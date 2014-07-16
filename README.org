@@ -34,18 +34,20 @@ If you need a high level guide on how to become a master. Please check my [[http
 - yasnippet and my customized snippets (insert code snippet by typing less keys)
 
 * Install
-Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into ~/.emacs.d. Ensure that the 'init.el' contained in this repo ends up at ~/.emacs.d/init.el and old ~/.emacs *IS REMOVED*.
+Please remove the file "~/.emacs" ("~" means HOME directory).
+
+If you prefer the method described in the section "Install stable version in easiest way", skip everything below this line.
+
+Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into ~/.emacs.d .
+
+Or run shell command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs".
+
+Ensure that the 'init.el' contained in this repo ends up at ~/.emacs.d/init.el and old ~/.emacs *IS REMOVED*.
 
 You *possibly* need run the below command in the terminal at least once to update the content from package repositories:
 #+BEGIN_SRC elisp
 emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
 #+END_SRC
-
-*If you cannot download packages from remote repository (for example, you are behind company firewall), don't panic!*
-
-You do have USB stick, right?
-
-Check the section *Install stable version in easiest way* for solutions.
 
 * Quick guide
 ** Step 1, Learn OS basics
@@ -159,9 +161,9 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - any package manager at Linux
 
 * Install stable version in easiest way
-You don't need git or network any more. All you need are just two zip files.
+You don't need git or network any more. All you need are only two zip files.
 
-Here are the exact steps you need follow:
+Here are the *exact steps* you need follow:
 - Download https://github.com/redguardtoo/emacs.d/archive/v1.0.zip
 - Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
 - Download [[https://github.com/redguardtoo/myelpa/archive/v1.0.zip]]
