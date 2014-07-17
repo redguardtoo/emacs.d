@@ -36,13 +36,15 @@ If you need a high level guide on how to become a master. Please check my [[http
 * Install
 Please remove the file "~/.emacs" ("~" means HOME directory).
 
-If you prefer the method described in the section "Install stable version in easiest way", skip everything below this line.
+Uninstall any third party Emacs plugins. For example, please run "apt-get uninstall emacs-w3m" in Ubuntu because all plugins will be managed by my set up.
+
+If you prefer the method described in the section "Install stable version in easiest way", *skip everything below this line and go to that section now*.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into ~/.emacs.d .
 
 Or run shell command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs".
 
-Ensure that the 'init.el' contained in this repo ends up at ~/.emacs.d/init.el and old ~/.emacs *IS REMOVED*.
+Ensure that the 'init.el' contained in this repo ends up at ~/.emacs.d/init.el.
 
 You *possibly* need run the below command in the terminal at least once to update the content from package repositories:
 #+BEGIN_SRC elisp
@@ -174,9 +176,9 @@ Here are the *exact steps* you need follow:
 (setq package-archives '(("myelpa" . "~/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet connection in the future. I tested it on *Emacs 24.3 and Emacs 23.4*.
+That's it. You will never need internet connection in the future. I tested it on *Emacs 24.3 and Emacs 23.4*. These two versions are *the most stable ones which I highly recommended*!
 
-Please note that all your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line again*.
+Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line again*.
 
 I don't recommend advanced users locking their packages.
 * Report bug
