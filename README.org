@@ -1,6 +1,6 @@
 * Warning
 - *If you are absolutely newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".*
-- *I will NOT support Emacs newer than the latest stable Emacs (version 24.3.1) on [[http://ftp.gnu.org/gnu/emacs/]].*
+- *I will NOT support Emacs newer than the latest stable Emacs (version 24.3.1).*
 - I'm using [[http://www.vim.org][Vim]] key binding. Please see section *Tips* if you prefer the Emacs key binding.
 - People in Mainland China may need [[http://code.google.com/p/goagent/][goagent]] to download packages from ELPA. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" after starting goagent server (or any proxy server).
 - C++/C developers, you need tell Emacs location of header files. You *MUST* see section `clang` now!
@@ -15,9 +15,9 @@ Most modern popular programming languages are supported (C/C++/Java/Ruby/Perl/Py
 
 I will provide a updated and stable set up here. But don't count on my explaining usage of every package. You need contact the original developer for tech support. Besides, [[http://www.emacswiki.org/emacs/][EmacsWiki]] has all the tips you need.
 
-A guide for newbies is provided at section *Quick Guide*.
+A guide for Emacs newbie is provided at section *Emacs quick guide*.
 
-If you need a high level guide on how to become a master. Please check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Mastering Emacs in one year]].
+If you need a high level tutorial on how to become a master. Please check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Mastering Emacs in one year]].
 
 * Features
 - All key binding and plugins are usable in terminal
@@ -50,7 +50,7 @@ You *possibly* need run the below command in the terminal at least once to updat
 emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
 #+END_SRC
 
-* Quick guide
+* Emacs quick guide
 ** Step 1, Learn OS basics
 - Know what's environment variable
 - Know what's pipe, stdout, stdin
