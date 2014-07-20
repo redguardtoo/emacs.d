@@ -35,7 +35,7 @@ If you need a high level tutorial on how to become a master. Please check my [[h
 * Install
 Please remove the file "~/.emacs" ("~" means HOME directory).
 
-Uninstall any third party Emacs plugins. For example, please run "apt-get uninstall emacs-w3m" in Ubuntu because all plugins will be managed by my set up.
+Uninstall any third party Emacs plugins. For example, please run "apt-get uninstall emacs-w3m" in Ubuntu because all plugins will be installed and managed by my set up.
 
 If you prefer the method described in the section "Install stable version in easiest way", *skip everything below this line and go to that section now*.
 
@@ -88,17 +88,18 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - required by `flymake-lua`
 - install through OS package manager
 
-** aspell (RECOMMENDED) or hunspell, and corresponding dictionary (aspell-en, for example)
+** aspell (RECOMMENDED) or hunspell
 - needed by `flyspell`
-- hunspell is the alternative of `aspell`. So you need only install either aspell or hunspell.
+- hunspell is the alternative of `aspell`. So you need only one of them.
 - install through OS package manager
+- for aspell, you may need its dictionary like aspell-en
 - I force the dictionary to "en_US" in init-spelling.el. You can modify it in init-spelling.el.
 
 ** sbcl (lisp environment)
 - needed by lisp `slime`
 - install through OS package manager
 
-** tidy (html tidy program) or html5-tidy (RECOMMENDED)
+** tidy or html5-tidy
 - needed by `web-mode` for real time HTML syntax check
 - install through OS package manager
 - For html5-tidy, you need [[https://github.com/w3c/tidy-html5/archive/master.zip][download its source code]] and build it manually
@@ -110,23 +111,30 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - needed by `org-mode` to export org to odt
 - install through OS package manager
 
-** jshint (if you use js-mode instead js2-mode)
+** jshint
 - install `node.js` through OS package manager, then `sudo npm install -g jshint`
+- required by js-mode
+- by default I use js2-mode which does NOT need jshint
+
 ** xsel
 - needed by my clipboard command `copy-to-x-clipboard` and `paste-from-x-clipboard` under Linux
 - install through OS package manager
+
 ** [[http://www.cmake.org][CMake]]
 - needed by `cpputils-cmake`
 - install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
+
 ** [[http://clang.llvm.org][Clang]]
 - needed by `cpputils-cmake`, `company-clang`
 - install through OS package manager
 - If you use `cpputils-cmake` and `cmake`, `cpputils-cmake` will do all the set up for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use `company-clang`, add `(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))` into ~/.emacs.d/init.el
+
 ** GCC/Make
 - needed by `flymake`
 - install through OS package manager
+
 ** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
 - needed by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
 - used by Firefox
@@ -156,10 +164,10 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 ** js-beautify
 - To beautify javascript code (insert extra space, for example)
 - Install pip through OS package manager, then `pip install jsbeautifier`
-* OS package manager recommended
+* What is "OS package manager"
 - [[https://github.com/cfg/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
-- any package manager at Linux
+- any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
 
 * Install stable version in easiest way
 You don't need git or network any more. All you need are only two zip files.
