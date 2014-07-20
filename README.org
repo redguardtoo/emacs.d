@@ -1,5 +1,6 @@
 * Warning
 - *If you are absolutely newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".*
+- *I will NOT support Emacs newer than the latest stable Emacs (version 24.3.1) on [[http://ftp.gnu.org/gnu/emacs/]].*
 - I'm using [[http://www.vim.org][Vim]] key binding. Please see section *Tips* if you prefer the Emacs key binding.
 - People in Mainland China may need [[http://code.google.com/p/goagent/][goagent]] to download packages from ELPA. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" after starting goagent server (or any proxy server).
 - C++/C developers, you need tell Emacs location of header files. You *MUST* see section `clang` now!
@@ -174,7 +175,7 @@ Here are the *exact steps* you need follow:
 (setq package-archives '(("myelpa" . "~/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet connection in the future. I tested it on *Emacs 24.3 and Emacs 23.4*. These two versions are *the most stable ones which I highly recommended*!
+That's it. You will never need internet connection in the future. I tested it on *Emacs 24.3.1 and Emacs 23.4*.
 
 Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line again*.
 
