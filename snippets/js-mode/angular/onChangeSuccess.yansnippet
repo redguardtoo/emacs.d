@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: $scope.$on('$stateChangeSuccess'), ...);
+# key: aon
+# group: angular
+# --
+$scope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
+  $0
+});
