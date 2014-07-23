@@ -74,6 +74,8 @@ ARCHIVE is the string name of the package archive.")
 (setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("melpa-stable" . "http://hiddencameras.milkbox.net/packages/")
                          ))
+;; well, melpa does not bother supporting emacs23 any more
+(if (not *emacs24*) (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;; Un-comment below line if you download zip file from https://github.com/redguardtoo/myelpa/archive/master.zip and extract its content into ~/myelpa/
 ;; (setq package-archives '(("myelpa" . "~/myelpa")))
