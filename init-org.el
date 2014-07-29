@@ -15,6 +15,21 @@
 (if (and *is-a-mac* (file-exists-p "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
     (setq org-export-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
 
+;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
+(defun narrow-or-widen-dwim ()
+  "If the buffer is narrowed, it widens. Otherwise, it narrows to region, or Org subtree."
+  (interactive)
+  (cond ((buffer-narrowed-p) (widen))
+        ((region-active-p) (narrow-to-region (region-beginning) (region-end)))
+        ((equal major-mode 'org-mode) (org-narrow-to-subtree))
+        (t (error "Please select a region to narrow to"))))
+
+;; I bind this key to C-c n, using the bind-key function that comes with use-package.
+(bind-key "C-c n" 'narrow-or-widen-dwim)
+
+;; I also bind it to C-x t n, using Artur Malabarba's toggle map idea:
+;; http:://www.endlessparentheses.com/the-toggle-map-and-wizardry.html
+(bind-key "n" 'narrow-or-widen-dwim toggle-map)
 ;; Various preferences
 (setq org-log-done t
       org-completion-use-ido t

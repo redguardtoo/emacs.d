@@ -308,7 +308,7 @@ to replace the symbol under cursor"
   "fnn" 'fancy-narrow-to-region
   "fnd" 'fancy-narrow-to-defun
   "fnw" 'fancy-widen
-  "xnn" 'narrow-to-region
+  "xnn" 'narrow-or-widen-dwim
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
