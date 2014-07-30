@@ -24,12 +24,6 @@
         ((equal major-mode 'org-mode) (org-narrow-to-subtree))
         (t (error "Please select a region to narrow to"))))
 
-;; I bind this key to C-c n, using the bind-key function that comes with use-package.
-(bind-key "C-c n" 'narrow-or-widen-dwim)
-
-;; I also bind it to C-x t n, using Artur Malabarba's toggle map idea:
-;; http:://www.endlessparentheses.com/the-toggle-map-and-wizardry.html
-(bind-key "n" 'narrow-or-widen-dwim toggle-map)
 ;; Various preferences
 (setq org-log-done t
       org-completion-use-ido t
