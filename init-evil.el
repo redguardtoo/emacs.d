@@ -181,7 +181,7 @@ to replace the symbol under cursor"
   "ht" 'helm-etags-select
   "hb" 'helm-bookmarks
   "cg" 'helm-ls-git-ls
-  "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname " (cppcm-get-exe-path-current-buffer))))
+  "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
