@@ -50,6 +50,8 @@ You *possibly* need run the below command in the terminal at least once to updat
 emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
 #+END_SRC
 
+The command "package-refresh-content" will fetch the latest package list from remote servers. It has to be done manually. It's not reasonable to *automatically* fetch the list for a normal text editor. 
+
 * Emacs quick guide
 ** Step 1, Learn OS basics
 - Know what's environment variable
