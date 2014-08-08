@@ -231,7 +231,8 @@
   "Create tags file."
   (interactive "DDirectory: ")
   (shell-command
-   (format "ctags -f %s/TAGS -e -R %s" dir-name (directory-file-name dir-name)))
+   ;;(format "ctags -f %s/TAGS -e -R %s" dir-name (directory-file-name dir-name)))
+   (format "ctags-exuberant -I __THROW -I __attribute_pure__ -I __nonnull -I __attribute__ --file-scope=yes --langmap=c:+.h --languages=c,c++ --links=yes --c-kinds=+p --c++-kinds=+p --fields=+iaS --extra=+q -R -e -f %s/TAGS %s" dir-name (directory-file-name dir-name)))
   )
 
 ; @see http://xahlee.blogspot.com/2012/01/emacs-tip-hotkey-for-repeat-complex.html
@@ -450,7 +451,7 @@
 ;; my screen is tiny, so I use minimum eshell prompt
 (setq eshell-prompt-function
        (lambda ()
-         (concat (getenv "USER") " $ ")))
+         (concat (getenv "USER") "@" (eshell/pwd) " $ ")))
 
 ;; max frame, @see https://github.com/rmm5t/maxframe.el
 (require 'maxframe)
