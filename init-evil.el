@@ -282,6 +282,7 @@ to replace the symbol under cursor"
   "xb" 'ido-switch-buffer
   "xc" 'save-buffers-kill-terminal
   "xo" 'helm-find-files
+  "ri" 'yari-helm
   "vd" 'scroll-other-window
   "vr" 'vr/replace
   "vq" 'vr/query-replace
