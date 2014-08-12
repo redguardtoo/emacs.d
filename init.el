@@ -2,6 +2,20 @@
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d"))
 
+(setq company-clang-arguments '("-I/usr/include" "-I/usr/include/clang/3.2/include"))
+;; trun off backup
+;; disable backup
+(setq backup-inhibited t)
+;; disable auto save
+(setq auto-save-default nil)
+;; turn off shell command echo
+(defun my-comint-init ()
+(setq comint-process-echoes t))
+(add-hook 'comint-mode-hook 'my-comint-init)
+;; add tags
+;; (setq tags-file-name "~/ctagsFile/emacssystags")
+(add-to-list 'tags-table-list (expand-file-name "~/ctagsFile/emacssystags") t)
+
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)
 ;;----------------------------------------------------------------------------
