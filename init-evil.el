@@ -283,11 +283,11 @@ to replace the symbol under cursor"
   "xc" 'save-buffers-kill-terminal
   "xo" 'helm-find-files
   "ri" 'yari-helm
-  "vd" 'scroll-other-window
+  "vv" 'scroll-other-window
+  "vu" '(lambda () (interactive) (scroll-other-window '-))
   "vr" 'vr/replace
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
-  "vu" '(lambda () (interactive) (scroll-other-window-down nil))
   "js" 'w3mext-search-js-api-mdn
   "je" 'js2-display-error-list
   "te" 'js2-mode-toggle-element
