@@ -1,5 +1,5 @@
 #!/bin/bash
-pkg=elpa-mirror-1.1.2
+pkg=elpa-mirror-1.1.3
 mkdir $pkg
 cp README.org *.el *.js index.html $pkg
 if [[ `uname -s` == *Darwin* ]]; then
