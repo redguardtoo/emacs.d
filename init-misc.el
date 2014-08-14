@@ -159,6 +159,8 @@
 (add-to-list 'auto-mode-alist '("\\.meta\\'" . conf-mode))
 ;; }}
 
+;; makefile
+(add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
 
 ;; midnight mode purges buffers which haven't been displayed in 3 days
 (require 'midnight)
