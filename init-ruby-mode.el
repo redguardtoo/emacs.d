@@ -14,7 +14,10 @@
             (flymake-ruby-load)))
 
 ;; doc look up
-(defalias 'ri 'yari)
+(defalias 'ri 'yari-helm)
+
+(autoload 'yari-helm "yari" "" t nil)
+(autoload 'yari "yari" "" t nil)
 
 ;;----------------------------------------------------------------------------
 ;; Ruby - erb

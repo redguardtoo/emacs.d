@@ -5,6 +5,9 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
+(setq gmail2bbdb-bbdb-file "~/.bbdb")
+(autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
+
 (add-hook 'bbdb-initialize-hook
           '(lambda ()
              ;; @see http://emacs-fu.blogspot.com.au/2009/08/managing-e-mail-addresses-with-bbdb.html
