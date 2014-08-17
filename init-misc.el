@@ -650,12 +650,8 @@ version control automatically"
 (global-set-key (kbd "C-c C-t") 'issue-tracker-increment-issue-id-under-cursor)
 ;; }}
 
-;; {{ messge buffer things
-(defun erase-message-buffer (&optional num)
-  "Erase the content of the *Messages* buffer in emacs.
-    Keep the last num lines if argument num if given."
-  (interactive "p")
-  (let ((message-buffer (get-buffer "*Messages*"))
+(defun erase-specific-buffer (num buf-name)
+  (let ((message-buffer (get-buffer buf-name))
         (old-buffer (current-buffer)))
     (save-excursion
       (if (buffer-live-p message-buffer)
@@ -675,6 +671,17 @@ version control automatically"
                 (switch-to-buffer old-buffer))))
         (error "Message buffer doesn't exists!")
         ))))
+
+;; {{ message buffer things
+(defun erase-message-buffer (&optional num)
+  "Erase the content of the *Messages* buffer in emacs.
+    Keep the last num lines if argument num if given."
+  (interactive "p")
+  (erase-specific-buffer num
+                         (cond
+                          ((eq 'ruby-mode major-mode) "*server*")
+                          (t "*Messages*")
+                          )))
 
 ;; }}
 
