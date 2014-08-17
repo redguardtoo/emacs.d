@@ -236,6 +236,17 @@ to replace the symbol under cursor"
   "lj" 'moz-load-js-file-and-send-it
   "lk" 'latest-kill-to-clipboard
   "rr" 'moz-console-clear
+  "rnr" 'rinari-web-server-restart
+  "rnc" 'rinari-find-controller
+  "rnv" 'rinari-find-view
+  "rna" 'rinari-find-application
+  "rnk" 'rinari-rake
+  "rnm" 'rinari-find-model
+  "rnl" 'rinari-find-log
+  "rbd" 'robe-doc
+  "rbj" 'robe-jump
+  "rbr" 'robe-rails-refresh
+  "rbs" 'robe-start
   "ws" 'w3mext-hacker-search
   "hs" 'helm-swoop
   "hd" 'describe-function
