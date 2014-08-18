@@ -205,7 +205,8 @@ If you use `gnus` for email (Gmail, for example). Check ~/.emacs.d/init-gnus.el 
 To toggle Chinese input method (eim, for example), press `C-\` or run command `M-x toggle-input-method`.
 
 * FAQ
-Please contact the original developer for help. My answer may be outdated soon.
+Please contact the original plugin developer if you find any plugin bug. My answer may be outdated soon.
+
 ** Why auto-completion/intellisense does not work?
 I assume you use company-mode. Other plugins have similar set up.
 
@@ -232,8 +233,20 @@ comment out below line in init-misc.el:
 #+BEGIN_SRC elisp
 (add-hook 'window-setup-hook 'maximize-frame t)
 #+END_SRC
+** How can I preview/apply a color theme?
+Check [[http://emacsthemes.caisah.info/]].
+
+Write down the name of color theme (for exmaple, I use molokai).
+
+Append below code into ~/.emacs.d/init.el,
+#+BEGIN_SRC elisp
+(require 'color-theme-molokai)
+(color-theme-molokai)
+#+END_SRC
+
+"M-x color-theme-select" may not work in this setup. It's because there is some design flaw in the original command.
 * My personal custom.el (OPTIONAL)
-It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff.
+It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff which is useless to you.
 * About Emacs23
 Emacs23 support will *be dropped* in one year <2015-04-24 Thu>.
 Currently Emacs 23 will not support below packages:
