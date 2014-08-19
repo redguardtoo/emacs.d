@@ -128,10 +128,16 @@
 (when *emacs24* (require 'init-company))
 (require 'init-stripe-buffer)
 
-;; color theme
 (require 'color-theme)
 (require 'color-theme-molokai)
-(color-theme-molokai)
+;; color theme
+(if (daemonp) ;; if run from daemon
+  (add-hook 'after-make-frame-functions
+            (lambda (frame)
+              (select-frame frame)
+              (color-theme-molokai)))
+  (color-theme-molokai))
+
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
 
