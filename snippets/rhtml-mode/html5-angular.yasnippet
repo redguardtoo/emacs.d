@@ -4,19 +4,34 @@
 # key: html5
 # --
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="myApp">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <title>Angular Sandbox (with Bootstrap)</title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.16/angular.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.0/ui-bootstrap-tpls.min.js"></script>
     <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css" />
+	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
     <style type="text/css">.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* angular ui bootstrap hack */</style>
   </head>
   <body>
-    {{ 1+2 }}
+    <div class="row">
+      <div class="col-sm-12">
+        <div ng-controller="ProgressDemoCtrl">
+          <progressbar max="max" value="dynamic">
+            <span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span>
+          </progressbar>
+        </div>
+      </div>
+    </div>
+  <script type="text/javascript">
+     var app = angular.module('myApp', ['ui.bootstrap']);
+     app.controller('ProgressDemoCtrl', function ($scope) {
+       $scope.max = 100;
+       $scope.dynamic = 50;
+     });
+  </script>
   </body>
 </html>
