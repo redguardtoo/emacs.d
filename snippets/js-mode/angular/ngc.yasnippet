@@ -2,6 +2,10 @@
 # name: angular.controller
 # key: acontroller
 # --
-controller('$1', function ($scope, $2) {
-  $0
+app.controller('${1:MyController}', function ($scope, ${2:$http}) {
+  console.log('${1:$(yas/substr text "[^ ]*")} registered');
+  var that = this;
+  $scope.fn1 = function () {
+    $0
+  };
 });
