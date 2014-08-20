@@ -160,6 +160,9 @@
 (add-to-list 'auto-mode-alist '("\\.ctags\\'" . conf-mode))
 ;; }}
 
+;; java
+(add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
+
 ;; makefile
 (add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
 
