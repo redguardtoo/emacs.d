@@ -246,6 +246,8 @@ to replace the symbol under cursor"
   "rnk" 'rinari-rake
   "rnm" 'rinari-find-model
   "rnl" 'rinari-find-log
+  "rns" 'rinari-console
+  "rnt" 'rinari-find-test
   "rbd" 'robe-doc
   "rbj" 'robe-jump
   "rbr" 'robe-rails-refresh
