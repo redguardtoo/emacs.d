@@ -246,7 +246,7 @@ to replace the symbol under cursor"
   "rnk" 'rinari-rake
   "rnm" 'rinari-find-model
   "rnl" 'rinari-find-log
-  "rns" 'rinari-console
+  "rno" 'rinari-console
   "rnt" 'rinari-find-test
   "rbd" 'robe-doc
   "rbj" 'robe-jump
@@ -298,7 +298,7 @@ to replace the symbol under cursor"
   "xb" 'ido-switch-buffer
   "xc" 'save-buffers-kill-terminal
   "xo" 'helm-find-files
-  "ri" 'yari-helm
+  "ri" '(lambda () (interactive) (require 'helm) (yari-helm))
   "vv" 'scroll-other-window
   "vu" '(lambda () (interactive) (scroll-other-window '-))
   "vr" 'vr/replace
