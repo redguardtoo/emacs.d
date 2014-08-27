@@ -1,4 +1,4 @@
-* evil-matchit (v1.3.1)
+* evil-matchit (v1.3.3)
 
 Vim [[http://www.vim.org/scripts/script.php?script_id=39][matchit.vim]] by Benji Fisher ported into Emacs.
 
@@ -22,7 +22,7 @@ Most modern languages are supported:
 
 This package uses Evil as its vi layer!
 
-* Why use evil-matchit 
+* Why use evil-matchit
 - No learning curve. Press "%" to jump between matched tags. That's all!
 - Stable! The ONLY dependency is evil-mode. So it should work in any major modes (web-mode, html-mode ...).
 - Support any modern languages (html/java/c/c++/python/latex/javascript ...).
@@ -34,7 +34,7 @@ Here is screen cast for python:
 [[file:screencast.gif]]
 
 * Install
-evil-matchit is already uploaded to [[http://marmalade-repo.org/]]. So the best way to install it is using Emacs' package manager.
+evil-matchit is already uploaded to [[http://melpa.milkbox.net/]]. So the best way to install it is using Emacs' package manager.
 
 Or you can download the package from https://dl.dropboxusercontent.com/u/858862/myelpa/index.html and manually install it by “M-x package-install-file”.
 * Set up
@@ -49,11 +49,15 @@ Alternatively, you can enable evil-matchit-mode along a major mode by adding `tu
 * Usage
 Press "%" to jump inside item(s) between tags in evil-normal-mode whose command name is "evilmi-jump-items". Please note that you *DO NOT* need move cursor above the tag before jumping, evil-matchit is smart enough to *detect the beginning of tag automatically*.
 
-Press ",si" to select item(s) wrapped by tags in evil-normal-mode whose command name is "evilmi-select-items".
+Text object "%" is also created. It roughly equal the region when you press "%" from  evil-matchit. Its basic unit is line.
 
-Press ",di" to delete item(s) wrapped by tags in evil-normal-mode whose command name is "evilmi-delete-items".
+Please note inner text object or outer object is the same thing in evil-matchit.
 
-All commands support numeric argument like "3%", "5,si" or "9,di"
+Press "va%" or "vi%" to select line(s) wrapped by tags.
+
+Press "da%" or "di%" to delete line(s) wrapped by tags.
+
+All commands support numeric argument like "3%", "5va%" or "9da%"
 
 * Advanced tips
 ** Support more major modes
@@ -84,11 +88,7 @@ All you need to do is to define function evilmi-customize-keybinding before turn
 #+BEGIN_SRC elisp
 (defun evilmi-customize-keybinding ()
   (evil-define-key 'normal evil-matchit-mode-map
-    "%" 'evilmi-jump-items
-    ",si" 'evilmi-select-items
-    ",di" 'evilmi-delete-items
-    )
-  )
+    "%" 'evilmi-jump-items))
 (global-evil-matchit-mode 1)
 #+END_SRC
 
@@ -188,7 +188,7 @@ Basically you just need:
 ** Share your code to the world
 Tweak your code a little bit to make it a plugin and ask me to merge it into upstream.
 
-Please check "evil-matchit-latext.el" for technical details about plugin.
+Please check "evil-matchit-latex.el" for technical details about plugin.
 
 Key points about code quality of plugin:
 - minimum dependency. For example, if your plugin for html template files is only some web-mode API wrapper, it will break when user don't have web-mode
