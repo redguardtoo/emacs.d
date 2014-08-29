@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.0
+;; Version: 1.5.4
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -75,7 +75,7 @@
 (defun evilnc--fix-buggy-major-modes ()
   "fix major modes whose comment regex is buggy.
 @see http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html"
-  (when (string= major-mode "autoconf-mode")
+  (when (eq major-mode 'autoconf-mode)
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure the its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode may give you some hint.
@@ -111,9 +111,11 @@
           ;; in evil-mode, if we use hot key V `M-x evil-visual-line` to select line
           ;; the (line-beginning-position) of the line which is after the last selected
           ;; line is always (region-end)! Don't know why.
-          (if (and (> e b) (= e (line-beginning-position)) (boundp 'evil-state) (string= evil-state 'visual))
-              (setq e (1- e))
-            )
+          (if (and (> e b)
+                     (save-excursion (goto-char e) (= e (line-beginning-position)))
+                     (boundp 'evil-state) (eq evil-state 'visual))
+              (setq e (1- e)))
+
           (goto-char b)
           (setq b (line-beginning-position))
           (goto-char e)
@@ -158,8 +160,8 @@
     (delq nil
           (mapcar #'(lambda (f)
                       ;; learn this trick from flyspell
-                      (or (string= f 'font-lock-comment-face)
-                          (string= f 'font-lock-comment-delimiter-face)))
+                      (or (eq f 'font-lock-comment-face)
+                          (eq f 'font-lock-comment-delimiter-face)))
                   fontfaces))))
 
 ;; @return (list beg end)
@@ -219,7 +221,7 @@
         lang
         lang-f
         old-flag)
-    (when (and (string= major-mode "org-mode")
+    (when (and (eq major-mode 'org-mode)
                (fboundp 'org-edit-src-find-region-and-lang))
       (setq info (org-edit-src-find-region-and-lang)))
 
@@ -248,7 +250,7 @@
 
 (defun evilnc--comment-or-uncomment-region (beg end)
   (cond
-   ((string= major-mode "web-mode")
+   ((eq major-mode 'web-mode)
     ;; web-mode comment only works when region selected
     ;; uncomment only works when region not selected
     ;; test three sample point, comment or uncomment
@@ -339,7 +341,7 @@ Paragraphs are separated by empty lines."
 ;;;###autoload
 (defun evilnc-comment-or-uncomment-to-the-line (&optional LINENUM)
   "Comment or uncomment from the current line to the LINENUM line"
-  (interactive "p")
+  (interactive "nLine: ")
   (if (not (region-active-p))
       (let ((b (line-beginning-position))
             (e (line-end-position)))
@@ -395,17 +397,21 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
    whole lines. Then we comment/uncomment the expanded region. NUM is ignored."
   (interactive "p")
   ;; donot move the cursor
-  (save-excursion
-    ;; support negative number
-    (when (< NUM 0)
-      (forward-line (1+ NUM))
-      (setq NUM (- 0 NUM)))
-
-    (evilnc--operation-on-lines-or-region '(lambda (b e)
-                                             (evilnc--fix-buggy-major-modes)
-                                             (evilnc--comment-or-uncomment-region b e)
-                                             )
-                                          NUM)))
+  ;; support negative number
+  (cond
+   ((and (= 1 NUM) (string-match "^[ \t]*$" (buffer-substring-no-properties (line-beginning-position) (line-end-position))))
+    ;; comment on current empty line
+    (comment-dwim nil))
+   (t
+    (save-excursion
+      (when (< NUM 0)
+        (forward-line (1+ NUM))
+        (setq NUM (- 0 NUM)))
+      (evilnc--operation-on-lines-or-region '(lambda (b e)
+                                               (evilnc--fix-buggy-major-modes)
+                                               (evilnc--comment-or-uncomment-region b e))
+                                            NUM))
+    )))
 
 ;;;###autoload
 (defun evilnc-copy-and-comment-lines (&optional NUM)
@@ -413,10 +419,8 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
    Case 1: If no region selected, operate on current line. if NUM>1, comment/uncomment
    extra N-1 lines from next line
    Case 2: If a region selected, the region is expand to make sure the region contain
-   whole lines. Then we operate the expanded region. NUM is ignored.
-"
+   whole lines. Then we operate the expanded region. NUM is ignored."
   (interactive "p")
-
   ;; support negative number
   (when (< NUM 0)
     (forward-line (1+ NUM))
@@ -437,7 +441,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-copy-to-line (&optional LINENUM)
   "Copy from the current line to the LINENUM line, for non-evil user only"
-  (interactive "p")
+  (interactive "nCopy to line: ")
   (if (not (region-active-p))
       (let ((b (line-beginning-position))
             (e (line-end-position)))
@@ -453,7 +457,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-kill-to-line (&optional LINENUM)
   "Kill from the current line to the LINENUM line, for non-evil user only"
-  (interactive "p")
+  (interactive "NKill to line: ")
   (if (not (region-active-p))
       (let ((b (line-beginning-position))
             (e (line-end-position)))
@@ -463,8 +467,16 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
               (setq b (line-beginning-position)))
           (if (> (line-end-position) e)
               (setq e (line-end-position)))
-          (kill-region b (+ 1 e)) ; +1 because we need remove the CR
+          ;; +1 because we need remove the CR
+          (setq e (+ 1 e))
+          (if (> e (point-max)) (setq e (point-max)))
+          (kill-region b e)
           ))))
+
+;;;###autoload
+(defun evilnc-version ()
+  (interactive)
+  (message "1.5.4"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
