@@ -848,12 +848,14 @@ The full path into relative path insert it as a local file link in org-mode"
   "when toggle on input method, switch to evil-insert-state if possible.
 when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
   (interactive)
-  (if (not current-input-method)
-      (if (not (string= evil-state "insert"))
-          (evil-insert-state))
-    (if (string= evil-state "insert")
-        (evil-normal-state)
-        ))
+  ;; some guy donot use evil-mode at all
+  (if (fboundp 'evil-insert-state)
+      (if (not current-input-method)
+          (if (not (string= evil-state "insert"))
+              (evil-insert-state))
+        (if (string= evil-state "insert")
+            (evil-normal-state)
+          )))
   (toggle-input-method))
 
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
