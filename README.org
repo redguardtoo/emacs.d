@@ -1,51 +1,50 @@
 * Warning
-- *If you are absolutely newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".*
-- *I will NOT support Emacs newer than the latest stable Emacs (version 24.3.1).*
-- I'm using [[http://www.vim.org][Vim]] key binding. Please see section *Tips* if you prefer the Emacs key binding.
-- People in Mainland China may need [[http://code.google.com/p/goagent/][goagent]] to download packages from ELPA. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" after starting goagent server (or any proxy server).
-- C++/C developers, you need tell Emacs location of header files. You *MUST* see section `clang` now!
-- I suggest Windows users using [[http://www.cygwin.com/][Cygwin]] version Emacs to avoid overhead of setting up third party tools. But this configuration is still usable even in  native windows Emacs if you set up environment variable HOME.
-- My first priority is stable. So I whitelist packages from [[http://melpa.milkbox.net][melpa]] (melpa-unstable, actually). Modify variable "melpa-include-packages" in init-elpa.el if you want to make *specific* excluded packages at melpa installable. Or search the line containing "(setq package-filter-function nil)" in "init-elpa.el" and *un-comment* it, which make all packages at melpa installable.
-- In your bug report, please include details of environment (OS, Emacs version ...) and the full output of `emacs --debug-init`.
-- If a package is not listed on myelpa, you can download its source code and put it in ~/.emacs.d/site-lisp. There are already some samples there.
+- If you are a newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".
+- Emacs newer than the latest stable version 24.3.1 are *NOT* supported.
+- I use [[http://www.vim.org][Vim]] key bindings. Check section *Tips* if you prefer Emacs key bindings.
+- People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server (or any proxy server).
+- C++ developers need tell Emacs location of header files. Please check see section `clang`.
+- Windows users could use Emacs in [[http://www.cygwin.com/][Cygwin]] to avoid instaling other GNU tools. But this setup is still usable in native windows version if you set up environment variable HOME.
+- My priority is make this setup stable. So I whitelist packages from [[http://melpa.milkbox.net][melpa]] (melpa-unstable, actually). It means by default packages from melpa-unstable are *invisible*. Modify variable "melpa-include-packages" in init-elpa.el if you want to install some package from melpa-unstable.
+- In the bug report, please include environment details (OS, Emacs version ...) and the full output of `emacs --debug-init`.
+- If a package is at myelpa, you can place its code at ~/.emacs.d/site-lisp. There are already some samples there.
 - Remove bundled emacs 22 at first *if you are using OS X*!
 
 * General
-Most modern popular programming languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...).
+Most popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...).
 
-I will provide a updated and stable set up here. But don't count on my explaining usage of every package. You need contact the original developer for tech support. Besides, [[http://www.emacswiki.org/emacs/][EmacsWiki]] has all the tips you need.
+Please contact the original developer if you don't know how to set up a package. [[http://www.emacswiki.org/emacs/][EmacsWiki]] also has all the tips.
 
-A guide for Emacs newbie is provided at section *Emacs quick guide*.
+A short tutorial for newbie is provided at section *Emacs quick guide*.
 
-If you need a high level tutorial on how to become a master. Please check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Mastering Emacs in one year]].
+If you need a detailed guide, check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Mastering Emacs in one year]].
 
 * Features
-- All key binding and plugins are usable in terminal
-- Real time HTML syntax checker enabled (you need install tidy or tidy-html5). I recommend tidy-html5.
-- git or subversion is *NOT* needed. You *DONOT* need run 'git submodule update'.
-- optimized for cross-platform C++ development with CMake and wxWidgets
-- emacs-w3m (console browser)
+- 100% usable in terminal
+- Real time HTML syntax checker
+- git or subversion is *NOT* needed. You don't need run 'git submodule update'.
+- optimized for cross-platform C++ development with CMake
+- emacs-w3m (console web browser)
 - eim (Chinese pinyin input method)
-- org2blog (post wordpress blog with org-mode)
-- make the configuration work on *ALL* platforms (Linux/Cygwin/Mac).
-- The configuration work with Emacs version >=24 but still usable with Emacs version 23 (tested with Emacs 23.4.1).
-- evil-mode and its plugins (Vim key binding)
-- yasnippet and my customized snippets (insert code snippet by typing less keys)
+- the setup work on *ALL* platforms (Linux/Cygwin/Mac).
+- The setup usable with Emacs 23
+- evil-mode and its plugins (Vim key binding) bundled
+- yasnippet bundled
 
 * Install
-Please remove the file "~/.emacs" ("~" means HOME directory).
+If you prefer the method described in the section "Install stable version in easiest way", *you don't need read this section.*.
 
-Uninstall any third party Emacs plugins. For example, please run "apt-get uninstall emacs-w3m" in Ubuntu because all plugins will be installed and managed by my set up.
+Please remove the file "$HOME/.emacs".
 
-If you prefer the method described in the section "Install stable version in easiest way", *skip everything below this line and go to that section now*.
+Uninstall any system Emacs plugins. For example, run "apt-get uninstall emacs-w3m" in Debian/Ubuntu to remove emacs-w3m. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into ~/.emacs.d .
 
-Or run shell command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d".
+Or run command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d" in terminal.
 
-Ensure that the 'init.el' contained in this repo ends up at ~/.emacs.d/init.el.
+Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
-You *possibly* need run the below command in the terminal at least once to update the content from package repositories:
+You *possibly* need run below command at the terminal at least once to update the content from package repositories:
 #+BEGIN_SRC elisp
 emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
 #+END_SRC
@@ -54,8 +53,8 @@ The command "package-refresh-content" will fetch the latest package list from re
 
 * Emacs quick guide
 ** Step 1, Learn OS basics
-- Know what's environment variable
-- Know what's pipe, stdout, stdin
+- Know what is environment variable
+- Know what is pipe, stdout, stdin
 ** Step 2, Read official tutorial at least once
 Press "C-h t" (C means Ctrl) and start read tutorial.
 - Know how to move cursor
@@ -79,7 +78,7 @@ My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is 
 Other directoris do not matter.
 
 * Third party command line tools
-These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
+They are *OPTIONAL*. Your Emacs will not crash if they are not installed.
 
 ** w3m (web browser in console) 
 - needed by `w3m` (w3m is emacs package name written in elisp)
@@ -90,12 +89,13 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - required by `flymake-lua`
 - install through OS package manager
 
-** aspell (RECOMMENDED) or hunspell
+** aspell or hunspell
 - needed by `flyspell`
 - hunspell is the alternative of `aspell`. So you need only one of them.
 - install through OS package manager
 - for aspell, you may need its dictionary like aspell-en
 - I force the dictionary to "en_US" in init-spelling.el. You can modify it in init-spelling.el.
+- I recommend aspell for programmers
 
 ** sbcl (lisp environment)
 - needed by lisp `slime`
@@ -105,12 +105,13 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - needed by `web-mode` for real time HTML syntax check
 - install through OS package manager
 - For html5-tidy, you need [[https://github.com/w3c/tidy-html5/archive/master.zip][download its source code]] and build it manually
+- I recommend html5-tidy because it supports html5
 
 ** csslint
 - install `node.js` through OS package manager, then `sudo npm install -g csslint`
 
 ** zip and unzip
-- needed by `org-mode` to export org to odt
+- needed by `org-mode` to export org file to odt file
 - install through OS package manager
 
 ** jshint
@@ -130,7 +131,7 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 ** [[http://clang.llvm.org][Clang]]
 - needed by `cpputils-cmake`, `company-clang`
 - install through OS package manager
-- If you use `cpputils-cmake` and `cmake`, `cpputils-cmake` will do all the set up for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
+- If you use `cpputils-cmake` and `cmake`, `cpputils-cmake` will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use `company-clang`, add `(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))` into ~/.emacs.d/init.el
 
 ** GCC/Make
@@ -145,7 +146,7 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 - it creates tags file for code navigation
 - needed by many tags related plugins
 - install through OS package manager
-- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]] for my guide
+- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]] if you prefer my way
 
 ** [[http://www.gnu.org/software/global][GNU Global]] 
 - needed by `ggtags.el`
@@ -175,6 +176,8 @@ These tools are *OPTIONAL*. Your Emacs will NOT crash if they are not installed.
 You don't need git or network any more. All you need are only two zip files.
 
 Here are the *exact steps* you need follow:
+- Remove the file "~/.emacs".
+- Uninstall any system Emacs plugins. For example, run "apt-get uninstall emacs-w3m" in Debian/Ubuntu to remove emacs-w3m. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
 - Download https://github.com/redguardtoo/emacs.d/archive/v1.0.zip
 - Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
 - Download [[https://github.com/redguardtoo/myelpa/archive/v1.0.zip]]
@@ -185,13 +188,13 @@ Here are the *exact steps* you need follow:
 (setq package-archives '(("myelpa" . "~/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet connection in the future. I tested it on *Emacs 24.3.1 and Emacs 23.4*.
+That's it. You will never need internet in the future. I tested it on Emacs 24.3.1 and Emacs 23.4.
 
-Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line again*.
+Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
 
 I don't recommend advanced users locking their packages.
 * Report bug
-Please file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't send me email!
+Please file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
 
 * Tips
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
@@ -208,48 +211,45 @@ To toggle Chinese input method (eim, for example), run command `M-x toggle-input
 Please contact the original plugin developer if you find any plugin bug. My answer may be outdated soon.
 
 ** Why auto-completion/intellisense does not work?
-I assume you use company-mode. Other plugins have similar set up.
+I assume you use company-mode. Other plugins have similar setup.
 
 At minimum:
 - You need install clang
 - Make sure your code is syntax correct at the beginning
 - assign reasonable value into company-clang-arguments
 
-Here is sample set up in ~/.emacs:
+Here is sample setup in ~/.emacs:
 #+begin_src elisp
 (setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
 #+end_src
 
-In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar set up]].
-** How to use color theme in CLI emacs
+In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
+** Use color theme in the terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
-** When editing python code, the computer is not responsive
-Don't open two Emacs instances to edit python files. This is the bug of anaconda-mode (version 20140605.757).
-UPDATE: the bug is fixed after that version.
-** How to AVOID Emacs maximized when it starts up
-comment out below line in init-misc.el:
+** Avoid Emacs maximized when it starts up
+Comment out below line in init-misc.el:
 #+BEGIN_SRC elisp
 (add-hook 'window-setup-hook 'maximize-frame t)
 #+END_SRC
-** How can I preview/apply a color theme?
+** Preview&apply a color theme?
 Check [[http://emacsthemes.caisah.info/]].
 
-Write down the name of color theme (for exmaple, I use molokai).
+Write down the name of color theme (for exmaple, molokai).
 
-Append below code into ~/.emacs.d/init.el,
+Insert below code into ~/.emacs.d/init.el,
 #+BEGIN_SRC elisp
 (require 'color-theme-molokai)
 (color-theme-molokai)
 #+END_SRC
 
-"M-x color-theme-select" may not work in this setup. It's because there is some design flaw in the original command.
+"M-x color-theme-select" may not work in this setup. It's because there is some design flaw in Emacs.
 * My personal custom.el (OPTIONAL)
 It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff which is useless to you.
-* About Emacs23
-Emacs23 support will *be dropped* in one year <2015-04-24 Thu>.
-Currently Emacs 23 will not support below packages:
+* About Emacs 23
+Emacs 23 support will *be dropped* in one year <2015-04-24 Thu>.
+Currently Emacs 23 does not support following packages:
 - helm
 - org-mode and its third party packages
 - company-mode
