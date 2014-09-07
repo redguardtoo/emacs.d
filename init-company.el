@@ -10,6 +10,7 @@
             company-select-next
             company-select-previous
             company-complete-selection
+            company-complete-number
             )))
 
 (eval-after-load 'company
