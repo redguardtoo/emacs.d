@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
-# name: $rootScope.$broadcast
+# name: $scope.$broadcast (fire event down $scope)
 # group: angular
 # key: abroadcast
 # --
-$rootScope.$broadcast('${1:eventHello}');
+$scope.$broadcast('${1:eventHello}', data);
