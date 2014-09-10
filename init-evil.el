@@ -9,6 +9,7 @@
 ;; {{@see https://github.com/timcharper/evil-surround
 (require 'surround)
 (global-surround-mode 1)
+(evil-define-key 'visual surround-mode-map "s" 'evil-substitute)
 ;; }}
 
 (defun toggle-org-or-message-mode ()
