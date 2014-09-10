@@ -7,9 +7,9 @@
 (evil-mode 1)
 
 ;; {{@see https://github.com/timcharper/evil-surround
-(require 'surround)
-(global-surround-mode 1)
-(evil-define-key 'visual surround-mode-map "s" 'evil-substitute)
+(require 'evil-surround)
+(global-evil-surround-mode 1)
+(evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
 ;; }}
 
 (defun toggle-org-or-message-mode ()
@@ -159,6 +159,7 @@ to replace the symbol under cursor"
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
+  "ss" 'evil-surround-region
   "sc" 'shell-command
   "srt" 'sr-speedbar-toggle
   "srr" 'sr-speedbar-refresh-toggle
