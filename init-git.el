@@ -1,3 +1,7 @@
+;; disable all vc backends
+;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
+(setq vc-handled-backends ())
+
 (setq magit-save-some-buffers nil
       magit-process-popup-time 10
       magit-completing-read-function 'magit-ido-completing-read)
