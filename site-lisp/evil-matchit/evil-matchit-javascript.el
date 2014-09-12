@@ -45,9 +45,7 @@
           )
         )
       )
-    rlt
-    )
-  )
+    rlt))
 
 ;;;###autoload
 (defun evilmi-javascript-get-tag ()
@@ -57,7 +55,6 @@
         (cur-line (buffer-substring-no-properties
                    (line-beginning-position) (line-end-position)))
         )
-    (message "evilmi-javascript-get-tag called")
     ;; only handle open tag
     (if (not (memq (following-char) (string-to-list "{[(}}])")))
         (if (setq forward-line-num (evilmi--javascript-find-open-brace cur-line))
@@ -71,9 +68,7 @@
           )
       (setq rlt (list (point)))
       )
-    rlt
-    )
-  )
+    rlt))
 
 ;;;###autoload
 (defun evilmi-javascript-jump (rlt NUM)
@@ -85,7 +80,6 @@
                       (line-beginning-position)
                       (line-end-position)))
       ;; hack for javascript
-      (message "cur-line=%s" cur-line)
       (if (or (string-match "^[ \t]*}\)\(.*\)\; *$" cur-line)
               (string-match "^[ \t]*}\(.*\))\; *$" cur-line)
               (string-match "^[ \t]*}\])\; *$" cur-line))

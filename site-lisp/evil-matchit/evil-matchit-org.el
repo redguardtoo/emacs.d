@@ -43,16 +43,10 @@ between '\\(' and '\\)' in regular expression.
   )
 ;; ruby/bash/lua/vimrc
 (defvar evilmi-org-match-tags
-  '((("begin_src" "BEGIN_SRC") () ( "end_src" "END_SRC"))
-    (("begin_example" "BEGIN_EXAMPLE") () ( "end_example" "END_EXAMPLE"))
-    (("begin_html" "BEGIN_HTML") () ( "end_html" "END_HTML"))
-    )
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).
-"
-  )
+  '((("begin_src" "BEGIN_SRC") () ( "end_src" "END_SRC") "MONOGAMY")
+    (("begin_example" "BEGIN_EXAMPLE") () ( "end_example" "END_EXAMPLE") "MONOGAMY")
+    (("begin_html" "BEGIN_HTML") () ( "end_html" "END_HTML") "MONOGAMY")
+    ))
 
 (defun evilmi--get-embedded-language-major-mode ()
   (let ((info (org-edit-src-find-region-and-lang))

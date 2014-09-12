@@ -1,4 +1,4 @@
-;;; evil-matchit-ruby.el ---ruby plugin of evil-matchit
+;;; evil-matchit-template.el --- web template plugin of evil-matchit
 
 ;; Copyright (C) 2014  Chen Bin <chenbin.sh@gmail.com>
 
@@ -31,26 +31,26 @@
 ;; All you need to do is just define the match-tags for SDK algorithm to lookup.
 (require 'evil-matchit-sdk)
 
-(defvar evilmi-ruby-extract-keyword-howtos
-  '(("^[ \t]*\\([a-z]+\\)\\( .*\\| *\\)$" 1)
-    ("^.* \\(do\\) |[a-z0-9A-Z,|]+|$" 1)
+(defvar evilmi-template-extract-keyword-howtos
+  '(("^[ \t]*<\\?php +\\([a-z]+\\).*$" 1)
     ))
 
-(defvar evilmi-ruby-match-tags
-  '((("unless" "if") ("elsif" "else") "end")
-    ("begin" ("rescue" "ensure") "end")
-    ("case" ("when" "else") "end")
-    (("class" "def" "while" "do" "module" "for" "until") () "end")
+(defvar evilmi-template-match-tags
+  '(("if" ("elseif" "else") "endif" "MONOGAMY")
+    ("foreach" () "endforeach" "MONOGAMY")
+    ("for" () "endfor" "MONOGAMY")
+    ("while" () "endwhile" "MONOGAMY")
     ))
 
 ;;;###autoload
-(defun evilmi-ruby-get-tag ()
+(defun evilmi-template-get-tag ()
   (let (rlt)
-    (setq rlt (evilmi-sdk-get-tag evilmi-ruby-match-tags evilmi-ruby-extract-keyword-howtos))
+    (setq rlt (evilmi-sdk-get-tag evilmi-template-match-tags evilmi-template-extract-keyword-howtos))
     rlt))
 
 ;;;###autoload
-(defun evilmi-ruby-jump (rlt NUM)
-  (evilmi-sdk-jump rlt NUM evilmi-ruby-match-tags evilmi-ruby-extract-keyword-howtos))
+(defun evilmi-template-jump (rlt NUM)
+  (evilmi-sdk-jump rlt NUM evilmi-template-match-tags evilmi-template-extract-keyword-howtos)
+  )
 
-(provide 'evil-matchit-ruby)
+(provide 'evil-matchit-template)

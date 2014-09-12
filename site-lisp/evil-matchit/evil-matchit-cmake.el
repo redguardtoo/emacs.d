@@ -37,18 +37,12 @@
 
 ;; CMake (http://www.cmake.org) syntax
 (defvar evilmi-cmake-match-tags
-  '((("if" "IF") ("elseif" "ELSEIF" "else" "ELSE") ("endif" "ENDIF"))
-    (("foreach" "FOREACH") () ("endforeach" "ENDFOREACH"))
-    (("macro" "MACRO") () ("endmacro" "ENDMACRO"))
-    (("while" "WHILE") () ("endwhile" "ENDWHILE"))
-    (("function" "FUNCTION") () ("endfunction" "ENDFUNCTION"))
-    )
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).
-"
-  )
+  '((("if" "IF") ("elseif" "ELSEIF" "else" "ELSE") ("endif" "ENDIF") "MONOGAMY")
+    (("foreach" "FOREACH") () ("endforeach" "ENDFOREACH") "MONOGAMY")
+    (("macro" "MACRO") () ("endmacro" "ENDMACRO") "MONOGAMY")
+    (("while" "WHILE") () ("endwhile" "ENDWHILE") "MONOGAMY")
+    (("function" "FUNCTION") () ("endfunction" "ENDFUNCTION") "MONOGAMY")
+    ))
 
 ;;;###autoload
 (defun evilmi-cmake-get-tag ()

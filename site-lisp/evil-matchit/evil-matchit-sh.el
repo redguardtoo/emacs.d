@@ -35,15 +35,9 @@
 (defvar evilmi-sh-match-tags
   '((("if") ("elif" "else") ("fi"))
     ("case" (";;") ("esac"))
-    ("function" ("exit") ("\}") t)
+    ("function" ("exit") ("\}") "FN_EXIT")
     (("for" "do" "while" "until") () ("done"))
-    )
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).
-"
-  )
+    ))
 
 (defvar evilmi-sh-extract-keyword-howtos
   '(("^[ \t]*\\([a-z]+\\)\\( .*\\| *\\)$" 1)

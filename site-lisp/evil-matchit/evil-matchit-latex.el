@@ -30,14 +30,11 @@
 (defvar evilmi-latex-regexp "\\\\\\([a-zA-Z]+\\(\{[a-zA-Z]+\}\\)?\\)")
 
 (defvar evilmi-latex-match-tags
-  '((("if[a-zA-Z]+" "if") "else" "fi")
-    ("left" nil "right")
+  '((("if[a-zA-Z]+" "if") "else" "fi" "MONOGAMY")
+    ("left" nil "right" "MONOGAMY")
     ("begin[a-z]+" nil "end[a-z]+")
-    ("begin\{[a-z]+\}" nil "end\{[a-z]+\}"))
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).")
+    ("begin\{[a-z]+\}" nil "end\{[a-z]+\}")
+    ))
 
 
 ;;;###autoload
@@ -72,8 +69,7 @@ The third column contains the closed tags(s).")
                    tag-info
                    ))))
     (if rlt (goto-char cursor-pos))
-    rlt
-    ))
+    rlt))
 
 ;;;###autoload
 (defun evilmi-latex-jump (rlt NUM)

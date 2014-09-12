@@ -46,8 +46,7 @@
         0
         )
       )
-    )
-  )
+    ))
 
 ;; jump from else to if, jump from finally to try
 ;; only python need this hack, a wierd language
@@ -274,8 +273,7 @@
               ;; record the latest indented line info
               (setq where-to-jump-in-theory (line-end-position))
               )
-            )
-          )
+            ))
         ;; last line
         (if (= (point-max) (line-end-position)) (setq dendent t))
         )
@@ -285,8 +283,6 @@
       (evilmi--python-move-to-next-open-tag keyword cur-indent)
       )
      )
-    where-to-jump-in-theory
-    )
-  )
+    where-to-jump-in-theory))
 
 (provide 'evil-matchit-python)

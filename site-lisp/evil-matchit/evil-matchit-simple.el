@@ -44,9 +44,7 @@
           )
         )
       )
-    rlt
-    )
-  )
+    rlt))
 
 ;;;###autoload
 (defun evilmi-simple-get-tag ()
@@ -70,9 +68,7 @@
           )
       (setq rlt (list (point)))
       )
-    rlt
-    )
-  )
+    rlt))
 
 ;;;###autoload
 (defun evilmi-simple-jump (rlt NUM)

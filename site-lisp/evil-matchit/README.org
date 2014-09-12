@@ -1,4 +1,4 @@
-* evil-matchit (v1.3.3)
+* evil-matchit (v1.4.0)
 
 Vim [[http://www.vim.org/scripts/script.php?script_id=39][matchit.vim]] by Benji Fisher ported into Emacs.
 
@@ -17,6 +17,7 @@ Most modern languages are supported:
 - Ruby
 - Bash
 - Lua
+- PHP
 - Vim script
 - Emacs email (mesage-mode)
 
@@ -157,8 +158,8 @@ I attached the full content of evil-matchit-script.el here:
 The first column contains the open tag(s).
 The second column contains the middle tag(s).
 The third column contains the closed tags(s).
-"
-  )
+The forth *optional* column defines the relationship between open and close tags. It could be FN_EXIT or MONOGAMY
+")
 
 ;;;###autoload
 (defun evilmi-script-get-tag ()

@@ -33,19 +33,12 @@
 
 ;; ruby/bash/lua/vimrc
 (defvar evilmi-script-match-tags
-  '((("unless" "if") ("elif" "elsif" "elseif" "else") ( "end" "fi" "endif"))
-    ("begin" ("rescue" "ensure") "end")
-    ("case" ("when" "else") ("esac" "end"))
-    (("fun!" "function!" "class" "def" "while" "function" "do") () ("end" "endfun" "endfunction"))
+  '((("unless" "if") ("elif" "elsif" "elseif" "else") ( "end" "fi" "endif") "")
+    ("begin" ("rescue" "ensure") "end" "")
+    ("case" ("when" "else") ("esac" "end") "")
+    (("fun!" "function!" "class" "def" "while" "function" "do") () ("end" "endfun" "endfunction") "")
     ("repeat" ()  "until")
-    )
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).
-The forth column is optional, t means the tags could be function exit
-"
-  )
+    ))
 
 ;;;###autoload
 (defun evilmi-script-get-tag ()

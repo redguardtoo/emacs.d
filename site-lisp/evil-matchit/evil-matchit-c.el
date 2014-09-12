@@ -29,25 +29,14 @@
 
 ;; ruby/bash/lua/vimrc
 (defvar evilmi-c-match-tags
-  '((("ifdef" "ifndef" "if") ("elif" "else")  "endif")
-    ("switch" "case" "default"))
-  "The table we look up match tags. This is a three column table.
-The first column contains the open tag(s).
-The second column contains the middle tag(s).
-The third column contains the closed tags(s).
-"
-  )
+  '((("ifdef" "ifndef" "if") ("elif" "else")  "endif" "MONOGAMY")
+    ("switch" "case" "default" "MONOGAMY")
+    ))
 
 (defvar evilmi-c-extract-keyword-howtos
   '(("^[ \t]*#[ \t]*\\([a-z]+\\)\\( .*\\| *\\)$" 1)
-    ("^[ \t]*\\([a-z]+\\)\\([ (:].*\\| *\\)$" 1))
-  "The list of HOWTO on extracting keyword from current line.
-Each howto is actually a pair. The first element of pair is the regular
-expression to match the current line. The second is the index of sub-matches
-to extract the keyword which starts from one. The sub-match is the match defined
-between '\\(' and '\\)' in regular expression.
-"
-  )
+    ("^[ \t]*\\([a-z]+\\)\\([ (:].*\\| *\\)$" 1)
+    ))
 
 ;;;###autoload
 (defun evilmi-c-get-tag ()
