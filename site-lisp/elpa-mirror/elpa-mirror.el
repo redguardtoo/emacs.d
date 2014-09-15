@@ -280,7 +280,11 @@ If elpamr-default-output-directory is not nil, it's assumed that is output direc
       ;; output archive-contents
       (with-temp-buffer
         (let ((print-level nil)  (print-length nil))
-          (insert (format "%S" (cons 1 rlt))))
+          (insert "(1\n")
+          (dolist (pkg rlt)
+            ;; each package occupies one line
+            (insert (format " %S\n" pkg)))
+          (insert ")"))
         (write-file (elpamr--output-fullpath "archive-contents")))
       (elpamr--output-html rlt)
       (message "DONE! Output into %s" elpamr-default-output-directory))
