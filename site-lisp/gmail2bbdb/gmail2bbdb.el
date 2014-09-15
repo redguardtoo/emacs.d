@@ -4,7 +4,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/gmail2bbdb
 ;; Keywords: vcard bbdb email contact gmail
-;; Version: 0.0.1
+;; Version: 0.0.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -15,22 +15,44 @@
 
 ;;; Code:
 
-(defvar gmail2bbdb-bbdb-file "~/.bbdb.el")
+(defvar gmail2bbdb-bbdb-file "~/.bbdb.el"
+  "the full path of exported BBDB file")
+(defvar gmail2bbdb-excluded-email-regex-list '("^noreply.*"
+                                               "notify.*@disqus.net"
+                                               ".*@noreply.github.com$"
+                                               "reply.*@reply.github.com"
+                                               "do-not-reply@stackoverflow.com")
+  "email matching any regex in this list will NOT be exported")
+
+(defun gmail2bbdb--is-valid-email (eml)
+  (let ((i 0) found re)
+    (while (and (not found)
+                (< i (length gmail2bbdb-excluded-email-regex-list)))
+      (setq re (nth i gmail2bbdb-excluded-email-regex-list))
+      (if (string-match re eml)
+        (setq found t))
+      (setq i (1+ i))
+      )
+    (not found)))
 
 ;; ["Spolsky" "Joel" nil ("Spolsky Joel") nil nil nil ("spolsky@fogcreek.com") nil nil]
-;; ["捷英" "沈" nil ("沈捷英") nil nil nil ("jieyingsh@gmail.com" "140113204@sohu.com" "jieyingsh@hotmail.com" "jieyingshen@gmail.com") nil nil]
 (defun gmail2bbdb--extract-item (str)
-  (let (lines fullname firstname lastname emails rlt)
+  (let (lines fullname firstname lastname emails rlt eml)
     (setq lines (split-string str "[\r\n]+"))
     (dolist (l lines)
       (cond
        ((string-match "^FN:\\(.*\\)" l)
         (setq fullname (match-string 1 l)))
+
        ((string-match "^N:\\([^;]*\\);\\([^;]*\\);.*" l)
         (setq firstname (match-string 1 l))
         (setq lastname (match-string 2 l)))
+
        ((string-match "TYPE=[A-Z]+:\\([^ @]+@[^ @]+\\)" l)
-        (add-to-list 'emails (match-string 1 l)))
+        (setq eml (match-string 1 l))
+        (if (gmail2bbdb--is-valid-email eml)
+            (add-to-list 'emails eml)
+          ))
        ))
     (when emails
       (setq rlt (vector firstname lastname nil (list fullname) nil nil nil emails nil nil))
