@@ -48,6 +48,6 @@
              ))
 
 ;; import Gmail contacts in vcard format into bbdb
-(autoload 'bbdb-vcard-import-file "bbdb-vcard" nil t)
+(autoload 'gmail2bbdb-import-file "gmail2bbdb" nil t)
 
 (provide 'init-bbdb)
