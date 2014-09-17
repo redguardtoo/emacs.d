@@ -70,12 +70,12 @@ ARCHIVE is the string name of the package archive.")
 ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 
 
-;; use packages from melpa only, even packages in elpa.gnu.org are ignored
-(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
+;; well, melpa does not bother supporting emacs23 any more, but cl-lib is still required
+;; TODO: in half a year, I will remove gnu elpa because emacs 24.3 is the minimum version
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("melpa" . "http://melpa.milkbox.net/packages/")
                          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
                          ))
-;; well, melpa does not bother supporting emacs23 any more
-(if (not *emacs24*) (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/")))
 
 ;; Un-comment below line if you download zip file from https://github.com/redguardtoo/myelpa/archive/master.zip and extract its content into ~/myelpa/
 ;; (setq package-archives '(("myelpa" . "~/myelpa")))
