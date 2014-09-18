@@ -236,7 +236,7 @@ Comment out below line in init-misc.el:
 ** Preview&apply a color theme?
 Check [[http://emacsthemes.caisah.info/]].
 
-Write down the name of color theme (for exmaple, molokai).
+Write down the name of color theme (for example, molokai).
 
 Insert below code into ~/.emacs.d/init.el,
 #+BEGIN_SRC elisp
