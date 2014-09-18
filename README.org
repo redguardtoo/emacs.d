@@ -1,3 +1,5 @@
+* Help me, Help you
+[[https://github.com/redguardtoo/emacs.d/issues/169][Make this setup better]] if you find it useful.
 * Warning
 - If you are a newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".
 - Emacs newer than the latest stable version 24.3.1 are *NOT* supported.
@@ -256,3 +258,4 @@ Currently Emacs 23 does not support following packages:
 - git-gutter
 - yasnippet
 - ggtags-mode
+
