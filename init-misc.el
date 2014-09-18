@@ -111,7 +111,7 @@
                    (lambda (s1 s2) (eq (random 2) 0)))))))
 
 ;need install browse-kill-ring
-(browse-kill-ring-default-keybindings)
+(if *emacs24* (browse-kill-ring-default-keybindings))
 
 (add-hook 'prog-mode-hook
           '(lambda ()

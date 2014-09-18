@@ -99,7 +99,7 @@
 (require 'init-haskell)
 (require 'init-ruby-mode)
 (require 'init-elisp)
-(require 'init-yasnippet)
+(if *emacs24* (require 'init-yasnippet))
 ;; Use bookmark instead
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
@@ -152,8 +152,7 @@
 ;;----------------------------------------------------------------------------
 ;; Variables configured via the interactive 'customize' interface
 ;;----------------------------------------------------------------------------
-(if (file-exists-p "~/.custom.el")
-                   (load-file "~/.custom.el"))
+(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 (when (require 'time-date nil t)
    (message "Emacs startup time: %d seconds."

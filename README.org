@@ -253,3 +253,6 @@ Currently Emacs 23 does not support following packages:
 - helm
 - org-mode and its third party packages
 - company-mode
+- git-gutter
+- yasnippet
+- ggtags-mode
