@@ -1,0 +1,67 @@
+* Basics
+"M" means ALT key. "C" means CTRL key.
+
+For example, "M-x" means pressing ALT and X key together in Emacs.
+
+Download https://github.com/redguardtoo/hello/archive/master.zip and extracted somewhere, say "~/hello/". It contains sample code files written in different programming languages.
+
+By default, I use vim key bindings. You can "C-z" to toggle into Emacs key bindings.
+
+Error message is always dumped into "\*Messages\*" buffer. "C-x C-b" and select buffer named "\*Messages\*" to get the error message.
+
+README at https://github.com/redguardtoo/emacs.d has all the technical information you need.
+
+* Get the Emacs version
+In bash shell, run comand,
+#+BEGIN_SRC sh
+emacs --version
+#+END_SRC
+
+* Start up
+In bash shell, run command,
+#+BEGIN_SRC sh
+emacs -nw  --debug-init
+#+END_SRC
+
+"M-x toggle debug-on-error" after startup.
+* Test
+Send the message in "\*Messages\*" buffer *if there is any error*.
+** Packages
+Back up and remove original ~/.emacs.d.
+
+Download zip or git clone from [[https://github.com/redguardtoo/emacs.d]]
+
+Use this as emacs setup.
+
+- Start Emacs, "M-x list-packages", ignore any error in this step
+- restart Emacs, all packages should be downloaded and installed without any problem.
+
+** Org-mode
+Open ~/hello/hello.org by "C-x C-f".
+** C
+Open ~/hello/hello.c
+
+insert single character "i" and press "M-j", the text should be expanded by yasnippet.
+** Javascript
+Open ~/hello/hello.js
+
+insert single character "l" and press "M-j", the text should be expanded by yasnippet.
+
+Produce syntax error intentionally, the error will be highlighted immediately
+** HTML
+Open ~/hello/hello.html
+
+Install "tidy" (check README), input some invalid html tag, you should see the tag is highlighted
+
+Install "aspell" and it English dictionary, input some typo in html tag's "value" attribute. The typo will be highlighted.
+** Ruby
+Open ~/hello/hello.rb
+** Python
+Open ~/hello/hello.py
+** Perl
+Open ~/hello/hello.pl
+* Report
+Email me,
+- the environment information (Emacs version, OS details)
+- any bug report
+- any general issues not covered by this document
