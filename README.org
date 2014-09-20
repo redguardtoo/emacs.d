@@ -69,7 +69,7 @@ For that specific problem, you can visit [[http://www.emacswiki.org/emacs/][Emac
 * Directory structure
 init.el is main file which include all the other *.el files.
 
-init-elpa define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.milkbox.net][melpa]] by package manager.
+"lisp/init-elpa.el" define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.milkbox.net][melpa]] by package manager.
 
 The package manager will extract packages into ~/.emacs.d/elpa/.
 
