@@ -5,6 +5,7 @@
              (bbdb-initialize 'gnus)
              (local-set-key "<TAB>" 'bbdb-complete-name)))
 
+;; import Gmail contacts in vcard format into bbdb
 (setq gmail2bbdb-bbdb-file "~/.bbdb")
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 
@@ -46,8 +47,5 @@
              ;; just remove some warning since bbdb package hook the mail-mode
              (setq compose-mail-user-agent-warnings nil)
              ))
-
-;; import Gmail contacts in vcard format into bbdb
-(autoload 'gmail2bbdb-import-file "gmail2bbdb" nil t)
 
 (provide 'init-bbdb)
