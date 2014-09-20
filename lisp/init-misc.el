@@ -844,23 +844,6 @@ The full path into relative path insert it as a local file link in org-mode"
 (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 ;; }}
 
-(defun evil-toggle-input-method ()
-  "when toggle on input method, switch to evil-insert-state if possible.
-when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
-  (interactive)
-  ;; some guy donot use evil-mode at all
-  (if (fboundp 'evil-insert-state)
-      (if (not current-input-method)
-          (if (not (string= evil-state "insert"))
-              (evil-insert-state))
-        (if (string= evil-state "insert")
-            (evil-normal-state)
-          )))
-  (toggle-input-method))
-
-(global-set-key (kbd "C-\\") 'evil-toggle-input-method)
-
-
 ;; {{smart-compile: http://www.emacswiki.org/emacs/SmartCompile
 (autoload 'smart-compile "smart-compile" "" t)
 ;; }}

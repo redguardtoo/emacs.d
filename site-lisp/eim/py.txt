@@ -23804,6 +23804,7 @@ w-l-z-y-x-t 网路作业系统
 w-l-zh-j 网络直径
 w-m 我们 外貌 外贸 外面 完美 亡命 望谟 微米 微妙 微明 帏幕 未免 文盲 文明 闻名 污蔑 污衊 诬蔑 乌木 无名 武鸣 晤面
 w-m-h 文明化
+w-m-w-n 我们玩弄
 w-m-w-q 完美无缺
 w-m-w-x 惟妙惟肖 维妙维肖
 w-m-z 我们组
@@ -24469,6 +24470,7 @@ wo-jian-lue 见简略
 wo-jian-yi 我建议
 wo-li 握力
 wo-men 我们
+wo-men-wan-nong 我们玩弄
 wo-men-zi-ji 我们自己
 wo-men-zu 我们组
 wo-nang 窝囊

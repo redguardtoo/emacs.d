@@ -127,6 +127,7 @@
 (require 'init-slime)
 (when *emacs24* (require 'init-company))
 (require 'init-stripe-buffer)
+(require 'init-eim) ;;  cannot be idle-required
 
 ;; color theme
 (require 'color-theme)
@@ -137,9 +138,7 @@
 
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-lisp
-                             init-eim
                              init-keyfreq
-                             init-move-window-buffer
                              init-elnode
                              init-doxygen
                              init-pomodoro

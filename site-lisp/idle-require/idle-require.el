@@ -114,7 +114,7 @@ Loading all autoload functions can easily triple Emacs' memory footprint."
     (while (and idle-require-symbols
                 (not (input-pending-p)))
       (setq symbol (pop idle-require-symbols))
-;;       (condition-case err
+      (condition-case err
           (cond
            ((stringp symbol) (load symbol t))
            ((functionp symbol)
@@ -125,7 +125,7 @@ Loading all autoload functions can easily triple Emacs' memory footprint."
            (t
             (message "idle-require: require %s" symbol)
             (require symbol)))
-;;         (error (message "idle-require for %s failed" symbol)))
+        (error (message "idle-require for %s failed" symbol)))
       (sit-for idle-require-load-break)))
   (when (null idle-require-symbols)
     (idle-require-mode 0)
