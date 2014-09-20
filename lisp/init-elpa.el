@@ -75,10 +75,10 @@ ARCHIVE is the string name of the package archive.")
 
 ;; well, melpa does not bother supporting emacs23 any more, but cl-lib is still required
 ;; TODO: in half a year, I will remove gnu elpa because emacs 24.3 is the minimum version
-(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("melpa" . "http://melpa.milkbox.net/packages/")
+(setq package-archives '(("melpa" . "http://melpa.milkbox.net/packages/")
                          ("melpa-stable" . "http://melpa-stable.milkbox.net/packages/")
                          ))
+(if (not *emacs24*) (add-to-list 'package-archives '("localelpa" . "~/.emacs.d/localelpa")))
 
 ;; Un-comment below line if you download zip file from https://github.com/redguardtoo/myelpa/archive/master.zip and extract its content into ~/myelpa/
 ;; (setq package-archives '(("myelpa" . "~/myelpa")))
@@ -203,12 +203,13 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
 (require-package 'pretty-mode)
-(if *emacs24* (require-package 'coffee-mode))
+(when *emacs24*
+  (require-package 'coffee-mode)
+  (require-package 'flymake-coffee))
 (require-package 'crontab-mode)
 (require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
-(require-package 'flymake-coffee)
 (require-package 'flymake-css)
 (require-package 'flymake-haml)
 (require-package 'flymake-jslint)
