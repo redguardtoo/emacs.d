@@ -2,7 +2,7 @@
 [[https://github.com/redguardtoo/emacs.d/issues/169][Make this setup better]] if you find it useful.
 * Warning
 - If you are a newbie and want to use Emacs immediately, please check the section "Install stable version in easiest way".
-- Emacs newer than the latest stable version 24.3.1 are *NOT* supported.
+- Emacs newer than the version 24.3.93.1 are *NOT* supported.
 - I use [[http://www.vim.org][Vim]] key bindings. Check section *Tips* if you prefer Emacs key bindings.
 - People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server (or any proxy server).
 - C++ developers need tell Emacs location of header files. Please check see section `clang`.
@@ -190,7 +190,7 @@ Here are the *exact steps* you need follow:
 (setq package-archives '(("myelpa" . "~/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet in the future. I tested it on Emacs 24.3.1 and Emacs 23.4.
+That's it. You will never need internet in the future. I tested it on Emacs 24.3.93.1, Emacs 24.3.1 and Emacs 23.4.
 
 Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
 
