@@ -242,7 +242,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'pomodoro '(20130114 1543 0) nil)
 (require-package 'flymake-lua)
 (require-package 'dropdown-list)
-(if *emacs24* (require-package 'yasnippet '(0 8 0) nil))
+(if *emacs24* (require-package 'yasnippet '(0 9 0 1) nil))
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks

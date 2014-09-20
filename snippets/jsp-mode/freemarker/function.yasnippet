@@ -5,7 +5,7 @@
 # contributor: chen bin <chenbin.sh@gmail.com>
 # --
 <#function ${1:functionName} >
-    <#if ${2:flag}?? && ${2:$(yas/substr text "[^ ]*")}>
+    <#if ${2:flag}?? && ${2:$(yas/substr yas-text "[^ ]*")}>
         <#return "${3:true}">
     <#else>
         <#return "${4:false}">

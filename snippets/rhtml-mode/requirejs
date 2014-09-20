@@ -2,4 +2,4 @@
 # name: require.js
 # key: reqjs
 # --
-<script data-main="${1:scripts}/main" src="${1:$(yas-substr text "[^: ]*")}/require.js" type="text/javascript"></script>
+<script data-main="${1:scripts}/main" src="${1:$(yas-substr yas-text "[^: ]*")}/require.js" type="text/javascript"></script>

@@ -6,8 +6,8 @@
 # --
 (function ($) {
   var originalFn = this.originalFn = $.fn.${1:val};
-  $.fn.${1:$(yas/substr text "[^ ]*")} = function(${2:value}) {
-    if (typeof ${2:$(yas/substr text "[^ ]*")} == 'undefined') {
+  $.fn.${1:$(yas/substr yas-text "[^ ]*")} = function(${2:value}) {
+    if (typeof ${2:$(yas/substr yas-text "[^ ]*")} == 'undefined') {
       //set
       if ($(this).hasClass('${3:jsStripSpace}')) {
         var v=originalFn.call(this);
@@ -17,7 +17,7 @@
       return originalFn.call(this);
     } else {
       //get
-      return originalFn.call(this, ${1:$(yas/substr text "[^ ]*")});
+      return originalFn.call(this, ${1:$(yas/substr yas-text "[^ ]*")});
     }
   };
 })(jQuery);

@@ -6,7 +6,7 @@
 (let ((i 0) found item)
   (while (and (not found)
               (< i (length ${1:items})))
-    (setq item (nth i ${1:$(yas/substr text "[^ ]*")}))
+    (setq item (nth i ${1:$(yas/substr yas-text "[^ ]*")}))
     (when (${2:t})
       (setq found t)
       )

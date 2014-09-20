@@ -6,10 +6,10 @@
 @font-face {
   font-family: '${1:Arial}';
   src: url('${2:../fonts/Arial-webfont}.eot');
-  src: url('${2:$(yas/substr text "[^ ]*")}.eot?#iefix') format('embedded-opentype'),
-       url('${2:$(yas/substr text "[^ ]*")}.woff') format('woff'),
-       url('${2:$(yas/substr text "[^ ]*")}.ttf') format('truetype'),
-       url('${2:$(yas/substr text "[^ ]*")}.svg#${1:$(yas/substr text "[^ ]*")}') format('svg');
+  src: url('${2:$(yas/substr yas-text "[^ ]*")}.eot?#iefix') format('embedded-opentype'),
+       url('${2:$(yas/substr yas-text "[^ ]*")}.woff') format('woff'),
+       url('${2:$(yas/substr yas-text "[^ ]*")}.ttf') format('truetype'),
+       url('${2:$(yas/substr yas-text "[^ ]*")}.svg#${1:$(yas/substr yas-text "[^ ]*")}') format('svg');
   font-weight:${3:normal};
-  font-style:${3:$(yas/substr text "[^ ]*")};
+  font-style:${3:$(yas/substr yas-text "[^ ]*")};
 }
