@@ -12,6 +12,9 @@
 (evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
 ;; }}
 
+;; Don't move back the cursor one position when exiting insert mode
+(setq evil-move-cursor-back nil)
+
 (defun toggle-org-or-message-mode ()
   (interactive)
   (if (eq major-mode 'message-mode)
@@ -148,6 +151,9 @@ to replace the symbol under cursor"
 
 (require 'evil-leader)
 (evil-leader/set-key
+  "ae" 'evil-ace-jump-word-mode ; ,e for Ace Jump (word)
+  "al" 'evil-ace-jump-line-mode ; ,l for Ace Jump (line)
+  "ac" 'evil-ace-jump-char-mode ; ,x for Ace Jump (char)
   "as" 'ack-same
   "ac" 'ack
   "aa" 'ack-find-same-file
