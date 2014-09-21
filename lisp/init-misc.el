@@ -95,6 +95,23 @@
            (when ,flagvar
              (,mode-name 1)))))))
 
+(eval-after-load 'grep
+  '(progn
+     (dolist (v '("auto"
+                  "target"
+                  "node_modules"
+                  "bower_components"
+                  ".sass_cache"
+                  ".cache"
+                  ".git"
+                  ".cvs"
+                  ".svn"
+                  ".hg"
+                  "elpa"))
+       (add-to-list 'grep-find-ignored-directories v))
+     ))
+
+(add-hook 'grep-mode-hook (lambda () (toggle-truncate-lines 1)))
 ;;----------------------------------------------------------------------------
 ;; Random line sorting
 ;;----------------------------------------------------------------------------
