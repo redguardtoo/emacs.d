@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: agnular.main
+# key: amain
+# group: angular
+# --
+// insert <html ng-app="myApp"> or <body ng-app="myApp"> into html
+angular.module('myApp', ['ui.bootstrap']);
+var app = angular.module('myApp');
+app.controller('MainCtrl', function ($scope) {
+  $scope.max = 100;
+  $scope.dynamic = 50;
+});
