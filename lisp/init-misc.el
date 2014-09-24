@@ -180,6 +180,7 @@
 ;; java
 (add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
 
+(add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
 ;; makefile
 (add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
 
