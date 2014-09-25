@@ -7,6 +7,8 @@
                                          shell-mode
                                          erc-mode
                                          help-mode
+                                         text-mode
+                                         fundamental-mode
                                          jabber-roster-mode
                                          jabber-chat-mode
                                          twittering-mode
