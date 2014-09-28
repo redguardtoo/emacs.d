@@ -891,6 +891,14 @@ The full path into relative path insert it as a local file link in org-mode"
 
 (setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
 
+(defun display-line-number ()
+  "display current line number in mini-buffer"
+  (interactive)
+  (let (l)
+    (setq l (line-number-at-pos))
+    (message "line number:%d" l)
+    ))
+
 (defun toggle-web-js-offset ()
   "toggle js2-basic-offset"
   (interactive)
