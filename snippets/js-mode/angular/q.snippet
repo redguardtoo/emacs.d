@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: $q.all([...]).then(...)
+# key: aq
+# group: angular
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+var a = [1, 40, 50, 100, 1000];
+var promises = [];
+
+angular.forEach(a, function(addr) {
+  // make sure deferred refer to different object
+  var deferred = $q.defer();
+  if(a > 50) {
+    deferred.reject();
+  } else {
+    deferred.resolve(a);
+  }
+  promises.push(deferred.promise);
+});
+
+$q.all(promises).then(function(results) {
+  console.log('results=', results);
+});
