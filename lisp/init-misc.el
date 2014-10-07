@@ -440,6 +440,19 @@
   )
 
 (add-hook 'minibuffer-setup-hook 'my/paste-in-minibuffer)
+
+(defun paste-from-clipboard-and-cc-kill-ring ()
+  "paste from clipboard and cc the content into kill ring"
+  (interactive)
+  (let (str)
+    (with-temp-buffer
+      (paste-from-x-clipboard)
+      (setq str (buffer-string)))
+    ;; finish the paste
+    (insert str)
+    ;; cc the content into kill ring at the same time
+    (kill-new str)
+    ))
 ;;; }}
 
 (eval-after-load 'speedbar '(if (load "mwheel" t)
