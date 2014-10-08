@@ -377,11 +377,27 @@
 (defun cp-filename-of-current-buffer ()
   "copy file name (NOT full path) into the yank ring and OS clipboard"
   (interactive)
-  (let ((filename))
+  (let (filename)
     (when buffer-file-name
       (setq filename (file-name-nondirectory buffer-file-name))
       (copy-yank-str filename)
       (message "filename %s => clipboard & yank ring" filename)
+      )))
+
+(defun cp-filename-line-number-of-current-buffer ()
+  "copy file:line into the yank ring and clipboard"
+  (interactive)
+  (let (filename linenum rlt)
+    (when buffer-file-name
+      (setq filename (file-name-nondirectory buffer-file-name))
+      (setq linenum (save-restriction
+                      (widen)
+                      (save-excursion
+                        (beginning-of-line)
+                        (1+ (count-lines 1 (point))))))
+      (setq rlt (format "%s:%d" filename linenum))
+      (copy-yank-str rlt)
+      (message "%s => clipboard & yank ring" rlt)
       )))
 
 (defun cp-fullpath-of-current-buffer ()
@@ -389,7 +405,7 @@
   (interactive)
   (when buffer-file-name
     (copy-yank-str (file-truename buffer-file-name))
-    (message "full path of current buffer => clipboard & yank ring")
+    (message "file full path => clipboard & yank ring")
     ))
 
 ;; {{ git-messenger
