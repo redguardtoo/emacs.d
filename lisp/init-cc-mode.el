@@ -75,18 +75,18 @@
   ;1 (was imposed by gnu style by default)
   (setq c-label-minimum-indentation 0)
 
-  (require 'fic-mode)
-  (add-hook 'c++-mode-hook 'turn-on-fic-mode)
+  (when buffer-file-name
+    (require 'fic-mode)
+    (add-hook 'c++-mode-hook 'turn-on-fic-mode)
 
-  ; @see https://github.com/seanfisk/cmake-flymake
-  ; make sure you project use cmake
-  (flymake-mode 1)
-  (if (and buffer-file-name
-           (not (or (string-match "^/usr/local/include/.*" buffer-file-name)
-                    (string-match "^/usr/src/linux/include/.*" buffer-file-name))
-                ))
-      (cppcm-reload-all))
-  )
+    ;; @see https://github.com/seanfisk/cmake-flymake
+    ;; make sure you project use cmake
+    (flymake-mode 1)
+    (if (not (or (string-match "^/usr/local/include/.*" buffer-file-name)
+                 (string-match "^/usr/src/linux/include/.*" buffer-file-name))
+             )
+        (cppcm-reload-all))
+    ))
 
 (defun fix-c-indent-offset-according-to-syntax-context (key val)
   ;; remove the old element
