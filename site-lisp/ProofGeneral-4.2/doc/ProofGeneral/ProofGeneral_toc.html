@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: Table of Contents</title>
+
+<meta name="description" content="Proof General: Table of Contents">
+<meta name="keywords" content="Proof General: Table of Contents">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="SEC_Contents"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Table of Contents</h1>
+<div class="contents">
+
+<ul class="toc">
+  <li><a name="toc-Preface-1" href="ProofGeneral_1.html#Preface">Preface</a>
+  <ul class="toc">
+    <li><a name="toc-News-for-Version-4_002e2-1" href="ProofGeneral_1.html#News-for-Version-4_002e2">News for Version 4.2</a></li>
+    <li><a name="toc-News-for-Version-4_002e1-1" href="ProofGeneral_1.html#News-for-Version-4_002e1">News for Version 4.1</a></li>
+    <li><a name="toc-News-for-Version-4_002e0-1" href="ProofGeneral_1.html#News-for-Version-4_002e0">News for Version 4.0</a></li>
+    <li><a name="toc-Future-1" href="ProofGeneral_1.html#Future">Future</a></li>
+    <li><a name="toc-Credits-1" href="ProofGeneral_1.html#Credits">Credits</a></li>
+  </ul></li>
+  <li><a name="toc-Introducing-Proof-General-1" href="ProofGeneral_2.html#Introducing-Proof-General">1. Introducing Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Installing-Proof-General-1" href="ProofGeneral_2.html#Installing-Proof-General">1.1 Installing Proof General</a></li>
+    <li><a name="toc-Quick-start-guide-1" href="ProofGeneral_2.html#Quick-start-guide">1.2 Quick start guide</a></li>
+    <li><a name="toc-Features-of-Proof-General-1" href="ProofGeneral_2.html#Features-of-Proof-General">1.3 Features of Proof General</a></li>
+    <li><a name="toc-Supported-proof-assistants-1" href="ProofGeneral_2.html#Supported-proof-assistants">1.4 Supported proof assistants</a></li>
+    <li><a name="toc-Prerequisites-for-this-manual-1" href="ProofGeneral_2.html#Prerequisites-for-this-manual">1.5 Prerequisites for this manual</a></li>
+    <li><a name="toc-Organization-of-this-manual-1" href="ProofGeneral_2.html#Organization-of-this-manual">1.6 Organization of this manual</a></li>
+  </ul></li>
+  <li><a name="toc-Basic-Script-Management-1" href="ProofGeneral_3.html#Basic-Script-Management">2. Basic Script Management</a>
+  <ul class="toc">
+    <li><a name="toc-Walkthrough-example-in-Isabelle-1" href="ProofGeneral_3.html#Walkthrough-example-in-Isabelle">2.1 Walkthrough example in Isabelle</a></li>
+    <li><a name="toc-Proof-scripts-1" href="ProofGeneral_3.html#Proof-scripts">2.2 Proof scripts</a></li>
+    <li><a name="toc-Script-buffers-1" href="ProofGeneral_3.html#Script-buffers">2.3 Script buffers</a>
+    <ul class="toc">
+      <li><a name="toc-Locked_002c-queue_002c-and-editing-regions" href="ProofGeneral_3.html#Locked-queue-and-editing-regions">2.3.1 Locked, queue, and editing regions</a></li>
+      <li><a name="toc-Goal_002dsave-sequences-1" href="ProofGeneral_3.html#Goal_002dsave-sequences">2.3.2 Goal-save sequences</a></li>
+      <li><a name="toc-Active-scripting-buffer-1" href="ProofGeneral_3.html#Active-scripting-buffer">2.3.3 Active scripting buffer</a></li>
+    </ul></li>
+    <li><a name="toc-Summary-of-Proof-General-buffers-1" href="ProofGeneral_3.html#Summary-of-Proof-General-buffers">2.4 Summary of Proof General buffers</a></li>
+    <li><a name="toc-Script-editing-commands-1" href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></li>
+    <li><a name="toc-Script-processing-commands-1" href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></li>
+    <li><a name="toc-Proof-assistant-commands-1" href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></li>
+    <li><a name="toc-Toolbar-commands-1" href="ProofGeneral_3.html#Toolbar-commands">2.8 Toolbar commands</a></li>
+    <li><a name="toc-Interrupting-during-trace-output-1" href="ProofGeneral_3.html#Interrupting-during-trace-output">2.9 Interrupting during trace output</a></li>
+  </ul></li>
+  <li><a name="toc-Advanced-Script-Management-and-Editing-1" href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing">3. Advanced Script Management and Editing</a>
+  <ul class="toc">
+    <li><a name="toc-Document-centred-working-1" href="ProofGeneral_4.html#Document-centred-working">3.1 Document centred working</a></li>
+    <li><a name="toc-Automatic-processing-1" href="ProofGeneral_4.html#Automatic-processing">3.2 Automatic processing</a></li>
+    <li><a name="toc-Visibility-of-completed-proofs-1" href="ProofGeneral_4.html#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></li>
+    <li><a name="toc-Switching-between-proof-scripts-1" href="ProofGeneral_4.html#Switching-between-proof-scripts">3.4 Switching between proof scripts</a></li>
+    <li><a name="toc-View-of-processed-files-1" href="ProofGeneral_4.html#View-of-processed-files">3.5 View of processed files</a></li>
+    <li><a name="toc-Retracting-across-files-1" href="ProofGeneral_4.html#Retracting-across-files">3.6 Retracting across files</a></li>
+    <li><a name="toc-Asserting-across-files-1" href="ProofGeneral_4.html#Asserting-across-files">3.7 Asserting across files</a></li>
+    <li><a name="toc-Automatic-multiple-file-handling-1" href="ProofGeneral_4.html#Automatic-multiple-file-handling">3.8 Automatic multiple file handling</a></li>
+    <li><a name="toc-Escaping-script-management-1" href="ProofGeneral_4.html#Escaping-script-management">3.9 Escaping script management</a></li>
+    <li><a name="toc-Editing-features-1" href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></li>
+  </ul></li>
+  <li><a name="toc-Unicode-symbols-and-special-layout-support-1" href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support">4. Unicode symbols and special layout support</a>
+  <ul class="toc">
+    <li><a name="toc-Maths-menu-1" href="ProofGeneral_5.html#Maths-menu">4.1 Maths menu</a></li>
+    <li><a name="toc-Unicode-Tokens-mode-1" href="ProofGeneral_5.html#Unicode-Tokens-mode">4.2 Unicode Tokens mode</a></li>
+    <li><a name="toc-Configuring-tokens-symbols-and-shortcuts-1" href="ProofGeneral_5.html#Configuring-tokens-symbols-and-shortcuts">4.3 Configuring tokens symbols and shortcuts</a></li>
+    <li><a name="toc-Special-layout-1" href="ProofGeneral_5.html#Special-layout">4.4 Special layout</a></li>
+    <li><a name="toc-Moving-between-Unicode-and-tokens-1" href="ProofGeneral_5.html#Moving-between-Unicode-and-tokens">4.5 Moving between Unicode and tokens</a></li>
+    <li><a name="toc-Finding-available-tokens-shortcuts-and-symbols-1" href="ProofGeneral_5.html#Finding-available-tokens-shortcuts-and-symbols">4.6 Finding available tokens shortcuts and symbols</a></li>
+    <li><a name="toc-Selecting-suitable-fonts-1" href="ProofGeneral_5.html#Selecting-suitable-fonts">4.7 Selecting suitable fonts</a></li>
+  </ul></li>
+  <li><a name="toc-Support-for-other-Packages-1" href="ProofGeneral_6.html#Support-for-other-Packages">5. Support for other Packages</a>
+  <ul class="toc">
+    <li><a name="toc-Syntax-highlighting-1" href="ProofGeneral_6.html#Syntax-highlighting">5.1 Syntax highlighting</a></li>
+    <li><a name="toc-Imenu-and-Speedbar-1" href="ProofGeneral_6.html#Imenu-and-Speedbar">5.2 Imenu and Speedbar</a></li>
+    <li><a name="toc-Support-for-outline-mode-1" href="ProofGeneral_6.html#Support-for-outline-mode">5.3 Support for outline mode</a></li>
+    <li><a name="toc-Support-for-completion-1" href="ProofGeneral_6.html#Support-for-completion">5.4 Support for completion</a></li>
+    <li><a name="toc-Support-for-tags-1" href="ProofGeneral_6.html#Support-for-tags">5.5 Support for tags</a></li>
+  </ul></li>
+  <li><a name="toc-Subterm-Activation-and-Proof-by-Pointing-1" href="ProofGeneral_7.html#Subterm-Activation-and-Proof-by-Pointing">6. Subterm Activation and Proof by Pointing</a>
+  <ul class="toc">
+    <li><a name="toc-Goals-buffer-commands-1" href="ProofGeneral_7.html#Goals-buffer-commands">6.1 Goals buffer commands</a></li>
+  </ul></li>
+  <li><a name="toc-Graphical-Proof_002dTree-Visualization-1" href="ProofGeneral_8.html#Graphical-Proof_002dTree-Visualization">7. Graphical Proof-Tree Visualization</a>
+  <ul class="toc">
+    <li><a name="toc-Starting-and-Stopping-Proof_002dTree-Visualization-1" href="ProofGeneral_8.html#Starting-and-Stopping-Proof_002dTree-Visualization">7.1 Starting and Stopping Proof-Tree Visualization</a></li>
+    <li><a name="toc-Features-of-Prooftree-1" href="ProofGeneral_8.html#Features-of-Prooftree">7.2 Features of Prooftree</a></li>
+    <li><a name="toc-Prooftree-Customization-1" href="ProofGeneral_8.html#Prooftree-Customization">7.3 Prooftree Customization</a></li>
+  </ul></li>
+  <li><a name="toc-Customizing-Proof-General-1" href="ProofGeneral_9.html#Customizing-Proof-General">8. Customizing Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Basic-options-1" href="ProofGeneral_9.html#Basic-options">8.1 Basic options</a></li>
+    <li><a name="toc-How-to-customize-1" href="ProofGeneral_9.html#How-to-customize">8.2 How to customize</a></li>
+    <li><a name="toc-Display-customization-1" href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></li>
+    <li><a name="toc-User-options-1" href="ProofGeneral_9.html#User-options">8.4 User options</a></li>
+    <li><a name="toc-Changing-faces-1" href="ProofGeneral_9.html#Changing-faces">8.5 Changing faces</a>
+    <ul class="toc">
+      <li><a name="toc-Script-buffer-faces-1" href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></li>
+      <li><a name="toc-Goals-and-response-faces-1" href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></li>
+    </ul></li>
+    <li><a name="toc-Tweaking-configuration-settings-1" href="ProofGeneral_9.html#Tweaking-configuration-settings">8.6 Tweaking configuration settings</a></li>
+  </ul></li>
+  <li><a name="toc-Hints-and-Tips-1" href="ProofGeneral_10.html#Hints-and-Tips">9. Hints and Tips</a>
+  <ul class="toc">
+    <li><a name="toc-Adding-your-own-keybindings-1" href="ProofGeneral_10.html#Adding-your-own-keybindings">9.1 Adding your own keybindings</a></li>
+    <li><a name="toc-Using-file-variables-1" href="ProofGeneral_10.html#Using-file-variables">9.2 Using file variables</a></li>
+    <li><a name="toc-Using-abbreviations-1" href="ProofGeneral_10.html#Using-abbreviations">9.3 Using abbreviations</a></li>
+  </ul></li>
+  <li><a name="toc-LEGO-Proof-General-1" href="ProofGeneral_11.html#LEGO-Proof-General">10. LEGO Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-LEGO-specific-commands-1" href="ProofGeneral_11.html#LEGO-specific-commands">10.1 LEGO specific commands</a></li>
+    <li><a name="toc-LEGO-tags-1" href="ProofGeneral_11.html#LEGO-tags">10.2 LEGO tags</a></li>
+    <li><a name="toc-LEGO-customizations-1" href="ProofGeneral_11.html#LEGO-customizations">10.3 LEGO customizations</a></li>
+  </ul></li>
+  <li><a name="toc-Coq-Proof-General-1" href="ProofGeneral_12.html#Coq-Proof-General">11. Coq Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Coq_002dspecific-commands-1" href="ProofGeneral_12.html#Coq_002dspecific-commands">11.1 Coq-specific commands</a></li>
+    <li><a name="toc-Multiple-File-Support-1" href="ProofGeneral_12.html#Multiple-File-Support">11.2 Multiple File Support</a>
+    <ul class="toc">
+      <li><a name="toc-Automatic-Compilation-in-Detail-1" href="ProofGeneral_12.html#Automatic-Compilation-in-Detail">11.2.1 Automatic Compilation in Detail</a></li>
+      <li><a name="toc-Locking-Ancestors-1" href="ProofGeneral_12.html#Locking-Ancestors">11.2.2 Locking Ancestors</a></li>
+      <li><a name="toc-Customizing-Coq-Multiple-File-Support-1" href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></li>
+      <li><a name="toc-Current-Limitations-1" href="ProofGeneral_12.html#Current-Limitations">11.2.4 Current Limitations</a></li>
+    </ul></li>
+    <li><a name="toc-Editing-multiple-proofs-1" href="ProofGeneral_12.html#Editing-multiple-proofs">11.3 Editing multiple proofs</a></li>
+    <li><a name="toc-User_002dloaded-tactics-1" href="ProofGeneral_12.html#User_002dloaded-tactics">11.4 User-loaded tactics</a></li>
+    <li><a name="toc-Holes-feature-1" href="ProofGeneral_12.html#Holes-feature">11.5 Holes feature</a></li>
+    <li><a name="toc-Proof_002dTree-Visualization-1" href="ProofGeneral_12.html#Proof_002dTree-Visualization">11.6 Proof-Tree Visualization</a></li>
+  </ul></li>
+  <li><a name="toc-Isabelle-Proof-General-1" href="ProofGeneral_13.html#Isabelle-Proof-General">12. Isabelle Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Choosing-logic-and-starting-isabelle-1" href="ProofGeneral_13.html#Choosing-logic-and-starting-isabelle">12.1 Choosing logic and starting isabelle</a></li>
+    <li><a name="toc-Isabelle-commands-1" href="ProofGeneral_13.html#Isabelle-commands">12.2 Isabelle commands</a></li>
+    <li><a name="toc-Isabelle-settings-1" href="ProofGeneral_13.html#Isabelle-settings">12.3 Isabelle settings</a></li>
+    <li><a name="toc-Isabelle-customizations-1" href="ProofGeneral_13.html#Isabelle-customizations">12.4 Isabelle customizations</a></li>
+  </ul></li>
+  <li><a name="toc-HOL-Light-Proof-General-1" href="ProofGeneral_14.html#HOL-Light-Proof-General">13. HOL Light Proof General</a></li>
+  <li><a name="toc-Shell-Proof-General-1" href="ProofGeneral_15.html#Shell-Proof-General">14. Shell Proof General</a></li>
+  <li><a name="toc-Obtaining-and-Installing-1" href="ProofGeneral_16.html#Obtaining-and-Installing">A. Obtaining and Installing</a>
+  <ul class="toc">
+    <li><a name="toc-Obtaining-Proof-General-1" href="ProofGeneral_16.html#Obtaining-Proof-General">A.1 Obtaining Proof General</a></li>
+    <li><a name="toc-Installing-Proof-General-from-tarball-1" href="ProofGeneral_16.html#Installing-Proof-General-from-tarball">A.2 Installing Proof General from tarball</a></li>
+    <li><a name="toc-Setting-the-names-of-binaries-1" href="ProofGeneral_16.html#Setting-the-names-of-binaries">A.3 Setting the names of binaries</a></li>
+    <li><a name="toc-Notes-for-syssies-1" href="ProofGeneral_16.html#Notes-for-syssies">A.4 Notes for syssies</a>
+    <ul class="toc">
+      <li><a name="toc-Byte-compilation" href="ProofGeneral_16.html#Byte-compilation">Byte compilation</a></li>
+      <li><a name="toc-Site_002dwide-installation" href="ProofGeneral_16.html#Site_002dwide-installation">Site-wide installation</a></li>
+      <li><a name="toc-Removing-support-for-unwanted-provers" href="ProofGeneral_16.html#Removing-support-for-unwanted-provers">Removing support for unwanted provers</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Bugs-and-Enhancements-1" href="ProofGeneral_17.html#Bugs-and-Enhancements">B. Bugs and Enhancements</a></li>
+  <li><a name="toc-References-1" href="ProofGeneral_18.html#References">References</a></li>
+  <li><a name="toc-History-of-Proof-General-1" href="ProofGeneral_19.html#History-of-Proof-General">History of Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Old-News-for-3_002e0-1" href="ProofGeneral_19.html#Old-News-for-3_002e0">Old News for 3.0</a></li>
+    <li><a name="toc-Old-News-for-3_002e1-1" href="ProofGeneral_19.html#Old-News-for-3_002e1">Old News for 3.1</a></li>
+    <li><a name="toc-Old-News-for-3_002e2-1" href="ProofGeneral_19.html#Old-News-for-3_002e2">Old News for 3.2</a></li>
+    <li><a name="toc-Old-News-for-3_002e3-1" href="ProofGeneral_19.html#Old-News-for-3_002e3">Old News for 3.3</a></li>
+    <li><a name="toc-Old-News-for-3_002e4-1" href="ProofGeneral_19.html#Old-News-for-3_002e4">Old News for 3.4</a></li>
+    <li><a name="toc-Old-News-for-3_002e5-1" href="ProofGeneral_19.html#Old-News-for-3_002e5">Old News for 3.5</a></li>
+    <li><a name="toc-Old-News-for-3_002e6-1" href="ProofGeneral_19.html#Old-News-for-3_002e6">Old News for 3.6</a></li>
+    <li><a name="toc-Old-News-for-3_002e7-1" href="ProofGeneral_19.html#Old-News-for-3_002e7">Old News for 3.7</a></li>
+  </ul></li>
+  <li><a name="toc-Function-and-Command-Index" href="ProofGeneral_20.html#Function-Index">Function and Command Index</a></li>
+  <li><a name="toc-Variable-and-User-Option-Index" href="ProofGeneral_21.html#Variable-Index">Variable and User Option Index</a></li>
+  <li><a name="toc-Keystroke-Index-1" href="ProofGeneral_22.html#Keystroke-Index">Keystroke Index</a></li>
+  <li><a name="toc-Concept-Index-1" href="ProofGeneral_23.html#Concept-Index">Concept Index</a></li>
+</ul>
+</div>
+<hr size="1">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

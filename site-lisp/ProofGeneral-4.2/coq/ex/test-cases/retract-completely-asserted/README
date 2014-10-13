@@ -1,0 +1,38 @@
+In coq different modules may contain definition with the same
+name, because for coq they have different "absolute names" because
+they are in different modules.
+
+To provoke an error inside ProofGeneral on correct coq input,
+do the following: 
+- Start a fresh emacs and delete (or comment out) the lines
+    (add-hook 'proof-deactivate-scripting-hook
+	      'coq-switch-buffer-kill-proof-shell
+	      t)
+  in coq/coq.el. Safe that file.
+- Visit a.v and script the initial comment. 
+- Set proof-no-fully-processed-buffer to nil.
+- assert buffer a.v completely
+- switch to b.v
+- scripting "Definition a" in b.v will give the error "a already
+  exists"
+
+Now retract a.v, set proof-no-fully-processed-buffer to t and try
+again.
+
+To see that the example is indeed valid, script c.v. (For c.v you
+either have to switch coq-recompile-before-require to t or you
+have to compile modules a and b yourself with "coqc a" and "coqc b".)
+
+
+The following problem has been fixed by the commit of David Aspinall
+around 2011-01-25 20:54:54 UTC. It can no longer be reproduced.
+
+There is a bug present on 2011-01-21 09:49:36 UTC, to reproduce:
+- visit a.v, do C-c C-n twice to fully assert the buffer
+- kill buffer a.v, notice that there is no "coq killed" message
+  apprears, and that the *coq* buffer is still live and that there is
+  no undo command in it
+- visit b.v, do C-c C-n twice to get the error "a already exists"
+
+See "no deactivation-hooks when killing fully asserted active buffer"
+on the pg-devel list.

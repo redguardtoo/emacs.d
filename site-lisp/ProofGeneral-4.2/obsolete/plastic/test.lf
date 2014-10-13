@@ -1,0 +1,64 @@
+EXAMPLE FILE: less than or equal on Nat
+
+%---------------------------------------
+Nat
+
+> Inductive
+>	[Nat : Type]
+>	Constructors
+>	[zero : Nat]
+>	[succ : (n:Nat)Nat];
+
+> [plus [m:Nat] = E_Nat ([_:Nat]Nat) m ([_:Nat]succ) ];
+
+
+-----------------------
+Non-dependent Pi type.
+
+> Inductive
+>	[A,B:Type]
+>	[Pi_ : Type]
+>	Constructors
+>	[La_ : (f:(x:El A)El B)Pi_ ];
+
+
+application of Pi_ types, ie conversion to a dependent product.
+
+> Claim ap_ : (A,B:Type) Pi_ A B -> A -> B;
+> Intros A B f x;
+> Refine E_Pi_ ? ? ([_:?]B);
+> Refine f;
+> Intros fo;
+> Refine fo x;
+> ReturnAll;
+> ap_;
+
+
+
+%---------------------------------------
+Combined leq with if-branch - thus avoiding Boolean type.
+
+Notice that we have to prove (Pi_ Nat T) by induction on x, since we can't
+eliminate over (Nat -> T) in LF. 
+
+
+> Claim if_leq : (x,y:Nat)(T:Type)T -> T -> T;
+> Intros x y T leq not_leq;
+> Refine ap_ ? ? (ap_ ? ? ? x) y;
+
+> Refine La_;
+> Intros x1;
+> Refine E_Nat ([_:?]Pi_ Nat T) ?x_z ?x_s x1;
+> x_z Refine La_ ? ? ([_:?]leq);
+> Intros x1_ f_x1_;
+> Refine La_;
+> Intros y1;
+> Refine E_Nat ([_:?]T) ?y_z ?y_s y1;
+> y_z Refine not_leq;
+> Intros y1_ _;
+> Refine ap_ ? ? f_x1_ y1_;
+> ReturnAll;
+
+> if_leq;
+
+

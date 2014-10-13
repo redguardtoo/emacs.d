@@ -1,0 +1,18 @@
+Test multiple file support when files are distributed over
+different directories.
+
+Dependency graph
+
+   a/a.v
+     \
+      \
+      b/b1.v --- b/b2.v
+                   \
+                    \
+                    c/c.v
+
+That is, c depends on b2, which depends on b1, which depends on
+a.
+
+Script c.v and watch the compilation messages in *Messages*.
+Touch any file and retract and assert the Require in c.

@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: A. Plans and Ideas</title>
+
+<meta name="description" content="Adapting Proof General: A. Plans and Ideas">
+<meta name="keywords" content="Adapting Proof General: A. Plans and Ideas">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_15.html#Internals-of-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_17.html#Demonstration-Instantiations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Plans-and-Ideas"></a>
+<a name="Plans-and-Ideas-1"></a>
+<h1 class="appendix">A. Plans and Ideas</h1>
+
+<p>This appendix contains some tentative plans and ideas for improving
+Proof General.
+</p>
+<p>This appendix is no longer extended: instead we keep a list of Proof
+General projects on the web, and forthcoming plans and ideas in the
+&lsquo;<tt>TODO</tt>&rsquo; and &lsquo;<tt>todo</tt>&rsquo; files included in the ordinary and
+developers PG distributions, respectively.  Once the items mentioned
+below are implemented, they will be removed from here.
+</p>
+<p>Please send us contributions to our wish lists, or better still, an
+offer to implement something from them!
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Proof-by-pointing-and-similar-features">A.1 Proof by pointing and similar features</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Granularity-of-atomic-command-sequences">A.2 Granularity of atomic command sequences</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Browser-mode-for-script-files-and-theories">A.3 Browser mode for script files and theories</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Proof-by-pointing-and-similar-features"></a>
+<a name="Proof-by-pointing-and-similar-features-1"></a>
+<h2 class="section">A.1 Proof by pointing and similar features</h2>
+<a name="index-proof-by-pointing"></a>
+
+<p>This is a note by David Aspinall about proof by pointing and similar
+features.
+</p>
+<p>Proof General already supports proof by pointing, and experimental
+support is provided in LEGO.  We would like to extend this support to
+other proof assistants.  Unfortunately, proof by pointing requires
+rather heavy support from the proof assistant.  There are two aspects to
+the support:
+</p><ul>
+<li> term structure mark-up
+</li><li> proof by pointing command generation
+</li></ul>
+<p>Term structure mark-up is useful in itself: it allows the user to
+explore the structure of a term using the mouse (the smallest
+subexpression that the mouse is over is highlighted), and easily copy
+subterms from the output to a proof script.
+</p>
+<p>Command generation for proof by pointing is usually specific to a
+particular logic in use, if we hope to generate a good proof command
+unambiguously for any particular click. However, Proof General could
+easily be generalised to offer the user a context-sensitive choice of
+next commands to apply, which may be more useful in practice, and a
+worthy addition to Proof General.
+</p>
+<p>Implementors of new proof assistants should be encouraged to consider
+supporting term-structure mark up from the start.  Command generation
+should be something that the logic-implementor can specify in some way.
+</p>
+<p>Of the supported provers, we can certainly hope for proof-by-pointing
+support from Coq, since the CtCoq proof-by-pointing code has been moved
+into the Coq kernel lately.  I hope the Coq community can encourage
+somebody to do this.
+</p>
+
+<hr size="6">
+<a name="Granularity-of-atomic-command-sequences"></a>
+<a name="Granularity-of-atomic-command-sequences-1"></a>
+<h2 class="section">A.2 Granularity of atomic command sequences</h2>
+<a name="index-ACS-_0028Atomic-Command-Sequence_0029"></a>
+
+<p>This is a proposal by Thomas Kleymann for generalising the way Proof
+General handles sequences of proof commands (see <i>Goal-save
+sequences</i> in the user manual), particularly to make retraction more flexible.
+</p>
+<p>The blue region of a script buffer contains the initial segment of
+the proof script which has been processed successfully. It consists of
+atomic sequences of commands (ACS). Retraction is supported to the
+beginning of every ACS. By default, every command is an ACS. But the
+granularity of atomicity should be able to be adjusted.
+</p>
+<p>This is essential when arbitrary retraction is not supported. Usually,
+after a theorem has been proved, one may only retract to the start of
+the goal. One needs to mark the proof of the theorem as an ACS. At
+present, support for goal-save sequences (see <i>Goal-save sequences</i> in
+the user manual), has been hard wired. No other ACS are currently
+supported. We propose the following to overcome this deficiency:
+</p>
+<dl compact="compact">
+<dt> <code>proof-atomic-sequents-list</code>
+<a name="index-proof_002datomic_002dsequents_002dlist"></a>
+</dt>
+<dd><p>is a list of instructions for setting up ACSs. Each instruction is a
+list of the form <code>(<var>end</var> <var>start</var> &amp;optional
+<var>forget-command</var>)</code>. <var>end</var> is a regular expression to recognise
+the last command in an ACS. <var>start</var> is a function. Its input is the
+last command of an ACS. Its output is a regular expression to recognise
+the first command of the ACS. It is evaluated once and, starting with the
+command matched by <var>end</var>, the output is
+successively matched against previously processed commands until a match
+occurs (or the beginning of the current buffer is reached). The region
+determined by (<var>start</var>,<var>end</var>) is locked as an ACS. Optionally,
+the ACS is annotated with the actual command to retract the ACS. This is 
+computed by applying <var>forget-command</var> to the first and last command
+of the ACS.
+</p>
+<p>For convenience one might also want to allow <var>start</var> to be the
+symbol &lsquo;<samp>t</samp>&rsquo; as a convenient short-hand for <code>'(lambda (str)
+&quot;.&quot;)</code> which always matches.
+</p></dd>
+</dl>
+
+<hr size="6">
+<a name="Browser-mode-for-script-files-and-theories"></a>
+<a name="Browser-mode-for-script-files-and-theories-1"></a>
+<h2 class="section">A.3 Browser mode for script files and theories</h2>
+
+<p>This is a proposal by David Aspinall for a browser window.
+</p>
+<p>A browser window should provide support for browsing script files and
+theories.  We should be able to inspect data in varying levels of
+detail, perhaps using outlining mechanisms.  For theories, it would be
+nice to query the running proof assistant.  This may require support
+from the assistant in the form of output which has been specially
+marked-up with an SGML like syntax, for example.
+</p>
+<p>A browser would be useful to:
+</p><ul>
+<li> Provide impoverished proof assistants with a browser
+</li><li> Extend the uniform interface of Proof General to theory browsing 
+</li><li> Interact closely with proof script writing
+</li></ul>
+<p>The last point is the most important. We should be able to integrate a
+search mechanism for proofs of similar theorems, theorems containing
+particular constants, etc.
+</p>
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Plans-and-Ideas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_17.html#Demonstration-Instantiations" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

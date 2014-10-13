@@ -1,0 +1,64 @@
+%%% 
+%%% Example script for Twelf Proof General.
+%%%
+%%% example.elf,v 12.0 2011/10/13 10:54:51 da Exp
+%%%
+
+%%% Rather than a proof this file is just a signature,
+%%% bunch of declarations.  Would be nice to have something
+%%% closer to other systems for pedagogical purposes...
+%%% (i.e. proving commutativity of conjunction in ND fragment
+%%%  of this logic)
+
+%%% Intuitionistic propositional calculus
+%%% Positive fragment with implies, and, true.
+%%% Two formulations here: natural deduction and Hilbert-style system.
+%%% Author: Frank Pfenning
+
+% Type of propositions.
+o : type.
+%name o A.
+
+% Syntax: implication, plus a few constants.
+=> : o -> o -> o.  %infix right 10 =>.
+&  : o -> o -> o.  %infix right 11 &.
+true : o.
+
+% Provability.
+|- : o -> type.    %prefix 9 |-.
+%name |- P.
+
+% Axioms.
+K : |- A => B => A.
+S : |- (A => B => C) => (A => B) => A => C.
+ONE : |- true.
+PAIR : |- A => B => A & B.
+LEFT : |- A & B => A.
+RIGHT : |- A & B => B.
+
+% Inference Rule.
+MP : |- A => B -> |- A -> |- B. 
+
+% Natural Deduction.
+
+! : o -> type.   %prefix 9 !.
+%name ! D.
+
+trueI : ! true.
+andI  : ! A -> ! B -> ! A & B.
+andEL : ! A & B -> ! A.
+andER : ! A & B -> ! B.
+impliesI : (! A -> ! B) -> ! A => B.
+impliesE : ! A => B -> ! A -> ! B.
+
+% Normal deductions (for faster search)
+!^ : o -> type.
+!v : o -> type.
+
+trueI^ : !^ true.
+andI^ : !^ A -> !^ B -> !^ (A & B).
+andEvL : !v (A & B) -> !v A.
+andEvR : !v (A & B) -> !v B.
+impI^ : (!v A -> !^ B) -> !^ (A => B).
+impEv : !v (A => B) -> !^ A -> !v B.
+close : !v A -> !^ A.

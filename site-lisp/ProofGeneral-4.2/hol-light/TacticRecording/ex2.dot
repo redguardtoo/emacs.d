@@ -1,0 +1,13 @@
+digraph G {
+  subgraph cluster0 {
+    label = "process #1"
+    a0->a1->a2->a3
+  }
+  subgraph cluster1 {
+    label = "process #2"
+    b0->b1->b2->b3
+  }
+  b3->23
+  b2->a3
+  a3->23
+}

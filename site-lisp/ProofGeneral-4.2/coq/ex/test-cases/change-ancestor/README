@@ -1,0 +1,26 @@
+One can add text at the end of an completely locked ancestor.
+When this text is asserted the following should happen
+- retract the current scripting buffer, thereby unlocking all ancestors
+- restart Coq
+- start asserting at the beginning of the ancestor
+
+To reproduce the test do the following:
+- visit b.v and assert at least the initial Require command in it
+  (this will lock the ancestor a.v)
+- visit the ancestor a.v and add the following text at the end
+
+  Definition b := a.
+
+- assert that with proof-assert-next-command-interactive or
+  proof-goto-point
+
+
+This test case triggers a bug in the cvs version from
+2011-05-12 12:10:00 UTC. The bug has been fixed, see issue 
+http://proofgeneral.inf.ed.ac.uk/trac/ticket/400 .
+
+The bug is that after unlocking the
+ancestor a.v, only the newly added text is sent to Coq. Therefore
+Coq responds with an error (reference a was not found in the
+current environment). When one asserts a.v from the beginning,
+the definition of b is of course accepted.

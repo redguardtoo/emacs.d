@@ -1,0 +1,15 @@
+* Prooftree support: fix problem with successive proofs
+  (try example.ml with tree turned on, gives exn in Prooftree)
+  [da to investigate]
+
+* Prooftree: fix evar support so it works
+  Need patch for proof tree program and (maybe) modification of 
+  output
+  [ma to do]
+
+* PG: add patch for background startup (needs testing)
+  [da to do]
+
+* Integrate Tactic recording/proof refactoring (e.g. menu commands)
+  [ma to do]
+

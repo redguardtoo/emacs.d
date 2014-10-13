@@ -1,0 +1,53 @@
+-*- mode:outline -*-
+
+* LEGO Proof General Bugs
+
+See also ../BUGS for generic bugs.
+
+
+** PBP doesn't work on FSF, reason mentioned in generic bugs.
+
+** [FSF specific] `proof-zap-commas-region' does not work for Emacs
+  
+  On lego/example.l . On *initially* fontifying the buffer,
+  commas are not zapped [unfontified]. However, when entering text,
+  commata are zapped correctly. Workaround: don't stare too much at commata
+
+** If LEGO attempts to write a (object) file in a non-writable directory
+
+  It forgets the protocol mechanism on how to interact with 
+  Proof General and gets stuck. Workaround: Directly enter "Configure
+  AnnotateOn" in the Proof Shell to recover.
+
+** After a `Discharge', retraction ought to only be possible back 
+
+ to the first declaration/definition which is discharged. However,
+ LEGO Proof General does not know that Discharge has such a non-local
+ effect.  Workaround: retract back to the first declaration/definition
+ which is discharged.
+
+** A thorny issue is local definitions in a proof state. 
+
+ LEGO cannot undo them explicitly. Workaround: retract back to a
+ command before a definition.
+
+** Normalisation commands such as `Dnf', `Hnf' `Normal' cannot be undone
+
+ in a proof state by Proof General. Workaround: retract back to the
+ start of the proof.
+
+** After LEGO has issued a `*** QED ***' you may undo steps in the proof
+
+ as long as you don't issue a `Save' command or start a new proof.
+ LEGO Proof General assumes that all proofs are terminated with a
+ proper `Save' command. Workaround: Always issue a `Save' command after
+ completing a proof. If you forget one, you should retract to a point
+ before the offending proof development.
+
+** legotags doesn't find all declarations. 
+
+ It cannot handle lists e.g., with [x,y:nat]; it only tags x but not y. 
+ [The same problem exists for coqtags] 
+ Workaround: don't rely too much on the etags mechanism.
+
+

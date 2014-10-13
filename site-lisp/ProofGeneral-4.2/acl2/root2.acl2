@@ -1,0 +1,348 @@
+(* Example proof by Ruben Gamboa.  
+   See http://www.cs.kun.nl/~freek/comparison/ *)
+
+
+(in-package "ACL2")
+
+;; This book presents the proof that sqrt(2) is an irrational number.
+;; The proof proceeds by observing that p^2 is even precisely when p
+;; is even.  Thus, if p^2 = 2 q^2, p must be even.  But then, p^2
+;; isn't just even, it's a multiple of 4, so q^2 = p^2 / 2 must also
+;; be even.  But since q^2 is even, so is q.  Now, letting p be the
+;; numerator of 2 and q the denominator of 2, we find that both the
+;; numerator and denominator are even -- but this is an
+;; impossibility.  Hence, we can conclude that 2 is not rational.
+
+;; The proof is completed by observing that sqrt(2) is not complex.
+;; The reason is that if x is complex, x^2 is real only when x is a
+;; pure imaginary number.  But in those cases, x^2 is negative
+
+(include-book "../arithmetic/top"
+	      :load-compiled-file nil)
+
+;; Step 1: We begin by proving that p^2 is even precisely when p is
+;; even.
+
+(encapsulate
+ ()
+
+ ;; Since ACL2 is so strong in induction, it is common to use
+ ;; induction to prove simple number theoretic results.  But to induce
+ ;; over the even numbers requires that each time through the
+ ;; induction we "step" by 2, not the usual 1.  So we start by
+ ;; introducing the induction scheme for the even numbers.
+
+ (local
+  (defun even-induction (x)
+    "Induct by going two steps at a time"
+    (if (or (zp x) (equal x 1))
+	x
+      (1+ (even-induction (1- (1- x)))))))
+
+ ;; Now we can prove that if p^2 is even, so is p.  Because we're
+ ;; doing this inductively, we only consider the even naturals to
+ ;; begin with.
+
+ (local
+  (defthm lemma-1
+    (implies (and (integerp p)
+		  (<= 0 p)
+		  (evenp (* p p)))
+	     (evenp p))
+    :hints (("Goal"
+	     :induct (even-induction p)))
+    :rule-classes nil))
+
+ ;; Technically, we do not need to worry about the negative integers
+ ;; in this proof, since both the numerator and denominator of 2 (if
+ ;; they existed) are positive.  But it's easy enough to prove this,
+ ;; and it gets rid of the "non-negative" hypothesis.  In general, it
+ ;; is good to get rid of hypothesis in ACL2 rewrite rules.
+
+ (local
+  (defthm lemma-2
+    (implies (and (integerp p)
+		  (<= p 0)
+		  (evenp (* p p)))
+	     (evenp p))
+    :hints (("Goal"
+	     :use (:instance lemma-1 (p (- p)))))
+    :rule-classes nil))
+
+ ;; Now, we can prove that if p^2 is even, so is p.  But the converse
+ ;; is trivial, so we could show that p^2 is even iff p is even.
+ ;; Because equalities are more powerful rewrite rules than
+ ;; implications, we prefer to do so, even though we don't really need
+ ;; the stronger equality for this proof.  So we prove the converse
+ ;; here: if p is even, so is p^2.
+
+ (local
+  (defthm lemma-3
+    (implies (and (integerp p)
+		  (evenp p))
+	     (evenp (* p p)))
+    :rule-classes nil))
+    
+ ;; Now, we simply collect the results above to find that p^2 is even
+ ;; if and only if p is even.  This is the only theorem that is
+ ;; exported from this event.
+
+ (defthm even-square-implies-even
+   (implies (integerp p)
+	    (equal (evenp (* p p)) (evenp p)))
+   :hints (("Goal"
+	    :use ((:instance lemma-1)
+		  (:instance lemma-2)
+		  (:instance lemma-3)))))
+ )
+
+;; Step 2. Suppose p^2 is even.  Then, p is even, so p^2 is more than
+;; even -- it is a multiple of 4.  We prove this here, since it is the
+;; key fact allowing us to conclude that q^2 is even when we know that
+;; p^2 = 2 * q^2.
+
+(defthm even-square-implies-even-square-multiple-of-4
+  (implies (and (integerp p)
+		(evenp (* p p)))
+	   (evenp (* 1/2 p p)))
+  :hints (("Goal"
+	   :use ((:instance even-square-implies-even)
+		 (:instance (:theorem (implies (integerp x) (integerp (* x x))))
+			    (x (* 1/2 p))))
+	   :in-theory (disable even-square-implies-even))))
+
+;; In the proofs below, we disable ACL2's definition of even, but we
+;; need to remember that 2*n is always even.  So we prove that rewrite
+;; rule here.
+
+(defthm evenp-2x
+  (implies (integerp x)
+	   (evenp (* 2 x))))
+
+;; Step 3. Suppose p^2 = 2 * q^2.  Then we can conclude that p is
+;; even, since p^2 is even.
+
+(defthm numerator-sqrt-2-is-even
+   (implies (and (integerp p)
+		 (integerp q)
+		 (equal (* p p)
+			(* 2 (* q q))))
+	    (evenp p))
+   :hints (("Goal"
+	    :use ((:instance even-square-implies-even)
+		  (:instance evenp-2x (x (* q q))))
+	    :in-theory (disable even-square-implies-even
+				evenp-2x
+				evenp))))
+
+;; Step 4. Suppose p^2 = 2 * q^2.  Then we can conclude that q is
+;; even, since p^2 is a multiple of 4, so q^2 is even.
+
+(defthm denominator-sqrt-2-is-even
+   (implies (and (integerp p)
+		 (integerp q)
+		 (equal (* p p)
+			(* 2 (* q q))))
+	    (evenp q))
+   :hints (("Goal"
+	    :use ((:instance even-square-implies-even-square-multiple-of-4)
+		  (:instance even-square-implies-even (p q))
+		  (:instance evenp-2x 
+			     (x (* q q)))
+		  (:instance equal-*-/-1
+			     (x 2)
+			     (y (* p p))
+			     (z (* q q))))
+	    :in-theory (disable even-square-implies-even-square-multiple-of-4
+				even-square-implies-even
+				evenp-2x
+				evenp
+				equal-*-/-1))))
+
+;; Step 5.  Those are all the pieces we need to prove that sqrt(2) is
+;; not rational.  For we observe that if p=numerator(sqrt(2)) and
+;; q=denominator(sqrt(2)), the theorems above show that both p and q
+;; are even, and that's an absurdity.
+
+(encapsulate
+ ()
+
+ ;; ACL2's algebraic prowess is modest.  In the proof of the main
+ ;; theorem below, it builds the expression p^2/q^2 where x=p/q, but
+ ;; it does not reduce the expression further to x^2.  We add a
+ ;; rewrite rule to take care of that.
+
+ (local
+  (defthm lemma-1
+    (implies (rationalp x)
+	     (equal (* (/ (denominator x))
+		       (/ (denominator x))
+		       (numerator x)
+		       (numerator x))
+		    (* x x)))
+    :hints (("Goal"
+	     :use ((:instance Rational-implies2)
+		   (:instance *-r-denominator-r (r x)))
+	     :in-theory (disable Rational-implies2
+				 *-r-denominator-r)))))
+
+ ;; Now we can prove that the square root of 2 is not rational.  This
+ ;; involves using the theorems defined above, as well as some
+ ;; algebraic lemmas to help reduce the terms.  The most important
+ ;; hint, however, is the inclusion of the axiom Lowest-Terms, because
+ ;; it is not enabled in the ACL2 world.
+
+ (defthm sqrt-2-not-rational
+   (implies (equal (* x x) 2)
+	    (not (rationalp x)))
+   :hints (("Goal"
+	    :use ((:instance numerator-sqrt-2-is-even
+			     (p (numerator x))
+			     (q (denominator x)))
+		  (:instance denominator-sqrt-2-is-even
+			     (p (numerator x))
+			     (q (denominator x)))	
+		  (:instance Lowest-Terms
+			     (n 2)
+			     (r (/ (numerator x) 2))
+			     (q (/ (denominator x) 2)))
+		  (:instance equal-*-/-1
+			     (x (/ (* (denominator x) (denominator x))))
+			     (y 2)
+			     (z (* (numerator x) (numerator x)))))
+	    :in-theory (disable equal-*-/-1
+				numerator-sqrt-2-is-even
+				denominator-sqrt-2-is-even))))
+ )
+
+;; Step 6. Now that the rationals are ruled out, we need to weed out
+;; the remaining sqrt(2) suspects.  One possibility is that sqrt(2) is
+;; a complex number.  We explore that here.  Because ACL2 has very
+;; little knowledge of the complex numbers, we have to start with some
+;; basic facts.  First, we show that (a+bi)^2 = (a^2-b^2)+(ab+ab)i.
+(encapsulate
+ ()
+
+ ;; We start out with the desired theorem when the complex number is
+ ;; written as a+bi instead of (complex a b).  Here, the result
+ ;; follows from simple algebra and the fact that i^2=-1.
+ (local
+  (defthm lemma-1
+    (equal (* (+ x (* #c(0 1) y))
+	      (+ x (* #c(0 1) y)))
+	   (+ (- (* x x) (* y y))
+	      (* #c(0 1) (+ (* x y) (* x y)))))
+    :rule-classes nil))
+
+ ;; Now we rewrite the right-hand side of the rewrite rule into the
+ ;; final form of (complex (a^2-b^2) (ab+ab))
+ (local
+  (defthm lemma-2
+    (implies (and (realp x)
+		  (realp y))
+	     (equal (* (+ x (* #c(0 1) y))
+		       (+ x (* #c(0 1) y)))
+		    (complex (- (* x x) (* y y))
+			     (+ (* x y) (* x y)))))
+    :hints (("Goal"
+	     :use ((:instance lemma-1)
+		   (:instance complex-definition
+			      (x (- (* x x) (* y y)))
+			      (y (+ (* x y) (* x y)))))))
+    :rule-classes nil))
+
+ ;; And finally we rewrite the left-hand side of the rewrite rule into
+ ;; the final form of (complex a b)^2.
+ (defthm complex-square-definition
+   (implies (and (realp x)
+		 (realp y))
+	    (equal (* (complex x y) (complex x y))
+		   (complex (- (* x x) (* y y))
+			    (+ (* x y) (* x y)))))
+   :hints (("Goal"
+	    :use ((:instance complex-definition)
+		  (:instance lemma-2))))
+   :rule-classes nil)
+ )
+
+;; Step 7.  Since (a+bi)^2 = (a^2-b^2)+(ab+ab)i, it follows that it is
+;; real if and only if a or b is zero, i.e., if and only if the number
+;; is real or pure imaginary.  Since we're interested only in the
+;; non-real complex numbers (the ones for which complexp is true), we
+;; can conlude that only pure imaginaries have real squares.
+(encapsulate
+ ()
+
+ ;; First we show that (a+bi)^2 = (a^2-b^2)+(ab+ab)i is real if and
+ ;; only ab+ab is zero.
+ (local
+  (defthm lemma-1
+    (implies (and (complexp x)
+		  (realp (* x x)))
+	     (equal (+ (* (realpart x) (imagpart x))
+		       (* (realpart x) (imagpart x)))
+		    0))
+    :hints (("Goal"
+	     :use (:instance complex-square-definition
+			     (x (realpart x))
+			     (y (imagpart x)))))
+    :rule-classes nil))
+
+ ;; The following rewrite rule allows us to conclude that a real
+ ;; number x is zero whenever x+x is zero.
+ (local
+  (defthm lemma-2
+    (implies (and (realp x)
+		  (equal (+ x x) 0))
+	     (= x 0))))
+
+ ;; The two lemmas above conclude that ab is zero whenever (a+bi)^2 is
+ ;; zero, and since b is assumed non-zero (because a+bi is complex),
+ ;; we have that a must be zero, and a+bi=bi is a pure imaginary
+ ;; number.
+ (defthm complex-squares-real-iff-imaginary
+   (implies (and (complexp x)
+		 (realp (* x x)))
+	    (equal (realpart x) 0))
+   :hints (("Goal"
+	    :use ((:instance lemma-1)
+		  (:instance lemma-2
+			     (x (* (realpart x) (imagpart x))))))))
+ )
+
+;; Step 7.  Trivially, the square of a pure imaginary number bi is a
+;; negative real, since bi^2 = -b^2.
+(defthm imaginary-squares-are-negative
+  (implies (and (complexp x)
+		(equal (realpart x) 0))
+	   (< (* x x) 0))
+  :hints (("Goal"
+	   :use (:instance complex-square-definition
+			   (x 0)
+			   (y (imagpart x))))))
+
+;; Step 8.  From the theorems above, we can conclude that sqrt(2) is
+;; not a complex number, because the only candidates are the pure
+;; imaginary numbers, and their squares are all negative.
+(defthm sqrt-2-not-complexp
+  (implies (complexp x)
+	   (not (equal (* x x) 2)))
+  :hints (("Goal"
+	   :use ((:instance complex-squares-real-iff-imaginary)
+		 (:instance imaginary-squares-are-negative)))))
+
+;; Step 9.  That means sqrt(2) is not rational, and neither is it a
+;; complex number.  The only remaining candidates (in ACL2's universe)
+;; are the non-rational reals, so we can prove the main result: the
+;; square root of two (if it exists) is irrational.
+(defthm irrational-sqrt-2
+  (implies (equal (* x x) 2)
+	   (and (realp x)
+		(not (rationalp x))))
+  :hints (("Goal"
+	   :cases ((rationalp x) (complexp x)))))
+
+;; Step 10.  Next, it would be nice to show that sqrt(2) actually
+;; exists!  See the book nonstd/nsa/sqrt.lisp for a proof of that,
+;; using non-standard analysis.
+

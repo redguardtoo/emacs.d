@@ -1,0 +1,35 @@
+# This is an example shell script for processing 
+# with the script management of Proof General.
+#
+# It demonstrates the usefulness of PG simply for
+# sending a pre-defined sequence of commands to
+# some command-line interpreter, here /bin/sh.
+#
+# To adjust this for your needs, edit pgshell.el
+# (or copy and rename it).
+#
+# example.pgsh,v 12.0 2011/10/13 10:54:51 da Exp
+#
+
+# What time is it?
+date;
+
+# What machine am I on?
+uname -a;
+
+# What files are here?
+ls 
+   -lt;
+
+# Notes:
+#
+# * Commands have to be terminated by ';'.  Alternative is to write 
+#   your own scanner to recognize the start of the next command.
+#
+# * Undo has no effect, of course, it just navigates in the file.
+#
+
+
+
+
+

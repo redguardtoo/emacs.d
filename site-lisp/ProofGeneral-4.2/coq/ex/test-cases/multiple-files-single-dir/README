@@ -1,0 +1,36 @@
+Test multiple file support for the simple case in which all files
+are in one directory.
+
+Dependency graph:
+
+     a.v    b.v     c.v
+      \	    / \	    /
+       \   /   \   /
+        d.v     e.v
+	  \    	/
+	   \   /
+            f.v
+
+That is, d.v depends on a.v and b.v, and so on.
+
+Some tests:
+
+- first visit f.v and display the *Message* buffer in some other
+  frame
+- script f.v and watch the recompilation messages in the
+  *Message* buffer
+- Change now an arbitrary file (either from within emacs or
+  simply do touch), retract the Require in f.v, and watch the
+  compilation messages when you assert it again.
+
+The following two problems have been fixed with the commit around 
+2011-01-17 07:45:00 UTC.
+
+The implementation in Proof General cvs at 2011-01-14 20:03:51 UTC 
+has an embarrassing bug: Touching b.v causes recompilation of b.v
+and d.v but not of e.v!
+
+Another problem is the following: After a consistent compilation,
+change b.v and recompile it outside of Proof General. Then script
+f.v -- Proof General will not recompile d and e!
+

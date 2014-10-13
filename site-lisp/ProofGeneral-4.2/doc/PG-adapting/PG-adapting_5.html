@@ -1,0 +1,997 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 4. Proof Shell Settings</title>
+
+<meta name="description" content="Adapting Proof General: 4. Proof Shell Settings">
+<meta name="keywords" content="Adapting Proof General: 4. Proof Shell Settings">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_4.html#Proof-Script-Settings" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_6.html#Goals-Buffer-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Proof-Shell-Settings"></a>
+<a name="Proof-Shell-Settings-1"></a>
+<h1 class="chapter">4. Proof Shell Settings</h1>
+
+<p>The variables in this chapter concern the proof shell mode, and are the
+largest group.  They are split into several subgroups.  The first
+subgroup are commands invoked at various points.  The second subgroup of
+variables are concerned with matching the output from the proof
+assistant.  The final subgroup contains various hooks which you can set
+to add lisp customization to Proof General in various points (some of
+them are also used internally for behaviour you may wish to adjust).
+</p>
+<p>Variables for configuring the proof shell are put into the customize
+group <code>proof-shell</code>.
+</p>
+<p>These should be set in the shell mode configuration, before
+<code>proof-shell-config-done</code> is called.
+</p>
+<p>To understand the way the proof assistant runs inside Emacs, you may
+want to refer to the <code>comint.el</code> (Command interpreter) package
+distributed with Emacs.  This package controls several shell-like modes
+available in Emacs, including the <code>proof-shell-mode</code> and
+all specific shell modes derived from it.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Proof-shell-commands">4.1 Commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Script-input-to-the-shell">4.2 Script input to the shell</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Hooks-and-other-settings">4.5 Hooks and other settings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Proof-shell-commands"></a>
+<a name="Commands"></a>
+<h2 class="section">4.1 Commands</h2>
+
+<p>Settings in this section configure Proof General with commands
+to send to the prover to activate certain actions.
+</p>
+<dl>
+<dt><a name="index-proof_002dprog_002dname"></a><u>Variable:</u> <b>proof-prog-name</b></dt>
+<dd><p>System command to run the proof assistant in the proof shell.<br>
+May contain arguments separated by spaces, but see also the
+prover specific settings &lsquo;<samp>&lt;PA&gt;-prog-args</samp>&rsquo; and &lsquo;<samp>&lt;PA&gt;-prog-env</samp>&rsquo;.
+</p>
+<p>Remark: if &lsquo;<samp>&lt;PA&gt;-prog-args</samp>&rsquo; is non-nil, then &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo; is considered
+strictly: it must contain <strong>only</strong> the program name with no option, spaces
+are interpreted literally as part of the program name.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dprog_002dargs"></a><u>Variable:</u> <b>PA-prog-args</b></dt>
+<dd><p>Arguments to be passed to &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo; to run the proof assistant.<br>
+If non-nil, will be treated as a list of arguments for &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo;.
+Otherwise &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo; will be split on spaces to form arguments.
+</p>
+<p>Remark: Arguments are interpreted strictly: each one must contain only one
+word, with no space (unless it is the same word). For example if the
+arguments are -x foo -y bar, then the list should be &rsquo;(&quot;-x&quot; &quot;foo&quot;
+&quot;-y&quot; &quot;bar&quot;), notice that &rsquo;(&quot;-x foo&quot; &quot;-y bar&quot;) is <strong>wrong</strong>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dprog_002denv"></a><u>Variable:</u> <b>PA-prog-env</b></dt>
+<dd><p>Modifications to &lsquo;<samp><code>process-environment</code></samp>&rsquo; made before running &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo;.<br>
+Each element should be a string of the form ENVVARNAME=<var>value</var>.  They will be
+added to the environment before launching the prover (but not pervasively).
+For example for coq on Windows you might need something like:
+(setq <code>coq-prog-env</code> &rsquo;(&quot;HOME=C:\Program Files\Coq\&quot;))
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dauto_002dterminate_002dcommands"></a><u>Variable:</u> <b>proof-shell-auto-terminate-commands</b></dt>
+<dd><p>Non-nil if Proof General should try to add terminator to every command.<br>
+If non-nil, whenever a command is sent to the prover using
+&lsquo;<samp><code>proof-shell-invisible-command</code></samp>&rsquo;, Proof General will check to see if it
+ends with &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo;, and add it if not.
+If &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo; is nil, this has no effect.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dpre_002dsync_002dinit_002dcmd"></a><u>Variable:</u> <b>proof-shell-pre-sync-init-cmd</b></dt>
+<dd><p>The command for configuring the proof process to gain synchronization.<br>
+This command is sent before Proof General&rsquo;s synchronization
+mechanism is engaged, to allow customization inside the process
+to help gain syncrhonization (e.g. engaging special markup).
+</p>
+<p>It is better to configure the proof assistant for this purpose
+via command line options if possible, in which case this variable
+does not need to be set.
+</p>
+<p>See also &lsquo;<samp><code>proof-shell-init-cmd</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dinit_002dcmd"></a><u>Variable:</u> <b>proof-shell-init-cmd</b></dt>
+<dd><p>The command(s) for initially configuring the proof process.<br>
+This command is sent to the process as soon as synchronization is gained
+(when an annotated prompt is first recognized).  It can be used to configure
+the proof assistant in some way, or print a welcome message
+(since output before the first prompt is discarded).
+</p>
+<p>See also &lsquo;<samp><code>proof-shell-pre-sync-init-cmd</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002drestart_002dcmd"></a><u>Variable:</u> <b>proof-shell-restart-cmd</b></dt>
+<dd><p>A command for re-initialising the proof process.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dquit_002dcmd"></a><u>Variable:</u> <b>proof-shell-quit-cmd</b></dt>
+<dd><p>A command to quit the proof process.  If nil, send EOF instead.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dcd_002dcmd"></a><u>Variable:</u> <b>proof-shell-cd-cmd</b></dt>
+<dd><p>Command to the proof assistant to change the working directory.<br>
+The format character &lsquo;<samp>%s</samp>&rsquo; is replaced with the directory, and
+the escape sequences in &lsquo;<samp><code>proof-shell-filename-escapes</code></samp>&rsquo; are
+applied to the filename.
+</p>
+<p>This setting is used to define the function &lsquo;<samp><code>proof-cd</code></samp>&rsquo; which
+changes to the value of (<code>default-directory</code>) for script buffers.
+For files, the value of (<code>default-directory</code>) is simply the
+directory the file resides in.
+</p>
+<p>NB: By default, &lsquo;<samp><code>proof-cd</code></samp>&rsquo; is called from &lsquo;<samp><code>proof-activate-scripting-hook</code></samp>&rsquo;,
+so that the prover switches to the directory of a proof
+script every time scripting begins.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dstart_002dsilent_002dcmd"></a><u>Variable:</u> <b>proof-shell-start-silent-cmd</b></dt>
+<dd><p>Command to turn prover goals output off when sending many script commands.<br>
+If non-nil, Proof General will automatically issue this command
+to help speed up processing of long proof scripts.
+See also &lsquo;<samp><code>proof-shell-stop-silent-cmd</code></samp>&rsquo;.
+NB: terminator not added to command.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dstop_002dsilent_002dcmd"></a><u>Variable:</u> <b>proof-shell-stop-silent-cmd</b></dt>
+<dd><p>Command to turn prover output on.<br>
+If non-nil, Proof General will automatically issue this command
+to help speed up processing of long proof scripts.
+See also &lsquo;<samp><code>proof-shell-start-silent-cmd</code></samp>&rsquo;.
+NB: Terminator not added to command.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dsilent_002dthreshold"></a><u>Variable:</u> <b>proof-shell-silent-threshold</b></dt>
+<dd><p>Number of waiting commands in the proof queue needed to trigger silent mode.<br>
+Default is 2, but you can raise this in case switching silent mode
+on or off is particularly expensive (or make it ridiculously large
+to disable silent mode altogether).
+</p></dd></dl>
+<p>See section <a href="PG-adapting_9.html#Handling-Multiple-Files">Handling Multiple Files</a>,
+for more details about the final two settings in this group,
+</p>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dinform_002dfile_002dprocessed_002dcmd"></a><u>Variable:</u> <b>proof-shell-inform-file-processed-cmd</b></dt>
+<dd><p>Command to the proof assistant to tell it that a file has been processed.<br>
+The format character &lsquo;<samp>%s</samp>&rsquo; is replaced by a complete filename for a
+script file which has been fully processed interactively with
+Proof General.  See &lsquo;<samp><code>proof-format-filename</code></samp>&rsquo; for other possibilities
+to process the filename.
+</p>
+<p>This setting used to interface with the proof assistant&rsquo;s internal
+management of multiple files, so the proof assistant is kept aware of
+which files have been processed.  Specifically, when scripting
+is deactivated in a completed buffer, it is added to Proof General&rsquo;s
+list of processed files, and the prover is told about it by
+issuing this command.
+</p>
+<p>If this is set to nil, no command is issued.
+</p>
+<p>See also: &lsquo;<samp><code>proof-shell-inform-file-retracted-cmd</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-shell-process-file</code></samp>&rsquo;, &lsquo;<samp><code>proof-shell-compute-new-files-list</code></samp>&rsquo;.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dinform_002dfile_002dretracted_002dcmd"></a><u>Variable:</u> <b>proof-shell-inform-file-retracted-cmd</b></dt>
+<dd><p>Command to the proof assistant to tell it that a file has been retracted.<br>
+The format character &lsquo;<samp>%s</samp>&rsquo; is replaced by a complete filename for a
+script file which Proof General wants the prover to consider as not
+completely processed.  See &lsquo;<samp><code>proof-format-filename</code></samp>&rsquo; for other
+possibilities to process the filename.
+</p>
+<p>This is used to interface with the proof assistant&rsquo;s internal
+management of multiple files, so the proof assistant is kept aware of
+which files have been processed.  Specifically, when scripting
+is activated, the file is removed from Proof General&rsquo;s list of
+processed files, and the prover is told about it by issuing this
+command.  The action may cause the prover in turn to suggest to
+Proof General that files depending on this one are
+also unlocked.
+</p>
+<p>If this is set to nil, no command is issued.
+</p>
+<p>It is also possible to set this value to a function which will
+be invoked on the name of the retracted file, and should remove
+the ancestor files from &lsquo;<samp><code>proof-included-files-list</code></samp>&rsquo; by some
+other calculation.
+</p>
+<p>See also: &lsquo;<samp><code>proof-shell-inform-file-processed-cmd</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-shell-process-file</code></samp>&rsquo;, &lsquo;<samp><code>proof-shell-compute-new-files-list</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Script-input-to-the-shell"></a>
+<a name="Script-input-to-the-shell-1"></a>
+<h2 class="section">4.2 Script input to the shell</h2>
+
+<p>Generally, commands from the proof script are sent verbatim to the proof
+process running in the proof shell.  For historical reasons, carriage
+returns are stripped by default.  You can set
+<code>proof-shell-strip-crs-from-input</code> to adjust that.  For more
+sophisticated pre-processing of the sent string, you may like to set
+<code>proof-shell-insert-hook</code>.
+</p>
+<dl>
+<dt><a name="index-proof_002dshell_002dstrip_002dcrs_002dfrom_002dinput"></a><u>Variable:</u> <b>proof-shell-strip-crs-from-input</b></dt>
+<dd><p>If non-nil, replace carriage returns in every input with spaces.<br>
+This is enabled by default: it is appropriate for many systems
+based on human input, because several CR&rsquo;s can result in several
+prompts, which may mess up the display (or even worse, the
+synchronization).
+</p>
+<p>If the prover can be set to output only one prompt for every chunk of
+input, then newlines can be retained in the input.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dinsert_002dhook"></a><u>Variable:</u> <b>proof-shell-insert-hook</b></dt>
+<dd><p>Hooks run by &lsquo;<samp><code>proof-shell-insert</code></samp>&rsquo; before inserting a command.<br>
+Can be used to configure the proof assistant to the interface in
+various ways &ndash; for example, to observe or alter the commands sent to
+the prover, or to sneak in extra commands to configure the prover.
+</p>
+<p>This hook is called inside a &lsquo;<samp><code>save-excursion</code></samp>&rsquo; with the &lsquo;<samp><code>proof-shell-buffer</code></samp>&rsquo;
+current, just before inserting and sending the text in the
+variable &lsquo;<samp>string</samp>&rsquo;.  The hook can massage &lsquo;<samp>string</samp>&rsquo; or insert additional
+text directly into the &lsquo;<samp><code>proof-shell-buffer</code></samp>&rsquo;.
+Before sending &lsquo;<samp>string</samp>&rsquo;, it will be stripped of carriage returns.
+</p>
+<p>Additionally, the hook can examine the variable &lsquo;<samp>action</samp>&rsquo;.  It will be
+a symbol, set to the callback command which is executed in the proof
+shell filter once &lsquo;<samp>string</samp>&rsquo; has been processed.  The &lsquo;<samp>action</samp>&rsquo; variable
+suggests what class of command is about to be inserted, the first two
+are normally the ones of interest:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp"> <code>'proof-done-advancing</code>       A &quot;forward&quot; scripting command
+ <code>'proof-done-retracting</code>      A &quot;backward&quot; scripting command
+ <code>'proof-done-invisible</code>       A non-scripting command
+ <code>'proof-shell-set-silent</code>     Indicates prover output has been surpressed
+ <code>'proof-shell-clear-silent</code>   Indicates prover output has been restored
+ <code>'init-cmd</code>                   Early initialization command sent to prover
+</pre></td></tr></table>
+<p>Caveats: You should be very careful about setting this hook.  Proof
+General relies on a careful synchronization with the process between
+inputs and outputs.  It expects to see a prompt for each input it
+sends from the queue.  If you add extra input here and it causes more
+prompts than expected, things will break!  Extending the variable
+&lsquo;<samp>string</samp>&rsquo; may be safer than inserting text directly, since it is
+stripped of carriage returns before being sent.
+</p>
+<p>Example uses:
+<var>lego</var> uses this hook for setting the pretty printer width if
+the window width has changed;
+Plastic uses it to remove literate-style markup from &lsquo;<samp>string</samp>&rsquo;.
+</p>
+<p>See also &lsquo;<samp><code>proof-script-preprocess</code></samp>&rsquo; which can munge text when
+it is added to the queue of commands.
+</p></dd></dl>
+
+
+
+
+
+
+<hr size="6">
+<a name="Settings-for-matching-various-output-from-proof-process"></a>
+<a name="Settings-for-matching-various-output-from-proof-process-1"></a>
+<h2 class="section">4.3 Settings for matching various output from proof process</h2>
+
+<p>These settings control the way Proof General reacts to process output.
+The single most important setting is
+<code>proof-shell-annotated-prompt-regexp</code>, which <b>must</b> be set as
+part of the prover configuraton.  This is used to configure the
+communication with the prover process.
+</p>
+<dl>
+<dt><a name="index-pg_002dsubterm_002dfirst_002dspecial_002dchar"></a><u>Variable:</u> <b>pg-subterm-first-special-char</b></dt>
+<dd><p>First special character.<br>
+Codes above this character can have special meaning to Proof General,
+and are stripped from the prover&rsquo;s output strings.
+Leave unset if no special characters are being used.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dannotated_002dprompt_002dregexp"></a><u>Variable:</u> <b>proof-shell-annotated-prompt-regexp</b></dt>
+<dd><p>Regexp matching a (possibly annotated) prompt pattern.
+</p>
+<p><var>this</var> IS THE <var>most</var> <var>important</var> <var>setting</var> TO <var>configure</var>!!
+</p>
+<p>Output is grabbed between pairs of lines matching this regexp,
+and the appearance of this regexp is used by Proof General to
+recognize when the prover has finished processing a command.
+</p>
+<p>To help speed up matching you may be able to annotate the
+proof assistant prompt with a special character not appearing
+in ordinary output, which should appear in this regexp.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002derror_002dregexp"></a><u>Variable:</u> <b>proof-shell-error-regexp</b></dt>
+<dd><p>Regexp matching an error report from the proof assistant.
+</p>
+<p>We assume that an error message corresponds to a failure in the last
+proof command executed.  So don&rsquo;t match mere warning messages with
+this regexp.  Moreover, an error message should <strong>not</strong> be matched as an
+eager annotation (see &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo;) otherwise it
+will be lost.
+</p>
+<p>Error messages are considered to begin from &lsquo;<samp><code>proof-shell-error-regexp</code></samp>&rsquo;
+and continue until the next prompt.  The variable
+&lsquo;<samp><code>proof-shell-truncate-before-error</code></samp>&rsquo; controls whether text before the
+error message is displayed.
+</p>
+<p>The engine matches interrupts before errors, see &lsquo;<samp><code>proof-shell-interrupt-regexp</code></samp>&rsquo;.
+</p>
+<p>It is safe to leave this variable unset (as nil).
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dinterrupt_002dregexp"></a><u>Variable:</u> <b>proof-shell-interrupt-regexp</b></dt>
+<dd><p>Regexp matching output indicating the assistant was interrupted.<br>
+We assume that an interrupt message corresponds to a failure in the last
+proof command executed.  So don&rsquo;t match mere warning messages with
+this regexp.  Moreover, an interrupt message should not be matched as an
+eager annotation (see &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo;) otherwise it
+will be lost.
+</p>
+<p>The engine matches interrupts before errors, see &lsquo;<samp><code>proof-shell-error-regexp</code></samp>&rsquo;.
+</p>
+<p>It is safe to leave this variable unset (as nil).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dtruncate_002dbefore_002derror"></a><u>Variable:</u> <b>proof-shell-truncate-before-error</b></dt>
+<dd><p>Non-nil means truncate output that appears before error messages.<br>
+If nil, the whole output that the prover generated before the last
+error message will be shown.
+</p>
+<p>NB: the default setting for this is t to be compatible with
+behaviour in Proof General before version 3.4.  The more obvious
+setting for new instances is probably nil.
+</p>
+<p>Interrupt messages are treated in the same way.
+See &lsquo;<samp><code>proof-shell-error-regexp</code></samp>&rsquo; and &lsquo;<samp><code>proof-shell-interrupt-regexp</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dproof_002dcompleted_002dregexp"></a><u>Variable:</u> <b>proof-shell-proof-completed-regexp</b></dt>
+<dd><p>Regexp matching output indicating a finished proof.
+</p>
+<p>When output which matches this regexp is seen, we clear the goals
+buffer in case this is not also marked up as a &lsquo;<samp>goals</samp>&rsquo; type of
+message.
+</p>
+<p>We also enable the QED function (save a proof) and we may automatically
+close off the proof region if another goal appears before a save
+command, depending on whether the prover supports nested proofs or not.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dstart_002dgoals_002dregexp"></a><u>Variable:</u> <b>proof-shell-start-goals-regexp</b></dt>
+<dd><p>Regexp matching the start of the proof state output.<br>
+This is an important setting.  Output between &lsquo;<samp><code>proof-shell-start-goals-regexp</code></samp>&rsquo;
+and &lsquo;<samp><code>proof-shell-end-goals-regexp</code></samp>&rsquo; will be pasted into the goals buffer
+and possibly analysed further for proof-by-pointing markup.
+If it is left as nil, the goals buffer will not be used.
+</p>
+<p>The goals display starts at the beginning of the match on this
+regexp, unless it has a match group, in which case it starts
+at (<code>match-end</code> 1).
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dend_002dgoals_002dregexp"></a><u>Variable:</u> <b>proof-shell-end-goals-regexp</b></dt>
+<dd><p>Regexp matching the end of the proof state output, or nil.<br>
+This allows a shorter form of the proof state output to be displayed,
+in case several messages are combined in a command output.
+</p>
+<p>The portion treated as the goals output will be that between the
+match on &lsquo;<samp><code>proof-shell-start-goals-regexp</code></samp>&rsquo; (which see) and the
+start of the match on &lsquo;<samp><code>proof-shell-end-goals-regexp</code></samp>&rsquo;.
+</p>
+<p>If nil, use the whole of the output from the match on
+&lsquo;<samp><code>proof-shell-start-goals-regexp</code></samp>&rsquo; up to the next prompt.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshell_002dassumption_002dregexp"></a><u>Variable:</u> <b>proof-shell-assumption-regexp</b></dt>
+<dd><p>A regular expression matching the name of assumptions.
+</p>
+<p>At the moment, this setting is not used in the generic Proof General.
+</p>
+<p>Future use may provide a generic implementation for &lsquo;<samp><code>pg-topterm-goalhyplit-fn</code></samp>&rsquo;,
+used to help parse the goals buffer to annotate it for proof by pointing.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Settings-for-matching-urgent-messages-from-proof-process"></a>
+<a name="Settings-for-matching-urgent-messages-from-proof-process-1"></a>
+<h2 class="section">4.4 Settings for matching urgent messages from proof process</h2>
+
+<p>Among the various dialogue messages that the proof assistant outputs
+during proof, Proof General can consider certain messages to be
+&quot;urgent&quot;.  When processing many lines of a proof, Proof General will
+normally supress the output, waiting until the final message appears
+before displaying anything to the user.  Urgent messages escape this:
+typically they include messages that the prover wants the user to
+notice, for example, perhaps, file loading messages, timing
+statistics or dedicated tracing messages which can be sent to the
+<code>*trace*</code> buffer.
+</p>
+<p>So that Proof General notices, these urgent messages should be marked-up
+with &quot;eager&quot; annotations.
+</p>
+<dl>
+<dt><a name="index-proof_002dshell_002deager_002dannotation_002dstart"></a><u>Variable:</u> <b>proof-shell-eager-annotation-start</b></dt>
+<dd><p>Eager annotation field start.  A regular expression or nil.<br>
+An &quot;eager annotation indicates&quot; to Proof General that some following output
+should be displayed (or processed) immediately and not accumulated for
+parsing later.  Note that this affects processing of output which is
+ordinarily accumulated: output which appears before the eager annotation
+start will be discarded.
+</p>
+<p>The start/end annotations can be used to hilight the output, but
+are stripped from display of the message in the minibuffer.
+</p>
+<p>It is useful to recognize (starts of) warnings or file-reading messages
+with this regexp.  You must also recognize any special messages
+from the prover to PG with this regexp (e.g. &lsquo;<samp><code>proof-shell-clear-goals-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-shell-retract-files-regexp</code></samp>&rsquo;, etc.)
+</p>
+<p>See also &lsquo;<samp><code>proof-shell-eager-annotation-start-length</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>Set to nil to disable this feature.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002deager_002dannotation_002dstart_002dlength"></a><u>Variable:</u> <b>proof-shell-eager-annotation-start-length</b></dt>
+<dd><p>Maximum length of an eager annotation start.<br>
+Must be set to the maximum length of the text that may match
+&lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; (at least 1).
+If this value is too low, eager annotations may be lost!
+</p>
+<p>This value is used internally by Proof General to optimize the process
+filter to avoid unnecessary searching.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002deager_002dannotation_002dend"></a><u>Variable:</u> <b>proof-shell-eager-annotation-end</b></dt>
+<dd><p>Eager annotation field end.  A regular expression or nil.<br>
+An eager annotation indicates to Emacs that some following output
+should be displayed or processed immediately.
+</p>
+<p>See also &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo;.
+</p>
+<p>It is nice to recognize (ends of) warnings or file-reading messages
+with this regexp.  You must also recognize (ends of) any special messages
+from the prover to PG with this regexp (e.g. &lsquo;<samp><code>proof-shell-clear-goals-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-shell-retract-files-regexp</code></samp>&rsquo;, etc.)
+</p>
+<p>The default value is &quot;\n&quot; to match up to the end of the line.
+</p></dd></dl>
+
+
+<p>The default action for urgent messages is to display them in the
+response buffer, highlighted.  But we also allow for some control
+messages, issued from the proof assistant to Proof General and not
+intended for the user to see.  These are recognized in the same way as
+urgent messages (marked with eager annotations), so they will
+be acted on as soon as they are issued by the prover.
+</p>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dclear_002dresponse_002dregexp"></a><u>Variable:</u> <b>proof-shell-clear-response-regexp</b></dt>
+<dd><p>Regexp matching output telling Proof General to clear the response buffer.
+</p>
+<p>More precisely, this should match a string which is bounded by
+matches on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>This feature is useful to give the prover more control over what output
+is shown to the user.  Set to nil to disable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dclear_002dgoals_002dregexp"></a><u>Variable:</u> <b>proof-shell-clear-goals-regexp</b></dt>
+<dd><p>Regexp matching output telling Proof General to clear the goals buffer.
+</p>
+<p>More precisely, this should match a string which is bounded by
+matches on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>This feature is useful to give the prover more control over what output
+is shown to the user.  Set to nil to disable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dinteractive_002dprompt_002dregexp"></a><u>Variable:</u> <b>proof-shell-interactive-prompt-regexp</b></dt>
+<dd><p>Matches output from the prover which indicates an interactive prompt.<br>
+If we match this, we suppose that the prover has switched to an
+interactive diagnostic mode which requires direct interaction
+with the shell rather than via script management.  In this case,
+the shell buffer will be displayed and the user left to their own
+devices.
+</p>
+<p>Note: this should match a string which is bounded by matches
+on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dtrace_002doutput_002dregexp"></a><u>Variable:</u> <b>proof-shell-trace-output-regexp</b></dt>
+<dd><p>Matches tracing output which should be displayed in trace buffer.<br>
+Each line which matches this regexp but would otherwise be treated
+as an ordinary response, is sent to the trace buffer instead of the
+response buffer.
+</p>
+<p>This is intended for unusual debugging output from
+the prover, rather than ordinary output from final proofs.
+</p>
+<p>This should match a string which is bounded by matches
+on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>Set to nil to disable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dset_002delisp_002dvariable_002dregexp"></a><u>Variable:</u> <b>proof-shell-set-elisp-variable-regexp</b></dt>
+<dd><p>Matches output telling Proof General to set some variable.<br>
+This allows the proof assistant to configure Proof General directly
+and dynamically.   (It&rsquo;s also a fantastic backdoor security risk).
+</p>
+<p>More precisely, this should match a string which is bounded by
+matches on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>If the regexp matches output from the proof assistant, there should be
+two match strings: (<code>match-string</code> 1) should be the name of the elisp
+variable to be set, and (<code>match-string</code> 2) should be the value of the
+variable (which will be evaluated as a Lisp expression).
+</p>
+<p>A good markup for the second string is to delimit with #&rsquo;s, since
+these are not valid syntax for elisp evaluation.
+</p>
+<p>Elisp errors will be trapped when evaluating; set
+&lsquo;<samp><code>proof-general-debug</code></samp>&rsquo; to be informed when this happens.
+</p>
+<p>Example uses are to adjust PG&rsquo;s internal copies of proof assistant&rsquo;s
+settings, or to make automatic dynamic syntax adjustments in Emacs to
+match changes in theory, etc.
+</p>
+<p>If you pick a dummy variable name (e.g. &lsquo;<samp>proof-dummy-setting</samp>&rsquo;) you
+can just evaluation arbitrary elisp expressions for their side
+effects, to adjust menu entries, or even launch auxiliary programs.
+But use with care &ndash; there is no protection against catastrophic elisp!
+</p>
+<p>This setting could also be used to move some configuration settings
+from PG to the prover, but this is not really supported (most settings
+must be made before this mechanism will work).  In future, the PG
+standard protocol, <var>pgip</var>, will use this mechanism for making all
+settings.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dtheorem_002ddependency_002dlist_002dregexp"></a><u>Variable:</u> <b>proof-shell-theorem-dependency-list-regexp</b></dt>
+<dd><p>Matches output telling Proof General about dependencies.<br>
+This is to allow navigation and display of dependency information.
+The output from the prover should be a message with the form
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   <var>dependencies</var> OF  X Y Z   ARE  A B C
+</pre></td></tr></table>
+<p>with X Y Z, A B C separated by whitespace or somehow else (see
+&lsquo;<samp><code>proof-shell-theorem-dependency-list-split</code></samp>&rsquo;.  This variable should
+be set to a regexp to match the overall message (which should
+be an urgent message), with two sub-matches for X Y Z and A B C.
+</p>
+<p>This is an experimental feature, currently work-in-progress.
+</p></dd></dl>
+
+<p>Two important control messages are recognized by
+<code>proof-shell-process-file</code> and
+<code>proof-shell-retract-files-regexp</code>, used for synchronizing Proof
+General with a file loading mechanism built into the proof assistant.
+See section <a href="PG-adapting_9.html#Handling-Multiple-Files">Handling Multiple Files</a>, for more details about how to use the
+final four settings described here.
+</p>
+<a name="index-proof_002dincluded_002dfiles_002dlist"></a>
+<dl>
+<dt><a name="index-proof_002dshell_002dprocess_002dfile"></a><u>Variable:</u> <b>proof-shell-process-file</b></dt>
+<dd><p>A pair (<var>regexp</var> . <var>function</var>) to match a processed file name.
+</p>
+<p>If <var>regexp</var> matches output, then the function <var>function</var> is invoked.
+It must return the name of a script file (with complete path)
+that the system has successfully processed.  In practice,
+<var>function</var> is likely to inspect the match data.  If it returns
+the empty string, the file name of the scripting buffer is used
+instead.  If it returns nil, no action is taken.
+</p>
+<p>More precisely, <var>regexp</var> should match a string which is bounded by
+matches on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>Care has to be taken in case the prover only reports on compiled
+versions of files it is processing.  In this case, <var>function</var> needs to
+reconstruct the corresponding script file name.  The new (true) file
+name is added to the front of &lsquo;<samp><code>proof-included-files-list</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dretract_002dfiles_002dregexp"></a><u>Variable:</u> <b>proof-shell-retract-files-regexp</b></dt>
+<dd><p>Matches a message that the prover has retracted a file.
+</p>
+<p>More precisely, this should match a string which is bounded by
+matches on &lsquo;<samp><code>proof-shell-eager-annotation-start</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-shell-eager-annotation-end</code></samp>&rsquo;.
+</p>
+<p>At this stage, Proof General&rsquo;s view of the processed files is out of
+date and needs to be updated with the help of the function
+&lsquo;<samp><code>proof-shell-compute-new-files-list</code></samp>&rsquo;.
+</p></dd></dl>
+<a name="index-proof_002dincluded_002dfiles_002dlist-1"></a>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dcompute_002dnew_002dfiles_002dlist"></a><u>Variable:</u> <b>proof-shell-compute-new-files-list</b></dt>
+<dd><p>Function to update &lsquo;<samp>proof-included-files list</samp>&rsquo;.
+</p>
+<p>It needs to return an up-to-date list of all processed files.  The
+result will be stored in &lsquo;<samp><code>proof-included-files-list</code></samp>&rsquo;.
+</p>
+<p>This function is called when &lsquo;<samp><code>proof-shell-retract-files-regexp</code></samp>&rsquo;
+has been matched in the prover output.
+</p>
+<p>In practice, this function is likely to inspect the
+previous (global) variable &lsquo;<samp><code>proof-included-files-list</code></samp>&rsquo; and the
+match data triggered by &lsquo;<samp><code>proof-shell-retract-files-regexp</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-proof_002dcannot_002dreopen_002dprocessed_002dfiles"></a><u>Variable:</u> <b>proof-cannot-reopen-processed-files</b></dt>
+<dd><p>Non-nil if the prover allows re-opening of already processed files.
+</p>
+<p>If the user has used Proof General to process a file incrementally,
+then PG will retain the spans recording undo history in the buffer
+corresponding to that file (provided it remains visited in Emacs).
+</p>
+<p>If the prover allows, it will be possible to undo to a position within
+this file.  If the prover does <strong>not</strong> allow this, this variable should
+be set non-nil, so that when a completed file is activated for
+scripting (to do undo operations), the whole history is discarded.
+</p></dd></dl>
+
+
+
+
+
+<hr size="6">
+<a name="Hooks-and-other-settings"></a>
+<a name="Hooks-and-other-settings-1"></a>
+<h2 class="section">4.5 Hooks and other settings</h2>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dfilename_002descapes"></a><u>Variable:</u> <b>proof-shell-filename-escapes</b></dt>
+<dd><p>A list of escapes that are applied to %s for filenames.<br>
+A list of cons cells, car of which is string to be replaced
+by the cdr.
+For example, when directories are sent to Isabelle, HOL, and Coq,
+they appear inside ML strings and the backslash character and
+quote characters must be escaped.  The setting
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  '((&quot;<var>\\\\</var>&quot; . &quot;<var>\\\\</var>&quot;)
+    (&quot;\&quot;&quot; . &quot;\\\&quot;&quot;))
+</pre></td></tr></table>
+<p>achieves this.   This does not apply to <var>lego</var>, which does not
+need backslash escapes and does not allow filenames with
+quote characters.
+</p>
+<p>This setting is used inside the function &lsquo;<samp><code>proof-format-filename</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dprocess_002dconnection_002dtype"></a><u>Variable:</u> <b>proof-shell-process-connection-type</b></dt>
+<dd><p>The value of &lsquo;<samp><code>process-connection-type</code></samp>&rsquo; for the proof shell.<br>
+Set non-nil for ptys, nil for pipes.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dhandle_002derror_002dor_002dinterrupt_002dhook"></a><u>Variable:</u> <b>proof-shell-handle-error-or-interrupt-hook</b></dt>
+<dd><p>Run after an error or interrupt has been reported in the response buffer.<br>
+Hook functions may inspect &lsquo;<samp><code>proof-shell-last-output-kind</code></samp>&rsquo; to
+determine whether the cause was an error or interrupt.  Possible
+values for this hook include:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp"> &lsquo;<samp><code>proof-goto-end-of-locked-on-error-if-pos-not-visible-in-window</code></samp>&rsquo;
+ &lsquo;<samp><code>proof-goto-end-of-locked-if-pos-not-visible-in-window</code></samp>&rsquo;
+</pre></td></tr></table>
+<p>which move the cursor in the scripting buffer on an error or
+error/interrupt.
+</p>
+<p>Remark: This hook is called from shell buffer.  If you want to do
+something in scripting buffer, &lsquo;<samp><code>save-excursion</code></samp>&rsquo; and/or &lsquo;<samp><code>set-buffer</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dpre_002dinterrupt_002dhook"></a><u>Variable:</u> <b>proof-shell-pre-interrupt-hook</b></dt>
+<dd><p>Run immediately after &lsquo;<samp><code>comint-interrupt-subjob</code></samp>&rsquo; is called.<br>
+This hook is added to allow customization for systems that query the user
+before returning to the top level.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dhandle_002doutput_002dsystem_002dspecific"></a><u>Variable:</u> <b>proof-shell-handle-output-system-specific</b></dt>
+<dd><p>Set this variable to handle system specific output.<br>
+Errors and interrupts are recognised in the function
+&lsquo;<samp><code>proof-shell-handle-immediate-output</code></samp>&rsquo;.  Later output is
+handled by &lsquo;<samp><code>proof-shell-handle-delayed-output</code></samp>&rsquo;, which
+displays messages to the user in <strong>goals</strong> and <strong>response</strong>
+buffers.
+</p>
+<p>This hook can run between the two stages to take some effect.
+</p>
+<p>It should be a function which is passed (cmd string) as
+arguments, where &lsquo;<samp>cmd</samp>&rsquo; is a string containing the currently
+processed command and &lsquo;<samp>string</samp>&rsquo; is the response from the proof
+system.  If action is taken and goals/response display should
+be prevented, the function should update the variable
+&lsquo;<samp><code>proof-shell-last-output-kind</code></samp>&rsquo; to some non-nil symbol.
+</p>
+<p>The symbol will be compared against standard ones, see documentation
+of &lsquo;<samp><code>proof-shell-last-output-kind</code></samp>&rsquo;.  A suggested canonical non-standard
+symbol is <code>'systemspecific</code>.
+</p></dd></dl>
+
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Proof-Shell-Settings" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_6.html#Goals-Buffer-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

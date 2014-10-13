@@ -1,0 +1,914 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 3. Proof Script Settings</title>
+
+<meta name="description" content="Adapting Proof General: 3. Proof Script Settings">
+<meta name="keywords" content="Adapting Proof General: 3. Proof Script Settings">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_3.html#Menus-and-Toolbar-and-User_002dlevel-Commands" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_5.html#Proof-Shell-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Proof-Script-Settings"></a>
+<a name="Proof-Script-Settings-1"></a>
+<h1 class="chapter">3. Proof Script Settings</h1>
+
+<p>The variables described in this chapter should be set in the script mode
+before <code>proof-config-done</code> is called.  These variables configure
+recognition of commands in the proof script, and also control some of
+the behaviour of script management.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Recognizing-proofs">3.2 Recognizing proofs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Recognizing-other-elements">3.3 Recognizing other elements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Nested-proofs">3.5 Nested proofs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Safe-_0028state_002dpreserving_0029-commands">3.6 Safe (state-preserving) commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Activate-scripting-hook">3.7 Activate scripting hook</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Automatic-multiple-files">3.8 Automatic multiple files</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Completely-asserted-buffers">3.9 Completely asserted buffers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Completions">3.10 Completions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Recognizing-commands-and-comments"></a>
+<a name="Recognizing-commands-and-comments-1"></a>
+<h2 class="section">3.1 Recognizing commands and comments</h2>
+
+<p>The first four settings configure the generic parsing strategy for
+commands in the proof script.  Usually only one of these three needs to
+be set.  If the generic parsing functions are not flexible for your
+needs, you can supply a value for <code>proof-script-parse-function</code>.
+</p>
+<p>Note that for the generic functions to work properly, it is
+<strong>essential</strong> that you set the syntax table for your mode properly,
+so that comments and strings are recognized.  See the Emacs
+documentation to discover how to do this (particularly for the function
+<code>modify-syntax-entry</code>, (See <a href="../Elisp/Syntax-Tables.html#Syntax-Tables">(Elisp)Syntax Tables</a>).
+</p>
+<p>See section <a href="PG-adapting_15.html#Proof-script-mode">Proof script mode</a>, for more details of the parsing
+functions.
+</p>
+<dl>
+<dt><a name="index-proof_002dterminal_002dstring"></a><u>Variable:</u> <b>proof-terminal-string</b></dt>
+<dd><p>String that terminates commands sent to prover; nil if none.
+</p>
+<p>To configure command recognition properly, you must set at least one
+of these: &lsquo;<samp><code>proof-script-sexp-commands</code></samp>&rsquo;, &lsquo;<samp><code>proof-script-command-end-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-script-command-start-regexp</code></samp>&rsquo;, &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo;,
+or &lsquo;<samp><code>proof-script-parse-function</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002delectric_002dterminator_002dnoterminator"></a><u>Variable:</u> <b>proof-electric-terminator-noterminator</b></dt>
+<dd><p>If non-nil, electric terminator does not actually insert a terminator.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dscript_002dsexp_002dcommands"></a><u>Variable:</u> <b>proof-script-sexp-commands</b></dt>
+<dd><p>Non-nil if script has LISP-like syntax: commands are <code>top-level</code> sexps.<br>
+You should set this variable in script mode configuration.
+</p>
+<p>To configure command recognition properly, you must set at least one
+of these: &lsquo;<samp><code>proof-script-sexp-commands</code></samp>&rsquo;, &lsquo;<samp><code>proof-script-command-end-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-script-command-start-regexp</code></samp>&rsquo;, &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo;,
+or &lsquo;<samp><code>proof-script-parse-function</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dscript_002dcommand_002dstart_002dregexp"></a><u>Variable:</u> <b>proof-script-command-start-regexp</b></dt>
+<dd><p>Regular expression which matches start of commands in proof script.<br>
+You should set this variable in script mode configuration.
+</p>
+<p>To configure command recognition properly, you must set at least one
+of these: &lsquo;<samp><code>proof-script-sexp-commands</code></samp>&rsquo;, &lsquo;<samp><code>proof-script-command-end-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-script-command-start-regexp</code></samp>&rsquo;, &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo;,
+or &lsquo;<samp><code>proof-script-parse-function</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dscript_002dcommand_002dend_002dregexp"></a><u>Variable:</u> <b>proof-script-command-end-regexp</b></dt>
+<dd><p>Regular expression which matches end of commands in proof script.<br>
+You should set this variable in script mode configuration.
+</p>
+<p>The end of the command is considered to be the end of the match
+of this regexp.  The regexp may include a nested group, which
+can be used to recognize the start of the following command
+(or white space).  If there is a nested group, the end of the
+command is considered to be the start of the nested group,
+i.e. (<code>match-beginning</code> 1), rather than (<code>match-end</code> 0).
+</p>
+<p>To configure command recognition properly, you must set at least one
+of these: &lsquo;<samp><code>proof-script-sexp-commands</code></samp>&rsquo;, &lsquo;<samp><code>proof-script-command-end-regexp</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-script-command-start-regexp</code></samp>&rsquo;, &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo;,
+or &lsquo;<samp><code>proof-script-parse-function</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<p>The next four settings configure the comment syntax.  Notice that to get
+reliable behaviour of the parsing functions, you may need to modify the
+syntax table for your prover&rsquo;s mode.  
+Read the Elisp manual (See <a href="../Elisp/Syntax-Tables.html#Syntax-Tables">(Elisp)Syntax Tables</a>) for details about that.
+</p>
+<dl>
+<dt><a name="index-proof_002dscript_002dcomment_002dstart"></a><u>Variable:</u> <b>proof-script-comment-start</b></dt>
+<dd><p>String which starts a comment in the proof assistant command language.<br>
+The script buffer&rsquo;s &lsquo;<samp><code>comment-start</code></samp>&rsquo; is set to this string plus a space.
+Moreover, comments are usually ignored during script management, and not
+sent to the proof process.
+</p>
+<p>You should set this variable for reliable working of Proof General,
+as well as &lsquo;<samp><code>proof-script-comment-end</code></samp>&rsquo;.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dscript_002dcomment_002dstart_002dregexp"></a><u>Variable:</u> <b>proof-script-comment-start-regexp</b></dt>
+<dd><p>Regexp which matches a comment start in the proof command language.
+</p>
+<p>The default value for this is set as (<code>regexp-quote</code> &lsquo;<samp><code>proof-script-comment-start</code></samp>&rsquo;)
+but you can set this variable to something else more precise if necessary.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dscript_002dcomment_002dend"></a><u>Variable:</u> <b>proof-script-comment-end</b></dt>
+<dd><p>String which ends a comment in the proof assistant command language.<br>
+Should be an empty string if comments are terminated by &lsquo;<samp><code>end-of-line</code></samp>&rsquo;
+The script buffer&rsquo;s &lsquo;<samp><code>comment-end</code></samp>&rsquo; is set to a space plus this string,
+if it is non-empty.
+</p>
+<p>See also &lsquo;<samp><code>proof-script-comment-start</code></samp>&rsquo;.
+</p>
+<p>You should set this variable for reliable working of Proof General.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dscript_002dcomment_002dend_002dregexp"></a><u>Variable:</u> <b>proof-script-comment-end-regexp</b></dt>
+<dd><p>Regexp which matches a comment end in the proof command language.
+</p>
+<p>The default value for this is set as (<code>regexp-quote</code> &lsquo;<samp><code>proof-script-comment-end</code></samp>&rsquo;)
+but you can set this variable to something else more precise if necessary.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dcase_002dfold_002dsearch"></a><u>Variable:</u> <b>proof-case-fold-search</b></dt>
+<dd><p>Value for &lsquo;<samp><code>case-fold-search</code></samp>&rsquo; when recognizing portions of proof scripts.<br>
+Also used for completion, via &lsquo;<samp><code>proof-script-complete</code></samp>&rsquo;.
+The default value is nil.  If your prover has a case <strong>insensitive</strong>
+input syntax, &lsquo;<samp><code>proof-case-fold-search</code></samp>&rsquo; should be set to t instead.
+NB: This setting is not used for matching output from the prover.
+</p></dd></dl>
+
+
+<p>Finally, the function <code>proof-looking-at-syntactic-context</code> is used
+internally to help determine the syntactic structure of the buffer.
+You can test it to check the settings above.  If necessary, you can
+override this with a system-specific function.
+</p>
+<dl>
+<dt><a name="index-proof_002dlooking_002dat_002dsyntactic_002dcontext"></a><u>Function:</u> <b>proof-looking-at-syntactic-context</b></dt>
+<dd><p>Determine if current point is at beginning or within comment/string context.<br>
+If so, return a symbol indicating this (&rsquo;comment or <code>'string</code>).
+This function invokes &lt;PA-syntactic-context&gt; if that is defined, otherwise
+it calls &lsquo;<samp><code>proof-looking-at-syntactic-context</code></samp>&rsquo;.
+</p></dd></dl>
+<hr size="6">
+<a name="Recognizing-proofs"></a>
+<a name="Recognizing-proofs-1"></a>
+<h2 class="section">3.2 Recognizing proofs</h2>
+
+<p>Several settings each may be supplied for recognizing goal-like and
+save-like commands.  The <code>-with-hole-</code> settings are used to make a
+record of the name of the theorem proved.
+</p>
+<p>The <code>-p</code> subsidiary predicates were added to allow more
+discriminating behaviour for particular proof assistants.  (This is a
+typical example of where the core framework needs some additional
+generalization, to simplify matters, and allow for a smooth handling of
+nested proofs; the present state is only part of the way there).
+</p>
+
+<dl>
+<dt><a name="index-proof_002dgoal_002dcommand_002dregexp"></a><u>Variable:</u> <b>proof-goal-command-regexp</b></dt>
+<dd><p>Matches a goal command in the proof script.<br>
+This is used to make the default value for &lsquo;<samp><code>proof-goal-command-p</code></samp>&rsquo;,
+used as an important part of script management to find the start
+of an atomic undo block.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgoal_002dcommand_002dp"></a><u>Variable:</u> <b>proof-goal-command-p</b></dt>
+<dd><p>A function to test: is this really a goal command span?
+</p>
+<p>This is added as a more refined addition to &lsquo;<samp><code>proof-goal-command-regexp</code></samp>&rsquo;,
+to solve the problem that Coq and some other provers can have goals which
+look like definitions, etc.  (In the future we may generalize
+&lsquo;<samp><code>proof-goal-command-regexp</code></samp>&rsquo; instead).
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-proof_002dgoal_002dwith_002dhole_002dregexp"></a><u>Variable:</u> <b>proof-goal-with-hole-regexp</b></dt>
+<dd><p>Regexp which matches a command used to issue and name a goal.<br>
+The name of the theorem is built from the variable
+&lsquo;<samp><code>proof-goal-with-hole-result</code></samp>&rsquo; using the same convention as
+for &lsquo;<samp><code>query-replace-regexp</code></samp>&rsquo;.
+Used for setting names of goal..save regions and for default
+configuration of other modes (function menu, imenu).
+</p>
+<p>It&rsquo;s safe to leave this setting as nil.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgoal_002dwith_002dhole_002dresult"></a><u>Variable:</u> <b>proof-goal-with-hole-result</b></dt>
+<dd><p>How to get theorem name after &lsquo;<samp><code>proof-goal-with-hole-regexp</code></samp>&rsquo; match.<br>
+String or Int.
+If an int N use <code>match-string</code> to recover the value of the Nth parenthesis matched.
+If it is a string use <code>replace-match</code>. In this case, <code>proof-save-with-hole-regexp</code>
+should match the entire command
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dsave_002dcommand_002dregexp"></a><u>Variable:</u> <b>proof-save-command-regexp</b></dt>
+<dd><p>Matches a save command.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dsave_002dwith_002dhole_002dregexp"></a><u>Variable:</u> <b>proof-save-with-hole-regexp</b></dt>
+<dd><p>Regexp which matches a command to save a named theorem.<br>
+The name of the theorem is built from the variable
+&lsquo;<samp><code>proof-save-with-hole-result</code></samp>&rsquo; using the same convention as
+&lsquo;<samp><code>query-replace-regexp</code></samp>&rsquo;.
+Used for setting names of goal..save and proof regions.
+</p>
+<p>It&rsquo;s safe to leave this setting as nil.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dcompleted_002dproof_002dbehaviour"></a><u>Variable:</u> <b>proof-completed-proof-behaviour</b></dt>
+<dd><p>Indicates how Proof General treats commands beyond the end of a proof.<br>
+Normally goal...save regions are &quot;closed&quot;, i.e. made atomic for undo.
+But once a proof has been completed, there may be a delay before
+the &quot;save&quot; command appears &mdash; or it may not appear at all.  Unless
+nested proofs are supported, this can spoil the undo-behaviour in
+script management since once a new goal arrives the old undo history
+may be lost in the prover.  So we allow Proof General to close
+off the goal..[save] region in more flexible ways.
+The possibilities are:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">        nil  -  nothing special; close only when a save arrives
+  <code>'closeany</code>  -  close as soon as the next command arrives, save or not
+ <code>'closegoal</code>  -  close when the next &quot;goal&quot; command arrives
+    <code>'extend</code>  -  keep extending the closed region until a save or goal.
+</pre></td></tr></table>
+<p>If your proof assistant allows nested goals, it will be wrong to close
+off the portion of proof so far, so this variable should be set to nil.
+</p>
+<p>NB: <code>'extend</code> behaviour is not currently compatible with appearance of
+save commands, so don&rsquo;t use that if your prover has save commands.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dreally_002dsave_002dcommand_002dp"></a><u>Variable:</u> <b>proof-really-save-command-p</b></dt>
+<dd><p>Is this really a save command?
+</p>
+<p>This is a more refined addition to &lsquo;<samp><code>proof-save-command-regexp</code></samp>&rsquo;.
+It should be a function taking a span and command as argument,
+and can be used to track nested proofs.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Recognizing-other-elements"></a>
+<a name="Recognizing-other-elements-1"></a>
+<h2 class="section">3.3 Recognizing other elements</h2>
+<a name="index-proof_002dgoal_002dwith_002dhole_002dregexp-1"></a>
+<a name="index-proof_002dgoal_002dwith_002dhole_002dresult-1"></a>
+
+<p>To configure <i>Imenu</i> (which in turn configures <i>Speedbar</i>), 
+you may use the following setting.  If this is unset, a generic
+setting based on <code>proof-goal-with-hole-regexp</code> is configured.
+</p>
+<dl>
+<dt><a name="index-proof_002dscript_002dimenu_002dgeneric_002dexpression"></a><u>Variable:</u> <b>proof-script-imenu-generic-expression</b></dt>
+<dd><p>Regular expressions to help find definitions and proofs in a script.<br>
+Value for &lsquo;<samp><code>imenu-generic-expression</code></samp>&rsquo;, see documentation of Imenu
+and that variable for details.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-imenu_002dgeneric_002dexpression"></a><u>Variable:</u> <b>imenu-generic-expression</b></dt>
+<dd><p>The regex pattern to use for creating a buffer index.
+</p>
+<p>If non-nil this pattern is passed to &lsquo;<samp>imenu--generic-function</samp>&rsquo;
+to create a buffer index.
+</p>
+<p>The value should be an alist with elements that look like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp"> (<var>menu-title</var> <var>regexp</var> <var>index</var>)
+</pre></td></tr></table>
+<p>or like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp"> (<var>menu-title</var> <var>regexp</var> <var>index</var> <var>function</var> ARGUMENTS...)
+</pre></td></tr></table>
+<p>with zero or more ARGUMENTS.  The former format creates a simple element in
+the index alist when it matches; the latter creates a special element
+of the form  (<var>name</var> <var>function</var> <var>position-marker</var> ARGUMENTS...)
+with <var>function</var> and <var>arguments</var> beiong copied from &lsquo;<samp>imenu-generic-expression</samp>&rsquo;.
+</p>
+<p><var>menu-title</var> is a string used as the title for the submenu or nil if the
+entries are not nested.
+</p>
+<p><var>regexp</var> is a regexp that should match a construct in the buffer that is
+to be displayed in the menu; i.e., function or variable definitions,
+etc.  It contains a substring which is the name to appear in the
+menu.  See the info section on Regexps for more information.
+</p>
+<p><var>index</var> points to the substring in <var>regexp</var> that contains the name (of the
+function, variable or type) that is to appear in the menu.
+</p>
+<p>The variable is buffer-local.
+</p>
+<p>The variable &lsquo;<samp>imenu-case-fold-search</samp>&rsquo; determines whether or not the
+regexp matches are case sensitive. and &lsquo;<samp>imenu-syntax-alist</samp>&rsquo; can be
+used to alter the syntax table for the search.
+</p>
+<p>For example, see the value of &lsquo;<samp>lisp-imenu-generic-expression</samp>&rsquo; used by
+&lsquo;<samp>lisp-mode</samp>&rsquo; and &lsquo;<samp>emacs-lisp-mode</samp>&rsquo; with &lsquo;<samp>imenu-syntax-alist</samp>&rsquo; set
+locally to give the characters which normally have \&quot;punctuation\&quot;
+syntax \&quot;word\&quot; syntax during matching.&quot;
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Configuring-undo-behaviour"></a>
+<a name="Configuring-undo-behaviour-1"></a>
+<h2 class="section">3.4 Configuring undo behaviour</h2>
+
+<p>The settings here are used to configure the way &quot;undo&quot; commands are
+calculated.
+</p>
+<dl>
+<dt><a name="index-proof_002dnon_002dundoables_002dregexp"></a><u>Variable:</u> <b>proof-non-undoables-regexp</b></dt>
+<dd><p>Regular expression matching commands which are <strong>not</strong> undoable.<br>
+These are commands which should not appear in proof scripts,
+for example, undo commands themselves (if the proof assistant
+cannot &quot;redo&quot; an &quot;undo&quot;).
+Used in default functions &lsquo;<samp><code>proof-generic-state-preserving-p</code></samp>&rsquo;
+and &lsquo;<samp><code>proof-generic-count-undos</code></samp>&rsquo;.  If you don&rsquo;t use those,
+may be left as nil.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dundo_002dn_002dtimes_002dcmd"></a><u>Variable:</u> <b>proof-undo-n-times-cmd</b></dt>
+<dd><p>Command to undo n steps of the currently open goal.<br>
+String or function.
+If this is set to a string, &lsquo;<samp>%s</samp>&rsquo; will be replaced by the number of
+undo steps to issue.
+If this is set to a function, it should return a list of
+the appropriate commands (given the number of undo steps).
+</p>
+<p>This setting is used for the default &lsquo;<samp><code>proof-generic-count-undos</code></samp>&rsquo;.
+If you set &lsquo;<samp><code>proof-count-undos-fn</code></samp>&rsquo; to some other function, there is no
+need to set this variable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dignore_002dfor_002dundo_002dcount"></a><u>Variable:</u> <b>proof-ignore-for-undo-count</b></dt>
+<dd><p>Matcher for script commands to be ignored in undo count.<br>
+May be left as nil, in which case it will be set to
+&lsquo;<samp><code>proof-non-undoables-regexp</code></samp>&rsquo;.
+Used in default function &lsquo;<samp><code>proof-generic-count-undos</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dcount_002dundos_002dfn"></a><u>Variable:</u> <b>proof-count-undos-fn</b></dt>
+<dd><p>Function to calculate a list of commands to undo to reach a target span.<br>
+The function takes a span as an argument, and should return a string
+which is the command to undo to the target span.  The target is
+guaranteed to be within the current (open) proof.
+This is an important function for script management.
+The default setting &lsquo;<samp><code>proof-generic-count-undos</code></samp>&rsquo; is based on the
+settings &lsquo;<samp><code>proof-non-undoables-regexp</code></samp>&rsquo; and
+&lsquo;<samp><code>proof-non-undoables-regexp</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgeneric_002dcount_002dundos"></a><u>Function:</u> <b>proof-generic-count-undos</b><i> span</i></dt>
+<dd><p>Count number of undos in <var>span</var>, return commands needed to undo that far.<br>
+Command is set using &lsquo;<samp><code>proof-undo-n-times-cmd</code></samp>&rsquo;.
+</p>
+<p>A default value for &lsquo;<samp><code>proof-count-undos-fn</code></samp>&rsquo;.
+</p>
+<p>For this function to work properly, you must configure
+&lsquo;<samp><code>proof-undo-n-times-cmd</code></samp>&rsquo; and &lsquo;<samp><code>proof-ignore-for-undo-count</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+
+
+
+
+<dl>
+<dt><a name="index-proof_002dfind_002dand_002dforget_002dfn"></a><u>Variable:</u> <b>proof-find-and-forget-fn</b></dt>
+<dd><p>Function to return list of commands to forget to before its argument span.<br>
+This setting is used to for retraction (undoing) in proof scripts.
+</p>
+<p>It should undo the effect of all settings between its target span
+up to (<code>proof-unprocessed-begin</code>).  This may involve forgetting a number
+of definitions, declarations, or whatever.
+</p>
+<p>If return value is nil, it means there is nothing to do.
+</p>
+<p>This is an important function for script management.
+Study one of the existing instantiations for examples of how to write it,
+or leave it set to the default function &lsquo;<samp><code>proof-generic-find-and-forget</code></samp>&rsquo;
+(which see).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgeneric_002dfind_002dand_002dforget"></a><u>Function:</u> <b>proof-generic-find-and-forget</b><i> span</i></dt>
+<dd><p>Calculate a forget/undo command to forget back to <var>span</var>.<br>
+This is a long-range forget: we know that there is no
+open goal at the moment, so forgetting involves unbinding
+declarations, etc, rather than undoing proof steps.
+</p>
+<p>This generic implementation assumes it is enough to find the
+nearest following span with a &lsquo;<samp>name</samp>&rsquo; property, and retract
+that using &lsquo;<samp><code>proof-forget-id-command</code></samp>&rsquo; with the given name.
+</p>
+<p>If this behaviour is not correct, you must customize the function
+with something different.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dforget_002did_002dcommand"></a><u>Variable:</u> <b>proof-forget-id-command</b></dt>
+<dd><p>Command to forget back to a given named span.<br>
+A string; &lsquo;<samp>%s</samp>&rsquo; will be replaced by the name of the span.
+</p>
+<p>This is only used in the implementation of &lsquo;<samp><code>proof-generic-find-and-forget</code></samp>&rsquo;,
+you only need to set if you use that function (by not customizing
+&lsquo;<samp><code>proof-find-and-forget-fn</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dtopterm_002dgoalhyplit_002dfn"></a><u>Variable:</u> <b>pg-topterm-goalhyplit-fn</b></dt>
+<dd><p>Function to return cons if point is at a goal/hypothesis/literal.<br>
+This is used to parse the proofstate output to mark it up for
+proof-by-pointing or literal command insertion.  It should return a cons or nil.
+First element of the cons is a symbol, <code>'goal'</code>, <code>'hyp'</code> or <code>'lit'</code>.
+The second element is a string: the goal, hypothesis, or literal command itself.
+</p>
+<p>If you leave this variable unset, no proof-by-pointing markup
+will be attempted.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dkill_002dgoal_002dcommand"></a><u>Variable:</u> <b>proof-kill-goal-command</b></dt>
+<dd><p>Command to kill the currently open goal.
+</p>
+<p>If this is set to nil, PG will expect &lsquo;<samp><code>proof-find-and-forget-fn</code></samp>&rsquo;
+to do all the work of retracting to an arbitrary point in a file.
+Otherwise, the generic split-phase mechanism will be used:
+</p>
+<p>1. If inside an unclosed proof, use &lsquo;<samp>proof-count-undos</samp>&rsquo;.
+2. If retracting to before an unclosed proof, use
+&lsquo;<samp><code>proof-kill-goal-command</code></samp>&rsquo;, followed by &lsquo;<samp><code>proof-find-and-forget-fn</code></samp>&rsquo;
+if necessary.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Nested-proofs"></a>
+<a name="Nested-proofs-1"></a>
+<h2 class="section">3.5 Nested proofs</h2>
+
+<p>Proof General allows configuration for provers which have particular
+notions of nested proofs.  The right thing may happen automatically,
+or you may need to adjust some of the following settings.
+</p>
+<p>First, you should alter the next setting if the prover retains history
+for nested proofs.
+</p>
+<dl>
+<dt><a name="index-proof_002dnested_002dgoals_002dhistory_002dp"></a><u>Variable:</u> <b>proof-nested-goals-history-p</b></dt>
+<dd><p>Whether the prover supports recovery of history for nested proofs.<br>
+If it does (non-nil), Proof General will retain history inside
+nested proofs.
+If it does not, Proof General will amalgamate nested proofs into single
+steps within the outer proof.
+</p></dd></dl>
+<p>Second, it may happen (i.e. it does for Coq) that the prover has a
+history mechanism which necessitates keeping track of the number of
+nested &quot;undoable&quot; commands, even if the history of the proof itself is
+lost.  
+</p>
+<dl>
+<dt><a name="index-proof_002dnested_002dundo_002dregexp"></a><u>Variable:</u> <b>proof-nested-undo-regexp</b></dt>
+<dd><p>Regexp for commands that must be counted in nested goal-save regions.
+</p>
+<p>Used for provers which allow nested atomic goal-saves, but with some
+nested history that must be undone specially.
+</p>
+<p>At the moment, the behaviour is that a goal-save span has a <code>'nestedundos</code>
+property which is set to the number of commands within it which match
+this regexp.  The idea is that the prover-specific code can create a
+customized undo command to retract the goal-save region, based on the
+<code>'nestedundos</code> setting.  Coq uses this to forget declarations, since
+declarations in Coq reside in a separate context with its own (flat)
+history.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Safe-_0028state_002dpreserving_0029-commands"></a>
+<a name="Safe-_0028state_002dpreserving_0029-commands-1"></a>
+<h2 class="section">3.6 Safe (state-preserving) commands</h2>
+
+<p>A proof command is &quot;safe&quot; if it can be issued away from the proof
+script.  For this to work it should be state-preserving in the proof
+assistant (with respect to an on-going proof).
+</p>
+<dl>
+<dt><a name="index-proof_002dstate_002dpreserving_002dp"></a><u>Variable:</u> <b>proof-state-preserving-p</b></dt>
+<dd><p>A predicate, non-nil if its argument (a command) preserves the proof state.<br>
+This is a safety-test used by &lsquo;<samp><code>proof-minibuffer-cmd</code></samp>&rsquo; to filter out scripting
+commands which should be entered directly into the script itself.
+</p>
+<p>The default setting for this function, &lsquo;<samp><code>proof-generic-state-preserving-p</code></samp>&rsquo;
+tests by negating the match on &lsquo;<samp><code>proof-non-undoables-regexp</code></samp>&rsquo;.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgeneric_002dstate_002dpreserving_002dp"></a><u>Function:</u> <b>proof-generic-state-preserving-p</b><i> cmd</i></dt>
+<dd><p>Is <var>cmd</var> state preserving?  Match on &lsquo;<samp><code>proof-non-undoables-regexp</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Activate-scripting-hook"></a>
+<a name="Activate-scripting-hook-1"></a>
+<h2 class="section">3.7 Activate scripting hook</h2>
+
+
+<dl>
+<dt><a name="index-proof_002dactivate_002dscripting_002dhook"></a><u>Variable:</u> <b>proof-activate-scripting-hook</b></dt>
+<dd><p>Hook run when a buffer is switched into scripting mode.<br>
+The current buffer will be the newly active scripting buffer.
+</p>
+<p>This hook may be useful for synchronizing with the proof
+assistant, for example, to switch to a new theory
+(in case that isn&rsquo;t already done by commands in the proof
+script).
+</p>
+<p>When functions in this hook are called, the variable
+&lsquo;<samp>activated-interactively</samp>&rsquo; will be non-nil if
+&lsquo;<samp><code>proof-activate-scripting</code></samp>&rsquo; was called interactively
+(rather than as a side-effect of some other action).
+If a hook function sends commands to the proof process,
+it should wait for them to complete (so the queue is cleared
+for scripting commands), unless activated-interactively is set.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Automatic-multiple-files"></a>
+<a name="Automatic-multiple-files-1"></a>
+<h2 class="section">3.8 Automatic multiple files</h2>
+
+<p>See section <a href="PG-adapting_9.html#Handling-Multiple-Files">Handling Multiple Files</a>, for more details about this
+setting.
+</p>
+<dl>
+<dt><a name="index-proof_002dauto_002dmultiple_002dfiles"></a><u>Variable:</u> <b>proof-auto-multiple-files</b></dt>
+<dd><p>Whether to use automatic multiple file management.<br>
+If non-nil, Proof General will automatically retract a script file
+whenever another one is retracted which it depends on.  It assumes
+a simple linear dependency between files in the order which
+they were processed.
+</p>
+<p>If your proof assistant has no management of file dependencies, or one
+which depends on a simple linear context, you may be able to use this
+setting to good effect.  If the proof assistant has more complex
+file dependencies then you should configure it to communicate with
+Proof General about the dependencies rather than using this setting.
+</p></dd></dl>
+
+<hr size="6">
+<a name="Completely-asserted-buffers"></a>
+<a name="Completely-asserted-buffers-1"></a>
+<h2 class="section">3.9 Completely asserted buffers</h2>
+
+<p>When switching scripting from buffer A to buffer B Proof General
+normally offers the choice of either completely retracting or
+completely asserting buffer A. The option to completely assert
+buffer A is offered, because the material in B may depend on A.
+Even if B does not depend on A, it does no harm if one keeps the
+development of A loaded in the proof assistant. This observation
+is true for many proof assistants.
+</p>
+<p>One exception is Coq. Assume file B depends on file A. When Coq
+processes B it does not read the sources of A. Instead it loads a
+compiled object representation of A. Therefore, when switching
+from A to B, it does make no sense to keep the material of A
+loaded in the proof assistant. For Coq, the material of A may
+even provoke errors on correct input. Therefore, for coq, the
+right behaviour is to completely retract buffer A before
+switching to B. 
+</p>
+<dl>
+<dt><a name="index-proof_002dno_002dfully_002dprocessed_002dbuffer"></a><u>Variable:</u> <b>proof-no-fully-processed-buffer</b></dt>
+<dd><p>Set to t if buffers should always retract before scripting elsewhere.<br>
+Leave at nil if fully processed buffers make sense for the current
+proof assistant. If nil the user can choose to fully assert a
+buffer when starting scripting in a different buffer. If t there
+is only the choice to fully retract the active buffer before
+starting scripting in a different buffer. This last behavior is
+needed for Coq.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Completions"></a>
+<a name="Completions-1"></a>
+<h2 class="section">3.10 Completions</h2>
+
+<p>Proof General allows provers to create a <i>completion table</i> to help
+writing keywords and identifiers in proof scripts.  This is documented
+in the main <i>Proof General</i> user manual but summarized here for (a
+different kind of) completion.
+</p>
+<p>Completions are filled in according to what has been recently typed,
+from a database of symbols.  The database is automatically saved at the
+end of a session.  Completion is usually a hand-wavy thing, so we don&rsquo;t
+make any attempt to maintain a precise completion table or anything.
+</p>
+<p>The completion table maintained by &lsquo;<tt>complete.el</tt>&rsquo; is initialized
+from <code>PA-completion-table</code> when &lsquo;<tt>proof-script.el</tt>&rsquo; is loaded.
+This is done with the function <code>proof-add-completions</code> which
+you may want to call at other times.
+</p>
+
+<dl>
+<dt><a name="index-PA_002dcompletion_002dtable"></a><u>Variable:</u> <b>PA-completion-table</b></dt>
+<dd><p>List of identifiers to use for completion for this proof assistant.<br>
+Completion is activated with M-x complete.
+</p>
+<p>If this table is empty or needs adjusting, please make changes using
+&lsquo;<samp><code>customize-variable</code></samp>&rsquo; and post suggestions at
+http://proofgeneral.inf.ed.ac.uk/trac
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dadd_002dcompletions"></a><u>Command:</u> <b>proof-add-completions</b></dt>
+<dd><p>Add completions from &lt;PA&gt;-completion-table to completion database.<br>
+Uses &lsquo;<samp><code>add-completion</code></samp>&rsquo; with a negative number of uses and ancient
+last use time, to discourage saving these into the users database.
+</p></dd></dl>
+
+
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Proof-Script-Settings" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_5.html#Proof-Shell-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,37 @@
+digraph G {
+  344 [label = "CONV_TAC"];
+  345 [label = "GEN_TAC"];
+  351 [label = "INDUCT_TAC"];
+  352 [label = "REWRITE_TAC"];
+  358 [label = "REAL_ARITH_TAC"];
+  353 [label = "REWRITE_TAC"];
+  367 [label = "REWRITE_TAC"];
+  368 [label = "SIMP_TAC"];
+  370 [label = "REWRITE_TAC"];
+  372 [label = "REWRITE_TAC"];
+  374 [label = "ASM_REWRITE_TAC"];
+  376 [label = "REWRITE_TAC"];
+  378 [label = "REAL_ARITH_TAC"];
+  344 -> 345;
+  345 -> 351;
+  subgraph cluster1 {
+    label = "induction";
+    351 -> 352;
+    351 -> 353;
+    352 -> 358;
+    subgraph cluster2 {
+      label = "base case";
+      358;
+    }
+    353 -> 367;
+    subgraph cluster3 {
+      label = "step case";
+      367 -> 368;
+      368 -> 370;
+      370 -> 372;
+      372 -> 374;
+      374 -> 376;
+      376 -> 378;
+    }
+  }
+}

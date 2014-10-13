@@ -1,0 +1,36 @@
+To use this:
+1. first compile HOL Light and any extra files up to the particular proof you want to record;
+     #use "hol.ml";;
+     #use ....
+
+2. Then process the 'main.ml' file
+     #use "TacticRecording/main.ml";;
+
+3. Then perform the tactic proof you want to record, using g/e's or prove:
+     g `...`;;
+     e (...);;
+     e (...);;
+  OR
+     prove (`...`, ... THEN ... THENL [...]);;
+
+4. Use the ML export commands to output the proof in the form you want:
+
+     print_executed_proof ();;
+         - Tries to reproduce the inputted proof verbatim, with steps
+          corresponding one-to-one to original.
+
+     print_flat_proof ();;
+         - Prints the proof as a flatten series single-tactic steps, with no
+          tacticals.
+
+     print_thenl_proof ();;
+         - Prints the proof as a single-step tactic, connected by THEN for
+          single goals and THENL for multiple goals.  This structure directly
+          reflects the tree structure of the proof as it was executed.
+
+     print_optimal_proof ();;
+         - Like 'print_thenl_proof', but prints a more concise proof, not
+          necessarily reflecting the original tree structure.  Currently this
+          only performs one improvement: seeing where THENL can be replaced
+          with THEN.
+

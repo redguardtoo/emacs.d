@@ -1,0 +1,181 @@
+-*-outline-*-
+              Frequently Asked Questions about MMM Mode
+              =========================================
+
+* How do I write/capitalize the name of this package/mode?
+
+However you want.  The author says `MMM Mode' (and occasionally `MMM')
+when discussing the entire package, and `mmm-mode' when discussing the
+emacs mode or function.  He does think, however, that `Mmm' looks
+rather ugly, although that is how SourceForge insists on capitalizing
+the name of the mailing list.
+
+
+* How do I get rid of that ugly gray background color?
+
+Put the following line in your Emacs initialization file:
+
+  (setq mmm-submode-decoration-level 0)
+
+You may want to try using MMM Mode for a while with the background
+highlight, however, or merely changing it to a different color.  There
+are two reasons it's there by default:
+
+1. MMM Mode isn't as smart as you might hope it would be about
+   recognizing new submode regions, so the presence or absence of the
+   highlight can let you know at a glance where it thinks they are.
+
+2. Just like the rest of font-lock, it helps you mentally organize the
+   code; you can see at a glance that THIS code is executed as Perl,
+   but THAT code is straight HTML (or whatever).  You can get even
+   more help by setting the above variable to 2, in which case regions
+   will get a background color according to their function.
+
+
+* I typed `<%' (or other delimiter) but I'm still in the wrong mode.
+
+MMM Mode isn't that smart yet.  You have to tell it explicitly to
+reparse (`C-c % C-5' or `C-c % C-b') when you add new submode regions,
+and both delimiters have to be present.  Hopefully a future version
+will be able to automatically recognize new regions an you type them,
+but that version is not yet here.
+
+However, most submode classes provide insertion commands that remove
+the need to type the delimiters as well as the need to reparse the
+block: type `C-c % h' for a list of available insertion commands for
+current submode class(es).
+
+
+* Why is the first character of the end delimiter in the submode region?
+
+It isn't.  When your cursor looks like it is over that character, it
+is actually *before* that character and therefore inside the submode
+region.  You can check that the offending character does not have the
+background highlight--that is, if you haven't set the decoration level
+to 0.  For example, in the following text (where -!- represents the
+cursor position)
+
+  print <<END_TEXT;
+  here is some text
+  -!-END_TEXT
+
+The 'E' at the beginning of the END_TEXT line is not actually part of
+the submode region.  But with the cursor as indicated (that is, the
+box is blinking over the `E' which follows the actual cursor
+position), Emacs is in text-mode.
+
+
+* Why won't MMM Mode work with `foo-mode'?
+
+Foo-mode probably has extra variables or states that need to be set
+up, that MMM Mode doesn't yet know about.  Often this sort of problem
+can be fixed by adding elements to `mmm-save-local-variables'.  If you
+know some Elisp, you may want to try and track down the problem
+yourself, or you can contact the mailing list and ask for help.
+Either way, please contact the maintainer or the mailing list when
+(if) you find something that works, so that in the future, folks can
+use MMM Mode and foo-mode together more easily.
+
+
+* I'm getting an emacs error, what did I do wrong?
+
+Most likely nothing.  MMM Mode is still more or less alpha software
+and is quite likely to contain bugs; probably something in your
+configuration has brought a new bug to light.  Please send the text of
+the error, along with a stack backtrace (1) and the relevant portions
+of your emacs initialization file, to either the maintainer or the
+mailing list, and hopefully a fix can be worked out.
+
+Of course, it's also possible that there is an error in your
+configuration.  Double-check the elisp syntax in your init file, or
+inspect the backtrace yourself.  If the error happens while loading
+your init code, try manually evaluating it line by line (`C-x C-e') to
+see where the error occurs.  Folks on the mailing list can also help
+point out errors, but only with your init code and a backtrace.
+
+(1) To get a stack backtrace of an error, set the emacs variable
+    `debug-on-error' to non-nil (type `M-x set-variable RET
+    debug-on-error RET t RET' or `M-: (setq debug-on-error t) RET'),
+    then repeat the actions which caused the error.  A stack backtrace
+    should pop up which you can select and copy.  If the error occurs
+    while loading emacs, invoke emacs with the `--debug-init' (Emacs)
+    or `-debug-init' (XEmacs) switch.
+
+
+* Will MMM Mode work with (Emacs 19 / XEmacs 20 / XEmacs 21 / etc...)?
+
+MMM Mode was designed for FSF Emacs 20 and 21 and works best there.
+But don't let that stop you from trying it under other variants of
+emacs.  If you encounter problems, feel free to ask the mailing list,
+but success is not guaranteed.
+
+For example, the font-lock support in XEmacs 20 is known to be broken
+and well-nigh unfixable; consider upgrading.  XEmacs 21 also has
+problems with font-lock: for example, often apostrophes in a different
+submode region can cause code to be incorrectly font-locked as a
+string.  I have given up trying to support Emacs 19; you should
+upgrade to Emacs 20 or 21.
+
+
+* XEmacs says `Symbol's function definition is void: make-indirect-buffer'.
+
+You probably used FSF Emacs to compile MMM as it is the one used by
+default if both are installed.  To explicitly set the emacs to use
+when byte compiling, do the following:
+
+$ cd mmm-mode-x.x.x
+$ make distclean
+$ ./configure --with-xemacs=/path/to/xemacs
+$ make
+$ make install
+
+Running `make distclean' is only necessary if you have already
+compiled MMM Mode for the wrong emacs, but can never hurt.  The exact
+error message this problem produces may change with newer versions of
+MMM Mode; always be sure you have compiled for the correct emacsen.
+
+
+* I want to install the CVS version, but there's no `configure' script.
+
+The `configure' script which is included in the official distributions
+is not present in CVS, because it is automatically generated by GNU
+Automake/Autoconf from files like `Makefile.am' and `configure.in'.
+To build the CVS version the same way as the official distributions,
+you must first run `autogen.sh':
+
+$ cd mmm-mode
+$ ./autogen.sh
+
+and then you can continue as usual:
+
+$ ./configure
+$ make
+$ make install
+
+Note that autogen.sh requires aclocal, automake, and autoconf, which
+may or may not be installed on your system, since they are considered
+developer tools rather than end-user tools.  If you can't or don't
+want to install them, however, you can still use the CVS version of
+MMM Mode by manually copying all the `.el' files into a directory in
+your `load-path'.  Optionally, you may also byte-compile them manually
+(this is what `make' normally does).  Byte-compiling gives some speed
+improvement, but if you experience problems, the stack traces are
+sometimes more informative if you are using the source files only.
+
+The Info files `mmm.info-*' are also not included in CVS, since they
+are generated from `mmm.texinfo' by the program `makeinfo'.  If you
+want to install the Info documentation from CVS, you will have to run
+this manually as well, and copy the resulting info files into the
+appropriate location for your system.
+
+The CVS version is, of course, even less guaranteed to be bug-free
+than the official distributions.  But please report any problems you
+have with it, so they can be fixed for the next release.
+
+
+* You haven't answered my question; how can I get more help?
+
+At the MMM Mode web site, <http://mmm-mode.sourceforge.net>, there is
+a link to the subscription page for the MMM Mode mailing list.  When
+asking a question on the list, be sure to give the versions of emacs
+and MMM Mode you are using, and any other relevant information.

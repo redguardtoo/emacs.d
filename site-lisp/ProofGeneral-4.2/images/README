@@ -1,0 +1,28 @@
+README,v 12.1 2012/01/11 10:55:34 da Exp
+
+Icons for Proof General.
+
+The images in this directory were made with The Gimp and Inkscape.
+They were created in my spare time as a donation to the Proof General
+project.  The images here are released under the Creative Commons
+license, see https://creativecommons.org/licenses/by-sa/3.0/
+
+The Inkscape-based search icon includes portions from Andrew
+Fitzsimon's Etiquette search icon (under CC 2.0).
+
+[ Inkscape-based icons forthcoming ]
+
+
+Note for developers: the sources for images have been moved
+to the PG graphics repository.
+
+				David Aspinall <da@inf.ed.ac.uk>
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,538 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 12. Isabelle Proof General</title>
+
+<meta name="description" content="Proof General: 12. Isabelle Proof General">
+<meta name="keywords" content="Proof General: 12. Isabelle Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_12.html#Coq-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_14.html#HOL-Light-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Isabelle-Proof-General"></a>
+<a name="Isabelle-Proof-General-1"></a>
+<h1 class="chapter">12. Isabelle Proof General</h1>
+<a name="index-Isabelle-Proof-General"></a>
+
+<p>Isabelle Proof General supports major generic features of Proof General,
+including integration with Isabelle&rsquo;s theory loader for proper automatic
+multiple file handling.  
+</p>
+<p>Isabelle provides its own way to invoke Proof General via the
+<code>isabelle</code> command.  Running <code>isabelle emacs</code> starts an Emacs
+session with Isabelle Proof General.  The defaults may be changed by
+editing the Isabelle settings, see the Isabelle documentation for
+details.
+</p>
+<p>Proof General for Isabelle manages Isar &lsquo;<tt>.thy</tt>&rsquo; files.  Proof
+General provides reliable control over incremental execution of the
+text.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Choosing-logic-and-starting-isabelle">12.1 Choosing logic and starting isabelle</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Isabelle-commands">12.2 Isabelle commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Isabelle-settings">12.3 Isabelle settings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Isabelle-customizations">12.4 Isabelle customizations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Choosing-logic-and-starting-isabelle"></a>
+<a name="Choosing-logic-and-starting-isabelle-1"></a>
+<h2 class="section">12.1 Choosing logic and starting isabelle</h2>
+<a name="index-Isabelle-logic"></a>
+
+<p>When you load an Isabelle theory file into Proof General, you may be
+prompted for the path to the program <code>isabelle</code> if it is not on the
+system <code>PATH</code> already.  This is used to generate further
+information for invoking Isabelle, in particular, the list of available
+logics.
+</p>
+<p>The Isabelle menu offers an easy way to select the invoked object logic.
+If you look at the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">        Isabelle -&gt; Logics -&gt; 
+</pre></td></tr></table>
+
+<p>you should see the list of logics available to Isabelle.  This menu is
+generated from the output of the command <code>isabelle findlogics</code>.
+(Similarly, the documentation menu is partly generated from
+<code>isabelle doc</code>).  Instead of the menu, you can use the
+keyboard command <code>isabelle-chose-logic</code> to choose from the list.
+</p>
+<p>The logics list is refreshed dynamically so you can select any newly
+built heap images in the same Emacs session.  However, notice that the
+choices are greyed out while Isabelle is actually runnning &mdash; you can
+only switch to a new logic if you first exit Isabelle (similarly to
+Proof General, Isabelle operates with only one logic at a time).
+</p>
+<p>Another way to set the logic before Isabelle is launched is using an
+Emacs local variable setting inside a comment at the top of the file,
+see the documentation of <code>isabelle-chosen-logic</code> below.
+</p>
+<p>In case you do not have the <code>isabelle</code> program available or want to
+override its behaviour, you may set the variable
+<code>isabelle-program-name-override</code> to define the name of the
+executable used to start Isabelle.  The standard options are and 
+logic name are still appended.  
+</p>
+
+<dl>
+<dt><a name="index-isabelle_002dprogram_002dname_002doverride"></a><u>User Option:</u> <b>isabelle-program-name-override</b></dt>
+<dd><p>Name of executable program to run Isabelle.
+</p>
+<p>You can set customize this in case the automatic settings
+mechanism does not work for you, perhaps because isabelle
+is not on your path, or you are running it remotely.
+</p>
+<p>The logic image name is tagged onto the end.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-isabelle_002dchosen_002dlogic"></a><u>User Option:</u> <b>isabelle-chosen-logic</b></dt>
+<dd><p>Choice of logic to use with Isabelle.<br>
+If non-nil, added onto the Isabelle command line for invoking Isabelle.
+</p>
+<p>You can set this as a file local variable, using a special comment
+at the top of your theory file, like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   (* -*- <code>isabelle-chosen-logic</code>: &quot;ZF&quot; -*- *)
+</pre></td></tr></table>
+
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-isabelle_002dchoose_002dlogic"></a><u>Command:</u> <b>isabelle-choose-logic</b><i> logic</i></dt>
+<dd><p>Adjust isabelle-prog-name and <code>proof-prog-name</code> for running <var>logic</var>.
+</p></dd></dl>
+<hr size="6">
+<a name="Isabelle-commands"></a>
+<a name="Isabelle-commands-1"></a>
+<h2 class="section">12.2 Isabelle commands</h2>
+<a name="index-Isabelle-commands"></a>
+
+
+<a name="index-C_002dc-C_002da-r"></a>
+<a name="index-C_002dc-C_002da-C_002dq"></a>
+<a name="index-C_002dc-C_002da-C_002dd"></a>
+<a name="index-C_002dc-C_002da-C_002dp"></a>
+<a name="index-C_002dc-C_002da-h-A"></a>
+<a name="index-C_002dc-C_002da-h-C"></a>
+<a name="index-C_002dc-C_002da-h-I"></a>
+<a name="index-C_002dc-C_002da-h-S"></a>
+<a name="index-C_002dc-C_002da-h-T"></a>
+<a name="index-C_002dc-C_002da-h-a"></a>
+<a name="index-C_002dc-C_002da-h-b"></a>
+<a name="index-C_002dc-C_002da-h-c"></a>
+<a name="index-C_002dc-C_002da-h-f"></a>
+<a name="index-C_002dc-C_002da-h-i"></a>
+<a name="index-C_002dc-C_002da-h-m"></a>
+<a name="index-C_002dc-C_002da-h-o"></a>
+<a name="index-C_002dc-C_002da-h-t"></a>
+<a name="index-C_002dc-C_002da-C_002ds-1"></a>
+<a name="index-C_002dc-C_002da-C_002dm"></a>
+<a name="index-C_002dc-C_002da-C_002df"></a>
+<a name="index-C_002dc-C_002df-1"></a>
+
+<p>The Isabelle instance of Proof General supplies several specific
+help key bindings; these functions are offered within the prover help
+menu as well.
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-a r</kbd></dt>
+<dd><p>Invokes Isar command <code>refute</code> on the current subgoal.  Only available in HOL
+and derived logics.
+</p></dd>
+<dt> <kbd>C-c C-a C-q</kbd></dt>
+<dd><p>Invokes Isar command <code>quickcheck</code> on the current subgoal.
+</p></dd>
+<dt> <kbd>C-c C-a C-d</kbd></dt>
+<dd><p>Displays a draft document of the current theory.
+</p></dd>
+<dt> <kbd>C-c C-a C-p</kbd></dt>
+<dd><p>Prints a draft document of the current theory.
+</p></dd>
+<dt> <kbd>C-c C-a h A</kbd></dt>
+<dd><p>Shows available antiquotation commands and options.
+</p></dd>
+<dt> <kbd>C-c C-a h C</kbd></dt>
+<dd><p>Shows the current Classical Reasoner context.
+</p></dd>
+<dt> <kbd>C-c C-a h I</kbd></dt>
+<dd><p>Shows the current set of induct/cases rules.
+</p></dd>
+<dt> <kbd>C-c C-a h S</kbd></dt>
+<dd><p>Shows the current Simplifier context.
+</p></dd>
+<dt> <kbd>C-c C-a h T</kbd></dt>
+<dd><p>Shows the current set of transitivity rules (for calculational reasoning).
+</p></dd>
+<dt> <kbd>C-c C-a h a</kbd></dt>
+<dd><p>Shows attributes available in current theory context.
+</p></dd>
+<dt> <kbd>C-c C-a h b</kbd></dt>
+<dd><p>Shows all local term bindings.
+</p></dd>
+<dt> <kbd>C-c C-a h c</kbd></dt>
+<dd><p>Shows all named local contexts (cases).
+</p></dd>
+<dt> <kbd>C-c C-a h f</kbd></dt>
+<dd><p>Shows all local facts.
+</p></dd>
+<dt> <kbd>C-c C-a h i</kbd></dt>
+<dd><p>Shows inner syntax of the current theory context (for types and terms).
+</p></dd>
+<dt> <kbd>C-c C-a h m</kbd></dt>
+<dd><p>Shows proof methods available in current theory context.
+</p></dd>
+<dt> <kbd>C-c C-a h o</kbd></dt>
+<dd><p>Shows all available commands of Isabelle&rsquo;s outer syntax.
+</p></dd>
+<dt> <kbd>C-c C-a h t</kbd></dt>
+<dd><p>Shows theorems stored in the current theory node.
+</p></dd>
+<dt> <kbd>C-c C-a C-s</kbd></dt>
+<dd><p>Invoke sledgehammer on first subgoal.
+</p></dd>
+<dt> <kbd>C-c C-a C-m</kbd> </dt>
+<dd><p>Find theorems containing given arguments (prompt in minibuffer).
+Invokes the <code>thms_containing</code> command.  Arguments are
+separated by white space as usual in Isar.
+</p></dd>
+<dt> <kbd>C-c C-a C-f</kbd> </dt>
+<dd><p>Find theorems containing (argument in form)
+</p></dd>
+<dt> <kbd>C-c C-f</kbd></dt>
+<dd><p>Find theorems: either of the above.  
+</p></dd>
+</dl>
+
+
+
+<a name="index-C_002dc-C_002da-b"></a>
+<a name="index-C_002dc-C_002da-C_002db"></a>
+<a name="index-C_002dc-C_002da-C_002du"></a>
+<a name="index-C_002dc-C_002da-C_002dl"></a>
+<a name="index-C_002dc-C_002da-u"></a>
+<a name="index-C_002dc-C_002da-l"></a>
+<a name="index-C_002dc-C_002da-C_002di-2"></a>
+<a name="index-C_002dc-C_002da-C_002dr"></a>
+<a name="index-C_002dc-C_002da-C_002da-1"></a>
+
+<p>The following shortcuts insert control sequences into the text,
+modifying the appearance of individual symbols (single letters,
+mathematical entities etc.); the Tokens package will provide immediate
+visual feedback.
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-a C-b</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^bold&gt;&quot; (bold character)
+</p></dd>
+<dt> <kbd>C-c C-a C-c</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^loc&gt;&quot; (&ldquo;local&rdquo; control)
+</p></dd>
+<dt> <kbd>C-c C-a C-u</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^sup&gt;&quot;  (superscript character)
+</p></dd>
+<dt> <kbd>C-c C-a C-l</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^sub&gt;&quot; (subscript character)
+</p></dd>
+<dt> <kbd>C-c C-a u</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^bsup&gt; \&lt;^esup&gt;&quot;  (superscript string)
+</p></dd>
+<dt> <kbd>C-c C-a l</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^bsub&gt; \&lt;^esub&gt;&quot;  (subscript string)
+</p></dd>
+<dt> <kbd>C-c C-a C-i</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^isub&gt;&quot;  (identifier subscript letter)
+</p></dd>
+<dt> <kbd>C-c C-a C-r</kbd></dt>
+<dd><p>Inserts &quot;\&lt;^raw:&gt;&quot;  (raw LaTeX text)
+</p></dd>
+<dt> <kbd>C-c C-a C-a</kbd></dt>
+<dd><p>Inserts &quot;@{text &quot;&quot;}&quot;  (anti-quotation).
+</p></dd>
+<dt> <kbd>C-c C-a C-x</kbd></dt>
+<dd><p>Inserts &quot;ML {* *}&quot;  (inline ML code).
+</p></dd>
+</dl>
+
+<p>Command termination via &lsquo;<code>;</code>&rsquo; is an optional feature of Isar
+syntax.  Neither Isabelle nor Proof General require semicolons to
+do their job.  The following command allows to get rid of command
+terminators in existing texts.
+</p>
+<dl>
+<dt><a name="index-isar_002dstrip_002dterminators"></a><u>Command:</u> <b>isar-strip-terminators</b></dt>
+<dd><p>Remove explicit Isabelle/Isar command terminators &lsquo;<samp>;</samp>&rsquo; from the buffer.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Isabelle-settings"></a>
+<a name="Isabelle-settings-1"></a>
+<h2 class="section">12.3 Isabelle settings</h2>
+
+<p>The Isabelle menu also contains a <code>Settings</code> submenu, which
+allows you to configure things such as the behaviour of Isabelle&rsquo;s term
+pretty printer (display of types, sorts, etc).  Note that you won&rsquo;t
+see this sub-menu until Isabelle has been started, because it is
+generated by Isabelle itself.  Proof General, on the other hand, is
+responsible for recording any settings that are configured when you
+select <code>Isabelle -&gt; Settings -&gt; Save Settings</code>.  They are stored
+along with the other Emacs customization settings.
+</p>
+
+
+<hr size="6">
+<a name="Isabelle-customizations"></a>
+<a name="Isabelle-customizations-1"></a>
+<h2 class="section">12.4 Isabelle customizations</h2>
+<a name="index-Isabelle-customizations"></a>
+
+<p>Here are some of the other user options specific to Isabelle.  You can
+set these as usual with the customization mechanism.
+</p>
+<dl>
+<dt><a name="index-isabelle_002dweb_002dpage"></a><u>Variable:</u> <b>isabelle-web-page</b></dt>
+<dd><p>URL of web page for Isabelle.
+</p></dd></dl>
+
+
+
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Isabelle-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_14.html#HOL-Light-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

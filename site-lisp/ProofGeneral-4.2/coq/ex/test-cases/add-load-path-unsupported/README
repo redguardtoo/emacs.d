@@ -1,0 +1,12 @@
+b/b.v depends on a/a.v and the code is correct because of Add
+LoadPath in b.
+
+Scripting b/b.v works if coq-recompile-before-require is set to
+nil and if a/a.v is compiled manually.
+
+This problem is not considered a bug, but a feature that does not
+make much sense to implement, because apparently nobody is using
+Add LoadPath.
+
+Note that not even coqdep is able to handle b/b.v correctly!
+

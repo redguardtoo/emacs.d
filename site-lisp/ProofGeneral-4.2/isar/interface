@@ -1,0 +1,205 @@
+#!/usr/bin/env bash
+#
+# interface,v 12.0 2011/10/13 10:54:50 da Exp
+#
+# Proof General interface wrapper for Isabelle.
+
+
+## self references
+
+THIS="$(cd "$(dirname "$0")"; pwd)"
+SUPER="$(cd "$THIS/.."; pwd)"
+
+
+## diagnostics
+
+usage()
+{
+  echo
+  echo "Usage: isabelle emacs [OPTIONS] [FILES ...]"
+  echo
+  echo "  Options are:"
+  echo "    -L NAME      abbreviates -l NAME -k NAME"
+  echo "    -U BOOL      enable UTF-8 communication (default true)"
+  echo "    -f FONT      specify Emacs font"
+  echo "    -g GEOMETRY  specify Emacs geometry"
+  echo "    -k NAME      use specific isar-keywords for named logic"
+  echo "    -l NAME      logic image name (default \$ISABELLE_LOGIC=$ISABELLE_LOGIC)"
+  echo "    -m MODE      add print mode for output"
+  echo "    -p NAME      Emacs program name (default emacs)"
+  echo "    -u BOOL      use personal .emacs file (default true)"
+  echo "    -w BOOL      use window system (default true)"
+  echo "    -x BOOL      render Isabelle symbols via Unicode (default false)"
+  echo
+  echo "Starts Proof General for Isabelle with theory and proof FILES"
+  echo "(default Scratch.thy)."
+  echo
+  echo "  PROOFGENERAL_OPTIONS=$PROOFGENERAL_OPTIONS"
+  echo
+  exit 1
+}
+
+fail()
+{
+  echo "$1" >&2
+  exit 2
+}
+
+
+## process command line
+
+# options
+
+ISABELLE_OPTIONS=""
+
+KEYWORDS=""
+LOGIC="$ISABELLE_LOGIC"
+UNICODE=""
+FONT=""
+GEOMETRY=""
+PROGNAME="emacs"
+INITFILE="true"
+WINDOWSYSTEM="true"
+UNICODE_SYMBOLS=""
+
+getoptions()
+{
+  OPTIND=1
+  while getopts "L:U:f:g:k:l:m:p:u:w:x:" OPT
+  do
+    case "$OPT" in
+      L)
+        KEYWORDS="$OPTARG"
+        LOGIC="$OPTARG"
+        ;;
+      U)
+        UNICODE="$OPTARG"
+        ;;
+      f)
+        FONT="$OPTARG"
+        ;;
+      g)
+        GEOMETRY="$OPTARG"
+        ;;
+      k)
+        KEYWORDS="$OPTARG"
+        ;;
+      l)
+        LOGIC="$OPTARG"
+        ;;
+      m)
+        if [ -z "$ISABELLE_OPTIONS" ]; then
+          ISABELLE_OPTIONS="-m $OPTARG"
+        else
+          ISABELLE_OPTIONS="$ISABELLE_OPTIONS -m $OPTARG"
+        fi
+        ;;
+      p)
+        PROGNAME="$OPTARG"
+        ;;
+      u)
+        INITFILE="$OPTARG"
+        ;;
+      w)
+        WINDOWSYSTEM="$OPTARG"
+        ;;
+      x)
+        UNICODE_SYMBOLS="$OPTARG"
+        ;;
+      \?)
+        usage
+        ;;
+    esac
+  done
+}
+
+eval "OPTIONS=($PROOFGENERAL_OPTIONS)"
+getoptions "${OPTIONS[@]}"
+
+getoptions "$@"
+shift $(($OPTIND - 1))
+
+
+# args
+
+declare -a FILES=()
+
+if [ "$#" -eq 0 ]; then
+  FILES["${#FILES[@]}"]="Scratch.thy"
+else
+  while [ "$#" -gt 0 ]; do
+    FILES["${#FILES[@]}"]="$1"
+    shift
+  done
+fi
+
+
+## main
+
+declare -a ARGS=()
+
+if [ -n "$FONT" ]; then
+  ARGS["${#ARGS[@]}"]="-fn"
+  ARGS["${#ARGS[@]}"]="$FONT"
+fi
+
+if [ -n "$GEOMETRY" ]; then
+  ARGS["${#ARGS[@]}"]="-geometry"
+  ARGS["${#ARGS[@]}"]="$GEOMETRY"
+fi
+
+[ "$INITFILE" = false ] && ARGS["${#ARGS[@]}"]="-q"
+[ "$WINDOWSYSTEM" = false ] && ARGS["${#ARGS[@]}"]="-nw"
+
+ARGS["${#ARGS[@]}"]="-l"
+ARGS["${#ARGS[@]}"]="$SUPER/isar/interface-setup.el"
+
+if [ -n "$KEYWORDS" ]; then
+  if [ -f "$ISABELLE_HOME_USER/etc/isar-keywords-$KEYWORDS.el" ]; then
+    ARGS["${#ARGS[@]}"]="-l"
+    ARGS["${#ARGS[@]}"]="$ISABELLE_HOME_USER/etc/isar-keywords-$KEYWORDS.el"
+  elif [ -f "$ISABELLE_HOME/etc/isar-keywords-$KEYWORDS.el" ]; then
+    ARGS["${#ARGS[@]}"]="-l"
+    ARGS["${#ARGS[@]}"]="$ISABELLE_HOME/etc/isar-keywords-$KEYWORDS.el"
+  else
+    fail "No isar-keywords file for '$KEYWORDS'"
+  fi
+elif [ -f "$ISABELLE_HOME_USER/etc/isar-keywords.el" ]; then
+  ARGS["${#ARGS[@]}"]="-l"
+  ARGS["${#ARGS[@]}"]="$ISABELLE_HOME_USER/etc/isar-keywords.el"
+elif [ -f "$ISABELLE_HOME/etc/isar-keywords.el" ]; then
+  ARGS["${#ARGS[@]}"]="-l"
+  ARGS["${#ARGS[@]}"]="$ISABELLE_HOME/etc/isar-keywords.el"
+fi
+
+for FILE in "$ISABELLE_HOME/etc/proofgeneral-settings.el" \
+    "$ISABELLE_HOME_USER/etc/proofgeneral-settings.el"
+do
+  if [ -f "$FILE" ]; then
+    ARGS["${#ARGS[@]}"]="-l"
+    ARGS["${#ARGS[@]}"]="$FILE"
+  fi
+done
+
+case "$LOGIC" in
+  /*)
+    ;;
+  */*)
+    LOGIC="$(pwd -P)/$LOGIC"
+    ;;
+esac
+
+export PROOFGENERAL_HOME="$SUPER"
+export PROOFGENERAL_ASSISTANTS="isar"
+export PROOFGENERAL_LOGIC="$LOGIC"
+export PROOFGENERAL_UNICODE="$UNICODE"
+export PROOFGENERAL_UNICODE_SYMBOLS="$UNICODE_SYMBOLS"
+
+export ISABELLE_OPTIONS
+
+# Isabelle2008 compatibility
+[ -z "$ISABELLE_PROCESS" ] && export ISABELLE_PROCESS="$ISABELLE"
+[ -z "$ISABELLE_TOOL" ] && export ISABELLE_TOOL="$ISATOOL"
+
+exec "$PROGNAME" "${ARGS[@]}" "${FILES[@]}"
+

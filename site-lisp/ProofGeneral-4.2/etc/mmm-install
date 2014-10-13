@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+# Install from mmm-mode into PG by copying relevant files
+# Run from inside mmm-mode distrib
+#
+# mmm-install,v 12.0 2011/10/13 10:54:47 da Exp
+#
+NOTICES="AUTHORS COPYING FAQ INSTALL NEWS README TODO"
+DOCS="mmm.texinfo version.texi"
+ELISP=*.el
+MMMDIR=~/PG/mmm
+
+rm -f $MMMDIR/*
+cp -p $NOTICES $DOCS $ELISP $MMMDIR
+
+
+

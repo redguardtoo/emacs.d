@@ -1,0 +1,474 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: B. Demonstration Instantiations</title>
+
+<meta name="description" content="Adapting Proof General: B. Demonstration Instantiations">
+<meta name="keywords" content="Adapting Proof General: B. Demonstration Instantiations">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_16.html#Plans-and-Ideas" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Demonstration-Instantiations"></a>
+<a name="Demonstration-Instantiations-1"></a>
+<h1 class="appendix">B. Demonstration Instantiations</h1>
+
+<p>This appendix contains the code for the two demonstration
+instantiations of Proof General, for Isabelle.
+</p>
+<p>These instantiations make an almost-bare minimum of settings to get
+things working.  To add embellishments, you should refer to
+the instantiations for other systems distributed with
+Proof General.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#demoisa_002deasy_002eel">B.1 demoisa-easy.el</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#demoisa_002eel">B.2 demoisa.el</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="demoisa_002deasy_002eel"></a>
+<a name="demoisa_002deasy_002eel-1"></a>
+<h2 class="section">B.1 demoisa-easy.el</h2>
+
+<table><tr><td>&nbsp;</td><td><pre class="lisp">;; demoisa-easy.el Example Proof General instance for Isabelle
+;;
+;; Copyright (C) 1999 LFCS Edinburgh. 
+;;
+;; Author: David Aspinall &lt;David.Aspinall@ed.ac.uk&gt;
+;;
+;; PG-adapting.texi,v 12.6 2012/05/29 14:53:59 tews Exp
+;;
+;; This is an alternative version of demoisa.el which uses the
+;; proof-easy-config macro to do the work of declaring derived modes,
+;; etc.  
+;;
+;; See demoisa.el and the Proof General manual for more documentation.
+;;
+;; To test this file you must rename it demoisa.el.
+;;
+
+(require 'proof-easy-config)            ; easy configure mechanism
+
+(proof-easy-config 
+ 'demoisa &quot;Isabelle Demo&quot; 
+ proof-prog-name		 &quot;isabelle&quot;
+ proof-terminal-string           &quot;;&quot;
+ proof-script-comment-start             &quot;(*&quot;
+ proof-script-comment-end               &quot;*)&quot;
+ proof-goal-command-regexp       &quot;^Goal&quot;
+ proof-save-command-regexp       &quot;^qed&quot;
+ proof-goal-with-hole-regexp     &quot;qed_goal \&quot;\\(\\(.*\\)\\)\&quot;&quot;
+ proof-save-with-hole-regexp     &quot;qed \&quot;\\(\\(.*\\)\\)\&quot;&quot;
+ proof-non-undoables-regexp      &quot;undo\\|back&quot;
+ proof-goal-command              &quot;Goal \&quot;%s\&quot;;&quot;
+ proof-save-command              &quot;qed \&quot;%s\&quot;;&quot;
+ proof-kill-goal-command         &quot;Goal \&quot;PROP no_goal_set\&quot;;&quot;
+ proof-showproof-command         &quot;pr()&quot;
+ proof-undo-n-times-cmd          &quot;pg_repeat undo %s;&quot;
+ proof-auto-multiple-files       t
+ proof-shell-cd-cmd              &quot;cd \&quot;%s\&quot;&quot;
+ proof-shell-interrupt-regexp    &quot;Interrupt&quot;
+ proof-shell-start-goals-regexp  &quot;Level [0-9]&quot;
+ proof-shell-end-goals-regexp    &quot;val it&quot;
+ proof-shell-quit-cmd            &quot;quit();&quot;
+ proof-assistant-home-page    
+ &quot;http://www.cl.cam.ac.uk/Research/HVG/Isabelle/&quot;
+ proof-shell-annotated-prompt-regexp 
+ &quot;^\\(val it = () : unit\n\\)?ML&gt;? &quot;
+ proof-shell-error-regexp             
+ &quot;\\*\\*\\*\\|^.*Error:\\|^uncaught exception \\|^Exception- &quot;
+ proof-shell-init-cmd  
+ &quot;fun pg_repeat f 0 = () | pg_repeat f n = (f(); pg_repeat f (n-1));&quot;
+ proof-shell-proof-completed-regexp &quot;^No subgoals!&quot;
+ proof-shell-eager-annotation-start   
+ &quot;^\\[opening \\|^###\\|^Reading&quot;)
+
+(provide 'demoisa)
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="demoisa_002eel"></a>
+<a name="demoisa_002eel-1"></a>
+<h2 class="section">B.2 demoisa.el</h2>
+
+<table><tr><td>&nbsp;</td><td><pre class="lisp">;; demoisa.el Example Proof General instance for Isabelle
+;;
+;; Copyright (C) 1999 LFCS Edinburgh. 
+;;
+;; Author: David Aspinall &lt;David.Aspinall@ed.ac.uk&gt;
+;;
+;; PG-adapting.texi,v 12.6 2012/05/29 14:53:59 tews Exp
+;;
+;; =================================================================
+;;
+;; See README in this directory for an introduction.
+;;
+;; Basic configuration is controlled by one line in `proof-site.el'.
+;; It has this line in proof-assistant-table:
+;;
+;;     (demoisa &quot;Isabelle Demo&quot;	&quot;\\.ML$&quot;)
+;;
+;; From this it loads this file &quot;demoisa/demoisa.el&quot; whenever
+;; a .ML file is visited, and sets the mode to `demoisa-mode'
+;; (defined below).  
+;; 
+;; I've called this instance &quot;Isabelle Demo Proof General&quot; just to
+;; avoid confusion with the real &quot;Isabelle Proof General&quot; in case the
+;; demo gets loaded by accident.
+;;
+;; To make the line above take precedence over the real Isabelle mode
+;; later in the table, set PROOFGENERAL_ASSISTANTS=demoisa in the
+;; shell before starting Emacs  (or customize proof-assistants).
+;;
+
+
+(require 'proof)			; load generic parts
+
+
+;; ======== User settings for Isabelle ========
+;;
+;; Defining variables using customize is pretty easy.
+;; You should do it at least for your prover-specific user options.
+;;
+;; proof-site provides us with two customization groups
+;; automatically:  (based on the name of the assistant)
+;;
+;; 'isabelledemo        -  User options for Isabelle Demo Proof General
+;; 'isabelledemo-config -  Configuration of Isabelle Proof General
+;;			   (constants, but may be nice to tweak)
+;;
+;; The first group appears in the menu
+;;   ProofGeneral -&gt; Advanced -&gt; Customize -&gt; Isabelledemo 
+;; The second group appears in the menu:
+;;   ProofGeneral -&gt; Internals -&gt; Isabelledemo config
+;;
+
+(defcustom isabelledemo-prog-name &quot;isabelle&quot;
+  &quot;*Name of program to run Isabelle.&quot;
+  :type 'file
+  :group 'isabelledemo)
+
+(defcustom isabelledemo-web-page
+  &quot;http://www.cl.cam.ac.uk/Research/HVG/isabelle.html&quot;
+  &quot;URL of web page for Isabelle.&quot;
+  :type 'string
+  :group 'isabelledemo-config)
+
+
+;;
+;; ======== Configuration of generic modes ========
+;;
+
+(defun demoisa-config ()
+  &quot;Configure Proof General scripting for Isabelle.&quot;
+  (setq
+   proof-terminal-string	&quot;;&quot;
+   proof-script-comment-start	&quot;(*&quot;
+   proof-script-comment-end	&quot;*)&quot;
+   proof-goal-command-regexp    &quot;^Goal&quot;
+   proof-save-command-regexp    &quot;^qed&quot;
+   proof-goal-with-hole-regexp  &quot;qed_goal \&quot;\\(\\(.*\\)\\)\&quot;&quot;
+   proof-save-with-hole-regexp  &quot;qed \&quot;\\(\\(.*\\)\\)\&quot;&quot;
+   proof-non-undoables-regexp   &quot;undo\\|back&quot;
+   proof-undo-n-times-cmd	&quot;pg_repeat undo %s;&quot;
+   proof-showproof-command	&quot;pr()&quot;
+   proof-goal-command		&quot;Goal \&quot;%s\&quot;;&quot;
+   proof-save-command		&quot;qed \&quot;%s\&quot;;&quot;
+   proof-kill-goal-command	&quot;Goal \&quot;PROP no_goal_set\&quot;;&quot;
+   proof-assistant-home-page	isabelledemo-web-page
+   proof-auto-multiple-files    t))
+
+
+(defun demoisa-shell-config ()
+  &quot;Configure Proof General shell for Isabelle.&quot;
+  (setq
+   proof-shell-annotated-prompt-regexp   &quot;^\\(val it = () : unit\n\\)?ML&gt;? &quot;
+   proof-shell-cd-cmd			&quot;cd \&quot;%s\&quot;&quot;
+   proof-shell-interrupt-regexp         &quot;Interrupt&quot;
+   proof-shell-error-regexp		&quot;\\*\\*\\*\\|^.*Error:\\|^uncaught exception \\|^Exception- &quot;
+   proof-shell-start-goals-regexp	&quot;Level [0-9]&quot;
+   proof-shell-end-goals-regexp		&quot;val it&quot;
+   proof-shell-proof-completed-regexp   &quot;^No subgoals!&quot;
+   proof-shell-eager-annotation-start   &quot;^\\[opening \\|^###\\|^Reading&quot;
+   proof-shell-init-cmd  ; define a utility function, in a lib somewhere?
+   &quot;fun pg_repeat f 0 = () 
+      | pg_repeat f n = (f(); pg_repeat f (n-1));&quot;
+   proof-shell-quit-cmd			&quot;quit();&quot;))
+
+
+
+;;
+;; ======== Defining the derived modes ========
+;;
+
+;; The name of the script mode is always &lt;proofsym&gt;-script,
+;; but the others can be whatever you like.
+;;
+;; The derived modes set the variables, then call the
+;; &lt;mode&gt;-config-done function to complete configuration.
+
+(define-derived-mode demoisa-mode proof-mode
+    &quot;Isabelle Demo script&quot; nil
+    (demoisa-config)
+    (proof-config-done))
+
+(define-derived-mode demoisa-shell-mode proof-shell-mode
+   &quot;Isabelle Demo shell&quot; nil
+   (demoisa-shell-config)
+   (proof-shell-config-done))
+
+(define-derived-mode demoisa-response-mode proof-response-mode
+  &quot;Isabelle Demo response&quot; nil
+  (proof-response-config-done))
+
+(define-derived-mode demoisa-goals-mode proof-goals-mode
+  &quot;Isabelle Demo goals&quot; nil
+  (proof-goals-config-done))
+
+;; The response buffer and goals buffer modes defined above are
+;; trivial.  In fact, we don't need to define them at all -- they
+;; would simply default to &quot;proof-response-mode&quot; and &quot;pg-goals-mode&quot;.
+
+;; A more sophisticated instantiation might set font-lock-keywords to
+;; add highlighting, or some of the proof by pointing markup
+;; configuration for the goals buffer.
+
+(provide 'demoisa)
+</pre></td></tr></table>
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Demonstration-Instantiations" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

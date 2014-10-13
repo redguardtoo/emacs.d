@@ -1,0 +1,465 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 13. Writing More Lisp Code</title>
+
+<meta name="description" content="Adapting Proof General: 13. Writing More Lisp Code">
+<meta name="keywords" content="Adapting Proof General: 13. Writing More Lisp Code">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_13.html#Configuring-Proof_002dTree-Visualization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_15.html#Internals-of-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Writing-More-Lisp-Code"></a>
+<a name="Writing-More-Lisp-Code-1"></a>
+<h1 class="chapter">13. Writing More Lisp Code</h1>
+
+<p>You may want to add some extra features to your instance of Proof
+General which are not supported in the generic core.  To do this, you
+can use the settings described above, plus a small number of fundamental
+functions in Proof General which you can consider as exported in the
+generic interface.  Be careful using more functions than are mentioned
+here because the internals of Proof General may change between versions.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Default-values-for-generic-settings">13.1 Default values for generic settings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Adding-prover_002dspecific-configurations">13.2 Adding prover-specific configurations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Useful-variables">13.3 Useful variables</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Useful-functions-and-macros">13.4 Useful functions and macros</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">        
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Default-values-for-generic-settings"></a>
+<a name="Default-values-for-generic-settings-1"></a>
+<h2 class="section">13.1 Default values for generic settings</h2>
+
+<p>Several generic settings are defined using <code>defpgcustom</code> in
+&lsquo;<tt>proof-config.el</tt>&rsquo;.  This introduces settings of the form
+<code>&lt;PA&gt;-name</code> for each proof assistant <var>PA</var>.
+</p>
+<p>To set the default value for these settings in prover-specific cases,
+you should use the special <code>defpgdefault</code> macro:
+</p>
+<dl>
+<dt><a name="index-defpgdefault"></a><u>Macro:</u> <b>defpgdefault</b></dt>
+<dd><p>Set default for the proof assistant specific variable &lt;PA&gt;<var>-sym</var> to <var>value</var>.<br>
+This should be used in prover-specific code to alter the default values
+for prover specific settings.
+</p>
+<p>Usage: (defpgdefault SYM <var>value</var>)
+</p></dd></dl>
+
+<p>In your prover-specific code you can simply use the setting
+<code>&lt;PA&gt;-sym</code> directly, i.e., write <code>myprover-home-page</code>.
+</p>
+<p>In the generic code, you can use a macro, writing <code>(proof-ass
+home-page)</code> to refer to the <code>&lt;PA&gt;-home-page</code> setting for the
+currently running instance of Proof General.
+</p>
+<p>See section <a href="PG-adapting_15.html#Configuration-variable-mechanisms">Configuration variable mechanisms</a>, for more details on this
+mechanism.
+</p>
+
+<hr size="6">
+<a name="Adding-prover_002dspecific-configurations"></a>
+<a name="Adding-prover_002dspecific-configurations-1"></a>
+<h2 class="section">13.2 Adding prover-specific configurations</h2>
+
+<p>Apart from the generic settings, your prover instance will probably need
+some specific customizable settings.
+</p>
+<p>Defining new prover-specific settings using customize is pretty easy.
+You should do it at least for your prover-specific user options.
+</p>
+<p>The code in &lsquo;<tt>proof-site.el</tt>&rsquo; provides each prover with two
+customization groups automatically (based on the name of the assistant): 
+<code>&lt;PA&gt;</code> for user options for prover <var>PA</var>
+and 
+<code>&lt;PA&gt;-config</code> for configuration of prover <var>PA</var>.
+Typically <code>&lt;PA&gt;-config</code> holds settings which are
+constants but which may be nice to tweak.
+</p>
+<p>The first group appears in the menu
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  ProofGeneral -&gt; Advanced -&gt; Customize -&gt; &lt;PA&gt; 
+</pre></td></tr></table>
+<p>The second group appears in the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  ProofGeneral -&gt; Internals -&gt; &lt;PA&gt; config
+</pre></td></tr></table>
+
+<p>A typical use of <code>defcustom</code> looks like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(defcustom myprover-search-page
+  &quot;http://findtheorem.myprover.org&quot;
+  &quot;URL of search web page for myprover.&quot;
+  :type 'string
+  :group 'myprover-config)
+</pre></td></tr></table>
+<p>This introduces a new customizable setting, which you might use to make
+a menu entry, for example.  The default value is the string
+<code>&quot;http://findtheorem.myprover.org&quot;</code>.
+</p>
+
+
+
+
+
+<hr size="6">
+<a name="Useful-variables"></a>
+<a name="Useful-variables-1"></a>
+<h2 class="section">13.3 Useful variables</h2>
+
+<p>In &lsquo;<tt>proof-site</tt>&rsquo;, some architecture flags are defined.  These
+can be used to write conditional pieces of code for different Emacs
+and operating systems.  They are referred to mainly in
+&lsquo;<tt>proof-compat</tt>&rsquo; (which helps to keep the architecture and version
+dependent code in one place).
+</p>
+<dl>
+<dt><a name="index-proof_002drunning_002don_002dwin32"></a><u>Variable:</u> <b>proof-running-on-win32</b></dt>
+<dd><p>Non-nil if Proof General is running on a windows variant system.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Useful-functions-and-macros"></a>
+<a name="Useful-functions-and-macros-1"></a>
+<h2 class="section">13.4 Useful functions and macros</h2>
+
+<p>The recommended functions you may invoke are these:
+</p>
+<ul>
+<li> Any of the interactive commands (i.e. anything you
+ can invoke with <kbd>M-x</kbd>, including all key-bindings)
+</li><li> Any of the internal functions and macros mentioned below
+</li></ul>
+
+<p>To insert text into the current (usually script) buffer, the function
+<code>proof-insert</code> is useful.  There&rsquo;s also a handy macro
+<code>proof-defshortcut</code> for defining shortcut functions using it.
+</p>
+
+<dl>
+<dt><a name="index-proof_002dinsert"></a><u>Function:</u> <b>proof-insert</b><i> text</i></dt>
+<dd><p>Insert <var>text</var> into the current buffer.<br>
+<var>text</var> may include these special characters:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  %p  - place the point here after input
+</pre></td></tr></table>
+<p>Any other %-prefixed character inserts itself.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002ddefshortcut"></a><u>Macro:</u> <b>proof-defshortcut</b></dt>
+<dd><p>Define shortcut function FN to insert <var>string</var>, optional keydef KEY.<br>
+This is intended for defining proof assistant specific functions.
+<var>string</var> is inserted using &lsquo;<samp><code>proof-insert</code></samp>&rsquo;, which see.
+KEY is added onto proof assistant map.
+</p></dd></dl>
+<p>The function <code>proof-shell-invisible-command</code> is a useful utility
+for sending a single command to the process.  You should use this to
+implement user-level or internal functions rather than attempting to
+directly manipulate the proof action list, or insert into the shell
+buffer.
+</p>
+<dl>
+<dt><a name="index-proof_002dshell_002dinvisible_002dcommand"></a><u>Function:</u> <b>proof-shell-invisible-command</b><i> cmd &amp;optional wait invisiblecallback &amp;rest flags</i></dt>
+<dd><p>Send <var>cmd</var> to the proof process.<br>
+The <var>cmd</var> is &lsquo;<samp>invisible</samp>&rsquo; in the sense that it is not recorded in buffer.
+<var>cmd</var> may be a string or a string-yielding expression.
+</p>
+<p>Automatically add &lsquo;<samp><code>proof-terminal-string</code></samp>&rsquo; if necessary, examining
+&lsquo;<samp>proof-shell-no-auto-terminate-commands</samp>&rsquo;.
+</p>
+<p>By default, let the command be processed asynchronously.
+But if optional <var>wait</var> command is non-nil, wait for processing to finish
+before and after sending the command.
+</p>
+<p>In case <var>cmd</var> is (or yields) nil, do nothing.
+</p>
+<p><var>invisiblecallback</var> will be invoked after the command has finished,
+if it is set.  It should probably run the hook variables
+&lsquo;<samp><code>proof-state-change-hook</code></samp>&rsquo;.
+</p>
+<p><var>flags</var> are additional flags to put onto the &lsquo;<samp><code>proof-action-list</code></samp>&rsquo;.
+The flag <code>'invisible</code> is always added to <var>flags</var>.
+</p></dd></dl>
+
+<p>There are several handy macros to help you define functions
+which invoke <code>proof-shell-invisible-command</code>.
+</p>
+<dl>
+<dt><a name="index-proof_002ddefinvisible"></a><u>Macro:</u> <b>proof-definvisible</b></dt>
+<dd><p>Define function FN to send <var>string</var> to proof assistant, optional keydef KEY.<br>
+This is intended for defining proof assistant specific functions.
+<var>string</var> is sent using &lsquo;<samp><code>proof-shell-invisible-command</code></samp>&rsquo;, which see.
+<var>string</var> may be a string or a function which returns a string.
+KEY is added onto proof assistant map.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002ddefine_002dassistant_002dcommand"></a><u>Macro:</u> <b>proof-define-assistant-command</b></dt>
+<dd><p>Define FN (docstring DOC) to send <var>body</var> to prover, based on <var>cmdvar</var>.<br>
+<var>body</var> defaults to <var>cmdvar</var>, a variable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002ddefine_002dassistant_002dcommand_002dwitharg"></a><u>Macro:</u> <b>proof-define-assistant-command-witharg</b></dt>
+<dd><p>Define command FN to prompt for string <var>cmdvar</var> to proof assistant.<br>
+<var>cmdvar</var> is a variable holding a function or string.  Automatically has history.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dformat_002dfilename"></a><u>Function:</u> <b>proof-format-filename</b><i> string filename</i></dt>
+<dd><p>Format <var>string</var> by replacing quoted chars by escaped version of <var>filename</var>.
+</p>
+<p>%e uses the canonicalized expanded version of filename (including
+directory, using &lsquo;<samp><code>default-directory</code></samp>&rsquo; &ndash; see &lsquo;<samp><code>expand-file-name</code></samp>&rsquo;).
+</p>
+<p>%r uses the unadjusted (possibly relative) version of <var>filename</var>.
+</p>
+<p>%m (&rsquo;module&rsquo;) uses the basename of the file, without directory
+or extension.
+</p>
+<p>%s means the same as %e.
+</p>
+<p>Using %e can avoid problems with dumb proof assistants who don&rsquo;t
+understand ~, for example.
+</p>
+<p>For all these cases, the escapes in &lsquo;<samp><code>proof-shell-filename-escapes</code></samp>&rsquo;
+are processed.
+</p>
+<p>If <var>string</var> is in fact a function, instead invoke it on <var>filename</var> and
+return the resulting (string) value.
+</p></dd></dl>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Writing-More-Lisp-Code" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_15.html#Internals-of-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

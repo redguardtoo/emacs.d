@@ -1,0 +1,21 @@
+default namespace = ""
+
+start =
+  element movie {
+    element film {
+      element frame {
+        attribute frameNumber { xsd:integer },
+        element command { text },
+        element response { text },
+        element command-pp { part+ },
+        element response-pp { part* }
+      }+
+    }
+  }
+part =
+  element part {
+    attribute class { classname },
+    text
+  }
+
+classname = "plain" | "comment" | "obligation" | "label"

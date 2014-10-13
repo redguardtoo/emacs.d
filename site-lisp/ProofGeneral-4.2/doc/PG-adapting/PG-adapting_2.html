@@ -1,0 +1,473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 1. Beginning with a New Prover</title>
+
+<meta name="description" content="Adapting Proof General: 1. Beginning with a New Prover">
+<meta name="keywords" content="Adapting Proof General: 1. Beginning with a New Prover">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_1.html#Introduction" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_3.html#Menus-and-Toolbar-and-User_002dlevel-Commands" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Beginning-with-a-New-Prover"></a>
+<a name="Beginning-with-a-New-Prover-1"></a>
+<h1 class="chapter">1. Beginning with a New Prover</h1>
+
+<p>Proof General has about 100 configuration variables which are set on a
+per-prover basis to configure the various features.  It may sound like a
+lot but don&rsquo;t worry!  Many of the variables occur in pairs (typically
+regular expressions matching the start and end of some text), and you
+can begin by setting just a fraction of the variables to get the basic
+features of script management working.  The bare minimum for a working
+prototype is about 25 simple settings.
+</p>
+<p>For more advanced features you may need (or want) to write some Emacs
+Lisp.  If you&rsquo;re adding new functionality please consider making it
+generic for different proof assistants, if appropriate.  When writing
+your modes, please follow the Emacs Lisp conventions, See <a href="../Elisp/Tips.html#Tips">(Elisp)Tips</a>.
+</p>
+<p>The configuration variables are declared in the file
+&lsquo;<tt>generic/proof-config.el</tt>&rsquo;.  The details in the central part of this
+manual are based on the contents of that file, beginning in <a href="PG-adapting_3.html#Menus-and-Toolbar-and-User_002dlevel-Commands">Menus, toolbar, and user-level commands</a>, and continuing until <a href="PG-adapting_8.html#Global-Constants">Global Constants</a>.
+Other chapters cover the details of configuring for multiple files and
+for supporting the other Emacs packages mentioned in the user manual
+(<i>Support for other Packages</i>).  If you write additional Elisp code
+interfacing to Proof General, you can find out about some useful functions
+by reading <a href="PG-adapting_14.html#Writing-More-Lisp-Code">Writing More Lisp Code</a>.  The last chapter of this
+manual describes some of the internals of Proof General, in case you are
+interested, maybe because you need to extend the generic core to do
+something new.
+</p>
+<p>In the rest of this chapter we describe the general mechanisms for
+instantiating Proof General.  We assume some knowledge of the content
+of the main Proof General manual.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Overview-of-adding-a-new-prover">1.1 Overview of adding a new prover</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Demonstration-instance-and-easy-configuration">1.2 Demonstration instance and easy configuration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Major-modes-used-by-Proof-General">1.3 Major modes used by Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Overview-of-adding-a-new-prover"></a>
+<a name="Overview-of-adding-a-new-prover-1"></a>
+<h2 class="section">1.1 Overview of adding a new prover</h2>
+
+<p>Each proof assistant supported has its own subdirectory under
+<code>proof-home-directory</code>, used to store a root elisp file and any
+other files needed to adapt the proof assistant for Proof General.
+</p>
+
+<p>Here is how to go about adding support for a new prover.
+</p>
+<ol>
+<li> Make a directory called &lsquo;<tt>myassistant/</tt>&rsquo; under the Proof General home
+directory <code>proof-home-directory</code>, to put the specific customization
+and associated files in.
+</li><li> Add a file &lsquo;<tt>myassistant.el</tt>&rsquo; to the new directory.
+</li><li> Edit &lsquo;<tt>proof-site.el</tt>&rsquo; to add a new entry to the
+  <code>proof-assistants-table</code> variable.  The new entry should look
+like this:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">    (myassistant &quot;My Proof Assistant&quot; &quot;\\.myasst$&quot;)
+</pre></td></tr></table>
+   
+<p>The first item is used to form the name of the internal variables for
+the new mode as well as the directory and file where it loads from.  The
+second is a string, naming the proof assistant.  The third item is a
+regular expression to match names of proof script files for this
+assistant.  See the documentation of <code>proof-assistant-table</code> for
+more details.
+</p></li><li> Define the new Proof General modes in &lsquo;<tt>myassistant.el</tt>&rsquo;, 
+ by setting configuration variables to customize the
+ behaviour of the generic modes.  
+</li></ol>
+
+
+<dl>
+<dt><a name="index-proof_002dassistant_002dtable"></a><u>User Option:</u> <b>proof-assistant-table</b></dt>
+<dd><p>Proof General&rsquo;s table of supported proof assistants.<br>
+This is copied from &lsquo;<samp><code>proof-assistant-table-default</code></samp>&rsquo; at load time,
+removing any entries that do not have a corresponding directory
+under &lsquo;<samp><code>proof-home-directory</code></samp>&rsquo;.
+</p>
+<p>Each entry is a list of the form
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  (<var>symbol</var> <var>name</var> <var>file-extension</var> [AUTOMODE-REGEXP] [IGNORED-EXTENSIONS-LIST])
+</pre></td></tr></table>
+<p>The <var>name</var> is a string, naming the proof assistant.
+The <var>symbol</var> is used to form the name of the mode for the
+assistant, &lsquo;<samp>SYMBOL-mode</samp>&rsquo;, run when files with <var>automode-regexp</var>
+(or with extension <var>file-extension</var>) are visited. If present,
+<var>ignored-extensions-list</var> is a list of file-name extensions to be
+ignored when doing file-name completion (<var>ignored-extensions-list</var>
+is added to <code>completion-ignored-extensions</code>).
+</p>
+<p><var>symbol</var> is also used to form the name of the directory and elisp
+file for the mode, which will be
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">    <var>proof-home-directory</var>/<var>symbol</var>/<var>symbol</var>.el
+</pre></td></tr></table>
+<p>where <var>proof-home-directory</var> is the value of the
+variable &lsquo;<samp><code>proof-home-directory</code></samp>&rsquo;.
+</p>
+<p>The default value is <code>((isar &quot;Isabelle&quot; &quot;thy&quot;) (coq &quot;Coq&quot; &quot;v&quot; nil (&quot;.vo&quot; &quot;.glob&quot;)) (phox &quot;PhoX&quot; &quot;phx&quot;) (hol-light &quot;HOL Light&quot; &quot;ml&quot;) (pgshell &quot;PG-Shell&quot; &quot;pgsh&quot;) (pgocaml &quot;PG-OCaml&quot; &quot;pgml&quot;) (pghaskell &quot;PG-Haskell&quot; &quot;pghci&quot;))</code>.
+</p></dd></dl>
+
+
+<p>The final step of the description above is where the work lies.  There
+are two basic methods.  You can write some Emacs lisp functions and
+define the modes using the macro <code>define-derived-mode</code>.  Or you can
+use the new easy configuration mechanism of Proof General 3.0 described
+in the next section, which calls <code>define-derived-mode</code> for you.
+You still need to know which configuration variables should be set, and
+how to set them.  
+</p>
+<p>The documentation below (and inside Emacs) should help with that, but
+the best way to begin might be to use an existing Proof General instance
+as an example.  
+</p>
+
+<hr size="6">
+<a name="Demonstration-instance-and-easy-configuration"></a>
+<a name="Demonstration-instance-and-easy-configuration-1"></a>
+<h2 class="section">1.2 Demonstration instance and easy configuration</h2>
+
+<p>Proof General is supplied with a demonstration instance for Isabelle
+which configures the basic features.  This is a whittled down version of
+Isabelle Proof General, which you can use as a template to get support
+for a new assistant going.  Check the directory &lsquo;<tt>demoisa</tt>&rsquo; for the
+two files &lsquo;<tt>demoisa.el</tt>&rsquo; and &lsquo;<tt>demoisa-easy.el</tt>&rsquo;.
+</p>
+<p>The file &lsquo;<tt>demoisa.el</tt>&rsquo; follows the scheme described in <a href="#Major-modes-used-by-Proof-General">Major modes used by Proof General</a>.  It uses the Emacs Lisp macro
+<code>define-derived-mode</code> to define the four modes for a Proof General
+instance, by inheriting from the generic code.  Settings which configure
+Proof General are made by functions called from within each mode, as
+appropriate.
+</p>
+<p>The file &lsquo;<tt>demoisa-easy.el</tt>&rsquo; uses a new simplified mechanism to
+achieve (virtually) the same result.  It uses the macro
+<code>proof-easy-config</code> defined in &lsquo;<tt>proof-easy-configl.el</tt>&rsquo; to make
+all of the settings for the Proof General instance in one go, defining
+the derived modes automatically using a regular naming scheme.  No lisp
+code is used in this file except the call to this macro.  The minor
+difference in the end result is that all the variables are set at once,
+rather than inside each mode.  But since the configuration variables are
+all global variables anyway, this makes no real difference.
+</p>
+<p>The macro <code>proof-easy-config</code> is called like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   (proof-easy-config <var>myprover</var> &quot;<var>MyProver</var>&quot;
+        <var>config_1</var> <var>val_1</var>
+        ...
+        <var>config_n</var> <var>val_n</var>)
+</pre></td></tr></table>
+<p>The main body of the macro call is like the body of a <code>setq</code>.  It
+contains pairs of variables and value settings.  The first argument to
+the macro is a symbol defining the mode root, the second argument is a
+string defining the mode name.  These should be the same as the first
+part of the entry in <code>proof-assistant-table</code> for your prover.
+See section <a href="#Overview-of-adding-a-new-prover">Overview of adding a new prover</a>.  After the call to
+<code>proof-easy-config</code>, the new modes <code><var>myprover</var>-mode</code>,
+<code><var>myprover</var>-shell-mode</code>, <code><var>myprover</var>-response-mode</code>,
+and <code><var>myprover</var>-goals-mode</code> will be defined.  The configuration
+variables in the body will be set immediately.
+</p>
+
+<p>This mechanism is in fact recommended for new instantiations of
+Proof General since it follows a regular pattern, and we can more
+easily adapt it in the future to new versions of Proof General.
+</p>
+<p>Even Emacs Lisp experts should prefer the simplified mechanism.  If you
+want to set some buffer-local variables in your Proof General modes, or
+invoke supporting lisp code, this can easily be done by adding functions
+to the appropriate mode hooks after the <code>proof-easy-config</code> call.
+For example, to add extra settings for the shell mode for
+<code>demoisa</code>, we could do this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   (defun demoisa-shell-extra-config ()
+      <var>extra configuration ...</var>
+    )
+   (add-hook 'demoisa-shell-mode-hook 'demoisa-shell-extra-config)
+</pre></td></tr></table>
+<p>The function to do extra configuration <code>demoisa-shell-extra-config</code>
+is then called as the final step when <code>demoisa-shell-mode</code> is
+entered (be wary, this will be after the generic
+<code>proof-shell-config-done</code> is called, so it will be too late to set
+normal configuration variables which may be examined by
+<code>proof-shell-config-done</code>).
+</p>
+
+<hr size="6">
+<a name="Major-modes-used-by-Proof-General"></a>
+<a name="Major-modes-used-by-Proof-General-1"></a>
+<h2 class="section">1.3 Major modes used by Proof General</h2>
+
+<p>There are four major modes used by Proof General, one for each type of
+buffer it handles.  The buffer types are: script, shell, response and
+goals.  Each of these has a generic mode, respectively:
+<code>proof-mode</code>, <code>proof-shell-mode</code>, <code>proof-response-mode</code>,
+and <code>proof-goals-mode</code>.
+</p>
+<p>The pattern for defining the major mode for an instance of Proof General
+is to use <code>define-derived-mode</code> to define a specific mode to inherit from
+each generic one, like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(define-derived-mode myass-shell-mode proof-shell-mode
+   &quot;MyAss shell&quot; nil
+   (myass-shell-config)
+   (proof-shell-config-done))
+</pre></td></tr></table>
+<p>Where <code>myass-shell-config</code> is a function which sets the
+configuration variables for the shell (see section <a href="PG-adapting_5.html#Proof-Shell-Settings">Proof Shell Settings</a>).
+</p>
+<p>It&rsquo;s important that each of your modes invokes one of the functions
+ <code>proof-config-done</code>,
+ <code>proof-shell-config-done</code>, 
+ <code>proof-response-config-done</code>, or
+ <code>proof-goals-config-done</code>
+once it has set its configuration variables.  These functions
+finalize the configuration of the mode.
+</p>
+<p>The modes must be named standardly, replacing <code>proof-</code> with the
+prover&rsquo;s symbol name, <code><var>PA</var>-</code>.  In other words, you must define
+<code><var>PA</var>-mode</code>, <code><var>PA</var>-shell-mode</code>, etc.
+</p>
+<p>See the file &lsquo;<tt>demoisa.el</tt>&rsquo; for an example of the four calls to
+<code>define-derived-mode</code>.
+</p>
+<p>Aside: notice that the modes are selected using stub functions
+inside <code>proof-site.el</code>, which set the variables
+<code>proof-mode-for-script</code>, <code>proof-mode-for-shell</code>, etc,
+that actually select the right mode.  These variables
+are declared in <code>pg-vars.el</code>.
+</p>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Beginning-with-a-New-Prover" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_3.html#Menus-and-Toolbar-and-User_002dlevel-Commands" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

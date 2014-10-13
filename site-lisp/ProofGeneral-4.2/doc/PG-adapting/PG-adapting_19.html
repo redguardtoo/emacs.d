@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: Variable and User Option Index</title>
+
+<meta name="description" content="Adapting Proof General: Variable and User Option Index">
+<meta name="keywords" content="Adapting Proof General: Variable and User Option Index">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_20.html#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Variable-Index"></a>
+<a name="Variable-and-User-Option-Index"></a>
+<h1 class="unnumbered">Variable and User Option Index</h1>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-and-User-Option-Index_vr_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-vr">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_10.html#index-comment_002dquote_002dnested"><code>comment-quote-nested</code></a></td><td valign="top"><a href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-I">I</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-imenu_002dgeneric_002dexpression"><code>imenu-generic-expression</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-other-elements">3.3 Recognizing other elements</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-O">O</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_10.html#index-outline_002dheading_002dend_002dregexp"><code>outline-heading-end-regexp</code></a></td><td valign="top"><a href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_10.html#index-outline_002dregexp"><code>outline-regexp</code></a></td><td valign="top"><a href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-P">P</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-PA_002dcompletion_002dtable"><code>PA-completion-table</code></a></td><td valign="top"><a href="PG-adapting_4.html#Completions">3.10 Completions</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-PA_002dhelp_002dmenu_002dentries"><code>PA-help-menu-entries</code></a></td><td valign="top"><a href="PG-adapting_3.html#Menu-configuration">2.2 Menu configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-PA_002dmenu_002dentries"><code>PA-menu-entries</code></a></td><td valign="top"><a href="PG-adapting_3.html#Menu-configuration">2.2 Menu configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-PA_002dprog_002dargs"><code>PA-prog-args</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-PA_002dprog_002denv"><code>PA-prog-env</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-PA_002dtoolbar_002dentries"><code>PA-toolbar-entries</code></a></td><td valign="top"><a href="PG-adapting_3.html#Toolbar-configuration">2.3 Toolbar configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pbp_002dgoal_002dcommand"><code>pbp-goal-command</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pbp_002dhyp_002dcommand"><code>pbp-hyp-command</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_11.html#index-pg_002dafter_002dfontify_002doutput_002dhook"><code>pg-after-fontify-output-hook</code></a></td><td valign="top"><a href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_11.html#index-pg_002dbefore_002dfontify_002doutput_002dhook"><code>pg-before-fontify-output-hook</code></a></td><td valign="top"><a href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dgoals_002dchange_002dgoal"><code>pg-goals-change-goal</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dgoals_002derror_002dregexp"><code>pg-goals-error-regexp</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-pg_002dsubterm_002danns_002duse_002dstack"><code>pg-subterm-anns-use-stack</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-shell-mode">14.6 Proof shell mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dsubterm_002dend_002dchar"><code>pg-subterm-end-char</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-pg_002dsubterm_002dfirst_002dspecial_002dchar"><code>pg-subterm-first-special-char</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dsubterm_002dsep_002dchar"><code>pg-subterm-sep-char</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dsubterm_002dstart_002dchar"><code>pg-subterm-start-char</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-pg_002dtopterm_002dgoalhyplit_002dfn"><code>pg-topterm-goalhyplit-fn</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-pg_002dtopterm_002dregexp"><code>pg-topterm-regexp</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002daction_002dlist"><code>proof-action-list</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-shell-mode">14.6 Proof shell mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002daction_002dlist-1"><code>proof-action-list</code></a></td><td valign="top"><a href="PG-adapting_15.html#Input-to-the-shell">14.6.1 Input to the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002daction_002dlist-2"><code>proof-action-list</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dactivate_002dscripting_002dhook"><code>proof-activate-scripting-hook</code></a></td><td valign="top"><a href="PG-adapting_4.html#Activate-scripting-hook">3.7 Activate scripting hook</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dassistant_002dhome_002dpage"><code>proof-assistant-home-page</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_2.html#index-proof_002dassistant_002dtable"><code>proof-assistant-table</code></a></td><td valign="top"><a href="PG-adapting_2.html#Overview-of-adding-a-new-prover">1.1 Overview of adding a new prover</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dassistants"><code>proof-assistants</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_16.html#index-proof_002datomic_002dsequents_002dlist"><code>proof-atomic-sequents-list</code></a></td><td valign="top"><a href="PG-adapting_16.html#Granularity-of-atomic-command-sequences">A.2 Granularity of atomic command sequences</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dauto_002dmultiple_002dfiles"><code>proof-auto-multiple-files</code></a></td><td valign="top"><a href="PG-adapting_4.html#Automatic-multiple-files">3.8 Automatic multiple files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dbuffer_002dtype"><code>proof-buffer-type</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dcannot_002dreopen_002dprocessed_002dfiles"><code>proof-cannot-reopen-processed-files</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dcannot_002dreopen_002dprocessed_002dfiles-1"><code>proof-cannot-reopen-processed-files</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dcase_002dfold_002dsearch"><code>proof-case-fold-search</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dcompleted_002dproof_002dbehaviour"><code>proof-completed-proof-behaviour</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dcontext_002dcommand"><code>proof-context-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dcount_002dundos_002dfn"><code>proof-count-undos-fn</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002delectric_002dterminator_002dnoterminator"><code>proof-electric-terminator-noterminator</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dfind_002dand_002dforget_002dfn"><code>proof-find-and-forget-fn</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dfind_002dtheorems_002dcommand"><code>proof-find-theorems-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dforget_002did_002dcommand"><code>proof-forget-id-command</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dgeneral_002ddebug"><code>proof-general-debug</code></a></td><td valign="top"><a href="PG-adapting_15.html#Debugging">14.7 Debugging</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_8.html#index-proof_002dgeneral_002dhome_002dpage"><code>proof-general-home-page</code></a></td><td valign="top"><a href="PG-adapting_8.html#Global-Constants">7. Global Constants</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_8.html#index-proof_002dgeneral_002dname"><code>proof-general-name</code></a></td><td valign="top"><a href="PG-adapting_8.html#Global-Constants">7. Global Constants</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dgeneral_002dversion"><code>proof-general-version</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dgoal_002dcommand"><code>proof-goal-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dcommand_002dp"><code>proof-goal-command-p</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dcommand_002dregexp"><code>proof-goal-command-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dwith_002dhole_002dregexp"><code>proof-goal-with-hole-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dwith_002dhole_002dregexp-1"><code>proof-goal-with-hole-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-other-elements">3.3 Recognizing other elements</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dwith_002dhole_002dresult"><code>proof-goal-with-hole-result</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dgoal_002dwith_002dhole_002dresult-1"><code>proof-goal-with-hole-result</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-other-elements">3.3 Recognizing other elements</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dgoals_002dbuffer"><code>proof-goals-buffer</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_11.html#index-proof_002dgoals_002dfont_002dlock_002dkeywords"><code>proof-goals-font-lock-keywords</code></a></td><td valign="top"><a href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dhome_002ddirectory"><code>proof-home-directory</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dignore_002dfor_002dundo_002dcount"><code>proof-ignore-for-undo-count</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dimages_002ddirectory"><code>proof-images-directory</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dincluded_002dfiles_002dlist"><code>proof-included-files-list</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dincluded_002dfiles_002dlist-1"><code>proof-included-files-list</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dincluded_002dfiles_002dlist-2"><code>proof-included-files-list</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dincluded_002dfiles_002dlist-3"><code>proof-included-files-list</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dinfo_002dcommand"><code>proof-info-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dinfo_002ddirectory"><code>proof-info-directory</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dkill_002dgoal_002dcommand"><code>proof-kill-goal-command</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dlocked_002dspan"><code>proof-locked-span</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-script-mode">14.5 Proof script mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dmarker"><code>proof-marker</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-shell-mode">14.6 Proof shell mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dnested_002dgoals_002dhistory_002dp"><code>proof-nested-goals-history-p</code></a></td><td valign="top"><a href="PG-adapting_4.html#Nested-proofs">3.5 Nested proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dnested_002dundo_002dregexp"><code>proof-nested-undo-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Nested-proofs">3.5 Nested proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dno_002dfully_002dprocessed_002dbuffer"><code>proof-no-fully-processed-buffer</code></a></td><td valign="top"><a href="PG-adapting_4.html#Completely-asserted-buffers">3.9 Completely asserted buffers</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dnon_002dundoables_002dregexp"><code>proof-non-undoables-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dprog_002dname"><code>proof-prog-name</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dqueue_002dspan"><code>proof-queue-span</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-script-mode">14.5 Proof script mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dreally_002dsave_002dcommand_002dp"><code>proof-really-save-command-p</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dresponse_002dbuffer"><code>proof-response-buffer</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_11.html#index-proof_002dresponse_002dfont_002dlock_002dkeywords"><code>proof-response-font-lock-keywords</code></a></td><td valign="top"><a href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_14.html#index-proof_002drunning_002don_002dwin32"><code>proof-running-on-win32</code></a></td><td valign="top"><a href="PG-adapting_14.html#Useful-variables">13.3 Useful variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dsave_002dcommand"><code>proof-save-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dsave_002dcommand_002dregexp"><code>proof-save-command-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dsave_002dwith_002dhole_002dregexp"><code>proof-save-with-hole-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dscript_002dbuffer"><code>proof-script-buffer</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcommand_002dend_002dregexp"><code>proof-script-command-end-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcommand_002dstart_002dregexp"><code>proof-script-command-start-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcomment_002dend"><code>proof-script-comment-end</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcomment_002dend_002dregexp"><code>proof-script-comment-end-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcomment_002dstart"><code>proof-script-comment-start</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dcomment_002dstart_002dregexp"><code>proof-script-comment-start-regexp</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_11.html#index-proof_002dscript_002dfont_002dlock_002dkeywords"><code>proof-script-font-lock-keywords</code></a></td><td valign="top"><a href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dimenu_002dgeneric_002dexpression"><code>proof-script-imenu-generic-expression</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-other-elements">3.3 Recognizing other elements</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dscript_002dsexp_002dcommands"><code>proof-script-sexp-commands</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_10.html#index-proof_002dscript_002dsyntax_002dtable_002dentries"><code>proof-script-syntax-table-entries</code></a></td><td valign="top"><a href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dannotated_002dprompt_002dregexp"><code>proof-shell-annotated-prompt-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dassumption_002dregexp"><code>proof-shell-assumption-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dauto_002dterminate_002dcommands"><code>proof-shell-auto-terminate-commands</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dbuffer"><code>proof-shell-buffer</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dbusy"><code>proof-shell-busy</code></a></td><td valign="top"><a href="PG-adapting_15.html#Proof-shell-mode">14.6 Proof shell mode</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dcd_002dcmd"><code>proof-shell-cd-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dclear_002dgoals_002dregexp"><code>proof-shell-clear-goals-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dclear_002dresponse_002dregexp"><code>proof-shell-clear-response-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dcompute_002dnew_002dfiles_002dlist"><code>proof-shell-compute-new-files-list</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dshell_002dcompute_002dnew_002dfiles_002dlist-1"><code>proof-shell-compute-new-files-list</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002ddelayed_002doutput_002dend"><code>proof-shell-delayed-output-end</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002ddelayed_002doutput_002dflags"><code>proof-shell-delayed-output-flags</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002ddelayed_002doutput_002dstart"><code>proof-shell-delayed-output-start</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002deager_002dannotation_002dend"><code>proof-shell-eager-annotation-end</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dshell_002deager_002dannotation_002dend-1"><code>proof-shell-eager-annotation-end</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002deager_002dannotation_002dstart"><code>proof-shell-eager-annotation-start</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dshell_002deager_002dannotation_002dstart-1"><code>proof-shell-eager-annotation-start</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002deager_002dannotation_002dstart_002dlength"><code>proof-shell-eager-annotation-start-length</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dend_002dgoals_002dregexp"><code>proof-shell-end-goals-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002derror_002dor_002dinterrupt_002dseen"><code>proof-shell-error-or-interrupt-seen</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002derror_002dregexp"><code>proof-shell-error-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dfilename_002descapes"><code>proof-shell-filename-escapes</code></a></td><td valign="top"><a href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dhandle_002derror_002dor_002dinterrupt_002dhook"><code>proof-shell-handle-error-or-interrupt-hook</code></a></td><td valign="top"><a href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dhandle_002doutput_002dsystem_002dspecific"><code>proof-shell-handle-output-system-specific</code></a></td><td valign="top"><a href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinform_002dfile_002dprocessed_002dcmd"><code>proof-shell-inform-file-processed-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinform_002dfile_002dretracted_002dcmd"><code>proof-shell-inform-file-retracted-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinit_002dcmd"><code>proof-shell-init-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinsert_002dhook"><code>proof-shell-insert-hook</code></a></td><td valign="top"><a href="PG-adapting_5.html#Script-input-to-the-shell">4.2 Script input to the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinteractive_002dprompt_002dregexp"><code>proof-shell-interactive-prompt-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dinterrupt_002dregexp"><code>proof-shell-interrupt-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dlast_002doutput"><code>proof-shell-last-output</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dlast_002doutput_002dkind"><code>proof-shell-last-output-kind</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dlast_002doutput_002dkind-1"><code>proof-shell-last-output-kind</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dlast_002dprompt"><code>proof-shell-last-prompt</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dpre_002dinterrupt_002dhook"><code>proof-shell-pre-interrupt-hook</code></a></td><td valign="top"><a href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dpre_002dsync_002dinit_002dcmd"><code>proof-shell-pre-sync-init-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dprocess_002dconnection_002dtype"><code>proof-shell-process-connection-type</code></a></td><td valign="top"><a href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dprocess_002dfile"><code>proof-shell-process-file</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dshell_002dprocess_002dfile-1"><code>proof-shell-process-file</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dproof_002dcompleted"><code>proof-shell-proof-completed</code></a></td><td valign="top"><a href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dproof_002dcompleted_002dregexp"><code>proof-shell-proof-completed-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dquit_002dcmd"><code>proof-shell-quit-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002drestart_002dcmd"><code>proof-shell-restart-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-proof_002dshell_002dresult_002dend"><code>proof-shell-result-end</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_6.html#index-proof_002dshell_002dresult_002dstart"><code>proof-shell-result-start</code></a></td><td valign="top"><a href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dretract_002dfiles_002dregexp"><code>proof-shell-retract-files-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_9.html#index-proof_002dshell_002dretract_002dfiles_002dregexp-1"><code>proof-shell-retract-files-regexp</code></a></td><td valign="top"><a href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dset_002delisp_002dvariable_002dregexp"><code>proof-shell-set-elisp-variable-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dsilent_002dthreshold"><code>proof-shell-silent-threshold</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dstart_002dgoals_002dregexp"><code>proof-shell-start-goals-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dstart_002dsilent_002dcmd"><code>proof-shell-start-silent-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dstop_002dsilent_002dcmd"><code>proof-shell-stop-silent-cmd</code></a></td><td valign="top"><a href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dstrip_002dcrs_002dfrom_002dinput"><code>proof-shell-strip-crs-from-input</code></a></td><td valign="top"><a href="PG-adapting_5.html#Script-input-to-the-shell">4.2 Script input to the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002dstrip_002dcrs_002dfrom_002doutput"><code>proof-shell-strip-crs-from-output</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_10.html#index-proof_002dshell_002dsyntax_002dtable_002dentries"><code>proof-shell-syntax-table-entries</code></a></td><td valign="top"><a href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dtheorem_002ddependency_002dlist_002dregexp"><code>proof-shell-theorem-dependency-list-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dtrace_002doutput_002dregexp"><code>proof-shell-trace-output-regexp</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_5.html#index-proof_002dshell_002dtruncate_002dbefore_002derror"><code>proof-shell-truncate-before-error</code></a></td><td valign="top"><a href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_15.html#index-proof_002dshell_002durgent_002dmessage_002dmarker"><code>proof-shell-urgent-message-marker</code></a></td><td valign="top"><a href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dshowproof_002dcommand"><code>proof-showproof-command</code></a></td><td valign="top"><a href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_7.html#index-proof_002dsplash_002dcontents"><code>proof-splash-contents</code></a></td><td valign="top"><a href="PG-adapting_7.html#Splash-Screen-Settings">6. Splash Screen Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_7.html#index-proof_002dsplash_002dtime"><code>proof-splash-time</code></a></td><td valign="top"><a href="PG-adapting_7.html#Splash-Screen-Settings">6. Splash Screen Settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dstate_002dpreserving_002dp"><code>proof-state-preserving-p</code></a></td><td valign="top"><a href="PG-adapting_4.html#Safe-_0028state_002dpreserving_0029-commands">3.6 Safe (state-preserving) commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dterminal_002dstring"><code>proof-terminal-string</code></a></td><td valign="top"><a href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_12.html#index-proof_002dtokens_002dactivate_002dcommand"><code>proof-tokens-activate-command</code></a></td><td valign="top"><a href="PG-adapting_12.html#Configuring-Tokens">11. Configuring Tokens</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_12.html#index-proof_002dtokens_002ddeactivate_002dcommand"><code>proof-tokens-deactivate-command</code></a></td><td valign="top"><a href="PG-adapting_12.html#Configuring-Tokens">11. Configuring Tokens</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_12.html#index-proof_002dtokens_002dextra_002dmodes"><code>proof-tokens-extra-modes</code></a></td><td valign="top"><a href="PG-adapting_12.html#Configuring-Tokens">11. Configuring Tokens</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_3.html#index-proof_002dtoolbar_002dentries_002ddefault"><code>proof-toolbar-entries-default</code></a></td><td valign="top"><a href="PG-adapting_3.html#Toolbar-configuration">2.3 Toolbar configuration</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_13.html#index-proof_002dtree_002dconfigured"><code>proof-tree-configured</code></a></td><td valign="top"><a href="PG-adapting_13.html#Guards">12.2.3 Guards</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_13.html#index-proof_002dtree_002dexistentials_002dalist"><code>proof-tree-existentials-alist</code></a></td><td valign="top"><a href="PG-adapting_13.html#Organization-of-the-Code">12.2.1 Organization of the Code</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_13.html#index-proof_002dtree_002dexistentials_002dalist_002dhistory"><code>proof-tree-existentials-alist-history</code></a></td><td valign="top"><a href="PG-adapting_13.html#Organization-of-the-Code">12.2.1 Organization of the Code</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_13.html#index-proof_002dtree_002dexternal_002ddisplay"><code>proof-tree-external-display</code></a></td><td valign="top"><a href="PG-adapting_13.html#Guards">12.2.3 Guards</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_13.html#index-proof_002dtree_002dsequent_002dhash"><code>proof-tree-sequent-hash</code></a></td><td valign="top"><a href="PG-adapting_13.html#Organization-of-the-Code">12.2.1 Organization of the Code</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_4.html#index-proof_002dundo_002dn_002dtimes_002dcmd"><code>proof-undo-n-times-cmd</code></a></td><td valign="top"><a href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></td></tr>
+<tr><td></td><td valign="top"><a href="PG-adapting_8.html#index-proof_002duniversal_002dkeys"><code>proof-universal-keys</code></a></td><td valign="top"><a href="PG-adapting_8.html#Global-Constants">7. Global Constants</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-and-User-Option-Index_vr_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-O" class="summary-letter"><b>O</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+</td></tr></table>
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_20.html#Concept-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

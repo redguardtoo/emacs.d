@@ -1,0 +1,317 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 10. Configuring Font Lock</title>
+
+<meta name="description" content="Adapting Proof General: 10. Configuring Font Lock">
+<meta name="keywords" content="Adapting Proof General: 10. Configuring Font Lock">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_10.html#Configuring-Editing-Syntax" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_12.html#Configuring-Tokens" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Configuring-Font-Lock"></a>
+<a name="Configuring-Font-Lock-1"></a>
+<h1 class="chapter">10. Configuring Font Lock</h1>
+<a name="index-font-lock"></a>
+
+<p>Support for Font Lock in Proof General is described in the user manual
+(see the <i>Syntax highlighting</i> section).  To configure Font Lock for a
+new proof assistant, you need to set the variable
+<code>font-lock-keywords</code> in each of the mode functions you want
+highlighting for.  Proof General will automatically install these
+settings, and use font lock minor mode (for syntax highlighting as you
+type) in script buffers.
+</p>
+<p>To understand its format, check the documentation of
+<code>font-lock-keywords</code> inside Emacs.
+</p>
+<p>Instead of setting <code>font-lock-keywords</code> in each mode function, you
+can use the following four variables to make the settings in place.
+This is particularly useful if use the easy configuration mechanism for
+Proof General, see section <a href="PG-adapting_2.html#Demonstration-instance-and-easy-configuration">Demonstration instance and easy configuration</a>.
+</p>
+<dl>
+<dt><a name="index-proof_002dscript_002dfont_002dlock_002dkeywords"></a><u>Variable:</u> <b>proof-script-font-lock-keywords</b></dt>
+<dd><p>Value of &lsquo;<samp><code>font-lock-keywords</code></samp>&rsquo; used to fontify proof scripts.<br>
+The proof script mode should set this before calling &lsquo;<samp><code>proof-config-done</code></samp>&rsquo;.
+Used also by &lsquo;<samp><code>proof-easy-config</code></samp>&rsquo; mechanism.
+See also &lsquo;<samp><code>proof-goals-font-lock-keywords</code></samp>&rsquo; and &lsquo;<samp><code>proof-response-font-lock-keywords</code></samp>&rsquo;.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dgoals_002dfont_002dlock_002dkeywords"></a><u>Variable:</u> <b>proof-goals-font-lock-keywords</b></dt>
+<dd><p>Value of &lsquo;<samp><code>font-lock-keywords</code></samp>&rsquo; used to fontify the goals output.<br>
+The goals shell mode should set this before calling &lsquo;<samp><code>proof-goals-config-done</code></samp>&rsquo;.
+Used also by &lsquo;<samp><code>proof-easy-config</code></samp>&rsquo; mechanism.
+See also &lsquo;<samp><code>proof-script-font-lock-keywords</code></samp>&rsquo; and &lsquo;<samp><code>proof-response-font-lock-keywords</code></samp>&rsquo;.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dresponse_002dfont_002dlock_002dkeywords"></a><u>Variable:</u> <b>proof-response-font-lock-keywords</b></dt>
+<dd><p>Value of &lsquo;<samp><code>font-lock-keywords</code></samp>&rsquo; used to fontify the response output.<br>
+The response mode should set this before calling &lsquo;<samp><code>proof-response-config-done</code></samp>&rsquo;.
+Used also by &lsquo;<samp><code>proof-easy-config</code></samp>&rsquo; mechanism.
+See also &lsquo;<samp><code>proof-script-font-lock-keywords</code></samp>&rsquo; and &lsquo;<samp><code>proof-goals-font-lock-keywords</code></samp>&rsquo;.
+</p></dd></dl>
+<p>Proof General provides a special function, <code>proof-zap-commas</code>, for
+tweaking the font lock behaviour of provers which have declarations of
+the form <code>x,y,z:Ty</code>.  This function removes highlighting on the
+commas, and can be added as the last element of
+<code>font-lock-keywords</code>.  Further manipulation of font lock behaviour
+can be achieved via two hook functions which are run before and after
+fontifying the output buffers.
+</p>
+<dl>
+<dt><a name="index-proof_002dzap_002dcommas"></a><u>Function:</u> <b>proof-zap-commas</b><i> limit</i></dt>
+<dd><p>Remove the face of all &lsquo;<samp>,</samp>&rsquo; from point to <var>limit</var>.<br>
+Meant to be used from &lsquo;<samp><code>font-lock-keywords</code></samp>&rsquo; as a way
+to unfontify commas in declarations and definitions.
+Useful for provers which have declarations of the form x,y,z:Ty
+All that can be said for it is that the previous ways of doing
+this were even more bogus....
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dbefore_002dfontify_002doutput_002dhook"></a><u>Variable:</u> <b>pg-before-fontify-output-hook</b></dt>
+<dd><p>This hook is called before fontifying a region in an output buffer.<br>
+A function on this hook can alter the region of the buffer within
+the current restriction, and must return the final value of (<code>point-max</code>).
+[This hook is presently only used by phox-sym-lock].
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dafter_002dfontify_002doutput_002dhook"></a><u>Variable:</u> <b>pg-after-fontify-output-hook</b></dt>
+<dd><p>This hook is called before fonfitying a region in an output buffer.<br>
+[This hook is presently only used by Isabelle].
+</p></dd></dl>
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_10.html#Configuring-Editing-Syntax" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_12.html#Configuring-Tokens" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

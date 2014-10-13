@@ -1,0 +1,34 @@
+/* File name:      example.lcm                            */
+/* Description:    Tutorial walkthrough from LClam manual */
+/* Author:         James Brotherston                      */
+/* Last modified:  20th August 2001                       */
+
+query_top_goal X assp.
+
+set_spypoint (induction_top normal_ind).
+set_spypoint sym_eval.
+
+silent_output on.
+
+pds_plan (induction_top normal_ind) assp.
+continue.
+continue.
+continue.
+
+add_theory_to_induction_scheme_list arithmetic.
+add_theory_to_sym_eval_list arithmetic.
+set_wave_rule_to_sym_eval.
+add_to_sym_eval_list [idty].
+set_wave_rule_to_sym_eval.
+remove_spypoint (induction_top normal_ind).
+remove_spypoint sym_eval.
+pds_plan (induction_top normal_ind) assp.
+
+step_by_step on.
+pds_plan (induction_top normal_ind) assp.
+continue.
+backtrack.
+try ind_strat.
+continue.
+plan_node (2::1::nil).
+abandon.

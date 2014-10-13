@@ -1,0 +1,486 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 5. Support for other Packages</title>
+
+<meta name="description" content="Proof General: 5. Support for other Packages">
+<meta name="keywords" content="Proof General: 5. Support for other Packages">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_7.html#Subterm-Activation-and-Proof-by-Pointing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Support-for-other-Packages"></a>
+<a name="Support-for-other-Packages-1"></a>
+<h1 class="chapter">5. Support for other Packages</h1>
+
+<p>Proof General makes some configuration for other Emacs packages which
+provide various useful facilities that can make your editing
+more effective.
+</p>
+<p>Sometimes this configuration is purely at the proof assistant specific
+level (and so not necessarily available), and sometimes it is made using
+Proof General settings.
+</p>
+<p>When adding support for a new proof assistant, we suggest that these
+other packages are supported, as a convention.
+</p>
+<p>The packages currently supported include
+<code>font-lock</code>, 
+<code>imenu</code> and <code>speedbar</code>,
+<code>outline-mode</code>,
+<code>completion</code>,
+and <code>etags</code>.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Syntax-highlighting">5.1 Syntax highlighting</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Imenu-and-Speedbar">5.2 Imenu and Speedbar</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Support-for-outline-mode">5.3 Support for outline mode</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Support-for-completion">5.4 Support for completion</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Support-for-tags">5.5 Support for tags</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Syntax-highlighting"></a>
+<a name="Syntax-highlighting-1"></a>
+<h2 class="section">5.1 Syntax highlighting</h2>
+<a name="index-lego_002dmode_002dhooks"></a>
+<a name="index-coq_002dmode_002dhooks"></a>
+<a name="index-isa_002dmode_002dhooks"></a>
+<a name="index-font-lock"></a>
+<a name="index-colour"></a>
+
+<p>Proof script buffers are decorated (or <i>fontified</i>) with colours, bold
+and italic fonts, etc, according to the syntax of the proof language and
+the settings for <code>font-lock-keywords</code> made by the proof assistant
+specific portion of Proof General.  Moreover, Proof General usually
+decorates the output from the proof assistant, also using
+<code>font-lock</code>.
+</p>
+<p>To automatically switch on fontification in Emacs, you may need
+to engage <code>M-x global-font-lock-mode</code>.  
+</p>
+<p>By the way, the choice of colour, font, etc, for each kind of markup is
+fully customizable in Proof General.  Each <em>face</em> (Emacs
+terminology) is controlled by its own customization setting.
+You can display a list of all of them using the customize
+menu: 
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof General -&gt; Advanced -&gt; Customize -&gt; Faces -&gt; Proof Faces.
+</pre></td></tr></table>
+
+<hr size="6">
+<a name="Imenu-and-Speedbar"></a>
+<a name="Imenu-and-Speedbar-1"></a>
+<h2 class="section">5.2 Imenu and Speedbar</h2>
+<a name="index-proof_002dgoal_002dwith_002dhole_002dregexp"></a>
+<a name="index-proof_002dgoal_002dwith_002dhole_002dresult"></a>
+<a name="index-Speedbar"></a>
+<a name="index-Imenu"></a>
+<a name="index-index-menu"></a>
+
+<p>The Emacs package <code>imenu</code> (Index Menu) provides a menu built from
+the names of entities (e.g., theorems, definitions, etc) declared in a
+buffer.  This allows easy navigation within the file.  Proof General
+configures both packages automatically so that you can quickly jump to
+particular proofs in a script buffer.
+</p>
+<p>(Developers note: the automatic configuration is done with the settings
+<code>proof-goal-with-hole-regexp</code> and
+<code>proof-save-with-hole-regexp</code>.  Better configuration may be made
+manually with several other settings, see the <i>Adapting Proof General</i>
+manual for further details).
+</p>
+<p>To use Imenu, select the option
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">        Proof-General -&gt; Quick Options -&gt; Minor Modes -&gt; Index Menu
+</pre></td></tr></table>
+<p>This adds an &quot;Index&quot; menu to the main menu bar for proof script buffers.
+You can also use <kbd>M-x imenu</kbd> for keyboard-driven completion of tags
+built from names in the buffer.
+</p>
+<p>Speedbar displays a file tree in a separate window on the display,
+allowing quick navigation.  Middle/double-clicking or pressing <kbd>+</kbd>
+on a file icon opens up to display tags (definitions, theorems, etc)
+within the file.  Middle/double-clicking on a file or tag jumps to that
+file or tag.
+</p>
+<p>To use Speedbar, use 
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">        Proof-General -&gt; Quick Options -&gt; Minor Modes -&gt; Speedbar 
+</pre></td></tr></table>
+<p>If you prefer the old fashioned way, &lsquo;M-x speedbar&rsquo; does
+the same job.
+</p>
+<p>For more information about Speedbar,
+see <a href="http://cedet.sourceforge.net/speedbar.shtml">http://cedet.sourceforge.net/speedbar.shtml</a>.
+</p>
+
+<hr size="6">
+<a name="Support-for-outline-mode"></a>
+<a name="Support-for-outline-mode-1"></a>
+<h2 class="section">5.3 Support for outline mode</h2>
+<a name="index-outline-mode"></a>
+
+<p>Proof General configures Emacs variables (<code>outline-regexp</code> and
+<code>outline-heading-end-regexp</code>) so that outline minor mode can be
+used on proof script files.  The headings taken for outlining are the
+&quot;goal&quot; statements at the start of goal-save sequences, 
+see section <a href="ProofGeneral_3.html#Goal_002dsave-sequences">Goal-save sequences</a>. If you want to use <code>outline</code> to hide 
+parts of the proof script in the <em>locked</em> region, you need to disable
+<code>proof-strict-read-only</code>.
+</p>
+<p>Use <kbd>M-x outline-minor-mode</kbd> to turn on outline minor mode.
+Functions for navigating, hiding, and revealing the proof script are
+available in menus. 
+</p>
+<p>Please note that outline-mode may not work well in processed proof
+script files, because of read-only restrictions of the protected region.
+This is an inherent problem with outline because it works by modifying
+the buffer.  If you want to use outline with processed scripts, you
+can turn off the <code>Strict Read Only</code> option. 
+</p>
+<p>See See <a href="../(emacs/_0029Outline-Mode.html#g_t_0029Outline-Mode">((emacs))Outline Mode</a> for more information about outline mode.
+</p>
+<hr size="6">
+<a name="Support-for-completion"></a>
+<a name="Support-for-completion-1"></a>
+<h2 class="section">5.4 Support for completion</h2>
+<a name="index-completion"></a>
+
+<p>You might find the <em>completion</em> facility of Emacs useful when
+you&rsquo;re using Proof General.  The key <kbd>C-RET</kbd> is defined to invoke
+the <code>complete</code> command.  Pressing <kbd>C-RET</kbd> cycles through
+completions displaying hints in the minibuffer.
+</p>
+<p>Completions are filled in according to what has been recently typed,
+from a database of symbols.  The database is automatically saved at
+the end of a session.
+</p>
+<p>Proof General has the additional facility for setting a completion table
+for each supported proof assistant, which gets loaded into the
+completion database automatically.  Ideally the completion table would
+be set from the running process according to the identifiers available
+are within the particular context of a script file.  But until this is
+available, this table may be set to contain a number of standard
+identifiers available for your proof assistant.
+</p>
+<p>The setting <code><em>PA</em>-completion-table</code> holds the list of
+identifiers for a proof assistant.  The function
+<code>proof-add-completions</code> adds these into the completion
+database.
+</p>
+<dl>
+<dt><a name="index-PA_002dcompletion_002dtable"></a><u>Variable:</u> <b>PA-completion-table</b></dt>
+<dd><p>List of identifiers to use for completion for this proof assistant.<br>
+Completion is activated with M-x complete.
+</p>
+<p>If this table is empty or needs adjusting, please make changes using
+&lsquo;<samp><code>customize-variable</code></samp>&rsquo; and post suggestions at
+http://proofgeneral.inf.ed.ac.uk/trac
+</p></dd></dl>
+
+<p>The completion facility uses a library &lsquo;<tt>completion.el</tt>&rsquo; which
+usually ships with Emacs, and supplies the <code>complete</code> function.
+</p>
+<dl>
+<dt><a name="index-complete"></a><u>Command:</u> <b>complete</b></dt>
+<dd><p>Fill out a completion of the word before point.  <br>
+Point is left at end.  Consecutive calls rotate through all possibilities.
+Prefix args:
+</p><dl compact="compact">
+<dt> <kbd>C-u</kbd></dt>
+<dd><p>leave point at the beginning of the completion, not the end.
+</p></dd>
+<dt> <kbd>a number</kbd></dt>
+<dd><p>rotate through the possible completions by that amount
+</p></dd>
+<dt> <kbd>0</kbd></dt>
+<dd><p>same as -1 (insert previous completion)
+</p></dd>
+</dl>
+<p>See the comments at the top of &lsquo;<samp>completion.el</samp>&rsquo; for more info.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Support-for-tags"></a>
+<a name="Support-for-tags-1"></a>
+<h2 class="section">5.5 Support for tags</h2>
+<a name="index-tags"></a>
+
+<p>An Emacs &quot;tags table&quot; is a description of how a multi-file system is
+broken up into files.  It lists the names of the component files and the
+names and positions of the functions (or other named subunits) in each
+file.  Grouping the related files makes it possible to search or replace
+through all the files with one command.  Recording the function names
+and positions makes possible the <kbd>M-.</kbd> command which finds the
+definition of a function by looking up which of the files it is in.
+</p>
+<p>Some instantiations of Proof General (currently LEGO and Coq) are
+supplied with external programs (&lsquo;<tt>legotags</tt>&rsquo; and &lsquo;<tt>coqtags</tt>&rsquo;) for
+making tags tables.  For example, invoking &lsquo;<samp>coqtags *.v</samp>&rsquo; produces a
+file &lsquo;<tt>TAGS</tt>&rsquo; for all files &lsquo;<samp>*.v</samp>&rsquo; in the current
+directory. Invoking &lsquo;<samp>coqtags `find . -name \*.v`</samp>&rsquo; produces a file
+&lsquo;<tt>TAGS</tt>&rsquo; for all files ending in &lsquo;<samp>.v</samp>&rsquo; in the current directory
+structure. Once a tag table has been made for your proof developments,
+you can use the Emacs tags mechanisms to find tags, and complete symbols
+from tags table.
+</p>
+<p>One useful key-binding you might want to make is to set the usual
+tags completion key <kbd>M-tab</kbd> to run <code>tag-complete-symbol</code> to use
+completion from names in the tag table.  To set this binding in Proof
+General script buffers, put this code in your &lsquo;<tt>.emacs</tt>&rsquo; file:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(add-hook 'proof-mode-hook
+  (lambda () (local-set-key '(meta tab) 'tag-complete-symbol)))
+</pre></td></tr></table>
+<p>Since this key-binding interferes with a default binding that users may
+already have customized (or may be taken by the window manager), Proof
+General doesn&rsquo;t do this automatically.
+</p>
+<p>Apart from completion, there are several other operations on tags.  One
+common one is replacing identifiers across all files using
+<code>tags-query-replace</code>.  For more information on how to use tags,
+See <a href="../(emacs/_0029Tags.html#g_t_0029Tags">((emacs))Tags</a>.
+</p>
+<p>To use tags for completion at the same time as the completion mechanism
+mentioned already, you can use the command <kbd>M-x add-completions-from-tags-table</kbd>.
+</p>
+<dl>
+<dt><a name="index-add_002dcompletions_002dfrom_002dtags_002dtable"></a><u>Command:</u> <b>add-completions-from-tags-table</b></dt>
+<dd><p>Add completions from the current tags table.
+</p></dd></dl>
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Support-for-other-Packages" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_7.html#Subterm-Activation-and-Proof-by-Pointing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

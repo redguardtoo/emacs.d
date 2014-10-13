@@ -1,0 +1,22 @@
+Here we have three projects a, b and c. The projects b and c are
+totally independent from each other. 
+
+Strangely, project a contains a module Le, which clashes with
+Coq.Arith.Le from the standard library.
+
+Project b depends on a, more precisely, b/b.v requires a/Le.v.
+
+File c/c.v require Le, but this refers to Coq.Arith.Le!!
+
+The resulting LoadPath confusion bug, which is described in the
+following, has been fixed with the commit 
+around 2011-01-18 21:45:00 UTC.
+
+Currently coqtop is not able to reset the LoadPath, therefore,
+when first scripting b/b.v and then switching to c/c.v, coq
+wrongly loads a/Le.vo! Vice versa, when first scripting c/c.v and
+then switching to b/b.v, coq loads Coq.Arith.Le instead of
+a/Le.vo!
+
+Because coq-load-path is file-local, the dependency analysis
+works correctly.

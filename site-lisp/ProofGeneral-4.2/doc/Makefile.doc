@@ -1,0 +1,119 @@
+##
+## Makefile for Proof General doc directory.
+##
+## Author:  David Aspinall <da@inf.ed.ac.uk>
+##
+## Maintainer:  Proof General maintainer <da+proofgen@inf.ed.ac.uk>
+##
+## Makefile.doc,v 12.2 2012/01/03 14:43:05 da Exp
+## 
+###########################################################################
+##
+## Use:
+##	make info,pdf,html    - build respective docs from texi source.
+##	make doc	      - make default kinds of doc (pdf, info).
+##
+###########################################################################
+
+
+MAKE = make -f Makefile.doc 
+MAKEINFO = makeinfo
+TEXI2HTML = texi2html -expandinfo -number -split_chapter --noheader --css-include proofgen.css
+# `texinfo-tex' package contains texi2pdf
+TEXI2PDF = texi2pdf
+# `dviutils' package contains these useful utilities.
+# "make rearrange" will only be called if you have dviselect.
+DVISELECT = dviselect
+DVICONCAT = dviconcat
+
+# Assumes actual first two pages belong to titlepage
+TITLERANGE = =1,=2
+
+# Assumes that main document starts on third actual page
+MAINRANGE = =3,=4,3:
+
+TOC = :_1
+
+EMACS = emacs
+EMACSFLAGS = -q -no-site-file 
+
+TMPFILE=pgt
+
+.SUFFIXES:  .texi .info .html .pdf .gz
+
+default: doc
+
+.texi.info:
+	$(MAKEINFO) $< 
+
+.texi.pdf:
+	$(TEXI2PDF) $< 
+
+.texi.html:	
+	$(TEXI2HTML) --output $* $< 
+
+default: doc
+
+FORCE:
+
+%.gz : %
+	gzip -f -9 $*
+
+## 
+## doc : build pdf, info files from $(DOCNAME).texi
+##
+doc:	pdf info
+
+## 
+## all : build all documentation targets
+##
+all:    html info pdf
+
+##
+## dist: build distribution targets
+##
+dist:   info html pdf
+
+pdf:    $(DOCNAME).pdf
+
+# da: target is a fake: we actually make in a subdir
+html:   $(DOCNAME).html
+info:   $(DOCNAME).info
+
+# NB: for info, could make localdir automatically from
+# START-INFO-DIR-ENTRY / END-INFO-DIR-ENTRY.
+# Does some utility do this?
+
+##
+## clean: Remove subsidiary documentation files
+##
+CLEANTARGS:=$(DOCNAME).cp $(DOCNAME).fn $(DOCNAME).vr $(DOCNAME).tp $(DOCNAME).ky $(DOCNAME).kys $(DOCNAME).pg $(DOCNAME).fns $(DOCNAME).vrs $(DOCNAME).cps $(DOCNAME).aux $(DOCNAME).log $(DOCNAME).cp $(DOCNAME).cp0 $(DOCNAME).toc
+clean:
+	rm -f $(CLEANTARGS)
+	rm -f *~
+
+##
+## distclean: Remove documentation targets
+##
+distclean:   clean
+	rm -rf $(DOCNAME).info* $(DOCNAME).pdf $(DOCNAME)
+
+##
+## texi: update magic comments in texi from docstrings in code.
+##	  (developer use only!)
+##       Must be run from source .els otherwise function arguments lost
+##
+$(DOCNAME).texi: 
+	$(MAKE) magic
+magic:
+	(cd ..; make clean)
+	$(EMACS) $(EMACSFLAGS) -batch -l ./docstring-magic.el $(DOCNAME).texi -f texi-docstring-magic -f save-buffer
+
+debugmagic:
+	$(EMACS) $(EMACFLAGS)  -eval '(setq debug-on-error t)' -l ./docstring-magic.el $(DOCNAME).texi -f texi-docstring-magic -f save-buffer
+
+
+
+
+
+

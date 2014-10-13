@@ -1,0 +1,38 @@
+Proof General Documentation
+===========================
+
+The distribution may include pre-built documentation for
+your convenience.  Otherwise you will need to run 
+
+	make info
+	make dvi
+	make pdf
+	make html
+
+according to what format you'd like.  Everything is generated
+from the master Texinfo files ProofGeneral.texi and PG-adapting.texi,
+so you'll need the proper tools for conversion.  Check Makefile.doc
+for details.
+
+Front Image for Manual
+----------------------
+If you want a front image on the printed dvi/gs manuals, you need to
+have the ProofGeneral.eps file in this directory.  You can download a
+compressed version from
+
+   http://proofgeneral.inf.ed.ac.uk/ProofGeneralPortrait.eps.gz
+
+This file is not included with the distribution because it is rather
+large (1.6M).  
+
+Instead of downloading, you may be able to generate an alternative eps
+from the included ProofGeneral.jpg file using an image manipulation
+program such as gimp or Imagemagick.  This will give you a slightly
+different (and degraded) image compared to the distributed one
+mentioned above.
+
+Running "made dvi" will adjust the Texinfo file to make the front
+page blank if there is no ProofGeneral.eps file available.
+
+David Aspinall.
+August 2000.

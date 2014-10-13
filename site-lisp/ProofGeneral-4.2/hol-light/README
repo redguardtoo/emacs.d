@@ -1,0 +1,44 @@
+HOL Light in Proof General.
+
+Written by David Aspinall and Mark Adams.
+
+Status:	           not officially supported yet
+Maintainer:        volunteer required
+HOL-Light version: SVN trunk (a moving target 8-) - tested on 118)
+HOL homepage:      https://www.cl.cam.ac.uk/~jrh13/hol-light/
+
+========================================
+
+
+This is a "technology demonstration" of Proof General for HOL-Light.
+
+We have written this in the hope that somebody from the HOL-Light
+community will adopt it, maintain and improve it, and thus turn it
+into a proper instantiation of Proof General.
+
+
+------------
+
+Notes:
+
+There are some problems at the moment.  HOL proof scripts often use
+batch-oriented single step tactic proofs, but Proof General does not
+offer an easy way to edit these kind of proofs.  The "Boomburg-HOL"
+Emacs interface by Koichi Takahashi and Masima Hagiya addressed this,
+and to some extent so perhaps does the Emacs interface supplied with
+HOL.  Perhaps one of these could be embedded/reimplemented inside
+Proof General.  Implemented in a generic way, managing batch vs
+interactive proofs might also be useful for other provers.
+
+Another problem is that HOL scripts sometimes use OCaml modules, which
+will cause confusion because Proof General does not really parse OCaml,
+it just looks for semicolons.  This could be improved by taking a
+better parser (perhaps from the OCaml mode for Emacs).
+
+These improvements would be worthwhile contributions to Proof General
+and also provide the HOL community with a nice front end.  
+Please have a go!
+
+
+README,v 12.1 2012/01/19 12:48:02 da Exp
+

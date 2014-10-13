@@ -1,0 +1,13 @@
+Experimental work-in-progress on "Movie" output from
+annotated Proof General buffers.
+
+The XSL files here are due to Carst Tankink, copied from the Proviola
+project.  See http://mws.cs.ru.nl/proviola and these papers:
+
+Carst Tankink, Herman Geuvers, James McKinna, Freek Wiedijk
+Proviola: a Tool for Proof Re-animation
+MKM 2010.
+
+Carst Tankink, Herman Geuvers and James McKinna. 
+Narrating Formal Proof (Work in Progress)
+UITP 2010.

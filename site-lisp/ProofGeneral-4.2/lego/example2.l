@@ -1,0 +1,1 @@
+Module example2 Import "readonly/readonly";

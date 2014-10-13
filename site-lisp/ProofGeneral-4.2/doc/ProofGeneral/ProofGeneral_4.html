@@ -1,0 +1,763 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 3. Advanced Script Management and Editing</title>
+
+<meta name="description" content="Proof General: 3. Advanced Script Management and Editing">
+<meta name="keywords" content="Proof General: 3. Advanced Script Management and Editing">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_3.html#Basic-Script-Management" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Advanced-Script-Management-and-Editing"></a>
+<a name="Advanced-Script-Management-and-Editing-1"></a>
+<h1 class="chapter">3. Advanced Script Management and Editing</h1>
+<a name="index-Multiple-Files"></a>
+
+<p>If you are working with large proof developments, you may want to know
+about the advanced script management and editing features of Proof
+General covered in this chapter.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Document-centred-working">3.1 Document centred working</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Automatic-processing">3.2 Automatic processing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Switching-between-proof-scripts">3.4 Switching between proof scripts</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#View-of-processed-files">3.5 View of processed files</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Retracting-across-files">3.6 Retracting across files</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Asserting-across-files">3.7 Asserting across files</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">      
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Automatic-multiple-file-handling">3.8 Automatic multiple file handling</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Escaping-script-management">3.9 Escaping script management</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Editing-features">3.10 Editing features</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Document-centred-working"></a>
+<a name="Document-centred-working-1"></a>
+<h2 class="section">3.1 Document centred working</h2>
+<a name="index-annotation"></a>
+
+<p>Proof scripts can be annotated with the output produced by the prover
+while they are checked.  By hovering the mouse on the completed
+regions you can see any output that was produced when they were
+checked.  Depending on the proof language (it works well with
+declarative languages), this may enable a &ldquo;document centred&rdquo; way of
+working, where you may not need to keep a separate window open for
+displaying prover output.
+</p>
+<p>This way of working is controlled by several settings.  To help
+configure things appropriately for document-centred working, there are
+two short-cut commands:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Display -&gt; Document Centred 
+Proof-General -&gt; Quick Options -&gt; Display -&gt; Default
+</pre></td></tr></table>
+<p>which change settings appropriately between a document centred
+mode and the original classic Proof General behaviour and appearance.  
+The first command also engages automatic processing of the whole
+buffer, explained in the following section further below.
+</p>
+<p>The behaviour can be fine-tuned with the individual settings.
+Starting with the classic settings, first, you may select
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Processing -&gt; Full Annotations
+</pre></td></tr></table>
+<p>to ensure that the details are recorded in the script.  This is not the
+default because it can cause long sequences of commands to execute more
+slowly as the output is collected from the prover eagerly when the
+commands are executed, and printing can be be slow for large and complex
+expressions.  It also increases the space requirements for Emacs
+buffers.  However, when interactively developing smaller files, it is
+very useful.
+</p>
+<p>Next, you may <i>de</i>select 
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Display -&gt; Auto Raise
+</pre></td></tr></table>
+<p>which will prevent the prover output being eagerly displayed.  You can
+still manually arrange your Emacs windows and frames to ensure the
+output buffers are present if you want.  
+</p>
+<p>You may like to <i>de</i>select
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof General -&gt; Quick Options -&gt; Display -&gt; Colour Locked
+</pre></td></tr></table>
+<p>to prevent highlighting of the locked region.  This text which
+has been checked and that which has not is less obvious, but 
+you can see the position of the next command to be processed
+with the marker.
+</p>
+<p>If you have no colouring on the locked region, it can be hard to see
+where processing has got to.  Look for the &ldquo;overlay marker&rdquo;, a triangle
+in the left-hand fringe of the display, to see which line processing has
+stopped at.   If it has stopped on a region with
+an error, you might want to see that.  You can select
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Display -&gt; Sticky Errors
+</pre></td></tr></table>
+<p>to add a higlight for regions which did not successfully process
+on the last attempt.  Whenever the region is edited, the
+highlight is removed. 
+</p>
+<p>Finally, you may want to ensure that
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Read Only -&gt; Undo On Edit
+</pre></td></tr></table>
+<p>is selected.  
+Undo on edit is a setting for the <code>proof-strict-read-only</code> variable.
+This allows you to freely edit the processed region, but first it
+automatically retracts back to the point of the edit.  Comments can
+be edited freely without retraction.
+</p>
+<p>The configuration variables controlled by the above menu items can be
+customized as Emacs variables.  The two settings which control
+interaction with the prover are <code>proof-full-annotation</code> and
+<code>proof-strict-read-only</code>.  Note that you can also record the
+history of output from the prover <i>without</i> adding mouse hovers to the
+script.  This is controlled by <code>proof-output-tooltips</code> which is
+also on the Display menu in Quick Options.  See section <a href="ProofGeneral_9.html#Display-customization">Display customization</a>, for more information about customizing display options.
+</p>
+<dl>
+<dt><a name="index-proof_002dfull_002dannotation"></a><u>User Option:</u> <b>proof-full-annotation</b></dt>
+<dd><p>Non-nil causes Proof General to record output for all proof commands.<br>
+Proof output is recorded as it occurs interactively; normally if
+many steps are taken at once, this output is suppressed.  If this
+setting is used to enable it, the proof script can be annotated
+with full details.  See also &lsquo;<samp><code>proof-output-tooltips</code></samp>&rsquo; to enable
+automatic display of output on mouse hovers.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-proof_002dstrict_002dread_002donly"></a><u>User Option:</u> <b>proof-strict-read-only</b></dt>
+<dd><p>Whether Proof General is strict about the read-only region in buffers.<br>
+If non-nil, an error is given when an attempt is made to edit the
+read-only region, except for the special value <code>'retract</code> which means
+undo first.  If nil, Proof General is more relaxed (but may give
+you a reprimand!).
+</p>
+<p>The default value is <code>retract</code>.
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Automatic-processing"></a>
+<a name="Automatic-processing-1"></a>
+<h2 class="section">3.2 Automatic processing</h2>
+<a name="index-Automatic-processing"></a>
+<a name="index-autosend"></a>
+<a name="index-proof_002dautosend_002denable"></a>
+
+
+<p>If you like making your hair stand on end, the electric
+terminator mode is probably not enough.  Proof General has another
+feature that will automatically send text to the prover, while
+you aren&rsquo;t looking.
+</p>
+<p>Enabling
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Processing -&gt; Process Automatically
+</pre></td></tr></table>
+
+<p>Causes Proof General to start processing text when Emacs is idle for a
+while.  You can choose either to send just the next command beyond the
+point, or the whole buffer.  See
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">Proof-General -&gt; Quick Options -&gt; Processing -&gt; Automatic Processing Mode
+</pre></td></tr></table>
+<p>for the choices.
+</p>
+<p>The text will be sent in a fast loop that processes more quickly than
+<kbd>C-c C-b</kbd> (i.e., <code>proof-process-buffer</code>, the down toolbar
+button), but ignores user input and doesn&rsquo;t update the display.  But the
+feature tries to be non-intrusive to the user: if you start to type
+something or use the mouse, the fast loop will be interrupted and revert
+to a slower interactive loop with display updates.
+</p>
+<p>In the check next command mode, the successfully checked region will
+briefly flash up as green to indicate it is okay.
+</p>
+<p>You can use <kbd>C-c C-.</kbd> (<code>proof-goto-end-of-locked</code>) to find out
+where processing got to, as usual.  Text is only sent if the last
+interactive command processed some text (i.e., wasn&rsquo;t an undo step
+backwards into the buffer) and processing didn&rsquo;t stop with an error.  To
+start automatic processing again after an error, simply hit <kbd>C-c
+C-n</kbd> after editing the buffer.  To turn the automatic processing on or
+off from the keyboard, you can use the keybinding:
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c &gt;</kbd></dt>
+<dd><p><code>proof-autosend-toggle</code>
+</p></dd>
+</dl>
+
+<dl>
+<dt><a name="index-proof_002dautosend_002dtoggle"></a><u>Command:</u> <b>proof-autosend-toggle</b><i> &amp;optional arg</i></dt>
+<dd><p>Toggle &lsquo;<samp><code>proof-autosend-enable</code></samp>&rsquo;. With <var>arg</var>, turn on iff ARG&gt;0.<br>
+This function simply uses <code>customize-set-variable</code> to set the variable.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Visibility-of-completed-proofs"></a>
+<a name="Visibility-of-completed-proofs-1"></a>
+<h2 class="section">3.3 Visibility of completed proofs</h2>
+<a name="index-Visibility-of-proofs"></a>
+
+<p>Large developments may consist of large files with many proofs.  To help
+see what has been proved without the detail of the proof itself, Proof
+General can hide portions of the proof script.  Two different kinds of
+thing can be hidden: comments and (what Proof General designates as) the
+body of proofs.
+</p>
+<p>You can toggle the visibility of a proof script portion by using the
+context sensitive menu triggered by <b>clicking the right mouse button
+on a completed proof</b>, or the key <kbd>C-c v</kbd>, which runs
+<code>pg-toggle-visibility</code>.
+</p>
+<p>You can also select the &ldquo;disappearing proofs&rdquo; mode from the menu,
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  Proof-General -&gt; Quick Options -&gt; Display -&gt; Disappearing Proofs
+</pre></td></tr></table>
+
+<p>This automatically hides each the body of each proof portion
+as it is completed by the proof assistant.
+Two further menu commands in the main Proof-General menu,
+<em>Show all</em> and <em>Hide all</em> apply to all the completed
+portions in the buffer.
+</p>
+<p>Notice that by design, this feature only applies to completed proofs,
+<em>after</em> they have been processed by the proof assistant.  When
+files are first visited in Proof General, no information is stored about
+proof boundaries.
+</p>
+<p>The relevant elisp functions and settings are mentioned below.
+</p>
+<dl>
+<dt><a name="index-pg_002dtoggle_002dvisibility"></a><u>Command:</u> <b>pg-toggle-visibility</b></dt>
+<dd><p>Toggle visibility of region under point.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dshow_002dall_002dproofs"></a><u>Command:</u> <b>pg-show-all-proofs</b></dt>
+<dd><p>Display all completed proofs in the buffer.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dhide_002dall_002dproofs"></a><u>Command:</u> <b>pg-hide-all-proofs</b></dt>
+<dd><p>Hide all completed proofs in the buffer.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002ddisappearing_002dproofs"></a><u>User Option:</u> <b>proof-disappearing-proofs</b></dt>
+<dd><p>Non-nil causes Proof General to hide proofs as they are completed.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Switching-between-proof-scripts"></a>
+<a name="Switching-between-proof-scripts-1"></a>
+<h2 class="section">3.4 Switching between proof scripts</h2>
+<a name="index-Switching-between-proof-scripts"></a>
+
+<p>Basic modularity in large proof developments can be achieved by
+splitting proof scripts across various files. Let&rsquo;s assume that you are
+in the middle of a proof development. You are working on a soundness
+proof of Hoare Logic in a file called<a name="DOCF5" href="ProofGeneral_fot.html#FOOT5">(5)</a> &lsquo;<tt>HSound.l</tt>&rsquo;. It
+depends on a number of other files which develop underlying
+concepts e.g. syntax and semantics of expressions, assertions,
+imperative programs. You notice that the current lemma is too difficult
+to prove because you have forgotten to prove some more basic properties
+about determinism of the programming language. Or perhaps a previous
+definition is too cumbersome or even wrong.
+</p>
+<p>At this stage, you would like to visit the appropriate file, say
+&lsquo;<tt>sos.l</tt>&rsquo; and retract to where changes are required. Then, using
+script management, you want to develop some more basic theory in
+&lsquo;<tt>sos.l</tt>&rsquo;. Once this task has been completed (possibly involving
+retraction across even earlier files) and the new development has been
+asserted, you want to switch back to &lsquo;<tt>HSound.l</tt>&rsquo; and replay to the
+point you got stuck previously.
+</p>
+<p>Some hours (or days) later you have completed the soundness proof and
+are ready to tackle new challenges. Perhaps, you want to prove a
+property that builds on soundness or you want to prove an orthogonal
+property such as completeness.
+</p>
+<p>Proof General lets you do all of this while maintaining the consistency
+between proof script buffers and the state of the proof assistant.
+However, you cannot have more than one buffer where only a fraction of
+the proof script contains a locked region. Before you can employ script
+management in  another proof script buffer, you must either fully assert
+or retract the current script buffer.
+</p>
+<hr size="6">
+<a name="View-of-processed-files"></a>
+<a name="View-of-processed-files-1"></a>
+<h2 class="section">3.5 View of processed files</h2>
+
+<p>Proof General tries to be aware of all files that the proof assistant
+has processed or is currently processing.  In the best case, it relies
+on the proof assistant explicitly telling it whenever it processes a new
+file which corresponds<a name="DOCF6" href="ProofGeneral_fot.html#FOOT6">(6)</a> to a file
+containing a proof script.
+</p>
+<p>If the current proof script buffer depends on background material from
+other files, proof assistants typically process these files
+automatically. If you visit such a file, the whole file is locked as
+having been processed in a single step.  From the user&rsquo;s point of view,
+you can only retract but not assert in this buffer. Furthermore,
+retraction is only possible to the <em>beginning</em> of the buffer.
+</p>
+<p>Unlike a script buffer that has been processed step-by-step via Proof
+General, automatically loaded script buffers do not pass through a
+&ldquo;red&rdquo; phase to indicate that they are currently being processed.  This
+is a limitation of the present implementation.  Proof General locks a
+buffer as soon as it sees the appropriate message from the proof
+assistant.  Different proof assistants may use different messages:
+either <em>early locking</em> when processing a file begins (e.g. LEGO) or
+<em>late locking</em> when processing a file ends (e.g. Isabelle).
+</p>
+<p>With <em>early locking</em>, you may find that a script which has only
+been partly processed (due to an error or interrupt, for example), is
+wrongly completely locked by Proof General.  Visit the file and retract
+back to the start to fix this.
+</p>
+<p>With <em>late locking</em>, there is the chance that you can break
+synchronization by editing a file as it is being read by the proof
+assistant, and saving it before processing finishes.
+</p>
+<p>In fact, there is a general problem of editing files which may be
+processed by the proof assistant automatically.  Synchronization can be
+broken whenever you have unsaved changes in a proof script buffer and
+the proof assistant processes the corresponding file.  (Of course, this
+problem is familiar from program development using separate editors
+and compilers).  The good news is that Proof General can detect the
+problem and flashes up a warning in the response buffer.  You can then
+visit the modified buffer, save it and retract to the beginning. Then
+you are back on track.
+</p>
+
+
+
+
+<hr size="6">
+<a name="Retracting-across-files"></a>
+<a name="Retracting-across-files-1"></a>
+<h2 class="section">3.6 Retracting across files</h2>
+<a name="index-Retraction-1"></a>
+
+<p>Make sure that the current script buffer has either been completely
+asserted or retracted (Proof General enforces this).  Then you can
+retract proof scripts in a different file. Simply visit a file that has
+been processed earlier and retract in it, using the retraction commands
+from see section <a href="ProofGeneral_3.html#Script-processing-commands">Script processing commands</a>. Apart from removing parts of the
+locked region in this buffer, all files which depend on it will be
+retracted (and thus unlocked) automatically. Proof General reminds you
+that now is a good time to save any unmodified buffers.
+</p>
+<hr size="6">
+<a name="Asserting-across-files"></a>
+<a name="Asserting-across-files-1"></a>
+<h2 class="section">3.7 Asserting across files</h2>
+<a name="index-Assertion-1"></a>
+
+<p>Make sure that the current script buffer has either been completely
+asserted or retracted. Then you can assert proof scripts in a different
+file. Simply visit a file that contains no locked region and assert some
+command with the usual assertion commands, see section <a href="ProofGeneral_3.html#Script-processing-commands">Script processing commands</a>. Proof General reminds you that now is a good time to save any
+unmodified buffers.  This is particularly useful as assertion may cause
+the proof assistant to automatically process other files.
+</p>
+
+<hr size="6">
+<a name="Automatic-multiple-file-handling"></a>
+<a name="Automatic-multiple-file-handling-1"></a>
+<h2 class="section">3.8 Automatic multiple file handling</h2>
+
+<p>To make it easier to adapt Proof General for a proof assistant, there is
+another possibility for multiple file support &mdash; that it is provided
+automatically by Proof General and not integrated with the
+file-management system of the proof assistant.
+</p>
+<p>In this case, Proof General assumes that the only files processed are
+the ones it has sent to the proof assistant itself.  Moreover, it
+(conservatively) assumes that there is a linear dependency between files
+in the order they were processed.
+</p>
+<p>If you only have automatic multiple file handling, you&rsquo;ll find that any
+files loaded directly by the proof assistant are <em>not</em> locked when
+you visit them in Proof General.  Moreover, if you retract a file it may
+retract more than is strictly necessary (because it assumes a linear
+dependency).
+</p>
+<p>For further technical details of the ways multiple file scripting is
+configured, see <i>Handling multiple files</i> in
+the <i>Adapting Proof General</i> manual.
+</p>
+
+
+<hr size="6">
+<a name="Escaping-script-management"></a>
+<a name="Escaping-script-management-1"></a>
+<h2 class="section">3.9 Escaping script management</h2>
+<a name="index-Shell"></a>
+
+<p>Occasionally you may want to review the dialogue of the entire session
+with the proof assistant, or check that it hasn&rsquo;t done something
+unexpected.  Experienced users may also want to directly communicate
+with the proof assistant rather than sending commands via the
+minibuffer, see section <a href="ProofGeneral_3.html#Proof-assistant-commands">Proof assistant commands</a>.
+</p>
+<p>Although the proof shell is usually hidden from view, it is run in a
+buffer which you can use to interact with the prover if necessary.  You
+can switch to it using the menu:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">  Proof-General -&gt; Buffers -&gt; Shell
+</pre></td></tr></table>
+
+<p><b>Warning:</b> you can probably cause confusion by typing in the shell
+buffer!  Proof General may lose track of the state of the proof
+assistant.  Output from the assistant is only fully monitored when Proof
+General is in control of the shell.
+When in control, Proof General watches the output from the proof
+assistant to guess when a file is loaded or when a proof step is taken
+or undone.  What happens when you type in the shell buffer directly
+depends on how complete the communication is between Proof General and
+the prover (which depends on the particular instantiation of Proof
+General).
+</p>
+<p>If synchronization is lost, you have two options to resynchronize. If
+you are lucky, it might suffice to use the key:
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-z</kbd></dt>
+<dd><p><code>proof-frob-locked-end</code>
+</p></dd>
+</dl>
+
+<p>This command is disabled by default, to protect novices using it
+accidently.
+</p>
+<p>If <code>proof-frob-locked-end</code> does not work, you will need to restart
+script management altogether (see section <a href="ProofGeneral_3.html#Proof-assistant-commands">Proof assistant commands</a>).
+</p>
+<dl>
+<dt><a name="index-proof_002dfrob_002dlocked_002dend"></a><u>Command:</u> <b>proof-frob-locked-end</b></dt>
+<dd><p>Move the end of the locked region backwards to regain synchronization.<br>
+Only for use by consenting adults.
+</p>
+<p>This command can be used to repair synchronization in case something
+goes wrong and you want to tell Proof General that the proof assistant
+has processed less of your script than Proof General thinks.
+</p>
+<p>You should only use it to move the locked region to the end of
+a proof command.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Editing-features"></a>
+<a name="Editing-features-1"></a>
+<h2 class="section">3.10 Editing features</h2>
+<a name="index-Input-ring"></a>
+
+<p>To make editing proof scripts more productive, Proof General provides
+some additional editing commands.
+</p>
+<p>One facility is the <i>input ring</i> of previously processed commands.
+This allows a convenient way of repeating an earlier command or a small
+edit of it.  The feature is reminiscent of history mechanisms provided
+in shell terminals (and the implementation is borrowed from the Emacs
+Comint package).  The input ring only contains commands which have been
+successfully processed (coloured blue).  Duplicated commands are only
+entered once.  
+The size of the ring is set by the variable <code>pg-input-ring-size</code>.
+</p>
+<a name="index-M_002dp"></a>
+<a name="index-M_002dn"></a>
+<dl compact="compact">
+<dt> <kbd>M-p</kbd></dt>
+<dd><p><code>pg-previous-matching-input-from-input</code>
+</p></dd>
+<dt> <kbd>M-n</kbd></dt>
+<dd><p><code>pg-next-matching-input-from-input</code>
+</p></dd>
+</dl>
+
+
+<dl>
+<dt><a name="index-pg_002dprevious_002dinput"></a><u>Command:</u> <b>pg-previous-input</b><i> arg</i></dt>
+<dd><p>Cycle backwards through input history, saving input.
+</p></dd></dl>
+<dl>
+<dt><a name="index-pg_002dnext_002dinput"></a><u>Command:</u> <b>pg-next-input</b><i> arg</i></dt>
+<dd><p>Cycle forwards through input history.
+</p></dd></dl>
+<dl>
+<dt><a name="index-pg_002dprevious_002dmatching_002dinput"></a><u>Command:</u> <b>pg-previous-matching-input</b><i> regexp n</i></dt>
+<dd><p>Search backwards through input history for match for <var>regexp</var>.<br>
+(Previous history elements are earlier commands.)
+With prefix argument <var>n</var>, search for Nth previous match.
+If <var>n</var> is negative, find the next or Nth next match.
+</p></dd></dl>
+<dl>
+<dt><a name="index-pg_002dnext_002dmatching_002dinput"></a><u>Command:</u> <b>pg-next-matching-input</b><i> regexp n</i></dt>
+<dd><p>Search forwards through input history for match for <var>regexp</var>.<br>
+(Later history elements are more recent commands.)
+With prefix argument <var>n</var>, search for Nth following match.
+If <var>n</var> is negative, find the previous or Nth previous match.
+</p></dd></dl>
+<dl>
+<dt><a name="index-pg_002dprevious_002dmatching_002dinput_002dfrom_002dinput"></a><u>Command:</u> <b>pg-previous-matching-input-from-input</b><i> n</i></dt>
+<dd><p>Search backwards through input history for match for current input.<br>
+(Previous history elements are earlier commands.)
+With prefix argument <var>n</var>, search for Nth previous match.
+If <var>n</var> is negative, search forwards for the -Nth following match.
+</p></dd></dl>
+<dl>
+<dt><a name="index-pg_002dnext_002dmatching_002dinput_002dfrom_002dinput"></a><u>Command:</u> <b>pg-next-matching-input-from-input</b><i> n</i></dt>
+<dd><p>Search forwards through input history for match for current input.<br>
+(Following history elements are more recent commands.)
+With prefix argument <var>n</var>, search for Nth following match.
+If <var>n</var> is negative, search backwards for the -Nth previous match.
+</p></dd></dl>
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Advanced-Script-Management-and-Editing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

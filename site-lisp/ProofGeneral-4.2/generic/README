@@ -1,0 +1,15 @@
+Proof General
+
+The code in this directory implements the generic basis 
+of Proof General.
+
+It was written by Thomas Kleymann, Dilip Sequeira, Healfdene Goguen,
+David Aspinall, and Markus Wenzel.
+
+Several other people helped with contributions and modifications, see
+individual credits in the code or summary in the Proof General manual.
+
+Contributions to the generic basis are welcome!
+
+README,v 12.0 2011/10/13 10:54:49 da Exp
+

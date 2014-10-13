@@ -1,0 +1,247 @@
+MMM Mode NEWS -- history of user-visible changes.  -*-outline-*-
+Copyright (C) 2003, 2004 Michael Abraham Shulman
+See the file COPYING for copying conditions.
+
+Please submit bug reports at http://sourceforge.net/projects/mmm-mode/
+
+* Changes in MMM Mode 0.4.8
+
+** Delimiter Regions
+
+The delimiters which mark off submode regions now have their own
+overlays.  They can be highlighted if you so desire using appropriate
+class arguments and/or the variable mmm-delimiter-face.  They are also
+in an appropriate major mode, or non-mode as the case may be.
+
+** Nested Submodes
+
+Nested submodes are now vaguely supported.
+
+** RPM Spec File
+
+An RPM spec file, contributed by <bishop@platypus.bc.ca>, is now
+included for people who wish to build their own SRPM to install from.
+
+** New Submode Classes
+
+Many thanks to Joe Kelsey for writing a very intelligent class for
+editing Noweb files, and to Alan Shutko for one for CWeb files.  We
+also have a mode for SGML DTD definitions from Yann Dirson.
+
+** Numerous bugfixes and small improvements
+
+
+* Changes in MMM Mode 0.4.7
+
+** Multiple Decoration Levels
+
+You now have finer control over how colorful your submode regions are,
+via `mmm-submode-decoration-level'.  Level 0 turns coloring off--no
+messing around with faces required.  Level 1 (default) is the same as
+in previous versions.  Level 2 colors regions according to function:
+initialization, cleanup, output, declaration, comment, etc.
+
+** Preferred Major Modes
+
+The variable `mmm-major-mode-preferences' lets you tell MMM what modes
+you prefer for different programming languages and they will be used
+by all submode classes.
+
+** New Submode Classes
+
+New submode classes for JSP and ePerl are included.  A major bug in
+the handling of embedded Java (and other C-type languages) was fixed,
+so the JSP class should work consistently.
+
+
+* MMM Mode 0.4.6 is a bug-fix release with one user-visible change:
+
+** New Submode Class for RPM Spec Files
+
+Contributed by Marcus Harnisch, the `rpm' submode class allows editing
+appropriate parts of RPM spec files in shell-script mode.
+
+
+* Changes in MMM Mode 0.4.5
+
+** Font-Lock works again in XEmacs
+
+The MMM code to handle font-locking broke in XEmacs several versions
+back due to differences in the font-lock implementation between Emacs
+and XEmacs.  It appears to be working once again.
+
+** Here-Document submode class improved
+
+Here-document names such as <<TEXT_EOF and <<END_PERL_CODE are now
+correctly recognized, and `mmm-here-doc-mode-alist' allows you to
+define your own mappings from here-document names to submodes.
+
+
+* Changes in MMM Mode 0.4.4
+
+** Tab Completion in `mmm-ify-by-class' (`C-c % C-c')
+
+When interactively specifying a submode class, completion on all
+defined public (not internal/private) submode classes is available.
+
+** Submode classes can now be autoloaded
+
+You don't need (require 'mmm-mason) or (require 'mmm-sample) in your
+.emacs file any more; all the supplied submode classes that are not
+automatically loaded are autoloaded from their files of definition.
+
+** Here-Document submode class can now recognize any submode
+
+As long as the name of the here-document is or begins with the name of
+the appropriate submode, suitably mangled, such as <<HTML or
+<<HTML_MODE or <<HTML_MODE_EOF, it should be correctly recognized.
+
+** New File Variables submode class
+
+Actually, this is an old submode class that now works (better than
+before) with the new post-0.3.8 syntax for class definition.  It is a
+good candidate for membership in `mmm-global-classes' if you use many
+file-local variables, but is not there by default.
+
+** New flags :include-{front,back}
+
+If the keywords INCLUDE-FRONT or INCLUDE-BACK are set to non-nil
+values in a submode class definition, the corresponding delimiter will
+be included inside the submode region.
+
+** New values for :{front,back}-offset
+
+The keywords FRONT-OFFSET and BACK-OFFSET can now be function to call,
+such as `beginning-of-line' or `end-of-line', or lists of values to
+apply in sequence, such as (end-of-line 1).
+
+** Search for next region now starts at end of previous one
+
+...rather than at the end of the previous region's ending delimiter.
+This allows matching regions ended only by the start of the next one.
+
+
+* Changes in MMM Mode 0.4.3
+
+** Syntax of Universal Class Changed
+
+Instead of %[MODE]% ... %[/MODE]%, the universal class now uses
+{%MODE%} ... {%/MODE%} which isn't quite as ugly and doesn't to my
+knowledge conflict with any other syntax.
+
+** Some Bugs under Emacs 19 and XEmacs Fixed
+
+
+* Changes in MMM Mode 0.4.2
+
+** Global Classes and `Universal' Class
+
+The new variable `mmm-global-classes' is the inverse of `mmm-classes'
+in that it contains submode classes which apply to all MMM Mode
+buffers unless turned off manually with file-local variables.  By
+default, it contains the class `universal', which defines the syntax
+%[MODE]% ... %[/MODE]% to specify regions of any mode.  This allows,
+for instance, example code embedded in an email to be both edited by
+the sender and viewed by the receiver in an appropriate mode.
+
+** New Embperl Submode Class
+
+The new supplied submode class `embperl', which can be loaded with
+(require 'mmm-sample), detects the Embperl syntax [+...+] (and so on)
+for embedded Perl code.
+
+
+* Changes in MMM Mode 0.4.1
+
+** Font Lock Parsing Speed Improved
+
+Extra regions were being parsed due to an error in finding the right
+regions, slowing down the parsing considerably.  This has been fixed.
+
+
+* Changes in MMM Mode 0.4.0
+
+** Improved Local Variable Saving
+
+Local variables can now be saved for only some major modes, as well as
+both globally, per-buffer, or per-submode region.  This facility is
+now used to save the font-lock cache state, possible improving the
+font-lock support.  See the docs for `mmm-save-local-variables'.
+
+** Get and Set Class Parameters
+
+The functions `mmm-[get,set]-class-parameters' do just that.  The
+latter modifies the definition of a submode class, affecting all
+subsequent applications of that class.
+
+** New Implementation for MMM Global Mode
+
+The implementation of MMM Global Mode has been changed from the
+"stack-walk" method to the "post-command-hook" method used by
+global-font-lock-mode.  This is arguably cleaner, but more
+importantly, waits until after all local variables and text are loaded
+before trying to enabling MMM Mode.
+
+
+* MMM Mode 0.3.10 is a bug-fix release with no user-visible changes
+
+
+* MMM Mode 0.3.9 is a bug-fix release with no user-visible changes
+
+
+* Changes in MMM Mode 0.3.8
+
+** IMPORTANT: Default key bindings have changed.
+
+The MMM Mode commands, including interactive MMM-ification and
+re-parsing buffer regions, are now bound by default to key sequences
+of the form `C-c % C-<letter>', rather than `C-c % <letter>' as
+in previous versions.  Key sequences of the form `C-c % <letter>' are
+now reserved for submode region insertion.  The old behavior can be
+restored by setting the variable `mmm-use-old-command-keys' to a
+non-nil value before MMM Mode is loaded--then insertion commands are
+bound to `C-c % C-<letter>' sequences.
+
+** New Global Mode added
+
+MMM Global Mode can now turn MMM Mode on automatically in all buffers,
+or only in buffers that have associated submode classes.  It replaces
+the previous function `mmm-add-find-file-hook', which still works for
+now.  A side effect of this change is that it is no longer necessary
+to use `mmm-add-mode-ext-class': `mmm-mode-ext-classes-alist' can be
+modified directly.
+
+The hack used by MMM Global Mode to insinuate itself into all buffers
+is different from, but vaguely similar to, the one used by FSF Emacs'
+Global Font Lock Mode.  In order that future writers of global modes
+don't have to reinvent the wheel, MMM Global Mode provides the hook
+`mmm-major-mode-hook' which is run (in theory) whenever a major mode
+starts up.  Perhaps in future this will be provided in a separate
+package.
+
+** Automatic submode region insertion commands
+
+Submode classes can now define skeletons for automatic insertion of
+submode regions with delimiters.  For example, when using the Mason
+class, the key sequence `C-c % %' will (by default) insert the text
+`<% -!- %>' with point where indicated and submode region already
+present.  These commands also wrap around words as described in the
+documentation of `skeleton-insert'.
+
+** Info Documentation File
+
+MMM Mode now has an (admittedly incomplete) manual in Texinfo format.
+It can be found in the files `mmm.info' or `mmm.texinfo' in the
+distribution.
+
+** Automatic Installation
+
+MMM Mode now uses GNU automake/autoconf for ease of installation.  See
+the files README and INSTALL for more information.
+
+** Changed submode class specification format
+
+This change affects only people who define their own submode classes.
+The format for defining submode classes has changed; it now uses
+keyword arguments for clarity and has a few more possible arguments,
+including skeletons for submode region insertion.

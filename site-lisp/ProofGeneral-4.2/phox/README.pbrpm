@@ -1,0 +1,26 @@
+****
+Projet PhoX : Proof By Rules Popup Menu (PBRPM)
+*****
+
+-----
+Fichiers concernés :
+ ProofGeneral/generic/pg-goals.el
+ ProofGeneral/generic/pg-pbrpm.el
+ ProofGeneral/phox/phox.el
+ ProofGeneral/phox/phox-pbrpm.el
+
+
+- Dans pg-goals.el -
+(l. 58-59)
+	inclusion de pg-pbrpm.el
+	déclaration du 'CTRL + Click Droit' associé à pg-pbrpm-button-action (dans pg-pbrpm.el)
+
+- Dans pg-pbrpm.el -
+	Fonctions indépendantes de PhoX implémentant le PBRPM.
+
+- Dans phox.el -
+(l. 86) inclus phox-pbrpm.el
+(l. 103-104) ajoute le menu de gestion du buffer de selections dans le menu de PhoX
+
+- Dans phox-pbrpm.el -
+ 	Fonctions spécifiques à PhoX.

@@ -1,0 +1,25 @@
+Index: generic/proof-tree.el
+===================================================================
+RCS file: /disk/cvs/proofgen/ProofGeneral/generic/proof-tree.el,v
+retrieving revision 12.3
+diff -c -r12.3 proof-tree.el
+*** generic/proof-tree.el	19 Jan 2012 13:23:56 -0000	12.3
+--- generic/proof-tree.el	19 Jan 2012 13:25:30 -0000
+***************
+*** 492,498 ****
+    "Send the configure message."
+    (proof-tree-send-message
+     (format "configure for \"%s\" and protocol version %02d"
+! 	   proof-assistant
+  	   proof-tree-protocol-version)
+     ()))
+  
+--- 492,499 ----
+    "Send the configure message."
+    (proof-tree-send-message
+     (format "configure for \"%s\" and protocol version %02d"
+! 	   ;; temporarily pretend every proof assistant is Coq
+! 	   "Coq" ;; was proof-assistant
+  	   proof-tree-protocol-version)
+     ()))
+  

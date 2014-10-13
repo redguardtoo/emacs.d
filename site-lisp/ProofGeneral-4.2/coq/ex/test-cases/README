@@ -1,0 +1,32 @@
+This directory contains test cases for coq ProofGeneral,
+especially for its multi-file support.
+
+Each test case is in one subdirectory. Each such subdirectory has
+a README file, describing the test case.
+
+
+Overview of the test cases:
+
+add-load-path-unsupported
+	Add LoadPath is not supported
+
+change-ancestor
+	assert something just added to an completely locked ancestor
+	       (triggers known bugs)
+
+multiple-files-multiple-dir
+	working with multiple files in multiple directories
+
+multiple-files-single-dir
+	working with multiple files in a single directory
+
+require-string
+	test Require "x.vo"
+		(triggers known bugs)
+
+retract-completely-asserted
+	test how proof-no-fully-processed-buffer retracts fully
+	asserted buffers
+
+stale-load-path
+	test switching between files with different load path.

@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: Table of Contents</title>
+
+<meta name="description" content="Adapting Proof General: Table of Contents">
+<meta name="keywords" content="Adapting Proof General: Table of Contents">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="SEC_Contents"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<h1>Table of Contents</h1>
+<div class="contents">
+
+<ul class="toc">
+  <li><a name="toc-Introduction-1" href="PG-adapting_1.html#Introduction">Introduction</a>
+  <ul class="toc">
+    <li><a name="toc-Future-1" href="PG-adapting_1.html#Future">Future</a></li>
+    <li><a name="toc-Credits-1" href="PG-adapting_1.html#Credits">Credits</a></li>
+  </ul></li>
+  <li><a name="toc-Beginning-with-a-New-Prover-1" href="PG-adapting_2.html#Beginning-with-a-New-Prover">1. Beginning with a New Prover</a>
+  <ul class="toc">
+    <li><a name="toc-Overview-of-adding-a-new-prover-1" href="PG-adapting_2.html#Overview-of-adding-a-new-prover">1.1 Overview of adding a new prover</a></li>
+    <li><a name="toc-Demonstration-instance-and-easy-configuration-1" href="PG-adapting_2.html#Demonstration-instance-and-easy-configuration">1.2 Demonstration instance and easy configuration</a></li>
+    <li><a name="toc-Major-modes-used-by-Proof-General-1" href="PG-adapting_2.html#Major-modes-used-by-Proof-General">1.3 Major modes used by Proof General</a></li>
+  </ul></li>
+  <li><a name="toc-Menus_002c-toolbar_002c-and-user_002dlevel-commands" href="PG-adapting_3.html#Menus-and-Toolbar-and-User_002dlevel-Commands">2. Menus, toolbar, and user-level commands</a>
+  <ul class="toc">
+    <li><a name="toc-Settings-for-generic-user_002dlevel-commands-1" href="PG-adapting_3.html#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></li>
+    <li><a name="toc-Menu-configuration-1" href="PG-adapting_3.html#Menu-configuration">2.2 Menu configuration</a></li>
+    <li><a name="toc-Toolbar-configuration-1" href="PG-adapting_3.html#Toolbar-configuration">2.3 Toolbar configuration</a></li>
+  </ul></li>
+  <li><a name="toc-Proof-Script-Settings-1" href="PG-adapting_4.html#Proof-Script-Settings">3. Proof Script Settings</a>
+  <ul class="toc">
+    <li><a name="toc-Recognizing-commands-and-comments-1" href="PG-adapting_4.html#Recognizing-commands-and-comments">3.1 Recognizing commands and comments</a></li>
+    <li><a name="toc-Recognizing-proofs-1" href="PG-adapting_4.html#Recognizing-proofs">3.2 Recognizing proofs</a></li>
+    <li><a name="toc-Recognizing-other-elements-1" href="PG-adapting_4.html#Recognizing-other-elements">3.3 Recognizing other elements</a></li>
+    <li><a name="toc-Configuring-undo-behaviour-1" href="PG-adapting_4.html#Configuring-undo-behaviour">3.4 Configuring undo behaviour</a></li>
+    <li><a name="toc-Nested-proofs-1" href="PG-adapting_4.html#Nested-proofs">3.5 Nested proofs</a></li>
+    <li><a name="toc-Safe-_0028state_002dpreserving_0029-commands-1" href="PG-adapting_4.html#Safe-_0028state_002dpreserving_0029-commands">3.6 Safe (state-preserving) commands</a></li>
+    <li><a name="toc-Activate-scripting-hook-1" href="PG-adapting_4.html#Activate-scripting-hook">3.7 Activate scripting hook</a></li>
+    <li><a name="toc-Automatic-multiple-files-1" href="PG-adapting_4.html#Automatic-multiple-files">3.8 Automatic multiple files</a></li>
+    <li><a name="toc-Completely-asserted-buffers-1" href="PG-adapting_4.html#Completely-asserted-buffers">3.9 Completely asserted buffers</a></li>
+    <li><a name="toc-Completions-1" href="PG-adapting_4.html#Completions">3.10 Completions</a></li>
+  </ul></li>
+  <li><a name="toc-Proof-Shell-Settings-1" href="PG-adapting_5.html#Proof-Shell-Settings">4. Proof Shell Settings</a>
+  <ul class="toc">
+    <li><a name="toc-Commands" href="PG-adapting_5.html#Proof-shell-commands">4.1 Commands</a></li>
+    <li><a name="toc-Script-input-to-the-shell-1" href="PG-adapting_5.html#Script-input-to-the-shell">4.2 Script input to the shell</a></li>
+    <li><a name="toc-Settings-for-matching-various-output-from-proof-process-1" href="PG-adapting_5.html#Settings-for-matching-various-output-from-proof-process">4.3 Settings for matching various output from proof process</a></li>
+    <li><a name="toc-Settings-for-matching-urgent-messages-from-proof-process-1" href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">4.4 Settings for matching urgent messages from proof process</a></li>
+    <li><a name="toc-Hooks-and-other-settings-1" href="PG-adapting_5.html#Hooks-and-other-settings">4.5 Hooks and other settings</a></li>
+  </ul></li>
+  <li><a name="toc-Goals-Buffer-Settings-1" href="PG-adapting_6.html#Goals-Buffer-Settings">5. Goals Buffer Settings</a></li>
+  <li><a name="toc-Splash-Screen-Settings-1" href="PG-adapting_7.html#Splash-Screen-Settings">6. Splash Screen Settings</a></li>
+  <li><a name="toc-Global-Constants-1" href="PG-adapting_8.html#Global-Constants">7. Global Constants</a></li>
+  <li><a name="toc-Handling-Multiple-Files-1" href="PG-adapting_9.html#Handling-Multiple-Files">8. Handling Multiple Files</a></li>
+  <li><a name="toc-Configuring-Editing-Syntax-1" href="PG-adapting_10.html#Configuring-Editing-Syntax">9. Configuring Editing Syntax</a></li>
+  <li><a name="toc-Configuring-Font-Lock-1" href="PG-adapting_11.html#Configuring-Font-Lock">10. Configuring Font Lock</a></li>
+  <li><a name="toc-Configuring-Tokens-1" href="PG-adapting_12.html#Configuring-Tokens">11. Configuring Tokens</a></li>
+  <li><a name="toc-Configuring-Proof_002dTree-Visualization-1" href="PG-adapting_13.html#Configuring-Proof_002dTree-Visualization">12. Configuring Proof-Tree Visualization</a>
+  <ul class="toc">
+    <li><a name="toc-Prerequisites-1" href="PG-adapting_13.html#Prerequisites">12.1 Prerequisites</a></li>
+    <li><a name="toc-Proof_002dTree-Display-Internals-1" href="PG-adapting_13.html#Proof_002dTree-Display-Internals">12.2 Proof-Tree Display Internals</a>
+    <ul class="toc">
+      <li><a name="toc-Organization-of-the-Code-1" href="PG-adapting_13.html#Organization-of-the-Code">12.2.1 Organization of the Code</a></li>
+      <li><a name="toc-Communication-1" href="PG-adapting_13.html#Communication">12.2.2 Communication</a></li>
+      <li><a name="toc-Guards-1" href="PG-adapting_13.html#Guards">12.2.3 Guards</a></li>
+      <li><a name="toc-Urgent-and-Delayed-Actions-1" href="PG-adapting_13.html#Urgent-and-Delayed-Actions">12.2.4 Urgent and Delayed Actions</a></li>
+      <li><a name="toc-Full-Annotation-1" href="PG-adapting_13.html#Full-Annotation">12.2.5 Full Annotation</a></li>
+    </ul></li>
+    <li><a name="toc-Configuring-Prooftree-for-a-New-Proof-Assistant-1" href="PG-adapting_13.html#Configuring-Prooftree-for-a-New-Proof-Assistant">12.3 Configuring Prooftree for a New Proof Assistant</a>
+    <ul class="toc">
+      <li><a name="toc-Proof-Tree-Elisp-configuration-1" href="PG-adapting_13.html#Proof-Tree-Elisp-configuration">12.3.1 Proof Tree Elisp configuration</a></li>
+      <li><a name="toc-Prooftree-Adaption-1" href="PG-adapting_13.html#Prooftree-Adaption">12.3.2 Prooftree Adaption</a></li>
+    </ul>
+</li>
+  </ul></li>
+  <li><a name="toc-Writing-More-Lisp-Code-1" href="PG-adapting_14.html#Writing-More-Lisp-Code">13. Writing More Lisp Code</a>
+  <ul class="toc">
+    <li><a name="toc-Default-values-for-generic-settings-1" href="PG-adapting_14.html#Default-values-for-generic-settings">13.1 Default values for generic settings</a></li>
+    <li><a name="toc-Adding-prover_002dspecific-configurations-1" href="PG-adapting_14.html#Adding-prover_002dspecific-configurations">13.2 Adding prover-specific configurations</a></li>
+    <li><a name="toc-Useful-variables-1" href="PG-adapting_14.html#Useful-variables">13.3 Useful variables</a></li>
+    <li><a name="toc-Useful-functions-and-macros-1" href="PG-adapting_14.html#Useful-functions-and-macros">13.4 Useful functions and macros</a></li>
+  </ul></li>
+  <li><a name="toc-Internals-of-Proof-General-1" href="PG-adapting_15.html#Internals-of-Proof-General">14. Internals of Proof General</a>
+  <ul class="toc">
+    <li><a name="toc-Spans-1" href="PG-adapting_15.html#Spans">14.1 Spans</a></li>
+    <li><a name="toc-Proof-General-site-configuration-1" href="PG-adapting_15.html#Proof-General-site-configuration">14.2 Proof General site configuration</a></li>
+    <li><a name="toc-Configuration-variable-mechanisms-1" href="PG-adapting_15.html#Configuration-variable-mechanisms">14.3 Configuration variable mechanisms</a></li>
+    <li><a name="toc-Global-variables-1" href="PG-adapting_15.html#Global-variables">14.4 Global variables</a></li>
+    <li><a name="toc-Proof-script-mode-1" href="PG-adapting_15.html#Proof-script-mode">14.5 Proof script mode</a></li>
+    <li><a name="toc-Proof-shell-mode-1" href="PG-adapting_15.html#Proof-shell-mode">14.6 Proof shell mode</a>
+    <ul class="toc">
+      <li><a name="toc-Input-to-the-shell" href="PG-adapting_15.html#Input-to-the-shell">14.6.1 Input to the shell</a></li>
+      <li><a name="toc-Output-from-the-shell" href="PG-adapting_15.html#Output-from-the-shell">14.6.2 Output from the shell</a></li>
+    </ul></li>
+    <li><a name="toc-Debugging-1" href="PG-adapting_15.html#Debugging">14.7 Debugging</a></li>
+  </ul></li>
+  <li><a name="toc-Plans-and-Ideas-1" href="PG-adapting_16.html#Plans-and-Ideas">A. Plans and Ideas</a>
+  <ul class="toc">
+    <li><a name="toc-Proof-by-pointing-and-similar-features-1" href="PG-adapting_16.html#Proof-by-pointing-and-similar-features">A.1 Proof by pointing and similar features</a></li>
+    <li><a name="toc-Granularity-of-atomic-command-sequences-1" href="PG-adapting_16.html#Granularity-of-atomic-command-sequences">A.2 Granularity of atomic command sequences</a></li>
+    <li><a name="toc-Browser-mode-for-script-files-and-theories-1" href="PG-adapting_16.html#Browser-mode-for-script-files-and-theories">A.3 Browser mode for script files and theories</a></li>
+  </ul></li>
+  <li><a name="toc-Demonstration-Instantiations-1" href="PG-adapting_17.html#Demonstration-Instantiations">B. Demonstration Instantiations</a>
+  <ul class="toc">
+    <li><a name="toc-demoisa_002deasy_002eel-1" href="PG-adapting_17.html#demoisa_002deasy_002eel">B.1 demoisa-easy.el</a></li>
+    <li><a name="toc-demoisa_002eel-1" href="PG-adapting_17.html#demoisa_002eel">B.2 demoisa.el</a></li>
+  </ul></li>
+  <li><a name="toc-Function-and-Command-Index" href="PG-adapting_18.html#Function-Index">Function and Command Index</a></li>
+  <li><a name="toc-Variable-and-User-Option-Index" href="PG-adapting_19.html#Variable-Index">Variable and User Option Index</a></li>
+  <li><a name="toc-Concept-Index-1" href="PG-adapting_20.html#Concept-Index">Concept Index</a></li>
+</ul>
+</div>
+<hr size="1">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

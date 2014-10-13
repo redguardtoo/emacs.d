@@ -981,4 +981,7 @@ The full path into relative path insert it as a local file link in org-mode"
 (require 'go-mode-load)
 ;; }}
 
+;; coq programming language
+(load-file "/home/cb/.emacs.d/site-lisp/ProofGeneral-4.2/generic/proof-site.el")
+
 (provide 'init-misc)

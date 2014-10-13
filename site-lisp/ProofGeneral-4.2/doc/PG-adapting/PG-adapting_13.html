@@ -1,0 +1,674 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 12. Configuring Proof-Tree Visualization</title>
+
+<meta name="description" content="Adapting Proof General: 12. Configuring Proof-Tree Visualization">
+<meta name="keywords" content="Adapting Proof General: 12. Configuring Proof-Tree Visualization">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_12.html#Configuring-Tokens" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_14.html#Writing-More-Lisp-Code" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Configuring-Proof_002dTree-Visualization"></a>
+<a name="Configuring-Proof_002dTree-Visualization-1"></a>
+<h1 class="chapter">12. Configuring Proof-Tree Visualization</h1>
+
+<p>The proof-tree visualization feature was written with the idea of
+supporting Coq as well as other proof assistants. Nevertheless,
+supporting proof-tree visualization for a second proof assistant
+will almost certainly require changes in the generic Elisp code
+in <code>generic/proof-tree.el</code> as well as in the
+Prooftree program.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Prerequisites">12.1 Prerequisites</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Proof_002dTree-Display-Internals">12.2 Proof-Tree Display Internals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configuring-Prooftree-for-a-New-Proof-Assistant">12.3 Configuring Prooftree for a New Proof Assistant</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Prerequisites"></a>
+<a name="Prerequisites-1"></a>
+<h2 class="section">12.1 Prerequisites</h2>
+
+<p>Proof-tree visualization requires certain support from the proof
+assistant. Patching the proof assistant is therefore the first
+step of adding support for proof-tree visualization. The
+following features are needed.
+</p>
+<dl compact="compact">
+<dt> Unique goal identification</dt>
+<dd><p>The proof assistant must assign and output a unique string for
+each goal. For Coq the internal <code>evar</code> index number is used,
+which is printed for each goal in the form <code>(ID XXX)</code> when
+Coq is started with the option <code>-emacs</code>.
+</p>
+<p>The unique goal identification is needed to distinguish newly
+spawned subgoals from older open subgoals and to mark the current
+goal in the proof-tree display.
+</p>
+</dd>
+<dt> Indication of newly generated subgoals</dt>
+<dd><p>A proof command that spawns additional subgoals must somehow
+indicate the goal ID&rsquo;s of these new subgoals. Otherwise the
+proof-tree display will not be able to reconstruct the proof-tree
+structure. 
+</p>
+<p>For Coq the newly spawned subgoals appear always in the list of
+additional subgoals below the current goal. Note, that it is not
+required to mark the newly spawned subgoals. They may appear in a
+mixed list with older open subgoals. Note further, that it is not
+required that always the complete set of all open subgoals is
+printed (which is indeed not the case after of <code>Focus</code>
+command in Coq). It is only required that the goal ID&rsquo;s of all
+newly spawned subgoals is somehow printed.
+</p>
+</dd>
+<dt> State number for undo</dt>
+<dd><p>There must be a state number that is strictly increasing when
+asserting proof commands and that is reset to the appropriate
+number after retracting some proof commands.
+</p>
+<p>For Coq the state number in the extended prompt (visible only
+with option <code>-emacs</code>) is used. 
+</p>
+</dd>
+<dt> Information about existential variables</dt>
+<dd><p>Existential variables are placeholders that might or must be
+instantiated later in the proof. Prooftree supports
+existential variables with three features. Firstly, it can update
+goals when existential variables get instantiated. Secondly, it
+can mark the proof commands that introduced or instantiated
+existential variables and, thirdly, it can display and track
+dependencies between existential variables.
+</p>
+<p>For the first feature, the proof assistant must list the currently
+instantiated existential variables for every goal. For the second
+feature it must additionally list the not instantiated
+existential variables. Finally, for the third feature, it must
+display the dependencies for instantiated existential variables.
+</p>
+<p>For Coq, all necessary information is provided in the existential
+evar line, that is printed with the <code>-emacs</code> switch.
+</p>
+</dd>
+</dl>
+
+
+<hr size="6">
+<a name="Proof_002dTree-Display-Internals"></a>
+<a name="Proof_002dTree-Display-Internals-1"></a>
+<h2 class="section">12.2 Proof-Tree Display Internals</h2>
+
+<p>This section gives some information about the inner structure of
+the code that realizes the proof-tree display. The idea here is
+that this section provides the background information to make the
+documentation of the customizable variables of the proof-tree
+Elisp code easy to understand.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Organization-of-the-Code">12.2.1 Organization of the Code</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Communication">12.2.2 Communication</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Guards">12.2.3 Guards</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Urgent-and-Delayed-Actions">12.2.4 Urgent and Delayed Actions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Full-Annotation">12.2.5 Full Annotation</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Organization-of-the-Code"></a>
+<a name="Organization-of-the-Code-1"></a>
+<h3 class="subsection">12.2.1 Organization of the Code</h3>
+
+<p>The proof-tree display is realized by Proof General in
+cooperation with the external Prooftree program. The
+latter is a GTK application in OCaml. Both, the Elisp code in
+Proof General and the Prooftree OCaml code is divided into
+a generic and a proof assistant specific part.
+</p>
+<p>The generic Elisp code lives in <code>generic/proof-tree.el</code>. As
+usual in Proof General, it contains various customizable
+variables, which the proof assistant specific code must set. Most
+of these variables contain regular expressions, but there are also
+some that hold functions. The Coq specific code for the
+proof-tree display is distributed in a few chunks over
+<code>coq/coq.el</code>. 
+</p>
+<p>The main task of the Elisp code is to extract goals, undo events
+and information about existential variables from the
+proof-assistant output and to send all this data to Prooftree.
+The Elisp code does also determine if additional output must be
+requested from the proof assistant. In that case it adds
+appropriate commands to <code>proof-action-list</code>, see section <a href="PG-adapting_15.html#Proof-script-mode">Proof script mode</a>. These additional commands are flagged with
+<code>proof-tree-show-subgoal</code>, <code>no-goals-display</code> and
+<code>no-response-display</code>. The flag
+<code>proof-tree-show-subgoal</code> ensures that a number of internal
+functions ignore these additional commands. The other two flags
+ensure that their output is neither displayed in the goals nor
+the response buffer.
+</p>
+<p>For the decision about which goals must be sent to Prooftree, the
+Elisp code maintains the following two state variables.
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002dsequent_002dhash"></a><u>Variable:</u> <b>proof-tree-sequent-hash</b></dt>
+<dd><p>Hash table to remember sequent ID&rsquo;s.<br>
+Needed because some proof assistants do not distinguish between
+new subgoals, which have been created by the last proof command,
+and older, currently unfocussed subgoals. If Proof General meets
+a goal, it is treated as new subgoal if it is not in this hash yet.
+</p>
+<p>The hash is mostly used as a set of sequent ID&rsquo;s. However, for
+undo operations it is necessary to delete all those sequents from
+the hash that have been created in a state later than the undo
+state. For this purpose this hash maps sequent ID&rsquo;s to the state
+number in which the sequent has been created.
+</p>
+<p>The hash table is initialized in &lsquo;<samp><code>proof-tree-start-process</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-proof_002dtree_002dexistentials_002dalist"></a><u>Variable:</u> <b>proof-tree-existentials-alist</b></dt>
+<dd><p>Alist mapping existential variables to sequent ID&rsquo;s.<br>
+Used to remember which goals need a refresh when an existential
+variable gets instantiated. To support undo commands the old
+contents of this list must be stored in
+&lsquo;<samp><code>proof-tree-existentials-alist-history</code></samp>&rsquo;. To ensure undo is
+properly working, this variable should only be changed by using
+&lsquo;<samp><code>proof-tree-delete-existential-assoc</code></samp>&rsquo;,
+&lsquo;<samp><code>proof-tree-add-existential-assoc</code></samp>&rsquo; or
+&lsquo;<samp><code>proof-tree-clear-existentials</code></samp>&rsquo;.
+</p></dd></dl>
+
+<p>When retracting these two variables must be set to their previous
+state. For <code>proof-tree-sequent-hash</code> this is done with the
+state numbers that are stored in the hash. For
+<code>proof-tree-existentials-alist</code> a separate alist stores
+previous states.
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002dexistentials_002dalist_002dhistory"></a><u>Variable:</u> <b>proof-tree-existentials-alist-history</b></dt>
+<dd><p>Alist mapping state numbers to old values of &lsquo;<samp><code>proof-tree-existentials-alist</code></samp>&rsquo;.<br>
+Needed for undo.
+</p></dd></dl>
+
+
+<p>In Prooftree the separation between generic and proof-assistant
+specific code is less obvious. The Coq specific code is in the
+file <code>coq.ml</code>. All the remaining code is generic. 
+</p>
+<p>Prooftree opens for each proof a separate window. It reconstructs
+the proof tree and orders the existential variables in a
+dependency hierarchy. It stores a complete history of previous
+states to support arbitrary undo operations. Under normal
+circumstances one starts just one Prooftree process that keeps
+running for the remainder of the Proof General session,
+regardless of how many proof-tree windows are displayed.
+</p>
+<p>A fair amount of the Prooftree code is documented with
+<code>ocamldoc</code> documentation comments. With <code>make doc</code> they
+can be converted into a set of html pages in the <code>doc</code>
+subdirectory.
+</p>
+
+<hr size="6">
+<a name="Communication"></a>
+<a name="Communication-1"></a>
+<h3 class="subsection">12.2.2 Communication</h3>
+
+<p>Prooftree is a standard Emacs subprocess that reads goals and
+other proof status messages from its standard input. The
+communication between Proof General and Prooftree is almost one
+way only. Proof General sends proof status messages to Prooftree,
+from which Prooftree reconstructs the current proof status and
+the complete proof tree. Prooftree never requests additional
+information from Proof General. The only message that is sent
+from Prooftree to Proof General is a <code>stop-displaying</code>
+command, when the user closes the proof-tree display of the
+current proof.
+</p>
+<p>The communication protocol is completely described in the
+<code>ocamldoc</code> documentation of <code>input.ml</code> in the Prooftree
+sources. All messages consist of UTF-8 encoded human-readable
+strings. The strings have either a fixed length or their byte-length
+is encoded in the message before the string itself. 
+</p>
+<p>For debugging purposes Prooftree can save all input in a file.
+This feature can be turned on in the <code>Debug</code> tab of the
+Prooftree configuration dialog or with option <code>-tee</code>.
+</p>
+
+<hr size="6">
+<a name="Guards"></a>
+<a name="Guards-1"></a>
+<h3 class="subsection">12.2.3 Guards</h3>
+
+<p>The proof-tree display code inside Proof General uses two guard
+variables. 
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002dconfigured"></a><u>Variable:</u> <b>proof-tree-configured</b></dt>
+<dd><p>Whether external proof-tree display is configured.<br>
+This boolean enables the proof-tree menu entry and the function
+that starts external proof-tree display.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dtree_002dexternal_002ddisplay"></a><u>Variable:</u> <b>proof-tree-external-display</b></dt>
+<dd><p>Display proof trees in external prooftree windows if t.<br>
+Actually, if this variable is t then the user requested an
+external proof-tree display. If there was no unfinished proof
+when proof-tree display was requested and if no proof has been
+started since then, then there is obviously no proof-tree
+display. In this case, this variable stays t and the proof-tree
+display will be started for the next proof.
+</p>
+<p>Controlled by &lsquo;<samp><code>proof-tree-external-display-toggle</code></samp>&rsquo;.
+</p></dd></dl>
+
+<p>In Proof General, the code for the external proof-tree display is
+called from the proof-shell filter function in
+<code>proof-shell-exec-loop</code> and
+<code>proof-shell-filter-manage-output</code>, see section <a href="PG-adapting_15.html#Proof-shell-mode">Proof shell mode</a>. The variable <code>proof-tree-external-display</code> is a guard
+for these calls, to ensure that the proof-tree specific code is
+only called if the user requested a proof-tree display.
+</p>
+<p>The whole proof-tree package contains only one function that can
+be called interactively:
+<code>proof-tree-external-display-toggle</code>, which switches
+<code>proof-tree-external-display</code> on and off. When
+<code>proof-tree-configured</code> is <code>nil</code>,
+<code>proof-tree-external-display-toggle</code> aborts with an error
+message. 
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002dexternal_002ddisplay_002dtoggle"></a><u>Command:</u> <b>proof-tree-external-display-toggle</b></dt>
+<dd><p>Toggle the external proof-tree display.<br>
+When called outside a proof the external proof-tree display will
+be enabled for the next proof. When called inside a proof the
+proof display will be created for the current proof. If the
+external proof-tree display is currently on, then this toggle
+will switch it off. At the end of the proof the proof-tree
+display is switched off.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Urgent-and-Delayed-Actions"></a>
+<a name="Urgent-and-Delayed-Actions-1"></a>
+<h3 class="subsection">12.2.4 Urgent and Delayed Actions</h3>
+
+<p>The proof-shell filter functions contains two calls to proof-tree
+specific code. One for urgent actions and one for all remaining
+actions, that can be delayed.
+</p>
+<p>Urgent actions are those that must be executed before
+<code>proof-shell-exec-loop</code> sends the next item from
+<code>proof-action-list</code> to the proof assistant. For execution
+speed, the amount of urgent code should be kept small.
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002durgent_002daction"></a><u>Function:</u> <b>proof-tree-urgent-action</b><i> flags</i></dt>
+<dd><p>Handle urgent points before the next item is sent to the proof assistant.<br>
+Schedule goal updates when existential variables have changed and
+call &lsquo;<samp><code>proof-tree-urgent-action-hook</code></samp>&rsquo;. All this is only done if
+the current output does not come from a command (with the
+<code>'proof-tree-show-subgoal</code> flag) that this package inserted itself.
+</p>
+<p>Urgent actions are only needed if the external proof display is
+currently running. Therefore this function should not be called
+when &lsquo;<samp><code>proof-tree-external-display</code></samp>&rsquo; is nil. 
+</p>
+<p>This function assumes that the prover output is not suppressed.
+Therefore, &lsquo;<samp><code>proof-tree-external-display</code></samp>&rsquo; being t is actually a
+necessary precondition.
+</p>
+<p>The not yet delayed output is in the region
+[<code>proof-shell-delayed-output-start</code>, <code>proof-shell-delayed-output-end</code>].
+</p></dd></dl>
+
+
+<p>The function <code>proof-tree-urgent-action</code> is called at a point
+where it is save to manipulate <code>proof-action-list</code>. This is
+essential, because <code>proof-tree-urgent-action</code> inserts goal
+display commands into <code>proof-action-list</code> when existential
+variables got instantiated and when the sequent text from newly
+created subgoals is missing.
+</p>
+
+<p>Most of the proof-tree specific code runs when the proof
+assistant is already busy with the next item from
+<code>proof-action-list</code>. 
+</p>
+<dl>
+<dt><a name="index-proof_002dtree_002dhandle_002ddelayed_002doutput"></a><u>Function:</u> <b>proof-tree-handle-delayed-output</b><i> cmd flags span</i></dt>
+<dd><p>Process delayed output for prooftree.<br>
+This function is the main entry point of the Proof General
+prooftree support. It examines the delayed output in order to
+take appropriate actions and maintains the internal state.
+</p>
+<p>All arguments are (former) fields of the &lsquo;<samp><code>proof-action-list</code></samp>&rsquo;
+entry that is now finally retired. <var>cmd</var> is the command, <var>flags</var> are
+the flags and <var>span</var> is the span.
+</p></dd></dl>
+
+<p>The function <code>proof-tree-handle-delayed-output</code> does all the
+communication with Prooftree. 
+</p>
+
+<hr size="6">
+<a name="Full-Annotation"></a>
+<a name="Full-Annotation-1"></a>
+<h3 class="subsection">12.2.5 Full Annotation</h3>
+
+<p>In the default configuration Proof General switches the proof
+assistant into quiet mode if there are more than
+<code>proof-shell-silent-threshold</code> items in
+<code>proof-action-list</code>, see Section <i>Document centred
+working</i> (in Chapter <i>Advanced Script Management and Editing</i>)
+in the <i>Proof General</i> users manual. The proof-tree display
+needs of course the full output from the proof assistant.
+Therefore <code>proof-shell-should-be-silent</code> keeps the proof
+assistant noisy when the proof-tree display is switched on.
+</p>
+
+<hr size="6">
+<a name="Configuring-Prooftree-for-a-New-Proof-Assistant"></a>
+<a name="Configuring-Prooftree-for-a-New-Proof-Assistant-1"></a>
+<h2 class="section">12.3 Configuring Prooftree for a New Proof Assistant</h2>
+
+<p>To get the proof-tree display running for a new proof assistant
+one has to configure the proof-tree Elisp code and adapt the
+Prooftree program.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Proof-Tree-Elisp-configuration">12.3.1 Proof Tree Elisp configuration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Prooftree-Adaption">12.3.2 Prooftree Adaption</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Proof-Tree-Elisp-configuration"></a>
+<a name="Proof-Tree-Elisp-configuration-1"></a>
+<h3 class="subsection">12.3.1 Proof Tree Elisp configuration</h3>
+
+<p>All variables that need to be configured are in the customization
+group <code>proof-tree-internals</code>. Most of these variables are
+regular expressions for extracting various parts from the proof
+assistant output. However, some are functions that need to be
+implemented as prover specific part of the proof display code.
+</p>
+<p>The variables <code>proof-tree-configured</code>,
+<code>proof-tree-get-proof-info</code> and
+<code>proof-tree-find-begin-of-unfinished-proof</code> might be used
+before the proof assistant is running inside a proof shell. They
+must therefore be configured as part of the proof assistant
+editing mode. 
+</p>
+<p>The other variables are only used when the proof shell is
+running. They can therefore be configured with the
+proof assistant proof-shell mode.
+</p>
+
+<hr size="6">
+<a name="Prooftree-Adaption"></a>
+<a name="Prooftree-Adaption-1"></a>
+<h3 class="subsection">12.3.2 Prooftree Adaption</h3>
+
+<p>To make the new proof assistant known to Prooftree, the match in
+function <code>configure_prooftree</code> in <code>input.ml</code> must be
+extended. If the new proof assistant does not support existential
+variables adding a line
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  | &quot;new-pa-name&quot; -&gt; ()
+</pre></td></tr></table>
+<p>suffices.
+</p>
+<p>If the new prover supports existential variables, Prooftree must
+be extended with a parser for the existential variable
+information printout of the proof assistant. The parser for Coq
+is contained in the file <code>coq.ml</code>. Then the function
+<code>configure_prooftree</code> must assign this new parser to the
+reference <code>parse_existential_info</code>.
+</p>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Configuring-Proof_002dTree-Visualization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_14.html#Writing-More-Lisp-Code" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>
