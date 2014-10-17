@@ -166,6 +166,7 @@ to replace the symbol under cursor"
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
+  "sd" 'sudo-edit
   "ss" 'evil-surround-region
   "sc" 'shell-command
   "srt" 'sr-speedbar-toggle

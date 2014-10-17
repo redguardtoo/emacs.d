@@ -643,18 +643,27 @@ version control automatically"
           (vc-register)
          )))))
 
-;; @see http://wenshanren.org/?p=298
-(defun wenshan-edit-current-file-as-root ()
-  "Edit the file that is associated with the current buffer as root"
-  (interactive)
-  (if (buffer-file-name)
-      (progn
-        (setq file (concat "/sudo:root@localhost:" (buffer-file-name)))
-        (find-file file))
-    (message "Current buffer does not have an associated file.")))
+;; {{ @see http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
+(defun sudo-edit (&optional arg)
+  "Edit currently visited file as root.
+With a prefix ARG prompt for a file to visit.
+Will also prompt for a file to visit if current
+buffer is not visiting a file."
+  (interactive "P")
+  (if (or arg (not buffer-file-name))
+      (find-file (concat "/sudo:root@localhost:"
+                         (ido-read-file-name "Find file(as root): ")))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+
+(defadvice ido-find-file (after find-file-sudo activate)
+  "Find file as root if necessary."
+  (unless (and buffer-file-name
+               (file-writable-p buffer-file-name))
+    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+;; }}
 
 ;; {{ eval and replace anywhere
-;; @see http://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/ 
+;; @see http://emacs.wordpress.com/2007/01/17/eval-and-replace-anywhere/
 (defun fc-eval-and-replace ()
   "Replace the preceding sexp with its value."
   (interactive)
