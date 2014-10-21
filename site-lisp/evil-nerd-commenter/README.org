@@ -1,4 +1,4 @@
-* evil-nerd-commenter (v1.5.3)
+* evil-nerd-commenter (v1.5.8)
 
 *This program could be used independently WITHOUT evil-mode!*
 
@@ -80,17 +80,12 @@ If you don't use emacs package manager please insert below code into your ~/.ema
 ;; ",," is the default value of evilnc-hotkey-comment-operator,
 ;; so below line is NOT needed.
 ;; But please put it *ABOVE* the (require 'evil-nerd-commenter)!!!
+;; Please note if you use evil-leader, (setq evilnc-hotkey-comment-operator "\\\\")
+;; does NOT work! You need set up the hot key for command "evilnc-comment-operator" directly.
+;; Check the end of README for sample setup
 (setq evilnc-hotkey-comment-operator ",,")
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
-#+END_SRC
-
-** Use back slash as the leader key in evil-mode
-Remove line "(evilnc-default-hotkeys)" from your ~/.emacs and re-assign hot key manually.
-
-Besides, ",," is used for commenting text object. So you need re-define that hot key. Insert below code into ~/.emacs:
-#+BEGIN_SRC elisp
-(setq evilnc-hotkey-comment-operator "\\")
 #+END_SRC
 
 * Usage
@@ -255,6 +250,7 @@ Most popular programming languages are supported;
   "cp" 'evilnc-comment-or-uncomment-paragraphs
   "cr" 'comment-or-uncomment-region
   "cv" 'evilnc-toggle-invert-comment-line-by-line
+  "\\" 'evilnc-comment-operator
   )
 #+END_SRC
 
