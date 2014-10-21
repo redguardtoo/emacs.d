@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.4
+;; Version: 1.5.7
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -42,14 +42,39 @@
 ;; For example, `C-u 9 evilnc-quick-comment-or-uncomment-to-the-line` will comment code from
 ;; current line to line 99 if you current line is 91.
 ;;
-;; Check README for more use cases.
-;;
 ;; Though this program could be used *independently*, I highly recommend you use it with
 ;; evil (http://gitorious.org/evil)
 ;;
 ;; Evil makes you take advantage of power of Vi to comment lines in shocking speed.
 ;; For example, you can press key `99,ci` to comment out 99 lines.
-
+;;
+;; Setup:
+;;
+;; Check https://github.com/redguardtoo/evil-nerd-commenter for more use cases.
+;;
+;; Use case 1, If you use comma as leader key, as most Vim users do, setup is just one liner,
+;; (evilnc-default-hotkeys)
+;;
+;; Use case 2, If you are using evil-leader and didn't change the whose default leader key,
+;; insert below setup into your ~/.emacs instead,
+;;
+;; (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
+;; (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
+;; (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
+;; (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+;;
+;; (require 'evil-leader)
+;; (global-evil-leader-mode)
+;; (evil-leader/set-key
+;;   "ci" 'evilnc-comment-or-uncomment-lines
+;;   "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
+;;   "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
+;;   "cc" 'evilnc-copy-and-comment-lines
+;;   "cp" 'evilnc-comment-or-uncomment-paragraphs
+;;   "cr" 'comment-or-uncomment-region
+;;   "cv" 'evilnc-toggle-invert-comment-line-by-line
+;;   "\\" 'evilnc-comment-operator
+;;   )
 
 ;;; Code:
 
@@ -68,9 +93,8 @@
     (widen)
     (goto-char (point-min))
     (if (eq selective-display t)
-	(re-search-forward "[\n\C-m]" nil 'end (1- line))
-      (forward-line (1- line))))
-  )
+      (re-search-forward "[\n\C-m]" nil 'end (1- line))
+      (forward-line (1- line)))))
 
 (defun evilnc--fix-buggy-major-modes ()
   "fix major modes whose comment regex is buggy.
@@ -82,25 +106,22 @@
     ;; See code in (defun comment-search-forward) from emacs 24.2.1:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
-    ;;     (or (match-end 1) (match-beginning 0))
-    ;; My regex make sure (match-end 1) return the position of comment starter
+    ;;     (or (match-end 1) (match-beginning 0)))
+    ;;     (do-something))
+    ;; My regex makes sure (match-end 1) return the position of comment starter
     (when (and (boundp 'comment-use-syntax) (not comment-use-syntax))
         ;; Maybe autoconf.el will (setq comment-use-syntax t) in the future?
-        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +")
-      )
-    )
-  )
+        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))
+    ))
 
 (defun evilnc--operation-on-lines-or-region (fn &optional NUM)
   (if (not (region-active-p))
-      (let ((b (line-beginning-position))
-            e)
+      (let ((b (line-beginning-position)) e)
         (save-excursion
           (forward-line (- NUM 1))
           (setq e (line-end-position))
           )
-        (funcall fn b e)
-        )
+        (funcall fn b e))
     ;; expand selected region
     (progn
       (save-excursion
@@ -136,21 +157,18 @@
               (setq b (line-beginning-position))
               )
         (setq b 1)
-        )
-      )
+        ))
     (save-excursion
-
       (setq e (re-search-forward "^[ \t]*$" nil t))
       (if e (progn
               (forward-line -1)
               (setq e (line-end-position))
               )
         (setq e (point-max))
-        )
-      )
+        ))
+
     (list b e)
-    )
-  )
+    ))
 
 (defun evilnc--in-comment-p (pos)
   (interactive)
@@ -290,11 +308,16 @@
 
 (defun evilnc--find-dst-line-num (UNITS)
   (let ((cur-line-num (evilnc--current-line-num))
-        dst-line-num)
-    (if (>= (mod cur-line-num 10) UNITS)
-        (setq UNITS (+ UNITS 10))
+        dst-line-num
+        (r 1)
+        (l (length (number-to-string UNITS))))
+    (while (> l 0)
+      (setq r (* r 10))
+      (setq l (- l 1)))
+    (if (>= (mod cur-line-num r) UNITS)
+        (setq UNITS (+ UNITS r))
       )
-    (setq dst-line-num (+ cur-line-num (- UNITS (mod cur-line-num 10))))
+    (setq dst-line-num (+ cur-line-num (- UNITS (mod cur-line-num r))))
     ))
 
 ;; ==== below this line are public commands
@@ -476,7 +499,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-version ()
   (interactive)
-  (message "1.5.4"))
+  (message "1.5.7"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
@@ -496,9 +519,16 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
        (define-key evil-normal-state-map ",cr" 'comment-or-uncomment-region)
        (define-key evil-normal-state-map ",cv" 'evilnc-toggle-invert-comment-line-by-line))))
 
+;; workaround issue https://github.com/redguardtoo/evil-nerd-commenter/issues/36
+;; shamelessly copied from http://www.lunaryorn.com/2013/06/25/introducing-with-eval-after-load.html
+(unless (fboundp 'with-eval-after-load)
+  (defmacro with-eval-after-load (file &rest body)
+    `(eval-after-load ,file
+       `(funcall (function ,(lambda () ,@body))))))
+
 ;; Attempt to define the operator on first load.
 ;; Will only work if evil has been loaded
-(eval-after-load 'evil
+(with-eval-after-load 'evil
   '(progn
      (evil-define-operator evilnc-comment-operator (beg end type register yank-handler)
        "Comments text from BEG to END with TYPE.
