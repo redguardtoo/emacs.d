@@ -215,8 +215,10 @@
   kept-old-versions 2
   version-control t  ;use versioned backups
   )
-;; Make backups of files, even when they're in version control
-(setq vc-make-backup-files t)
+
+;; Donot make backups of files, not safe
+;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
+(setq vc-make-backup-files nil)
 
 ;; Don't disable narrowing commands
 (put 'narrow-to-region 'disabled nil)
