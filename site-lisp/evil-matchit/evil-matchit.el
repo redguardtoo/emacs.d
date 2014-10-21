@@ -94,7 +94,7 @@
   (autoload 'evilmi-javascript-jump "evil-matchit-javascript" nil)
   (mapc (lambda (mode)
           (plist-put evilmi-plugins mode '((evilmi-javascript-get-tag evilmi-javascript-jump))))
-        '(js-mode js2-mode js3-mode javascript-mode))
+        '(js-mode json-mode js2-mode js3-mode javascript-mode))
 
   ;; Html
   (autoload 'evilmi-template-get-tag "evil-matchit-template" nil)
