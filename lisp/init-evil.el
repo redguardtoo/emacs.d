@@ -171,6 +171,7 @@ to replace the symbol under cursor"
   "af" 'ack-find-file
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
+  "bb" '(lambda () (interactive) (switch-to-buffer nil))
   "ef" 'end-of-defun
   "db" 'sdcv-search-pointer ;; in another buffer
   "dt" 'sdcv-search-input+ ;; in tip
