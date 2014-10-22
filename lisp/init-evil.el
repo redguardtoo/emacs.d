@@ -56,8 +56,8 @@
         (eshell-mode . emacs)
         (shell-mode . emacs)
         ;;(message-mode . emacs)
-        (magit-log-edit-mode . emacs)
-        (fundamental-mode . emacs)
+        (magit-log-edit-mode . insert)
+        (fundamental-mode . insert)
         (weibo-timeline-mode . emacs)
         (weibo-post-mode . emacs)
         (sr-mode . emacs)
@@ -65,9 +65,20 @@
         (compilation-mode . emacs)
         (speedbar-mode . emacs)
         (magit-commit-mode . normal)
+        (magit-diff-mode . normal)
         (js2-error-buffer-mode . emacs)
         )
       do (evil-set-initial-state mode state))
+
+(evil-define-key 'motion magit-commit-mode-map
+  (kbd "TAB") 'magit-toggle-section
+  (kbd "RET") 'magit-visit-item
+  (kbd "C-w") 'magit-copy-item-as-kill)
+
+(evil-define-key 'motion magit-diff-mode-map
+  (kbd "TAB") 'magit-toggle-section
+  (kbd "RET") 'magit-visit-item
+  (kbd "C-w") 'magit-copy-item-as-kill)
 
 (define-key evil-ex-completion-map (kbd "M-p") 'previous-complete-history-element)
 (define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
@@ -221,6 +232,7 @@ to replace the symbol under cursor"
   "ov" '(lambda () (interactive) (set-selective-display (if selective-display nil 1)))
   "or" 'open-readme-in-git-root-directory
   "mq" '(lambda () (interactive) (man (concat "-k " (thing-at-point 'symbol))))
+  "mgh" '(lambda () (interactive) (magit-show-commit "HEAD"))
   "gg" '(lambda () (interactive) (w3m-search "g" (thing-at-point 'symbol)))
   "qq" '(lambda () (interactive) (w3m-search "q" (thing-at-point 'symbol)))
   "gss" 'git-gutter:set-start-revision
