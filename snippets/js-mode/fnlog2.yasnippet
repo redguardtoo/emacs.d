@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: that.name = function (...) { console.log('fn called'); };
+# key: fn
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+that.${1:name} = function (${2:args}) {
+  console.log('that.${1:$(yas/substr yas-text "[^ ]*")} called');
+  $0
+};
