@@ -25,8 +25,15 @@
 ;; @see http://stackoverflow.com/questions/20863386/idomenu-not-working-in-javascript-mode
 (defun mo-js-imenu-make-index ()
   (save-excursion
-    (imenu--generic-function '((nil "function\\s-+\\([^ ]+\\)(" 1)
-                               (nil " \\([^ ]+\\)\\s-*=\\s-*function\\s-*(" 1)))))
+    (imenu--generic-function '(("Controller" "\.controller( *'\\([^']+\\)" 1)
+                               ("Filter" "\.filter( *'\\([^']+\\)" 1)
+                               ("Factory" "\.factory( *'\\([^']+\\)" 1)
+                               ("Service" "\.service( *'\\([^']+\\)" 1)
+                               ("Directive" "\.directive( *'\\([^']+\\)" 1)
+                               ("Function" "function\\s-+\\([^ ]+\\)(" 1)
+                               ("Function" " \\([^ ]+\\)\\s-*=\\s-*function\\s-*(" 1)
+                               ("Event" "\.\$on( *'\\([^']+\\)" 1)
+                               ))))
 
 (defun flymake-jshint-init ()
     (let* ((temp-file (flymake-init-create-temp-buffer-copy
