@@ -7,7 +7,7 @@
 - People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
 - C++ developers need set the directories to seach C++ header files. Please see the section `clang`.
 - Windows users could use [[http://www.cygwin.com/][Cygwin]] to avoid installing GNU tools. But this setup is still usable in native windows version if you set up environment variable HOME.
-- My priority is stable. So I whitelist packages from [[http://melpa.milkbox.net][melpa]] (melpa-unstable, actually). By default packages from melpa-unstable are *invisible*. Modify variable "melpa-include-packages" in init-elpa.el if you need packages from melpa-unstable.
+- My priority is stable. So I whitelist packages from [[http://melpa.org][melpa]] (melpa-unstable, actually). By default packages from melpa-unstable are *invisible*. Modify variable "melpa-include-packages" in init-elpa.el if you need packages from melpa-unstable.
 - In the bug report, please include details (OS, Emacs version ...) and the output of `emacs --debug-init`.
 - If a package is NOT installable through melpa, you can place its code at ~/.emacs.d/site-lisp. There are already some samples there.
 - Remove bundled emacs 22 at first *if you are using OS X*!
@@ -71,7 +71,7 @@ For that specific problem, you can visit [[http://www.emacswiki.org/emacs/][Emac
 * Directory structure
 init.el is main file which include all the other *.el files.
 
-"lisp/init-elpa.el" define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.milkbox.net][melpa]] by package manager.
+"lisp/init-elpa.el" define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.org][melpa]] by package manager.
 
 The package manager will extract packages into ~/.emacs.d/elpa/.
 
