@@ -76,7 +76,7 @@ ARCHIVE is the string name of the package archive.")
 ;; well, melpa does not bother supporting emacs23 any more, but cl-lib is still required
 ;; TODO: in half a year, I will remove gnu elpa because emacs 24.3 is the minimum version
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
-                         ("melpa-stable" . "http://melpa-stable.org/packages/")
+                         ("melpa-stable" . "http://stable.melpa.org/packages/")
                          ))
 (if (not *emacs24*) (add-to-list 'package-archives '("localelpa" . "~/.emacs.d/localelpa")))
 
