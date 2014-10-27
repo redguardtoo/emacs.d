@@ -1,27 +1,27 @@
 * Help me, Help you
-[[https://github.com/redguardtoo/emacs.d/issues/169][Make this setup better]] if you find it useful.
+[[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup better]].
 * Warning
-- Newbies who want to start immediately should check the section "Install stable version in easiest way".
-- Emacs newer than v24.3.93.1 is *NOT* supported.
-- I use [[http://www.vim.org][Vim]] key bindings. Check the section *Tips* if you prefer native key bindings.
-- People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
-- C++ developers need set the directories to seach C++ header files. Please see the section `clang`.
-- Windows users could use [[http://www.cygwin.com/][Cygwin]] to avoid installing GNU tools. But this setup is still usable in native windows version if you set up environment variable HOME.
-- My priority is stable. So I whitelist packages from [[http://melpa.org][melpa]] (melpa-unstable, actually). By default packages from melpa-unstable are *invisible*. Modify variable "melpa-include-packages" in init-elpa.el if you need packages from melpa-unstable.
-- In the bug report, please include details (OS, Emacs version ...) and the output of `emacs --debug-init`.
-- If a package is NOT installable through melpa, you can place its code at ~/.emacs.d/site-lisp. There are already some samples there.
+- If you want to start immediately please check the section "Install stable version in easiest way"
+- Lastest stable Emacs v24.4 *IS* supported
+- I use [[http://www.vim.org][Vim]] key bindings. Check the section *Tips* if you prefer native key bindings
+- People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server
+- C++ developers need set the directories to seach C++ header files. Please see the section `clang`
+- Windows users could use [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up environment variable HOME.
+- My priority is stable. So I *whitelist* packages from [[http://melpa.org][melpa-unstable]]. It means packages from melpa-unstable are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need install packages from melpa-unstable.
+- Bug report should include details (OS, Emacs version ...) and the output of `emacs --debug-init`.
+- If a package is not installable through melpa, you can place its code at ~/.emacs.d/site-lisp. There are already some samples there.
 - Remove bundled emacs 22 at first *if you are using OS X*!
 
 * General
 Most popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...).
 
-Tested with v23.4, v24.3.1, v24.3.93.1.
+Tested with v23.4, v24.3.1, v24.4
 
-Please contact the original developer if you have any issue with some plugin. [[http://www.emacswiki.org/emacs/][EmacsWiki]] also can help.
+Please contact the original developer if you have any issue with some plugin. [[http://www.emacswiki.org/emacs/][EmacsWiki]] can help, btw.
 
 A short tutorial for newbie is at section *Emacs quick guide*.
 
-If you need a detailed guide, check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Mastering Emacs in one year]].
+If you need a detailed guide, check my [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 
 * Features
 - 100% usable in terminal
@@ -69,7 +69,7 @@ Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik'
 ** Step 4, Solve your first *specific* problem
 For that specific problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help on [[http://www.reddit.com/r/emacs/]].
 * Directory structure
-init.el is main file which include all the other *.el files.
+init.el is the main file. It includes all the other *.el files.
 
 "lisp/init-elpa.el" define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.org][melpa]] by package manager.
 
@@ -260,4 +260,3 @@ Currently Emacs 23 does not support following packages:
 - git-gutter
 - yasnippet
 - ggtags-mode
-
