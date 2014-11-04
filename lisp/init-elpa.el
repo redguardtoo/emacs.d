@@ -91,7 +91,6 @@ ARCHIVE is the string name of the package archive.")
     json-rpc
     kv
     color-theme
-    anaconda-mode
     wgrep
     robe
     inf-ruby
@@ -143,7 +142,9 @@ ARCHIVE is the string name of the package archive.")
     w3m
     fakir
     erlang
-    fancy-narrow)
+    fancy-narrow
+    company-anaconda
+    anaconda-mode)
   "Don't install any Melpa packages except these packages")
 
 ;; Don't take Melpa versions of certain packages
@@ -270,7 +271,8 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'f)
 (require-package 'elnode) ;; elnode dependent on f
 (when *emacs24*
-  (require-package 'anaconda-mode))
+  (require-package 'anaconda-mode)
+  (require-package 'company-anaconda))
 (require-package 'quack) ;; for scheme
 
 ;; (require-package 'command-frequency)

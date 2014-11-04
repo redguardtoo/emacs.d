@@ -13,7 +13,7 @@
 (add-hook 'python-mode-hook '(lambda ()
                                (when *emacs24*
                                  (anaconda-mode)
-                                 (add-to-list 'company-backends 'company-jedi)
+                                 (add-to-list 'company-backends 'company-anaconda)
                                  (eldoc-mode))
                                (flymake-python-pyflakes-load)))
 
