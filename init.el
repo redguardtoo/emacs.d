@@ -128,6 +128,7 @@
 (when *emacs24* (require 'init-company))
 (require 'init-stripe-buffer)
 (require 'init-eim) ;;  cannot be idle-required
+(require 'init-hs-minor-mode)
 
 ;; color theme
 (require 'color-theme)

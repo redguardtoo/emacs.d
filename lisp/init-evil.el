@@ -277,7 +277,11 @@ to replace the symbol under cursor"
   "rbr" 'robe-rails-refresh
   "rbs" 'robe-start
   "ws" 'w3mext-hacker-search
-  "hs" 'helm-swoop
+  "hsp" 'helm-swoop
+  "hst" 'hs-toggle-fold
+  "hsa" 'hs-toggle-fold-all
+  "hsh" 'hs-hide-block
+  "hss" 'hs-show-block
   "hd" 'describe-function
   "hf" 'find-function
   "hv" 'describe-variable
