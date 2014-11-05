@@ -46,7 +46,6 @@
 
 (defun mo-js-mode-hook ()
   (setq imenu-create-index-function 'mo-js-imenu-make-index)
-  (flymake-mode 1)
   (setq flymake-err-line-patterns
         (cons '(".*: line \\([[:digit:]]+\\), col \\([[:digit:]]+\\), \\(.*\\)$"
                 nil 1 2 3)
@@ -55,8 +54,8 @@
   (add-to-list 'flymake-allowed-file-name-masks
                '("\\.js\\'" flymake-jshint-init)
                '("\\.json\\'" flymake-jshint-init))
-  (flymake-mode 1)
-  )
+  (flymake-mode 1))
+
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
 (cond
