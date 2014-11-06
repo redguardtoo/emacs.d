@@ -185,5 +185,20 @@
 ;; turn off the overlay, I do NOT want to lose original syntax highlight!
 (setq magit-highlight-overlay t)
 ;; }}
+
+;; {{ git-messenger
+(autoload 'git-messenger:popup-message "git-messenger" "" t)
+;; show details to play `git blame' game
+(setq git-messenger:show-detail t)
+(add-hook 'git-messenger:after-popup-hook
+          (lambda (msg)
+            ;; extract commit id and put into the kill ring
+            (when (string-match "\\(commit *: *\\)\\([0-9a-z]+\\)" msg)
+              (copy-yank-str (match-string 2 msg))
+              (message "commit hash => clipboard & kill-ring")
+              )))
+(global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
+;; }}
+
 (provide 'init-git)
 
