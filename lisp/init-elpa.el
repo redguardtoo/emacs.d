@@ -143,6 +143,7 @@ ARCHIVE is the string name of the package archive.")
     fakir
     erlang
     fancy-narrow
+    company-c-headers
     company-anaconda
     anaconda-mode)
   "Don't install any Melpa packages except these packages")
@@ -261,7 +262,9 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'fancy-narrow)
 (require-package 'sr-speedbar)
 ;; company-mode drop emacs 23 support
-(if (>= emacs-major-version 24) (require-package 'company '(0 8 5) nil))
+(when (>= emacs-major-version 24)
+  (require-package 'company '(0 8 5) nil)
+  (require-package 'company-c-headers))
 (require-package 'legalese)
 (require-package 'string-edit)
 (require-package 'dired-details)
