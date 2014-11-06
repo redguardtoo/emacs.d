@@ -1,4 +1,5 @@
 (add-hook 'prog-mode-hook 'global-company-mode)
+(add-hook 'cmake-mode-hook 'global-company-mode)
 
 ;; does not matter, I never use this hotkey
 (global-set-key (kbd "C-c o") 'company-complete)
