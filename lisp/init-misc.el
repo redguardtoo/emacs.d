@@ -127,9 +127,6 @@
         (sort-subr nil 'forward-line 'end-of-line nil nil
                    (lambda (s1 s2) (eq (random 2) 0)))))))
 
-;need install browse-kill-ring
-(if *emacs24* (browse-kill-ring-default-keybindings))
-
 (add-hook 'prog-mode-hook
           '(lambda ()
              ;; enable for all programming modes
