@@ -71,7 +71,7 @@ For that specific problem, you can visit [[http://www.emacswiki.org/emacs/][Emac
 * Directory structure
 init.el is the main file. It includes all the other *.el files.
 
-"lisp/init-elpa.el" define how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.org][melpa]] by package manager.
+"lisp/init-elpa.el" defines how and what packages will be installed from [[http://elpa.gnu.org][elpa]]/[[http://marmalade-repo.org][marmalade]]/[[http://melpa.org][melpa]] by package manager.
 
 The package manager will extract packages into ~/.emacs.d/elpa/.
 
@@ -187,7 +187,7 @@ Here are the *exact steps* you need follow:
 - Download [[https://github.com/redguardtoo/myelpa/archive/v1.1.zip]]
 - Extract the zip somewhere, say "~/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/myelpa"
-- Uncomment below code in ~/.emacs.d/init-elpa.el and start Emacs now!
+- Uncomment below code in ~/.emacs.d/lisp/init-elpa.el and start Emacs now!
 #+BEGIN_SRC bash
 (setq package-archives '(("myelpa" . "~/myelpa/")))
 #+END_SRC
