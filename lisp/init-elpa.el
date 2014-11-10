@@ -138,7 +138,6 @@ ARCHIVE is the string name of the package archive.")
     org-fstree
     textile-mode
     pretty-mode
-    auto-complete-clang
     w3m
     fakir
     erlang
