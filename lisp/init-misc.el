@@ -265,8 +265,22 @@ grab matched string, jsonize them, and insert into kill ring"
     (message "matched strings => json => kill-ring")
     rlt))
 
-; from RobinH
-;Time management
+(defun grep-pattern-cssize-into-kill-ring (regexp)
+  "Find all strings matching REGEXP in current buffer.
+grab matched string, cssize them, and insert into kill ring"
+  (interactive
+   (let* ((regexp (grep-read-regexp)))
+     (list regexp)))
+  (let (items rlt)
+    (setq items (grep-pattern-into-list regexp))
+    (dolist (i items)
+      (setq i (replace-regexp-in-string "\\(class=\\|\"\\)" "" i))
+      (setq rlt (concat rlt (format ".%s {\n}\n\n" i))))
+    (kill-new rlt)
+    (message "matched strings => json => kill-ring")
+    rlt))
+
+;; from RobinH, Time management
 (setq display-time-24hr-format t)
 (setq display-time-day-and-date t)
 (display-time)
