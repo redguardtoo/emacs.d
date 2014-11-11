@@ -200,5 +200,11 @@
 (global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
 ;; }}
 
+(setq cppcm-debug t)
+(setq cppcm-get-executable-full-path-callback
+          (lambda (path type tgt-name)
+            ;; extract commit id and put into the kill ring
+            (message "path=%s type=%s tgt-name=%s" path type tgt-name)
+            ))
 (provide 'init-git)
 

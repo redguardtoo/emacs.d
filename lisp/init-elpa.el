@@ -112,7 +112,6 @@ ARCHIVE is the string name of the package archive.")
     regex-tool
     csharp-mode
     switch-window
-    cmake-mode
     sr-speedbar
     quack
     iedit
@@ -228,7 +227,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'rinari)
 (require-package 'ruby-compilation)
 (require-package 'csharp-mode)
-(require-package 'cmake-mode)
 (require-package 'emmet-mode)
 (require-package 'session)
 ;; (require-package 'tidy)
