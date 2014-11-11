@@ -8,15 +8,18 @@
   "Activate flymake-css as necessary, but not in derived modes."
   (when (eq major-mode 'css-mode)
     (flymake-css-load)))
-(add-hook 'css-mode-hook 'maybe-flymake-css-load)
 
-(add-hook 'sass-mode-hook 'flymake-sass-load)
-(add-hook 'scss-mode-hook 'flymake-sass-load)
-(setq-default scss-compile-at-save nil)
+(defun my-css-imenu-make-index ()
+  (save-excursion
+    (imenu--generic-function '((nil "^ *\\([^ ]+\\) *{ *$" 1)
+                               ))))
+(add-hook 'css-mode-hook
+          (lambda ()
+            (setq imenu-create-index-function 'my-css-imenu-make-index)
+            (maybe-flymake-css-load)))
 
-(eval-after-load 'auto-complete
-  '(progn
-     (dolist (hook '(css-mode-hook sass-mode-hook scss-mode-hook))
-       (add-hook hook 'ac-css-mode-setup))))
+(add-hook 'scss-mode-hook
+          (lambda ()
+            (flymake-sass-load)))
 
 (provide 'init-css)

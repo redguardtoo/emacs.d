@@ -197,6 +197,7 @@ That's it. You will never need internet in the future. I tested it on Emacs 24.3
 Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
 
 I don't recommend advanced users locking their packages.
+
 * Report bug
 Please file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
 
