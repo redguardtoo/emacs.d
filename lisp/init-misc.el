@@ -860,17 +860,16 @@ The full path into relative path insert it as a local file link in org-mode"
   (interactive)
   (let (str
         rlt
-        (file (read-file-name "The path of image:"))
-        )
+        (file (read-file-name "The path of image:")))
     (with-temp-buffer
       (shell-command (concat "cat " file "|base64") 1)
       (setq str (replace-regexp-in-string "\n" "" (buffer-string)))
       )
-    (setq rlt (concat "background:url(data:image/"
+    (setq rlt (concat "background:url(\"data:image/"
                       (car (last (split-string file "\\.")))
                       ";base64,"
                       str
-                      ") no-repeat 0 0;"
+                      "\") no-repeat 0 0;"
                       ))
     (kill-new rlt)
     (copy-yank-str rlt)
