@@ -12,8 +12,8 @@
 (evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
 ;; }}
 
-;; Don't move back the cursor one position when exiting insert mode
-(setq evil-move-cursor-back nil)
+;; Move back the cursor one position when exiting insert mode
+(setq evil-move-cursor-back t)
 
 (defun toggle-org-or-message-mode ()
   (interactive)
