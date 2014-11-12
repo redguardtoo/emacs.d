@@ -54,16 +54,14 @@
               (local-set-key (kbd "C-c C-f") 'helm-gtags-pop-stack)))
 ;; ==end
 
-(if *emacs24*
-    (progn
-      (autoload 'helm-c-yas-complete "helm-c-yasnippet" nil t)
-      (global-set-key (kbd "C-x C-o") 'helm-find-files)
-      (global-set-key (kbd "C-c f") 'helm-for-files)
-      (global-set-key (kbd "C-c y") 'helm-c-yas-complete)
-      (global-set-key (kbd "C-c i") 'helm-imenu)
-      )
+(when *emacs24*
+  (autoload 'helm-c-yas-complete "helm-c-yasnippet" nil t)
+  (global-set-key (kbd "C-x C-o") 'helm-find-files)
+  (global-set-key (kbd "C-c f") 'helm-for-files)
+  (global-set-key (kbd "C-c y") 'helm-c-yas-complete)
+  (global-set-key (kbd "C-c i") 'helm-imenu)
   (global-set-key (kbd "C-x C-o") 'ffap)
-  )
+  (global-set-key (kbd "M-y") 'helm-show-kill-ring))
 
 (autoload 'helm-swoop "helm-swoop" nil t)
 (autoload 'helm-back-to-last-point "helm-swoop" nil t)

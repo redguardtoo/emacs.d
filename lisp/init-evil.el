@@ -202,7 +202,9 @@ to replace the symbol under cursor"
   "cb" 'evilcvn-change-symbol-in-whole-buffer
   "tt" 'ido-goto-symbol ;; same as my vim hotkey
   "ht" 'helm-etags-select
-  "hb" 'helm-bookmarks
+  "hm" 'helm-bookmarks
+  "hb" 'helm-back-to-last-point
+  "hh" 'helm-show-kill-ring
   "cg" 'helm-ls-git-ls
   "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes
@@ -219,10 +221,10 @@ to replace the symbol under cursor"
   "W" 'save-some-buffers
   "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
-  "hh" 'highlight-symbol-at-point
-  "hn" 'highlight-symbol-next
-  "hp" 'highlight-symbol-prev
-  "hq" 'highlight-symbol-query-replace
+  "lh" 'highlight-symbol-at-point
+  "ln" 'highlight-symbol-next
+  "lp" 'highlight-symbol-prev
+  "lq" 'highlight-symbol-query-replace
   "bm" 'pomodoro-start ;; beat myself
   "im" 'helm-imenu
   "." 'evil-ex
@@ -285,7 +287,6 @@ to replace the symbol under cursor"
   "hd" 'describe-function
   "hf" 'find-function
   "hv" 'describe-variable
-  "hb" 'helm-back-to-last-point
   "gt" 'ggtags-find-tag-dwim
   "gr" 'ggtags-find-reference
   "fb" 'flyspell-buffer
