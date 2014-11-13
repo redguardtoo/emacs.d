@@ -33,6 +33,7 @@
                                ("Function" "function\\s-+\\([^ ]+\\)(" 1)
                                ("Function" " \\([^ ]+\\)\\s-*=\\s-*function\\s-*(" 1)
                                ("Event" "\.\$on( *'\\([^']+\\)" 1)
+                               ("Watch" "\.\$watch( *'\\([^']+\\)" 1)
                                ))))
 
 (defun flymake-jshint-init ()
