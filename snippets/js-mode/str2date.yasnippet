@@ -1,0 +1,12 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: str2date
+# key: str2date
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+${1:var str2date} = function(str) {
+  // sample: 2014-06-22 09:00:00
+  var a = str.split(' '),
+      d1 = a[0].split('-'),
+      d2 = a[1].split(':');
+  return new Date(d1[0], (d1[1] - 1), d1[2], d2[0], d2[1], d2[2]);
+};

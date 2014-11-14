@@ -1,0 +1,16 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: date2str
+# key: date2str
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+${1:var date2str} = function(d) {
+  var formatNum = function(n) {
+    return n<=9? '0' + n : '' + n;
+  };
+  var strDate = d.getFullYear()
+    + '-'
+    + formatNum(d.getMonth() + 1)
+    + '-'
+    + formatNum(d.getDate());
+  return strDate;
+};
