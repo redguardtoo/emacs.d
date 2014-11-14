@@ -250,6 +250,27 @@ grab matched string and insert them into kill-ring"
     (message "matched strings => kill-ring")
     rlt))
 
+(defvar rimenu-position-pair nil "positions before and after imenu jump")
+(add-hook 'imenu-after-jump-hook
+          (lambda ()
+            (let ((start-point (marker-position (car mark-ring)))
+                  (end-point (point)))
+              (setq rimenu-position-pair (list start-point end-point)))))
+
+(defun rimenu-jump ()
+  "jump to the closest before/after position of latest imenu jump"
+  (interactive)
+  (when rimenu-position-pair
+    (let ((p1 (car rimenu-position-pair))
+          (p2 (cadr rimenu-position-pair)))
+
+      ;; jump to the far way point of the rimenu-position-pair
+      (if (< (abs (- (point) p1))
+             (abs (- (point) p2)))
+          (goto-char p2)
+          (goto-char p1))
+      )))
+
 (defun grep-pattern-jsonize-into-kill-ring (regexp)
   "Find all strings matching REGEXP in current buffer.
 grab matched string, jsonize them, and insert into kill ring"

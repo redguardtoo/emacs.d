@@ -222,6 +222,7 @@ to replace the symbol under cursor"
   "W" 'save-some-buffers
   "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
+  "ii" 'rimenu-jump
   "lh" 'highlight-symbol-at-point
   "ln" 'highlight-symbol-next
   "lp" 'highlight-symbol-prev
