@@ -4,14 +4,25 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/org2nikola
 ;; Keywords: blog static html export org
-;; Version: 0.0.8
+;; Version: 0.0.9
 
 ;; This file is not part of GNU Emacs.
 
 ;; This file is free software (GPLv3 License)
 
-;; How to set it up:
-;; See README.org which is distributed with this file
+;;; Setup:
+;;
+;; (add-to-list 'load-path "~/.emacs.d/lisp/nikola")
+;; (require 'org2nikola)
+;; (setq org2nikola-output-root-directory "~/projs/blog.binchen.org")
+;; ;; OPTIONAL
+;; (add-hook 'org2nikola-after-hook
+;;           (lambda (title slug)
+;;             (message "title=%s slug=%s" title slug)))
+
+;;; Usage:
+;;
+;;  M-x org2nikola-export-subtree
 
 ;;; Code:
 (require 'org)
@@ -22,8 +33,12 @@
 
 (defvar org2nikola-prettify-unsupported-language
   '(elisp "lisp"
-          emacs-lisp "lisp"
-          ))
+          emacs-lisp "lisp"))
+
+(defcustom org2nikola-after-hook nil
+  "hook after HTML files are created. title and slug are pass as parameters"
+  :type 'hook
+  :group 'org2nikola)
 
 (defconst org2nikola-zh-char-table
   '(
@@ -703,6 +718,7 @@ shamelessly copied from org2blog/wp-replace-pre()"
 
     (with-temp-file html-file
       (insert html-text))
-    ))
+
+    (run-hook-with-args 'org2nikola-after-hook title post-slug)))
 
 (provide 'org2nikola)
