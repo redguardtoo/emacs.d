@@ -1053,6 +1053,11 @@ The full path into relative path insert it as a local file link in org-mode"
 (require 'go-mode-load)
 ;; }}
 
+;; someone mentioned that blink cursor could slow Emacs24.4
+;; I couldn't care less about cursor, so turn it off explicitly
+;; https://github.com/redguardtoo/emacs.d/issues/208
+(blink-cursor-mode -1)
+
 ;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
 (if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
