@@ -60,8 +60,7 @@
   (global-set-key (kbd "C-c f") 'helm-for-files)
   (global-set-key (kbd "C-c y") 'helm-c-yas-complete)
   (global-set-key (kbd "C-c i") 'helm-imenu)
-  (global-set-key (kbd "C-x C-o") 'ffap)
-  (global-set-key (kbd "M-y") 'helm-show-kill-ring))
+  (global-set-key (kbd "C-x C-o") 'ffap))
 
 (autoload 'helm-swoop "helm-swoop" nil t)
 (autoload 'helm-back-to-last-point "helm-swoop" nil t)

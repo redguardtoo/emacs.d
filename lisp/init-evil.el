@@ -204,8 +204,6 @@ to replace the symbol under cursor"
   "ht" 'helm-etags-select
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
-  "hh" 'helm-show-kill-ring
-  "ha" 'helm-all-mark-rings
   "cg" 'helm-ls-git-ls
   "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes
