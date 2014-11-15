@@ -1,7 +1,7 @@
 * Help me, Help you
 [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup better]].
 * Notes
-- I recommdend *Emacs 24.3.1*
+- I recommend *Emacs 24.3.1*
 - If you want to start immediately please check the section "Install stable version in easiest way"
 - Lastest stable Emacs v24.4 *IS* supported
 - I use [[http://www.vim.org][Vim]] key bindings. Check the section *Tips* if you prefer native key bindings
@@ -262,3 +262,4 @@ Currently Emacs 23 does not support following packages:
 - git-gutter
 - yasnippet
 - ggtags-mode
+  
