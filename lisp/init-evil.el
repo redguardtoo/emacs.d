@@ -87,6 +87,7 @@
 (define-key evil-normal-state-map "+" 'evil-numbers/inc-at-pt)
 (define-key evil-normal-state-map "-" 'evil-numbers/dec-at-pt)
 (define-key evil-normal-state-map "go" 'goto-char)
+(define-key evil-normal-state-map (kbd "M-y") 'browse-kill-ring)
 
 ;; {{ evil-matchit
 (require 'evil-matchit)
@@ -204,6 +205,7 @@ to replace the symbol under cursor"
   "ht" 'helm-etags-select
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
+  "hh" 'browse-kill-ring
   "cg" 'helm-ls-git-ls
   "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes

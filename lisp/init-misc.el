@@ -1058,6 +1058,10 @@ The full path into relative path insert it as a local file link in org-mode"
 ;; https://github.com/redguardtoo/emacs.d/issues/208
 (blink-cursor-mode -1)
 
+;; https://github.com/browse-kill-ring/browse-kill-ring
+(require 'browse-kill-ring)
+(browse-kill-ring-default-keybindings)
+
 ;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
 (if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
 
