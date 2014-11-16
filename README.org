@@ -8,7 +8,7 @@
 - People in Mainland China need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server
 - C++ developers need set the directories to seach C++ header files. Please see the section `clang`
 - Windows users could use [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up environment variable HOME.
-- My priority is stable. So I *whitelist* packages from [[http://melpa.org][melpa-unstable]]. It means packages from melpa-unstable are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need install packages from melpa-unstable.
+- My first priority is stable. So I *whitelist* packages from [[http://melpa.org][melpa-unstable]]. It means packages from melpa-unstable are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need install any package from melpa-unstable.
 - Bug report should include details (OS, Emacs version ...) and the output of `emacs --debug-init`.
 - If a package is not installable through melpa, you can place its code at ~/.emacs.d/site-lisp. There are already some samples there.
 - Remove bundled emacs 22 at first *if you are using OS X*!
@@ -27,7 +27,7 @@ If you need a detailed guide, check my [[https://github.com/redguardtoo/masterin
 * Features
 - 100% usable in terminal
 - Real time HTML syntax checker
-- git or subversion is *NOT* needed. You don't need run 'git submodule update'.
+- git or subversion is *NOT* required. You don't need run `git submodule update`.
 - optimized for cross-platform C++ development with CMake
 - emacs-w3m (console web browser)
 - eim (Chinese pinyin input method)
@@ -58,12 +58,15 @@ The command "package-refresh-content" will fetch the latest package list from re
 
 * Emacs quick guide
 ** Step 1, Learn OS basics
-- Know what is environment variable
-- Know what is pipe, stdout, stdin
+Read wikipedia in order to know,
+- What is environment variable
+- What is pipe, stdout, stdin
 ** Step 2, Read official tutorial at least once
-Press "C-h t" (C means Ctrl) and start read tutorial.
-- Know how to move cursor
-- Know how to open help. Press "C-h v" and "C-h f".
+Press "C-h t" (C means Ctrl) to read tutorial.
+
+At minimum you need know:
+- How to move cursor
+- How to open help. Press "C-h v" and "C-h f".
 ** Step 3, Know org-mode basics
 [[http://orgmode.org/][Org-mode]] is a for notes-keeping and planning.
 Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key you need remember is "Tab".
@@ -78,9 +81,9 @@ The package manager will extract packages into ~/.emacs.d/elpa/.
 
 I also manually download and extract some packages into ~/.emacs.d/site-lisp/. Packages in ~/.emacs.d/site-lisp/ is not visible to Emacs package manager.
 
-My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is in ~/.emacs.d/snippets.
+My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at ~/.emacs.d/snippets.
 
-Other directoris do not matter.
+Other directories do not matter.
 
 * Third party command line tools
 They are *OPTIONAL*. Your Emacs will not crash if they are not installed.
@@ -250,11 +253,11 @@ Insert below code into ~/.emacs.d/init.el,
 (color-theme-molokai)
 #+END_SRC
 
-"M-x color-theme-select" may not work in this setup. It's because there is some design flaw in Emacs.
+"M-x color-theme-select" may not work in this setup. It's because of some design flaw in Emacs.
 * My personal custom.el (OPTIONAL)
 It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff which is useless to you.
 * About Emacs 23
-Emacs 23 support will *be dropped* in one year <2015-04-24 Thu>.
+Emacs 23 support will *be dropped* on <2015-04-24 Thu>.
 Currently Emacs 23 does not support following packages:
 - helm
 - org-mode and its third party packages
