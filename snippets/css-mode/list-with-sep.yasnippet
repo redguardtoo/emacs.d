@@ -1,0 +1,25 @@
+# -*- mode: snippet -*-
+# name : inline <ul> list with separator
+# key: ul
+# --
+ul.${1:className} {
+  list-style-type: none;
+  margin:0;
+  padding:0;
+  li {
+    font-size:16px;
+    float:left;
+  }
+
+  .not-last-item {
+    /* no separator in mobile */
+    @media (min-width:768px) {
+      &:after {
+        content: "|";
+        position: relative;
+        left: 16px;
+      }
+    }
+  }
+
+}

@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: div
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# name: <div class="col-xs-12 col-sm-12 col-md-12">...</div>
+# --
+<div class="col-xs-${1:12} col-sm-${1:$(yas/substr yas-text "[^ ]*")} col-md-${1:$(yas/substr yas-text "[^ ]*")}">
+  $0
+</div>
