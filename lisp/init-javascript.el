@@ -32,8 +32,6 @@
         ("Config" "\.config( *\\[ *'\\([^']+\\)" 1)
         ("OnChange" " *\$('\\([^']*\\)').*\.change *( *function" 1)
         ("OnClick" " *\$('\\([^']*\\)').*\.click *( *function" 1)
-        ("OnChange" "^ *\\([a-zA-Z0-9\.]+\\)\.change *( *function" 1)
-        ("OnClick" "^ *\\([a-zA-Z0-9\.]+\\)\.click *( *function" 1)
         ("Watch" "\.\$watch( *'\\([^']+\\)" 1)
         ("Function" "function\\s-+\\([^ ]+\\) *(" 1)
         ("Function" " \\([^ ]+\\)\\s-*=\\s-*function\\s-*(" 1)))
