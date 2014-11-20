@@ -43,13 +43,14 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun flymake-jshint-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name)))
-           (arglist (list local-file)))
-      (list "jshint" arglist)))
+  (message "flymake-jshint-init called (buffer-file-name)=%s" (buffer-file-name))
+  (let* ((temp-file (flymake-init-create-temp-buffer-copy
+                     'flymake-create-temp-inplace))
+         (local-file (file-relative-name
+                      temp-file
+                      (file-name-directory buffer-file-name)))
+         (arglist (list local-file)))
+    (list "jshint" arglist)))
 
 (defun mo-js-mode-hook ()
   (setq imenu-create-index-function 'mo-js-imenu-make-index)

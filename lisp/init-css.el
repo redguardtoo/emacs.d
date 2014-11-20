@@ -15,11 +15,14 @@
                                ))))
 (add-hook 'css-mode-hook
           (lambda ()
-            (setq imenu-create-index-function 'my-css-imenu-make-index)
-            (maybe-flymake-css-load)))
+            (unless (is-buffer-file-temp)
+              (setq imenu-create-index-function 'my-css-imenu-make-index)
+              (maybe-flymake-css-load))))
 
 (add-hook 'scss-mode-hook
           (lambda ()
-            (flymake-sass-load)))
+            (unless (is-buffer-file-temp)
+              (setq imenu-create-index-function 'my-css-imenu-make-index)
+              (flymake-sass-load))))
 
 (provide 'init-css)

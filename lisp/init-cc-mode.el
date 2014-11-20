@@ -8,6 +8,7 @@
 
 ;C/C++ SECTION
 (defun my-c-mode-hook ()
+  (message "my-c-mode-hook called (buffer-file-name)=%s" (buffer-file-name))
   ;; @see http://stackoverflow.com/questions/3509919/ \
   ;; emacs-c-opening-corresponding-header-file
   (local-set-key (kbd "C-x C-o") 'ff-find-other-file)
@@ -105,7 +106,8 @@
               ;; gtags (GNU global) stuff
               (setq gtags-suggested-key-mapping t)
               (if *emacs24* (ggtags-mode 1)))
-            (when (derived-mode-p 'c-mode 'c++-mode)
+            (if (and (derived-mode-p 'c-mode 'c++-mode)
+                     (not (is-buffer-file-temp)))
               (my-c-mode-hook))
             ))
 

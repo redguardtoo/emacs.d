@@ -44,4 +44,11 @@
             (remove-hook 'yas/after-exit-snippet-hook
                          'web-mode-yasnippet-exit-hook t)
             ))
+
+(eval-after-load 'web-mode
+  '(progn
+     ;; make org-mode export failed, I use evil and evil-matchit
+     ;; to select text
+     (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
+     ))
 (provide 'init-web-mode)

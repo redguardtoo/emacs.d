@@ -6,17 +6,20 @@
                       "setTimeout(function(){content.document.location.reload(true);}, '500');"))
 
 (defun moz-custom-setup ()
-  (message "moz-custom-setup called")
-  (moz-minor-mode 1)
-  ;; @see  http://www.emacswiki.org/emacs/MozRepl
-  ;; Example - you may want to add hooks for your own modes.
-  ;; I also add this to python-mode when doing django development.
-  (add-hook 'after-save-hook
-            '(lambda () (interactive)
-               (when (memq major-mode '(web-mode html-mode nxml-mode nxhml-mode php-mode))
-                 (moz-reload-browser)
-                 ))
-            'append 'local))
+  ;; called when editing a REAL file
+  (unless (is-buffer-file-temp)
+    (message "moz-custom-setup called (buffer-file-name)=%s" (buffer-file-name))
+    (moz-minor-mode 1)
+    ;; @see  http://www.emacswiki.org/emacs/MozRepl
+    ;; Example - you may want to add hooks for your own modes.
+    ;; I also add this to python-mode when doing django development.
+    (add-hook 'after-save-hook
+              '(lambda () (interactive)
+                 (when (memq major-mode '(web-mode html-mode nxml-mode nxhml-mode php-mode))
+                   (moz-reload-browser)
+                   ))
+              'append 'local)
+    ))
 
 ;; (add-hook 'js2-mode-hook 'moz-custom-setup)
 (add-hook 'html-mode-hook 'moz-custom-setup)

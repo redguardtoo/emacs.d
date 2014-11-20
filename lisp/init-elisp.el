@@ -39,7 +39,7 @@
 
 ;; do not use elisplint
 (defun flymake-elisp-init ()
-  (unless (string-match "^ " (buffer-name))
+  (unless (or (string-match "^ " (buffer-name)) (is-buffer-file-temp))
     (let* ((temp-file (flymake-init-create-temp-buffer-copy
                          'flymake-create-temp-intemp))
            (local-file (file-relative-name
