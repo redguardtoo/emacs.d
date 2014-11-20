@@ -51,6 +51,7 @@
         (direx:direx-mode . emacs)
         (yari-mode . emacs)
         (erc-mode . emacs)
+        (w3m-mode . emacs)
         (gud-mode . emacs)
         (help-mode . emacs)
         (eshell-mode . emacs)
