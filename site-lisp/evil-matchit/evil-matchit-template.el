@@ -33,6 +33,7 @@
 
 (defvar evilmi-template-extract-keyword-howtos
   '(("^[ \t]*<\\?php +\\([a-z]+\\).*$" 1)
+    ("^[ \t]*\\([@a-z]+\\).*$" 1)
     ))
 
 (defvar evilmi-template-match-tags
@@ -40,6 +41,13 @@
     ("foreach" () "endforeach" "MONOGAMY")
     ("for" () "endfor" "MONOGAMY")
     ("while" () "endwhile" "MONOGAMY")
+    ("@section" () ("@show" "@stop" "@overwrite") "MONOGAMY")
+    ("@if" ("@elseif" "@else") "@endif" "MONOGAMY")
+    ("@unless" () "@endunless")
+    ("@for" () "@endfor" "MONOGAMY")
+    ("@foreach" () "@endforeach" "MONOGAMY")
+    ("@forelse" "@empty" "@endforelse" "MONOGAMY")
+    ("@while" () "@endwhile" "MONOGAMY")
     ))
 
 ;;;###autoload
@@ -50,7 +58,6 @@
 
 ;;;###autoload
 (defun evilmi-template-jump (rlt NUM)
-  (evilmi-sdk-jump rlt NUM evilmi-template-match-tags evilmi-template-extract-keyword-howtos)
-  )
+  (evilmi-sdk-jump rlt NUM evilmi-template-match-tags evilmi-template-extract-keyword-howtos))
 
 (provide 'evil-matchit-template)
