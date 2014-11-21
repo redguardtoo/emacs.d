@@ -51,6 +51,7 @@
      ;; to select text, so expand-region.el is not used
      (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
      ;; angular imenu
-     (push '(" \\(ng-[a-z]*\\)=\"\\([a-zA-Z0-9]*\\)" 1 2 "=") 'web-mode-imenu-regexp-list)
+     (add-to-list 'web-mode-imenu-regexp-list
+                  '(" \\(ng-[a-z]*\\)=\"\\([a-zA-Z0-9]*\\)" 1 2 "="))
      ))
 (provide 'init-web-mode)
