@@ -47,8 +47,10 @@
 
 (eval-after-load 'web-mode
   '(progn
-     ;; make org-mode export failed, I use evil and evil-matchit
-     ;; to select text
+     ;; make org-mode export fail, I use evil and evil-matchit
+     ;; to select text, so expand-region.el is not used
      (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
+     ;; angular imenu
+     (push '(" \\(ng-[a-z]*\\)=\"\\([a-zA-Z0-9]*\\)" 1 2 "=") 'web-mode-imenu-regexp-list)
      ))
 (provide 'init-web-mode)
