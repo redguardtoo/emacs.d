@@ -1,9 +1,11 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: jQuery change()
-# key: cha
+# key: change
 # group: jquery
 # contributor: David Miller <david@deadpansincerity.com>
 # --
-change(function(){
+$('${1:#myid}').change( function(){
+  var v = this.value;
+  console.log('${1:$(yas/substr yas-text "[^ ]*")}.change called. this.value=', v);
   $0
 });

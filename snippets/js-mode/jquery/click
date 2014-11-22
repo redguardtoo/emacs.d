@@ -4,6 +4,8 @@
 # group: jquery
 # contributor: David Miller <david@deadpansincerity.com>
 # --
-$('${1:#myid}').click( function() {
-    $0
+$('${1:#myid}').click( function(e) {
+  console.log('${1:$(yas/substr yas-text "[^ ]*")}.click called');
+  e.preventDefault();
+  $0
 });
