@@ -366,6 +366,7 @@ to replace the symbol under cursor"
   "xnr" 'narrow-to-region
   "xw" 'widen
   "xd" 'narrow-to-defun
+  "ycr" (lambda () (interactive) (yas-compile-directory (file-truename "~/.emacs.d/snippets")) (yas-reload-all))
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
   "zv" '(lambda (wg)
