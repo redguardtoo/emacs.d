@@ -222,6 +222,8 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'page-break-lines)
 (require-package 'pointback)
 (require-package 'regex-tool)
+;; I don't use multiple-cursors, but js2-refactor requires it
+(require-package 'multiple-cursors)
 (require-package 'rinari)
 (require-package 'ruby-compilation)
 (require-package 'csharp-mode)

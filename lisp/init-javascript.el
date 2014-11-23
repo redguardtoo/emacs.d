@@ -198,7 +198,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
                  (imenu--generic-function js2-imenu-extra-generic-expression)))
          (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
          ad-return-value))
-     ))
+     (require 'js2-refactor)
+     (js2r-add-keybindings-with-prefix "C-c C-m")))
 ;; }}
 
 (defun my-js2-mode-setup()
