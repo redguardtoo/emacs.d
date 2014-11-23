@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: console.log top one in kill-ring
+# key: lk
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(message '${1:`(car kill-ring)`}=%s' ${1:$(yas/substr yas-text "[^ ]*")})

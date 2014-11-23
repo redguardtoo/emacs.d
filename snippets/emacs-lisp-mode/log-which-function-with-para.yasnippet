@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (message function+params)
+# key: lwf
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(message "${1:`(which-function)`} called => `(mapconcat (lambda (i) "%s") (split-string (car kill-ring) "[ \n\t]+") " ")`" `(mapconcat 'identity (split-string (car kill-ring) "[ \n\t]+") " ")`)

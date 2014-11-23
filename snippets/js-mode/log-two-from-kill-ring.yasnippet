@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: console.log two items in kill-ring
+# key: lkk
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+console.log('`(replace-regexp-in-string "'" "\\\\'" (car kill-ring))`=', `(car kill-ring)`, '`(replace-regexp-in-string "'" "\\\\'" (cadr kill-ring))`=', `(cadr kill-ring)`);

@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: console.log which function with parameters
+# key: lwf
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+console.log('${1:`(which-function)`} called => ', `(mapconcat (lambda (i) (format "'%s=',%s" i i)) (split-string (car kill-ring) ",[ \s\n]*") ",")`);
