@@ -502,18 +502,24 @@ grab matched string, cssize them, and insert into kill ring"
         (deactivate-mark))
         (message "No region active; can't yank to clipboard!")))
 
+(defun get-str-from-x-clipboard ()
+  (let (s)
+    (cond
+     ((and (display-graphic-p) x-select-enable-clipboard)
+      (setq s (x-selection 'CLIPBOARD)))
+     (t (setq s (shell-command-to-string
+                 (cond
+                  (*cygwin* "getclip")
+                  (*is-a-mac* "pbpaste")
+                  (t "xsel -ob"))))
+        ))
+    s))
+
+
 (defun paste-from-x-clipboard()
+  "Paste string clipboard"
   (interactive)
-  (cond
-   ((and (display-graphic-p) x-select-enable-clipboard)
-    (insert (x-selection 'CLIPBOARD)))
-   (t (shell-command
-       (cond
-        (*cygwin* "getclip")
-        (*is-a-mac* "pbpaste")
-        (t "xsel -ob"))
-       1))
-   ))
+  (insert (get-str-from-x-clipboard)))
 
 (defun my/paste-in-minibuffer ()
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
