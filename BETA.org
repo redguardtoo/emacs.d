@@ -42,22 +42,36 @@ Open ~/hello/hello.org by "C-x C-f".
 Open ~/hello/hello.c
 
 insert single character "i" and press "M-j", the text should be expanded by yasnippet.
+** C++ plus CMake
+Make sure CMake installed and the executable "cmake" exists in environment variable PATH.
+
+Finish [[https://github.com/redguardtoo/cpputils-cmake#one-minute-step-by-step-tutorial][One Minute tutorial]].
 ** Javascript
 Open ~/hello/hello.js
 
-insert single character "l" and press "M-j", the text should be expanded by yasnippet.
+Insert single character "l" and press "M-j", the text should be expanded by yasnippet.
 
 Please input some javascript with syntax error intentionally, the error will be highlighted immediately.
+
+Place the cursor inside any function, input "lwf" and press "M-j", text will be expanded by yasnippet.
+
+"M-x helm-imenu" to display the function list in current buffer. AngularJS code preferred.
 ** HTML
 Open ~/hello/hello.html
 
 Install "tidy" (check README), then intentionally input some invalid html tag, you should see the tag is highlighted
 
-Install "aspell" and its English dictionary, input some typo in html tag's "value" attribute. The typo will be highlighted automatically.
+Install "aspell" and its English dictionary "aspell-en", input some typo in html tag's "value" attribute. The typo will be highlighted automatically.
+
+Open an empty HTML file, input "html5" then "M-j". Input "script" then "M-j".
 ** Ruby
-Open ~/hello/hello.rb
+Open ~/hello/hello.rb. It shoud be fine to edit the code.
+
 ** Python
 Open ~/hello/hello.py
+
+Input "os.", you will see the auto-completion of methods in two second. Python 2.x required.
+
 ** Perl
 Open ~/hello/hello.pl
 * Report
