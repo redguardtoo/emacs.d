@@ -52,6 +52,6 @@
      (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
      ;; angular imenu
      (add-to-list 'web-mode-imenu-regexp-list
-                  '(" \\(ng-[a-z]*\\)=\"\\([a-zA-Z0-9]*\\)" 1 2 "="))
+                  '(" \\(ng-[a-z]*\\)=\"\\([^\"]+\\)" 1 2 "="))
      ))
 (provide 'init-web-mode)
