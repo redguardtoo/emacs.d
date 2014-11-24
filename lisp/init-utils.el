@@ -90,12 +90,24 @@
 (defun is-buffer-file-temp ()
   (interactive)
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file"
+  (message "is-buffer-file-temp called")
   (let ((f (buffer-file-name))
+        org
         (rlt t))
-    (if f
-        (if (and (not (string-match temporary-file-directory f))
-                 (not (file-exists-p (replace-regexp-in-string "\.html$" ".org" f))))
-          (setq rlt nil)))
+    (cond
+     ((not f)
+      (setq rlt t)
+      (message "(buffer-file-name) is nil"))
+     ((string-match (concat "^" temporary-file-directory) f)
+      (setq rlt t)
+      (message "%s is from temp dir %s" temporary-file-directory))
+     ((and (string-match "\.html$" f)
+           (file-exists-p (setq org (replace-regexp-in-string "\.html$" ".org" f))))
+      (setq rlt t)
+      (message "This files is created from %s" org))
+     (t
+      (setq rlt nil)))
+
     rlt))
 
 (provide 'init-utils)
