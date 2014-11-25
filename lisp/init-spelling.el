@@ -25,8 +25,7 @@
         (search-backward-regexp "=['\"]" (line-beginning-position) t)
         (backward-char)
         (setq thing (thing-at-point 'symbol))
-        (setq rlt (or (string-match "^ng-.*" thing)
-                     (string= "value" thing)))
+        (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$" thing))
         rlt))
      (t t))
     rlt
