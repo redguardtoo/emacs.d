@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: if(boolean-condition-from-kill-ring) { debugger; }
+# key: d
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+if(${1:`(car kill-ring)`}) { console.clear(); debugger; }
