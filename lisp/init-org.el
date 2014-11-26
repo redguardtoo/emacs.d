@@ -37,14 +37,14 @@
       org-export-kill-product-buffer-when-displayed t
       org-export-odt-preferred-output-format "doc"
       org-tags-column 80
-      ;org-startup-indented t
+      ;; org-startup-indented t
       )
 
-; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
+;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
 (setq org-refile-targets (quote ((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))))
-; Targets start with the file name - allows creating level 1 tasks
+;; Targets start with the file name - allows creating level 1 tasks
 (setq org-refile-use-outline-path (quote file))
-; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
+;; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
 (setq org-outline-path-complete-in-steps t)
 
 
