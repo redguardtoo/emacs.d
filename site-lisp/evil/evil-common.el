@@ -25,14 +25,11 @@
 ;; along with Evil.  If not, see <http://www.gnu.org/licenses/>.
 
 (require 'evil-vars)
-(require 'evil-digraphs)
 (require 'rect)
 
 ;;; Code:
 
 (declare-function evil-visual-state-p "evil-states")
-(declare-function evil-visual-restore "evil-states")
-(declare-function evil-motion-state "evil-states")
 
 ;;; Compatibility for Emacs 23
 (unless (fboundp 'deactivate-input-method)
@@ -291,15 +288,6 @@ sorting in between."
                       (mapcar #'(lambda (var)
                                   (list var `(pop ,sorted)))
                               vars))))))
-
-(defun evil-vector-to-string (vector)
-  "Turns vector into a string, changing <escape> to '\\e'"
-  (mapconcat (lambda (c)
-               (if (equal c 'escape)
-                   "\e"
-                 (make-string 1 c)))
-             vector
-             ""))
 
 ;;; Command properties
 
@@ -624,36 +612,6 @@ as a command. Its main use is in the `evil-read-key-map'."
   (interactive)
   (read-quoted-char))
 
-(defun evil-read-digraph-char (&optional hide-chars)
-  "Read two keys from keyboard forming a digraph.
-This function creates an overlay at (point), hiding the next
-HIDE-CHARS characters. HIDE-CHARS defaults to 1."
-  (interactive)
-  (let (char1 char2 string overlay)
-    (unwind-protect
-        (progn
-          (setq overlay (make-overlay (point)
-                                      (min (point-max)
-                                           (+ (or hide-chars 1)
-                                              (point)))))
-          (overlay-put overlay 'invisible t)
-          ;; create overlay prompt
-          (setq string "?")
-          (put-text-property 0 1 'face 'minibuffer-prompt string)
-          ;; put cursor at (i.e., right before) the prompt
-          (put-text-property 0 1 'cursor t string)
-          (overlay-put overlay 'after-string string)
-          (setq char1 (read-key))
-          (setq string (string char1))
-          (put-text-property 0 1 'face 'minibuffer-prompt string)
-          (put-text-property 0 1 'cursor t string)
-          (overlay-put overlay 'after-string string)
-          (setq char2 (read-key)))
-      (delete-overlay overlay))
-    (or (evil-digraph (list char1 char2))
-        ;; use the last character if undefined
-        (cadr char2))))
-
 (defun evil-read-motion (&optional motion count type modifier)
   "Read a MOTION, motion COUNT and motion TYPE from the keyboard.
 The type may be overridden with MODIFIER, which may be a type
@@ -814,8 +772,7 @@ BUFFER defaults to the current buffer."
            (cursor (evil-state-property state :cursor t))
            (color (or (and (stringp cursor) cursor)
                       (and (listp cursor)
-                           (evil-member-if #'stringp cursor))
-                      (frame-parameter nil 'cursor-color))))
+                           (evil-member-if #'stringp cursor)))))
       (with-current-buffer (or buffer (current-buffer))
         ;; if both STATE and `evil-default-cursor'
         ;; specify a color, don't set it twice
@@ -1115,25 +1072,6 @@ the loop immediately quits. See also `evil-loop'.
        (error
         (when (= p (point))
           (signal (car err) (cdr err)))))))
-
-(defmacro evil-with-hproject-point-on-window (&rest body)
-  "Project point after BODY to current window.
-If point is on a position left or right of the current window
-then it is moved to the left and right boundary of the window,
-respectively. If `auto-hscroll-mode' is non-nil then the left and
-right positions are increased or decreased, respectively, by
-`horizontal-margin' so that no automatic scrolling occurs."
-  (declare (indent defun)
-           (debug t))
-  (let ((diff (make-symbol "diff"))
-        (left (make-symbol "left"))
-        (right (make-symbol "right")))
-    `(let ((,diff (if auto-hscroll-mode (1+ hscroll-margin) 0))
-           auto-hscroll-mode)
-       ,@body
-       (let* ((,left (+ (window-hscroll) ,diff))
-              (,right (+ (window-hscroll) (window-width) (- ,diff) -1)))
-         (move-to-column (min (max (current-column) ,left) ,right))))))
 
 (defun evil-goto-min (&rest positions)
   "Go to the smallest position in POSITIONS.
@@ -1537,7 +1475,7 @@ POS defaults to point."
                 (set-marker marker nil))
             evil-jump-list)
       (setq evil-jump-list nil)
-      (push-mark pos t))))
+      (push-mark pos))))
 
 (defun evil-get-register (register &optional noerror)
   "Return contents of REGISTER.
@@ -1553,59 +1491,57 @@ The following special registers are supported.
   :  the last command line (read only)
   .  the last inserted text (read only)
   -  the last small (less than a line) delete
-  _  the black hole register
   =  the expression register (read only)"
-  (condition-case err
-      (when (characterp register)
-        (or (cond
-             ((eq register ?\")
-              (current-kill 0))
-             ((and (<= ?1 register) (<= register ?9))
-              (let ((reg (- register ?1)))
-                (and (< reg (length kill-ring))
-                     (current-kill reg t))))
-             ((eq register ?*)
-              (x-get-selection-value))
-             ((eq register ?+)
-              (x-get-clipboard))
-             ((eq register ?%)
-              (or (buffer-file-name) (error "No file name")))
-             ((= register ?#)
-              (or (with-current-buffer (other-buffer) (buffer-file-name))
-                  (error "No file name")))
-             ((eq register ?/)
-              (or (car-safe
-                   (or (and (boundp 'evil-search-module)
-                            (eq evil-search-module 'evil-search)
-                            evil-ex-search-history)
-                       (and isearch-regexp regexp-search-ring)
-                       search-ring))
-                  (error "No previous regular expression")))
-             ((eq register ?:)
-              (or (car-safe evil-ex-history)
-                  (error "No previous command line")))
-             ((eq register ?.)
-              evil-last-insertion)
-             ((eq register ?-)
-              evil-last-small-deletion)
-             ((eq register ?=)
-              (let* ((enable-recursive-minibuffers t)
-                     (result (eval (car (read-from-string (read-string "="))))))
-                (cond
-                 ((or (stringp result)
-                      (numberp result)
-                      (symbolp result))
-                  (prin1-to-string result))
-                 ((sequencep result)
-                  (mapconcat #'prin1-to-string result "\n"))
-                 (t (error "Using %s as a string" (type-of result))))))
-             ((eq register ?_) ; the black hole register
-              "")
-             (t
-              (setq register (downcase register))
-              (get-register register)))
-            (error "Register `%c' is empty" register)))
-    (error (unless err (signal (car err) (cdr err))))))
+  (when (characterp register)
+    (or (cond
+         ((eq register ?\")
+          (current-kill 0))
+         ((and (<= ?0 register) (<= register ?9))
+          (current-kill (- register ?0) t))
+         ((eq register ?*)
+          (let ((x-select-enable-primary t))
+            (current-kill 0)))
+         ((eq register ?+)
+          (let ((x-select-enable-clipboard t))
+            (current-kill 0)))
+         ((eq register ?%)
+          (or (buffer-file-name) (unless noerror (error "No file name"))))
+         ((= register ?#)
+          (or (with-current-buffer (other-buffer) (buffer-file-name))
+              (unless noerror (error "No file name"))))
+         ((eq register ?/)
+          (or (car-safe
+               (or (and (boundp 'evil-search-module)
+                        (eq evil-search-module 'evil-search)
+                        evil-ex-search-history)
+                   (and isearch-regexp regexp-search-ring)
+                   search-ring))
+              (unless noerror (error "No previous regular expression"))))
+         ((eq register ?:)
+          (or (car-safe evil-ex-history)
+              (unless noerror (error "No previous command line"))))
+         ((eq register ?.)
+          evil-last-insertion)
+         ((eq register ?-)
+          evil-last-small-deletion)
+         ((eq register ?=)
+          (let* ((enable-recursive-minibuffers t)
+                 (result (eval (car (read-from-string (read-string "="))))))
+            (cond
+             ((or (stringp result)
+                  (numberp result)
+                  (symbolp result))
+              (prin1-to-string result))
+             ((sequencep result)
+              (mapconcat #'prin1-to-string result "\n"))
+             (t (error "Using %s as a string" (type-of result))))))
+         ((eq register ?_) ; the black hole register
+          "")
+         (t
+          (setq register (downcase register))
+          (get-register register)))
+        (unless noerror
+          (error "Register `%c' is empty" register)))))
 
 (defun evil-set-register (register text)
   "Set the contents of register REGISTER to TEXT.
@@ -1614,18 +1550,20 @@ register instead of replacing its content."
   (cond
    ((eq register ?\")
     (kill-new text))
-   ((and (<= ?1 register) (<= register ?9))
+   ((and (<= ?0 register) (<= register ?9))
     (if (null kill-ring)
         (kill-new text)
       (let ((kill-ring-yank-pointer kill-ring-yank-pointer)
             interprogram-paste-function
             interprogram-cut-function)
-        (current-kill (- register ?1))
+        (current-kill (- register ?0))
         (setcar kill-ring-yank-pointer text))))
    ((eq register ?*)
-    (x-set-selection 'PRIMARY text))
+    (let ((x-select-enable-primary t))
+      (kill-new text)))
    ((eq register ?+)
-    (x-set-selection 'CLIPBOARD text))
+    (let ((x-select-enable-clipboard t))
+      (kill-new text)))
    ((eq register ?-)
     (setq evil-last-small-deletion text))
    ((eq register ?_) ; the black hole register
@@ -1664,8 +1602,8 @@ register instead of replacing its content."
   (sort (append (mapcar #'(lambda (reg)
                             (cons reg (evil-get-register reg t)))
                         '(?\" ?* ?+ ?% ?# ?/ ?: ?. ?-
-                              ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9))
-                register-alist nil)
+                              ?0 ?1 ?2 ?3 ?4 ?5 ?6 ?7 ?8 ?9))
+                register-alist)
         #'(lambda (reg1 reg2) (< (car reg1) (car reg2)))))
 
 (defsubst evil-kbd-macro-suppress-motion-error ()
@@ -1900,22 +1838,24 @@ The insertion range is stored as a pair of buffer positions in
 then the current range is modified, otherwise it is replaced by a
 new range. Compatible changes are changes that do not create a
 disjoin range."
-  ;; deletion
-  (when (> len 0)
+  (cond
+   ((zerop len)
+    ;; insertion
+    (if (and evil-current-insertion
+             (>= beg (car evil-current-insertion))
+             (<= beg (cdr evil-current-insertion)))
+        (setcdr evil-current-insertion
+                (+ (- end beg)
+                   (cdr evil-current-insertion)))
+      (setq evil-current-insertion (cons beg end))))
+   (t
+    ;; deletion of something in range is recorded
     (if (and evil-current-insertion
              (>= beg (car evil-current-insertion))
              (<= (+ beg len) (cdr evil-current-insertion)))
         (setcdr evil-current-insertion
                 (- (cdr evil-current-insertion) len))
-      (setq evil-current-insertion nil)))
-  ;; insertion
-  (if (and evil-current-insertion
-           (>= beg (car evil-current-insertion))
-           (<= beg (cdr evil-current-insertion)))
-      (setcdr evil-current-insertion
-              (+ (- end beg)
-                 (cdr evil-current-insertion)))
-    (setq evil-current-insertion (cons beg end))))
+      (setq evil-current-insertion nil)))))
 (put 'evil-track-last-insertion 'permanent-local-hook t)
 
 (defun evil-start-track-last-insertion ()
@@ -1928,15 +1868,6 @@ disjoin range."
 The tracked insertion is set to `evil-last-insertion'."
   (setq evil-last-insertion
         (and evil-current-insertion
-             ;; Check whether the insertion range is a valid buffer
-             ;; range.  If a buffer modification is done from within
-             ;; another change hook or modification-hook (yasnippet
-             ;; does this using overlay modification-hooks), then the
-             ;; insertion information may be invalid. There is no way
-             ;; to detect this situation, but at least we should
-             ;; ensure that no error occurs (see bug #272).
-             (>= (car evil-current-insertion) (point-min))
-             (<= (cdr evil-current-insertion) (point-max))
              (buffer-substring-no-properties (car evil-current-insertion)
                                              (cdr evil-current-insertion))))
   (remove-hook 'after-change-functions #'evil-track-last-insertion t))
@@ -1950,10 +1881,7 @@ The tracked insertion is set to `evil-last-insertion'."
       (setq text (propertize text 'yank-handler (list yank-handler))))
     (when register
       (evil-set-register register text))
-    (when evil-was-yanked-without-register
-      (evil-set-register ?0 text)) ; "0 register contains last yanked text
-    (unless (eq register ?_)
-      (kill-new text))))
+    (kill-new text)))
 
 (defun evil-yank-lines (beg end &optional register yank-handler)
   "Saves the lines in the region BEG and END into the kill-ring."
@@ -1968,13 +1896,10 @@ The tracked insertion is set to `evil-last-insertion'."
     (setq text (propertize text 'yank-handler yank-handler))
     (when register
       (evil-set-register register text))
-    (when evil-was-yanked-without-register
-      (evil-set-register ?0 text)) ; "0 register contains last yanked text
-    (unless (eq register ?_)
-      (kill-new text))))
+    (kill-new text)))
 
 (defun evil-yank-rectangle (beg end &optional register yank-handler)
-  "Saves the rectangle defined by region BEG and END into the kill-ring."
+  "Stores the rectangle defined by region BEG and END into the kill-ring."
   (let ((lines (list nil)))
     (evil-apply-on-rectangle #'extract-rectangle-line beg end lines)
     ;; We remove spaces from the beginning and the end of the next.
@@ -1987,15 +1912,12 @@ The tracked insertion is set to `evil-last-insertion'."
                                    #'evil-yank-block-handler)
                                lines
                                nil
-                               'evil-delete-yanked-rectangle))
+                               #'evil-delete-yanked-rectangle))
            (text (propertize (mapconcat #'identity lines "\n")
                              'yank-handler yank-handler)))
       (when register
         (evil-set-register register text))
-      (when evil-was-yanked-without-register
-        (evil-set-register ?0 text)) ; "0 register contains last yanked text
-      (unless (eq register ?_)
-        (kill-new text)))))
+      (kill-new text))))
 
 (defun evil-yank-line-handler (text)
   "Inserts the current text linewise."
@@ -2004,12 +1926,12 @@ The tracked insertion is set to `evil-last-insertion'."
     (remove-list-of-text-properties
      0 (length text) yank-excluded-properties text)
     (cond
-     ((eq this-command 'evil-paste-before)
+     ((eq this-command #'evil-paste-before)
       (evil-move-beginning-of-line)
       (evil-move-mark (point))
       (insert text)
       (setq evil-last-paste
-            (list 'evil-paste-before
+            (list #'evil-paste-before
                   evil-paste-count
                   opoint
                   (mark t)
@@ -2018,7 +1940,7 @@ The tracked insertion is set to `evil-last-insertion'."
       (evil-set-marker ?\] (1- (point)))
       (evil-exchange-point-and-mark)
       (back-to-indentation))
-     ((eq this-command 'evil-paste-after)
+     ((eq this-command #'evil-paste-after)
       (evil-move-end-of-line)
       (evil-move-mark (point))
       (insert "\n")
@@ -2027,7 +1949,7 @@ The tracked insertion is set to `evil-last-insertion'."
       (evil-set-marker ?\] (1- (point)))
       (delete-char -1) ; delete the last newline
       (setq evil-last-paste
-            (list 'evil-paste-after
+            (list #'evil-paste-after
                   evil-paste-count
                   opoint
                   (mark t)
@@ -2041,7 +1963,7 @@ The tracked insertion is set to `evil-last-insertion'."
 (defun evil-yank-block-handler (lines)
   "Inserts the current text as block."
   (let ((count (or evil-paste-count 1))
-        (col (if (eq this-command 'evil-paste-after)
+        (col (if (eq this-command #'evil-paste-after)
                  (1+ (current-column))
                (current-column)))
         (current-line (line-number-at-pos (point)))
@@ -2086,14 +2008,14 @@ The tracked insertion is set to `evil-last-insertion'."
     (evil-set-marker ?\[ opoint)
     (evil-set-marker ?\] (1- epoint))
     (goto-char opoint)
-    (when (and (eq this-command 'evil-paste-after)
+    (when (and (eq this-command #'evil-paste-after)
                (not (eolp)))
       (forward-char))))
 
 (defun evil-delete-yanked-rectangle (nrows ncols)
   "Special function to delete the block yanked by a previous paste command."
   (let ((opoint (point))
-        (col (if (eq last-command 'evil-paste-after)
+        (col (if (eq last-command #'evil-paste-after)
                  (1+ (current-column))
                (current-column))))
     (dotimes (i nrows)
@@ -2125,30 +2047,15 @@ is negative this is a more recent kill."
   (interactive "p")
   (unless (memq last-command
                 '(evil-paste-after
-                  evil-paste-before
-                  evil-visual-paste))
+                  evil-paste-before))
     (error "Previous command was not an evil-paste: %s" last-command))
   (unless evil-last-paste
     (error "Previous paste command used a register"))
   (evil-undo-pop)
   (goto-char (nth 2 evil-last-paste))
+  (current-kill count)
   (setq this-command (nth 0 evil-last-paste))
-  ;; use temporary kill-ring, so the paste cannot modify it
-  (let ((kill-ring (list (current-kill
-                          (if (and (> count 0) (nth 5 evil-last-paste))
-                              ;; if was visual paste then skip the
-                              ;; text that has been replaced
-                              (1+ count)
-                            count))))
-        (kill-ring-yank-pointer kill-ring))
-    (when (eq last-command 'evil-visual-paste)
-      (let ((evil-no-display t))
-        (evil-visual-restore)))
-    (funcall (nth 0 evil-last-paste) (nth 1 evil-last-paste))
-    ;; if this was a visual paste, then mark the last paste as NOT
-    ;; being the first visual paste
-    (when (eq last-command 'evil-visual-paste)
-      (setcdr (nthcdr 4 evil-last-paste) nil))))
+  (funcall (nth 0 evil-last-paste) (nth 1 evil-last-paste)))
 
 (defun evil-paste-pop-next (count)
   "Same as `evil-paste-pop' but with negative argument."
@@ -2639,11 +2546,8 @@ the new (extended) text object range.  See
                        #'(lambda (count)
                            (funcall forward-func (- count))))))
     (if (> count 0)
-        ;; Ensure we select the next object if there is an existing
-        ;; selection. If the selection contains only one character,
-        ;; we've just entered visual mode, and should select the
-        ;; current object as usual.
-        (when (and beg end (> (- end beg) 1)) (forward-char 1))
+        ;; ensure we select the next object
+        (when (and beg end) (forward-char 1))
       ;; going backward
       (evil-swap forward backward)
       (setq count (abs count)))
@@ -2785,7 +2689,7 @@ use `evil-regexp-range'."
               (setq range (evil-range beg end))
               (when exclusive
                 (evil-adjust-whitespace-inside-range
-                 range (not (eq evil-this-operator 'evil-delete)))))))
+                 range (not (eq evil-this-operator #'evil-delete)))))))
           range)))))
 
 (defun evil-quote-range (count beg end type open close &optional exclusive)
@@ -3201,7 +3105,7 @@ considered magic.
    (t "[][}{*+?$^]")))
 
 ;; TODO: support magic characters in patterns
-(defconst evil-replacement-magic "[eElLuU0-9&#,rnbt=]"
+(defconst evil-replacement-magic "[eElLuU0-9&#,rnbt]"
   "All magic characters in a replacement string")
 
 (defun evil-compile-subreplacement (to &optional start)
@@ -3232,17 +3136,8 @@ REST is the unparsed remainder of TO."
                   (list `(,func
                           (replace-quote
                            (evil-match-substitute-replacement
-                            ,(car result)
-                            (not case-replace))))
+                            ,(car result) t)))
                         (cdr result))))
-               ((eq char ?=)
-                (when (or (zerop (length rest))
-                          (not (eq (aref rest 0) ?@)))
-                  (error "Expected @ after \\="))
-                (when (< (length rest) 2)
-                  (error "Expected register after \\=@"))
-                (list (evil-get-register (aref rest 1))
-                      (substring rest 2)))
                ((eq char ?,)
                 (let* ((obj (read-from-string rest))
                        (result `(replace-quote ,(car obj)))
@@ -3258,8 +3153,6 @@ REST is the unparsed remainder of TO."
                             (1+ (cdr obj))
                           (cdr obj))))
                   (list result (substring rest end))))
-               ((eq char ?0)
-                (list "\\&" rest))
                (t
                 (list (concat "\\" (char-to-string char)) rest))))
           start)))
@@ -3334,29 +3227,6 @@ should be left-aligned for left justification."
                (and (zerop (forward-line)) (bolp))))
       (goto-char (point-min))
       (back-to-indentation))))
-
-;;; View helper
-(defun evil-view-list (name body)
-  "Open new view buffer.
-The view buffer is named *NAME*. After the buffer is created, the
-function BODY is called with the view buffer being the current
-buffer. The new buffer is opened in view-mode with evil come up
-in motion state."
-  (let ((buf (get-buffer-create (concat "*" name "*")))
-        (inhibit-read-only t))
-    (with-current-buffer buf
-      (evil-motion-state)
-      (erase-buffer)
-      (funcall body)
-      (goto-char (point-min))
-      (view-buffer-other-window buf nil #'kill-buffer))))
-
-(defmacro evil-with-view-list (name &rest body)
-  "Execute BODY in new view-mode buffer *NAME*.
-This macro is a small convenience wrapper around
-`evil-view-list'."
-  (declare (indent 1) (debug t))
-  `(evil-view-list ,name #'(lambda () ,@body)))
 
 (provide 'evil-common)
 

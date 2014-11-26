@@ -135,14 +135,6 @@
 (declare-function evil-visual-line "evil-visual")
 (declare-function evil-visual-block "evil-visual")
 
-(defmacro evil-without-repeat (&rest body)
-  (declare (indent defun)
-           (debug t))
-  `(let ((pre-command-hook (remq 'evil-repeat-pre-hook pre-command-hook))
-         (post-command-hook (remq 'evil-repeat-post-hook post-command-hook)))
-     ,@body
-     (evil-repeat-abort)))
-
 (defsubst evil-repeat-recording-p ()
   "Returns non-nil iff a recording is in progress."
   (eq evil-recording-repeat t))
@@ -325,9 +317,6 @@ invoked the current command"
   "Repeation recording function for commands that are repeated by keystrokes."
   (cond
    ((eq flag 'pre)
-    (when evil-this-register
-      (evil-repeat-record
-       `(set evil-this-register ,evil-this-register)))
     (setq evil-repeat-keys (this-command-keys)))
    ((eq flag 'post)
     (evil-repeat-record (if (zerop (length (this-command-keys)))
@@ -496,19 +485,8 @@ where point should be placed after all changes."
     (dolist (rep repeat-info)
       (cond
        ((or (arrayp rep) (stringp rep))
-        (let ((input-method current-input-method)
-              (evil-input-method nil))
-          (deactivate-input-method)
-          (unwind-protect
-              (execute-kbd-macro rep)
-            (activate-input-method input-method))))
+        (execute-kbd-macro rep))
        ((consp rep)
-        (when (and (= 3 (length rep))
-                   (eq (nth 0 rep) 'set)
-                   (eq (nth 1 rep) 'evil-this-register)
-                   (>= (nth 2 rep) ?0)
-                   (< (nth 2 rep) ?9))
-          (setcar (nthcdr 2 rep) (1+ (nth 2 rep))))
         (apply (car rep) (cdr rep)))
        (t
         (error "Unexpected repeat-info: %S" rep))))))

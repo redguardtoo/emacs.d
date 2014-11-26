@@ -338,17 +338,6 @@ If visual state is inactive then those values are nil."
   (list (when (and (evil-ex-p) evil-ex-argument)
           (intern evil-ex-argument))))
 
-(evil-define-interactive-code "<addr>"
-  "Ex line number."
-  (list
-   (and (evil-ex-p)
-        (let ((expr (evil-ex-parse  evil-ex-argument)))
-          (if (eq (car expr) 'evil-goto-line)
-              (save-excursion
-                (goto-char evil-ex-point)
-                (eval (cadr expr)))
-            (error "Invalid address"))))))
-
 (evil-define-interactive-code "<!>"
   "Ex bang argument."
   :ex-bang t
@@ -368,7 +357,7 @@ If visual state is inactive then those values are nil."
   "Ex substitution argument."
   :ex-arg substitution
   (when (evil-ex-p)
-    (evil-ex-get-substitute-info evil-ex-argument t)))
+    (evil-ex-get-substitute-info evil-ex-argument)))
 
 (provide 'evil-types)
 

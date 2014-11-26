@@ -27,16 +27,10 @@
 
 (require 'evil-maps)
 (require 'evil-core)
-(require 'evil-macros)
-(require 'evil-types)
-(require 'evil-repeat)
 
 ;;; Code:
 
 ;;; Evilize some commands
-
-;; unbound keys should be ignored
-(evil-declare-ignore-repeat 'undefined)
 
 (mapc #'(lambda (cmd)
           (evil-set-command-property cmd :keep-visual t)
@@ -63,14 +57,10 @@
         find-file-at-point
         ffap-other-window
         recompile
-        redo
         save-buffer
         split-window
         split-window-horizontally
-        split-window-vertically
-        undo
-        undo-tree-redo
-        undo-tree-undo))
+        split-window-vertically))
 
 (evil-set-type #'previous-line 'line)
 (evil-set-type #'next-line 'line)
@@ -83,6 +73,23 @@
 (evil-declare-insert-at-point-repeat 'mouse-yank-secondary)
 
 ;;; key-binding
+
+;; disable evil-esc-mode during a call to key-binding
+(defadvice key-binding (around evil activate)
+  (let (evil-esc-mode)
+    ad-do-it))
+
+;; disable evil-esc-mode during the read of a key-sequence
+;; TODO: should we handle the special ESC-delay, too?
+(defadvice read-key-sequence (around evil activate)
+  (let (evil-esc-mode)
+    ad-do-it))
+
+;; disable evil-esc-mode during the read of a key-sequence
+;; TODO: should we handle the special ESC-delay, too?
+(defadvice read-key-sequence-vector (around evil activate)
+  (let (evil-esc-mode)
+    ad-do-it))
 
 ;; Calling `keyboard-quit' should cancel repeat
 (defadvice keyboard-quit (before evil activate)
@@ -110,14 +117,12 @@
 (eval-after-load 'dired
   '(progn
      ;; use the standard Dired bindings as a base
-     (defvar dired-mode-map)
-     (evil-make-overriding-map dired-mode-map 'normal)
+     (evil-make-overriding-map dired-mode-map 'normal t)
      (evil-add-hjkl-bindings dired-mode-map 'normal
        "J" 'dired-goto-file                   ; "j"
        "K" 'dired-do-kill-lines               ; "k"
        "r" 'dired-do-redisplay                ; "l"
-       ;; ":d", ":v", ":s", ":e"
-       ";" (lookup-key dired-mode-map ":"))))
+       ";" (lookup-key dired-mode-map ":")))) ; ":d", ":v", ":s", ":e"
 
 (eval-after-load 'wdired
   '(progn
@@ -148,7 +153,7 @@
 
 ;;; Parentheses
 
-(defadvice show-paren-function (around evil disable)
+(defadvice show-paren-function (around evil)
   "Match parentheses in Normal state."
   (if (if (memq 'not evil-highlight-closing-paren-at-point-states)
           (memq evil-state evil-highlight-closing-paren-at-point-states)
@@ -199,8 +204,7 @@
 ;; Ibuffer
 (eval-after-load 'ibuffer
   '(progn
-     (defvar ibuffer-mode-map)
-     (evil-make-overriding-map ibuffer-mode-map 'normal)
+     (evil-make-overriding-map ibuffer-mode-map 'normal t)
      (evil-define-key 'normal ibuffer-mode-map
        "j" 'evil-next-line
        "k" 'evil-previous-line
@@ -258,7 +262,6 @@ activated."
 ;;; Auto-complete
 (eval-after-load 'auto-complete
   '(progn
-     (evil-add-command-properties 'auto-complete :repeat 'evil-ac-repeat)
      (evil-add-command-properties 'ac-complete :repeat 'evil-ac-repeat)
      (evil-add-command-properties 'ac-expand :repeat 'evil-ac-repeat)
      (evil-add-command-properties 'ac-next :repeat 'ignore)
@@ -267,7 +270,6 @@ activated."
      (defvar evil-ac-prefix-len nil
        "The length of the prefix of the current item to be completed.")
 
-     (defvar ac-prefix)
      (defun evil-ac-repeat (flag)
        "Record the changes for auto-completion."
        (cond
@@ -289,39 +291,18 @@ activated."
          ;; Finish repeation
          (evil-repeat-finish-record-changes))))))
 
-;;; Company
-(eval-after-load 'company
-  '(progn
-     (mapc #'evil-declare-change-repeat
-           '(company-complete-mouse
-             company-complete-number
-             company-complete-selection
-             company-complete-common))
-
-     (mapc #'evil-declare-ignore-repeat
-           '(company-abort
-             company-select-next
-             company-select-previous
-             company-select-next-or-abort
-             company-select-previous-or-abort
-             company-select-mouse
-             company-show-doc-buffer
-             company-show-location
-             company-search-candidates
-             company-filter-candidates))))
-
 ;; Eval last sexp
 (defadvice preceding-sexp (around evil activate)
-  "In normal-state or motion-state, last sexp ends at point."
-  (if (or (evil-normal-state-p) (evil-motion-state-p))
+  "In normal-state, last sexp ends at point."
+  (if (evil-normal-state-p)
       (save-excursion
         (unless (or (eobp) (eolp)) (forward-char))
         ad-do-it)
     ad-do-it))
 
 (defadvice pp-last-sexp (around evil activate)
-  "In normal-state or motion-state, last sexp ends at point."
-  (if (or (evil-normal-state-p) (evil-motion-state-p))
+  "In normal-state, last sexp ends at point."
+  (if (evil-normal-state-p)
       (save-excursion
         (unless (or (eobp) (eolp)) (forward-char))
         ad-do-it)
@@ -335,115 +316,6 @@ activated."
 (defadvice describe-char (around evil activate)
   "Temporarily go to Emacs state"
   (evil-with-state emacs ad-do-it))
-
-;; ace-jump-mode
-(declare-function 'ace-jump-char-mode "ace-jump-mode")
-(declare-function 'ace-jump-word-mode "ace-jump-mode")
-(declare-function 'ace-jump-line-mode "ace-jump-mode")
-
-(defvar evil-ace-jump-active nil)
-
-(defmacro evil-enclose-ace-jump-for-motion (&rest body)
-  "Enclose ace-jump to make it suitable for motions.
-This includes restricting `ace-jump-mode' to the current window
-in visual and operator state, deactivating visual updates, saving
-the mark and entering `recursive-edit'."
-  (declare (indent defun)
-           (debug t))
-  `(let ((old-mark (mark))
-         (ace-jump-mode-scope
-          (if (and (not (memq evil-state '(visual operator)))
-                   (boundp 'ace-jump-mode-scope))
-              ace-jump-mode-scope
-            'window)))
-     (remove-hook 'pre-command-hook #'evil-visual-pre-command t)
-     (remove-hook 'post-command-hook #'evil-visual-post-command t)
-     (unwind-protect
-         (let ((evil-ace-jump-active 'prepare))
-           (add-hook 'ace-jump-mode-end-hook
-                     #'evil-ace-jump-exit-recursive-edit)
-           ,@body
-           (when evil-ace-jump-active
-             (setq evil-ace-jump-active t)
-             (recursive-edit)))
-       (remove-hook 'post-command-hook
-                    #'evil-ace-jump-exit-recursive-edit)
-       (remove-hook 'ace-jump-mode-end-hook
-                    #'evil-ace-jump-exit-recursive-edit)
-       (if (evil-visual-state-p)
-           (progn
-             (add-hook 'pre-command-hook #'evil-visual-pre-command nil t)
-             (add-hook 'post-command-hook #'evil-visual-post-command nil t)
-             (set-mark old-mark))
-         (push-mark old-mark)))))
-
-(eval-after-load 'ace-jump-mode
-  `(defadvice ace-jump-done (after evil activate)
-     (when evil-ace-jump-active
-       (add-hook 'post-command-hook #'evil-ace-jump-exit-recursive-edit))))
-
-(defun evil-ace-jump-exit-recursive-edit ()
-  "Exit a recursive edit caused by an evil jump."
-  (cond
-   ((eq evil-ace-jump-active 'prepare)
-    (setq evil-ace-jump-active nil))
-   (evil-ace-jump-active
-    (remove-hook 'post-command-hook #'evil-ace-jump-exit-recursive-edit)
-    (exit-recursive-edit))))
-
-(evil-define-motion evil-ace-jump-char-mode (count)
-  "Jump visually directly to a char using ace-jump."
-  :type inclusive
-  (evil-without-repeat
-    (let ((pnt (point))
-          (buf (current-buffer)))
-      (evil-enclose-ace-jump-for-motion
-        (call-interactively 'ace-jump-char-mode))
-      ;; if we jump backwards, motion type is exclusive, analogously
-      ;; to `evil-find-char-backward'
-      (when (and (equal buf (current-buffer))
-                 (< (point) pnt))
-        (setq evil-this-type 'exclusive)))))
-
-(evil-define-motion evil-ace-jump-char-to-mode (count)
-  "Jump visually to the char in front of a char using ace-jump."
-  :type inclusive
-  (evil-without-repeat
-    (let ((pnt (point))
-          (buf (current-buffer)))
-      (evil-enclose-ace-jump-for-motion
-        (call-interactively 'ace-jump-char-mode))
-      (if (and (equal buf (current-buffer))
-               (< (point) pnt))
-          (progn
-            (or (eobp) (forward-char))
-            (setq evil-this-type 'exclusive))
-        (backward-char)))))
-
-(evil-define-motion evil-ace-jump-line-mode (count)
-  "Jump visually to the beginning of a line using ace-jump."
-  :type line
-  :repeat abort
-  (evil-without-repeat
-    (evil-enclose-ace-jump-for-motion
-      (call-interactively 'ace-jump-line-mode))))
-
-(evil-define-motion evil-ace-jump-word-mode (count)
-  "Jump visually to the beginning of a word using ace-jump."
-  :type exclusive
-  :repeat abort
-  (evil-without-repeat
-    (evil-enclose-ace-jump-for-motion
-      (call-interactively 'ace-jump-word-mode))))
-
-(define-key evil-motion-state-map [remap ace-jump-char-mode] #'evil-ace-jump-char-mode)
-(define-key evil-motion-state-map [remap ace-jump-line-mode] #'evil-ace-jump-line-mode)
-(define-key evil-motion-state-map [remap ace-jump-word-mode] #'evil-ace-jump-word-mode)
-
-;;; nXhtml/mumamo
-;; ensure that mumamo does not toggle evil through its globalized mode
-(eval-after-load 'mumamo
-  '(push 'evil-mode-cmhh mumamo-change-major-mode-no-nos))
 
 (provide 'evil-integration)
 
