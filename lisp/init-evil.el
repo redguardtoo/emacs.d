@@ -256,6 +256,7 @@ to replace the symbol under cursor"
            (message "git-gutter reset")) ;; reset
   "hr" 'helm-recentf
   "jb" 'js-beautify
+  "jpp" 'jsons-print-path
   "se" 'string-edit-at-point
   "s0" 'delete-window
   "s1" 'delete-other-windows
