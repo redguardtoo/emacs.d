@@ -135,6 +135,7 @@
 (define-key evil-insert-state-map (kbd "M-j") 'my-yas-expand)
 (define-key evil-emacs-state-map (kbd "M-j") 'my-yas-expand)
 (global-set-key (kbd "M-k") 'keyboard-quit)
+(global-set-key (kbd "C-r") 'undo-tree-redo)
 
 (define-key evil-normal-state-map [escape] 'keyboard-quit)
 (define-key evil-visual-state-map [escape] 'keyboard-quit)
