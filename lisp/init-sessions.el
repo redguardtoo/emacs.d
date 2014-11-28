@@ -34,7 +34,6 @@
                 (shell-command-history    . 128)
                 (evil-ex                  . 128)
                 desktop-missing-file-warning
-                tags-file-name
                 register-alist)))
 
 (provide 'init-sessions)
