@@ -3,7 +3,7 @@
 
 For example, "M-x" means pressing ALT and X key together in Emacs.
 
-Download https://github.com/redguardtoo/hello/archive/master.zip and extracted somewhere, say "~/hello/". It contains sample code files written in different programming languages.
+Download [[https://github.com/redguardtoo/emacs.d/archive/rc.zip]] and extracted somewhere, say "~/hello/". It contains sample code files written in different programming languages.
 
 By default, I use vim key bindings. You can "C-z" to toggle into Emacs key bindings.
 
@@ -74,6 +74,10 @@ Input "os.", you will see the auto-completion of methods in two second. Python 2
 
 ** Perl
 Open ~/hello/hello.pl
+** Misc
+Feel free to test any command at any environment. If I may suggest you can start from the commands which is assigned hotkey by "evil-leader/set-key". These commands are my frequently used commands.
+
+The only exception is tex related stuff. I don't have tex envrionment for now.
 * Report
 Email me,
 - the environment information (Emacs version, OS details)

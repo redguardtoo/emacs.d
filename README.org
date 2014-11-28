@@ -49,6 +49,8 @@ Or run command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emac
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
+You can use *stable* version of my setup only. Stable version has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression testd by volunteers]] from time to time. "cd ~/.emacs.d/;git checkout stable" to get the stable version.
+
 You *possibly* need run below command at the terminal at least once to update the content from package repositories:
 #+BEGIN_SRC elisp
 emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
@@ -254,6 +256,11 @@ Insert below code into ~/.emacs.d/init.el,
 #+END_SRC
 
 "M-x color-theme-select" may not work in this setup. It's because of some design flaw in Emacs.
+** Git pull from my setup
+I suggest pulling from the version tagged as "stable":
+#+begin_src bash
+git pull https://github.com/redguardtoo/emacs.d.git stable
+#+end_src
 * My personal custom.el (OPTIONAL)
 It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff which is useless to you.
 * About Emacs 23
