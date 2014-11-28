@@ -239,7 +239,7 @@
   "Find all strings matching REGEXP in current buffer.
 grab matched string and insert them into kill-ring"
   (interactive
-   (let* ((regexp (grep-read-regexp)))
+   (let* ((regexp (read-regexp "grep regex:")))
      (list regexp)))
   (let (items rlt)
     (setq items (grep-pattern-into-list regexp))
@@ -275,7 +275,7 @@ grab matched string and insert them into kill-ring"
   "Find all strings matching REGEXP in current buffer.
 grab matched string, jsonize them, and insert into kill ring"
   (interactive
-   (let* ((regexp (grep-read-regexp)))
+   (let* ((regexp (read-regexp "grep regex:")))
      (list regexp)))
   (let (items rlt)
     (setq items (grep-pattern-into-list regexp))
@@ -290,7 +290,7 @@ grab matched string, jsonize them, and insert into kill ring"
   "Find all strings matching REGEXP in current buffer.
 grab matched string, cssize them, and insert into kill ring"
   (interactive
-   (let* ((regexp (grep-read-regexp)))
+   (let* ((regexp (read-regexp "grep regex:")))
      (list regexp)))
   (let (items rlt)
     (setq items (grep-pattern-into-list regexp))
