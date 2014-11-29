@@ -1,0 +1,11 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: main
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+-module(`(file-name-base (buffer-file-name))`).
+-export([${1:helloworld}/${2:1}]).
+
+%% Only this function is exported
+${1:$(yas/substr yas-text "[^ ]*")}([]) ->    % No output for empty list
+    ok;
