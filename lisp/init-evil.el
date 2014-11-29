@@ -267,6 +267,8 @@ to replace the symbol under cursor"
   "gsr" '(lambda () (interactive) (git-gutter:set-start-revision nil)
            (message "git-gutter reset")) ;; reset
   "hr" 'helm-recentf
+  "di" 'evilmi-delete-items
+  "si" 'evilmi-select-items
   "jb" 'js-beautify
   "jpp" 'jsons-print-path
   "se" 'string-edit-at-point

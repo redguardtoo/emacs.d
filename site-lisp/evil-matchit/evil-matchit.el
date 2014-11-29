@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 1.4.0
+;; Version: 1.4.2
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -40,8 +40,12 @@
 (require 'evil)
 
 (defvar evilmi-plugins '(emacs-lisp-mode
-                         ((evilmi-simple-get-tag evilmi-simple-jump))
-                         ))
+                         ((evilmi-simple-get-tag evilmi-simple-jump)))
+  "The table to define which algorithm to use and when to to jump items")
+
+(defvar evilmi-may-jump-by-percentage t
+  "Simulate evil-jump-item behaviour. For example, press 50% to jump to 50 percentage in buffer.
+If this flag is nil, then 50 means jump 50 times.")
 
 (defun evilmi--operate-on-item (NUM &optional FUNC)
   (let ((plugin (plist-get evilmi-plugins major-mode))
@@ -72,8 +76,7 @@
       (setq where-to-jump-in-theory (point))
       )
     where-to-jump-in-theory
-    )
-  )
+    ))
 
 (defun evilmi--push-mark (rlt)
     (push-mark (nth 0 rlt) t t)
@@ -159,9 +162,7 @@
         '(ruby-mode))
   )
 
-(evil-define-text-object evilmi-text-object (&optional NUM begin end type)
-  "text object describing the region selected when you press % from evil-matchit"
-  :type line
+(defun evilmi--region-to-select-or-delete (NUM)
   (let (where-to-jump-in-theory b e)
     (save-excursion
       (setq where-to-jump-in-theory (evilmi--operate-on-item NUM 'evilmi--push-mark))
@@ -173,22 +174,70 @@
         (setq b (line-beginning-position))
         ;; 1+ because the line feed
         ))
-    (evil-range b e 'line)))
+    (list b e)))
+
+(evil-define-text-object evilmi-text-object (&optional NUM begin end type)
+  "text object describing the region selected when you press % from evil-matchit"
+  :type line
+  (let (selected-region)
+    (setq selected-region (evilmi--region-to-select-or-delete NUM))
+    (evil-range (car selected-region) (cadr selected-region) 'line)))
 
 (define-key evil-inner-text-objects-map "%" 'evilmi-text-object)
 (define-key evil-outer-text-objects-map "%" 'evilmi-text-object)
+
+;;;###autoload
+(defun evilmi-select-items (&optional NUM)
+  "Select items/tags and the region between them"
+  (interactive "p")
+  (let (selected-region)
+    (setq selected-region (evilmi--region-to-select-or-delete NUM))
+    (when selected-region
+      (evilmi--push-mark selected-region)
+      (goto-char (cadr selected-region)))
+    ))
+
+;;;###autoload
+(defun evilmi-delete-items (&optional NUM)
+  "Delete items/tags and the region between them"
+  (interactive "p")
+  (let (selected-region)
+    (setq selected-region (evilmi--region-to-select-or-delete NUM))
+    ;; 1+ because the line feed
+    (kill-region (car selected-region) (1+ (cadr selected-region)))
+    ))
+
+;;;###autoload
+(defun evilmi-jump-to-percentage (NUM)
+  "Re-implementation of evil's similar functionality"
+  (interactive "P")
+  (let (dst)
+    (when (and NUM (> NUM 0))
+      (setq dst (let ((size (- (point-max) (point-min))))
+                  (+ (point-min)
+                     (if (> size 80000)
+                         (* NUM (/ size 100))
+                       (/ (* NUM size) 100)))))
+      (cond
+       ((< dst (point-min))
+        (setq dst (point-min)))
+       ((> dst (point-max))
+        (setq dst (point-max))))
+      (goto-char dst)
+      (back-to-indentation))))
 
 ;;;###autoload
 (defun evilmi-jump-items (&optional NUM)
   "jump between item/tag(s)"
   (interactive "P")
   (cond
-   (NUM (evil-jump-item NUM))
+   ((and evilmi-may-jump-by-percentage NUM)
+    (evilmi-jump-to-percentage NUM))
    (t (evilmi--operate-on-item NUM))
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "1.4.0"))
+(defun evilmi-version() (interactive) (message "1.4.2"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
