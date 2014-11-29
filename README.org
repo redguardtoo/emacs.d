@@ -177,6 +177,9 @@ They are *OPTIONAL*. Your Emacs will not crash if they are not installed.
 ** js-beautify
 - To beautify javascript code (insert extra space, for example)
 - Install pip through OS package manager, then `pip install jsbeautifier`
+** syntaxerl
+- syntax check [[http://www.erlang.org/][Erlang]] through flymake
+- Install from [[https://github.com/ten0s/syntaxerl]]
 * What is "OS package manager"
 - [[https://github.com/cfg/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
