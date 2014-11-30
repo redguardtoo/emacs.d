@@ -286,6 +286,12 @@ grab matched string, jsonize them, and insert into kill ring"
     (message "matched strings => json => kill-ring")
     rlt))
 
+(defun open-blog-on-current-month ()
+  (interactive)
+  (let (blog)
+   (setq blog (file-truename (concat "~/blog/" (format-time-string "%Y-%m") ".org")) )
+   (find-file blog)))
+
 (defun grep-pattern-cssize-into-kill-ring (regexp)
   "Find all strings matching REGEXP in current buffer.
 grab matched string, cssize them, and insert into kill ring"
