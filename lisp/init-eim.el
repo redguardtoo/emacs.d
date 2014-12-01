@@ -4,7 +4,7 @@
 (setq eim-punc-translate-p nil)         ; use English punctuation
 (register-input-method
  "eim-py" "euc-cn" 'eim-use-package
- "pinyin" "EIM Chinese Pinyin Input Method" "py.txt"
+ "pinyin" "EIM Chinese Pinyin Input Method" (file-truename "~/.eim/py.txt")
  'my-eim-py-activate-function)
 (setq default-input-method "eim-py")
 ;; (toggle-input-method nil)               ; default is turn off

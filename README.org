@@ -27,10 +27,10 @@ If you need a detailed guide, check my [[https://github.com/redguardtoo/masterin
 * Features
 - 100% usable in terminal
 - Real time HTML syntax checker
-- git or subversion is *NOT* required. You don't need run `git submodule update`.
+- git or subversion is *NOT* required. You don't need run `git submodule update`
 - optimized for cross-platform C++ development with CMake
 - emacs-w3m (console web browser)
-- eim (Chinese pinyin input method)
+- eim (Chinese pinyin input method), check the FAQ for installation
 - the setup work on *ALL* platforms (Linux/Cygwin/Mac).
 - The setup usable with Emacs 23
 - evil-mode and its plugins (Vim key binding) bundled
@@ -264,6 +264,12 @@ I suggest pulling from the version tagged as "stable":
 #+begin_src bash
 git pull https://github.com/redguardtoo/emacs.d.git stable
 #+end_src
+** Eim pinying word file
+By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect your privacy.
+
+The path can be changed in ~/.emacs.d/lisp/init-eim.el
+
+A sample py.txt can be downloaded at [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
 * My personal custom.el (OPTIONAL)
 It's publicized at [[http://blog.binchen.org/?p=430]]. It contains my personal stuff which is useless to you.
 * About Emacs 23
