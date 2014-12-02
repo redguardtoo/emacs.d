@@ -1002,8 +1002,6 @@ The full path into relative path insert it as a local file link in org-mode"
 (setq imenu-max-item-length 64)
 ;; }}
 
-(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
-
 (defun display-line-number ()
   "display current line number in mini-buffer"
   (interactive)

@@ -129,10 +129,15 @@
 (require 'init-eim) ;;  cannot be idle-required
 (require 'init-hs-minor-mode)
 
+
+(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
 ;; color theme
 (require 'color-theme)
 (require 'color-theme-molokai)
 (color-theme-molokai)
+;; (color-theme-select 'color-theme-xp)
+;; (color-theme-xp)
+
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
 
