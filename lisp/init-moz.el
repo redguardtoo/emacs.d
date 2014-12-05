@@ -1,9 +1,24 @@
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 
+;; {{ mozrepl auto-refresh browser
 (defun moz-reload-browser ()
   (interactive)
-  (comint-send-string (inferior-moz-process)
-                      "setTimeout(function(){content.document.location.reload(true);}, '500');"))
+  (let (js-cond cmd)
+    (if (fboundp 'my-moz-refresh-browser-condition)
+        (setq js-cond (funcall 'my-moz-refresh-browser-condition (buffer-file-name))))
+    (cond
+     (js-cond
+      (setq cmd (concat "if(" js-cond "){setTimeout(function(){content.document.location.reload(true);}, '500');}")))
+     (t
+      (setq cmd "setTimeout(function(){content.document.location.reload(true);}, '500');")))
+    (comint-send-string (inferior-moz-process) cmd)
+    ))
+
+(defun moz-after-save ()
+  (interactive)
+  (when (memq major-mode '(web-mode html-mode nxml-mode nxhml-mode php-mode))
+    (moz-reload-browser)))
+;; }}
 
 (defun moz-custom-setup ()
   ;; called when editing a REAL file
@@ -14,12 +29,8 @@
     ;; Example - you may want to add hooks for your own modes.
     ;; I also add this to python-mode when doing django development.
     (add-hook 'after-save-hook
-              '(lambda () (interactive)
-                 (when (memq major-mode '(web-mode html-mode nxml-mode nxhml-mode php-mode))
-                   (moz-reload-browser)
-                   ))
-              'append 'local)
-    ))
+              'moz-after-save
+              'append 'local)))
 
 ;; (add-hook 'js2-mode-hook 'moz-custom-setup)
 (add-hook 'html-mode-hook 'moz-custom-setup)
