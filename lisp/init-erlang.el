@@ -1,6 +1,6 @@
 (require 'erlang-start)
 (require 'flymake)
-(setq flymake-log-level 3)
+;; (setq flymake-log-level 3) ;; log is annoying
 
 ;; @see https://github.com/ten0s/syntaxerl
 (defun flymake-compile-script-path (path)

@@ -318,6 +318,8 @@ to replace the symbol under cursor"
   "fb" 'flyspell-buffer
   "fe" 'flyspell-goto-next-error
   "fa" 'flyspell-auto-correct-word
+  "pe" 'flymake-goto-prev-error
+  "ne" 'flymake-goto-next-error
   "fw" 'ispell-word
   "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
   "ma" 'mc/mark-all-like-this-in-defun
