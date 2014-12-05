@@ -45,7 +45,6 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun flymake-jshint-init ()
-  (message "flymake-jshint-init called (buffer-file-name)=%s" (buffer-file-name))
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
                      'flymake-create-temp-inplace))
          (local-file (file-relative-name
