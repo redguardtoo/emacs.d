@@ -193,9 +193,9 @@ You don't need git or network any more. All you need are only two zip files.
 Here are the *exact steps* you need follow:
 - Remove the file "~/.emacs".
 - Uninstall any system Emacs plugins. For example, run "apt-get uninstall emacs-w3m" in Debian/Ubuntu to remove emacs-w3m. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
-- Download https://github.com/redguardtoo/emacs.d/archive/v1.1.zip
+- Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
 - Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
-- Download [[https://github.com/redguardtoo/myelpa/archive/v1.1.zip]]
+- Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Extract the zip somewhere, say "~/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/myelpa"
 - Uncomment below code in ~/.emacs.d/lisp/init-elpa.el and start Emacs now!
