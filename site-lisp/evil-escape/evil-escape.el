@@ -5,7 +5,7 @@
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; Keywords: convenience editing evil
 ;; Created: 22 Oct 2014
-;; Version: 1.5.2
+;; Version: 1.6.2
 ;; Package-Requires: ((emacs "24") (evil "1.0.9") (key-chord "0.6"))
 ;; URL: https://github.com/syl20bnr/evil-escape
 
@@ -38,6 +38,9 @@
 ;;   - quit help buffers
 ;;   - quit apropos buffers
 ;;   - quit ert buffers
+;;   - quit undo-tree buffer
+;;   - quit paradox
+;;   - quit gist-list menu
 ;;   - hide neotree buffer
 ;; And more to come !
 
@@ -97,11 +100,12 @@ with a key sequence."
                  evil-escape-key-sequence))
     (evil-escape--undefine-keys)))
 
-(defun evil-escape--first-key ()
-  "Return the first key string in the key sequence."
-  (let* ((first-key (elt evil-escape-key-sequence 0))
-         (fkeystr (char-to-string first-key)))
-    fkeystr))
+(eval-and-compile
+  (defun evil-escape--first-key ()
+    "Return the first key string in the key sequence."
+    (let* ((first-key (elt evil-escape-key-sequence 0))
+           (fkeystr (char-to-string first-key)))
+      fkeystr)))
 
 (defmacro evil-escape-define-escape (map command &rest properties)
   "Define an escape in MAP keymap by executing COMMAND.
@@ -155,6 +159,10 @@ with a key sequence."
                     '(lambda () (interactive)
                        (cond ((string-match "magit" (symbol-name major-mode))
                               (setq unread-command-events (listify-key-sequence "q")))
+                             ((eq 'paradox-menu-mode major-mode)
+                              (paradox-quit-and-close))
+                             ((eq 'gist-list-menu-mode major-mode)
+                              (quit-window))
                              (t  evil-normal-state))))
   ;; visual state
   (key-chord-define evil-visual-state-map evil-escape-key-sequence 'evil-exit-visual-state)
@@ -167,6 +175,8 @@ with a key sequence."
                                 (eq 'ert-results-mode major-mode)
                                 (eq 'ert-simple-view-mode major-mode))
                             (quit-window))
+                           ((eq 'undo-tree-visualizer-mode major-mode)
+                            (undo-tree-visualizer-quit))
                            ((eq 'neotree-mode major-mode) (neotree-hide))
                            (t (evil-normal-state))))))
     (eval `(evil-escape-define-escape evil-motion-state-map ,exit-func
@@ -223,6 +233,12 @@ with a key sequence."
   (let* ((insertp (not buffer-read-only)))
     (delete-char -1)))
 
+(defun evil-escape--call-evil-function (func)
+  "Call the passed evil function appropriatly."
+  (if (eq 'inclusive (evil-get-command-property func :type))
+      (setq evil-this-type 'inclusive))
+  (call-interactively shadowed-func))
+
 (evil-define-command evil-escape--escape
   (keys shadowed-func insert? delete? callback &optional insert-func delete-func)
   "Execute the passed CALLBACK using KEYS. KEYS is a cons cell of 2 characters.
@@ -238,7 +254,7 @@ If DELETE? is not nil then the first key is deleted using the function
 DELETE-FUNC when calling CALLBACK. "
   :repeat nil
   (if (and shadowed-func (eq 'normal evil-state))
-      (call-interactively shadowed-func)
+      (evil-escape--call-evil-function shadowed-func)
     (let* ((modified (buffer-modified-p))
            (insertf (if insert-func
                         insert-func 'evil-escape--default-insert-func))
@@ -252,7 +268,7 @@ DELETE-FUNC when calling CALLBACK. "
         (cond
          ((null evt)
           (unless (eq 'insert evil-state)
-            (if shadowed-func (call-interactively shadowed-func))))
+            (if shadowed-func (evil-escape--call-evil-function shadowed-func))))
          ((and (integerp evt)
                (char-equal evt skey))
           ;; remove the f character
@@ -262,7 +278,8 @@ DELETE-FUNC when calling CALLBACK. "
          (t ; otherwise
           (setq unread-command-events
                 (append unread-command-events (list evt)))
-          (if shadowed-func (call-interactively shadowed-func))))))))
+          (if shadowed-func (evil-escape--call-evil-function shadowed-func)))))
+      )))
 
 (provide 'evil-escape)
 ;;; evil-escape.el ends here
