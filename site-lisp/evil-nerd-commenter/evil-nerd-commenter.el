@@ -4,10 +4,15 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.8
+;; Version: 1.5.11
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
+
+;;; Credits:
+
+;; - Lally Oppenheimer (AKA lalopmak, https://github.com/lalopmak) added the support for text-object in Evil
+;; - Tom Willemse (AKA ryuslash, https://github.com/ryuslash) provided the fix to make Emacs 24.4 work
 
 ;;; License:
 
@@ -25,6 +30,13 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; WARNING:
+
+;; Emacs v24.4 has some issue if and only if you install evil-nerd-commenter from package manager (elpa/melpa/...).
+;;
+;; This can be *easily resolved* by running below command line in shell,
+;; find ~/.emacs.d -type f -iwholename '*/evil-nerd-commenter*.elc' | xargs rm
 
 ;;; Commentary:
 ;;
@@ -235,7 +247,8 @@
         ))))
 
 (defun evilnc--working-on-region (beg end fn)
-  (let (info
+  (let (pos
+        info
         lang
         lang-f
         old-flag)
@@ -259,11 +272,17 @@
 
     ;; turn off  3rd party language's major-mode temporarily and clean the shit
     (when lang-f
-      (setq old-flag org-inhibit-startup-visibility-stuff)
       ;; avoid org file automatically collapsed
-      (setq org-inhibit-startup-visibility-stuff t)
+      (setq pos (point))
       (org-mode)
-      (setq org-inhibit-startup-visibility-stuff old-flag))
+      ;; just goto the root element
+      (condition-case nil
+          (outline-up-heading 1)
+        (error
+       (message "in the beginning ...")))
+      ;; expand current node because by default (org-mode) will collapse all nodes
+      (org-show-subtree)
+      (goto-char pos))
     ))
 
 (defun evilnc--comment-or-uncomment-region (beg end)
@@ -499,7 +518,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-version ()
   (interactive)
-  (message "1.5.8"))
+  (message "1.5.11"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
@@ -522,44 +541,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;; Attempt to define the operator on first load.
 ;; Will only work if evil has been loaded
 (eval-after-load 'evil
-  '(progn
-     (evil-define-operator evilnc-comment-operator (beg end type register yank-handler)
-       "Comments text from BEG to END with TYPE.
-Save in REGISTER or in the kill-ring with YANK-HANDLER."
-       (interactive "<R><x><y>")
-       (unless register
-         (let ((text (filter-buffer-substring beg end)))
-           (unless (string-match-p "\n" text)
-             ;; set the small delete register
-             (evil-set-register ?- text))))
-       (evil-yank beg end type register yank-handler)
-       (cond
-        ((eq type 'block)
-         (let ((newpos (evilnc--extend-to-whole-comment beg end) ))
-           (evil-apply-on-block #'evilnc--comment-or-uncomment-region (nth 0 newpos) (nth 1 newpos) nil)
-           )
-         )
-        ((and (eq type 'line)
-              (= end (point-max))
-              (or (= beg end)
-                  (/= (char-before end) ?\n))
-              (/= beg (point-min))
-              (=  (char-before beg) ?\n))
-         (evilnc--comment-or-uncomment-region (1- beg) end))
-        ((eq type 'line)
-           (evilnc--comment-or-uncomment-region beg end))
-        (t
-         (let ((newpos (evilnc--extend-to-whole-comment beg end) ))
-           (evilnc--comment-or-uncomment-region (nth 0 newpos) (nth 1 newpos))
-           )
-         ))
-       ;; place cursor on beginning of line
-       (when (and (evil-called-interactively-p)
-                  (eq type 'line))
-         (evil-first-non-blank)))
-     (define-key evil-normal-state-map evilnc-hotkey-comment-operator 'evilnc-comment-operator)
-     (define-key evil-visual-state-map evilnc-hotkey-comment-operator 'evilnc-comment-operator)
-     ))
+  '(require 'evil-nerd-commenter-operator))
 
 (provide 'evil-nerd-commenter)
 
