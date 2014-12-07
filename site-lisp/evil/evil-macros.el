@@ -33,6 +33,12 @@
 
 (declare-function evil-ex-p "evil-ex")
 
+;; set some error codes
+(put 'beginning-of-line 'error-conditions '(beginning-of-line error))
+(put 'beginning-of-line 'error-message "Beginning of line")
+(put 'end-of-line 'error-conditions '(end-of-line error))
+(put 'end-of-line 'error-message "End of line")
+
 (defun evil-motion-range (motion &optional count type)
   "Execute a motion and return the buffer positions.
 The return value is a list (BEG END TYPE)."
@@ -64,9 +70,14 @@ The return value is a list (BEG END TYPE)."
                         (funcall repeat-type 'post)))
                 (error (prog1 nil
                          (evil-repeat-abort)
-                         (setq evil-this-type 'exclusive
-                               evil-write-echo-area t)
-                         (message (error-message-string err)))))
+                         ;; some operators depend on succeeding
+                         ;; motions, in particular for
+                         ;; `evil-forward-char' (e.g., used by
+                         ;; `evil-substitute'), therefore we let
+                         ;; end-of-line and end-of-buffer pass
+                         (if (not (memq (car err) '(end-of-line end-of-buffer)))
+                             (signal (car err) (cdr err))
+                           (message (error-message-string err))))))
               (cond
                ;; the motion returned a range
                ((evil-range-p range))
@@ -132,7 +143,8 @@ The return value is a list (BEG END TYPE)."
        ;; refresh echo area in Eldoc mode
        (when ',motion
          (eval-after-load 'eldoc
-           '(eldoc-add-command ',motion)))
+           '(and (fboundp 'eldoc-add-command)
+                 (eldoc-add-command ',motion))))
        (evil-define-command ,motion (,@args)
          ,@(when doc `(,doc))          ; avoid nil before `interactive'
          ,@keys
@@ -140,42 +152,9 @@ The return value is a list (BEG END TYPE)."
          (interactive ,@interactive)
          ,@body))))
 
-(defmacro evil-define-union-move (name args &rest moves)
-  "Create a movement function named NAME.
-The function moves to the nearest object boundary defined by one
-of the movement function in MOVES, which is a list where each
-element has the form \(FUNC PARAMS... COUNT).
-
-COUNT is a variable which is bound to 1 or -1, depending on the
-direction. In each iteration, the function calls each move in
-isolation and settles for the nearest position. If unable to move
-further, the return value is the number of iterations that could
-not be performed.
-
-\(fn NAME (COUNT) MOVES...)"
-  (declare (indent defun)
-           (debug (&define name lambda-list
-                           [&optional stringp]
-                           def-body)))
-  (let* ((var (or (car-safe args) 'var))
-         (doc (when (stringp (car-safe moves))
-                (pop moves)))
-         (moves (mapcar #'(lambda (move)
-                            `(save-excursion
-                               ;; don't include failing moves
-                               (when (zerop ,move)
-                                 (point))))
-                        moves)))
-    `(evil-define-motion ,name (count)
-       ,@(when doc `(,doc))
-       (evil-motion-loop (,var (or count 1))
-         (if (> ,var 0)
-             (evil-goto-min ,@moves)
-           (evil-goto-max ,@moves))))))
-
 (defmacro evil-narrow-to-line (&rest body)
   "Narrow BODY to the current line.
-BODY will signal the errors \"Beginning of line\" or \"End of line\"
+BODY will signal the errors 'beginning-of-line or 'end-of-line
 upon reaching the beginning or end of the current line.
 
 \(fn [[KEY VAL]...] BODY...)"
@@ -200,11 +179,11 @@ upon reaching the beginning or end of the current line.
            (beginning-of-buffer
             (if (= beg min)
                 (signal (car err) (cdr err))
-              (error "Beginning of line")))
+              (signal 'beginning-of-line nil)))
            (end-of-buffer
             (if (= end max)
                 (signal (car err) (cdr err))
-              (error "End of line"))))))))
+              (signal 'end-of-line nil))))))))
 
 ;; we don't want line boundaries to trigger the debugger
 ;; when `debug-on-error' is t
@@ -371,9 +350,10 @@ if COUNT is positive, and to the left of it if negative.
        (setq ,count (or ,count 1))
        (when (/= ,count 0)
          (let ((type (evil-type ',object evil-visual-char))
-               (extend (evil-get-command-property
-                        ',object :extend-selection
-                        ',(plist-get keys :extend-selection)))
+               (extend (and (evil-visual-state-p)
+                            (evil-get-command-property
+                             ',object :extend-selection
+                             ',(plist-get keys :extend-selection))))
                (dir evil-visual-direction)
                mark point range selection)
            (cond
@@ -503,7 +483,7 @@ if COUNT is positive, and to the left of it if negative.
 The return value is a list (BEG END), or (BEG END TYPE) if
 RETURN-TYPE is non-nil."
   (let ((motion (or evil-operator-range-motion
-                    (when (evil-ex-p) #'evil-line)))
+                    (when (evil-ex-p) 'evil-line)))
         (type evil-operator-range-type)
         (range (evil-range (point) (point)))
         command count modifier)
