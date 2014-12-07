@@ -3,7 +3,7 @@
 
 For example, "M-x" means pressing ALT and X key together in Emacs.
 
-Download [[https://github.com/redguardtoo/emacs.d/archive/rc.zip]] and extracted somewhere, say "~/hello/". It contains sample code files written in different programming languages.
+Download [[https://github.com/redguardtoo/hello.git]] and extracted somewhere, say "~/hello/". It contains sample code files written in different programming languages.
 
 By default, I use vim key bindings. You can "C-z" to toggle into Emacs key bindings.
 
@@ -11,7 +11,7 @@ Error message is always dumped into "\*Messages\*" buffer. You can "C-x C-b" to 
 
 BTW, README at https://github.com/redguardtoo/emacs.d has all the technical information you need.
 
-* Get the Emacs version
+* Emacs version
 In bash shell, run comand,
 #+BEGIN_SRC sh
 emacs --version
@@ -24,7 +24,7 @@ emacs -nw  --debug-init
 #+END_SRC
 
 Please "M-x toggle debug-on-error" after startup.
-* Test
+* Usage
 If there is any error please attached debug information in "\*Messages\*" buffer to your email.
 ** Packages
 Please back up and remove original ~/.emacs.d.
@@ -38,10 +38,36 @@ Use this as emacs setup.
 
 ** Org-mode
 Open ~/hello/hello.org by "C-x C-f".
+** Common operations for most programming languages
+*** Code navigation: jump to the definition
+For most languages, you need [[http://ctags.sourceforge.net/][Ctags]].
+
+`ctags -e -R` in the shell.
+
+Then `M-x find-tag` in Emacs
+*** Code navigation: find the references
+`M-x grep`
+
+*** Code navigation: jump to the definition in current file
+`M-x helm-imenu`
+
+*** Goto last change
+`M-x goto-last-change` and `M-x goto-last-change-reverse`
+
+*** Undo/Redo
+`M-x undo-tree-visualize`
+
+*** Insert a sequence of numbers
+Select a region, you can `M-x exchange-point-and-mark` to double check the actual column to insert.
+
+Then `M-x rectangle-number-lines`. `C-u M-x rectangle-number-lines` give you more choices.
+
 ** C
 Open ~/hello/hello.c
 
 insert single character "i" and press "M-j", the text should be expanded by yasnippet.
+** Lua
+Open ~/hello/hello.lua
 ** C++ plus CMake
 Make sure CMake installed and the executable "cmake" exists in environment variable PATH.
 
@@ -77,7 +103,7 @@ Open ~/hello/hello.pl
 ** Misc
 Feel free to test any command at any environment. If I may suggest you can start from the commands which is assigned hotkey by "evil-leader/set-key". These commands are my frequently used commands.
 
-The only exception is tex related stuff. I don't have tex envrionment for now.
+The only exception is tex related stuff. I don't have tex environment for now.
 * Report
 Email me,
 - the environment information (Emacs version, OS details)
