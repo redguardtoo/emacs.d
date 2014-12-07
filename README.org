@@ -261,11 +261,19 @@ Insert below code into ~/.emacs.d/init.el,
 #+END_SRC
 
 "M-x color-theme-select" may not work in this setup. It's because of some design flaw in Emacs.
-** Git pull from my setup
+** Update from my latest setup
 I suggest pulling from the version tagged as "stable":
 #+begin_src bash
 git pull https://github.com/redguardtoo/emacs.d.git stable
 #+end_src
+
+If you don't like some of my commits, you can revert them:
+#+begin_src bash
+# always start from the latest related commit
+git revert commit-2014-12-01
+git revert commit-2014-11-01
+#+end_src
+
 ** Eim pinyin word file
 By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect your privacy.
 
