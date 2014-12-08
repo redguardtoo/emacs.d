@@ -1,0 +1,13 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: CB controller
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+-module(`(file-name-base (buffer-file-name))`, [Req, SessionID]).
+-compile(export_all).
+
+%% @see http://www.chicagoboss.org/api-controller.html  
+
+%% Get /`(file-name-base (buffer-file-name))`/${1:view}/1234
+${1:$(yas/substr yas-text "[^ ]*")}('GET', [Id]) -> 
+    {output, "<h1>Hello world</h1>"}.
