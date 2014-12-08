@@ -110,7 +110,7 @@
     ad-do-it))
 
 ;; {{ org2nikola set up
-(setq org2nikola-output-root-directory "~/projs/blog.binchen.org")
+(setq org2nikola-output-root-directory "~/.config/nikola")
 (setq org2nikola-use-google-code-prettify t)
 (setq org2nikola-prettify-unsupported-language
       '(elisp "lisp"
