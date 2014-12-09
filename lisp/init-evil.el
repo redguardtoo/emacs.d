@@ -224,6 +224,7 @@ to replace the symbol under cursor"
   ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
   "cd" 'evilcvn-change-symbol-in-defun
   "cb" 'evilcvn-change-symbol-in-whole-buffer
+  "yy" 'cb-switch-between-controller-and-view
   "tt" 'ido-goto-symbol ;; same as my vim hotkey
   "ht" 'helm-etags-select
   "hm" 'helm-bookmarks
