@@ -87,27 +87,29 @@
              (progn ,@forms)
            (select-frame ,prev-frame))))))
 
+(defvar cached-normal-file-full-path nil)
 (defun is-buffer-file-temp ()
   (interactive)
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file"
-  (message "is-buffer-file-temp called")
   (let ((f (buffer-file-name))
         org
         (rlt t))
     (cond
      ((not f)
-      (setq rlt t)
-      (message "(buffer-file-name) is nil"))
+      ;; file does not exist at all
+      (setq rlt t))
+     ((string= f cached-normal-file-full-path)
+      (setq rlt nil))
      ((string-match (concat "^" temporary-file-directory) f)
-      (setq rlt t)
-      (message "%s is from temp dir %s" temporary-file-directory))
+      ;; file is create from temp directory
+      (setq rlt t))
      ((and (string-match "\.html$" f)
            (file-exists-p (setq org (replace-regexp-in-string "\.html$" ".org" f))))
-      (setq rlt t)
-      (message "This files is created from %s" org))
+      ;; file is a html file exported from org-mode
+      (setq rlt t))
      (t
+      (setq cached-normal-file-full-path f)
       (setq rlt nil)))
-
     rlt))
 
 (provide 'init-utils)
