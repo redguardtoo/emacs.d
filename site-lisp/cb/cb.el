@@ -31,7 +31,10 @@
           (setq type (file-name-base (nth (- len 1) info)))
           (setq namespace (replace-regexp-in-string
                            (concat ctrlname "_" type ".erl$") "" f))
-          (find-file (concat (cb--root-dir) "src/view/" ctrlname "/" wf ".html"))
+          (let ((view-dir (concat (cb--root-dir) "src/view/" ctrlname)))
+            (unless (file-exists-p view-dir)
+              (make-directory view-dir))
+            (find-file (concat view-dir "/" wf ".html")))
           )))
     (when (string= (file-name-extension f) "html")
       (let (namespace ctrlname type info len wf)
