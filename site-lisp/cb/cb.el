@@ -73,6 +73,7 @@
         ))
     ))
 
+;;;###autoload
 (defun cb-get-url-from-controller ()
   (interactive)
   (let (f)

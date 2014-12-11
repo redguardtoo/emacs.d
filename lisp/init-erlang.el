@@ -1,4 +1,5 @@
 (require 'erlang-start)
+(require 'cb)
 (require 'flymake)
 ;; (setq flymake-log-level 3) ;; log is annoying
 
@@ -42,7 +43,6 @@
       ;; should be the last.
       (flymake-mode 1))))
 
-(autoload 'cb-switch-between-controller-and-view "cb" nil t)
 (add-hook 'erlang-mode-hook 'my-setup-erlang)
 
 (provide 'init-erlang)
