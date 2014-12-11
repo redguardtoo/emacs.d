@@ -32,7 +32,8 @@
          )
     (set (make-local-variable 'flymake-err-line-patterns)
          ;; pick up errors and warnings for HTML5
-         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing.*\\|discarding.*\\)" nil 1 2 4))
+
+         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\|discarding unexpected.*\\)" nil 1 2 4))
          )
     (flymake-mode t)))
 
