@@ -10,10 +10,14 @@
 ;; Maintainer: David Capello, Xah lee
 ;; Created: 2006
 ;;
-;; This program is free software; you can redistribute it and/or
-;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2 of the
-;; License, or (at your option) any later version.
+;; Keyfreq is free software; you can redistribute it and/or modify it
+;; under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 2 of the License, or
+;; (at your option) any later version.
+;;
+;; Version 1.5 - 2014-11 - David Capello
+;; * Support cl-lib or cl
+;; * Minor doc fixes
 ;;
 ;; Version 1.4 - 2010-09 - David Capello
 ;; * Renamed from command-frequency to keyfreq
@@ -47,7 +51,8 @@
 ;; Version 0.1 - 2006
 ;; - First version by Ryan Yeske. A quick hack of about 40 lines.
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Commentary:
 ;;
 ;; HOW TO USE IT?
 ;;
@@ -57,15 +62,20 @@
 ;;   (keyfreq-mode 1)
 ;;   (keyfreq-autosave-mode 1)
 ;;
-;; And use keyfreq-show to see how many times you used a command.
+;; And use `keyfreq-show' to see how many times you used a command.
 ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Code:
+
+(if (featurep 'cl-lib)
+    (require 'cl-lib)
+  (require 'cl))
+;; (require 'json)?
 
 (defgroup keyfreq nil
-  "Customization group for keyfreq mode.  This mode stores
-number of times each command was called and provides it as
-a statistical data."
-  :package-version '(keyfreq . "1.4")
+  "Customization group for Keyfreq mode.
+This mode stores number of times each command was called and
+provides it as a statistical data."
+  :package-version '(keyfreq . "1.5")
   :group 'local
   :prefix "keyfreq")
 
@@ -110,8 +120,7 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 
 (defun keyfreq-pre-command-hook ()
-  "Records command execution in `keyfreq-table' hash."
-
+  "Record command execution in `keyfreq-table' hash."
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
@@ -120,9 +129,9 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 
 
 (defun keyfreq-groups-major-modes (table)
-  "Groups major modes by command. Returns a hash table where
-each entry has COMMAND as key and COUNTER as value."
-
+  "Group major modes in TABLE by command.
+Return a hash table where each entry has COMMAND as key and
+COUNTER as value."
   (let ((new-table (make-hash-table :test 'equal :size 128)))
     (maphash (lambda (k v)
 	       (puthash (cdr k) (+ (gethash (cdr k) new-table 0) v) new-table))
@@ -131,8 +140,9 @@ each entry has COMMAND as key and COUNTER as value."
 
 
 (defun keyfreq-filter-major-mode (table major-mode)
-  "Leave the frequencies of  the specified major mode. Returns a
-hash table where each entry has COMMAND as key and COUNTER as value."
+  "Leave the frequencies of the specified major mode.
+Return a hash table where each entry has COMMAND as key and
+COUNTER as value."
 
   (let ((new-table (make-hash-table :test 'equal :size 128)))
     (maphash (lambda (k v)
@@ -143,9 +153,8 @@ hash table where each entry has COMMAND as key and COUNTER as value."
 
 
 (defun keyfreq-used-major-modes (table)
-  "Returns a list with the used major-modes (major modes
+  "Return a list with the used major modes (major modes
 contained in the TABLE)."
-
   (let ((list))
     (maphash (lambda (k v)
 	       (add-to-list 'list (car k)))
@@ -154,14 +163,15 @@ contained in the TABLE)."
 
 
 (defun keyfreq-list (table &optional reverse limit)
-  "Returns a cons which car is sum of times any command was used
-and cdr is a list of (command . count) pairs.  If REVERSE is nil
-sorts it starting from the most used command; if it is 'no-sort
-the list is not sorted; if it is non-nil and not 'no-sort sorts
-it from the least used commands.  If LIMIT is positive number
-only commands which were used more then LIMIT times will be
-added.  If it is negative number only commands which were used
-less then -LIMIT times will be added."
+  "Return a cons which car is sum of times any command was used
+and cdr is a list of (command . count) pairs.
+
+If REVERSE is nil, sort it starting from the most used command;
+if it is `no-sort' the list is not sorted; if it is non-nil and
+not `no-sort', sort it from the least used commands.  If LIMIT is
+a positive number, only commands which were used more then LIMIT
+times will be added.  If it is a negative number, only commands
+which were used less then -LIMIT times will be added."
 
   (let (l (sum 0))
     (maphash
@@ -185,7 +195,7 @@ less then -LIMIT times will be added."
 
 
 (defun keyfreq-format-list (list &optional func)
-  "Returns formatted string with command usage statistics.
+  "Return formatted string with command usage statistics.
 
 The LIST is the `keyfreq-table' converted to a list using the `keyfreq-list'.
 
@@ -220,20 +230,18 @@ called, percentage usage and the command."
              ", "))
 
 (defun keyfreq-show (&optional major-mode-symbol)
-  "Shows command usage statistics in `keyfreq-buffer' using
-`keyfreq-string' function.
+  "Show command usage statistics in `keyfreq-buffer'.
 
 If MAJOR-MODE-SYMBOL is given, the function shows the statistics
-for that particular major-mode only.
+for that particular major mode only.
 
-With universal argument, the major-mode of the current
-buffer is used as MAJOR-MODE-SYMBOL argument."
-
+With a universal argument, the major-mode of the current buffer
+is used as MAJOR-MODE-SYMBOL argument."
   (interactive (list (cond (current-prefix-arg major-mode)
 			   (t nil))))
 
   (let ((table (copy-hash-table keyfreq-table)))
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (let* ((list (keyfreq-list
@@ -253,7 +261,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-html (filename &optional confirm)
-  "Saves an HTML file with all the statistics of each mode."
+  "Save an HTML file as FILENAME with all the statistics of each mode."
 
   (interactive
    (list (if buffer-file-name
@@ -282,7 +290,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 		     (insert "</tbody>\n")
 		     (insert "</table>\n"))))
 
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (with-temp-file filename
@@ -315,7 +323,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-json-encode (table)
-  "Returns a JSON representation of the table of frequencies."
+  "Return a JSON representation of the table of frequencies."
   (require 'json)
   (let ((commands-indexes (make-hash-table :test 'equal :size 128))
 	commands-list frequencies-matrix i)
@@ -348,7 +356,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-json (filename &optional confirm)
-  "Saves a file with a JSON structure of the data."
+  "Save a file (as FILENAME) with a JSON structure of the data."
 
   (interactive
    (list (if buffer-file-name
@@ -368,7 +376,7 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
   (let ((table (copy-hash-table keyfreq-table)))
 
-    ;; Merge with the values in .emacs.keyfreq file
+    ;; Merge with the values in `keyfreq-file'
     (keyfreq-table-load table)
 
     (with-temp-file filename
@@ -409,8 +417,8 @@ buffer is used as MAJOR-MODE-SYMBOL argument."
 
 
 (defun keyfreq-table-save (table)
-  "Appends all values from the specified TABLE into the
-`keyfreq-file' as a sexp of an alist. Then resets the TABLE
+  "Append all values from the specified TABLE into the
+`keyfreq-file' as a sexp of an alist.  Then resets the TABLE
 if it was successfully merged."
 
   ;; Check that the lock file does not exist
@@ -427,7 +435,9 @@ if it was successfully merged."
 
 	      ;; Write the new frequencies
 	      (with-temp-file keyfreq-file
-		(prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer))))
+		(let ((print-level nil)
+		      (print-length nil))
+		  (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer)))))
 
 	  ;; Release the lock and reset the hash table.
 	  (keyfreq-file-release-lock)
@@ -436,7 +446,7 @@ if it was successfully merged."
 
 
 (defun keyfreq-table-load (table)
-  "Loads all values from the `keyfreq-file' and adds them in the TABLE.
+  "Load all values from the `keyfreq-file' and add them in the TABLE.
 The table is not reset, so the values are appended to the table."
 
   ;; Does `keyfreq-file' exist?
@@ -492,11 +502,7 @@ value will take effect only after (re)enabling
 
 (defun keyfreq-autosave--do ()
   "Function executed periodically to save the `keyfreq-table' in `keyfreq-file'."
-  ;; I want to exit emacs as usually even there is exception here
-  (condition-case nil
-      (keyfreq-table-save keyfreq-table)
-    (error
-     (message "~/.emacs.keyfreq is corrupt"))))
+  (keyfreq-table-save keyfreq-table))
 
 
 (provide 'keyfreq)
