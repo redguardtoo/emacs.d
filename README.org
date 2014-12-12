@@ -196,11 +196,11 @@ Here are the *exact steps* you need follow:
 - Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
 - Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
-- Extract the zip somewhere, say "~/myelpa".
-- Double check that there is a file named "archive-contents" in the directory "~/myelpa"
+- Extract the zip somewhere, say "~/projs/myelpa".
+- Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
 - Uncomment below code in ~/.emacs.d/lisp/init-elpa.el and start Emacs now!
 #+BEGIN_SRC bash
-(setq package-archives '(("myelpa" . "~/myelpa/")))
+(setq package-archives '(("myelpa" . "~/projs/myelpa/")))
 #+END_SRC
 
 That's it. You will never need internet in the future. I tested it on Emacs 24.3.93.1, Emacs 24.3.1 and Emacs 23.4.
