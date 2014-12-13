@@ -4,8 +4,12 @@
 # group: angular
 # --
 // insert <html ng-app="myApp"> or <body ng-app="myApp"> into html
-angular.module('myApp', ['ui.bootstrap']);
-var app = angular.module('myApp');
+var app = angular.module('myApp', ['ui.bootstrap']);
+// if you need deal with django
+app.config(function($interpolateProvider) {
+  $interpolateProvider.startSymbol('[{');
+  $interpolateProvider.endSymbol('}]');
+});
 app.controller('MainCtrl', function ($scope) {
   $scope.max = 100;
   $scope.dynamic = 50;
