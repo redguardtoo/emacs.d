@@ -11,6 +11,7 @@
                                          fundamental-mode
                                          jabber-roster-mode
                                          jabber-chat-mode
+                                         inferior-scheme-mode
                                          twittering-mode
                                          compilation-mode
                                          weibo-timeline-mode
