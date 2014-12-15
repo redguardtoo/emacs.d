@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (display "object=~S" object)
+# key: lo
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(display (format #t "${1:object}=~S" ${1:$(yas/substr yas-text "[^ ]*")})) (newline)
