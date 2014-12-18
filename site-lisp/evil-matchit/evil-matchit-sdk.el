@@ -27,6 +27,7 @@ between '\\(' and '\\)' in regular expression.
           (if (and (string= tag-pair-status "MONOGAMY")
                    (not (= orig-row-idx cur-row-idx)))
               nil)
+
           (cond
            ((and (< orig-type 2) (= cur-type 2))
             (setq rlt (evilmi-sdk-member cur-keyword (nth 2 (nth orig-row-idx match-tags)))))
@@ -47,7 +48,7 @@ between '\\(' and '\\)' in regular expression.
      ((not LIST) nil)
 
      ((stringp LIST)
-      (string= LIST KEYWORD))
+      (string-match (concat "^" LIST "$") KEYWORD))
 
      ((stringp (car LIST))
       (if (string-match (concat "^" (car LIST) "$") KEYWORD) t

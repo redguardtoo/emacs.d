@@ -29,23 +29,21 @@
 
 ;; ruby/bash/lua/vimrc
 (defvar evilmi-c-match-tags
-  '((("ifdef" "ifndef" "if") ("elif" "else")  "endif" "MONOGAMY")
+  '((("# *ifdef" "# *ifndef" "# *if") ("# *elif" "# *else")  "# *endif" "MONOGAMY")
     ("switch" "case" "default" "MONOGAMY")
     ))
 
 (defvar evilmi-c-extract-keyword-howtos
-  '(("^[ \t]*#[ \t]*\\([a-z]+\\)\\( .*\\| *\\)$" 1)
+  '(("^[ \t]*\\(# *[a-z]+\\)" 1)
     ("^[ \t]*\\([a-z]+\\)\\([ (:].*\\| *\\)$" 1)
     ))
 
 ;;;###autoload
 (defun evilmi-c-get-tag ()
-  (evilmi-sdk-get-tag evilmi-c-match-tags evilmi-c-extract-keyword-howtos)
-  )
+  (evilmi-sdk-get-tag evilmi-c-match-tags evilmi-c-extract-keyword-howtos))
 
 ;;;###autoload
 (defun evilmi-c-jump (rlt NUM)
-  (evilmi-sdk-jump rlt NUM evilmi-c-match-tags evilmi-c-extract-keyword-howtos)
-  )
+  (evilmi-sdk-jump rlt NUM evilmi-c-match-tags evilmi-c-extract-keyword-howtos))
 
 (provide 'evil-matchit-c)
