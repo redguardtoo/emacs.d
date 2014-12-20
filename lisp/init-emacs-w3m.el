@@ -13,8 +13,7 @@
 
 (setq w3m-use-toolbar t
       ;w3m-use-tab     nil
-      w3m-key-binding 'info
-      )
+      w3m-key-binding 'info)
 
 ;; show images in the browser
 ;(setq w3m-default-display-inline-images t)
@@ -37,10 +36,10 @@
       browse-url-browser-function 'w3m
       mm-text-html-renderer       'w3m)
 
-;bind this function to ‘a’, which is the normal w3m bookmark binding:
-(eval-after-load "w3m" '(progn
-                          (w3m-lnum-mode 1)
-                          ))
+(defun w3m-mode-hook-setup ()
+  (w3m-lnum-mode 1))
+
+(add-hook 'w3m-mode-hook 'w3m-mode-hook-setup)
 
 ; external browser
 (setq browse-url-generic-program
@@ -48,6 +47,7 @@
        (*is-a-mac* "open")
        (*linux* (executable-find "firefox"))
        ))
+
 (setq browse-url-browser-function 'browse-url-generic)
 
 ;; use external browser to search programming stuff
