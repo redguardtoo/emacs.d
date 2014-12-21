@@ -3,7 +3,7 @@
 # key: hook
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-(defun ${1:major}-mode-hook-setup ()
+(defun ${1:major-mode}-hook-setup ()
   $0)
 
-(add-hook '${1:$(yas/substr yas-text "[^ ]*")}-mode-hook '${1:$(yas/substr yas-text "[^ ]*")}-mode-hook-setup)
+(add-hook '${1:$(yas/substr yas-text "[^ ]*")}-hook '${1:$(yas/substr yas-text "[^ ]*")}-hook-setup)
