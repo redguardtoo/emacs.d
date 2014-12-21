@@ -8,14 +8,18 @@
  'my-eim-py-activate-function)
 (setq default-input-method "eim-py")
 ;; (toggle-input-method nil)               ; default is turn off
-(defun my-eim-py-activate-function ()
-  (add-hook 'eim-active-hook
-            (lambda ()
-              (let ((map (eim-mode-map)))
-                (define-key eim-mode-map "-" 'eim-previous-page)
-                (define-key eim-mode-map "=" 'eim-next-page)))))
 
-;; make ime compatible with evil-mode
+(defun eim-active-hook-setup ()
+  (let ((map (eim-mode-map)))
+    (define-key map "-" 'eim-previous-page)
+    (define-key map "=" 'eim-next-page)
+    (define-key map "," 'eim-previous-page)
+    (define-key map "." 'eim-next-page)))
+
+(defun my-eim-py-activate-function ()
+  (add-hook 'eim-active-hook 'eim-active-hook-setup))
+
+;; make IME compatible with evil-mode
 (defun evil-toggle-input-method ()
   "when toggle on input method, switch to evil-insert-state if possible.
 when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
@@ -28,7 +32,13 @@ when toggle off input method, switch to evil-normal-state if current state is ev
         (if (string= evil-state "insert")
             (evil-normal-state)
           )))
-  (toggle-input-method))
+  ;; my way to toggle-input-method, the original implementation has some weird bug
+  (if current-input-method
+      (progn
+        (deactivate-input-method)
+        (setq current-input-method nil))
+    (activate-input-method default-input-method)
+    (setq current-input-method default-input-method)))
 
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 
