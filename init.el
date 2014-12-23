@@ -97,6 +97,7 @@
 (require 'init-python-mode)
 (require 'init-haskell)
 (require 'init-ruby-mode)
+(require 'init-lisp)
 (require 'init-elisp)
 (if *emacs24* (require 'init-yasnippet))
 ;; Use bookmark instead
@@ -146,7 +147,6 @@
 
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-writting
-                             init-lisp
                              init-elnode
                              init-doxygen
                              init-pomodoro
