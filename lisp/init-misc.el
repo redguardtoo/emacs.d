@@ -2,8 +2,6 @@
 ;; Some basic preferences
 ;;----------------------------------------------------------------------------
 (setq-default
- blink-cursor-delay 0
- blink-cursor-interval 0.4
  bookmark-default-file "~/.bookmarks.el"
  buffers-menu-max-size 30
  case-fold-search t
@@ -1066,7 +1064,9 @@ The full path into relative path insert it as a local file link in org-mode"
 ;; someone mentioned that blink cursor could slow Emacs24.4
 ;; I couldn't care less about cursor, so turn it off explicitly
 ;; https://github.com/redguardtoo/emacs.d/issues/208
-(blink-cursor-mode -1)
+;; but somebody mentioned that blink cursor is needed in dark theme
+;; so it should not be turned off by default
+;; (blink-cursor-mode -1)
 
 ;; https://github.com/browse-kill-ring/browse-kill-ring
 (require 'browse-kill-ring)
