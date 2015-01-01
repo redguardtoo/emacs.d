@@ -2,7 +2,6 @@
 ;; Some basic preferences
 ;;----------------------------------------------------------------------------
 (setq-default
- bookmark-default-file "~/.bookmarks.el"
  buffers-menu-max-size 30
  case-fold-search t
  compilation-scroll-output t
@@ -19,6 +18,10 @@
  truncate-partial-width-windows nil
  ;; no annoying beep on errors
  visible-bell t)
+
+;; use my own bmk if it exists
+(if (file-exists-p (file-truename "~/.emacs.bmk"))
+    (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
 
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
