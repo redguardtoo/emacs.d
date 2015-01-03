@@ -1,10 +1,10 @@
-;;; org2nikola --- export html and meta data used by static blog like nikola from org file
+;;; org2nikola --- create HTML for static blog generator Nikola from Org
 
 ;; Copyright (C) 2012 Chen Bin
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/org2nikola
 ;; Keywords: blog static html export org
-;; Version: 0.0.9
+;; Version: 0.1.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -14,20 +14,22 @@
 ;;
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/nikola")
 ;; (require 'org2nikola)
-;; (setq org2nikola-output-root-directory "~/projs/blog.binchen.org")
-;; ;; OPTIONAL
-;; (add-hook 'org2nikola-after-hook
-;;           (lambda (title slug)
-;;             (message "title=%s slug=%s" title slug)))
+;; (setq org2nikola-output-root-directory "~/.config/nikola")
+;;
 
 ;;; Usage:
 ;;
-;;  M-x org2nikola-export-subtree
+;;  `M-x org2nikola-export-subtree` to create HTML files.
+;;
+;;  Check https://github.com/redguardtoo/org2nikola for tips on
+;;  how to use git or FTP to upload HTML files.
 
 ;;; Code:
 (require 'org)
 
 (defvar org2nikola-output-root-directory nil)
+
+(defvar org2nikola-org-blog-directory nil)
 
 (defvar org2nikola-use-google-code-prettify nil)
 
@@ -559,13 +561,10 @@
                               ))
     (copy-file source-file-full-path dst-file-full-path t)
     (setq final-url (concat "/wp-content/" (file-name-nondirectory local-file)))
-    final-url
-    ))
+    final-url))
 
-;; TODO, all we need is set a flag to upload or not upload image again
-;; Seriously, I don't care individual image status.
 (defun org2nikola-replace-urls (text org-directory)
-  "Uploads files, if any in the html, and changes their links"
+  "Render media files in HTML and change their links"
 
   (let ((file-all-urls nil)
         file-name file-web-url beg
@@ -651,9 +650,75 @@ shamelessly copied from org2blog/wp-replace-pre()"
   "UTC time string"
   (format-time-string "%Y-%m-%d %T" (org-current-time) t))
 
+(defun org2nikola--post-slug-exists-p ()
+  "Return post slug or nil"
+  (let ((post-slug (org-entry-get (point) "POST_SLUG")))
+    (if (and post-slug (< 0 (length post-slug)))
+        post-slug)))
+
+(defun org2nikola--render-subtree (&optional donot-publish)
+  "Render current subtree"
+  (let ( (org-directory default-directory)
+         html-file
+         meta-file
+         tags
+         title
+         post-slug
+         post-date
+         update-date
+         html-text)
+    ;; set POST_DATE if it does not exist
+    (setq post-date (org-entry-get (point) "POST_DATE"))
+    (unless (and post-date (< 8 (length post-date)))
+      ;; full ISO 8601 format
+      (setq post-date (org2nikola-format-time-string))
+      (org-entry-put (point) "POST_DATE" post-date))
+
+    ;; set UPDATE_DATE always
+    ;; full ISO 8601 format
+    (setq update-date (org2nikola-format-time-string))
+    (org-entry-put (point) "UPDATE_DATE" update-date)
+
+    ;; set title and tags
+    (setq title (nth 4 (org-heading-components)))
+    (setq tags (mapcar 'org-no-properties (org-get-tags-at (point) nil)))
+
+    ;; set POST_SLUG if its does not exist
+    (unless (setq post-slug (org2nikola--post-slug-exists-p))
+      (setq post-slug (org2nikola-get-slug title))
+      (org-entry-put (point) "POST_SLUG" post-slug))
+
+    ;; meta file
+    (setq meta-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".meta"))
+    (with-temp-file meta-file
+      (insert (concat title "\n"
+                      post-slug "\n"
+                      post-date "\n"
+                      (mapconcat 'identity tags ","))))
+
+    ;; html file
+    (setq html-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".wp"))
+    (setq html-text (org2nikola-export-into-html-text))
+
+    (when org2nikola-use-google-code-prettify
+      (save-excursion
+        (setq html-text (org2nikola-replace-pre html-text))))
+
+    ;; post content should NOT contain title
+    (setq html-text (replace-regexp-in-string "<h2  id=\"sec-1\">.*<\/h2>" "" html-text))
+    (setq html-text (replace-regexp-in-string "<h3  id=\"sec-1\">.*<\/h3>" "" html-text))
+    (setq html-text (org2nikola-replace-urls html-text org-directory))
+
+    (with-temp-file html-file
+      (insert html-text))
+
+    (unless donot-publish
+      (run-hook-with-args 'org2nikola-after-hook title post-slug))
+    ))
+
 ;;;###autoload
 (defun org2nikola-export-subtree ()
-  "export current first level subtree into html located at Nikola's directory"
+  "Export current first level subtree into HTML"
   (interactive)
   (let ((org-directory default-directory)
         html-file
@@ -669,56 +734,36 @@ shamelessly copied from org2blog/wp-replace-pre()"
     (condition-case nil
         (outline-up-heading 8)
       (error
-       (message "in the beginning ...")))
-
-    (setq post-date (org-entry-get (point) "POST_DATE"))
-    (unless (and post-date (< 8 (length post-date)))
-      ;; full ISO 8601 format
-      (setq post-date (org2nikola-format-time-string))
-      (org-entry-put (point) "POST_DATE" post-date))
-
-    ;; full ISO 8601 format
-    (setq update-date (org2nikola-format-time-string))
-    (org-entry-put (point) "UPDATE_DATE" update-date)
-
-    (setq title (nth 4 (org-heading-components)))
-    (setq tags (mapcar 'org-no-properties (org-get-tags-at (point) nil)))
-
-    (setq post-slug (org-entry-get (point) "POST_SLUG"))
-    (unless (and post-slug (< 0 (length post-slug)))
-      (setq post-slug (org2nikola-get-slug title))
-      (org-entry-put (point) "POST_SLUG" post-slug))
+       (message "at the beginning ...")))
 
     ;; nikola root directory must exist
     (unless (and org2nikola-output-root-directory (file-directory-p org2nikola-output-root-directory))
       (setq org2nikola-output-root-directory (read-directory-name "Nikola root directory:")))
 
-    ;; meta file
-    (setq meta-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".meta"))
-    (with-temp-file meta-file
-      (insert (concat title "\n"
-                      post-slug "\n"
-                      post-date "\n"
-                      (mapconcat 'identity tags ",")
-                      )))
+    ;; should be nil
+    (org2nikola--render-subtree)
+    ))
 
-    ;; html file
-    (setq html-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".wp"))
-    (setq html-text (org2nikola-export-into-html-text))
-
-    (when org2nikola-use-google-code-prettify
-      (save-excursion
-        (setq html-text (org2nikola-replace-pre html-text))
-        ))
-
-    ;; post content should not contain title
-    (setq html-text (replace-regexp-in-string "<h2  id=\"sec-1\">.*<\/h2>" "" html-text))
-    (setq html-text (replace-regexp-in-string "<h3  id=\"sec-1\">.*<\/h3>" "" html-text))
-    (setq html-text (org2nikola-replace-urls html-text org-directory))
-
-    (with-temp-file html-file
-      (insert html-text))
-
-    (run-hook-with-args 'org2nikola-after-hook title post-slug)))
+;;;###autoload
+(defun org2nikola-rerender-published-posts ()
+  (interactive)
+  (let (dir)
+    (unless (and org2nikola-org-blog-directory (file-directory-p org2nikola-org-blog-directory))
+      (setq org2nikola-org-blog-directory (read-directory-name "Org blog directory:")))
+    (dolist (f (directory-files org2nikola-org-blog-directory t))
+      (when (and (not (file-directory-p f))
+                 (string-match "\.org$" f))
+        ;; need setup default-directory to get absolute path of image embedded in org file
+        (setq default-directory (file-name-directory f))
+        (with-temp-buffer
+          ;; need make sure is org-mode is load loaded
+          (insert-file-contents f)
+          (org-mode)
+          (goto-char (point-min))
+          (while (search-forward-regexp "^\* [^ ]+" (point-max) t)
+            (let ((slug (org2nikola--post-slug-exists-p)))
+              (if slug (org2nikola--render-subtree t))))
+          )))
+    ))
 
 (provide 'org2nikola)
