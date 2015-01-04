@@ -1,0 +1,24 @@
+# -*- mode: snippet -*-
+# name: load js dynamically
+# key: head-script
+# --
+(function() {
+  var script = document.createElement("script");
+  var head = document['head'] || document.getElementsByTagName("head")[0] || document.documentElementroot;
+  // Excerpted from jQuery.ajaxTransport("script") to fire events when a script is finished loading.
+  script.onload = script.onerror = script.onreadystatechange = function () {
+    if (script && (!script.readyState || /loaded|complete/.test(script.readyState))) {
+      // Handle memory leak in IE
+      script.onerror = script.onload = script.onreadystatechange = null;
+      // Remove the script
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+      script = null;
+    }
+  };
+  script.type = 'text/javascript';
+  script.src = '${1:http://cdnjs.cloudflare.com/ajax/libs/prettify/r298/lang-lisp.min.js}';
+  // Circumvent IE6 bugs with base elements (#2709 and #4378) by prepending
+  head.insertBefore(script, head.firstChild);
+})();
