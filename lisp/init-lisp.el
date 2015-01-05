@@ -5,7 +5,7 @@
 ;; ----------------------------------------------------------------------------
 (autoload 'enable-paredit-mode "paredit")
 
-;; {{
+;; {{ scheme setup
 (setq scheme-program-name "guile")
 (require 'quack)
 ;; }}
@@ -54,14 +54,6 @@
       (enable-paredit-mode)))
 
 
-;; ----------------------------------------------------------------------------
-;; Hippie-expand
-;; ----------------------------------------------------------------------------
-(defun set-up-hippie-expand-for-elisp ()
-  "Locally set `hippie-expand' completion functions for use with Emacs Lisp."
-  (make-local-variable 'hippie-expand-try-functions-list)
-  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t)
-  (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t))
 
 
 
@@ -84,25 +76,10 @@
   (enable-paredit-mode)
   (turn-on-eldoc-mode))
 
-(defun sanityinc/emacs-lisp-setup ()
-  "Enable features useful when working with elisp."
-  (rainbow-delimiters-mode t)
-  (set-up-hippie-expand-for-elisp)
-  ;; (ac-emacs-lisp-mode-setup)
-  (checkdoc-minor-mode))
-
-(let* ((elispy-hooks '(emacs-lisp-mode-hook
-                       ielm-mode-hook))
-       (lispy-hooks (append elispy-hooks '(lisp-mode-hook
-                                           inferior-lisp-mode-hook
-                                           lisp-interaction-mode-hook))))
+(let* ((lispy-hooks '(lisp-mode-hook
+                      inferior-lisp-mode-hook
+                      lisp-interaction-mode-hook)))
   (dolist (hook lispy-hooks)
-    (add-hook hook 'sanityinc/lisp-setup))
-  (dolist (hook elispy-hooks)
-    (add-hook hook 'sanityinc/emacs-lisp-setup)))
-
-
-(add-to-list 'auto-mode-alist '("\\.emacs-project\\'" . emacs-lisp-mode))
-(add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
+    (add-hook hook 'sanityinc/lisp-setup)))
 
 (provide 'init-lisp)
