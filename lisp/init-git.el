@@ -1,6 +1,27 @@
-;; disable all vc backends
+;; Solution 1: disable all vc backends
 ;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 (setq vc-handled-backends ())
+
+;; ;; Solution 2: if NO network mounted drive involved
+;; (setq vc-handled-backends '(Git SVN Hg))
+
+;; ;; Solution 3: setup vc-handled-backends per project
+;; (setq vc-handled-backends ())
+;; (defun my-setup-develop-environment ()
+;;   (interactive)
+;;   (cond
+;;    (((my-project-name-contains-substring (file-truename "~/.emacs.d")))
+;;     (setq vc-handled-backends '(Git)))
+;;    (t (setq vc-handled-backends nil))))
+;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'js2-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'js-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'javascript-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'web-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'c++-mode-hook 'my-setup-develop-environment)
+;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
 (setq magit-save-some-buffers nil
       magit-process-popup-time 10
