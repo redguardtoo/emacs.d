@@ -31,14 +31,16 @@
 
 (defvar org2nikola-org-blog-directory nil)
 
-(defvar org2nikola-use-google-code-prettify nil)
+(defvar org2nikola-code-prettify-type "highlight.js"
+  "Renderred code for certain type. could be nil,
+\"google-prettify\", \"highlight.js\" ")
 
 (defvar org2nikola-prettify-unsupported-language
   '(elisp "lisp"
           emacs-lisp "lisp"))
 
 (defcustom org2nikola-after-hook nil
-  "hook after HTML files are created. title and slug are pass as parameters"
+  "Hook after HTML files are created. title and slug are pass as parameters"
   :type 'hook
   :group 'org2nikola)
 
@@ -633,12 +635,24 @@ shamelessly copied from org2blog/wp-replace-pre()"
               (delete-region code-start code-end)
               ;; Stripping out all the code highlighting done by htmlize
               (setq code (replace-regexp-in-string "<.*?>" "" code))
-              ;; class linenums will add stripes which will destory the 3rd party skins
-              (insert (concat "\n<pre class=\"prettyprint lang-"
-                              (org2nikola-fix-unsupported-language lang)
-                              "\">\n"
-                              code
-                              "</pre>\n"))
+              (cond
+               ((string= org2nikola-code-prettify-type "google-prettify")
+                ;; google prettify
+                ;; class linenums will add stripes which will destory the 3rd party skins
+                (insert (concat "\n<pre class=\"prettyprint lang-"
+                                (org2nikola-fix-unsupported-language lang)
+                                "\">\n"
+                                code
+                                "</pre>\n"))
+                )
+               (t
+                ;; default is highlight.js, it's the best!
+                (insert (concat "\n<pre><code class=\"lang-"
+                                (org2nikola-fix-unsupported-language lang)
+                                "\">\n"
+                                code
+                                "</code></pre>\n"))
+                ))
               )))
 
         ;; Get the new html!
@@ -700,7 +714,7 @@ shamelessly copied from org2blog/wp-replace-pre()"
     (setq html-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".wp"))
     (setq html-text (org2nikola-export-into-html-text))
 
-    (when org2nikola-use-google-code-prettify
+    (when org2nikola-code-prettify-type
       (save-excursion
         (setq html-text (org2nikola-replace-pre html-text))))
 
