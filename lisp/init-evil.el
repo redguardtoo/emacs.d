@@ -295,7 +295,7 @@ to replace the symbol under cursor"
   "lo" 'moz-console-log-var
   "lj" 'moz-load-js-file-and-send-it
   "lk" 'latest-kill-to-clipboard
-  "rr" 'moz-console-clear
+  "mr" 'moz-console-clear
   "rnr" 'rinari-web-server-restart
   "rnc" 'rinari-find-controller
   "rnv" 'rinari-find-view
@@ -367,6 +367,7 @@ to replace the symbol under cursor"
   "vr" 'vr/replace
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
+  "rr" 'evil-show-registers
   "js" 'w3mext-search-js-api-mdn
   "je" 'js2-display-error-list
   "te" 'js2-mode-toggle-element
