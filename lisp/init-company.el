@@ -4,6 +4,9 @@
 ;; does not matter, I never use this hotkey
 (global-set-key (kbd "C-c o") 'company-complete)
 (setq company-require-match nil)
+;; press SPACE will accept the highlighted candidate and insert a space
+;; `M-x describe-variable company-auto-complete-chars` for details
+(setq company-auto-complete t)
 
 (if (fboundp 'evil-declare-change-repeat)
     (mapc #'evil-declare-change-repeat
