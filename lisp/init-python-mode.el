@@ -10,16 +10,16 @@
 (eval-after-load 'python
   '(require 'flymake-python-pyflakes))
 
-(add-hook 'python-mode-hook '(lambda ()
-                               (unless (is-buffer-file-temp)
-                                 (message "python-mode-hook called")
-                                 (when *emacs24*
-                                   (anaconda-mode)
-                                   (add-to-list 'company-backends 'company-anaconda)
-                                   (eldoc-mode))
-                                 (flymake-python-pyflakes-load)
-                                 )))
-
-
+(add-hook 'python-mode-hook
+          '(lambda ()
+             (unless (is-buffer-file-temp)
+               (message "python-mode-hook called")
+               (when *emacs24*
+                 (anaconda-mode)
+                 (add-to-list 'company-backends 'company-anaconda)
+                 (eldoc-mode))
+               (if (executable-find "pyflakes")
+                   (flymake-python-pyflakes-load))
+               )))
 
 (provide 'init-python-mode)
