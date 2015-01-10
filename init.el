@@ -132,7 +132,6 @@
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
 
-
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
 
