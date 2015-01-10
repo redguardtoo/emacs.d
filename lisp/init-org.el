@@ -38,6 +38,11 @@
       org-export-odt-preferred-output-format "doc"
       org-tags-column 80
       ;; org-startup-indented t
+      ;; {{ org 8.2.6 has some performance issue. Here is the workaround.
+      ;; @see http://punchagan.muse-amuse.in/posts/how-i-learnt-to-use-emacs-profiler.html
+      org-agenda-inhibit-startup t ;; ~50x speedup
+      org-agenda-use-tag-inheritance nil ;; 3-4x speedup
+      ;; }}
       )
 
 ;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
