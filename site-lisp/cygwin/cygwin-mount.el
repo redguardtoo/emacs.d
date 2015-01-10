@@ -213,10 +213,9 @@ The result is either \"/\" or \"/<string>/\"."
   (let ((buf (get-buffer-create " *cygdrive*"))
         (fullname (cygwin-mount-get-full-progname cygwin-mount-program)))
     (if (null fullname)
-        (error "Cannot find the program '%s', please check 'cygwin-mount-cygwin-bin-directory'!" cygwin-mount-program)
-      (save-excursion
-        (set-buffer buf)
-        
+        (error "Cannot find program '%s'.  Check `cygwin-mount-cygwin-bin-directory'"
+               cygwin-mount-program)
+      (with-current-buffer buf
         (or
 	 (progn
 	   (erase-buffer)
@@ -253,8 +252,9 @@ The result is either \"/\" or \"/<string>/\"."
   ;; can't use non-greedy regular expressions because versions of
   ;; Emacs older than 21.1 lack them.
   (if (or (string-match "\\(.*\\) on \\(/.*\\) type .* (.*)" line)
-          (string-match "\\(.*\\)\\s-+\\(/.*\\)\\s-+\\(user\\|system\\|vfat\\)\\s-+\\(textmode\\|binmode\\)" line))
-
+          (string-match "\\(.*\\)\\s-+\\(/.*\\)\\s-+\\(user\\|system\
+\\|vfat\\)\\s-+\\(textmode\\|binmode\\)"
+                        line))
       (let ((win (match-string 1 line))
             (cyg (match-string 2 line)))
         (setq win (trim-trailing-whitespace win))
@@ -295,8 +295,7 @@ function is current buffer must be the buffer named
   (if (or (eq (process-status proc) 'exit)
 	  (eq (process-status proc) 'signal))
       (let ((buf (get-buffer-create cygwin-mount-buffername)))
-	(save-excursion
-	  (set-buffer buf)
+	(with-current-buffer buf
           (setq cygwin-mount-table--internal (cygwin-mount-parse-mount)))
 	(kill-buffer buf)
 	(message "Build of mount table completed"))))
@@ -309,16 +308,20 @@ either synchronously or asynchronously \(see
 really done by `cygwin-mount-sentinel'."
   (let ((fullname (cygwin-mount-get-full-progname cygwin-mount-program)))
     (if (null fullname)
-        (error "Cannot find the program '%s', please check 'cygwin-mount-cygwin-bin-directory'!" cygwin-mount-program)
+        (error "Cannot find program '%s'.  Check `cygwin-mount-cygwin-bin-directory'"
+               cygwin-mount-program)
       (if cygwin-mount-build-mount-table-asynch
           ;; asynchron building
           (let ((proc (start-process "mount" cygwin-mount-buffername fullname)))
             (set-process-sentinel proc 'cygwin-mount-sentinel)
-            (process-kill-without-query proc))
+            ;; 2013-10-21, TunaFish5 (EmacsWiki): Use `set-process-query-on-exit-flag'.
+            ;; D. Adams: Use only if defined.  Keep older code for older Emacs.
+            (if (fboundp 'set-process-query-on-exit-flag)
+                (set-process-query-on-exit-flag proc nil)
+              (process-kill-without-query proc)))
         ;; synchron building
         (let ((buf (get-buffer-create cygwin-mount-buffername)))
-          (save-excursion
-            (set-buffer buf)
+          (with-current-buffer buf
             (erase-buffer)
             (call-process fullname nil buf)
             (prog1
@@ -352,7 +355,7 @@ really done by `cygwin-mount-sentinel'."
   "Run OPERATION NAME with ARGS.
  first ARG is either nil or a file name"
   (when (and args (car args))
-    (setq args (copy-sequence args))	; TODO: determine if this call is really necessary
+    (setq args (copy-sequence args))	; TODO: determine if this call is necessary
     (setcar args (cygwin-mount-substitute-longest-mount-name (car args))))
   (cygwin-mount-run-real-handler
    operation

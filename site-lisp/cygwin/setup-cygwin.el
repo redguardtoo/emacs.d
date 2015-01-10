@@ -3,16 +3,18 @@
 ;; Filename: setup-cygwin.el
 ;; Description:
 ;; Author: Markus Hoenika
-;; Maintainer: Drew Adams
-;; Copyright (C) 2004-2012, Drew Adams, all rights reserved.
+;; Maintainer: Drew Adams (concat "drew.adams" "@" "oracle" ".com")
+;; Copyright (C) 2004-2015, Drew Adams, all rights reserved.
 ;; Created: Thu Jan 15 11:13:38 2004
-;; Version: 21.0
-;; Last-Updated: Wed Jun 27 10:09:18 2012 (-0700)
+;; Version: 0
+;; Package-Requires: ((cygwin-mount "0"))
+;; Last-Updated: Thu Jan  1 11:13:26 2015 (-0800)
 ;;           By: dradams
-;;     Update #: 108
-;; URL: http://www.emacswiki.org/cgi-bin/wiki/setup-cygwin.el
+;;     Update #: 158
+;; URL: http://www.emacswiki.org/setup-cygwin.el
+;; Doc URL: http://www.emacswiki.org/NTEmacsWithCygwin
 ;; Keywords: os, unix, cygwin
-;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x
+;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x
 ;;
 ;; Features that might be required by this library:
 ;;
@@ -29,6 +31,19 @@
 ;;
 ;;; Change Log:
 ;;
+;; 2014/01/30 dadams
+;;     Added: setcyg-dir-p.
+;;     cygwin-root-directory: Look for "C:/cygwin64/" first, then "C:/cygwin/".
+;; 2014/01/14 dadams
+;;     Added: add-to-list definition with APPEND, for Emacs 20.
+;; 2013/06/02 dadams
+;;     Set env var CYGWIN to nodosfilewarning, to workaround ediff-buffers problem with names of temp files.
+;;     Set null-device to /dev/null.
+;; 2013/04/27 dadams
+;;     Put Cygwin path stuff before the stuff from getenv.
+;; 2013/03/08 dadams
+;;     Added: defgroup setup-cygwin, option cygwin-root-directory.
+;;     Use cygwin-root-directory instead of hardcoding root dir.  Thx to Gabor Vida.
 ;; 2011/08/11 dadams
 ;;     Made settings that are based on Cygwin install directory conditional, per input from Tom Popovich.
 ;; 2011/01/04 dadams
@@ -67,7 +82,44 @@
 
 (require 'cygwin-mount)
 
+(when (< emacs-major-version 21)
+  (defun add-to-list (list-var element &optional append)
+    "Add to the value of LIST-VAR the element ELEMENT if it isn't there yet.
+The test for presence of ELEMENT is done with `equal'.
+If ELEMENT is added, it is added at the beginning of the list,
+unless the optional argument APPEND is non-nil, in which case
+ELEMENT is added at the end.
+
+If you want to use `add-to-list' on a variable that is not defined
+until a certain package is loaded, you should put the call to `add-to-list'
+into a hook function that will be run only after loading the package.
+`eval-after-load' provides one way to do this.  In some cases
+other hooks, such as major mode hooks, can do the job."
+    (if (member element (symbol-value list-var))
+        (symbol-value list-var)
+      (set list-var
+           (if append
+               (append (symbol-value list-var) (list element))
+             (cons element (symbol-value list-var)))))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defgroup setup-cygwin nil
+  "Set up Emacs to use Cygwin.")
+
+(defun setcyg-dir-p (directory)
+  "Return DIRECTORY if DIRECTORY is a readable directory, nil otherwise."
+  (and (file-directory-p directory)  (file-readable-p directory)  directory))
+
+(defcustom cygwin-root-directory (or (setcyg-dir-p "C:/cygwin64/")  (setcyg-dir-p "C:/cygwin/"))
+  "Root directory of Cygwin installation.
+It should have subdirectories `bin' and `usr/info'.
+Subdirectory `bin' should have file `bin/bash.exe'."
+  :group 'setup-cygwin :type 'directory)
+
+(unless (setcyg-dir-p cygwin-root-directory)
+  (error "Cannot find Cygwin.  Please customize option `cygwin-root-directory'"))
+
 
 ;;; Make Cygwin paths accessible
 (cygwin-mount-activate)
@@ -88,32 +140,32 @@ loaded as such.)"
           (re-search-forward
            "\x000\\([-A-Za-z0-9_\\.\\\\\\$%@(){}~!#^'`][-A-Za-z0-9_\\.\\\\\\$%@(){}~!#^'`]+\\)")
           (find-alternate-file (match-string 1)))
-      (if (looking-at "!<symlink>")
-          (progn
-            (re-search-forward "!<symlink>\\(.*\\)\0")
-            (find-alternate-file (match-string 1))))
-      )))
+      (when (looking-at "!<symlink>")
+        (re-search-forward "!<symlink>\\(.*\\)\0")
+        (find-alternate-file (match-string 1))))))
 (add-hook 'find-file-hooks 'follow-cygwin-symlink)
 
 ;;; Use Unix-style line endings.
 (setq-default buffer-file-coding-system 'undecided-unix)
 
+;;; Use /dev/null, not NUL.
+(setq null-device  "/dev/null")
+
+;;; Without this env var setting, Cygwin causes `ediff-buffers', at least, to raise an error.
+;;; Making this setting here might have no effect, as the env var is checked only by the first Cygwin process
+;;; invoked during your Windows session.  For best results, set this env var globally, in Windows itself.
+;;; An alternative might be to use `cygpath' to change from MS Windows file names to POSIX.
+(setenv "CYGWIN" "nodosfilewarning")
 
 ;;; Add Cygwin Info pages
-(setq Info-default-directory-list (append Info-default-directory-list (list "c:/cygwin/usr/info/")))
-
-
-;;; TO DO: have an option for the Cygwin installation directory, instead of fiddling this way.
-(unless (or (file-directory-p "C:/cygwin/bin") (file-directory-p "C:/bin"))
-  (error "Edit `setup-cygwin.el' - not known where Cygwin is installed"))
+(add-to-list 'Info-default-directory-list (expand-file-name "usr/info" cygwin-root-directory) 'APPEND)
 
 ;;; Use `bash' as the default shell in Emacs.
-(setq exec-path  (cons (if (file-directory-p "C:/cygwin/bin") "C:/cygwin/bin" "C:/bin")
-                       exec-path))
-(setq shell-file-name  (concat (if (file-directory-p "C:/cygwin/bin") "C:/cygwin/bin" "C:/bin")
-                               "/bash.exe")) ; Subprocesses invoked via the shell.
+(add-to-list 'exec-path (expand-file-name "bin" cygwin-root-directory))
+(setq shell-file-name  (expand-file-name "bin/bash.exe" cygwin-root-directory)) ; Subprocesses invoked by shell.
 (setenv "SHELL" shell-file-name)
-(setenv "PATH" (concat (getenv "PATH") (if (file-directory-p "C:/cygwin/bin") ";C:\\cygwin\\bin" ";C:\\bin" )))
+;; (setenv "PATH" (concat (getenv "PATH") ";" (expand-file-name "bin" cygwin-root-directory)))
+(setenv "PATH" (concat (expand-file-name "bin" cygwin-root-directory) ";" (getenv "PATH")))
 (setq explicit-shell-file-name  shell-file-name) ; Interactive shell
 (setq ediff-shell               shell-file-name)    ; Ediff shell
 (setq explicit-shell-args       '("--login" "-i"))
