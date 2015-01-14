@@ -30,6 +30,7 @@
            (let ((case-fold-search t))
              ad-do-it))
 (add-hook 'text-mode-hook 'turn-on-artbollocks-mode)
-(add-hook 'org-mode-hook 'turn-on-artbollocks-mode)
+;; will impact on org-mode's performance
+;; (add-hook 'org-mode-hook 'turn-on-artbollocks-mode)
 
 (provide 'init-artbollocks-mode)

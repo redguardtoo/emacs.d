@@ -226,6 +226,7 @@ to replace the symbol under cursor"
   "cd" 'evilcvn-change-symbol-in-defun
   "cb" 'evilcvn-change-symbol-in-whole-buffer
   "yy" 'cb-switch-between-controller-and-view
+  "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
   "tt" 'ido-goto-symbol ;; same as my vim hotkey
   "ht" 'helm-etags-select
