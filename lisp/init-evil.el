@@ -4,6 +4,13 @@
 ;; load undo-tree and ert
 (add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
 (require 'evil)
+
+;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
+;; cursor is alway black because of evil
+;; here is the workaround
+(setq evil-default-cursor t)
+
+;; enable evil-mode
 (evil-mode 1)
 
 ;; {{@see https://github.com/timcharper/evil-surround
