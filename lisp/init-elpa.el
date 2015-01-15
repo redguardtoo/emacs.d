@@ -137,7 +137,6 @@ ARCHIVE is the string name of the package archive.")
     project-local-variables
     org-fstree
     textile-mode
-    pretty-mode
     w3m
     fakir
     erlang
@@ -203,7 +202,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'mic-paren)
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
-(require-package 'pretty-mode)
 (when *emacs24*
   (require-package 'coffee-mode)
   (require-package 'flymake-coffee))

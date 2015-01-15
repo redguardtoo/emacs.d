@@ -77,7 +77,6 @@
     (setq eldoc-idle-delay 0.2)
     (setq eldoc-echo-area-use-multiline-p t)
     (turn-on-eldoc-mode))
-    (turn-on-pretty-mode)
     (enable-paredit-mode)
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)
