@@ -38,6 +38,16 @@
 (require 'init-modeline)
 
 ;;----------------------------------------------------------------------------
+;; Less GC, more memor
+;;----------------------------------------------------------------------------
+;; By default Emacs will initiate GC every 0.76 MB allocated
+;; (gc-cons-threshold == 800000).
+;; we increase this to 1GB (gc-cons-threshold == 100000000)
+;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Garbage-Collection.html
+(setq-default gc-cons-threshold 100000000
+              gc-cons-percentage 0.5)
+
+;;----------------------------------------------------------------------------
 ;; Load configs for specific features and modes
 ;;----------------------------------------------------------------------------
 (require 'cl-lib)
@@ -132,6 +142,7 @@
 (require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
+(if *emacs24* (require 'init-projectile))
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)

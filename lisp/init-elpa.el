@@ -251,8 +251,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'multi-term)
 (require-package 'json-mode)
 (if (and (>= emacs-major-version 24) (>= emacs-minor-version 1))
-    (require-package 'js2-mode '(20140114 0 0) nil)
-  )
+    (require-package 'js2-mode '(20140114 0 0) nil))
 (require-package 'tagedit)
 (require-package 'fancy-narrow)
 (require-package 'sr-speedbar)
@@ -264,13 +263,16 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'string-edit)
 (require-package 'dired-details)
 (require-package 'ag)
-(if *emacs24* (require-package 'git-gutter '(0 71) nil))
 (require-package 'fakir)
 (require-package 'f)
 (require-package 'elnode) ;; elnode dependent on f
 (when *emacs24*
+  (require-package 'git-gutter '(0 71) nil)
+  (require-package 'flx-ido)
+  (require-package 'projectile)
   (require-package 'anaconda-mode)
   (require-package 'company-anaconda))
+
 (require-package 'quack) ;; for scheme
 
 ;; (require-package 'command-frequency)
