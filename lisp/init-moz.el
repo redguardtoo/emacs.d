@@ -25,6 +25,7 @@
   (unless (is-buffer-file-temp)
     (message "moz-custom-setup called (buffer-file-name)=%s" (buffer-file-name))
     (moz-minor-mode 1)
+    (setq moz-quiet t)
     ;; @see  http://www.emacswiki.org/emacs/MozRepl
     ;; Example - you may want to add hooks for your own modes.
     ;; I also add this to python-mode when doing django development.
