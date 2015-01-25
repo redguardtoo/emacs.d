@@ -3,7 +3,7 @@ Please read below checklist for at least once
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - I use [[http://www.vim.org][Vim]] key bindings. Check FAQ on how to disable it
-- Plugins from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need install any plugin from melpa-unstable
+- Plugins/Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need any of them
 - Any other issues are covered in FAQ
 * Features
 - Stable is the first priority
