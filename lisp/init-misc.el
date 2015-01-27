@@ -43,6 +43,7 @@
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
 
+(autoload 'find-by-pinyin-dired "find-by-pinyin-dired" "" t)
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
