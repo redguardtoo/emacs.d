@@ -33,7 +33,7 @@ if no files marked, always operate on current line in dired-mode
      (define-key dired-mode-map "/" 'diredext-exec-git-command-in-shell)
 
      (require 'dired+)
-     (setq dired-recursive-deletes 'top)
+     (setq dired-recursive-deletes 'always)
      (define-key dired-mode-map [mouse-2] 'dired-find-file)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
