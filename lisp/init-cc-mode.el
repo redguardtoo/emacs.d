@@ -8,6 +8,7 @@
 
 ;C/C++ SECTION
 (defun my-c-mode-hook ()
+  (interactive)
   (message "my-c-mode-hook called (buffer-file-name)=%s" (buffer-file-name))
   ;; @see http://stackoverflow.com/questions/3509919/ \
   ;; emacs-c-opening-corresponding-header-file
@@ -96,17 +97,14 @@
 (add-hook 'c-mode-common-hook
           (lambda ()
             (unless (is-buffer-file-temp)
-              (cond
-               ((derived-mode-p 'c-mode 'c++-mode 'java-mode)
-                ;; indent
-                (fix-c-indent-offset-according-to-syntax-context 'substatement 0)
-                (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0)
-                ;; gtags (GNU global) stuff
-                (setq gtags-suggested-key-mapping t)
-                (if *emacs24* (ggtags-mode 1)))
-               ((derived-mode-p 'c-mode 'c++-mode)
-                (my-c-mode-hook)))
-
+              ;; indent
+              (fix-c-indent-offset-according-to-syntax-context 'substatement 0)
+              (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0)
+              ;; gtags (GNU global) stuff
+              (setq gtags-suggested-key-mapping t)
+              (unless (derived-mode-p 'java-mode)
+                (my-c-mode-hook))
+              (if *emacs24* (ggtags-mode 1))
               )))
 
 (provide 'init-cc-mode)
