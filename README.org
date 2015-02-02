@@ -206,6 +206,12 @@ You need manually `M-x list-packages` and install it or `M-x package-refresh-con
 
 ** Use Emacs key bindings instead of Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
+
+** Evil setup
+It's defined in "init-evil.el". You can press "C-z" to switch between Emacs and Vim key bindings in evil-mode.
+
+Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
+
 ** Why C++ auto-completion doesn't work?
 I assume you are using company-mode. Other plugins have similar setup.
 
@@ -220,15 +226,18 @@ Here is sample setup in "~/.emacs.d/init.el":
 #+end_src
 
 In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
+
 ** Use color theme in the terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
+
 ** Avoid Emacs maximized when it starts up
 Comment out below line in init-misc.el:
 #+BEGIN_SRC elisp
 (add-hook 'window-setup-hook 'maximize-frame t)
 #+END_SRC
+
 ** Preview&apply a color theme?
 Check [[http://emacsthemes.caisah.info/]].
 
