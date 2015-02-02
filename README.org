@@ -3,7 +3,7 @@ Please read below checklist for at least once
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - I use [[http://www.vim.org][Vim]] key bindings. Check FAQ on how to disable it
-- Plugins/Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in lisp/init-elpa.el if you need any of them
+- Plugins/Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need any of them
 - Any other issues are covered in FAQ
 * Features
 - Stable is the first priority
@@ -15,7 +15,7 @@ Please read below checklist for at least once
 - Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac)
 * Installation
 ** Minimum installation
-Most user should follow the section "Install in normal way".
+Most users should follow the section "Install in normal way".
 
 You need the section "Install stable version in easiest way" IF and ONLY IF:
 - you are absolutely newbie, knowing nothing about Linux/Unix
@@ -51,7 +51,7 @@ Here are the *exact steps* to follow:
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
-- Uncomment below code in ~/.emacs.d/lisp/init-elpa.el and start Emacs now!
+- Uncomment below code in nit-elpa.el and start Emacs now!
 #+BEGIN_SRC bash
 (setq package-archives '(("myelpa" . "~/projs/myelpa/")))
 #+END_SRC
@@ -81,7 +81,7 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 - hunspell is the alternative of `aspell`. So you need only one of them.
 - install through OS package manager
 - for aspell, you may need its dictionary like aspell-en
-- I force the dictionary to "en_US" in init-spelling.el. You can modify it in init-spelling.el.
+- I force the dictionary to "en_US" in init-spelling.el. You can modify it.
 - I recommend aspell for programmers
 
 *** sbcl (lisp environment)
@@ -196,7 +196,7 @@ Please make sure your locale is *UTF-8 compatible*. For example, if I type `loca
 ** Your government blocks the internet?
 People in (China, North Korea, Cuba, Iran ...) need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command line "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server
 ** Email setup?
-If you use Gnus for email (Gmail, for example), check ~/.emacs.d/init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
+If you use Gnus for email (Gmail, for example), check init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** How to toggle Chinese input method?
 Run command `M-x toggle-input-method`.
 ** Cannot download packages through ELPA?
@@ -257,7 +257,7 @@ git revert commit-2014-11-01
 ** Eim pinyin word file
 By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect my privacy.
 
-The path can be changed in ~/.emacs.d/lisp/init-eim.el
+The path can be changed in init-eim.el.
 
 A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
 * Report bug
@@ -272,7 +272,7 @@ Bug report should include details (OS, Emacs version ...) plus the output of `em
 ** Directory structure
 init.el is the main file. It includes all the other *.el files.
 
-"lisp/init-elpa.el" defines how and what packages will be installed from [[http://melpa.org][MELPA]].
+"init-elpa.el" defines how and what packages will be installed from [[http://melpa.org][MELPA]].
 
 The package manager will extract packages into ~/.emacs.d/elpa/.
 
