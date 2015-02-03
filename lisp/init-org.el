@@ -1,19 +1,32 @@
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 
+;; Org v8 change log:
+;; @see http://orgmode.org/worg/org-8.0.html
+
 ;; {{ export org-mode in Chinese into PDF
 ;; @see http://freizl.github.io/posts/tech/2012-04-06-export-orgmode-file-in-Chinese.html
 ;; and you need install texlive-xetex on different platforms
 ;; To install texlive-xetex:
 ;;    `sudo USE="cjk" emerge texlive-xetex` on Gentoo Linux
-(setq org-latex-to-pdf-process
+(setq org-latex-to-pdf-process ;; org v7
       '("xelatex -interaction nonstopmode -output-directory %o %f"
         "xelatex -interaction nonstopmode -output-directory %o %f"
         "xelatex -interaction nonstopmode -output-directory %o %f"))
+(setq org-latex-pdf-process org-latex-to-pdf-process) ;; org v8
 ;; }}
 
-(if (and *is-a-mac* (file-exists-p "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
-    (setq org-export-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
+(defun my-setup-odt-org-convert-process ()
+  (interactive)
+  (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
+    (when (and *is-a-mac* (file-exists-p cmd))
+        ;; org v7
+        (setq org-export-odt-convert-processes '(("LibreOffice" (concat cmd " --headless --convert-to %f%x --outdir %d %i" ))))
+        ;; org v8
+        (setq org-odt-convert-processes '(("LibreOffice" (concat cmd " --headless --convert-to %f%x --outdir %d %i" )))))
+    ))
+
+(my-setup-odt-org-convert-process)
 
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
 (defun narrow-or-widen-dwim ()
@@ -35,7 +48,10 @@
       org-agenda-window-setup 'current-window
       org-fast-tag-selection-single-key 'expert
       org-export-kill-product-buffer-when-displayed t
+      ;; org v7
       org-export-odt-preferred-output-format "doc"
+      ;; org v8
+      org-odt-preferred-output-format "doc"
       org-tags-column 80
       ;; org-startup-indented t
       ;; {{ org 8.2.6 has some performance issue. Here is the workaround.
