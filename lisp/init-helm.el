@@ -56,10 +56,8 @@
 
 (when *emacs24*
   (autoload 'helm-c-yas-complete "helm-c-yasnippet" nil t)
-  (global-set-key (kbd "C-x C-o") 'helm-find-files)
   (global-set-key (kbd "C-c f") 'helm-for-files)
   (global-set-key (kbd "C-c y") 'helm-c-yas-complete)
-  (global-set-key (kbd "C-c i") 'helm-imenu)
   (global-set-key (kbd "C-x C-o") 'ffap))
 
 (autoload 'helm-swoop "helm-swoop" nil t)
