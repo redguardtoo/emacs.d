@@ -16,7 +16,29 @@
 ;; {{@see https://github.com/timcharper/evil-surround
 (require 'evil-surround)
 (global-evil-surround-mode 1)
-(evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
+;; }}
+
+;; {{ define my own text objects, works on evil v1.0.9 using older method
+;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
+(defmacro define-and-bind-text-object (key start-regex end-regex)
+  (let ((inner-name (make-symbol "inner-name"))
+        (outer-name (make-symbol "outer-name")))
+    `(progn
+       (evil-define-text-object ,inner-name (count &optional beg end type)
+         (evil-regexp-range count beg end type ,start-regex ,end-regex t))
+       (evil-define-text-object ,outer-name (count &optional beg end type)
+         (evil-regexp-range count beg end type ,start-regex ,end-regex nil))
+       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+
+;; between dollar signs:
+(define-and-bind-text-object "$" "\\$" "\\$")
+;; between pipe characters:
+(define-and-bind-text-object "|" "|" "|")
+;; trimmed line
+(define-and-bind-text-object "l" "^ *" " *$")
+;; angular template
+(define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
