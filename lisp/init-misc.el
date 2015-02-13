@@ -994,6 +994,7 @@ The full path into relative path insert it as a local file link in org-mode"
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
 (autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
+(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
 (autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
 (autoload 'org2nikola-export-subtree "org2nikola" "" t)
 (autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)

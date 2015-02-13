@@ -14,6 +14,19 @@
 ;; See README.org which is distributed with this file
 
 ;;; Code:
+
+(defvar issue-tracker-id-regexp
+  "^\\(.*[^0-9]\\)\\([0-9]+\\)$"
+  "The issue id regex which should end with digits")
+
+(defun issue-tracker-analyze-id (id)
+  (let (prefix num)
+    (when (string-match issue-tracker-id-regexp id)
+      (setq prefix (match-string 1 id))
+      (setq num (string-to-number (match-string 2 id)))
+      (list prefix num))
+    ))
+
 (defun issue-tracker-share-str (msg)
   (kill-new msg)
   (with-temp-buffer
@@ -49,29 +62,42 @@
 
 ;;;###autoload
 (defun issue-tracker-increment-issue-id-under-cursor ()
+  "increment current issue id under cursor and copy it to yank-ring/clipboard "
   (interactive)
   (let ((bounds (issue-tracker-bounds-of-bigword-under-cursor))
         ;; (id (buffer-substring (car bounds) (nth 1 bounds)))
+        rlt
         id
         nid
         num)
     (setq id (buffer-substring (car bounds) (nth 1 bounds)))
     ;; (message "id=%s" id)
     ;; get symbol under cursor
-    (if (string-match "^\\(.*[^0-9]\\)\\([0-9]+\\)$" id)
+    (if (setq rlt (issue-tracker-analyze-id id))
         (progn
-          (setq nid (match-string 1 id))
-          (setq num (string-to-number (match-string 2 id)))
-          (setq num (+ num 1))
-          (setq nid (concat nid (number-to-string num)))
-          )
-      (setq nid (concat id "1"))
-      )
+          (setq num (1+ (cadr rlt)))
+          (setq nid (concat (car rlt) (number-to-string num))))
+      (setq nid (concat id "1")))
+
     (issue-tracker-share-str nid)
     ;; change current issue id under cursor into new id
     (delete-region (car bounds) (nth 1 bounds))
     (insert nid)
     (goto-char (car bounds))
+    ))
+
+;;;###autoload
+(defun issue-tracker-insert-issue-list (id)
+  "Insert the issue list"
+  (interactive "sHighest issue id:")
+  (let (rlt i upper)
+    (when (setq rlt (issue-tracker-analyze-id id))
+      (setq upper (cadr rlt))
+      (setq i 0)
+      (if upper
+          (while (and upper (< i upper))
+            (insert (format "- [ ] %s%d\n" (car rlt) (1+ i)))
+            (setq i (1+ i)))))
     ))
 
 ;;; issue-tracker.el ends here
