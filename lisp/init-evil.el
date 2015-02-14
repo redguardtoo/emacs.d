@@ -157,7 +157,9 @@
 ;;        (t (setq unread-command-events (append unread-command-events
 ;;                           (list evt))))))))
 
-
+;; I learn this trick from ReneFroger, need latest expand-region
+;; @see https://github.com/redguardtoo/evil-matchit/issues/38
+(define-key evil-visual-state-map (kbd "v") 'er/expand-region)
 (define-key evil-insert-state-map (kbd "M-a") 'move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "M-e") 'move-end-of-line)
