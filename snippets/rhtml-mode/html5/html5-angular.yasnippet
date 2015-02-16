@@ -13,25 +13,27 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
     <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css" />
-	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+  <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
     <style type="text/css">.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* angular ui bootstrap hack */</style>
   </head>
   <body>
-    <div class="row">
-      <div class="col-sm-12">
-        <div ng-controller="ProgressDemoCtrl">
-          <progressbar max="max" value="dynamic">
-            <span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span>
-          </progressbar>
-        </div>
-      </div>
+    <div class="container" ng-controller="MainCtrl">
+      <h1>{{message}}</h1>
+      <div ng-view></div>
     </div>
-  <script type="text/javascript">
-     var app = angular.module('myApp', ['ui.bootstrap']);
-     app.controller('ProgressDemoCtrl', function ($scope) {
-       $scope.max = 100;
-       $scope.dynamic = 50;
-     });
-  </script>
+    <script type="text/javascript">
+      var app = angular.module('myApp', []);
+      app.controller('MainCtrl', function ($scope) {
+        $scope.message = 'Hello World';
+      });
+      app.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.when('/index', {
+          templateUrl: 'main.html',
+          controller:'MainCtrl'
+        }).otherwise({
+          redirectTo: '/index'
+        });
+      }]);
+    </script>
   </body>
 </html>
