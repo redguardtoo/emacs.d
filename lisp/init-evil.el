@@ -25,9 +25,9 @@
         (outer-name (make-symbol "outer-name")))
     `(progn
        (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-regexp-range count beg end type ,start-regex ,end-regex t))
+         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
        (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-regexp-range count beg end type ,start-regex ,end-regex nil))
+         (evil-select-paren ,start-regex ,end-regex beg end type count t))
        (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
