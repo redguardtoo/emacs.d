@@ -1,6 +1,24 @@
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 
+;; NO spell check for embedded snippets
+;; Please note flyspell only use ispell-word
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let ((rlt ad-return-value)
+        (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\)")
+        (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\)")
+        old-flag
+        b e)
+    (when ad-return-value
+      (save-excursion
+        (setq old-flag case-fold-search)
+        (setq case-fold-search t)
+        (setq b (re-search-backward begin-regexp nil t))
+        (if b (setq e (re-search-forward end-regexp nil t)))
+        (setq case-fold-search old-flag))
+      (if (and b e (< (point) e)) (setq rlt nil)))
+    (setq ad-return-value rlt)))
+
 ;; Org v8 change log:
 ;; @see http://orgmode.org/worg/org-8.0.html
 
