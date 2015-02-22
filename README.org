@@ -64,7 +64,7 @@ Please note that your packages are locked. So you *cannot* upgrade package onlin
 You can install those tools in any way you like. But using "OS package manager" might be easier.
 
 "OS package manager" means:
-- [[https://github.com/cfg/apt-cyg][apt-cyg]] at Cygwin
+- [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
 - any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
 
