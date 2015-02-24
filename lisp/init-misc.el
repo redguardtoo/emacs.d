@@ -941,9 +941,10 @@ The full path into relative path insert it as a local file link in org-mode"
   )
 
 ;; {{ save history
-(setq history-length 8000)
-(setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-(savehist-mode 1)
+(when (file-writable-p (file-truename "~/.emacs.d/history"))
+  (setq history-length 8000)
+  (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+  (savehist-mode 1))
 ;; }}
 
 (setq system-time-locale "C")
