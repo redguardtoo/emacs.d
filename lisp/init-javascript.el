@@ -22,19 +22,20 @@
       js2-bounce-indent-p t)
 
 (setq javascript-common-imenu-regex-list
-      '(("Controller" "\.controller( *'\\([^']+\\)" 1)
-        ("Filter" "\.filter( *'\\([^']+\\)" 1)
-        ("Factory" "\.factory( *'\\([^']+\\)" 1)
-        ("Service" "\.service( *'\\([^']+\\)" 1)
-        ("Directive" "\.directive( *'\\([^']+\\)" 1)
-        ("Event" "\.\$on( *'\\([^']+\\)" 1)
+      '(("Controller" "\.controller( *['\"]\\([^'\"]+\\)" 1)
+        ("Filter" "\.filter( *['\"]\\([^'\"]+\\)" 1)
+        ("Factory" "\.factory( *['\"]\\([^'\"]+\\)" 1)
+        ("Service" "\.service( *['\"]\\([^'\"]+\\)" 1)
+        ("Directive" "\.directive( *['\"]\\([^'\"]+\\)" 1)
+        ("Event" "\.\$on( *['\"]\\([^'\"]+\\)" 1)
         ("Config" "\.config( *function *( *\\([^\)]+\\)" 1)
-        ("Config" "\.config( *\\[ *'\\([^']+\\)" 1)
-        ("OnChange" " *\$('\\([^']*\\)').*\.change *( *function" 1)
-        ("OnClick" " *\$('\\([^']*\\)').*\.click *( *function" 1)
-        ("Watch" "\.\$watch( *'\\([^']+\\)" 1)
-        ("Function" "function\\s-+\\([^ ]+\\) *(" 1)
-        ("Function" " \\([^ ]+\\)\\s-*=\\s-*function\\s-*(" 1)))
+        ("Config" "\.config( *\\[ *['\"]\\([^'\"]+\\)" 1)
+        ("OnChange" " *\$(['\"]\\([^'\"]*\\)['\"]).*\.change *( *function" 1)
+        ("OnClick" " *\$(['\"]\\([^'\"]*\\)['\"]).*\.click *( *function" 1)
+        ("Watch" "\.\$watch( *['\"]\\([^'\"]+\\)" 1)
+        ("Function" "function\\s-+\\([a-zA-Z0-9_$.]+\\)\\s-*(" 1)
+        ("Function" "^\\s-*\\([a-zA-Z0-9_$.]+\\)\\s-*=\\s-*function\\s-*(" 1)
+        ))
 
 ;; js-mode imenu enhancement
 ;; @see http://stackoverflow.com/questions/20863386/idomenu-not-working-in-javascript-mode
