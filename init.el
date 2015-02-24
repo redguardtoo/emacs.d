@@ -24,6 +24,9 @@
                    (t nil)
                    ))
 
+;; my personal setup, other major-mode specific setup may need it
+(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
+
 ;----------------------------------------------------------------------------
 ; Functions (load all files in defuns-dir)
 ; Copied from https://github.com/magnars/.emacs.d/blob/master/init.el
@@ -38,7 +41,7 @@
 (require 'init-modeline)
 
 ;;----------------------------------------------------------------------------
-;; Less GC, more memor
+;; Less GC, more memory
 ;;----------------------------------------------------------------------------
 ;; By default Emacs will initiate GC every 0.76 MB allocated
 ;; (gc-cons-threshold == 800000).
@@ -166,11 +169,6 @@
                              init-emacs-w3m
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
-
-;;----------------------------------------------------------------------------
-;; Variables configured via the interactive 'customize' interface
-;;----------------------------------------------------------------------------
-(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 (when (require 'time-date nil t)
    (message "Emacs startup time: %d seconds."

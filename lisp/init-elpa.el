@@ -147,7 +147,6 @@ ARCHIVE is the string name of the package archive.")
     w3m
     fakir
     erlang
-    fancy-narrow
     company-c-headers
     company-anaconda
     anaconda-mode
@@ -311,7 +310,6 @@ ARCHIVE is the string name of the package archive.")
 (if (and (>= emacs-major-version 24) (>= emacs-minor-version 1))
     (require-package 'js2-mode '(20140114 0 0) nil))
 (require-package 'tagedit)
-(require-package 'fancy-narrow)
 (require-package 'sr-speedbar)
 ;; company-mode drop emacs 23 support
 (when (>= emacs-major-version 24)
