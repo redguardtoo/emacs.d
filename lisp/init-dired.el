@@ -1,6 +1,9 @@
 (require 'dired-details)
 (dired-details-install)
 
+;; search file name only when focus is over file
+(setq dired-isearch-filenames 'dwim)
+
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
 if no files marked, always operate on current line in dired-mode
@@ -25,12 +28,13 @@ if no files marked, always operate on current line in dired-mode
 
 (eval-after-load 'dired
   '(progn
-     ;; {dired-details
      (setq-default dired-details-hidden-string "")
      (define-key dired-mode-map "(" 'dired-details-toggle)
      (define-key dired-mode-map ")" 'dired-details-toggle)
-     ;; }
-     (define-key dired-mode-map "/" 'diredext-exec-git-command-in-shell)
+
+     (define-key dired-mode-map "/" 'dired-isearch-filenames)
+     (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
+     (define-key dired-mode-map (kbd "SPC") 'ace-jump-mode)
 
      (require 'dired+)
      (setq dired-recursive-deletes 'always)

@@ -6,6 +6,7 @@
   (setq linum-mode-inhibit-modes-list '(eshell-mode
                                          shell-mode
                                          erc-mode
+                                         dired-mode
                                          help-mode
                                          text-mode
                                          fundamental-mode
