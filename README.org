@@ -23,7 +23,7 @@ You need the section "Install stable version in easiest way" IF and ONLY IF:
 *** Install in normal way
 Please remove the file "$HOME/.emacs.d/init.el".
 
-Uninstall any system Emacs plugins. For example, run "apt-get uninstall emacs-w3m" in Debian/Ubuntu. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
+Uninstall any system Emacs plugins. For example, run "apt-get autoremove emacs-w3m" in Debian/Ubuntu. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into "~/.emacs.d".
 
@@ -51,7 +51,7 @@ Here are the *exact steps* to follow:
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
-- Uncomment below code in nit-elpa.el and start Emacs now!
+- Uncomment below code in init-elpa.el and start Emacs now!
 #+BEGIN_SRC bash
 (setq package-archives '(("myelpa" . "~/projs/myelpa/")))
 #+END_SRC
