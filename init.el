@@ -24,8 +24,6 @@
                    (t nil)
                    ))
 
-;; my personal setup, other major-mode specific setup may need it
-(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 ;----------------------------------------------------------------------------
 ; Functions (load all files in defuns-dir)
@@ -57,6 +55,10 @@
 (require 'init-compat)
 (require 'init-utils)
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
+
+;; my personal setup, other major-mode specific setup need it.
+;; It's dependent on init-site-lisp.el
+(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 ;; win32 auto configuration, assuming that cygwin is installed at "c:/cygwin"
 ;; (condition-case nil
