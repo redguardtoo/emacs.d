@@ -26,6 +26,8 @@
         ("Filter" "\.filter( *['\"]\\([^'\"]+\\)" 1)
         ("Factory" "\.factory( *['\"]\\([^'\"]+\\)" 1)
         ("Service" "\.service( *['\"]\\([^'\"]+\\)" 1)
+        ("Module" "\.module(\\s-*['\"]\\([a-zA-Z0-9_\.]+\\)" 1)
+        ("ngRoute" "[. \t]when(\\(['\"][a-zA-Z0-9_\/]+['\"]\\)" 1)
         ("Directive" "\.directive( *['\"]\\([^'\"]+\\)" 1)
         ("Event" "\.\$on( *['\"]\\([^'\"]+\\)" 1)
         ("Config" "\.config( *function *( *\\([^\)]+\\)" 1)
