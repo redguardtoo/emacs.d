@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 1.4.3
+;; Version: 1.5.0
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -128,6 +128,12 @@ If this flag is nil, then 50 means jump 50 times.")
   (plist-put evilmi-plugins 'python-mode '((evilmi-simple-get-tag evilmi-simple-jump)
                                            (evilmi-python-get-tag evilmi-python-jump)))
 
+  ;; SQL
+  (autoload 'evilmi-sql-get-tag "evil-matchit-sql" nil)
+  (autoload 'evilmi-sql-jump "evil-matchit-sql" nil)
+  (plist-put evilmi-plugins 'sql-mode '((evilmi-simple-get-tag evilmi-simple-jump)
+                                           (evilmi-sql-get-tag evilmi-sql-jump)))
+
   ;; C/C++
   (autoload 'evilmi-c-get-tag "evil-matchit-c" nil)
   (autoload 'evilmi-c-jump "evil-matchit-c" nil)
@@ -170,7 +176,7 @@ If this flag is nil, then 50 means jump 50 times.")
         '(ruby-mode))
   )
 
-(defun evilmi--region-to-select-or-delete (NUM)
+(defun evilmi--region-to-select-or-delete (NUM &optional is-inner)
   (let (where-to-jump-in-theory b e)
     (save-excursion
       (setq where-to-jump-in-theory (evilmi--operate-on-item NUM 'evilmi--push-mark))
@@ -178,21 +184,42 @@ If this flag is nil, then 50 means jump 50 times.")
       (setq b (region-beginning))
       (setq e (region-end))
       (goto-char b)
-      (when (string-match "[ \t]*" (buffer-substring-no-properties (line-beginning-position) b))
-        (setq b (line-beginning-position))
-        ;; 1+ because the line feed
-        ))
+
+      ;; for inner text object, forward a line at the beginning
+      (cond
+       (is-inner
+        (forward-line 1)
+        (setq b (line-beginning-position)))
+       (t
+        (if (string-match "[ \t]*" (buffer-substring-no-properties (line-beginning-position) b))
+            (setq b (line-beginning-position))
+          ;; 1+ because the line feed
+          )))
+
+      ;; for inner text object, backward a line at the end
+      (when is-inner
+        (goto-char e)
+        (forward-line -1)
+        (setq e (line-end-position)))
+      )
     (list b e)))
 
-(evil-define-text-object evilmi-text-object (&optional NUM begin end type)
-  "text object describing the region selected when you press % from evil-matchit"
+(evil-define-text-object evilmi-inner-text-object (&optional NUM begin end type)
+  "Inner text object describing the region selected when you press % from evil-matchit"
+  :type line
+  (let (selected-region)
+    (setq selected-region (evilmi--region-to-select-or-delete NUM t))
+    (evil-range (car selected-region) (cadr selected-region) 'line)))
+
+(evil-define-text-object evilmi-outer-text-object (&optional NUM begin end type)
+  "Outer text object describing the region selected when you press % from evil-matchit"
   :type line
   (let (selected-region)
     (setq selected-region (evilmi--region-to-select-or-delete NUM))
     (evil-range (car selected-region) (cadr selected-region) 'line)))
 
-(define-key evil-inner-text-objects-map "%" 'evilmi-text-object)
-(define-key evil-outer-text-objects-map "%" 'evilmi-text-object)
+(define-key evil-inner-text-objects-map "%" 'evilmi-inner-text-object)
+(define-key evil-outer-text-objects-map "%" 'evilmi-outer-text-object)
 
 ;;;###autoload
 (defun evilmi-select-items (&optional NUM)
@@ -245,7 +272,7 @@ If this flag is nil, then 50 means jump 50 times.")
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "1.4.3"))
+(defun evilmi-version() (interactive) (message "1.5.0"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
