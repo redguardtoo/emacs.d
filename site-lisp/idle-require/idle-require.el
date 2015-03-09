@@ -53,6 +53,8 @@
 ;;
 ;;; Code:
 
+(defvar idle-require-message-verbose t)
+
 (defun idle-require-get-symbols ()
   "Return all symbols that will be autoloaded."
   (let (symbols symbol)
@@ -76,6 +78,10 @@ This list may contain either autoload functions, file names or features.")
 
 (defvar idle-require-timer nil)
 
+(defun idle-log (msg)
+  (if idle-require-message-verbose
+      (message msg)))
+
 ;;;###autoload
 (defun idle-require (feature &optional filename noerror)
   "Add FEATURE to `idle-require-symbols'.
@@ -96,7 +102,7 @@ Loading all autoload functions can easily triple Emacs' memory footprint."
       ;; on
       (progn
         (unless (consp idle-require-symbols)
-          (message "Loading ALL autoload functions")
+          (idle-log "Loading ALL autoload functions")
           (setq idle-require-symbols (idle-require-get-symbols)))
         (unless idle-require-timer
         (setq idle-require-timer
@@ -110,7 +116,7 @@ Loading all autoload functions can easily triple Emacs' memory footprint."
 (defun idle-require-load-next ()
   "Load symbols from `idle-require-symbols.' until input occurs."
   (let (symbol)
-    (message "Beginning idle-require")
+    (idle-log "Beginning idle-require")
     (while (and idle-require-symbols
                 (not (input-pending-p)))
       (setq symbol (pop idle-require-symbols))
@@ -123,13 +129,13 @@ Loading all autoload functions can easily triple Emacs' memory footprint."
               ;; still not loaded
               (load (cadr symbol) t)))
            (t
-            (message "idle-require: require %s" symbol)
+            (idle-log (format "idle-require: require %s" symbol))
             (require symbol)))
         (error (message "idle-require for %s failed" symbol)))
       (sit-for idle-require-load-break)))
   (when (null idle-require-symbols)
     (idle-require-mode 0)
-    (message "idle-require finished")))
+    (idle-log "idle-require finished")))
 
 (provide 'idle-require)
 ;;; idle-require.el ends here
