@@ -3,16 +3,16 @@ Please read below checklist for at least once
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - I use [[http://www.vim.org][Vim]] key bindings. Check FAQ on how to disable it
-- Plugins/Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need any of them
+- Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need any of them
 - Any other issues are covered in FAQ
 * Features
 - Stable is the first priority
 - 100% usable in terminal
-- Most popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
+- Popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 - Minimum dependency (For example, network connection is OPTIONAL)
-- Optimized for cross-platform C++ development with CMake
+- Optimized for cross-platform C++ development
 - Real time HTML syntax checker
-- Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac)
+- Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac/Windows)
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
@@ -23,7 +23,7 @@ You need the section "Install stable version in easiest way" IF and ONLY IF:
 *** Install in normal way
 Please remove the file "$HOME/.emacs.d/init.el".
 
-Uninstall any system Emacs plugins. For example, run "apt-get autoremove emacs-w3m" in Debian/Ubuntu. It's because all plugins will be placed at "$HOME/.emacs.d" from now on.
+Uninstall any system Emacs packages. For example, run "apt-get autoremove emacs-w3m" in Debian/Ubuntu. It's because all packages will be placed at "$HOME/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into "~/.emacs.d".
 
@@ -31,7 +31,7 @@ Or run command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emac
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
-You can use *stable* version of my setup only. Stable version has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] from time to time. "cd ~/.emacs.d/;git checkout stable" to get the stable version.
+You can use *stable* version of my setup. Stable version has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] from time to time. "cd ~/.emacs.d/;git checkout stable" to get the stable version.
 
 You *possibly* need run below command at the terminal at least once to update the content from package repositories:
 #+BEGIN_SRC elisp
@@ -130,7 +130,7 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 
 *** [[http://ctags.sourceforge.net][CTags]]
 - it creates tags file for code navigation
-- needed by many tags related plugins
+- needed by many tags related packages
 - install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]] if you prefer my way
 
@@ -182,18 +182,18 @@ Use terminal version.
 Please remove bundled emacs 22 at first!
 
 You may need remove the obsolete ctags/etags too.
-** Why certain plugins cannot be upgraded through ELPA?
-Some plugins (Evil, Helm, Web-mode ...) are so important to my workflow that I locked their versions.
+** Why certain package cannot be upgraded through ELPA?
+Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I locked their versions.
 ** C++ developers?
 You need set up the directories to seach C++ header files. Please see the section `clang`.
 ** Use Emacs on Windows?
-I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version *if you set up environment variable HOME*.
-** [[http://melpa.org][MELPA]] does not include the plugin?
-If a plugin is not installable through MELPA, you can place it at ~/.emacs.d/site-lisp. There are already some samples there.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
+** [[http://melpa.org][MELPA]] does not include the package?
+If a package is not installable through MELPA, you can place its source code at ~/.emacs.d/site-lisp instead. There are already some samples there.
 ** Non-English users?
 Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8". If and only if you see the "UTF-8", your locale is correct.
 ** Your government blocks the internet?
-People in (China, North Korea, Cuba, Iran ...) need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command line "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server
+People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command line "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
 ** Email setup?
 If you use Gnus for email (Gmail, for example), check init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** How to toggle Chinese input method?
@@ -212,7 +212,7 @@ It's defined in "init-evil.el". You can press "C-z" to switch between Emacs and 
 Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
 ** Why C++ auto-completion doesn't work?
-I assume you are using company-mode. Other plugins have similar setup.
+I assume you are using company-mode. Other packages have similar setup.
 
 At minimum:
 - You need install clang
@@ -237,7 +237,7 @@ Comment out below line in init-misc.el:
 (add-hook 'window-setup-hook 'maximize-frame t)
 #+END_SRC
 
-** Preview&apply a color theme?
+** Preview&apply a color theme
 Check [[http://emacsthemes.caisah.info/]].
 
 Write down the name of color theme (for example, molokai).
@@ -249,6 +249,8 @@ Insert below code into ~/.emacs.d/init.el,
 #+END_SRC
 
 "M-x color-theme-select" may not work in this setup. It's because of some design flaw in Emacs.
+
+Please note color themes may user different versions Emacs APIs. So please read its documentation on setup.
 ** Update from my latest setup
 I suggest pulling from the version tagged as "stable":
 #+begin_src bash
@@ -273,7 +275,7 @@ Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
 File bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
 
-Please contact the original developer if you find any bug from third party plugins.
+Please contact the original developer if you find any bug from third party packages.
 
 Bug report should include details (OS, Emacs version ...) plus the output of `emacs --debug-init` at minimum.
 * Misc
@@ -292,9 +294,9 @@ Other directories don't matter.
 
 ** About Emacs 23
 Emacs 23 support will *be dropped* on <2015-04-24 Thu>.
-Currently below plugins are not supported on Emacs 23:
+Currently below packages are not supported on Emacs 23:
 - helm
-- org-mode and its plugins
+- org-mode and its packages
 - company-mode
 - git-gutter
 - yasnippet
