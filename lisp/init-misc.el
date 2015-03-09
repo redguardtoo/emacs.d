@@ -819,12 +819,17 @@ buffer is not visiting a file."
   "Erase the content of the *Messages* buffer in emacs.
     Keep the last num lines if argument num if given."
   (interactive "p")
-  (erase-specific-buffer num
-                         (cond
-                          ((eq 'ruby-mode major-mode) "*server*")
-                          (t "*Messages*")
-                          )))
+  (let ((buf (cond
+              ((eq 'ruby-mode major-mode) "*server*")
+              (t "*Messages*"))))
+    (erase-specific-buffer num buf)))
 
+;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
+(when (fboundp 'messages-buffer-mode)
+  (defun messages-buffer-mode-hook-setup ()
+    (message "messages-buffer-mode-hook-setup called")
+    (read-only-mode -1))
+  (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
 ;; }}
 
 ;; vimrc
