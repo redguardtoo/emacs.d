@@ -1,0 +1,8 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: thing under cursor selected region
+# key: thing
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(if (region-active-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))
+  (thing-at-point 'symbol))
