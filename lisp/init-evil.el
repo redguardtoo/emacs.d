@@ -18,6 +18,8 @@
 (global-evil-surround-mode 1)
 ;; }}
 
+(require 'evil-mark-replace)
+
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
 (defmacro define-and-bind-text-object (key start-regex end-regex)
@@ -191,29 +193,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 
-(defun evilcvn--change-symbol(fn)
-  (let ((old (thing-at-point 'symbol)))
-    (funcall fn)
-    (unless (evil-visual-state-p)
-      (kill-new old)
-      (evil-visual-state))
-    (evil-ex (concat "'<,'>s/" (if (= 0 (length old)) "" "\\<\\(") old (if (= 0 (length old)) "" "\\)\\>/"))))
-  )
-
-(defun evilcvn-change-symbol-in-whole-buffer()
-  "mark the region in whole buffer and use string replacing UI in evil-mode
-to replace the symbol under cursor"
-  (interactive)
-  (evilcvn--change-symbol 'mark-whole-buffer)
-  )
-
-(defun evilcvn-change-symbol-in-defun ()
-  "mark the region in defun (definition of function) and use string replacing UI in evil-mode
-to replace the symbol under cursor"
-  (interactive)
-  (evilcvn--change-symbol 'mark-defun)
-  )
-
 ;; {{ evil-leader config
 (setq evil-leader/leader ",")
 
@@ -257,12 +236,15 @@ to replace the symbol under cursor"
   ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
   "epy" 'emmet-expand-yas
   "epl" 'emmet-expand-line
-  "cd" 'evilcvn-change-symbol-in-defun
-  "cb" 'evilcvn-change-symbol-in-whole-buffer
+  "rd" 'evil-mark-replace-in-defun
+  "rb" 'evil-mark-replace-in-buffer
+  "tt" 'evil-mark-tag-selected-region
+  "rt" 'evil-mark-replace-in-tagged-region
+  "rs" 'evil-mark-show-tagged-region
+  "ro" 'evil-mark-replace-in-text-object-operator
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
-  "tt" 'ido-goto-symbol ;; same as my vim hotkey
   "ht" 'helm-etags-select ;; better than find-tag (C-])
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
@@ -344,10 +326,6 @@ to replace the symbol under cursor"
   "rnl" 'rinari-find-log
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
-  "rbd" 'robe-doc
-  "rbj" 'robe-jump
-  "rbr" 'robe-rails-refresh
-  "rbs" 'robe-start
   "ws" 'w3mext-hacker-search
   "hsp" 'helm-swoop
   "hst" 'hs-toggle-fold
