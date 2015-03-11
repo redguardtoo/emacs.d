@@ -263,12 +263,13 @@ to replace the symbol under cursor"
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
   "tt" 'ido-goto-symbol ;; same as my vim hotkey
-  "ht" 'helm-etags-select
+  "ht" 'helm-etags-select ;; better than find-tag (C-])
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
   "hh" 'browse-kill-ring
   "cg" 'helm-ls-git-ls
-  "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
+  "ud" '(lambda ()(interactive)
+          (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
