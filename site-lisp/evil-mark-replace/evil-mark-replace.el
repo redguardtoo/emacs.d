@@ -26,7 +26,7 @@
 (defun evil-mark-replace-string (MARK-FN)
   "Mark region with MAKR-FN. Then replace in marked area."
   (let ((old (if (region-active-p)
-                 (buffer-substring-no-properties (region-beginning)(region-end))
+                 (buffer-substring-no-properties (region-beginning) (region-end))
                (thing-at-point 'symbol)))
         escaped-old)
 
