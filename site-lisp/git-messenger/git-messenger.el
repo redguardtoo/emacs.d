@@ -81,16 +81,24 @@ and menus.")
 
 (defvar git-messenger:vcs nil)
 
+(defvar git-messenger:fix-code-file-path-callback nil
+  "Give user a chance to fix code file path before blame.
+For exmaple, use cygwin svn/git from win64 Emacs")
+
 (defconst git-messenger:directory-of-vcs
   '((git . ".git")
     (svn . ".svn")))
 
 (defun git-messenger:blame-arguments (vcs file line)
-  (cl-case vcs
-    (git (list "--no-pager" "blame" "-w" "-L"
-               (format "%d,+1" line)
-               "--porcelain" (file-name-nondirectory file)))
-    (svn (list "blame" file))))
+  (let ((code-file file))
+    (if git-messenger:fix-code-file-path-callback
+        (setq code-file (funcall git-messenger:fix-code-file-path-callback file)))
+    (cl-case vcs
+      (git (list "--no-pager" "blame" "-w" "-L"
+                 (format "%d,+1" line)
+                 "--porcelain" (file-name-nondirectory code-file)))
+      (svn (list "blame" code-file)))
+    ))
 
 (defsubst git-messenger:cat-file-arguments (commit-id)
   (list "--no-pager" "cat-file" "commit" commit-id))
