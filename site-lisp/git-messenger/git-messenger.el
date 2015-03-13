@@ -81,24 +81,17 @@ and menus.")
 
 (defvar git-messenger:vcs nil)
 
-(defvar git-messenger:fix-code-file-path-callback nil
-  "Give user a chance to fix code file path before blame.
-For exmaple, use cygwin svn/git from win64 Emacs")
-
 (defconst git-messenger:directory-of-vcs
   '((git . ".git")
     (svn . ".svn")))
 
 (defun git-messenger:blame-arguments (vcs file line)
-  (let ((code-file file))
-    (if git-messenger:fix-code-file-path-callback
-        (setq code-file (funcall git-messenger:fix-code-file-path-callback file)))
+  (let ((basename (file-name-nondirectory file)))
     (cl-case vcs
       (git (list "--no-pager" "blame" "-w" "-L"
                  (format "%d,+1" line)
-                 "--porcelain" (file-name-nondirectory code-file)))
-      (svn (list "blame" code-file)))
-    ))
+                 "--porcelain" basename))
+      (svn (list "blame" basename)))))
 
 (defsubst git-messenger:cat-file-arguments (commit-id)
   (list "--no-pager" "cat-file" "commit" commit-id))
@@ -153,9 +146,8 @@ For exmaple, use cygwin svn/git from win64 Emacs")
       (error "Failed: 'svn log"))
     (goto-char (point-min))
     (let (end)
-      (forward-paragraph)
-      (when (re-search-forward "^-\\{25\\}" nil t)
-        (forward-line -1)
+      (goto-char (point-max))
+      (if (re-search-backward "^-\\{25\\}" nil t)
         (setq end (point)))
       (buffer-substring-no-properties (point-min) (or end (point-max))))))
 
