@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name bootstrap smaller gutter
+# key: gutter
+# --
+.small-gutter div[class*='row'] { margin-left: -${1:8}px; margin-right: -${1:$(yas/substr yas-text "[^ ]*")}px; }
+.small-gutter div[class*='col-'] { padding-left: ${1:$(yas/substr yas-text "[^ ]*")}px; padding-right: ${1:$(yas/substr yas-text "[^ ]*")}px; }

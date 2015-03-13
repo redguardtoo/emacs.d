@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: two way binding <div ng-model="..." directiveName />
+# key: directive
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+${1:app}.directive('${2:directiveName}', function() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function(scope, element, attr, ngModel) {
+      var elementFocused;
+      var forceDataBinding = function(ctrl) {
+        var value = ctrl.$modelValue;
+        var formatters = ctrl.$formatters,
+        idx = formatters.length;
+
+        while(idx--) {
+          value = formatters[idx](value);
+        }
+
+        if (ctrl.$viewValue !== value) {
+          ctrl.$viewValue = value;
+          ctrl.$render();
+        }
+      };
+      element.on('focus', function () {
+        elementFocused = true;
+        forceDataBinding(ngModel);
+      });
+      element.on('blur', function () {
+        elementFocused = false;
+        forceDataBinding(ngModel);
+      });
+      ngModel.$parsers.push(function (v) {
+        $0
+        // from user input
+        return v;
+      });
+      ngModel.$formatters.push(function (v) {
+        // to user input
+        return v;
+      });
+    }
+  };
+});

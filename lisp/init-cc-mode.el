@@ -8,6 +8,7 @@
 
 ;C/C++ SECTION
 (defun my-c-mode-hook ()
+  (interactive)
   (message "my-c-mode-hook called (buffer-file-name)=%s" (buffer-file-name))
   ;; @see http://stackoverflow.com/questions/3509919/ \
   ;; emacs-c-opening-corresponding-header-file
@@ -77,9 +78,6 @@
   (setq c-label-minimum-indentation 0)
 
   (when buffer-file-name
-    (require 'fic-mode)
-    (add-hook 'c++-mode-hook 'turn-on-fic-mode)
-
     ;; @see https://github.com/seanfisk/cmake-flymake
     ;; make sure you project use cmake
     (flymake-mode 1)
@@ -98,17 +96,15 @@
 ;; donot use c-mode-common-hook or cc-mode-hook because many major-modes use this hook
 (add-hook 'c-mode-common-hook
           (lambda ()
-            (when (derived-mode-p 'c-mode 'c++-mode 'java-mode)
+            (unless (is-buffer-file-temp)
               ;; indent
               (fix-c-indent-offset-according-to-syntax-context 'substatement 0)
               (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0)
-
               ;; gtags (GNU global) stuff
               (setq gtags-suggested-key-mapping t)
-              (if *emacs24* (ggtags-mode 1)))
-            (if (and (derived-mode-p 'c-mode 'c++-mode)
-                     (not (is-buffer-file-temp)))
-              (my-c-mode-hook))
-            ))
+              (unless (derived-mode-p 'java-mode)
+                (my-c-mode-hook))
+              (if *emacs24* (ggtags-mode 1))
+              )))
 
 (provide 'init-cc-mode)

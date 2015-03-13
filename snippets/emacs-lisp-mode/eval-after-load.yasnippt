@@ -1,0 +1,9 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (eval-after-load 'major-mode ...)
+# key: eval
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(eval-after-load '${1:major-mode}
+  '(progn
+    $0
+    ))

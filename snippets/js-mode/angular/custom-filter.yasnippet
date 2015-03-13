@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: $filter('filter')(dataSoruce, functor(criteria));
+# group: angular
+# key: afilter
+# --
+// @see http://stackoverflow.com/questions/16474091/angular-custom-filter-function
+// HTML usage:
+// <div ng-repeat="item in items | filter:${1:$(yas/substr yas-text "[^ ]*")}(${2:$(yas/substr yas-text "[^ ]*")})">
+$scope.${1:criteriaMatch} = function(${2:criteria }) {
+  return function( item ) {
+    return item.${3:name} === ${2:$(yas/substr yas-text "[^ ]*")}.${3:$(yas/substr yas-text "[^ ]*")};
+  };
+};
+$filter('filter')(dataSoruce, $scope.${1:$(yas/substr yas-text "[^ ]*")}(${2:$(yas/substr yas-text "[^ ]*")}));

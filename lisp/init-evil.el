@@ -16,13 +16,39 @@
 ;; {{@see https://github.com/timcharper/evil-surround
 (require 'evil-surround)
 (global-evil-surround-mode 1)
-(evil-define-key 'visual evil-surround-mode-map "s" 'evil-substitute)
+;; }}
+
+(require 'evil-mark-replace)
+
+;; {{ define my own text objects, works on evil v1.0.9 using older method
+;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
+(defmacro define-and-bind-text-object (key start-regex end-regex)
+  (let ((inner-name (make-symbol "inner-name"))
+        (outer-name (make-symbol "outer-name")))
+    `(progn
+       (evil-define-text-object ,inner-name (count &optional beg end type)
+         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+       (evil-define-text-object ,outer-name (count &optional beg end type)
+         (evil-select-paren ,start-regex ,end-regex beg end type count t))
+       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+
+;; between dollar signs:
+(define-and-bind-text-object "$" "\\$" "\\$")
+;; between pipe characters:
+(define-and-bind-text-object "|" "|" "|")
+;; trimmed line
+(define-and-bind-text-object "l" "^ *" " *$")
+;; angular template
+(define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (require 'evil-escape)
 ;; key-chord is used by evil-escape
-(setq key-chord-two-keys-delay 0.5)
+(setq-default evil-escape-delay 0.2)
+(setq evil-escape-excluded-major-modes '(dired-mode))
+(setq-default evil-escape-key-sequence "kj")
 (evil-escape-mode 1)
 ;; }}
 
@@ -134,7 +160,9 @@
 ;;        (t (setq unread-command-events (append unread-command-events
 ;;                           (list evt))))))))
 
-
+;; I learn this trick from ReneFroger, need latest expand-region
+;; @see https://github.com/redguardtoo/evil-matchit/issues/38
+(define-key evil-visual-state-map (kbd "v") 'er/expand-region)
 (define-key evil-insert-state-map (kbd "M-a") 'move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "M-e") 'move-end-of-line)
@@ -165,29 +193,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-
-(defun evilcvn--change-symbol(fn)
-  (let ((old (thing-at-point 'symbol)))
-    (funcall fn)
-    (unless (evil-visual-state-p)
-      (kill-new old)
-      (evil-visual-state))
-    (evil-ex (concat "'<,'>s/" (if (= 0 (length old)) "" "\\<\\(") old (if (= 0 (length old)) "" "\\)\\>/"))))
-  )
-
-(defun evilcvn-change-symbol-in-whole-buffer()
-  "mark the region in whole buffer and use string replacing UI in evil-mode
-to replace the symbol under cursor"
-  (interactive)
-  (evilcvn--change-symbol 'mark-whole-buffer)
-  )
-
-(defun evilcvn-change-symbol-in-defun ()
-  "mark the region in defun (definition of function) and use string replacing UI in evil-mode
-to replace the symbol under cursor"
-  (interactive)
-  (evilcvn--change-symbol 'mark-defun)
-  )
 
 ;; {{ evil-leader config
 (setq evil-leader/leader ",")
@@ -230,18 +235,24 @@ to replace the symbol under cursor"
   ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
   ;; "cc" 'evilnc-copy-and-comment-lines
   ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
-  "cd" 'evilcvn-change-symbol-in-defun
-  "cb" 'evilcvn-change-symbol-in-whole-buffer
+  "epy" 'emmet-expand-yas
+  "epl" 'emmet-expand-line
+  "rd" 'evil-mark-replace-in-defun
+  "rb" 'evil-mark-replace-in-buffer
+  "tt" 'evil-mark-tag-selected-region
+  "rt" 'evil-mark-replace-in-tagged-region
+  "rs" 'evil-mark-show-tagged-region
+  "ro" 'evil-mark-replace-in-text-object-operator
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
-  "tt" 'ido-goto-symbol ;; same as my vim hotkey
-  "ht" 'helm-etags-select
+  "ht" 'helm-etags-select ;; better than find-tag (C-])
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
   "hh" 'browse-kill-ring
   "cg" 'helm-ls-git-ls
-  "ud" '(lambda ()(interactive) (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
+  "ud" '(lambda ()(interactive)
+          (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
@@ -316,10 +327,6 @@ to replace the symbol under cursor"
   "rnl" 'rinari-find-log
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
-  "rbd" 'robe-doc
-  "rbj" 'robe-jump
-  "rbr" 'robe-rails-refresh
-  "rbs" 'robe-start
   "ws" 'w3mext-hacker-search
   "hsp" 'helm-swoop
   "hst" 'hs-toggle-fold
@@ -328,6 +335,7 @@ to replace the symbol under cursor"
   "hss" 'hs-show-block
   "hd" 'describe-function
   "hf" 'find-function
+  "hk" 'describe-key
   "hv" 'describe-variable
   "gt" 'ggtags-find-tag-dwim
   "gr" 'ggtags-find-reference

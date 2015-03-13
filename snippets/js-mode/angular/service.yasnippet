@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: app.factory('ServiceName', ...)
+# group: angular
+# key: aservice
+# --
+${1:app}.factory('${2:ServiceName'}', ['$q','$rootScope','$http', function($q, $rootScope, $http){
+  var svc = {};
+  svc.${3:apiName} = function() {
+    return $http.post('${4:url}');
+  };
+  return svc;
+}]);

@@ -1,7 +1,11 @@
-;;; fic-mode.el --- Show FIXME/TODO/BUG/KLUDGE in special face only in comments and strings
+;;; fic-mode.el --- Show FIXME/TODO/BUG(...) in special face only in comments and strings
 ;;--------------------------------------------------------------------
 ;;
 ;; Copyright (C) 2010, Trey Jackson <bigfaceworm(at)gmail(dot)com>
+;; Copyright (C) 2010, Ivan Korotkov <twee(at)tweedle-dee(dot)org>
+;; Copyright (C) 2012, Le Wang
+;;
+;; Homepage: https://github.com/lewang/fic-mode
 ;;
 ;; This file is NOT part of Emacs.
 ;;
@@ -22,69 +26,106 @@
 ;;
 ;; To use, save fic-mode.el to a directory in your load-path.
 ;;
-;; (require 'fic-mode)
-;; (add-hook 'c++-mode-hook 'turn-on-fic-mode)
-;; (add-hook 'emacs-lisp-mode-hook 'turn-on-fic-mode)
+;;   (require 'fic-mode)
+;;
+;;   ;;; emacs 24
+;;   (add-hook 'prog-mode-hook 'fic-mode)
+;;
+;;   ;;; emacs 23 needs to add this to all programming modes you want this to be
+;;   ;;; enabled for.
+;;   ;;;
+;;   ;;; e.g.
+;;   (add-hook 'c++-mode-hook 'fic-mode)
+;;   (add-hook 'emacs-lisp-mode-hook 'fic-mode)
 ;;
 ;; or
 ;;
 ;; M-x fic-mode
-;;
-;; NOTE: If you manually turn on fic-mode, you you might need to force re-fontification initially
-;;   M-x font-lock-fontify-buffer
 
-(defcustom fic-highlighted-words '("FIXME" "TODO" "BUG" "KLUDGE")
-  "Words to highlight"
+(defgroup fic-mode nil
+  "Highlight FIXME/TODO(...) in comments"
+  :tag "FIC"
+  :group 'tools
+  :group 'font-lock
+  :group 'faces)
+
+(defcustom fic-highlighted-words '("FIXME" "TODO" "BUG")
+  "Words to highlight."
   :group 'fic-mode)
 
-(defcustom fic-foreground-color "Red"
-  "Font foreground colour"
+(defcustom fic-author-name-regexp "[-a-zA-Z0-9_.]+"
+  "Regexp describing FIXME/TODO author name"
   :group 'fic-mode)
 
-(defcustom fic-background-color  "Yellow"
-  "Font background color"
+(defcustom fic-activated-faces
+  '(font-lock-doc-face font-lock-string-face font-lock-comment-face)
+  "Faces to look for to highlight words."
   :group 'fic-mode)
 
-(defcustom font-lock-fic-face 'font-lock-fic-face
-  "variable storing the face for fic mode"
+(defface fic-face
+  '((((class color))
+     (:background "white" :foreground "red" :weight bold))
+    (t (:weight bold)))
+  "Face to fontify FIXME/TODO words"
   :group 'fic-mode)
 
-(make-face 'font-lock-fic-face)
-(modify-face 'font-lock-fic-face fic-foreground-color
-             fic-background-color nil t nil t nil nil)
+(defface fic-author-face
+  '((((class color))
+     (:background "white" :foreground "orangered" :underline t))
+    (t (:underline t)))
+  "Face to fontify author/assignee of FIXME/TODO"
+  :group 'fic-mode)
 
-(defvar fic-search-list-re (regexp-opt fic-highlighted-words 'words)
-  "regexp constructed from 'fic-highlighted-words")
+(defvar fic-mode-font-lock-keywords '((fic-search-for-keyword
+                                       (1 'fic-face t)
+                                       (2 'fic-author-face t t))) 
+  "Font Lock keywords for fic-mode")
+
+(defvar fic-saved-hash nil
+  "(`fic-highlighted-words' . `fic-author-name-regexp')")
+(defvar fic-saved-regexp nil
+  "Regexp cache for `fic-saved-hash'")
+
+(defun fic-search-re ()
+  "Regexp to search for."
+  (let ((hash (cons fic-highlighted-words fic-author-name-regexp)))
+    (if (and fic-saved-hash
+           (equal fic-saved-hash hash))
+        fic-saved-regexp
+      (let ((fic-words-re (concat "\\<"
+                                  (regexp-opt fic-highlighted-words t)
+                                  "\\>")))
+        (setq fic-saved-hash hash
+              fic-saved-regexp (concat fic-words-re "\\(?:(\\(" fic-author-name-regexp "\\))\\)?"))
+        fic-saved-regexp))))
 
 (defun fic-in-doc/comment-region (pos)
   (memq (get-char-property pos 'face)
-	(list font-lock-doc-face font-lock-string-face font-lock-comment-face)))
+        fic-activated-faces))
 
 (defun fic-search-for-keyword (limit)
   (let ((match-data-to-set nil)
 	found)
     (save-match-data
       (while (and (null match-data-to-set)
-		  (re-search-forward fic-search-list-re limit t))
+		  (re-search-forward (fic-search-re) limit t))
 	(if (and (fic-in-doc/comment-region (match-beginning 0))
-		 (fic-in-doc/comment-region (match-end 0))) 
+		 (fic-in-doc/comment-region (match-end 0)))
 	    (setq match-data-to-set (match-data)))))
     (when match-data-to-set
       (set-match-data match-data-to-set)
-      (goto-char (match-end 0)) 
+      (goto-char (match-end 0))
       t)))
 
 ;;;###autoload
-(define-minor-mode fic-mode "highlight FIXMEs in comments and strings (as well as TODO BUG and KLUDGE"
-  :lighter " FIC" :group 'fic-mode
-  (let ((kwlist '((fic-search-for-keyword (0 'font-lock-fic-face t)))))
+(define-minor-mode fic-mode
+  "Fic mode -- minor mode for highlighting FIXME/TODO in comments"
+  :lighter ""
+  :group 'fic-mode
+  (let ((kwlist fic-mode-font-lock-keywords))
     (if fic-mode
-        (font-lock-add-keywords nil kwlist)
-      (font-lock-remove-keywords nil kwlist))))
-
-(defun turn-on-fic-mode ()
-  "turn fic-mode on"
-  (interactive)
-  (fic-mode 1))
+	(font-lock-add-keywords nil kwlist 'append)
+      (font-lock-remove-keywords nil kwlist))
+    (font-lock-fontify-buffer)))
 
 (provide 'fic-mode)

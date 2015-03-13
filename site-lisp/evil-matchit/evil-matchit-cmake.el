@@ -37,11 +37,11 @@
 
 ;; CMake (http://www.cmake.org) syntax
 (defvar evilmi-cmake-match-tags
-  '((("if" "IF") ("elseif" "ELSEIF" "else" "ELSE") ("endif" "ENDIF") "MONOGAMY")
-    (("foreach" "FOREACH") () ("endforeach" "ENDFOREACH") "MONOGAMY")
-    (("macro" "MACRO") () ("endmacro" "ENDMACRO") "MONOGAMY")
-    (("while" "WHILE") () ("endwhile" "ENDWHILE") "MONOGAMY")
-    (("function" "FUNCTION") () ("endfunction" "ENDFUNCTION") "MONOGAMY")
+  '((("if") ("elseif" "else") ("endif") "MONOGAMY")
+    (("foreach") () ("endforeach") "MONOGAMY")
+    (("macro") () ("endmacro") "MONOGAMY")
+    (("while") () ("endwhile") "MONOGAMY")
+    (("function") () ("endfunction") "MONOGAMY")
     ))
 
 ;;;###autoload

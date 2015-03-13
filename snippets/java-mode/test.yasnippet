@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: test from yanked function
+# key: test
+# --
+@Test
+public void test`(upcase-initials (car kill-ring))`() {
+  $0
+  Assert.assertTrue(true);
+}

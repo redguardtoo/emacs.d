@@ -32,7 +32,7 @@
   (let ((current-prefix-arg t))
     (magit-status default-directory)))
 
-;; Sometimes I want check other developer's commit
+;; Sometimes I check other developer's commit
 ;; show file of specific version
 (autoload 'magit-show "magit" "" t nil)
 ;; show the commit
@@ -138,7 +138,6 @@
   "run `git push'"
   (interactive)
   (when buffer-file-name
-    (message "(pwd)=%s" default-directory)
     (shell-command (concat "cd " (pwd) ";git push"))
     (message "DONE! git push at %s" default-directory)
     ))

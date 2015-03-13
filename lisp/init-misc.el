@@ -43,6 +43,7 @@
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
 
+(autoload 'find-by-pinyin-dired "find-by-pinyin-dired" "" t)
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -130,14 +131,19 @@
 
 (add-hook 'prog-mode-hook
           '(lambda ()
-             ;; enable for all programming modes
-             ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-             (subword-mode)
-             (if *emacs24* (electric-pair-mode 1))
-             ;; eldoc, show API doc in minibuffer echo area
-             (turn-on-eldoc-mode)
-             ;; show trailing spaces in a programming mod
-             (setq show-trailing-whitespace t)))
+             (unless (is-buffer-file-temp)
+               ;; highlight FIXME/BUG/TODO in comment
+               (require 'fic-mode)
+               (fic-mode 1)
+               ;; enable for all programming modes
+               ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+               (subword-mode)
+               (if *emacs24* (electric-pair-mode 1))
+               ;; eldoc, show API doc in minibuffer echo area
+               (turn-on-eldoc-mode)
+               ;; show trailing spaces in a programming mod
+               (setq show-trailing-whitespace t)
+               )))
 
 ;; turns on auto-fill-mode, don't use text-mode-hook because for some
 ;; mode (org-mode for example), this will make the exported document
@@ -813,12 +819,17 @@ buffer is not visiting a file."
   "Erase the content of the *Messages* buffer in emacs.
     Keep the last num lines if argument num if given."
   (interactive "p")
-  (erase-specific-buffer num
-                         (cond
-                          ((eq 'ruby-mode major-mode) "*server*")
-                          (t "*Messages*")
-                          )))
+  (let ((buf (cond
+              ((eq 'ruby-mode major-mode) "*server*")
+              (t "*Messages*"))))
+    (erase-specific-buffer num buf)))
 
+;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
+(when (fboundp 'messages-buffer-mode)
+  (defun messages-buffer-mode-hook-setup ()
+    (message "messages-buffer-mode-hook-setup called")
+    (read-only-mode -1))
+  (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
 ;; }}
 
 ;; vimrc
@@ -935,9 +946,10 @@ The full path into relative path insert it as a local file link in org-mode"
   )
 
 ;; {{ save history
-(setq history-length 8000)
-(setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-(savehist-mode 1)
+(when (file-writable-p (file-truename "~/.emacs.d/history"))
+  (setq history-length 8000)
+  (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+  (savehist-mode 1))
 ;; }}
 
 (setq system-time-locale "C")
@@ -988,6 +1000,7 @@ The full path into relative path insert it as a local file link in org-mode"
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
 (autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
+(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
 (autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
 (autoload 'org2nikola-export-subtree "org2nikola" "" t)
 (autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)

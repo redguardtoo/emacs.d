@@ -1,0 +1,9 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: $scope.fromKillRing = function() {...}
+# key: af
+# group: angular
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+$scope.`(replace-regexp-in-string "(.*)$" "" (car kill-ring))` = function(`(replace-regexp-in-string "\\(.*( *\\| *).*\\)" "" (car kill-ring))`) {
+  $0
+};

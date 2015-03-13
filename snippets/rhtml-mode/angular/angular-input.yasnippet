@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: <label /><input type="text" /><span class="error" />
+# key: ni
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+<label>${1:First Name}</label>
+<input type="text" ng-model="b.${2:accountNumber}" ng-pattern="/[0-9]\{6\}/" />
+<span ng-show="b.${2:$(yas/substr yas-text "[^ ]*")}.$error.pattern" class="has-error">Enter a number</span>

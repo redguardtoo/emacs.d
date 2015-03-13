@@ -3,11 +3,16 @@
 ;; ----------------------------------------------------------------------------
 (autoload 'enable-paredit-mode "paredit")
 
+(setq-default initial-scratch-message
+              (concat ";; Happy hacking " (or user-login-name "") " - Emacs ♥ you!\n\n"))
+
 ;; {{ scheme setup
 (setq scheme-program-name "guile")
 (require 'quack)
 ;; }}
 
+;; A quick way to jump to the definition of a function given its key binding
+(global-set-key (kbd "C-h K") 'find-function-on-key)
 
 (defun maybe-map-paredit-newline ()
   (unless (or (eq major-mode 'inferior-emacs-lisp-mode) (minibufferp))

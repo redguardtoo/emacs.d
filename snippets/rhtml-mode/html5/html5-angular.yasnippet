@@ -4,34 +4,45 @@
 # key: html5
 # --
 <!DOCTYPE html>
-<html ng-app="myApp">
+<html ng-app="${2:$(yas/substr yas-text "[^ ]*")}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <title>Angular Sandbox (with Bootstrap)</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.2.20/angular.min.js"></script>
-    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/css/bootstrap.min.css" />
-	<link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css" />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.13/angular-mocks.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" />
     <style type="text/css">.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* angular ui bootstrap hack */</style>
   </head>
   <body>
-    <div class="row">
-      <div class="col-sm-12">
-        <div ng-controller="ProgressDemoCtrl">
-          <progressbar max="max" value="dynamic">
-            <span style="color:black; white-space:nowrap;">{{dynamic}} / {{max}}</span>
-          </progressbar>
-        </div>
-      </div>
+    <div class="container" ng-controller="MainCtrl">
+      <h1>{{message}}</h1>
     </div>
-  <script type="text/javascript">
-     var app = angular.module('myApp', ['ui.bootstrap']);
-     app.controller('ProgressDemoCtrl', function ($scope) {
-       $scope.max = 100;
-       $scope.dynamic = 50;
-     });
-  </script>
+    <div ng-view></div>
+    <script type="text/javascript">
+      var ${1:app}= angular.module('${2:myApp}', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']);
+      ${1:$(yas/substr yas-text "[^ ]*")}.config(['$routeProvider', function($routeProvider) {
+        $routeProvider.when('/index', {
+          templateUrl: 'main.html',
+          controller: 'MainCtrl'
+        }).otherwise({
+          redirectTo: '/index'
+        });
+      }]);
+      ${1:$(yas/substr yas-text "[^ ]*")}.run(function($httpBackend) {
+         // hack $http
+         $httpBackend.whenPOST('MY_POST_URL').respond(function(method, url, data, headers){
+           return [200, {}, {}];
+         });
+         $httpBackend.whenGET(/^.*/).passThrough();
+      });
+      ${1:$(yas/substr yas-text "[^ ]*")}.controller('MainCtrl', function ($scope) {
+        $scope.message = 'Hello World';
+      });
+    </script>
   </body>
 </html>

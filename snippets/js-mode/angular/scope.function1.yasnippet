@@ -1,0 +1,10 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: $scope.fname= function(para) {...}
+# key: af
+# group: angular
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+$scope.${1:init} = function(${2:para}) {
+  $0
+  console.log('$scope.${1:$(yas/substr yas-text "[^ ]*")} called! ${2:$(yas/substr yas-text "[^ ]*")}=', ${2:$(yas/substr yas-text "[^ ]*")});
+};

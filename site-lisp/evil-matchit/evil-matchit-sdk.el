@@ -9,6 +9,11 @@ to extract the keyword which starts from one. The sub-match is the match defined
 between '\\(' and '\\)' in regular expression.
 ")
 
+;; slower but I don't care
+;; @see http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html
+(defun evilmi-sdk-trim-string (string)
+  (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
+
 (defun evilmi-sdk-tags-is-matched (level orig-tag-info cur-tag-info match-tags)
   (let (rlt
         (tag-pair-status (nth 2 cur-tag-info)))
@@ -78,20 +83,11 @@ is-function-exit-point could be 'FN_EXIT' or other status"
       (setq j 0)
       (while (and (not found) (< j (length elems)))
         (setq elem (nth j elems))
-        (cond
-         ((stringp elem)
-          (if (string-match (concat "^" elem "$") KEYWORD)
-              (setq found t)
-            ))
-         ((listp elem)
-          (if (evilmi-sdk-member KEYWORD elem)
-              (setq found t)
-            ))
-         )
+        (setq found (and (or (stringp elem) (listp elem))
+                         (evilmi-sdk-member KEYWORD elem)))
         (if (not found) (setq j (1+ j)))
         )
-      (if (not found) (setq i (1+ i)))
-      )
+      (if (not found) (setq i (1+ i))))
     (when found
       ;; function exit point maybe?
       (if (nth 3 (nth i match-tags))
@@ -114,7 +110,10 @@ is-function-exit-point could be 'FN_EXIT' or other status"
       (setq howto (nth i howtos))
 
       (when (string-match (nth 0 howto) cur-line)
-        (setq keyword (match-string (nth 1 howto) cur-line))
+        ;; keyword should be trimmed because FORTRAN use "else if"
+        (setq keyword (evilmi-sdk-trim-string (match-string (nth 1 howto) cur-line) ))
+        ;; (message "keyword=%s" keyword)
+
         ;; keep search keyword by using next howto (regex and match-string index)
         (if (not (evilmi-sdk-member keyword match-tags)) (setq keyword nil))
         )

@@ -36,8 +36,9 @@
 (require 'evil-search)
 (require 'evil-ex)
 
-(define-derived-mode evil-command-window-mode text-mode "Evil-cmd"
+(define-derived-mode evil-command-window-mode fundamental-mode "Evil-cmd"
   "Major mode for the Evil command line window."
+  (auto-fill-mode 0)
   (setq-local after-change-functions (cons 'evil-command-window-draw-prefix
                                            after-change-functions)))
 
@@ -48,7 +49,7 @@ the key whose history is being shown (one of \":\", \"/\", or
 \"?\").  EXECUTE-FN should be a function of one argument to
 execute on the result that the user selects."
   (when (eq major-mode 'evil-command-window-mode)
-    (error "Cannot recursively open command line window"))
+    (user-error "Cannot recursively open command line window"))
   (mapc #'(lambda (win)
             (when (equal (buffer-name (window-buffer win))
                          "*Command Line*")
@@ -87,7 +88,7 @@ function to execute."
         (command-window (get-buffer-window)))
     (select-window (previous-window))
     (unless (equal evil-command-window-current-buffer (current-buffer))
-      (error "Originating buffer is no longer active"))
+      (user-error "Originating buffer is no longer active"))
     (kill-buffer "*Command Line*")
     (delete-window command-window)
     (funcall execute-fn result)
