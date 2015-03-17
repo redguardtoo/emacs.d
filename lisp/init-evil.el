@@ -301,6 +301,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "s2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
   "s3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
   "su" 'winner-undo
+  "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
   "x2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))

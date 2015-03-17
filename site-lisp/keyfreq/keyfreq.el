@@ -108,6 +108,7 @@ by default."
   "Hash table storing number of times each command was called in each major mode
 since the last time the frequencies were saved in `keyfreq-file'.")
 
+(defvar keyfreq-excluded-commands '(self-insert-command))
 
 (defun keyfreq-pre-command-hook ()
   "Records command execution in `keyfreq-table' hash."
@@ -115,8 +116,10 @@ since the last time the frequencies were saved in `keyfreq-file'.")
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
-      (puthash (cons major-mode command) (if count (1+ count) 1)
-	       keyfreq-table))))
+      (unless (memq command keyfreq-excluded-commands)
+        (puthash (cons major-mode command) (if count (1+ count) 1)
+                 keyfreq-table)
+        ))))
 
 
 (defun keyfreq-groups-major-modes (table)
@@ -420,19 +423,16 @@ if it was successfully merged."
 
     ;; Check that we have the lock
     (if (eq (keyfreq-file-owner) (emacs-pid))
-	(unwind-protect
-	    (progn
-	      ;; Load values and merge them with the current keyfreq-table
-	      (keyfreq-table-load table)
-
-	      ;; Write the new frequencies
-	      (with-temp-file keyfreq-file
-		(prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer))))
-
-	  ;; Release the lock and reset the hash table.
-	  (keyfreq-file-release-lock)
-	  (clrhash table))
-      )))
+        (unwind-protect
+            (progn
+              ;; Load values and merge them with the current keyfreq-table
+              (keyfreq-table-load table)
+              ;; Write the new frequencies
+              (with-temp-file keyfreq-file
+                (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer))))
+          ;; Release the lock and reset the hash table.
+          (keyfreq-file-release-lock)
+          (clrhash table)))))
 
 
 (defun keyfreq-table-load (table)
@@ -489,14 +489,20 @@ value will take effect only after (re)enabling
 
 (defvar keyfreq-autosave--timer nil)
 
+(defun keyfreq-save-now ()
+  (interactive)
+  (keyfreq-table-save keyfreq-table)
+  (message "keyfreq data saved into %s" keyfreq-file))
 
 (defun keyfreq-autosave--do ()
   "Function executed periodically to save the `keyfreq-table' in `keyfreq-file'."
   ;; I want to exit emacs as usually even there is exception here
   (condition-case nil
-      (keyfreq-table-save keyfreq-table)
+      (progn
+        (keyfreq-table-save keyfreq-table)
+        (message "kefreq data saved into %s" keyfreq-file))
     (error
-     (message "~/.emacs.keyfreq is corrupt"))))
+     (message "%s is corrupt" keyfreq-file))))
 
 
 (provide 'keyfreq)
