@@ -80,6 +80,7 @@ If nil default `helm-apt-cache-show-1' will be used."
     (persistent-action . helm-apt-persistent-action)
     (persistent-help . "Show package description")))
 
+;;; Internals vars
 (defvar helm-apt-search-command "apt-cache search '%s'")
 (defvar helm-apt-show-command "apt-cache show '%s'")
 (defvar helm-apt-installed-packages nil)
@@ -87,6 +88,7 @@ If nil default `helm-apt-cache-show-1' will be used."
 (defvar helm-apt-input-history nil)
 (defvar helm-apt-show-only 'all)
 (defvar helm-apt-term-buffer nil)
+(defvar helm-apt-default-archs nil)
 
 (defun helm-apt-refresh ()
   "Refresh installed candidates list."
@@ -97,15 +99,23 @@ If nil default `helm-apt-cache-show-1' will be used."
   "Persistent action for APT source."
   (helm-apt-cache-show candidate))
 
+(defun helm-apt--installed-package-name (name)
+  (cl-loop for arch in helm-apt-default-archs
+           thereis (or (assoc-default
+                        name helm-apt-installed-packages)
+                       (assoc-default
+                        (format "%s:%s" name arch)
+                        helm-apt-installed-packages))))
+
 (defun helm-apt-candidate-transformer (candidates)
   "Show installed CANDIDATES and the ones to deinstall in a different color."
   (cl-loop for cand in candidates
         for name = (helm-apt-display-to-real cand)
         for deinstall = (string=
-                         (assoc-default name helm-apt-installed-packages)
+                         (helm-apt--installed-package-name name)
                          "deinstall")
         for install = (string=
-                       (assoc-default name helm-apt-installed-packages)
+                       (helm-apt--installed-package-name name)
                        "install")
         for show = (cond ((and deinstall
                                (memq helm-apt-show-only '(all deinstalled)))
@@ -145,7 +155,6 @@ If nil default `helm-apt-cache-show-1' will be used."
 (defun helm-apt-init ()
   "Initialize list of debian packages."
   (let ((query ""))
-    (setq helm-apt-show-only 'all)
     (unless (and helm-apt-installed-packages
                  helm-apt-all-packages)
       (message "Loading package list...")
@@ -191,7 +200,7 @@ package name - description."
 (defun helm-apt-cache-show-1 (package)
   (let* ((command (format helm-apt-show-command package))
          (buf     (get-buffer-create "*helm apt show*")))
-    (helm-switch-to-buffer buf)
+    (switch-to-buffer buf)
     (unless (string= package helm-apt-show-current-package)
       (let ((inhibit-read-only t))
         (erase-buffer)
@@ -252,6 +261,17 @@ Support install, remove and purge actions."
   "Preconfigured `helm' : frontend of APT package manager.
 With a prefix arg reload cache."
   (interactive "P")
+  (setq helm-apt-show-only 'all)
+  (unless helm-apt-default-archs
+    (setq helm-apt-default-archs
+          (append (split-string
+                   (shell-command-to-string
+                    "dpkg --print-architecture")
+                   "\n" t)
+                  (split-string
+                   (shell-command-to-string
+                    "dpkg --print-foreign-architectures")
+                   "\n" t))))
   (let ((query (read-string "Search Package: " nil 'helm-apt-input-history)))
     (when arg (helm-apt-refresh))
     (helm :sources 'helm-source-apt

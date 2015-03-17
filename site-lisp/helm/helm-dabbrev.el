@@ -59,7 +59,7 @@ no need to provide \(lisp-interaction-mode . emacs-lisp-mode\) association."
   :group 'helm-dabbrev
   :type 'integer)
 
-(defcustom helm-dabbrev-cycle-thresold nil
+(defcustom helm-dabbrev-cycle-threshold nil
   "Number of time helm-dabbrev cycle before displaying helm completion.
 When nil or 0 disable cycling."
   :group 'helm-dabbrev
@@ -157,9 +157,19 @@ but the initial search for all candidates in buffer(s)."
                               (setq pos-before pos)
                               (search-backward pattern pos t))))
                 (let* ((match-1 (helm-aif (thing-at-point 'symbol)
-                                    (substring-no-properties it)))
+                                    ;; `thing-at-point' returns
+                                    ;; the quote outside of e-lisp mode,
+                                    ;; e.g in message mode,
+                                    ;; `foo' => foo'
+                                    ;; but in e-lisp like modes:
+                                    ;; `foo' => foo
+                                    ;; so remove it [1].
+                                    (replace-regexp-in-string
+                                     "[']\\'" "" (substring-no-properties it))))
                        (match-2 (helm-aif (thing-at-point 'filename)
-                                    (substring-no-properties it)))
+                                    ;; Same as in [1].
+                                    (replace-regexp-in-string
+                                     "[']\\'" "" (substring-no-properties it))))
                        (lst (if (string= match-1 match-2)
                                 (list match-1)
                               (list match-1 match-2))))
@@ -210,15 +220,6 @@ but the initial search for all candidates in buffer(s)."
             (append lst (funcall dabbrev-get abbrev 'all-bufs)))
         lst))))
 
-(defvar helm-source-dabbrev
-  `((name . "Dabbrev Expand")
-    (init . (lambda ()
-              (helm-init-candidates-in-buffer 'global
-                helm-dabbrev--cache)))
-    (candidates-in-buffer)
-    (keymap . ,helm-dabbrev-map)
-    (action . helm-dabbrev-default-action)))
-
 (defun helm-dabbrev-default-action (candidate)
   (with-helm-current-buffer
     (let* ((limits (helm-bounds-of-thing-before-point
@@ -236,8 +237,8 @@ but the initial search for all candidates in buffer(s)."
   (let ((dabbrev (helm-thing-before-point nil helm-dabbrev--regexp))
         (limits (helm-bounds-of-thing-before-point helm-dabbrev--regexp))
         (enable-recursive-minibuffers t)
-        (cycling-disabled-p (or (null helm-dabbrev-cycle-thresold)
-                                (zerop helm-dabbrev-cycle-thresold)))
+        (cycling-disabled-p (or (null helm-dabbrev-cycle-threshold)
+                                (zerop helm-dabbrev-cycle-threshold)))
         (helm-execute-action-at-once-if-one t)
         (helm-quit-if-no-candidate
          #'(lambda ()
@@ -267,13 +268,13 @@ but the initial search for all candidates in buffer(s)."
                                        collect i into selection
                                        when (and selection
                                                  (= (length selection)
-                                                    helm-dabbrev-cycle-thresold))
+                                                    helm-dabbrev-cycle-threshold))
                                        ;; When selection len reach
-                                       ;; `helm-dabbrev-cycle-thresold'
+                                       ;; `helm-dabbrev-cycle-threshold'
                                        ;; return selection.
                                        return selection
                                        ;; selection len never reach
-                                       ;; `helm-dabbrev-cycle-thresold'
+                                       ;; `helm-dabbrev-cycle-threshold'
                                        ;; return selection.
                                        finally return selection)))))
     (let ((iter (and (helm-dabbrev-info-p helm-dabbrev--data)
@@ -281,7 +282,9 @@ but the initial search for all candidates in buffer(s)."
           deactivate-mark)
       (helm-aif (and iter (helm-iter-next iter))
           (progn
-            (helm-insert-completion-at-point (car limits) (cdr limits) it)
+            (helm-insert-completion-at-point
+             (car (helm-dabbrev-info-limits helm-dabbrev--data))
+             (cdr limits) it)
             ;; Move already tried candidates to end of list.
             (setq helm-dabbrev--cache (append (remove it helm-dabbrev--cache)
                                               (list it))))
@@ -292,7 +295,12 @@ but the initial search for all candidates in buffer(s)."
           (setq helm-dabbrev--data nil)
           (insert dabbrev))
         (with-helm-show-completion (car limits) (cdr limits)
-          (helm :sources 'helm-source-dabbrev
+          (helm :sources (helm-build-in-buffer-source "Dabbrev Expand"
+                           :data helm-dabbrev--cache
+                           :persistent-action 'ignore
+                           :persistent-help "DoNothing"
+                           :keymap helm-dabbrev-map
+                           :action 'helm-dabbrev-default-action)
                 :buffer "*helm dabbrev*"
                 :input (concat "^" dabbrev " ")
                 :resume 'noresume

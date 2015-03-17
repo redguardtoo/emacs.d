@@ -49,6 +49,20 @@ one match."
   :type 'boolean
   :group 'helm-tags)
 
+
+(defgroup helm-tags-faces nil
+  "Customize the appearance of helm-tags faces."
+  :prefix "helm-"
+  :group 'helm-tags
+  :group 'helm-faces)
+
+(defface helm-etags-file
+    '((t (:foreground "Lightgoldenrod4"
+          :underline t)))
+  "Face used to highlight etags filenames."
+  :group 'helm-tags-faces)
+
+
 (defun helm-etags-run-switch-other-window ()
   "Run switch to other window action from `helm-source-etags-select'."
   (interactive)
@@ -200,7 +214,8 @@ If not found in CURRENT-DIR search in upper directory."
                           (substring i 0 it)
                         i))
           do (cond ((and elm (string-match "^\\([^,]+\\),[0-9]+$" elm))
-                    (setq fname (match-string 1 elm)))
+                    (setq fname (propertize (match-string 1 elm)
+                                            'face 'helm-etags-file)))
                    (elm (setq cand (concat fname ": " elm)))
                    (t (setq cand nil)))
           when cand do (progn
@@ -230,38 +245,40 @@ If no entry in cache, create one."
                            (cons f (helm-etags-mtime f))))))))))
 
 (defun helm-etags-split-line (line)
-  (let ((regexp "\\`\\([a-zA-Z]?:?.*?\\): \\(.*\\)"))
+  (let ((regexp "\\`\\([[:lower:][:upper:]]?:?.*?\\): \\(.*\\)"))
     (when (string-match regexp line)
       (cl-loop for n from 1 to 2 collect (match-string n line)))))
 
-(defvar helm-source-etags-select
-  `((name . "Etags")
-    (header-name . helm-etags-get-header-name)
-    (init . helm-etags-init)
-    (candidates-in-buffer)
-    (match-part . (lambda (candidate)
-                    ;; Match only the tag part of CANDIDATE
-                    ;; and not the filename.
-                    (if helm-etags-match-part-only
-                        (cadr (helm-etags-split-line candidate))
-                      candidate)))
-    (mode-line . helm-etags-mode-line-string)
-    (keymap . ,helm-etags-map)
-    (action . (("Go to tag" . (lambda (c)
-                                (helm-etags-action-goto 'find-file c)))
-               ("Go to tag in other window" . (lambda (c)
-                                                (helm-etags-action-goto
-                                                 'find-file-other-window
-                                                 c)))
-               ("Go to tag in other frame" . (lambda (c)
-                                               (helm-etags-action-goto
-                                                'find-file-other-frame
-                                                c)))))
-    (persistent-help . "Go to line")
-    (persistent-action . (lambda (candidate)
-                           (helm-etags-action-goto 'find-file candidate)
-                           (helm-highlight-current-line))))
+(defvar helm-source-etags-select nil
   "Helm source for Etags.")
+
+(defun helm-etags-build-source ()
+  (helm-build-in-buffer-source "Etags"
+    :header-name 'helm-etags-get-header-name
+    :init 'helm-etags-init
+    :get-line 'buffer-substring
+    :match-part (lambda (candidate)
+                  ;; Match only the tag part of CANDIDATE
+                  ;; and not the filename.
+                  (if helm-etags-match-part-only
+                      (cadr (helm-etags-split-line candidate))
+                      candidate))
+    :mode-line helm-etags-mode-line-string
+    :keymap helm-etags-map
+    :action '(("Go to tag" . (lambda (c)
+                               (helm-etags-action-goto 'find-file c)))
+              ("Go to tag in other window" . (lambda (c)
+                                               (helm-etags-action-goto
+                                                'find-file-other-window
+                                                c)))
+              ("Go to tag in other frame" . (lambda (c)
+                                              (helm-etags-action-goto
+                                               'find-file-other-frame
+                                               c))))
+    :persistent-help "Go to line"
+    :persistent-action (lambda (candidate)
+                         (helm-etags-action-goto 'find-file candidate)
+                         (helm-highlight-current-line))))
 
 (defvar find-tag-marker-ring)
 
@@ -323,6 +340,9 @@ This function aggregates three sources of tag files:
                              (helm-etags-file-modified-p f)))
                 (remhash f helm-etags-cache)))
             tag-files)
+      (unless helm-source-etags-select
+        (setq helm-source-etags-select
+              (helm-etags-build-source)))
       (helm :sources 'helm-source-etags-select
             :keymap helm-etags-map
             :default (list (concat "\\_<" str "\\_>") str)

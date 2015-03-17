@@ -2,6 +2,9 @@
 
 ;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
+;; Version: 1.6.8
+;; Package-Requires: ((helm "1.5") (w3m "20150208.1501") (cl-lib "0.5") (emacs "24.1"))
+
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -114,7 +117,7 @@ http://emacs-w3m.namazu.org/")
 (defun helm-w3m-rename-bookmark (elm)
   "Rename w3m bookmark in `w3m-bookmark-file'."
   (let* ((old-title (replace-regexp-in-string ">" "" elm))
-         (new-title (read-string "NewTitle: " old-title)))
+         (new-title (helm-read-string "NewTitle: " old-title)))
     (with-current-buffer
         (find-file-literally w3m-bookmark-file)
       (goto-char (point-min))

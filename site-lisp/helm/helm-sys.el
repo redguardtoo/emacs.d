@@ -26,6 +26,12 @@
   "System related helm library."
   :group 'helm)
 
+(defface helm-top-columns
+    '((t :inherit helm-header))
+  "Face for helm help string in minibuffer."
+  :group 'helm-sys)
+
+
 (defun helm-top-command-set-fn (var _value)
   (set var
        (cl-case system-type
@@ -62,25 +68,27 @@ A format string where %s will be replaced with `frame-width'."
     map))
 
 (defvar helm-source-top
-  `((name . "Top")
-    (header-name . (lambda (name) (concat name " (Press C-c C-u to refresh)"))) 
-    (init . helm-top-init)
-    (candidates-in-buffer)
-    (nomark)
-    (display-to-real . helm-top-display-to-real)
-    (persistent-action . helm-top-sh-persistent-action)
-    (persistent-help . "SIGTERM")
-    (mode-line . helm-top-mode-line)
-    (follow . never)
-    (keymap . ,helm-top-map)
-    (filtered-candidate-transformer . helm-top-sort-transformer)
-    (action-transformer . helm-top-action-transformer)))
+  (helm-build-in-buffer-source "Top"
+    :header-name (lambda (name) (concat name " (Press C-c C-u to refresh)"))
+    :init #'helm-top-init
+    :nomark t
+    :display-to-real #'helm-top-display-to-real
+    :persistent-action #'helm-top-sh-persistent-action
+    :persistent-help "SIGTERM"
+    :mode-line helm-top-mode-line
+    :follow 'never
+    :keymap helm-top-map
+    :filtered-candidate-transformer #'helm-top-sort-transformer
+    :action-transformer #'helm-top-action-transformer))
 
 (defun helm-top-transformer (candidates _source)
   "Transformer for `helm-top'.
 Return empty string for non--valid candidates."
   (cl-loop for disp in candidates collect
-        (if (string-match "^ *[0-9]+" disp) disp (cons disp ""))))
+        (cond ((string-match "^ *[0-9]+" disp) disp)
+              ((string-match "^ *PID" disp)
+               (cons (propertize disp 'face 'helm-top-columns) ""))
+              (t (cons disp "")))))
 
 (defun helm-top-action-transformer (actions _candidate)
   "Action transformer for `top'.
@@ -137,13 +145,13 @@ Show actions only on line starting by a PID."
   (helm-top-transformer
    (if helm-top-sort-fn
        (cl-loop for c in candidates
-             if (string-match "^ *[0-9]+" c) collect c into pid-cands
-             else collect c into header-cands
-             finally return (append (if (cdr header-cands)
-                                        (butlast header-cands)
-                                      header-cands)
-                                    (sort pid-cands helm-top-sort-fn)))
-     candidates)
+                if (string-match "^ *[0-9]+" c)
+                collect c into pid-cands
+                else collect c into header-cands
+                finally return (append
+                                header-cands
+                                (sort pid-cands helm-top-sort-fn)))
+       candidates)
    source))
 
 (defun helm-top-sort-by-com (s1 s2)
@@ -167,28 +175,24 @@ Show actions only on line starting by a PID."
          (user-2 (nth 1 split-2)))
     (string< user-1 user-2)))
 
-;;;###autoload
 (defun helm-top-run-sort-by-com ()
   (interactive)
   (helm-top-set-mode-line "COM")
   (setq helm-top-sort-fn 'helm-top-sort-by-com)
   (helm-force-update))
 
-;;;###autoload
 (defun helm-top-run-sort-by-cpu ()
   (interactive)
   (helm-top-set-mode-line "CPU")
   (setq helm-top-sort-fn nil)
   (helm-force-update))
 
-;;;###autoload
 (defun helm-top-run-sort-by-mem ()
   (interactive)
   (helm-top-set-mode-line "MEM")
   (setq helm-top-sort-fn 'helm-top-sort-by-mem)
   (helm-force-update))
 
-;;;###autoload
 (defun helm-top-run-sort-by-user ()
   (interactive)
   (helm-top-set-mode-line "USER")
@@ -256,7 +260,6 @@ Show actions only on line starting by a PID."
     (persistent-action . (lambda (elm)
                            (delete-process (get-process elm))
                            (helm-delete-current-selection)))
-    (update . list-processes--refresh)
     (persistent-help . "Kill Process")
     (action ("Kill Process" . (lambda (elm)
                                 (delete-process (get-process elm)))))))
@@ -270,7 +273,8 @@ Show actions only on line starting by a PID."
     (unless helm-alive-p (delete-other-windows))
     (helm :sources 'helm-source-top
           :buffer "*helm top*" :full-frame t
-          :candidate-number-limit 9999)))
+          :candidate-number-limit 9999
+          :preselect "^\\s-*[0-9]+")))
 
 ;;;###autoload
 (defun helm-list-emacs-process ()

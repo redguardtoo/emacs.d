@@ -21,52 +21,10 @@
 (require 'helm)
 (require 'helm-utils)
 
-(declare-function Info-index-nodes "info" (&optional file))
-(declare-function Info-goto-node "info" (&optional fork))
-(declare-function Info-find-node "info.el" (filename nodename &optional no-going-back))
-
 
 ;;; Plug-in: `info-index'
 ;;
 ;;
-(defvar Info-history)
-(cl-defun helm-info-init (&optional (file (helm-attr 'info-file)))
-  ;; Allow reinit candidate buffer when using edebug.
-  (helm-aif (and debug-on-error
-                 (helm-candidate-buffer))
-      (kill-buffer it))
-  (unless (helm-candidate-buffer)
-    (save-window-excursion
-      (info file)
-      (let (Info-history
-            (tobuf (helm-candidate-buffer 'global))
-            (infobuf (current-buffer))
-            s e
-            (nodes (or (helm-attr 'index-nodes) (Info-index-nodes))))
-        (cl-dolist (node nodes)
-          (Info-goto-node node)
-          (goto-char (point-min))
-          (while (search-forward "\n* " nil t)
-            (unless (search-forward "Menu:\n" (1+ (point-at-eol)) t)
-              (save-current-buffer (buffer-substring-no-properties
-                                    (point-at-bol) (point-at-eol)))
-              (setq s (point-at-bol)
-                    e (point-at-eol))
-              (with-current-buffer tobuf
-                (insert-buffer-substring infobuf s e)
-                (insert "\n")))))))))
-
-(defun helm-info-goto (node-line)
-  (Info-goto-node (car node-line))
-  (helm-goto-line (cdr node-line)))
-
-(defun helm-info-display-to-real (line)
-  (and (string-match
-        ;; This regexp is stolen from Info-apropos-matches
-        "\\* +\\([^\n]*.+[^\n]*\\):[ \t]+\\([^\n]*\\)\\.\\(?:[ \t\n]*(line +\\([0-9]+\\))\\)?" line)
-       (cons (format "(%s)%s" (helm-attr 'info-file) (match-string 2 line))
-             (string-to-number (or (match-string 3 line) "1")))))
-
 (defun helm-make-info-source (source file)
   `(,@source
     (name . ,(concat "Info Index: " file))
@@ -90,14 +48,6 @@
   Example:
 
   (defvar helm-source-info-wget '((info-index . \"wget\"))")
-
-(helm-document-attribute 'index-nodes "info-index plugin (optional)"
-  "  Index nodes of info file.
-
-  If it is omitted, `Info-index-nodes' is used to collect index
-  nodes. Some info files are missing index specification.
-
-  See `helm-source-info-screen'.")
 
 
 ;;; Plug-in: `candidates-file'
@@ -142,98 +92,13 @@
   Will list all lines in .emacs.el.")
 
 
-;;; Plug-in: `headline'
-;;
-;;
-(defun helm-compile-source--helm-headline (source)
-  (if (assoc-default 'headline source)
-      (append '((init . helm-headline-init)
-                (get-line . buffer-substring)
-                (type . line))
-              source
-              '((candidates-in-buffer)
-                (persistent-help . "Show this line")))
-    source))
-(add-to-list 'helm-compile-source-functions 'helm-compile-source--helm-headline)
-
-(defun helm-headline-init ()
-  (when (and (helm-current-buffer-is-modified)
-             (with-helm-current-buffer
-               (eval (or (helm-attr 'condition) t))))
-    (helm-headline-make-candidate-buffer
-     (helm-interpret-value (helm-attr 'headline))
-     (helm-interpret-value (helm-attr 'subexp)))))
-
-(helm-document-attribute 'headline "Headline plug-in"
-  "  Regexp string for helm-headline to scan.")
-(helm-document-attribute 'condition "Headline plug-in"
-  "  A sexp representing the condition to use helm-headline.")
-(helm-document-attribute 'subexp "Headline plug-in"
-  "  Display (match-string-no-properties subexp).")
-
-(defun helm-headline-get-candidates (regexp subexp)
-  (with-helm-current-buffer
-    (save-excursion
-      (goto-char (point-min))
-      (if (functionp regexp) (setq regexp (funcall regexp)))
-      (let ((matched 
-             #'(lambda ()
-                 (if (numberp subexp)
-                     (cons (match-string-no-properties subexp)
-                           (match-beginning subexp))
-                   (cons (buffer-substring (point-at-bol) (point-at-eol))
-                         (point-at-bol)))))
-            (arrange
-             #'(lambda (headlines)
-                 (unless (null headlines) ; FIX headlines empty bug!
-                   (cl-loop with curhead = (make-vector
-                                            (1+ (cl-loop for (_ . hierarchy) in headlines
-                                                      maximize hierarchy))
-                                            "")
-                         for ((str . pt) . hierarchy) in headlines
-                         do (aset curhead hierarchy str)
-                         collecting
-                         (cons
-                          (format "H%d:%s" (1+ hierarchy)
-                                  (mapconcat 'identity
-                                             (cl-loop for i from 0 to hierarchy
-                                                   collecting (aref curhead i))
-                                             " / "))
-                          pt))))))
-        (if (listp regexp)
-            (funcall arrange
-                     (sort
-                      (cl-loop for re in regexp
-                            for hierarchy from 0
-                            do (goto-char (point-min))
-                            appending
-                            (cl-loop
-                                  while (re-search-forward re nil t)
-                                  collect (cons (funcall matched) hierarchy)))
-                      (lambda (a b) (> (cdar b) (cdar a)))))
-          (cl-loop while (re-search-forward regexp nil t)
-                collect (funcall matched)))))))
-
-(defun helm-headline-make-candidate-buffer (regexp subexp)
-  (with-current-buffer (helm-candidate-buffer 'local)
-    (cl-loop for (content . pos) in (helm-headline-get-candidates regexp subexp)
-          do (insert
-              (format "%5d:%s\n"
-                      (with-helm-current-buffer
-                        (line-number-at-pos pos))
-                      content)))))
-
-(defun helm-headline-goto-position (pos recenter)
-  (goto-char pos)
-  (unless recenter
-    (set-window-start (get-buffer-window helm-current-buffer) (point))))
-
-
 ;;; Plug-in: `persistent-help'
 ;;
 ;; Add help about persistent action in `helm-buffer' header.
 (defun helm-compile-source--persistent-help (source)
-  (append source '((header-line . helm-persistent-help-string))))
+  (if (assoc 'header-line source)
+      source
+      (append source '((header-line . helm-persistent-help-string)))))
 (add-to-list 'helm-compile-source-functions 'helm-compile-source--persistent-help)
 
 (defun helm-persistent-help-string ()

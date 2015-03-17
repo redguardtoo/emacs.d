@@ -67,81 +67,6 @@
                 (call-interactively candidate)))))
 
 
-;;;; <Headline Extraction>
-(defvar helm-source-fixme
-  '((name . "TODO/FIXME/DRY comments")
-    (headline . "^.*\\<\\(TODO\\|FIXME\\|DRY\\)\\>.*$")
-    (adjust)
-    (recenter))
-  "Show TODO/FIXME/DRY comments in current file.")
-
-(defvar helm-source-rd-headline
-  '((name . "RD HeadLine")
-    (headline  "^= \\(.+\\)$" "^== \\(.+\\)$" "^=== \\(.+\\)$" "^==== \\(.+\\)$")
-    (condition . (memq major-mode '(rdgrep-mode rd-mode)))
-    (migemo)
-    (subexp . 1))
-  "Show RD headlines.
-
-RD is Ruby's POD.
-http://en.wikipedia.org/wiki/Ruby_Document_format")
-
-(defvar helm-source-oddmuse-headline
-  '((name . "Oddmuse HeadLine")
-    (headline  "^= \\(.+\\) =$" "^== \\(.+\\) ==$"
-     "^=== \\(.+\\) ===$" "^==== \\(.+\\) ====$")
-    (condition . (memq major-mode '(oddmuse-mode yaoddmuse-mode)))
-    (migemo)
-    (subexp . 1))
-  "Show Oddmuse headlines, such as EmacsWiki.")
-
-(defvar helm-source-emacs-source-defun
-  '((name . "Emacs Source DEFUN")
-    (headline . "DEFUN\\|DEFVAR")
-    (condition . (string-match "/emacs2[0-9].+/src/.+c$"
-                  (or buffer-file-name ""))))
-  "Show DEFUN/DEFVAR in Emacs C source file.")
-
-(defvar helm-source-emacs-lisp-expectations
-  '((name . "Emacs Lisp Expectations")
-    (headline . "(desc[ ]\\|(expectations")
-    (condition . (eq major-mode 'emacs-lisp-mode)))
-  "Show descriptions (desc) in Emacs Lisp Expectations.
-
-http://www.emacswiki.org/cgi-bin/wiki/download/el-expectations.el")
-
-(defvar helm-source-emacs-lisp-toplevels
-  '((name . "Emacs Lisp Toplevel / Level 4 Comment / Linkd Star")
-    (headline . "^(\\|(@\\*\\|^;;;;")
-    (get-line . buffer-substring)
-    (condition . (eq major-mode 'emacs-lisp-mode))
-    (adjust))
-  "Show top-level forms, level 4 comments and linkd stars (optional) in Emacs Lisp.
-linkd.el is optional because linkd stars are extracted by regexp.
-http://www.emacswiki.org/cgi-bin/wiki/download/linkd.el")
-
-
-;;; Eev anchors
-(defvar helm-source-eev-anchor
-  '((name . "Anchors")
-    (candidates
-     . (lambda ()
-         (ignore-errors
-           (with-helm-current-buffer
-             (cl-loop initially (goto-char (point-min))
-                   while (re-search-forward
-                          (format ee-anchor-format "\\([^\.].+\\)") nil t)
-                   for anchor = (match-string-no-properties 1)
-                   collect (cons (format "%5d:%s"
-                                         (line-number-at-pos (match-beginning 0))
-                                         (format ee-anchor-format anchor))
-                                 anchor))))))
-    (persistent-action . (lambda (item)
-                           (ee-to item)
-                           (helm-highlight-current-line)))
-    (persistent-help . "Show this entry")
-    (action . (("Goto link" . ee-to)))))
-
 ;;; Jabber Contacts (jabber.el)
 (defun helm-jabber-online-contacts ()
   "List online Jabber contacts."
@@ -187,19 +112,7 @@ http://www.emacswiki.org/cgi-bin/wiki/download/linkd.el")
 ;;; LaCarte
 ;;
 ;;
-(defun helm-create-lacarte-source (name &optional maps)
-  "Create lacarte source named NAME for MAPS.
-MAPS is like in `lacarte-get-overall-menu-item-alist'.
-See
-    http://www.emacswiki.org/cgi-bin/wiki/download/lacarte.el"
-  `((name . ,name)
-    (init . (lambda () (require 'lacarte)))
-    (candidates . (lambda ()
-                    (with-helm-current-buffer
-                      (delete '(nil) (lacarte-get-overall-menu-item-alist ,@maps)))))
-    (candidate-transformer . helm-lacarte-candidate-transformer)
-    (candidate-number-limit . 9999)
-    (type . command)))
+(declare-function lacarte-get-overall-menu-item-alist "ext:lacarte.el" (&optional MAPS))
 
 (defun helm-lacarte-candidate-transformer (cands)
   (mapcar (lambda (cand)
@@ -211,17 +124,34 @@ See
               cand))
           cands))
 
-(defvar helm-source-lacarte (helm-create-lacarte-source "Lacarte")
-  "Helm interface for lacarte.el.
-See
-    http://www.emacswiki.org/cgi-bin/wiki/download/lacarte.el")
+(defclass helm-lacarte (helm-source-sync helm-type-command)
+    ((init :initform (lambda () (require 'lacarte)))
+     (candidates :initform 'helm-lacarte-get-candidates)
+     (candidate-transformer :initform 'helm-lacarte-candidate-transformer)
+     (candidate-number-limit :initform 9999)))
+
+(defun helm-lacarte-get-candidates (&optional maps)
+  "Extract candidates for menubar using lacarte.el.
+See http://www.emacswiki.org/cgi-bin/wiki/download/lacarte.el.
+Optional argument MAPS is a list specifying which keymaps to use: it
+can contain the symbols `local', `global', and `minor', mean the
+current local map, current global map, and all current minor maps."
+  (with-helm-current-buffer
+    ;; FIXME: do we still need to remove possible '(nil) candidates.
+    (lacarte-get-overall-menu-item-alist maps)))
 
 ;;;###autoload
 (defun helm-browse-menubar ()
   "Helm interface to the menubar using lacarte.el."
   (interactive)
   (require 'lacarte)
-  (helm :sources 'helm-source-lacarte :buffer "*helm lacarte*"))
+  (helm :sources (mapcar 
+                  (lambda (spec) (helm-make-source (car spec) 'helm-lacarte
+                              :candidates (lambda () (helm-lacarte-get-candidates (cdr spec)))))
+                  '(("Major Mode"  . (local))
+                    ("Minor Modes" . (minor))
+                    ("Global Map"  . (global))))
+        :buffer "*helm lacarte*"))
 
 (defun helm-call-interactively (cmd-or-name)
   "Execute CMD-OR-NAME as Emacs command.
@@ -345,12 +275,6 @@ It is added to `extended-command-history'.
   (helm-other-buffer 'helm-source-latex-math "*helm latex*"))
 
 ;;;###autoload
-(defun helm-eev-anchors ()
-  "Preconfigured `helm' for eev anchors."
-  (interactive)
-  (helm-other-buffer 'helm-source-eev-anchor "*Helm eev anchors*"))
-
-;;;###autoload
 (defun helm-ratpoison-commands ()
   "Preconfigured `helm' to execute ratpoison commands."
   (interactive)
@@ -369,8 +293,13 @@ It is added to `extended-command-history'.
   "Preconfigured `helm' lightweight version \(buffer -> recentf\)."
   (interactive)
   (require 'helm-files)
+  (unless helm-source-buffers-list
+    (setq helm-source-buffers-list
+          (helm-make-source "Buffers" 'helm-source-buffers)))
   (let ((helm-ff-transformer-show-only-basename nil))
-    (helm-other-buffer helm-mini-default-sources "*helm mini*")))
+    (helm :sources helm-mini-default-sources
+          :buffer "*helm mini*"
+          :truncate-lines t)))
 
 ;;;###autoload
 (defun helm-minibuffer-history ()

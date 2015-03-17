@@ -19,6 +19,7 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-net)
 
 
 (defgroup helm-external nil
@@ -171,7 +172,7 @@ If not found or a prefix arg is given query the user which tool to use."
             (setq helm-external-programs-associations
                   (delete it helm-external-programs-associations)))
         (push (cons (file-name-extension fname)
-                    (read-string
+                    (helm-read-string
                      "Program (Add args maybe and confirm): " real-prog-name))
               helm-external-programs-associations)
         (customize-save-variable 'helm-external-programs-associations
