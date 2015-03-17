@@ -1,10 +1,10 @@
 ;;; popup.el --- Visual Popup User Interface
 
-;; Copyright (C) 2009, 2010, 2011, 2012, 2013  Tomohiro Matsuyama
+;; Copyright (C) 2009-2015  Tomohiro Matsuyama
 
-;; Author: Tomohiro Matsuyama <tomo@cx4a.org>
+;; Author: Tomohiro Matsuyama <m2ym.pub@gmail.com>
 ;; Keywords: lisp
-;; Version: 0.5.0
+;; Version: 0.5.2
 ;; Package-Requires: ((cl-lib "0.3"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -31,11 +31,18 @@
 
 (require 'cl-lib)
 
-(defconst popup-version "0.5.0")
+(defconst popup-version "0.5.2")
 
 
 
 ;;; Utilities
+
+(defun popup-calculate-max-width (max-width)
+  "Determines whether the width desired is
+character or window proportion based, And returns the result."
+  (cl-typecase max-width
+    (integer max-width)
+    (float (* (ceiling (/ (round (* max-width (window-width))) 10.0)) 10))))
 
 (defvar popup-use-optimized-column-computation t
   "Use the optimized column computation routine.
@@ -141,34 +148,6 @@ untouched."
            (progn ,@body)
          (set-buffer-modified-p modified)))))
 
-(defun popup-window-full-width-p (&optional window)
-  "A portable version of `window-full-width-p'."
-  (if (fboundp 'window-full-width-p)
-      (window-full-width-p window)
-    (= (window-width window) (frame-width (window-frame (or window (selected-window)))))))
-
-(defun popup-truncated-partial-width-window-p (&optional window)
-  "A portable version of `truncated-partial-width-window-p'."
-  (unless window
-    (setq window (selected-window)))
-  (unless (popup-window-full-width-p window)
-    (let ((t-p-w-w (buffer-local-value 'truncate-partial-width-windows
-				       (window-buffer window))))
-      (if (integerp t-p-w-w)
-	  (< (window-width window) t-p-w-w)
-	t-p-w-w))))
-
-(defun popup-current-physical-column ()
-  "Return the current physical column."
-  (or (when (and popup-use-optimized-column-computation
-                 (eq (window-hscroll) 0))
-        (let ((current-column (current-column)))
-          (if (or (popup-truncated-partial-width-window-p)
-                  truncate-lines
-                  (< current-column (window-width)))
-              current-column)))
-      (car (posn-col-row (posn-at-point)))))
-
 (defun popup-vertical-motion (column direction)
   "A portable version of `vertical-motion'."
   (if (>= emacs-major-version 23)
@@ -236,7 +215,7 @@ buffer."
   face mouse-face selection-face summary-face
   margin-left margin-right margin-left-cancel scroll-bar symbol
   cursor offset scroll-top current-height list newlines
-  pattern original-list)
+  pattern original-list invis-overlays)
 
 (defun popup-item-propertize (item &rest properties)
   "Same as `propertize' except that this avoids overriding
@@ -474,6 +453,7 @@ number at the point."
                         height
                         &key
                         min-height
+                        max-width
                         around
                         (face 'popup-face)
                         mouse-face
@@ -490,6 +470,10 @@ number at the point."
 
 MIN-HEIGHT is a minimal height of the popup. The default value is
 0.
+
+MAX-WIDTH is the maximum width of the popup. The default value is
+nil (no limit). If a floating point, the value refers to the ratio of
+the window. If an integer, limit is in characters.
 
 If AROUND is non-nil, the popup will be displayed around the
 point but not at the point.
@@ -521,11 +505,13 @@ KEYMAP is a keymap that will be put on the popup contents."
   (unless point
     (setq point
           (if parent (popup-child-point parent parent-offset) (point))))
-
+  (when max-width
+    (setq width (min width (popup-calculate-max-width max-width))))
   (save-excursion
     (goto-char point)
-    (let* ((row (line-number-at-pos))
-           (column (popup-current-physical-column))
+    (let* ((col-row (posn-col-row (posn-at-point)))
+           (row (cdr col-row))
+           (column (car col-row))
            (overlays (make-vector height nil))
            (popup-width (+ width
                            (if scroll-bar 1 0)
@@ -550,13 +536,14 @@ KEYMAP is a keymap that will be put on the popup contents."
                        (popup-calculate-direction height row)))
            (depth (if parent (1+ (popup-depth parent)) 0))
            (newlines (max 0 (+ (- height (count-lines point (point-max))) (if around 1 0))))
+           invis-overlays
            current-column)
       ;; Case: no newlines at the end of the buffer
       (when (> newlines 0)
         (popup-save-buffer-state
           (goto-char (point-max))
           (insert (make-string newlines ?\n))))
-      
+
       ;; Case: the popup overflows
       (if overflow
           (if foldable
@@ -578,22 +565,32 @@ KEYMAP is a keymap that will be put on the popup contents."
         (setq column 0)
         (cl-decf popup-width margin-left)
         (setq margin-left-cancel t))
-      
+
       (dotimes (i height)
         (let (overlay begin w (dangle t) (prefix "") (postfix ""))
           (when around
             (popup-vertical-motion column direction))
-	  (setq around t
-                current-column (popup-current-physical-column))
+          (cl-loop for ov in (overlays-in (save-excursion
+                                            (beginning-of-visual-line)
+                                            (point))
+                                          (save-excursion
+                                            (end-of-visual-line)
+                                            (point)))
+                   when (and (not (overlay-get ov 'popup))
+                             (not (overlay-get ov 'popup-item))
+                             (or (overlay-get ov 'invisible)
+                                 (overlay-get ov 'display)))
+                   do (progn
+                        (push (list ov (overlay-get ov 'display)) invis-overlays)
+                        (overlay-put ov 'display "")))
+          (setq around t)
+          (setq current-column (car (posn-col-row (posn-at-point))))
 
-          (when (> current-column column)
-            (backward-char)
-            (setq current-column (popup-current-physical-column)))
           (when (< current-column column)
             ;; Extend short buffer lines by popup prefix (line of spaces)
             (setq prefix (make-string
                           (+ (if (= current-column 0)
-                                 (- window-hscroll (current-column))
+                                 (- window-hscroll current-column)
                                0)
                              (- column current-column))
                           ? )))
@@ -608,14 +605,15 @@ KEYMAP is a keymap that will be put on the popup contents."
               (setq postfix (make-string (- w) ? )))
 
           (setq overlay (make-overlay begin (point)))
+          (overlay-put overlay 'popup t)
           (overlay-put overlay 'window window)
           (overlay-put overlay 'dangle dangle)
           (overlay-put overlay 'prefix prefix)
           (overlay-put overlay 'postfix postfix)
           (overlay-put overlay 'width width)
           (aset overlays
-		(if (> direction 0) i (- height i 1))
-		overlay)))
+                (if (> direction 0) i (- height i 1))
+                overlay)))
       (cl-loop for p from (- 10000 (* depth 1000))
                for overlay in (nreverse (append overlays nil))
                do (overlay-put overlay 'priority p))
@@ -644,6 +642,7 @@ KEYMAP is a keymap that will be put on the popup contents."
                             :list nil
                             :newlines newlines
                             :overlays overlays
+                            :invis-overlays invis-overlays
                             :keymap keymap)))
         (push it popup-instances)
         it))))
@@ -661,12 +660,16 @@ KEYMAP is a keymap that will be put on the popup contents."
         (popup-save-buffer-state
           (goto-char (point-max))
           (dotimes (i newlines)
-            (if (= (char-before) ?\n)
+            (if (and (char-before)
+                     (= (char-before) ?\n))
                 (delete-char -1)))))))
   nil)
 
 (defun popup-draw (popup)
   "Draw POPUP."
+  (cl-loop for (ov olddisplay) in (popup-invis-overlays popup)
+           do (overlay-put ov 'display ""))
+
   (cl-loop with height = (popup-height popup)
            with min-height = (popup-min-height popup)
            with popup-face = (popup-face popup)
@@ -765,6 +768,8 @@ KEYMAP is a keymap that will be put on the popup contents."
 
 (defun popup-hide (popup)
   "Hide POPUP."
+  (cl-loop for (ov olddisplay) in (popup-invis-overlays popup)
+           do (overlay-put ov 'display olddisplay))
   (dotimes (i (popup-height popup))
     (popup-hide-line popup i)))
 
@@ -874,6 +879,8 @@ Pages up through POPUP."
   (let ((map (make-sparse-keymap)))
     ;(define-key map "\r"        'popup-isearch-done)
     (define-key map "\C-g"      'popup-isearch-cancel)
+    (define-key map "\C-b"      'popup-isearch-close)
+    (define-key map [left]      'popup-isearch-close)
     (define-key map "\C-h"      'popup-isearch-delete)
     (define-key map (kbd "DEL") 'popup-isearch-delete)
     map))
@@ -967,6 +974,11 @@ HELP-DELAY is a delay of displaying helps."
                ((eq binding 'popup-isearch-cancel)
                 (popup-isearch-update popup "" callback)
                 (cl-return t))
+               ((eq binding 'popup-isearch-close)
+                (popup-isearch-update popup "" callback)
+                (setq unread-command-events
+                      (append (listify-key-sequence key) unread-command-events))
+                (cl-return nil))
                ((eq binding 'popup-isearch-delete)
                 (if (> (length pattern) 0)
                     (setq pattern (substring pattern 0 (1- (length pattern))))))
@@ -996,6 +1008,7 @@ HELP-DELAY is a delay of displaying helps."
                      width
                      (height 15)
                      min-height
+                     max-width
                      truncate
                      margin
                      margin-left
@@ -1004,6 +1017,7 @@ HELP-DELAY is a delay of displaying helps."
                      parent
                      parent-offset
                      nowait
+                     nostrip
                      prompt
                      &aux tip lines)
   "Show a tooltip of STRING at POINT. This function is
@@ -1015,22 +1029,27 @@ If TRUNCATE is non-nil, the tooltip can be truncated.
 If NOWAIT is non-nil, this function immediately returns the
 tooltip instance without entering event loop.
 
+If `NOSTRIP` is non-nil, `STRING` properties are not stripped.
+
 PROMPT is a prompt string when reading events during event loop."
   (if (bufferp string)
       (setq string (with-current-buffer string (buffer-string))))
-  ;; TODO strip text (mainly face) properties
-  (setq string (substring-no-properties string))
+
+  (unless nostrip
+    ;; TODO strip text (mainly face) properties
+    (setq string (substring-no-properties string)))
 
   (and (eq margin t) (setq margin 1))
   (or margin-left (setq margin-left margin))
   (or margin-right (setq margin-right margin))
-  
+
   (let ((it (popup-fill-string string width popup-tip-max-width)))
     (setq width (car it)
           lines (cdr it)))
-  
+
   (setq tip (popup-create point width height
                           :min-height min-height
+                          :max-width max-width
                           :around around
                           :margin-left margin-left
                           :margin-right margin-right
@@ -1172,7 +1191,7 @@ PROMPT is a prompt string when reading events during event loop."
                           :help-delay help-delay)
            (keyboard-quit))
       (setq key (popup-menu-read-key-sequence keymap prompt help-delay))
-      (setq binding (lookup-key keymap key))
+      (setq binding (and key (lookup-key keymap key)))
       (cond
        ((or (null key) (zerop (length key)))
         (unless (funcall popup-menu-show-quick-help-function menu nil :prompt prompt)
@@ -1198,7 +1217,12 @@ PROMPT is a prompt string when reading events during event loop."
                                                :margin-right (popup-margin-right menu)
                                                :scroll-bar (popup-scroll-bar menu)
                                                :parent menu
-                                               :parent-offset index))
+                                               :parent-offset index
+                                               :help-delay help-delay
+                                               :isearch isearch
+                                               :isearch-cursor-color isearch-cursor-color
+                                               :isearch-keymap isearch-keymap
+                                               :isearch-callback isearch-callback))
                   (and it (cl-return it)))
             (if (eq binding 'popup-select)
                 (cl-return (popup-item-value-or-self item))))))
@@ -1267,6 +1291,7 @@ PROMPT is a prompt string when reading events during event loop."
                        (around t)
                        (width (popup-preferred-width list))
                        (height 15)
+                       max-width
                        margin
                        margin-left
                        margin-right
@@ -1284,6 +1309,7 @@ PROMPT is a prompt string when reading events during event loop."
                        (isearch-cursor-color popup-isearch-cursor-color)
                        (isearch-keymap popup-isearch-keymap)
                        isearch-callback
+                       initial-index
                        &aux menu event)
   "Show a popup menu of LIST at POINT. This function returns a
 value of the selected item. Almost arguments are same as
@@ -1317,7 +1343,10 @@ during event loop. The default value is `popup-isearch-keymap'.
 
 ISEARCH-CALLBACK is a function taking one argument.  `popup-menu'
 calls ISEARCH-CALLBACK, if specified, after isearch finished or
-isearch canceled. The arguments is whole filtered list of items."
+isearch canceled. The arguments is whole filtered list of items.
+
+If `INITIAL-INDEX' is non-nil, this is an initial index value for
+`popup-select'. Only positive integer is valid."
   (and (eq margin t) (setq margin 1))
   (or margin-left (setq margin-left margin))
   (or margin-right (setq margin-right margin))
@@ -1327,6 +1356,7 @@ isearch canceled. The arguments is whole filtered list of items."
       ;; Make scroll-bar space as margin-right
       (cl-decf margin-right))
   (setq menu (popup-create point width height
+                           :max-width max-width
                            :around around
                            :face 'popup-menu-face
                            :mouse-face 'popup-menu-mouse-face
@@ -1344,6 +1374,9 @@ isearch canceled. The arguments is whole filtered list of items."
         (if cursor
             (popup-jump menu cursor)
           (popup-draw menu))
+        (when initial-index
+          (dotimes (_i (min (- (length list) 1) initial-index))
+            (popup-next menu)))
         (if nowait
             menu
           (popup-menu-event-loop menu keymap fallback
