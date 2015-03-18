@@ -450,7 +450,8 @@ The table is not reset, so the values are appended to the table."
 	;; Add the values in the table
 	(while (and (listp l) l)
 	  (if (listp (car l))
-	      (puthash (caar l) (+ (gethash (caar l) table 0) (cdar l)) table))
+          (unless (memq (cdr (caar l)) keyfreq-excluded-commands)
+            (puthash (caar l) (+ (gethash (caar l) table 0) (cdar l)) table)))
 	  (setq l (cdr l)))
 	)))
 
