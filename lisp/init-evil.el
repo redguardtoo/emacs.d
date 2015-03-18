@@ -45,7 +45,6 @@
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (require 'evil-escape)
-;; key-chord is used by evil-escape
 (setq-default evil-escape-delay 0.2)
 (setq evil-escape-excluded-major-modes '(dired-mode))
 (setq-default evil-escape-key-sequence "kj")
