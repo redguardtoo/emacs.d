@@ -429,7 +429,13 @@ if it was successfully merged."
               (keyfreq-table-load table)
               ;; Write the new frequencies
               (with-temp-file keyfreq-file
-                (prin1 (cdr (keyfreq-list table 'no-sort)) (current-buffer))))
+                (let ((l (cdr (keyfreq-list table 'no-sort))))
+                  (insert "(")
+                  (dolist (item l)
+                    (prin1 item (current-buffer))
+                    ;; easy for git to track if every command is one line
+                    (insert "\n"))
+                  (insert ")"))))
           ;; Release the lock and reset the hash table.
           (keyfreq-file-release-lock)
           (clrhash table)))))
