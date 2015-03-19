@@ -11,6 +11,7 @@
 ;; json
 (setq auto-mode-alist (cons '("\\.json$" . json-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.jason$" . json-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
 
 ;; {{ js2-mode or javascript-mode
 (setq js2-use-font-lock-faces t
