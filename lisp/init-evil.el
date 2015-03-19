@@ -18,6 +18,9 @@
 (global-evil-surround-mode 1)
 ;; }}
 
+;; press ";" instead of ":"
+(define-key evil-normal-state-map (kbd ";") 'evil-ex)
+
 (require 'evil-mark-replace)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
