@@ -143,7 +143,7 @@
 (require 'init-slime)
 (when *emacs24* (require 'init-company))
 (require 'init-stripe-buffer)
-(require 'init-eim) ;;  cannot be idle-required
+(require 'init-chinese-pyim) ;; cannot be idle-required
 (require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
@@ -182,6 +182,19 @@
 ;;----------------------------------------------------------------------------
 (require 'init-locales)
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
+ '(session-use-package t nil (session)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
