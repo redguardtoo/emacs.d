@@ -61,6 +61,25 @@
     args
     ))
 
+;; Aspell Setup (recommended):
+;; Skipped because it's easy.
+;;
+;; Hunspell Setup:
+;; 1. Install hunspell from http://hunspell.sourceforge.net/
+;; 2. Download openoffice dictionary extension from
+;; http://extensions.openoffice.org/en/project/english-dictionaries-apache-openoffice
+;; 3. That is download `dict-en.oxt'. Rename that to `dict-en.zip' and unzip
+;; the contents to a temporary folder.
+;; 4. Copy `en_US.dic' and `en_US.aff' files from there to a folder where you
+;; save dictionary files; I saved it to `~/usr_local/share/hunspell/'
+;; 5. Add that path to shell env variable `DICPATH':
+;; setenv DICPATH $MYLOCAL/share/hunspell
+;; 6. Restart emacs so that when hunspell is run by ispell/flyspell, that env
+;; variable is effective.
+;;
+;; hunspell will search for a dictionary called `en_US' in the path specified by
+;; `$DICPATH'
+
 (cond
  ((executable-find "aspell")
   (setq ispell-program-name "aspell"))
