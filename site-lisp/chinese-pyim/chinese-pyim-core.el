@@ -252,9 +252,9 @@ If you don't like this funciton, set the variable to nil")
     (define-key map " " 'pyim-select-current)
     (define-key map [backspace] 'pyim-delete-last-char)
     (define-key map (kbd "M-DEL") 'pyim-backward-kill-py)
-    (define-key map (kbd "TAB") (lambda ()
-                         (interactive)
-                         (funcall pyim-fuzzy-pinyin-adjust-function)))
+    (define-key map [tab] 'pyim-fuzzy-pinyin-adjust)
+    (define-key map (kbd "TAB") 'pyim-fuzzy-pinyin-adjust)
+    (define-key map "\M-g" 'pyim-fuzzy-pinyin-adjust)
     (define-key map [delete] 'pyim-delete-last-char)
     (define-key map "\177" 'pyim-delete-last-char)
     (define-key map "\C-n" 'pyim-next-page)
@@ -2172,15 +2172,18 @@ in package `chinese-pyim-pymap'"
 ;; 'Chinese-pyim的核心并不能处理模糊音，这里提供了一个比较 *粗糙* 的方法来处理模糊音。
 
 ;; 假如：用户需要输入“应该”，其拼音为“ying-gai”，但用户确输入了一个错误的拼音“yin-gai”，
-;; 这时，用户可以通过快捷键运行 `pyim-fuzzy-pinyin-adjust-function' ，将“in” 替换为 “ing”，
-;; 得到 “ying-gai”对应的词语。
+;; 这时，用户可以通过快捷键运行 `pyim-fuzzy-pinyin-adjust' ，将“in” 替换为 “ing”，得到
+;; “ying-gai”对应的词语，用户可以通过设置变量 `pyim-fuzzy-pinyin-adjust-function' 来自定义模
+;; 糊音处理函数。
 
 ;; 这种处理方式能力有限，一次不能处理太多的模糊音，用户需要根据自己的需要，自定义模糊音处理函数。
-
-;; 自定义模糊音处理函数可以参考：`pyim-pinyin-fuzzy-adjust-1'。
-
+;; 具体可以参考函数 `pyim-pinyin-fuzzy-adjust-1' 的定义。
 
 ;; #+BEGIN_SRC emacs-lisp
+(defun pyim-fuzzy-pinyin-adjust ()
+  (interactive)
+  (funcall pyim-fuzzy-pinyin-adjust-function))
+
 (defun pyim-fuzzy-pinyin-adjust-1 ()
   (interactive)
   (cond
