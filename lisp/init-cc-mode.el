@@ -77,7 +77,11 @@
   ;1 (was imposed by gnu style by default)
   (setq c-label-minimum-indentation 0)
 
+
   (when buffer-file-name
+    ;; c-eldoc (https://github.com/mooz/c-eldoc)
+    (c-turn-on-eldoc-mode)
+
     ;; @see https://github.com/seanfisk/cmake-flymake
     ;; make sure you project use cmake
     (flymake-mode 1)
