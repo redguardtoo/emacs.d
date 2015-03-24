@@ -2,6 +2,8 @@
 
 ;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
+;; Package-Requires: ((helm "1.5"))
+
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +21,6 @@
 
 (require 'cl-lib)
 (require 'vc)
-(require 'helm-locate)
 (require 'helm-files)
 
 (defvaralias 'helm-c-source-ls-git 'helm-source-ls-git)
@@ -45,6 +46,18 @@ Valid values are symbol 'abs (default) or 'relative."
   :group 'helm-ls-git
   :type 'symbol)
 
+(defcustom helm-ls-git-fuzzy-match nil
+  "Enable fuzzy matching in `helm-source-ls-git-status' and `helm-source-ls-git'."
+  :group 'helm-ls-git
+  :type 'boolean)
+
+(defcustom helm-ls-git-grep-command "git grep -n%cH --color=never --full-name -e %p %f"
+  "The git grep default command line.
+The option \"--color=always\" can be used safely, it is disabled by default though.
+The color of matched items can be customized in your .gitconfig."
+  :group 'helm-ls-git
+  :type 'string)
+
 (defface helm-ls-git-modified-not-staged-face
     '((t :foreground "yellow"))
   "Files which are modified but not yet staged."
@@ -90,8 +103,15 @@ Valid values are symbol 'abs (default) or 'relative."
   "Files which contain rebase/merge conflicts."
   :group 'helm-ls-git)
 
+
+(defvar helm-ls-git-map
+  (let ((map (make-sparse-keymap)))
+    (set-keymap-parent map helm-generic-files-map)
+    (define-key map (kbd "C-s") 'helm-ls-git-run-grep)
+    map))
+
 ;; Append visited files from `helm-source-ls-git' to `file-name-history'.
-(add-to-list 'helm-file-completion-sources "Git files")
+(add-to-list 'helm-files-save-history-extra-sources "Git files")
 
 
 (defvar helm-ls-git-log-file nil) ; Set it for debugging.
@@ -151,67 +171,97 @@ Valid values are symbol 'abs (default) or 'relative."
     (helm-init-candidates-in-buffer 'global data)))
 
 (defun helm-ls-git-header-name (name)
-  (let ((refs   (shell-command-to-string "git rev-parse --branches"))
-        (branch (shell-command-to-string
-                 "git rev-parse --abbrev-ref HEAD")))
-    (format "%s (%s)"
-            name
-            (replace-regexp-in-string
-             "\n" ""
-             ;; Check REFS to avoid message error in header
-             ;; when repo is just initialized and there is
-             ;; no branches yet.
-             (if (or (null refs) (string= refs "")) "--" branch)))))
+  (format "%s (%s)"
+          name
+          (with-temp-buffer
+            (let ((ret (call-process-shell-command "git symbolic-ref --short HEAD" nil t)))
+              ;; Use sha of HEAD when branch name is missing.
+              (unless (zerop ret)
+                (erase-buffer)
+                (call-process-shell-command "git rev-parse --short HEAD" nil t)))
+            (buffer-substring-no-properties (goto-char (point-min))
+                                            (line-end-position)))))
 
-(defvar helm-source-ls-git
-  `((name . "Git files")
-    (header-name . helm-ls-git-header-name)
-    (init . helm-ls-git-init)
-    (candidates-in-buffer)
-    (keymap . ,helm-generic-files-map)
-    (help-message . helm-generic-file-help-message)
-    (mode-line . helm-generic-file-mode-line-string)
-    (match-part . (lambda (candidate)
-                    (if helm-ff-transformer-show-only-basename
-                        (helm-basename candidate)
-                      candidate)))
-    (candidate-transformer . (helm-ls-git-transformer
-                              helm-ls-git-sort-fn))
-    (action-transformer helm-transform-file-load-el)
-    (action . ,(cdr (helm-get-actions-from-type helm-source-locate)))))
+(defun helm-ls-git-actions-list ()
+  (let ((actions (helm-actions-from-type-file)))
+    (helm-append-at-nth
+     actions
+     (helm-make-actions "Git grep files (`C-u' only files with ext, `C-u C-u' all)"
+                        'helm-ls-git-grep
+                        "Search in Git log (C-u show patch)"
+                        'helm-ls-git-search-log)
+     3)))
+
+;; Define the sources.
+(defvar helm-source-ls-git-status nil)
+(defvar helm-source-ls-git nil)
+
+;;;###autoload
+(defclass helm-ls-git-source (helm-source-in-buffer)
+  ((header-name :initform 'helm-ls-git-header-name)
+   (init :initform 'helm-ls-git-init)
+   (keymap :initform helm-ls-git-map)
+   (help-message :initform helm-generic-file-help-message)
+   (mode-line :initform helm-generic-file-mode-line-string)
+   (match-part :initform (lambda (candidate)
+                           (if helm-ff-transformer-show-only-basename
+                               (helm-basename candidate)
+                               candidate)))
+   (candidate-transformer :initform '(helm-ls-git-transformer
+                                      helm-ls-git-sort-fn))
+   (action-transformer :initform 'helm-transform-file-load-el)
+   (action :initform (helm-ls-git-actions-list))))
+
+;;;###autoload
+(defclass helm-ls-git-status-source (helm-source-in-buffer)
+  ((header-name :initform 'helm-ls-git-header-name)
+   (init :initform
+         (lambda ()
+           (helm-init-candidates-in-buffer 'global
+             (helm-ls-git-status))))
+   (keymap :initform helm-ls-git-map)
+   (filtered-candidate-transformer :initform 'helm-ls-git-status-transformer)
+   (persistent-action :initform 'helm-ls-git-diff)
+   (persistent-help :initform "Diff")
+   (action-transformer :initform 'helm-ls-git-status-action-transformer)
+   (action :initform
+           (helm-make-actions
+            "Find file" 'helm-find-many-files
+            "Git status" (lambda (_candidate)
+                           (with-current-buffer helm-buffer
+                             (funcall helm-ls-git-status-command
+                                      helm-default-directory)))))))
 
 
-(defun helm-ls-git-grep (candidate)
-  (let* ((helm-grep-default-command "git grep -n%cH --full-name -e %p %f")
+(defun helm-ls-git-grep (_candidate)
+  (let* ((helm-grep-default-command helm-ls-git-grep-command)
          helm-grep-default-recurse-command
-         (exts (helm-grep-guess-extensions (helm-marked-candidates)))
-         (globs (format "'%s'" (mapconcat 'identity exts " ")))
          (files (cond ((equal helm-current-prefix-arg '(4))
-                       (list "--" (read-string "OnlyExt(*.[ext]): " globs)))
+                       (list "--"
+                             (format "'%s'" (mapconcat
+                                             'identity
+                                             (helm-grep-get-file-extensions
+                                             (helm-marked-candidates))
+                                             " "))))
                       ((equal helm-current-prefix-arg '(16))
                        '("--"))
                       (t (helm-marked-candidates))))
          ;; Expand filename of each candidate with the git root dir.
          ;; The filename will be in the help-echo prop.
          (helm-grep-default-directory-fn 'helm-ls-git-root-dir)
-         ;; `helm-grep-init' initialize `default-directory' to this value,
-         ;; So set this value (i.e `helm-ff-default-directory') to
-         ;; something else.
-         (helm-ff-default-directory (file-name-directory candidate)))
+         ;; set `helm-ff-default-directory' to the root of project.
+         (helm-ff-default-directory (helm-ls-git-root-dir)))
     (helm-do-grep-1 files)))
 
-(helm-add-action-to-source
- "Git grep files (`C-u' only, `C-u C-u' all)"
- 'helm-ls-git-grep helm-source-ls-git 3)
-
-(helm-add-action-to-source
- "Search in Git log (C-u show patch)"
- 'helm-ls-git-search-log
- helm-source-ls-git 4)
+(defun helm-ls-git-run-grep ()
+  "Run Git Grep action from helm-ls-git."
+  (interactive)
+  (with-helm-alive-p
+    (helm-quit-and-execute-action 'helm-ls-git-grep)))
 
 
 (defun helm-ls-git-search-log (_candidate)
-  (let* ((query (read-string "Search log: "))
+  (let* ((query (helm-read-string "Search log: "))
          (coms (if helm-current-prefix-arg
                    (list "log" "-p" "--grep" query)
                  (list "log" "--grep" query))))
@@ -268,25 +318,6 @@ Valid values are symbol 'abs (default) or 'relative."
                (cons (propertize i 'face 'helm-ls-git-added-modified-face)
                      (expand-file-name (match-string 2 i) root)))
               (t i))))
-
-(defvar helm-source-ls-git-status
-  `((name . "Git status")
-    (header-name . helm-ls-git-header-name)
-    (init . (lambda ()
-              (helm-init-candidates-in-buffer
-                  'global
-                (helm-ls-git-status))))
-    (candidates-in-buffer)
-    (keymap . ,helm-generic-files-map)
-    (filtered-candidate-transformer . helm-ls-git-status-transformer)
-    (persistent-action . helm-ls-git-diff)
-    (persistent-help . "Diff")
-    (action-transformer . helm-ls-git-status-action-transformer)
-    (action . (("Find file" . helm-find-many-files)
-               ("Git status" . (lambda (_candidate)
-                                 (with-current-buffer helm-buffer
-                                   (funcall helm-ls-git-status-command
-                                            helm-default-directory))))))))
 
 (defun helm-ls-git-status-action-transformer (actions _candidate)
   (let ((disp (helm-get-selection nil t)))
@@ -348,6 +379,14 @@ Valid values are symbol 'abs (default) or 'relative."
 ;;;###autoload
 (defun helm-ls-git-ls ()
   (interactive)
+  (unless (and helm-source-ls-git-status
+               helm-source-ls-git)
+    (setq helm-source-ls-git-status
+          (helm-make-source "Git status" 'helm-ls-git-status-source
+            :fuzzy-match helm-ls-git-fuzzy-match)
+          helm-source-ls-git
+          (helm-make-source "Git files" 'helm-ls-git-source
+            :fuzzy-match helm-ls-git-fuzzy-match)))
   (helm :sources '(helm-source-ls-git-status
                    helm-source-ls-git)
         ;; When `helm-ls-git-ls' is called from lisp
@@ -377,13 +416,6 @@ Valid values are symbol 'abs (default) or 'relative."
                   helm-ff-default-directory)
                (error nil)))))
 
-(when (require 'helm-files)
-  (helm-add-action-to-source-if
-   "Git ls-files"
-   'helm-ff-ls-git-find-files
-   helm-source-find-files
-   'helm-ls-git-ff-dir-git-p
-   4))
 
 (provide 'helm-ls-git)
 
