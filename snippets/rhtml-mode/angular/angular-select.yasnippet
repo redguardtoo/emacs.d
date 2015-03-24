@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: <select ng-options="..."></select>
+# key: asel
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+<select ng-model="$0" ng-options="${1:item} as ${1:$(yas/substr yas-text "[^ ]*")}.${2:title} for ${1:$(yas/substr yas-text "[^ ]*")} in ${3:items}"></select>

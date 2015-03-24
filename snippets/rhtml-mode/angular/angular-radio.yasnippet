@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: <input type="radio"> ...
+# key: arad
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+<label ng-repeat="item in ${1:items}" for="\{\{item.${2:id}\}\}">
+  \{\{item.${3:text}\}\}
+  <input type="radio" ng-model="$0" ng-value="item.${2:$(yas/substr yas-text "[^ ]*")}">
+</label>
