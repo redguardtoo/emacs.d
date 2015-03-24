@@ -1,18 +1,15 @@
 # -*- mode: snippet -*-
-# name: app.service('serviceIdService', ...)
+# name: app.factory('serviceIdService', ...)
 # group: angular
-# key: aservice
+# key: afactory
 # --
-${1:app}.service('${2:serviceId}Service', ['$http', function($http){
+${1:app}.factory('${2:serviceId}Factory', ['$http', function($http){
   // @see http://stackoverflow.com/questions/14324451/angular-service-vs-angular-factory
   // Service: This function will be new-ed
   // Factory: This function (constructor) will be invoked
   // Suggestion: - Factory is more versatile
   //             - Service is just alias of Factory
   //             - All you got are Singletons!
-  var that = this;
-  that.data = 0;
-  that.fn1 = function() {
-    that.data++;
-  };
+  var globalStorage = {};
+  return globalStorage;
 }]);

@@ -1,11 +1,11 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: two way binding <div ng-model="..." directiveName />
-# key: directive
+# key: adirective
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-${1:app}.directive('${2:directiveName}', function() {
+${1:app}.directive('${2:prefixDirectiveId}', function() {
   return {
-    restrict: 'A',
+    restrict: 'A', // A - match attribute, E - match element name, C, match attribute name
     require: 'ngModel',
     link: function(scope, element, attr, ngModel) {
       var elementFocused;
