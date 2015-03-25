@@ -241,10 +241,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "epl" 'emmet-expand-line
   "rd" 'evil-mark-replace-in-defun
   "rb" 'evil-mark-replace-in-buffer
-  "tt" 'evil-mark-tag-selected-region
-  "rt" 'evil-mark-replace-in-tagged-region
-  "rs" 'evil-mark-show-tagged-region
-  "ro" 'evil-mark-replace-in-text-object-operator
+  "tt" 'evil-mark-tag-selected-region ;; recommended
+  "rt" 'evil-mark-replace-in-tagged-region ;; recommended
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
