@@ -3,16 +3,8 @@
 # group: angular
 # key: afilter
 # --
-// Usage:
-// <li ng-repeat="user in users | ${2:$(yas/substr yas-text "[^ ]*")}:3">
-${1:app}.filter('${2:filterId', function () {
-  return function (input, status) {
-    var rlt = [];
-    for (var i = 0; i < input.length; i++){
-      if(input[i].status === status) {
-        rlt.push(input[i]);
-      }
-    }
-    return rlt;
+filter('${1:filterName}', [${2:$http}, function(${2:$(yas/substr yas-text "[^ ]*")}) {
+  return function (input) {
+    return input;
   };
-});
+}]);
