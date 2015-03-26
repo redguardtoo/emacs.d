@@ -288,9 +288,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "gss" 'git-gutter:set-start-revision
   "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")
            (message "git-gutter:set-start-revision HEAD^"))
-  "gsr" '(lambda () (interactive) (git-gutter:set-start-revision nil)
+  "gsr" '(lambda () (interactive) (git-gutter:set-start-revikion nil)
            (message "git-gutter reset")) ;; reset
   "hr" 'helm-recentf
+  "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
@@ -387,7 +388,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "vr" 'vr/replace
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
-  "rr" 'evil-show-registers
   "js" 'w3mext-search-js-api-mdn
   "je" 'js2-display-error-list
   "te" 'js2-mode-toggle-element
