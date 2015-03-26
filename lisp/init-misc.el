@@ -153,24 +153,10 @@
 (add-hook 'cc-mode-hook 'turn-on-auto-fill)
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 
-;; {{ whitespace
-;; (require 'whitespace)
-;; (setq whitespace-style '(face empty tabs lines-tail trailing))
-;; (global-whitespace-mode t)
-;; }}
-
 ;; some project prefer tab, so be it
 ;; @see http://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
 (setq-default tab-width 4)
-(defun toggle-indent-tab ()
-  (interactive)
-  (if indent-tabs-mode
-      (progn
-        (setq indent-tabs-mode nil))
-    (progn
-        (setq indent-tabs-mode t)
-        (setq indent-line-function 'insert-tab)
-      )))
+
 ;;----------------------------------------------------------------------------
 ;; Misc config - yet to be placed in separate files
 ;;----------------------------------------------------------------------------
@@ -209,16 +195,14 @@
 
 ;; Write backup files to own directory
 (if (not (file-exists-p (expand-file-name "~/.backups")))
-    (make-directory (expand-file-name "~/.backups"))
-    )
-(setq
-  backup-by-coping t ; don't clobber symlinks
-  backup-directory-alist '(("." . "~/.backups"))
-  delete-old-versions t
-  kept-new-versions 6
-  kept-old-versions 2
-  version-control t  ;use versioned backups
-  )
+  (make-directory (expand-file-name "~/.backups")))
+(setq backup-by-coping t ; don't clobber symlinks
+      backup-directory-alist '(("." . "~/.backups"))
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t  ;use versioned backups
+      )
 
 ;; Donot make backups of files, not safe
 ;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
