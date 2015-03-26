@@ -21,8 +21,6 @@
       (ido-switch-buffer)
     (find-file (ido-completing-read "Open file: " recentf-list nil t))))
 
-(global-set-key [(meta f11)] 'steve-ido-choose-from-recentf)
-
 (defun ido-goto-symbol (&optional symbol-list)
   "Refresh imenu and jump to a place in the buffer using Ido."
   (interactive)

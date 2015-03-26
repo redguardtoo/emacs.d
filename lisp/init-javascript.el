@@ -1,10 +1,3 @@
-;; looks nodejs is more popular, if you prefer rhino, change to "js"
-(setq inferior-js-program-command "node --interactive")
-
-(require 'js-comint)
-;; if use node.js, we need nice output
-(setenv "NODE_NO_READLINE" "1")
-
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
@@ -205,6 +198,12 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; }}
 
 (defun my-js2-mode-setup()
+  ;; looks nodejs is more popular, if you prefer rhino, change to "js"
+  (setq inferior-js-program-command "node --interactive")
+  (require 'js-comint)
+  ;; if use node.js, we need nice output
+  (setenv "NODE_NO_READLINE" "1")
+
   (js2-imenu-extras-mode)
   (setq mode-name "JS2")
   (require 'js-doc)

@@ -122,7 +122,6 @@ ARCHIVE is the string name of the package archive.")
     switch-window
     sr-speedbar
     quack
-    iedit
     legalese
     htmlize
     scratch
@@ -141,8 +140,6 @@ ARCHIVE is the string name of the package archive.")
     auto-compile
     packed
     gitconfig-mode
-    project-local-variables
-    org-fstree
     textile-mode
     w3m
     fakir
@@ -238,7 +235,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'yagist)
 (require-package 'wgrep)
 (require-package 'lua-mode)
-(require-package 'project-local-variables)
 (require-package 'robe)
 (require-package 'inf-ruby '(2 3 0) nil)
 (require-package 'yaml-mode)
@@ -252,8 +248,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'scss-mode)
 (require-package 'markdown-mode)
 (require-package 'dired+)
-(require-package 'maxframe)
-(require-package 'org-fstree)
 (require-package 'htmlize)
 (require-package 'diminish)
 (require-package 'scratch)
@@ -297,7 +291,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'cpputils-cmake '(0 4 22) nil)
 (require-package 'flyspell-lazy)
 (require-package 'bbdb '(20130421 1145 0) nil)
-(require-package 'iedit)
 (require-package 'pomodoro '(20130114 1543 0) nil)
 (require-package 'flymake-lua)
 (require-package 'dropdown-list)
@@ -326,7 +319,6 @@ ARCHIVE is the string name of the package archive.")
 (when *emacs24*
   (require-package 'git-gutter '(0 71) nil)
   (require-package 'flx-ido)
-  (require-package 'projectile)
   (require-package 'anaconda-mode)
   (require-package 'company-anaconda))
 

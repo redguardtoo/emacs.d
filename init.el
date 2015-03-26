@@ -85,7 +85,6 @@
 (require 'init-osx-keys)
 (require 'init-gui-frames)
 (require 'init-ido)
-(require 'init-maxframe)
 (require 'init-proxies)
 (require 'init-dired)
 (require 'init-isearch)
@@ -147,10 +146,19 @@
 (require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
-(if *emacs24* (require 'init-projectile))
+
+;; projectile costs 7% startup time
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
+
+;; {{ work around color theme bug
+;; @see https://plus.google.com/106672400078851000780/posts/KhTgscKE8PM
+(defadvice load-theme (before disable-themes-first activate)
+  ;; diable all themes
+  (dolist (i custom-enabled-themes)
+    (disable-theme i)))
+;; }}
 
 ;; color theme
 (require 'color-theme)
@@ -162,7 +170,8 @@
 ;; (color-theme-xp)
 
 (setq idle-require-idle-delay 3)
-(setq idle-require-symbols '(init-writting
+(setq idle-require-symbols '(init-misc-lazy
+                             init-writting
                              init-elnode
                              init-doxygen
                              init-pomodoro

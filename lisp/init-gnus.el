@@ -26,8 +26,7 @@
 ;; QUOTED: If you are using an unthreaded display for some strange reason ...
 ;; Yes, when I search email in IMAP folder, emails are not threaded
 (setq gnus-article-sort-functions
-      '(
-        (not gnus-article-sort-by-date)
+      '((not gnus-article-sort-by-date)
         (not gnus-article-sort-by-number)
         ))
 

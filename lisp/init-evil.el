@@ -76,12 +76,10 @@
     "-" 'org-ctrl-c-minus ; change bullet style
     "<" 'org-metaleft ; out-dent
     ">" 'org-metaright ; indent
-    (kbd "TAB") 'org-cycle
-    )
+    (kbd "TAB") 'org-cycle)
 
 (loop for (mode . state) in
-      '(
-        (minibuffer-inactive-mode . emacs)
+      '((minibuffer-inactive-mode . emacs)
         (ggtags-global-mode . emacs)
         (grep-mode . emacs)
         (Info-mode . emacs)
@@ -135,70 +133,22 @@
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 
-;; {{ evil-matchit
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
-;; }}
 
 (eval-after-load "evil"
   '(setq expand-region-contract-fast-key "z"))
 
-;; @see http://stackoverflow.com/questions/10569165/how-to-map-jj-to-esc-in-emacs-evil-mode
-;; @see http://zuttobenkyou.wordpress.com/2011/02/15/some-thoughts-on-emacs-and-vim/
-;; (define-key evil-insert-state-map "k" #'cofi/maybe-exit)
-;; (evil-define-command cofi/maybe-exit ()
-;;   :repeat change
-;;   (interactive)
-;;   (let ((modified (buffer-modified-p)))
-;;     (insert "k")
-;;     (let ((evt (read-event (format "Insert %c to exit insert state" ?j)
-;;                nil 0.5)))
-;;       (cond
-;;        ((null evt) (message ""))
-;;        ((and (integerp evt) (char-equal evt ?j))
-;;     (delete-char -1)
-;;     (set-buffer-modified-p modified)
-;;     (push 'escape unread-command-events))
-;;        (t (setq unread-command-events (append unread-command-events
-;;                           (list evt))))))))
-
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
 (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
-(define-key evil-insert-state-map (kbd "M-a") 'move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
-(define-key evil-insert-state-map (kbd "M-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-(define-key evil-insert-state-map (kbd "M-k") 'evil-normal-state)
-(define-key evil-visual-state-map (kbd "M-k") 'evil-exit-visual-state)
-(define-key minibuffer-local-map (kbd "M-k") 'abort-recursive-edit)
 (define-key evil-insert-state-map (kbd "M-j") 'my-yas-expand)
 (define-key evil-emacs-state-map (kbd "M-j") 'my-yas-expand)
-(global-set-key (kbd "M-k") 'keyboard-quit)
 (global-set-key (kbd "C-r") 'undo-tree-redo)
 
-;; esc quits
-(defun minibuffer-keyboard-quit ()
-  "Abort recursive edit.
-In Delete Selection mode, if the mark is active, just deactivate it;
-then it takes a second \\[keyboard-quit] to abort the minibuffer."
-  (interactive)
-  (if (and delete-selection-mode transient-mark-mode mark-active)
-      (setq deactivate-mark t)
-    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
-    (abort-recursive-edit)))
-
-(define-key evil-normal-state-map [escape] 'keyboard-quit)
-(define-key evil-visual-state-map [escape] 'keyboard-quit)
-(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
-(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
-
-;; {{ evil-leader config
 (setq evil-leader/leader ",")
-
 (require 'evil-leader)
 (evil-leader/set-key
   "ae" 'evil-ace-jump-word-mode ; ,e for Ace Jump (word)
@@ -311,7 +261,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "to" 'toggle-web-js-offset
   "cam" 'org-tags-view ;; "C-c a m" search items in org-file-apps by tag
   "cf" 'helm-for-files ;; "C-c f"
-  "pf" 'projectile-find-file ;; "C-c p f"
   "sl" 'sort-lines
   "ulr" 'uniquify-all-lines-region
   "ulb" 'uniquify-all-lines-buffer
@@ -432,9 +381,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   "zb" 'wg-switch-to-buffer
   "zwr" 'wg-redo-wconfig-change
   "zws" 'wg-save-wconfig
-  "wf" 'popup-which-function
-  )
-;; }}
+  "wf" 'popup-which-function)
 
 ;; change mode-line color by evil state
 (lexical-let ((default-color (cons (face-background 'mode-line)
@@ -449,10 +396,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
-;; {{ evil-nerd-commenter
-;; comment/uncomment lines
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
-;; }}
 
 (provide 'init-evil)

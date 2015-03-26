@@ -1,6 +1,4 @@
 (require 'erlang-start)
-(require 'cb)
-(require 'flymake)
 ;; (setq flymake-log-level 3) ;; log is annoying
 
 ;; @see https://github.com/ten0s/syntaxerl
@@ -18,12 +16,13 @@
 (defun my-setup-erlang ()
   (interactive)
   (unless (is-buffer-file-temp)
+    (require 'cb)
     (when (file-exists-p (file-truename "~/bin/syntaxerl"))
       (setq erlang-compile-extra-opts
             '(bin_opt_info debug_info (i . "../include") (i . "../deps") (i . "../../") (i . "../../../deps")))
       (setq erlang-compile-outdir "../ebin")
       ;; if the project is in a git directory, then ...
-      (let (root-dir )
+      (let (root-dir)
         (setq root-dir (locate-dominating-file (file-name-as-directory (file-name-directory buffer-file-name)) ".git"))
         (when (and root-dir (file-exists-p root-dir))
           (push '(i . (concat root-dir "include")) 'erlang-compile-outdir)
