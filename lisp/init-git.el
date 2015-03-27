@@ -10,7 +10,7 @@
 ;; (defun my-setup-develop-environment ()
 ;;   (interactive)
 ;;   (cond
-;;    ((my-project-name-contains-substring (file-truename "~/.emacs.d"))
+;;    ((string-match-p (file-truename "~/.emacs.d") (file-name-directory (buffer-file-name))
 ;;     (setq vc-handled-backends '(Git)))
 ;;    (t (setq vc-handled-backends nil))))
 ;; (add-hook 'java-mode-hook 'my-setup-develop-environment)

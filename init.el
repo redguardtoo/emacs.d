@@ -72,6 +72,7 @@
 ;;    (message "setup-cygwin failed, continue anyway")
 ;;    ))
 
+(require 'idle-require)
 (require 'init-elpa)
 (require 'init-exec-path) ;; Set up $PATH
 (require 'init-frame-hooks)
@@ -94,12 +95,9 @@
 (require 'init-hippie-expand)
 (require 'init-windows)
 (require 'init-sessions)
-(require 'init-fonts)
 (require 'init-git)
 (require 'init-crontab)
-(require 'init-textile)
 (require 'init-markdown)
-(require 'init-csv)
 (require 'init-erlang)
 (require 'init-javascript)
 (when *emacs24*
@@ -116,11 +114,7 @@
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
 (require 'init-gud)
-(require 'init-cmake-mode)
-(require 'init-csharp-mode)
 (require 'init-linum-mode)
-(require 'init-which-func)
-(require 'init-move-window-buffer)
 ;; (require 'init-gist)
 (require 'init-moz)
 (require 'init-gtags)
@@ -151,9 +145,13 @@
 (require 'init-color-theme)
 
 ;; {{ idle require other stuff
-(require 'idle-require)
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-misc-lazy
+                             init-which-func
+                             init-fonts
+                             init-move-window-buffer
+                             init-textile
+                             init-csv
                              init-writting
                              init-elnode
                              init-doxygen

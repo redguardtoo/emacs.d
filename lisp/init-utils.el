@@ -112,10 +112,4 @@
       (setq rlt nil)))
     rlt))
 
-(defun my-project-name-contains-substring (REGEX)
-  (let ((dir (if (buffer-file-name)
-                 (file-name-directory (buffer-file-name))
-               "")))
-    (string-match-p REGEX dir)))
-
 (provide 'init-utils)

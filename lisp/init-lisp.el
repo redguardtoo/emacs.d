@@ -4,7 +4,7 @@
 (autoload 'enable-paredit-mode "paredit")
 
 (setq-default initial-scratch-message
-              (concat ";; Happy hacking " (or user-login-name "") " - Emacs ♥ you!\n\n"))
+              (concat ";; Happy hacking " (or user-login-name "") " - Emacs loves you!\n\n"))
 
 ;; {{ scheme setup
 (setq scheme-program-name "guile")

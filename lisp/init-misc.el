@@ -5,6 +5,13 @@
 (global-set-key (kbd "C-.") 'set-mark-command)
 (global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
+;; C#
+(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
+
+;; cmake
+(setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
+                              '(("\\.cmake\\'" . cmake-mode))
+                              auto-mode-alist))
 (add-hook 'prog-mode-hook
           '(lambda ()
              (unless (is-buffer-file-temp)
