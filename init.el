@@ -82,7 +82,6 @@
 (require 'init-xterm)
 (require 'init-gui-frames)
 (require 'init-ido)
-(require 'init-proxies)
 (require 'init-dired)
 (require 'init-isearch)
 (require 'init-uniquify)
