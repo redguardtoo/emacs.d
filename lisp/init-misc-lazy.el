@@ -1,4 +1,9 @@
+;;; init-misc-lazy.el --- misc setup loaded later
 (transient-mark-mode t)
+
+(recentf-mode 1)
+
+(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
 
 (setq-default buffers-menu-max-size 30
               case-fold-search t
@@ -102,7 +107,6 @@
                    ((equal prefix '(16)) "%d %B %Y")))
           )
       (insert (format-time-string format))))
-
 
 ;;compute the length of the marked region
 (defun region-length ()
@@ -300,9 +304,9 @@ grab matched string, cssize them, and insert into kill ring"
   (savehist-mode 1))
 ;; }}
 
-;; (defun insert-file-link-from-clipboard ()
-;;   "Make sure the full path of file exist in clipboard. This command will convert
-;; The full path into relative path insert it as a local file link in org-mode"
+(defun insert-file-link-from-clipboard ()
+  "Make sure the full path of file exist in clipboard. This command will convert
+The full path into relative path insert it as a local file link in org-mode"
   (interactive)
   (let (str)
     (with-temp-buffer
@@ -311,14 +315,10 @@ grab matched string, cssize them, and insert into kill ring"
 
     ;; convert to relative path (relative to current buffer) if possible
     (let ((m (string-match (file-name-directory (buffer-file-name)) str) ))
-      (when m
-        (if (= 0 m )
-            (setq str (substring str (length (file-name-directory (buffer-file-name)))))
-          )
-        )
+        (if (and m (= 0 m ))
+            (setq str (substring str (length (file-name-directory (buffer-file-name))))))
       (insert (format "[[file:%s]]" str))
-      )
-    ))
+      )))
 
 (defun convert-image-to-css-code ()
   "convert a image into css code (base64 encode)"
@@ -522,3 +522,5 @@ Current position is preserved."
 (browse-kill-ring-default-keybindings)
 
 (provide 'init-misc-lazy)
+;;; init-misc-lazy.el ends here
+

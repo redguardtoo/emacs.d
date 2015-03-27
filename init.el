@@ -83,11 +83,9 @@
 (require 'init-gui-frames)
 (require 'init-ido)
 (require 'init-dired)
-(require 'init-isearch)
 (require 'init-uniquify)
 (require 'init-ibuffer)
 (require 'init-flymake)
-(require 'init-recentf)
 (require 'init-smex)
 (if *emacs24* (require 'init-helm))
 (require 'init-hippie-expand)
@@ -127,12 +125,9 @@
 (require 'init-workgroups2)
 (require 'init-term-mode)
 (require 'init-web-mode)
-(require 'init-sr-speedbar)
 (require 'init-slime)
 (when *emacs24* (require 'init-company))
-(require 'init-stripe-buffer)
 (require 'init-chinese-pyim) ;; cannot be idle-required
-(require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
 
@@ -147,7 +142,9 @@
 (setq idle-require-symbols '(init-misc-lazy
                              init-which-func
                              init-fonts
-                             init-move-window-buffer
+                             init-sr-speedbar
+                             init-hs-minor-mode
+                             init-stripe-buffer
                              init-textile
                              init-csv
                              init-writting

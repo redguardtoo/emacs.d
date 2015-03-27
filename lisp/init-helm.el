@@ -1,52 +1,20 @@
 (require 'helm-config)
 
-(setq helm-completing-read-handlers-alist
-      '((describe-function . ido)
-        (describe-variable . ido)
-        (debug-on-entry . helm-completing-read-symbols)
-        (find-function . helm-completing-read-symbols)
-        (find-tag . helm-completing-read-with-cands-in-buffer)
-        (ffap-alternate-file . nil)
-        (tmm-menubar . nil)
-        (dired-do-copy . nil)
-        (dired-do-rename . nil)
-        (dired-create-directory . nil)
-        (find-file . ido)
-        (copy-file-and-rename-buffer . nil)
-        (rename-file-and-buffer . nil)
-        (w3m-goto-url . nil)
-        (ido-find-file . nil)
-        (ido-edit-input . nil)
-        (mml-attach-file . ido)
-        (read-file-name . nil)
-        (yas/compile-directory . ido)
-        (execute-extended-command . ido)
-        (minibuffer-completion-help . nil)
-        (minibuffer-complete . nil)
-        (c-set-offset . nil)
-        (wg-load . ido)
-        (rgrep . nil)
-        (read-directory-name . ido)
-        ))
-
-;; {{helm-gtags
-;; customize
 (autoload 'helm-gtags-mode "helm-gtags" nil t)
-(setq helm-c-gtags-path-style 'relative)
-(setq helm-c-gtags-ignore-case t)
-(setq helm-c-gtags-read-only t)
-(add-hook 'c-mode-hook (lambda () (helm-gtags-mode)))
-(add-hook 'c++-mode-hook (lambda () (helm-gtags-mode)))
-;; }}
+
+(defun helm-gtags-mode-setup ()
+  (setq helm-c-gtags-path-style 'relative)
+  (setq helm-c-gtags-ignore-case t)
+  (setq helm-c-gtags-read-only t)
+
+  (local-set-key (kbd "M-t") 'helm-gtags-find-tag)
+  (local-set-key (kbd "M-r") 'helm-gtags-find-rtag)
+  (local-set-key (kbd "M-s") 'helm-gtags-find-symbol)
+  (local-set-key (kbd "C-t") 'helm-gtags-pop-stack)
+  (local-set-key (kbd "C-c C-f") 'helm-gtags-pop-stack))
 
 ;; key bindings
-(add-hook 'helm-gtags-mode-hook
-          '(lambda ()
-              (local-set-key (kbd "M-t") 'helm-gtags-find-tag)
-              (local-set-key (kbd "M-r") 'helm-gtags-find-rtag)
-              (local-set-key (kbd "M-s") 'helm-gtags-find-symbol)
-              (local-set-key (kbd "C-t") 'helm-gtags-pop-stack)
-              (local-set-key (kbd "C-c C-f") 'helm-gtags-pop-stack)))
+(add-hook 'helm-gtags-mode-hook 'helm-gtags-mode-setup)
 
 (autoload 'helm-c-yas-complete "helm-c-yasnippet" nil t)
 (global-set-key (kbd "C-c f") 'helm-for-files)
@@ -73,20 +41,51 @@
     (set-face-attribute 'helm-source-header nil :height 1.0)))
 (add-hook 'helm-before-initialize-hook 'helm-toggle-header-line)
 
-(when (executable-find "curl")
-  (setq helm-google-suggest-use-curl-p t))
-
-;; @see http://tuhdo.github.io/helm-intro.html
-(setq helm-split-window-in-side-p t ;; opens a small window inside the lower half of current window
-      helm-move-to-line-cycle-in-source t ; move to end or beginning of source when reaching top or bottom of source.
-      helm-ff-search-library-in-sexp t ; search for library in `require' and `declare-function' sexp.
-      helm-scroll-amount 8 ; scroll 8 lines other window using M-<next>/M-<prior>
-      helm-ff-file-name-history-use-recentf t)
 
 (eval-after-load 'helm
   '(progn
      ;; Helm window is too big?
      (helm-autoresize-mode 1)
+
+     ;; @see http://tuhdo.github.io/helm-intro.html
+     (setq helm-split-window-in-side-p t ;; opens a small window inside the lower half of current window
+           helm-move-to-line-cycle-in-source t ; move to end or beginning of source when reaching top or bottom of source.
+           helm-ff-search-library-in-sexp t ; search for library in `require' and `declare-function' sexp.
+           helm-scroll-amount 8 ; scroll 8 lines other window using M-<next>/M-<prior>
+           helm-ff-file-name-history-use-recentf t)
+
+     (when (executable-find "curl")
+       (setq helm-google-suggest-use-curl-p t))
+
+     (setq helm-completing-read-handlers-alist
+           '((describe-function . ido)
+             (describe-variable . ido)
+             (debug-on-entry . helm-completing-read-symbols)
+             (find-function . helm-completing-read-symbols)
+             (find-tag . helm-completing-read-with-cands-in-buffer)
+             (ffap-alternate-file . nil)
+             (tmm-menubar . nil)
+             (dired-do-copy . nil)
+             (dired-do-rename . nil)
+             (dired-create-directory . nil)
+             (find-file . ido)
+             (copy-file-and-rename-buffer . nil)
+             (rename-file-and-buffer . nil)
+             (w3m-goto-url . nil)
+             (ido-find-file . nil)
+             (ido-edit-input . nil)
+             (mml-attach-file . ido)
+             (read-file-name . nil)
+             (yas/compile-directory . ido)
+             (execute-extended-command . ido)
+             (minibuffer-completion-help . nil)
+             (minibuffer-complete . nil)
+             (c-set-offset . nil)
+             (wg-load . ido)
+             (rgrep . nil)
+             (read-directory-name . ido)
+             ))
+
      ))
 ;; }}
 

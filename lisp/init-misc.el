@@ -190,6 +190,15 @@ buffer is not visiting a file."
 (setq imenu-max-item-length 64)
 ;; }}
 
+;; {{ recentf-mode
+(setq recentf-keep '(file-remote-p file-readable-p))
+(setq recentf-max-saved-items 1000
+      recentf-exclude '("/tmp/"
+                        "/ssh:"
+                        "/sudo:"
+                        "/home/[a-z]\+/\\."))
+;; }}
+
 ;; {{ which-func
 (autoload 'which-function "which-func")
 (autoload 'popup-tip "popup")
@@ -212,5 +221,13 @@ buffer is not visiting a file."
 
 ;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
 (if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
+
+;; http://tapoueh.org/emacs/switch-window.html
+(global-set-key (kbd "C-x o") 'switch-window)
+
+;; move window
+(require 'window-numbering)
+(custom-set-faces '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold)))))
+(window-numbering-mode 1)
 
 (provide 'init-misc)

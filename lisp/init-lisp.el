@@ -8,37 +8,17 @@
 
 ;; {{ scheme setup
 (setq scheme-program-name "guile")
-(require 'quack)
+(eval-after-load 'scheme-mode
+  '(progn
+     (require 'quack)))
 ;; }}
 
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
 
-(defun maybe-map-paredit-newline ()
-  (unless (or (eq major-mode 'inferior-emacs-lisp-mode) (minibufferp))
-    (local-set-key (kbd "RET") 'paredit-newline)))
-
-(add-hook 'paredit-mode-hook 'maybe-map-paredit-newline)
-
 (eval-after-load 'paredit
   '(progn
-     (diminish 'paredit-mode " Par")
-     ;; These are handy everywhere, not just in lisp modes
-     (global-set-key (kbd "M-(") 'paredit-wrap-round)
-     (global-set-key (kbd "M-[") 'paredit-wrap-square)
-     (global-set-key (kbd "M-{") 'paredit-wrap-curly)
-     (global-set-key (kbd "M-)") 'paredit-close-round-and-newline)
-     (global-set-key (kbd "M-]") 'paredit-close-square-and-newline)
-     (global-set-key (kbd "M-}") 'paredit-close-curly-and-newline)
-
-     (dolist (binding (list (kbd "C-<left>") (kbd "C-<right>")
-                            (kbd "C-M-<left>") (kbd "C-M-<right>")))
-       (define-key paredit-mode-map binding nil))
-
-     ;; Disable kill-sentence, which is easily confused with the kill-sexp
-     ;; binding, but doesn't preserve sexp structure
-     (define-key paredit-mode-map [remap kill-sentence] nil)
-     (define-key paredit-mode-map [remap backward-kill-sentence] nil)))
+     (diminish 'paredit-mode " Par")))
 
 
 ;; Use paredit in the minibuffer
@@ -68,8 +48,6 @@
   '(defadvice hl-sexp-mode (after unflicker (turn-on) activate)
      (when turn-on
        (remove-hook 'pre-command-hook #'hl-sexp-unhighlight))))
-
-
 
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes
