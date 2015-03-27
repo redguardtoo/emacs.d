@@ -151,24 +151,9 @@
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
+(require 'init-color-theme)
 
-;; {{ work around color theme bug
-;; @see https://plus.google.com/106672400078851000780/posts/KhTgscKE8PM
-(defadvice load-theme (before disable-themes-first activate)
-  ;; diable all themes
-  (dolist (i custom-enabled-themes)
-    (disable-theme i)))
-;; }}
-
-;; color theme
-(require 'color-theme)
-(require 'color-theme-molokai)
-(color-theme-molokai)
-;; This line must be after color-theme-molokai! Don't know why.
-(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
-;; (color-theme-select 'color-theme-xp)
-;; (color-theme-xp)
-
+;; idle require other stuff
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-misc-lazy
                              init-writting
