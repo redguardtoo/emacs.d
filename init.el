@@ -80,7 +80,6 @@
 ;; actually, I don't know which major-mode use flyspell.
 (require 'init-spelling)
 (require 'init-xterm)
-(require 'init-osx-keys)
 (require 'init-gui-frames)
 (require 'init-ido)
 (require 'init-proxies)
