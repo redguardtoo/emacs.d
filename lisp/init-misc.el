@@ -56,115 +56,6 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
-;;; {{ clipboard stuff
-;; Use the system clipboard
-(setq x-select-enable-clipboard t)
-
-;; you need install xsel under Linux
-;; xclip has some problem when copying under Linux
-(defun copy-yank-str (msg &optional clipboard-only)
-  (unless clipboard-only (kill-new msg))
-  (cond
-   ;; display-graphic-p need windows 23.3.1
-   ((and (display-graphic-p) x-select-enable-clipboard)
-    (x-set-selection 'CLIPBOARD msg))
-   (t (with-temp-buffer
-        (insert msg)
-        (shell-command-on-region (point-min) (point-max)
-                                 (cond
-                                  ((eq system-type 'cygwin) "putclip")
-                                  ((eq system-type 'darwin) "pbcopy")
-                                  (t "xsel -ib")
-                                  )))
-    )))
-
-(defun cp-filename-of-current-buffer ()
-  "copy file name (NOT full path) into the yank ring and OS clipboard"
-  (interactive)
-  (let (filename)
-    (when buffer-file-name
-      (setq filename (file-name-nondirectory buffer-file-name))
-      (copy-yank-str filename)
-      (message "filename %s => clipboard & yank ring" filename)
-      )))
-
-(defun cp-filename-line-number-of-current-buffer ()
-  "copy file:line into the yank ring and clipboard"
-  (interactive)
-  (let (filename linenum rlt)
-    (when buffer-file-name
-      (setq filename (file-name-nondirectory buffer-file-name))
-      (setq linenum (save-restriction
-                      (widen)
-                      (save-excursion
-                        (beginning-of-line)
-                        (1+ (count-lines 1 (point))))))
-      (setq rlt (format "%s:%d" filename linenum))
-      (copy-yank-str rlt)
-      (message "%s => clipboard & yank ring" rlt)
-      )))
-
-(defun cp-fullpath-of-current-buffer ()
-  "copy full path into the yank ring and OS clipboard"
-  (interactive)
-  (when buffer-file-name
-    (copy-yank-str (file-truename buffer-file-name))
-    (message "file full path => clipboard & yank ring")
-    ))
-
-(defun copy-to-x-clipboard ()
-  (interactive)
-  (if (region-active-p)
-      (progn
-        (cond
-         ((and (display-graphic-p) x-select-enable-clipboard)
-          (x-set-selection 'CLIPBOARD (buffer-substring (region-beginning) (region-end))))
-         (t (shell-command-on-region (region-beginning) (region-end)
-                                     (cond
-                                      (*cygwin* "putclip")
-                                      (*is-a-mac* "pbcopy")
-                                      (*linux* "xsel -ib")))
-            ))
-        (message "Yanked region to clipboard!")
-        (deactivate-mark))
-        (message "No region active; can't yank to clipboard!")))
-
-(defun get-str-from-x-clipboard ()
-  (let (s)
-    (cond
-     ((and (display-graphic-p) x-select-enable-clipboard)
-      (setq s (x-selection 'CLIPBOARD)))
-     (t (setq s (shell-command-to-string
-                 (cond
-                  (*cygwin* "getclip")
-                  (*is-a-mac* "pbpaste")
-                  (t "xsel -ob"))))
-        ))
-    s))
-
-
-(defun paste-from-x-clipboard()
-  "Paste string clipboard"
-  (interactive)
-  (insert (get-str-from-x-clipboard)))
-
-(defun my/paste-in-minibuffer ()
-  (local-set-key (kbd "M-y") 'paste-from-x-clipboard))
-
-(add-hook 'minibuffer-setup-hook 'my/paste-in-minibuffer)
-
-(defun paste-from-clipboard-and-cc-kill-ring ()
-  "paste from clipboard and cc the content into kill ring"
-  (interactive)
-  (let (str)
-    (with-temp-buffer
-      (paste-from-x-clipboard)
-      (setq str (buffer-string)))
-    ;; finish the paste
-    (insert str)
-    ;; cc the content into kill ring at the same time
-    (kill-new str)))
-;;; }}
 
 (eval-after-load 'speedbar
   '(if (load "mwheel" t)
@@ -302,10 +193,6 @@ buffer is not visiting a file."
     (copy-yank-str msg)
     ))
 ;; }}
-
-(defun latest-kill-to-clipboard ()
-  (interactive)
-  (copy-yank-str (current-kill 1) t))
 
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 ;; besides, use gnupg 1.4.9 instead of 2.0

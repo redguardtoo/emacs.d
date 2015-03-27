@@ -21,8 +21,7 @@
                    (*is-a-mac*
                     (< (string-to-number (nth 1 (split-string (shell-command-to-string "sysctl hw.physmem")))) 4000000000))
                    (*linux* nil)
-                   (t nil)
-                   ))
+                   (t nil)))
 
 
 ;----------------------------------------------------------------------------
@@ -72,8 +71,6 @@
 ;;   (error
 ;;    (message "setup-cygwin failed, continue anyway")
 ;;    ))
-
-(require 'idle-require)
 
 (require 'init-elpa)
 (require 'init-exec-path) ;; Set up $PATH
@@ -153,7 +150,8 @@
 (require 'init-misc)
 (require 'init-color-theme)
 
-;; idle require other stuff
+;; {{ idle require other stuff
+(require 'idle-require)
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-misc-lazy
                              init-writting
@@ -165,11 +163,11 @@
                              init-emacs-w3m
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
+;; }}
 
 (when (require 'time-date nil t)
    (message "Emacs startup time: %d seconds."
-    (time-to-seconds (time-since emacs-load-start-time)))
-   )
+    (time-to-seconds (time-since emacs-load-start-time))))
 
 ;;----------------------------------------------------------------------------
 ;; Locales (setting them earlier in this file doesn't work in X)

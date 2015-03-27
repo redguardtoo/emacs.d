@@ -1,15 +1,4 @@
 ;;----------------------------------------------------------------------------
-;; Stop C-z from minimizing windows under OS X
-;;----------------------------------------------------------------------------
-(defun maybe-suspend-frame ()
-  (interactive)
-  (unless (and *is-a-mac* window-system)
-    (suspend-frame)))
-
-(global-set-key (kbd "C-z") 'maybe-suspend-frame)
-
-
-;;----------------------------------------------------------------------------
 ;; Suppress GUI features
 ;;----------------------------------------------------------------------------
 (setq use-file-dialog nil)
@@ -58,6 +47,5 @@
             (with-selected-frame frame
               (unless window-system
                 (set-frame-parameter nil 'menu-bar-lines 0)))))
-
 
 (provide 'init-gui-frames)
