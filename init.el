@@ -126,6 +126,7 @@
 (require 'init-term-mode)
 (require 'init-web-mode)
 (require 'init-slime)
+(require 'init-clipboard)
 (when *emacs24* (require 'init-company))
 (require 'init-chinese-pyim) ;; cannot be idle-required
 ;; need statistics of keyfreq asap
