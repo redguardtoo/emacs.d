@@ -1,6 +1,9 @@
 ;; Use the system clipboard
 (setq x-select-enable-clipboard t)
 
+;; kill-ring and clipboard are same now!
+(setq save-interprogram-paste-before-kill t)
+
 ;; you need install xsel under Linux
 ;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)

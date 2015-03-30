@@ -12,6 +12,18 @@
 (setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
                               '(("\\.cmake\\'" . cmake-mode))
                               auto-mode-alist))
+
+;; {{expand-region.el
+;; if emacs-nox, use C-@, else, use C-2;
+(if window-system
+  (progn
+    (define-key global-map (kbd "C-2") 'er/expand-region)
+    (define-key global-map (kbd "C-M-2") 'er/contract-region)
+    )
+  (define-key global-map (kbd "C-@") 'er/expand-region)
+  (define-key global-map (kbd "C-M-@") 'er/contract-region))
+;; }}
+
 (add-hook 'prog-mode-hook
           '(lambda ()
              (unless (is-buffer-file-temp)
