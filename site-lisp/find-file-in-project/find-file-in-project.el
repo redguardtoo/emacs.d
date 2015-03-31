@@ -91,8 +91,8 @@ Use this to exclude portions of your project: \"-not -regex \\\".*svn.*\\\"\".")
 
 This overrides variable `ffip-project-root' when set.")
 
-(defvar ffip-limit 512
-  "Limit results to this many files.")
+(defvar ffip-limit 0
+  "Limit results to this many files. 0 means no limit")
 
 (defvar ffip-full-paths nil
   "If non-nil, show fully project-relative paths.")
@@ -146,6 +146,11 @@ This overrides variable `ffip-project-root' when set.")
   (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
              ffip-prune-patterns " -or "))
 
+(defun ffip-limit-find-results ()
+  (let ((rlt ""))
+    (if (and (executable-find "head") (> ffip-limit 0))
+        (setq rlt (format " | head -n %d" ffip-limit)))
+    rlt))
 
 (defun ffip-project-files ()
   "Return an alist of all filenames in the project and their path.
@@ -168,10 +173,10 @@ directory they are found in so that they are unique."
                   (add-to-list 'file-alist file-cons)
                   file-cons)))
             (split-string (shell-command-to-string
-                           (format "%s . -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
+                           (format "%s . -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s %s"
                                    (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                                    (ffip-prune-patterns) (ffip-join-patterns)
-                                   ffip-find-options ffip-limit))))))
+                                   ffip-find-options (ffip-limit-find-results)))))))
 
 ;;;###autoload
 (defun find-file-in-project ()
