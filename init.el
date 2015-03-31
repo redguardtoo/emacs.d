@@ -1,6 +1,7 @@
 ;; -*- coding: utf-8 -*-
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/wubi"))
 
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)
@@ -129,7 +130,7 @@
 (require 'init-moz)
 (require 'init-gtags)
 ;; use evil mode (vi key binding)
-(require 'init-evil)
+;;(require 'init-evil)
 (require 'init-sh)
 (require 'init-ctags)
 (require 'init-ace-jump-mode)
@@ -182,7 +183,28 @@
 ;;----------------------------------------------------------------------------
 (require 'init-locales)
 
-;;; Local Variables:
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(company-clang-arguments (quote ("-I/home/lyzh/data/switch_power_test")))
+ '(company-clang-insert-arguments t)
+ '(session-use-package t nil (session)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
+ ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
 (put 'erase-buffer 'disabled nil)
+
+(require 'lyzh-custom)
+(require 'wubi)
+
+(register-input-method "chinese-wubi" "Chinese-GB" 'quail-use-package "wubi" "wubi")
+(wubi-load-local-phrases)
+(setq default-input-method "chinese-wubi")

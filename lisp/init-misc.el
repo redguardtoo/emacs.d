@@ -154,9 +154,9 @@
 (global-set-key (kbd "C-c q") 'auto-fill-mode)
 
 ;; {{ whitespace
-;; (require 'whitespace)
-;; (setq whitespace-style '(face empty tabs lines-tail trailing))
-;; (global-whitespace-mode t)
+;(require 'whitespace)
+;(setq whitespace-style '(face empty tabs lines-tail trailing))
+;(global-whitespace-mode t)
 ;; }}
 
 ;; some project prefer tab, so be it
