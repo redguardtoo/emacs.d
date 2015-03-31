@@ -62,6 +62,8 @@
 
 (require 'cl)
 
+(defvar ffip-find-executable "find" "path of GNU find")
+
 (defvar ffip-project-file ".git"
   "The file that should be used to define a project root.
 
@@ -147,8 +149,9 @@ directory they are found in so that they are unique."
                   (add-to-list 'file-alist file-cons)
                   file-cons)))
             (split-string (shell-command-to-string
-                           (format "find %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
-                                   root (ffip-prune-patterns) (ffip-join-patterns)
+                           (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
+                                   ffip-find-executable
+                                   (file-name-as-directory root) (ffip-prune-patterns) (ffip-join-patterns)
                                    ffip-find-options ffip-limit))))))
 
 ;;;###autoload
