@@ -155,6 +155,7 @@ directory they are found in so that they are unique."
   (let ((file-alist nil)
         (root (expand-file-name (or ffip-project-root (ffip-project-root)
                                     (error "No project root found")))))
+    (setq default-directory (file-name-as-directory root))
     (mapcar (lambda (file)
               (if ffip-full-paths
                   (cons (substring (expand-file-name file) (length root))
@@ -167,9 +168,9 @@ directory they are found in so that they are unique."
                   (add-to-list 'file-alist file-cons)
                   file-cons)))
             (split-string (shell-command-to-string
-                           (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
+                           (format "%s . -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
                                    (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
-                                   (file-name-as-directory root) (ffip-prune-patterns) (ffip-join-patterns)
+                                   (ffip-prune-patterns) (ffip-join-patterns)
                                    ffip-find-options ffip-limit))))))
 
 ;;;###autoload
