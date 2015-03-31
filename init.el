@@ -23,20 +23,6 @@
                    (*linux* nil)
                    (t nil)))
 
-
-;----------------------------------------------------------------------------
-; Functions (load all files in defuns-dir)
-; Copied from https://github.com/magnars/.emacs.d/blob/master/init.el
-;----------------------------------------------------------------------------
-(setq defuns-dir (expand-file-name "~/.emacs.d/defuns"))
-(dolist (file (directory-files defuns-dir t "\\w+"))
-  (when (file-regular-p file)
-      (load file)))
-;----------------------------------------------------------------------------
-; Load configs for specific features and modes
-;----------------------------------------------------------------------------
-(require 'init-modeline)
-
 ;;----------------------------------------------------------------------------
 ;; Less GC, more memory
 ;;----------------------------------------------------------------------------
@@ -47,9 +33,7 @@
 (setq-default gc-cons-threshold (* 1024 1024 512)
               gc-cons-percentage 0.5)
 
-;;----------------------------------------------------------------------------
-;; Load configs for specific features and modes
-;;----------------------------------------------------------------------------
+(require 'init-modeline)
 (require 'cl-lib)
 (require 'init-compat)
 (require 'init-utils)

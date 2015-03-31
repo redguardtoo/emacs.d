@@ -221,13 +221,14 @@
   "W" 'save-some-buffers
   "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
-  "ii" 'rimenu-jump
   "lh" 'highlight-symbol-at-point
   "ln" 'highlight-symbol-next
   "lp" 'highlight-symbol-prev
   "lq" 'highlight-symbol-query-replace
   "bm" 'pomodoro-start ;; beat myself
   "im" 'helm-imenu
+  "ii" 'ido-imenu
+  "ij" 'rimenu-jump
   "." 'evil-ex
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "gn" 'git-timemachine-show-next-revisio
@@ -256,11 +257,15 @@
   "s2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
   "s3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
   "su" 'winner-undo
+  "sr" 'rotate-windows
+  "st" 'toggle-window-split
   "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
   "x2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
   "x3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
+  "xr" 'rotate-windows
+  "xt" 'toggle-window-split
   "xu" 'winner-undo
   "to" 'toggle-web-js-offset
   "cam" 'org-tags-view ;; "C-c a m" search items in org-file-apps by tag
@@ -306,7 +311,6 @@
   "ms" 'mc/mark-all-symbols-like-this-in-defun
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
-  "rw" 'rotate-windows
   "oc" 'occur
   "om" 'toggle-org-or-message-mode
   "ops" 'my-org2blog-post-subtree
@@ -352,7 +356,6 @@
   "xvv" 'vc-next-action
   "xva" 'git-add-current-file
   "xvp" 'git-push-remote-origin
-  "xrf" 'git-reset-current-file
   "xvu" 'git-add-option-update
   "xvg" 'vc-annotate
   "xv=" 'git-gutter:popup-hunk
