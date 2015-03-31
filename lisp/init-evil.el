@@ -21,6 +21,8 @@
 ;; press ";" instead of ":"
 (define-key evil-normal-state-map (kbd ";") 'evil-ex)
 
+(autoload 'find-file-in-project "find-file-in-project" "" t)
+
 (require 'evil-mark-replace)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
@@ -181,6 +183,7 @@
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "ff" 'toggle-full-window ;; I use WIN+F in i3
+  "ip" 'find-file-in-project
   "tm" 'get-term
   "px" 'paste-from-x-clipboard
   ;; "ci" 'evilnc-comment-or-uncomment-lines
