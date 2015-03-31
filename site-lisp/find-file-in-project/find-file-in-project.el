@@ -62,7 +62,7 @@
 
 (require 'cl)
 
-(defvar ffip-find-executable "find" "path of GNU find")
+(defvar ffip-find-executable nil "Path of GNU find. If nil, we will find `find' path automatically")
 
 (defvar ffip-project-file ".git"
   "The file that should be used to define a project root.
@@ -112,6 +112,24 @@ This overrides variable `ffip-project-root' when set.")
         (progn (message "No project was defined for the current file.")
                nil))))
 
+(defun ffip--guess-gnu-find ()
+  (let ((rlt "find"))
+    (if (eq system-type 'windows-nt)
+        (cond
+         ((executable-find "c:\\\\cygwin64\\\\bin\\\\find")
+          (setq rlt "c:\\\\cygwin64\\\\bin\\\\find"))
+         ((executable-find "d:\\\\cygwin64\\\\bin\\\\find")
+          (setq rlt "d:\\\\cygwin64\\\\bin\\\\find"))
+         ((executable-find "e:\\\\cygwin64\\\\bin\\\\find")
+          (setq rlt "e:\\\\cygwin64\\\\bin\\\\find"))
+         ((executable-find "c:\\\\cygwin\\\\bin\\\\find")
+          (setq rlt "c:\\\\cygwin\\\\bin\\\\find"))
+         ((executable-find "d:\\\\cygwin\\\\bin\\\\find")
+          (setq rlt "d:\\\\cygwin\\\\bin\\\\find"))
+         ((executable-find "e:\\\\cygwin\\\\bin\\\\find")
+          (setq rlt "e:\\\\cygwin\\\\bin\\\\find"))))
+    rlt))
+
 (defun ffip-uniqueify (file-cons)
   "Set the car of FILE-CONS to include the directory name plus the file name."
   (setcar file-cons
@@ -150,7 +168,7 @@ directory they are found in so that they are unique."
                   file-cons)))
             (split-string (shell-command-to-string
                            (format "%s %s -type d -a \\( %s \\) -prune -o -type f \\( %s \\) -print %s | head -n %s"
-                                   ffip-find-executable
+                                   (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                                    (file-name-as-directory root) (ffip-prune-patterns) (ffip-join-patterns)
                                    ffip-find-options ffip-limit))))))
 
