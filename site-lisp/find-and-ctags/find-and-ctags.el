@@ -5,7 +5,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/find-and-ctags
 ;; Keywords: find ctags
-;; Version: 0.0.1
+;; Version: 0.0.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -20,12 +20,14 @@
 ;;            CTAGS-OPTS)
 
 ;;        ;; for COOL MYPROJ
+;;        ;; you can use fctags-current-full-filename-match-pattern-p instead
 ;;        (when (fctags-current-path-match-pattern-p "MYPROJ.*/app")
 ;;          (setq proj-dir (if fctags-windows-p "c:/Workspaces/MYPROJ/MACWeb/WebContent/app"
 ;;                      "~/projs/MYPROJ/MACWeb/WebContent/app"))
 ;;          (setq FIND-OPTS "-not -size +64k")
 ;;          (setq CTAGS-OPTS "--exclude=*.min.js --exclude=*.git*")
-;;          (set tags-table-list
+;;          ;; you can use setq-local instead
+;;          (setq tags-table-list
 ;;               (list (fctags-run-ctags-if-needed proj-dir FIND-OPTS CTAGS-OPTS))))
 ;;        ;; for other projects
 ;;        ;; insert more WHENs here
@@ -147,6 +149,11 @@
                "")))
     (string-match-p REGEX dir)))
 
+;;;###autoload
+(defun fctags-current-full-filename-match-pattern-p (REGEX)
+  "Is current full file name (including directory) match the REGEX?"
+  (let ((dir (if (buffer-file-name) (buffer-file-name) "")))
+    (string-match-p REGEX dir)))
 
 ;;;###autoload
 (defun fctags-update-all-tags-force (&optional is-used-as-api)
