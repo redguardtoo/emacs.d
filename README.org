@@ -1,10 +1,10 @@
 * Before start
-Please read below checklist for at least once
+Please read below checklist at least once:
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
-- I use [[http://www.vim.org][Vim]] key bindings. Check FAQ on how to disable it
-- Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need any of them
-- Any other issues are covered in FAQ
+- Read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
+- Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need package from melpa-unstable
+- Other issues are covered in FAQ
 * Features
 - Stable is the first priority
 - 100% usable in terminal
@@ -18,27 +18,20 @@ Please read below checklist for at least once
 Most users should follow the section "Install in normal way".
 
 You need the section "Install stable version in easiest way" IF and ONLY IF:
-- you are absolutely newbie, knowing nothing about Linux/Unix
-- you are living in North Korea without internet access
+- You are absolutely newbie, knowing nothing about Linux/Unix
+- You are living in North Korea without internet access
 *** Install in normal way
-Please remove the file "$HOME/.emacs.d/init.el".
+Please remove the file "~/.emacs.d/init.el" ("~" means the parent directory of your ".emacs.d").
 
-Uninstall any system Emacs packages. For example, run "apt-get autoremove emacs-w3m" in Debian/Ubuntu. It's because all packages will be placed at "$HOME/.emacs.d" from now on.
+Uninstall any system Emacs packages. For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. It's because all packages will be placed at "~/.emacs.d" from now on.
 
-Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][this zip file]] and extract its content into "~/.emacs.d".
+Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
 
-Or run command "cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d" in terminal.
+Or you can use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]] which has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] every 3 months.
+
+If you've installed [[http://git-scm.com/][Git]], run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d` in terminal.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
-
-You can use *stable* version of my setup. Stable version has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] from time to time. "cd ~/.emacs.d/;git checkout stable" to get the stable version.
-
-You *possibly* need run below command at the terminal at least once to update the content from package repositories:
-#+BEGIN_SRC elisp
-emacs -nw --batch -l ~/.emacs.d/init.el -f package-refresh-contents
-#+END_SRC
-
-The command "package-refresh-content" will fetch the latest package list from remote servers. It has to be done manually. It's not reasonable to *automatically* fetch the list during a text editor startup. 
 
 *** Install stable version in easiest way (OPTIONAL)
 You don't need git or network any more. All you need are only two zip files.
@@ -229,12 +222,6 @@ In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/U
 ** Use color theme in the terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
-#+END_SRC
-
-** Avoid Emacs maximized when it starts up
-Comment out below line in init-misc.el:
-#+BEGIN_SRC elisp
-(add-hook 'window-setup-hook 'maximize-frame t)
 #+END_SRC
 
 ** Preview&apply a color theme
