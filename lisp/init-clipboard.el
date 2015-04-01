@@ -1,8 +1,8 @@
 ;; Use the system clipboard
 (setq x-select-enable-clipboard t)
 
-;; kill-ring and clipboard are same now!
-(setq save-interprogram-paste-before-kill t)
+;; kill-ring and clipboard are same. It's annoying!
+;; (setq save-interprogram-paste-before-kill t)
 
 (autoload 'simpleclip-get-contents "simpleclip" "" t)
 (autoload 'simpleclip-set-contents "simpleclip" "" t)
