@@ -318,7 +318,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'f)
 (require-package 'elnode) ;; elnode dependent on f
 (when *emacs24*
-  (require-package 'git-gutter '(0 71) nil)
+  (require-package 'git-gutter '(0 81) nil)
   (require-package 'flx-ido)
   (require-package 'anaconda-mode)
   (require-package 'company-anaconda))
