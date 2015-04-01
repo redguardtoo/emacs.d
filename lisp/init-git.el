@@ -117,12 +117,18 @@
     (compile (concat "git svn "
                      (ido-completing-read "git-svn command: " git-svn--available-commands nil t)))))
 
+(defun git-get-current-file-relative-path ()
+  (replace-regexp-in-string
+   (concat "^" (file-name-as-directory default-directory))
+   ""
+   buffer-file-name))
+
 (defun git-reset-current-file ()
   "git reset file of current buffer"
   (interactive)
   (let ((filename))
     (when buffer-file-name
-      (setq filename (file-truename buffer-file-name))
+      (setq filename (git-get-current-file-relative-path))
       (shell-command (concat "git reset " filename))
       (message "DONE! git reset %s" filename)
       )))
@@ -132,7 +138,7 @@
   (interactive)
   (let ((filename))
     (when buffer-file-name
-      (setq filename (file-truename buffer-file-name))
+      (setq filename (git-get-current-file-relative-path))
       (shell-command (concat "git add " filename))
       (message "DONE! git add %s" filename)
       )))
@@ -141,7 +147,7 @@
   "run `git push'"
   (interactive)
   (when buffer-file-name
-    (shell-command (concat "cd " (pwd) ";git push"))
+    (shell-command "git push")
     (message "DONE! git push at %s" default-directory)
     ))
 
