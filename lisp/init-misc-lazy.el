@@ -495,11 +495,6 @@ Current position is preserved."
 ;;----------------------------------------------------------------------------
 (move-text-default-bindings)
 
-;; increase and decrease font size in GUI emacs
-(when (display-graphic-p)
-  (global-set-key (kbd "C-=") 'text-scale-increase)
-  (global-set-key (kbd "C--") 'text-scale-decrease))
-
 (autoload 'vr/replace "visual-regexp")
 (autoload 'vr/query-replace "visual-regexp")
 ;; if you use multiple-cursors, this is for you:

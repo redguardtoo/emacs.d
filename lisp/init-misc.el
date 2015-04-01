@@ -159,6 +159,11 @@ buffer is not visiting a file."
   (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
 ;; }}
 
+;; increase and decrease font size in GUI emacs
+(when (display-graphic-p)
+  (global-set-key (kbd "C-=") 'text-scale-increase)
+  (global-set-key (kbd "C--") 'text-scale-decrease))
+
 ;; vimrc
 (autoload 'vimrc-mode "vimrc-mode")
 (add-to-list 'auto-mode-alist '("\\.?vim\\(rc\\)?$" . vimrc-mode))

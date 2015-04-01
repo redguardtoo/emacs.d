@@ -186,6 +186,8 @@
   "ff" 'toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
   "tm" 'get-term
+  "tff" 'toggle-frame-fullscreen
+  "tfm" 'toggle-frame-maximized
   "px" 'paste-from-x-clipboard
   ;; "ci" 'evilnc-comment-or-uncomment-lines
   ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
@@ -346,9 +348,9 @@
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
   "js" 'w3mext-search-js-api-mdn
-  "je" 'js2-display-error-list
-  "te" 'js2-mode-toggle-element
-  "tf" 'js2-mode-toggle-hide-functions
+  "jde" 'js2-display-error-list
+  "jte" 'js2-mode-toggle-element
+  "jtf" 'js2-mode-toggle-hide-functions
   "xh" 'mark-whole-buffer
   "xk" 'ido-kill-buffer
   "xs" 'save-buffer
