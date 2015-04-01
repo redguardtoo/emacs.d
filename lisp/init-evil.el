@@ -245,7 +245,7 @@
   "gss" 'git-gutter:set-start-revision
   "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")
            (message "git-gutter:set-start-revision HEAD^"))
-  "gsr" '(lambda () (interactive) (git-gutter:set-start-revikion nil)
+  "gsr" '(lambda () (interactive) (git-gutter:set-start-revision nil)
            (message "git-gutter reset")) ;; reset
   "hr" 'helm-recentf
   "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
