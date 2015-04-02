@@ -77,6 +77,7 @@
   ;1 (was imposed by gnu style by default)
   (setq c-label-minimum-indentation 0)
 
+  (autoload 'c-turn-on-eldoc-mode "c-eldoc" "" t)
 
   (when buffer-file-name
     ;; c-eldoc (https://github.com/mooz/c-eldoc)
