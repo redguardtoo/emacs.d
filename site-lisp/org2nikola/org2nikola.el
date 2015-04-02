@@ -641,7 +641,7 @@ shamelessly copied from org2blog/wp-replace-pre()"
                 ;; class linenums will add stripes which will destory the 3rd party skins
                 (insert (concat "\n<pre class=\"prettyprint lang-"
                                 (org2nikola-fix-unsupported-language lang)
-                                "\">\n"
+                                "\">"
                                 code
                                 "</pre>\n"))
                 )
@@ -649,7 +649,7 @@ shamelessly copied from org2blog/wp-replace-pre()"
                 ;; default is highlight.js, it's the best!
                 (insert (concat "\n<pre><code class=\"lang-"
                                 (org2nikola-fix-unsupported-language lang)
-                                "\">\n"
+                                "\">"
                                 code
                                 "</code></pre>\n"))
                 ))
