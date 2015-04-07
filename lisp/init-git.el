@@ -118,10 +118,14 @@
                      (ido-completing-read "git-svn command: " git-svn--available-commands nil t)))))
 
 (defun git-get-current-file-relative-path ()
-  (replace-regexp-in-string
-   (concat "^" (file-name-as-directory default-directory))
-   ""
-   buffer-file-name))
+  (let (rlt)
+    (setq rlt
+          (replace-regexp-in-string
+           (concat "^" (file-name-as-directory default-directory))
+           ""
+           buffer-file-name))
+    (message "rlt=%s" rlt)
+    rlt))
 
 (defun git-reset-current-file ()
   "git reset file of current buffer"
