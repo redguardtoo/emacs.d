@@ -4,6 +4,7 @@
 ;turning-on-linum-mode-when-in-python-c-mode
 (setq linum-mode-inhibit-modes-list '(eshell-mode
                                       shell-mode
+                                      dictionary-mode
                                       erc-mode
                                       dired-mode
                                       help-mode

@@ -5,6 +5,8 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
 (require 'evil)
 
+(autoload 'dictionary-new-search "dictionary" "" t nil)
+
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
 ;; cursor is alway black because of evil
 ;; here is the workaround
@@ -165,8 +167,13 @@
   "bu" 'backward-up-list
   "bb" '(lambda () (interactive) (switch-to-buffer nil))
   "ef" 'end-of-defun
-  "db" 'sdcv-search-pointer ;; in another buffer
+  "db" 'sdcv-search-pointer ; in buffer
   "dt" 'sdcv-search-input+ ;; in tip
+  "dd" '(lambda ()
+          (interactive)
+          (dictionary-new-search (cons (if (region-active-p)
+                                           (buffer-substring-no-properties (region-beginning) (region-end))
+                                         (thing-at-point 'symbol)) dictionary-default-dictionary)))
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
