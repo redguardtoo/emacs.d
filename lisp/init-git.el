@@ -124,7 +124,7 @@
            (concat "^" (file-name-as-directory default-directory))
            ""
            buffer-file-name))
-    (message "rlt=%s" rlt)
+    ;; (message "rlt=%s" rlt)
     rlt))
 
 (defun git-reset-current-file ()

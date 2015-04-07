@@ -128,7 +128,7 @@
     (when (or FORCE (not (file-exists-p file)))
       (setq old-dir default-directory)
       ;; "cd dir && find . -name blah | ctags" will NOT work on windows cmd window
-      (setq default-directory dir)
+	  (cd dir)
       ;; use relative directory because TAGS is shared between Cygwin and Window
       (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                         find-exe
@@ -137,8 +137,8 @@
                         CTAGS-OPTS))
       (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
       (shell-command cmd)
-      ;; restore default directory
-      (setq default-directory old-dir))
+      ;; restore default-directory
+      (cd old-dir))
     file))
 
 ;;;###autoload
