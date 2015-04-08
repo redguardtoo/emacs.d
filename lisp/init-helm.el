@@ -1,21 +1,5 @@
 (require 'helm-config)
 
-(autoload 'helm-gtags-mode "helm-gtags" nil t)
-
-(defun helm-gtags-mode-setup ()
-  (setq helm-c-gtags-path-style 'relative)
-  (setq helm-c-gtags-ignore-case t)
-  (setq helm-c-gtags-read-only t)
-
-  (local-set-key (kbd "M-t") 'helm-gtags-find-tag)
-  (local-set-key (kbd "M-r") 'helm-gtags-find-rtag)
-  (local-set-key (kbd "M-s") 'helm-gtags-find-symbol)
-  (local-set-key (kbd "C-t") 'helm-gtags-pop-stack)
-  (local-set-key (kbd "C-c C-f") 'helm-gtags-pop-stack))
-
-;; key bindings
-(add-hook 'helm-gtags-mode-hook 'helm-gtags-mode-setup)
-
 (autoload 'helm-c-yas-complete "helm-c-yasnippet" nil t)
 (global-set-key (kbd "C-c f") 'helm-for-files)
 (global-set-key (kbd "C-c y") 'helm-c-yas-complete)
