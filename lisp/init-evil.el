@@ -300,7 +300,7 @@
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
   "ws" 'w3mext-hacker-search
-  "hsp" 'helm-swoop
+  "//" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
