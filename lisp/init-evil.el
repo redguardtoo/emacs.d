@@ -181,10 +181,10 @@
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
-  "ss" 'evil-surround-region
+  "sr" 'evil-surround-region
   "sc" 'shell-command
-  "srt" 'sr-speedbar-toggle
-  "srr" 'sr-speedbar-refresh-toggle
+  "spt" 'sr-speedbar-toggle
+  "spr" 'sr-speedbar-refresh-toggle
   "ee" 'eval-expression
   "cx" 'copy-to-x-clipboard
   "cy" 'strip-convert-lines-into-one-big-string
@@ -264,13 +264,6 @@
   "jb" 'js-beautify
   "jpp" 'jsons-print-path
   "se" 'string-edit-at-point
-  "s0" 'delete-window
-  "s1" 'delete-other-windows
-  "s2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
-  "s3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
-  "su" 'winner-undo
-  "sr" 'rotate-windows
-  "st" 'toggle-window-split
   "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
@@ -300,7 +293,11 @@
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
   "ws" 'w3mext-hacker-search
-  "//" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
+  "ss" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
+  "st" '(lambda () (interactive)
+          (swiper (if (region-active-p)
+                    (buffer-substring-no-properties (region-beginning) (region-end))
+                    (thing-at-point 'symbol))))
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
