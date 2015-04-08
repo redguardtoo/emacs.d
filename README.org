@@ -12,6 +12,7 @@ Please read below checklist at least once:
 - Minimum dependency (For example, network connection is OPTIONAL)
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
+- I do NOT re-define new key bindings, so original key bindings from Emacs/Plugins are still there
 - Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac/Windows)
 * Installation
 ** Minimum installation
@@ -169,6 +170,8 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** What are my frequently used commands?
+They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys for them.
 ** GUI version has issues?
 Use terminal version.
 ** OS X user?

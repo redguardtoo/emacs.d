@@ -140,6 +140,8 @@
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
 
+;; press ",xx" to expand region
+;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
   '(setq expand-region-contract-fast-key "z"))
 
@@ -153,12 +155,13 @@
 (define-key evil-emacs-state-map (kbd "M-j") 'my-yas-expand)
 (global-set-key (kbd "C-r") 'undo-tree-redo)
 
+;; My frequently used commands are listed here
 (setq evil-leader/leader ",")
 (require 'evil-leader)
 (evil-leader/set-key
-  "ae" 'evil-ace-jump-word-mode ; ,e for Ace Jump (word)
-  "al" 'evil-ace-jump-line-mode ; ,l for Ace Jump (line)
-  "ac" 'evil-ace-jump-char-mode ; ,x for Ace Jump (char)
+  "ae" 'evil-ace-jump-word-mode ; ,ae for Ace Jump (word)
+  "al" 'evil-ace-jump-line-mode ; ,al for Ace Jump (line)
+  "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
   "as" 'ack-same
   "ac" 'ack
   "aa" 'ack-find-same-file
@@ -380,8 +383,6 @@
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "xw" 'widen
-  "xd" 'narrow-to-defun
   "ycr" (lambda () (interactive) (yas-compile-directory (file-truename "~/.emacs.d/snippets")) (yas-reload-all))
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
