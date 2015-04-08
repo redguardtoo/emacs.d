@@ -256,8 +256,15 @@
   "or" 'open-readme-in-git-root-directory
   "mq" '(lambda () (interactive) (man (concat "-k " (thing-at-point 'symbol))))
   "mgh" '(lambda () (interactive) (magit-show-commit "HEAD"))
-  "sg" '(lambda () (interactive) (w3m-search "g" (thing-at-point 'symbol)))
-  "sq" '(lambda () (interactive) (w3m-search "q" (thing-at-point 'symbol)))
+  ;; search by file type
+  "sg" 'w3m-google-by-filetype
+  ;; search on stackoverflow
+  "sq" '(lambda ()
+          (interactive)
+          (unless (featurep 'w3m) (require 'w3m))
+          (w3m-search "q" (if (region-active-p)
+                              (buffer-substring-no-properties (region-beginning) (region-end))
+                            (thing-at-point 'symbol))))
   "gss" 'git-gutter:set-start-revision
   "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")
            (message "git-gutter:set-start-revision HEAD^"))

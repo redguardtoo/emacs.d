@@ -121,6 +121,7 @@
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
 (require 'init-color-theme)
+(require 'init-emacs-w3m)
 
 ;; {{ idle require other stuff
 (setq idle-require-idle-delay 3)
@@ -138,7 +139,6 @@
                              init-pomodoro
                              init-emacspeak
                              init-artbollocks-mode
-                             init-emacs-w3m
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
 ;; }}

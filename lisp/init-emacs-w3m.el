@@ -19,17 +19,54 @@
 ;(setq w3m-default-display-inline-images t)
 
 (setq w3m-search-default-engine "g")
-(eval-after-load "w3m-search" '(progn
-                                 ; C-u S g RET <search term> RET
-                                 (add-to-list 'w3m-search-engine-alist '("g" "http://www.google.com.au/search?hl=en&q=%s" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("wz" "http://zh.wikipedia.org/wiki/Special:Search?search=%s" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("q" "http://www.google.com.au/search?hl=en&q=%s+site:stackoverflow.com" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("s" "http://code.ohloh.net/search?s=%s&browser=Default"  utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("b" "http://blogsearch.google.com.au/blogsearch?q=%s" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("w" "http://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("d" "http://dictionary.reference.com/search?q=%s" utf-8))
-                                 (add-to-list 'w3m-search-engine-alist '("j" "http://www.google.com.au/search?ie=UTF-8&oe=UTF-8&sourceid=navclient&btnI=1&q=%s+site:developer.mozilla.org" utf-8))
-                                 ))
+
+(defun w3m-get-url-from-search-engine-alist (k l)
+  (let (rlt)
+    (if (listp l)
+      (if (string= k (caar l))
+          (setq rlt (nth 1 (car l)))
+        (setq rlt (w3m-get-url-from-search-engine-alist k (cdr l)))))
+    rlt))
+
+(defun w3m-set-url-from-search-engine-alist (k l url)
+    (if (listp l)
+      (if (string= k (caar l))
+          (setcdr (car l) (list url))
+        (w3m-set-url-from-search-engine-alist k (cdr l) url))))
+
+;; C-u S g RET <search term> RET in w3m
+(setq w3m-search-engine-alist
+      '(("g" "http://www.google.com.au/search?q=%s" utf-8)
+        ;; stackoverflow search
+        ("q" "http://www.google.com.au/search?q=%s+site:stackoverflow.com" utf-8)
+        ;; elisp code search
+        ("s" "http://www.google.com.au/search?q=%s+filetype:el"  utf-8)
+        ;; wikipedia
+        ("w" "http://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8)
+        ;; online dictionary
+        ("d" "http://dictionary.reference.com/search?q=%s" utf-8)
+        ;; javascript seawrch on mozilla.org
+        ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
+
+(defun w3m-google-by-filetype ()
+  (interactive)
+  (unless (featurep 'w3m)
+    (require 'w3m))
+  (let ((thing (if (region-active-p)
+                   (buffer-substring-no-properties (region-beginning) (region-end))
+                 (thing-at-point 'symbol)))
+        (old-url (w3m-get-url-from-search-engine-alist "s" w3m-search-engine-alist))
+        new-url)
+    (when buffer-file-name
+      (setq new-url (replace-regexp-in-string
+                     "filetype:.*"
+                     (concat "filetype:" (file-name-extension buffer-file-name))
+                     old-url))
+      (w3m-set-url-from-search-engine-alist "s" w3m-search-engine-alist new-url))
+    ;; change the url to search current file type
+    (w3m-search "s" thing)
+    ;; restore the default url
+    (w3m-set-url-from-search-engine-alist "s" w3m-search-engine-alist old-url)))
 
 (setq w3m-command-arguments       '("-F" "-cookie")
       w3m-mailto-url-function     'compose-mail
@@ -54,7 +91,8 @@
 (defun w3mext-hacker-search ()
   "search word under cursor in google code search and stackoverflow.com"
   (interactive)
-  (require 'w3m)
+  (unless (featurep 'w3m)
+    (require 'w3m))
   (let ((keyword (w3m-url-encode-string (thing-at-point 'symbol))))
     ;; google
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q=%22"
