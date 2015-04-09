@@ -393,7 +393,11 @@
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "ycr" (lambda () (interactive) (yas-compile-directory (file-truename "~/.emacs.d/snippets")) (yas-reload-all))
+  "ycr" (lambda ()
+          (interactive)
+          (unless (featurep 'yasnippet) (require 'yasnippet))
+          (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
+          (yas-reload-all))
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
   "zv" '(lambda (wg)
