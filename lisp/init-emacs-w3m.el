@@ -3,6 +3,9 @@
       w3m-file-name-coding-system 'utf-8
       w3m-input-coding-system 'utf-8
       w3m-output-coding-system 'utf-8
+      ;; emacs-w3m will test the imagick's support for png32
+      ;; and create files named "png32:-" everywhere
+      w3m-imagick-convert-program nil
       w3m-terminal-coding-system 'utf-8
       w3m-use-cookies t
       w3m-cookie-accept-bad-cookies t
