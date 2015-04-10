@@ -167,13 +167,9 @@
 (setq evil-leader/leader ",")
 (require 'evil-leader)
 (evil-leader/set-key
-  "ae" 'evil-ace-jump-word-mode ; ,ae for Ace Jump (word)
+  ;; SPACE will evil-ace-jump-word-mode by default
   "al" 'evil-ace-jump-line-mode ; ,al for Ace Jump (line)
   "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
-  "as" 'ack-same
-  "ak" 'ack
-  "aa" 'ack-find-same-file
-  "af" 'ack-find-file
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" '(lambda () (interactive) (switch-to-buffer nil))
@@ -340,7 +336,7 @@
   "om" 'toggle-org-or-message-mode
   "ops" 'my-org2blog-post-subtree
   "ut" 'undo-tree-visualize
-  "al" 'align-regexp
+  "ar" 'align-regexp
   "ww" 'save-buffer
   "bk" 'buf-move-up
   "bj" 'buf-move-down
