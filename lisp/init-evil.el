@@ -263,6 +263,7 @@
   "sg" 'w3m-google-by-filetype
   "sq" 'w3m-stackoverflow-search
   "sj" 'w3m-search-js-api-mdn
+  "sa" 'w3m-java-search
   "sh" 'w3mext-hacker-search ; code search in all engines with firefox
   "gss" 'git-gutter:set-start-revision
   "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")

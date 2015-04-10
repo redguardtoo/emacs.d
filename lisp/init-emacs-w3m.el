@@ -37,6 +37,8 @@
         ("w" "http://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8)
         ;; online dictionary
         ("d" "http://dictionary.reference.com/search?q=%s" utf-8)
+        ;; java google search
+        ("java" "https://www.google.com.au/search?q=java+%s" utf-8)
         ;; javascript seawrch on mozilla.org
         ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
 
@@ -61,6 +63,10 @@
 (defun w3m-stackoverflow-search ()
   (interactive)
   (w3m-customized-search-api "q"))
+
+(defun w3m-java-search ()
+  (interactive)
+  (w3m-customized-search-api "java"))
 
 (defun w3m-google-by-filetype ()
   "Google search 'keyword filetype:file-extension'"
