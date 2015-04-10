@@ -171,7 +171,7 @@
   "al" 'evil-ace-jump-line-mode ; ,al for Ace Jump (line)
   "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
   "as" 'ack-same
-  "ac" 'ack
+  "ak" 'ack
   "aa" 'ack-find-same-file
   "af" 'ack-find-file
   "bf" 'beginning-of-defun
