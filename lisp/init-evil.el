@@ -249,12 +249,6 @@
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
   "gm" 'git-timemachine-toggle
-  "gn" 'git-timemachine-show-next-revision
-  "gp" 'git-timemachine-show-previous-revision
-  "gw" 'git-timemachine-kill-abbreviated-revision
-  "gW" 'git-timemachine-kill-revision
-  "gg" 'git-timemachine-show-nth-revision
-  "gq" 'git-timemachine-quit
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" '(lambda () (interactive) (set-selective-display (if selective-display nil 1)))
   "or" 'open-readme-in-git-root-directory
