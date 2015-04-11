@@ -17,6 +17,9 @@
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
+;;Don't echo passwords when communicating with interactive programs:
+(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+
 ;; {{expand-region.el
 ;; if emacs-nox, use C-@, else, use C-2;
 (if window-system
