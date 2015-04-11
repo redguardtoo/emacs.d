@@ -7,6 +7,7 @@
  "pinyin" "EIM Chinese Pinyin Input Method" (file-truename "~/.eim/py.txt")
  'my-eim-py-activate-function)
 (setq default-input-method "eim-py")
+(setq pyim-toggle-full-width-punctuation nil) ; use western puncutuation
 ;; (toggle-input-method nil)               ; default is turn off
 
 (defun eim-active-hook-setup ()
