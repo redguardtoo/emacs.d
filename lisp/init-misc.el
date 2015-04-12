@@ -13,12 +13,70 @@
                               '(("\\.cmake\\'" . cmake-mode))
                               auto-mode-alist))
 
+(defun back-to-previous-buffer ()
+  (interactive)
+  (switch-to-buffer nil))
+
+(defun my-lookup-dictionary ()
+  (interactive)
+  (dictionary-new-search (cons (if (region-active-p)
+                                   (buffer-substring-no-properties (region-beginning) (region-end))
+                                 (thing-at-point 'symbol)) dictionary-default-dictionary)))
+
+(defun my-gud-gdb ()
+  (interactive)
+  (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
+
+(defun my-overview-of-current-buffer ()
+  (interactive)
+  (set-selective-display (if selective-display nil 1)))
+
+(defun lookup-doc-in-man ()
+  (interactive)
+  (man (concat "-k " (thing-at-point 'symbol))))
+
+(defun magit-show-head-commit ()
+  (interactive)
+  (magit-show-commit "HEAD"))
+
+;; {{ swiper
+(defun swiper-the-thing ()
+  (interactive)
+  (swiper (if (region-active-p)
+              (buffer-substring-no-properties (region-beginning) (region-end))
+            (thing-at-point 'symbol))))
+;; }}
+
 ;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 ;;Don't echo passwords when communicating with interactive programs:
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+
+;; {{ guide-key-mode
+(require 'guide-key)
+(setq guide-key/guide-key-sequence '
+      ("C-x v"
+       ",a" ",b" ",c" ",d"
+       ",e" ",ep"
+       ",f"
+       ",g" ",gs"
+       ",h" ",hs"
+       ",i" ",j" ",jd" ",jt"
+       ",k" ",l"
+       ",m" ",mg"
+       ",o" ",p" ",q"
+       ",r" ",rn"
+       ",s" ",t" ",tu" ",tf"
+       ",u" ",ul"
+       ",v"
+	   ",x" ",xn" ",xv"
+	   ",y"
+	   ",z" ",zw"))
+(guide-key-mode 1)  ; Enable guide-key-mode
+(setq guide-key/idle-delay 0.5)
+;; }}
 
 ;; {{expand-region.el
 ;; if emacs-nox, use C-@, else, use C-2;

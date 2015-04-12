@@ -15,4 +15,18 @@
 (autoload 'wg-redo-wconfig-change "workgroups2" nil t)
 (autoload 'wg-save-wconfig "workgroups2" nil t)
 
+(defun my-wg-swich-to-workgroup (wg)
+  (interactive (list (progn (wg-find-session-file wg-default-session-file)
+                            (wg-read-workgroup-name))))
+  (wg-switch-to-workgroup wg))
+
+(defun my-wg-switch-to-workgroup-at-index (index)
+  (interactive (list (progn (wg-find-session-file wg-default-session-file)
+                            (wg-read-workgroup-index))))
+  (wg-switch-to-workgroup-at-index index))
+
+(defun my-wg-save-session()
+  (interactive)
+  (wg-save-session t))
+
 (provide 'init-workgroups2)

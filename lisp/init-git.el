@@ -67,8 +67,19 @@
      ))
 
 ;; {{ git-gutter
+
 (when *emacs24*
   (require 'git-gutter)
+
+  (defun git-gutter-reset-to-head-parent()
+    (interactive)
+    (git-gutter:set-start-revision "HEAD^")
+    (message "git-gutter:set-start-revision HEAD^"))
+
+  (defun git-gutter-reset-to-default ()
+    (interactive)
+    (git-gutter:set-start-revision nil)
+    (message "git-gutter reset"))
 
   ; If you enable global minor mode
   (global-git-gutter-mode t)

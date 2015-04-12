@@ -1,3 +1,9 @@
+(defun my-yas-reload-all ()
+  (interactive)
+  (unless (featurep 'yasnippet) (require 'yasnippet))
+  (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
+  (yas-reload-all))
+
 (defun my-yas-expand ()
   (interactive)
   (unless (bound-and-true-p yas-global-mode)

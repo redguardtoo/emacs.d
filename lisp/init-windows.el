@@ -38,6 +38,10 @@
 (global-set-key "\C-x|" 'split-window-horizontally-instead)
 (global-set-key "\C-x_" 'split-window-vertically-instead)
 
+(defun scroll-other-window-up ()
+  (interactive)
+  (scroll-other-window '-))
+
 (defun toggle-window-split ()
   (interactive)
   (if (= (count-windows) 2)

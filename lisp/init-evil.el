@@ -172,15 +172,11 @@
   "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
-  "bb" '(lambda () (interactive) (switch-to-buffer nil))
+  "bb" 'back-to-previous-buffer
   "ef" 'end-of-defun
   "db" 'sdcv-search-pointer ; in buffer
   "dt" 'sdcv-search-input+ ;; in tip
-  "dd" '(lambda ()
-          (interactive)
-          (dictionary-new-search (cons (if (region-active-p)
-                                           (buffer-substring-no-properties (region-beginning) (region-end))
-                                         (thing-at-point 'symbol)) dictionary-default-dictionary)))
+  "dd" 'my-lookup-dictionary
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
@@ -192,7 +188,6 @@
   "ee" 'eval-expression
   "cx" 'copy-to-x-clipboard
   "cy" 'strip-convert-lines-into-one-big-string
-  "cff" 'current-font-face
   "fl" 'cp-filename-line-number-of-current-buffer
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
@@ -221,8 +216,7 @@
   "hb" 'helm-back-to-last-point
   "hh" 'browse-kill-ring
   "cg" 'helm-ls-git-ls
-  "ud" '(lambda ()(interactive)
-          (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
+  "ud" 'my-gud-gdb
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
@@ -250,34 +244,33 @@
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
   "gm" 'git-timemachine-toggle
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
-  "ov" '(lambda () (interactive) (set-selective-display (if selective-display nil 1)))
+  "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
-  "mq" '(lambda () (interactive) (man (concat "-k " (thing-at-point 'symbol))))
-  "mgh" '(lambda () (interactive) (magit-show-commit "HEAD"))
+  "mq" 'lookup-doc-in-man
+  "mgh" 'magit-show-head-commit
   "sg" 'w3m-google-by-filetype
   "sq" 'w3m-stackoverflow-search
   "sj" 'w3m-search-js-api-mdn
   "sa" 'w3m-java-search
   "sh" 'w3mext-hacker-search ; code search in all engines with firefox
   "gss" 'git-gutter:set-start-revision
-  "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")
-           (message "git-gutter:set-start-revision HEAD^"))
-  "gsr" '(lambda () (interactive) (git-gutter:set-start-revision nil)
-           (message "git-gutter reset")) ;; reset
+  "gsh" 'git-gutter-reset-to-head-parent
+  "gsr" 'git-gutter-reset-to-default
   "hr" 'helm-recentf
   "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
-  "jpp" 'jsons-print-path
+  "jp" 'jsons-print-path
   "se" 'string-edit-at-point
   "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
-  "x2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
-  "x3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
+  "x2" 'split-window-right
+  "x3" 'split-window-below
   "xr" 'rotate-windows
   "xt" 'toggle-window-split
+  "su" 'winner-undo
   "xu" 'winner-undo
   "to" 'toggle-web-js-offset
   "cam" 'org-tags-view ;; "C-c a m" search items in org-file-apps by tag
@@ -299,12 +292,8 @@
   "rnl" 'rinari-find-log
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
-  "ws" 'w3mext-hacker-search
   "ss" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
-  "st" '(lambda () (interactive)
-          (swiper (if (region-active-p)
-                    (buffer-substring-no-properties (region-beginning) (region-end))
-                    (thing-at-point 'symbol))))
+  "st" 'swiper-the-thing
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
@@ -329,7 +318,6 @@
   "md" 'mc/mark-all-like-this-dwim
   "oc" 'occur
   "om" 'toggle-org-or-message-mode
-  "ops" 'my-org2blog-post-subtree
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "ww" 'save-buffer
@@ -355,9 +343,9 @@
   "xb" 'ido-switch-buffer
   "xc" 'save-buffers-kill-terminal
   "xo" 'helm-find-files
-  "ri" '(lambda () (interactive) (require 'helm) (yari-helm))
+  "ri" 'yari-helm
   "vv" 'scroll-other-window
-  "vu" '(lambda () (interactive) (scroll-other-window '-))
+  "vu" 'scroll-other-window-up
   "vr" 'vr/replace
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
@@ -374,35 +362,25 @@
   "xvp" 'git-push-remote-origin
   "xvu" 'git-add-option-update
   "xvg" 'vc-annotate
+  "xvs" 'git-gutter:stage-hunk
+  "xvr" 'git-gutter:revert-hunk
+  "xvl" 'vc-print-log
+  "xvb" 'git-messenger:popup-message
   "xv=" 'git-gutter:popup-hunk
   "ps" 'my-goto-previous-section
   "ns" 'my-goto-next-section
   "pp" 'my-goto-previous-hunk
   "nn" 'my-goto-next-hunk
-  "xvs" 'git-gutter:stage-hunk
-  "xvr" 'git-gutter:revert-hunk
-  "xvl" 'vc-print-log
-  "xvb" 'git-messenger:popup-message
   "xnn" 'narrow-or-widen-dwim
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "ycr" (lambda ()
-          (interactive)
-          (unless (featurep 'yasnippet) (require 'yasnippet))
-          (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
-          (yas-reload-all))
+  "ycr" 'my-yas-reload-all
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
-  "zv" '(lambda (wg)
-          (interactive (list (progn (wg-find-session-file wg-default-session-file)
-                                    (wg-read-workgroup-name))))
-          (wg-switch-to-workgroup wg))
-  "zj" '(lambda (index)
-          (interactive (list (progn (wg-find-session-file wg-default-session-file)
-                                    (wg-read-workgroup-index))))
-          (wg-switch-to-workgroup-at-index index))
-  "zs" '(lambda () (interactive)  (wg-save-session t))
+  "zv" 'my-wg-swich-to-workgroup
+  "zj" 'my-wg-switch-to-workgroup-at-index
+  "zs" 'my-wg-save-session
   "zb" 'wg-switch-to-buffer
   "zwr" 'wg-redo-wconfig-change
   "zws" 'wg-save-wconfig
