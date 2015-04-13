@@ -266,8 +266,8 @@
   "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
-  "x2" 'split-window-right
-  "x3" 'split-window-below
+  "x2" 'split-window-vertically
+  "x3" 'split-window-horizontally
   "xr" 'rotate-windows
   "xt" 'toggle-window-split
   "su" 'winner-undo
