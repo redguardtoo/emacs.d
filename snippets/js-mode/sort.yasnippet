@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# key: sort
+# name: arr.sort(function(a, b){ a.prop1 < b.prop1 ... })
+# --
+${1:arr}.sort(function(a, b) {
+  if (a.${2:prop1} < b.${2:$(yas/substr yas-text "[^ ]*")}) {
+    $0
+    return -1;
+  }
+  if (a.${2:$(yas/substr yas-text "[^ ]*")} > b.${2:$(yas/substr yas-text "[^ ]*")}) {
+    return 1;
+  }
+  return 0;
+});
