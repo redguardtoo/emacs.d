@@ -1,10 +1,10 @@
 ;;; rainbow-mode.el --- Colorize color names in buffers
 
-;; Copyright (C) 2010-2012 Free Software Foundation, Inc
+;; Copyright (C) 2010-2015 Free Software Foundation, Inc
 
 ;; Author: Julien Danjou <julien@danjou.info>
 ;; Keywords: faces
-;; Version: 0.9
+;; Version: 0.11
 
 ;; This file is part of GNU Emacs.
 
@@ -60,9 +60,9 @@
 
 ;; rgb() colors
 (defvar rainbow-html-rgb-colors-font-lock-keywords
-  '(("rgb(\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*)"
+  '(("rgb(\s*\\([0-9]\\{1,3\\}\\(?:\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*)"
      (0 (rainbow-colorize-rgb)))
-    ("rgba(\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\s*%\\)?\\)\s*,\s*[0-9]*\.?[0-9]+\s*%?\s*)"
+    ("rgba(\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*[0-9]*\.?[0-9]+\s*%?\s*)"
      (0 (rainbow-colorize-rgb)))
     ("hsl(\s*\\([0-9]\\{1,3\\}\\)\s*,\s*\\([0-9]\\{1,3\\}\\)\s*%\s*,\s*\\([0-9]\\{1,3\\}\\)\s*%\s*)"
      (0 (rainbow-colorize-hsl)))
@@ -1018,11 +1018,12 @@ background is COLOR. The foreground is computed using
 
 (defun rainbow-rgb-relative-to-absolute (number)
   "Convert a relative NUMBER to absolute. If NUMBER is absolute, return NUMBER.
-This will convert \"80 %\" to 204, \"100 %\" to 255 but \"123\" to \"123\"."
+This will convert \"80 %\" to 204, \"100 %\" to 255 but \"123\" to \"123\".
+If the percentage value is above 100, it's converted to 100."
   (let ((string-length (- (length number) 1)))
     ;; Is this a number with %?
     (if (eq (elt number string-length) ?%)
-        (/ (* (string-to-number (substring number 0 string-length)) 255) 100)
+        (/ (* (min (string-to-number (substring number 0 string-length)) 100) 255) 100)
       (string-to-number number))))
 
 (defun rainbow-colorize-hsl ()
@@ -1048,6 +1049,9 @@ This will convert \"80 %\" to 204, \"100 %\" to 255 but \"123\" to \"123\"."
         (g (* (string-to-number (match-string-no-properties 2)) 255.0))
         (b (* (string-to-number (match-string-no-properties 3)) 255.0)))
     (rainbow-colorize-match (format "#%02X%02X%02X" r g b))))
+
+(defvar ansi-color-context)
+(defvar xterm-color-current)
 
 (defun rainbow-colorize-ansi ()
   "Return a matched string propertized with ansi color face."
@@ -1159,10 +1163,25 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
   (progn
     (if rainbow-mode
         (rainbow-turn-on)
-      (rainbow-turn-off))))
+      (rainbow-turn-off))
+    ;; Call font-lock-mode to refresh the buffer when used e.g. interactively
+    (font-lock-mode 1)))
 
 ;;;; ChangeLog:
 
+;; 2015-03-06  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	rainbow: fix font-lock-mode refresh
+;; 
+;; 2014-10-15  Stefan Monnier  <monnier@iro.umontreal.ca>
+;; 
+;; 	* packages/rainbow-mode/rainbow-mode.el (ansi-color-context)
+;; 	(xterm-color-current): Declare.
+;; 
+;; 2014-09-07  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	rainbow-mode: support float in CSS and limit to 100%
+;; 
 ;; 2013-08-05  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode: 0.9, allow spaces in LaTeX colors
@@ -1170,13 +1189,13 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
 ;; 2013-05-03  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode: add support for R, bump version to 0.8
-;; 	
+;; 
 ;; 	Signed-off-by: Julien Danjou <julien@danjou.info>
 ;; 
 ;; 2013-02-26  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode: version 0.7
-;; 	
+;; 
 ;; 	* rainbow-mode.el: don't activate font-lock-mode
 ;; 
 ;; 2012-12-11  Julien Danjou  <julien@danjou.info>
@@ -1190,21 +1209,22 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
 ;; 2012-11-14  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode: version 0.5
-;; 	
+;; 
 ;; 	* rainbow-mode.el: fix syntax error on
-;; 	`rainbow-hexadecimal-colors-font-lock-keywords'.
+;; 	 `rainbow-hexadecimal-colors-font-lock-keywords'.
 ;; 
 ;; 2012-11-09  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode: version 0.4
-;; 	
-;; 	* rainbow-mode.el: Use functions from color package to colorize HSL rather
-;; 	than our own copy.
+;; 
+;; 	* rainbow-mode.el: Use functions from color package to colorize HSL
+;; 	rather
+;; 	 than our own copy.
 ;; 
 ;; 2012-11-09  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow-mode 0.3
-;; 	
+;; 
 ;; 	* rainbow-mode.el: avoid colorizing HTML entities
 ;; 
 ;; 2011-09-23  Julien Danjou  <julien@danjou.info>
@@ -1213,18 +1233,8 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
 ;; 
 ;; 2011-07-01  Chong Yidong  <cyd@stupidchicken.com>
 ;; 
-;; 	Reorganize repository layout, allowing site installation.
-;; 	
-;; 	A Makefile with "site", "archive" and "archive-full" rules can now be
-;; 	used for site-installation, partial archive deployment, and full
-;; 	archive deployment respectively.
-;; 	
-;; 	Rewrite the admin/archive-contents.el script to handle these changes.
-;; 
-;; 2011-07-01  Chong Yidong  <cyd@stupidchicken.com>
-;; 
-;; 	Give every package its own directory in packages/
-;; 	including single-file packages.
+;; 	Give every package its own directory in packages/ including single-file
+;; 	packages.
 ;; 
 
 
