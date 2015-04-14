@@ -8,6 +8,32 @@
 ;; C#
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
+;; {{ find-file-in-project (ffip)
+(setq-default ffip-patterns '("*.*")) ;; blackbox strategy
+(setq-default ffip-prune-patterns '(".git"
+                                    ".svn"
+                                    ".hg"
+                                    "node_modules"
+                                    "bower_components"
+                                    ".DS_Store"
+                                    ".cvs"
+                                    "TAGS"
+                                    "GTAGS"
+                                    "GPATH"
+                                    "GRTAGS"
+                                    "*flymake"
+                                    "*.class"
+                                    "*.war"
+                                    "*.jar"
+                                    "#*#"
+                                    "*.swp"
+                                    "*~"
+                                    "*.pyc"
+                                    "*.elc"
+                                    "*min.js"
+                                    "*min.css"))
+;; }}
+
 ;; cmake
 (setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
                               '(("\\.cmake\\'" . cmake-mode))
