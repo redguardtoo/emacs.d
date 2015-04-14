@@ -1,0 +1,28 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: <div ng-model="..." number-only />
+# key: adirective
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// <div ng-model="..." number-only ></div>
+// could be a general directive eating illegal characters
+angular.module('${1:myApp}').directive('${2:numberOnly}', function() {
+  function link(scope, element, attrs, ctrl) {
+    // ngModel from {require:'ngModel'}
+    // @see https://docs.angularjs.org/guide/directive
+	ctrl.$parsers.push(function (origVal) {
+	  if (!origVal) {
+        return '';
+      }
+	  var newVal = origVal.replace(/[^0-9]/g, '');
+	  if (newVal !== origVal) {
+		ctrl.$setViewValue(newVal);
+		ctrl.$render();
+	  }
+	  return newVal;
+	});
+  }
+  return {
+	require: 'ngModel',
+	link: link
+  };
+});
