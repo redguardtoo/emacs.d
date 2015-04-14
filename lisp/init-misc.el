@@ -9,6 +9,7 @@
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
 ;; {{ find-file-in-project (ffip)
+(autoload 'ivy-read "ivy")
 (setq-default ffip-patterns '("*.*")) ;; blackbox strategy
 (setq-default ffip-prune-patterns '(".git"
                                     ".svn"

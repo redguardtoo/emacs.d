@@ -152,6 +152,17 @@ This overrides variable `ffip-project-root' when set.")
         (setq rlt (format " | head -n %d" ffip-limit)))
     rlt))
 
+(defun ffip-completing-read (prompt collection)
+  (let (rlt)
+    (cond
+     ((fboundp 'ivy-read)
+      (setq rlt (ivy-read prompt files)))
+     ((and (boundp 'ido-mode) ido-mode)
+      (setq rlt (ido-completing-read prompt files)))
+     (t
+      (setq rlt (completing-read prompt files))))
+    rlt))
+
 (defun ffip-project-files ()
   "Return an alist of all filenames in the project and their path.
 
@@ -197,9 +208,7 @@ setting the variable `ffip-project-root'."
   (interactive)
   (let* ((project-files (ffip-project-files))
          (files (mapcar 'car project-files))
-         (file (if (and (boundp 'ido-mode) ido-mode)
-                   (ido-completing-read "Find file in project: " files)
-                 (completing-read "Find file in project: " files))))
+         (file (ffip-completing-read "Find file in project: " files)))
     (find-file (cdr (assoc file project-files)))))
 
 ;;;###autoload
