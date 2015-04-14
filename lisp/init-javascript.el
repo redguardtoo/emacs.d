@@ -56,9 +56,10 @@
                 nil 1 2 3)
               flymake-err-line-patterns))
 
+  ;; https://github.com/illusori/emacs-flymake
+  ;; javascript support is out of the box
   (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.js\\'" flymake-jshint-init)
-               '("\\.json\\'" flymake-jshint-init))
+               '("\\.json\\'" flymake-javascript-init))
   (flymake-mode 1))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
