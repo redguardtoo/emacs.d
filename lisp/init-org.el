@@ -38,10 +38,10 @@
   (interactive)
   (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
     (when (and *is-a-mac* (file-exists-p cmd))
-        ;; org v7
-        (setq org-export-odt-convert-processes '(("LibreOffice" (concat cmd " --headless --convert-to %f%x --outdir %d %i" ))))
-        ;; org v8
-        (setq org-odt-convert-processes '(("LibreOffice" (concat cmd " --headless --convert-to %f%x --outdir %d %i" )))))
+      ;; org v7
+      (setq org-export-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i")))
+      ;; org v8
+      (setq org-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))
     ))
 
 (my-setup-odt-org-convert-process)
