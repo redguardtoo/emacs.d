@@ -1,12 +1,12 @@
 ;;; find-file-in-project.el --- Find files in a project quickly.
 
-;; Copyright (C) 2006-2009, 2011-2012
+;; Copyright (C) 2006-2009, 2011-2012, 2015
 ;;   Phil Hagelberg, Doug Alcorn, and Will Farrington
-
 ;; Author: Phil Hagelberg, Doug Alcorn, and Will Farrington
+;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki/FindFileInProject
 ;; Git: git://github.com/technomancy/find-file-in-project.git
-;; Version: 3.3
+;; Version: 3.4
 ;; Created: 2008-03-18
 ;; Keywords: project, convenience
 ;; EmacsWiki: FindFileInProject
@@ -43,14 +43,29 @@
 
 ;; If you have so many files that it becomes unwieldy, you can set
 ;; `ffip-find-options' to a string which will be passed to the `find'
-;; invocation in order to exclude irrelevant subdirectories.  For
-;; instance, in a Ruby on Rails project, you may be interested in all
+;; invocation in order to exclude irrelevant subdirectories/files.
+;; For instance, in a Ruby on Rails project, you are interested in all
 ;; .rb files that don't exist in the "vendor" directory.  In that case
 ;; you could set `ffip-find-options' to "-not -regex \".*vendor.*\"".
 
 ;; All these variables may be overridden on a per-directory basis in
 ;; your .dir-locals.el.  See (info "(Emacs) Directory Variables") for
 ;; details.
+
+;; Ivy.el from https://github.com/abo-abo/swiper could be automatically
+;; used if you insert below line into ~/.emacs,
+;;   (autoload 'ivy-read "ivy")
+;; In Ivy.el, SPACE is translated to regex ".*".
+;; For exmaple, the search string "dec fun pro" is transformed into
+;; a regex "\\(dec\\).*\\(fun\\).*\\(pro\\)"
+;;
+;; If Ivy.el is not avaliable, ido will be used.
+
+;; GNU Find is required. It can be installed,
+;;   - though `brew' on OS X
+;;   - through `cygwin' on Windows.
+
+;; This program works on Windows/Cygwin/Linux/Mac Emacs.
 
 ;; Recommended binding: (global-set-key (kbd "C-x f") 'find-file-in-project)
 
@@ -70,13 +85,35 @@
 May be set using .dir-locals.el. Checks each entry if set to a list.")
 
 (defvar ffip-patterns
-  '("*.html" "*.org" "*.txt" "*.md" "*.el" "*.clj" "*.py" "*.rb" "*.js" "*.pl"
-    "*.sh" "*.erl" "*.hs" "*.ml")
+  '("*.*")
   "List of patterns to look for with `find-file-in-project'.")
 
 (defvar ffip-prune-patterns
-  '(".git")
-  "List of directory patterns to not decend into when listing files in `find-file-in-project'.")
+  '(".git"
+    ".svn"
+    ".cvs"
+    ".bzr"
+    ".hg"
+    "node_modules"
+    "bower_components"
+    ".DS_Store"
+    "TAGS"
+    "GTAGS"
+    "GPATH"
+    "GRTAGS"
+    "*flymake"
+    "*.class"
+    "*.war"
+    "*.jar"
+    "#*#"
+    ".#*"
+    "*.swp"
+    "*~"
+    "*.pyc"
+    "*.elc"
+    "*min.js"
+    "*min.css")
+  "List of directory/file patterns to not decend into when listing files in `find-file-in-project'.")
 
 (defvar ffip-find-options ""
   "Extra options to pass to `find' when using `find-file-in-project'.
@@ -94,7 +131,7 @@ This overrides variable `ffip-project-root' when set.")
 (defvar ffip-limit 0
   "Limit results to this many files. 0 means no limit")
 
-(defvar ffip-full-paths nil
+(defvar ffip-full-paths t
   "If non-nil, show fully project-relative paths.")
 
 (defun ffip-project-root ()
@@ -129,12 +166,6 @@ This overrides variable `ffip-project-root' when set.")
          ((executable-find "e:\\\\cygwin\\\\bin\\\\find")
           (setq rlt "e:\\\\cygwin\\\\bin\\\\find"))))
     rlt))
-
-(defun ffip-uniqueify (file-cons)
-  "Set the car of FILE-CONS to include the directory name plus the file name."
-  (setcar file-cons
-          (concat (cadr (reverse (split-string (cdr file-cons) "/"))) "/"
-                  (car file-cons))))
 
 (defun ffip-join-patterns ()
   "Turn `ffip-patterns' into a string that `find' can use."
@@ -176,24 +207,24 @@ directory they are found in so that they are unique."
                                     (error "No project root found")))))
     (cd (file-name-as-directory root))
     ;; make the prune pattern more general
-    (setq cmd (format "%s . \\( %s \\) -prune -o -type f \\( %s \\) -print %s %s"
+    (setq cmd (format "%s . \\( %s \\) -prune -o -type f \\( %s \\) %s %s -print"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                       (ffip-prune-patterns) (ffip-join-patterns)
                       ffip-find-options (ffip-limit-find-results)))
+
     ;; (message "run cmd at %s: %s" default-directory cmd)
     (setq rlt
           (mapcar (lambda (file)
                     (if ffip-full-paths
-                        (cons (substring (expand-file-name file) (length root))
+                        (cons (replace-regexp-in-string "^\./" "" file)
                               (expand-file-name file))
                       (let ((file-cons (cons (file-name-nondirectory file)
                                              (expand-file-name file))))
-                        (when (assoc (car file-cons) file-alist)
-                          (ffip-uniqueify (assoc (car file-cons) file-alist))
-                          (ffip-uniqueify file-cons))
                         (add-to-list 'file-alist file-cons)
                         file-cons)))
-                  (split-string (shell-command-to-string cmd))))
+                  ;; #15 improving handling of directories containing space
+                  (split-string (shell-command-to-string cmd) "[\r\n]+")))
+
     ;; restore the original default-directory
     (cd old-default-directory)
     rlt))
@@ -208,7 +239,10 @@ setting the variable `ffip-project-root'."
   (interactive)
   (let* ((project-files (ffip-project-files))
          (files (mapcar 'car project-files))
-         (file (ffip-completing-read "Find file in project: " files)))
+         file root)
+    (setq root (file-name-nondirectory (directory-file-name (or ffip-project-root (ffip-project-root)))))
+
+    (setq file (ffip-completing-read (format "Find file in %s/: " root)  files))
     (find-file (cdr (assoc file project-files)))))
 
 ;;;###autoload
