@@ -297,13 +297,6 @@ grab matched string, cssize them, and insert into kill ring"
 (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 ;; }}
 
-;; {{ save history
-(when (file-writable-p (file-truename "~/.emacs.d/history"))
-  (setq history-length 8000)
-  (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-  (savehist-mode 1))
-;; }}
-
 (defun insert-file-link-from-clipboard ()
   "Make sure the full path of file exist in clipboard. This command will convert
 The full path into relative path insert it as a local file link in org-mode"
@@ -546,6 +539,18 @@ Including indent-buffer, which should not be called automatically on save."
   (interactive)
   (cleanup-buffer-safe)
   (indent-buffer))
+
+;; {{ save history
+;; On Corp machines, I don't have permission to access history,
+;; so safe-wrap is used
+(safe-wrap
+ (when (file-writable-p (file-truename "~/.emacs.d/history"))
+   (setq history-length 8000)
+   (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
+   (savehist-mode 1))
+ (message "Failed to access ~/.emacs.d/history"))
+;; }}
+
 (provide 'init-misc-lazy)
 ;;; init-misc-lazy.el ends here
 
