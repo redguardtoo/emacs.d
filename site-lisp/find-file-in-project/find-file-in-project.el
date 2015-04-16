@@ -207,7 +207,7 @@ directory they are found in so that they are unique."
                                     (error "No project root found")))))
     (cd (file-name-as-directory root))
     ;; make the prune pattern more general
-    (setq cmd (format "%s . \\( %s \\) -prune -o -type f \\( %s \\) %s %s -print"
+    (setq cmd (format "%s . \\( %s \\) -prune -o -type f \\( %s \\) %s -print %s"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                       (ffip-prune-patterns) (ffip-join-patterns)
                       ffip-find-options (ffip-limit-find-results)))
