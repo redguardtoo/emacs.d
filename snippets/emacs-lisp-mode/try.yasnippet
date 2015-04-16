@@ -1,0 +1,12 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: try...catch...finally
+# key: try
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(unwind-protect
+    (let (retval)
+      (condition-case ex
+          (setq retval ${1:\(message "try"\)})
+        ('error (message (format "Caught exception: [%s]" ex))))
+      retval)
+  (message "${2:finally}"))
