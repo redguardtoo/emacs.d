@@ -357,6 +357,8 @@
   "xk" 'ido-kill-buffer
   "xs" 'save-buffer
   "xz" 'suspend-frame
+  "xvm" 'vc-rename-file-and-buffer
+  "xvc" 'vc-copy-file-and-rename-buffer
   "xvv" 'vc-next-action
   "xva" 'git-add-current-file
   "xvp" 'git-push-remote-origin
