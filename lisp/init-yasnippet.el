@@ -4,6 +4,30 @@
   (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
   (yas-reload-all))
 
+(defun my-yas-camelcase-to-string-list (str)
+  "Convert camelcase string into string list"
+  (let ((old-case case-fold-search)
+        rlt)
+    (setq case-fold-search nil)
+    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)" " \\1" str t))
+    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)\\([A-Z][a-z]+\\)" "\\1 \\2" rlt t))
+    ;; restore case-fold-search
+    (setq case-fold-search old-case)
+    (split-string rlt " ")))
+
+(defun my-yas-camelcase-to-downcase (str)
+  (let ((l (my-yas-camelcase-to-string-list str))
+        (old-case case-fold-search)
+        rlt)
+    (setq case-fold-search nil)
+    (setq rlt (mapcar (lambda (elem)
+                        (if (string-match "^[A-Z]+$" elem)
+                            elem
+                          (downcase elem))
+                        ) l))
+    (setq case-fold-search old-case)
+    (mapconcat 'identity rlt " ")))
+
 (defun my-yas-expand ()
   (interactive)
   (unless (bound-and-true-p yas-global-mode)

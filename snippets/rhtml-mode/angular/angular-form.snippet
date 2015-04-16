@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: <form><input ng-pattern><span>error message</span></form>
+# key: aform
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+<form name="${1:frm}">
+  <input type="text" name="${2:userName}" ng-model="${3:userData}.${2:$(yas/substr yas-text "[^ ]*")}" placeholder="" ng-pattern="/^[a-zA-Z0-9]+$/">
+  <span ng-show="!${1:$(yas/substr yas-text "[^ ]*")}.${2:$(yas/substr yas-text "[^ ]*")}.$valid" class="error">Enter valid ${2:$(my-yas-camelcase-to-downcase (yas/substr yas-text "[^ ]*"))}</span>
+</form>
