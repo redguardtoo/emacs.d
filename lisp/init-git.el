@@ -73,8 +73,13 @@
 
   (defun git-gutter-reset-to-head-parent()
     (interactive)
-    (git-gutter:set-start-revision "HEAD^")
-    (message "git-gutter:set-start-revision HEAD^"))
+    (let (parent)
+      (if (eq git-gutter:vcs-type 'svn)
+          (setq parent "PREV")
+        (setq parent "HEAD^"))
+      (git-gutter:set-start-revision parent)
+      (message "git-gutter:set-start-revision parent of HEAD")
+      ))
 
   (defun git-gutter-reset-to-default ()
     (interactive)
