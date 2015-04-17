@@ -67,6 +67,7 @@
   (magit-show-commit "HEAD"))
 
 ;; {{ swiper
+(autoload 'swiper "swiper" "" t)
 (defun swiper-the-thing ()
   (interactive)
   (swiper (if (region-active-p)

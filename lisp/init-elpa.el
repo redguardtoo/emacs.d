@@ -258,7 +258,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
 (when *emacs24*
-  (require-package 'swiper)
   (require-package 'coffee-mode)
   (require-package 'flymake-coffee))
 (require-package 'crontab-mode)
