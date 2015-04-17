@@ -6,7 +6,7 @@
 ;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://www.emacswiki.org/cgi-bin/wiki/FindFileInProject
 ;; Git: git://github.com/technomancy/find-file-in-project.git
-;; Version: 3.4
+;; Version: 3.5
 ;; Created: 2008-03-18
 ;; Keywords: project, convenience
 ;; EmacsWiki: FindFileInProject
@@ -32,7 +32,7 @@
 
 ;;; Commentary:
 
-;; This library provides a couple methods for quickly finding any file
+;; This program provides a couple methods for quickly finding any file
 ;; in a given project.  It depends on GNU find.
 
 ;; A project is found by searching up the directory tree until a file
@@ -59,19 +59,15 @@
 ;; For exmaple, the search string "dec fun pro" is transformed into
 ;; a regex "\\(dec\\).*\\(fun\\).*\\(pro\\)"
 ;;
-;; If Ivy.el is not avaliable, ido will be used.
+;; If Ivy.el is not available, ido will be used.
 
-;; GNU Find is required. It can be installed,
-;;   - though `brew' on OS X
+;; GNU Find can be installed,
+;;   - through `brew' on OS X
 ;;   - through `cygwin' on Windows.
 
 ;; This program works on Windows/Cygwin/Linux/Mac Emacs.
 
 ;; Recommended binding: (global-set-key (kbd "C-x f") 'find-file-in-project)
-
-;;; TODO:
-
-;; Add compatibility with BSD find (PDI; I can't virtualize OS X)
 
 ;;; Code:
 
@@ -84,19 +80,24 @@
 
 May be set using .dir-locals.el. Checks each entry if set to a list.")
 
-(defvar ffip-patterns
-  '("*.*")
+(defvar ffip-patterns nil
   "List of patterns to look for with `find-file-in-project'.")
 
 (defvar ffip-prune-patterns
   '(".git"
     ".svn"
     ".cvs"
+    ".metadata"
     ".bzr"
+    "bin"
     ".hg"
+    "cscope.files"
+    "*.log"
+    "target"
     "node_modules"
     "bower_components"
     ".DS_Store"
+    "tags"
     "TAGS"
     "GTAGS"
     "GPATH"
@@ -112,8 +113,9 @@ May be set using .dir-locals.el. Checks each entry if set to a list.")
     "*.pyc"
     "*.elc"
     "*min.js"
-    "*min.css")
-  "List of directory/file patterns to not decend into when listing files in `find-file-in-project'.")
+    "*min.css"
+    ".cask")
+  "List of directory/file patterns to not descend into when listing files in `find-file-in-project'.")
 
 (defvar ffip-find-options ""
   "Extra options to pass to `find' when using `find-file-in-project'.
@@ -169,8 +171,12 @@ This overrides variable `ffip-project-root' when set.")
 
 (defun ffip-join-patterns ()
   "Turn `ffip-patterns' into a string that `find' can use."
-  (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
-             ffip-patterns " -or "))
+  (if ffip-patterns
+      (format "\\( %s \\)"
+              (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
+                         ffip-patterns " -or "))
+
+    ""))
 
 (defun ffip-prune-patterns ()
   "Turn `ffip-prune-patterns' into a string that `find' can use."
@@ -187,11 +193,11 @@ This overrides variable `ffip-project-root' when set.")
   (let (rlt)
     (cond
      ((fboundp 'ivy-read)
-      (setq rlt (ivy-read prompt files)))
+      (setq rlt (ivy-read prompt collection)))
      ((and (boundp 'ido-mode) ido-mode)
-      (setq rlt (ido-completing-read prompt files)))
+      (setq rlt (ido-completing-read prompt collection)))
      (t
-      (setq rlt (completing-read prompt files))))
+      (setq rlt (completing-read prompt collection))))
     rlt))
 
 (defun ffip-project-files ()
@@ -207,7 +213,7 @@ directory they are found in so that they are unique."
                                     (error "No project root found")))))
     (cd (file-name-as-directory root))
     ;; make the prune pattern more general
-    (setq cmd (format "%s . \\( %s \\) -prune -o -type f \\( %s \\) %s -print %s"
+    (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s -print %s"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                       (ffip-prune-patterns) (ffip-join-patterns)
                       ffip-find-options (ffip-limit-find-results)))
@@ -223,11 +229,17 @@ directory they are found in so that they are unique."
                         (add-to-list 'file-alist file-cons)
                         file-cons)))
                   ;; #15 improving handling of directories containing space
-                  (split-string (shell-command-to-string cmd) "[\r\n]+")))
+                  (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
 
     ;; restore the original default-directory
     (cd old-default-directory)
     rlt))
+
+;;;###autoload
+(defun ffip-current-full-filename-match-pattern-p (REGEX)
+  "Is current full file name (including directory) match the REGEX?"
+  (let ((dir (if (buffer-file-name) (buffer-file-name) "")))
+    (string-match-p REGEX dir)))
 
 ;;;###autoload
 (defun find-file-in-project ()
