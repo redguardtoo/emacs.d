@@ -72,23 +72,23 @@
 (defun toggle-org-or-message-mode ()
   (interactive)
   (if (eq major-mode 'message-mode)
-    (org-mode)
+      (org-mode)
     (if (eq major-mode 'org-mode) (message-mode))
     ))
 
 ;; (evil-set-initial-state 'org-mode 'emacs)
 ;; Remap org-mode meta keys for convenience
 (evil-declare-key 'normal org-mode-map
-    "gh" 'outline-up-heading
-    "gl" 'outline-next-visible-heading
-    "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
-    "L" 'org-end-of-line ; smarter behaviour on headlines etc.
-    "$" 'org-end-of-line ; smarter behaviour on headlines etc.
-    "^" 'org-beginning-of-line ; ditto
-    "-" 'org-ctrl-c-minus ; change bullet style
-    "<" 'org-metaleft ; out-dent
-    ">" 'org-metaright ; indent
-    (kbd "TAB") 'org-cycle)
+  "gh" 'outline-up-heading
+  "gl" 'outline-next-visible-heading
+  "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
+  "L" 'org-end-of-line ; smarter behaviour on headlines etc.
+  "$" 'org-end-of-line ; smarter behaviour on headlines etc.
+  "^" 'org-beginning-of-line ; ditto
+  "-" 'org-ctrl-c-minus ; change bullet style
+  "<" 'org-metaleft ; out-dent
+  ">" 'org-metaright ; indent
+  (kbd "TAB") 'org-cycle)
 
 (loop for (mode . state) in
       '((minibuffer-inactive-mode . emacs)
@@ -244,6 +244,10 @@
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
+  "oas" 'org-archive-subtree ; `C-c $'
+  "ops" 'org-promote-subtree ; `C-c C-<'
+  "ods" 'org-demote-subtree ; `C-c C->'
+  "otv" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
   "mq" 'lookup-doc-in-man
   "mgh" 'magit-show-head-commit
   "sg" 'w3m-google-by-filetype
@@ -271,7 +275,6 @@
   "su" 'winner-undo
   "xu" 'winner-undo
   "to" 'toggle-web-js-offset
-  "cam" 'org-tags-view ;; "C-c a m" search items in org-file-apps by tag
   "cf" 'helm-for-files ;; "C-c f"
   "sl" 'sort-lines
   "ulr" 'uniquify-all-lines-region
