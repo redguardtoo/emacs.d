@@ -184,7 +184,7 @@
   "sr" 'evil-surround-region
   "sc" 'shell-command
   "ee" 'eval-expression
-  "cx" 'copy-to-x-clipboard
+  "xc" 'copy-to-x-clipboard
   "cy" 'strip-convert-lines-into-one-big-string
   "fl" 'cp-filename-line-number-of-current-buffer
   "fn" 'cp-filename-of-current-buffer
@@ -244,10 +244,13 @@
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
-  "oas" 'org-archive-subtree ; `C-c $'
-  "ops" 'org-promote-subtree ; `C-c C-<'
-  "ods" 'org-demote-subtree ; `C-c C->'
-  "otv" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
+  "c$" 'org-archive-subtree ; `C-c $'
+  "c<" 'org-promote-subtree ; `C-c C-<'
+  "c>" 'org-demote-subtree ; `C-c C->'
+  "cam" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
+  "cxi" 'org-clock-in ; `C-c C-x C-i'
+  "cxo" 'org-clock-out ; `C-c C-x C-o'
+  "cxr" 'org-clock-report ; `C-c C-x C-r'
   "mq" 'lookup-doc-in-man
   "mgh" 'magit-show-head-commit
   "sg" 'w3m-google-by-filetype
@@ -342,7 +345,6 @@
   "xx" 'er/expand-region
   "xf" 'ido-find-file
   "xb" 'ido-switch-buffer
-  "xc" 'save-buffers-kill-terminal
   "xo" 'helm-find-files
   "ri" 'yari-helm
   "vv" 'scroll-other-window
