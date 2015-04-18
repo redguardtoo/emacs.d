@@ -183,8 +183,6 @@
   "sd" 'sudo-edit
   "sr" 'evil-surround-region
   "sc" 'shell-command
-  "spt" 'sr-speedbar-toggle
-  "spr" 'sr-speedbar-refresh-toggle
   "ee" 'eval-expression
   "cx" 'copy-to-x-clipboard
   "cy" 'strip-convert-lines-into-one-big-string

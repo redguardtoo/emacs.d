@@ -168,13 +168,6 @@
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 (if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
-
-(eval-after-load 'speedbar
-  '(if (load "mwheel" t)
-       ;; Enable wheelmouse support by default
-       (cond (window-system
-              (mwheel-install)))))
-
 ;; {{ @see http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
 (defun sudo-edit (&optional arg)
   "Edit currently visited file as root.

@@ -128,7 +128,6 @@
 (setq idle-require-symbols '(init-misc-lazy
                              init-which-func
                              init-fonts
-                             init-sr-speedbar
                              init-hs-minor-mode
                              init-stripe-buffer
                              init-textile
