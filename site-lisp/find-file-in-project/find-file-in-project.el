@@ -34,7 +34,13 @@
 
 ;; This program provides a couple methods for quickly finding any file
 ;; in a given project.  It depends on GNU find.
-
+;;
+;; Usage,
+;;   - `M-x find-file-in-project` will start search immediately
+;;   - `M-x find-file-in-project-by-selected` use the your selected
+;;      region as keyword to search. Or you need provide the keyword
+;;      if no region selected.
+;;
 ;; A project is found by searching up the directory tree until a file
 ;; is found that matches `ffip-project-file'.  (".git" by default.)
 ;; You can set `ffip-project-root-function' to provide an alternate
@@ -64,8 +70,9 @@
 ;; GNU Find can be installed,
 ;;   - through `brew' on OS X
 ;;   - through `cygwin' on Windows.
-
+;;
 ;; This program works on Windows/Cygwin/Linux/Mac Emacs.
+;; See https://github.com/technomancy/find-file-in-project for advanced tips
 
 ;; Recommended binding: (global-set-key (kbd "C-x f") 'find-file-in-project)
 
@@ -175,7 +182,6 @@ This overrides variable `ffip-project-root' when set.")
       (format "\\( %s \\)"
               (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
                          ffip-patterns " -or "))
-
     ""))
 
 (defun ffip-prune-patterns ()
@@ -200,7 +206,7 @@ This overrides variable `ffip-project-root' when set.")
       (setq rlt (completing-read prompt collection))))
     rlt))
 
-(defun ffip-project-files ()
+(defun ffip-project-files (&optional keyword)
   "Return an alist of all filenames in the project and their path.
 
 Files with duplicate filenames are suffixed with the name of the
@@ -213,12 +219,11 @@ directory they are found in so that they are unique."
                                     (error "No project root found")))))
     (cd (file-name-as-directory root))
     ;; make the prune pattern more general
-    (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s -print %s"
+    (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s %s -print %s"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
                       (ffip-prune-patterns) (ffip-join-patterns)
+                      (if keyword (concat "-name \"*" keyword "*\"") "")
                       ffip-find-options (ffip-limit-find-results)))
-
-    ;; (message "run cmd at %s: %s" default-directory cmd)
     (setq rlt
           (mapcar (lambda (file)
                     (if ffip-full-paths
@@ -235,6 +240,15 @@ directory they are found in so that they are unique."
     (cd old-default-directory)
     rlt))
 
+(defun ffip-find-files (&optional keyword)
+  (let* ((project-files (ffip-project-files keyword))
+         (files (mapcar 'car project-files))
+         file root)
+    (setq root (file-name-nondirectory (directory-file-name (or ffip-project-root (ffip-project-root)))))
+
+    (setq file (ffip-completing-read (format "Find file in %s/: " root)  files))
+    (find-file (cdr (assoc file project-files)))))
+
 ;;;###autoload
 (defun ffip-current-full-filename-match-pattern-p (REGEX)
   "Is current full file name (including directory) match the REGEX?"
@@ -246,16 +260,22 @@ directory they are found in so that they are unique."
   "Prompt with a completing list of all files in the project to find one.
 
 The project's scope is defined as the first directory containing
-an `.emacs-project' file.  You can override this by locally
-setting the variable `ffip-project-root'."
-  (interactive)
-  (let* ((project-files (ffip-project-files))
-         (files (mapcar 'car project-files))
-         file root)
-    (setq root (file-name-nondirectory (directory-file-name (or ffip-project-root (ffip-project-root)))))
+a `ffip-project-file' (It's value is \".git\" by default.
 
-    (setq file (ffip-completing-read (format "Find file in %s/: " root)  files))
-    (find-file (cdr (assoc file project-files)))))
+You can override this by setting the variable `ffip-project-root'."
+  (interactive)
+  (ffip-find-files))
+
+;;;###autoload
+(defun find-file-in-project-by-selected ()
+  "Similar to find-file-in-project.
+But use string from selected region to search files in the project.
+If no region is selected, you need provide one."
+  (interactive)
+  (let ((keyword (if (region-active-p)
+                     (buffer-substring-no-properties (region-beginning) (region-end))
+                   (read-string "Enter keyword:"))))
+    (ffip-find-files keyword)))
 
 ;;;###autoload
 (defalias 'ffip 'find-file-in-project)

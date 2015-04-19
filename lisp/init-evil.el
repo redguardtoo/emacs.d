@@ -32,6 +32,7 @@
 (define-key evil-normal-state-map (kbd ";") 'evil-ex)
 
 (autoload 'find-file-in-project "find-file-in-project" "" t)
+(autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
 
 (require 'evil-mark-replace)
 
@@ -192,6 +193,7 @@
   "dj" 'dired-jump ;; open the dired from current file
   "ff" 'toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
+  "is" 'find-file-in-project-by-selected
   "tm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
