@@ -244,10 +244,13 @@ directory they are found in so that they are unique."
   (let* ((project-files (ffip-project-files keyword))
          (files (mapcar 'car project-files))
          file root)
-    (setq root (file-name-nondirectory (directory-file-name (or ffip-project-root (ffip-project-root)))))
-
-    (setq file (ffip-completing-read (format "Find file in %s/: " root)  files))
-    (find-file (cdr (assoc file project-files)))))
+    (cond
+     ((and files (> (length files) 0))
+      (setq root (file-name-nondirectory (directory-file-name (or ffip-project-root (ffip-project-root)))))
+      (setq file (ffip-completing-read (format "Find file in %s/: " root)  files))
+      (find-file (cdr (assoc file project-files))))
+     (t (message "No match file exist!")))
+    ))
 
 ;;;###autoload
 (defun ffip-current-full-filename-match-pattern-p (REGEX)
