@@ -87,6 +87,8 @@ Only \"./\" and \"../\" apply here. They appear in reverse order."
     (define-key map (kbd "M-n") 'ivy-next-history-element)
     (define-key map (kbd "M-p") 'ivy-previous-history-element)
     (define-key map (kbd "C-g") 'minibuffer-keyboard-quit)
+    (define-key map (kbd "C-v") 'ivy-scroll-up-command)
+    (define-key map (kbd "M-v") 'ivy-scroll-down-command)
     map)
   "Keymap used in the minibuffer.")
 
@@ -184,6 +186,18 @@ When non-nil, it should contain one %d.")
   "Select the last completion candidate."
   (interactive)
   (setq ivy--index (1- ivy--length)))
+
+(defun ivy-scroll-up-command ()
+  "Scroll the candidates upward by the minibuffer height."
+  (interactive)
+  (setq ivy--index (min (+ ivy--index ivy-height)
+                        (1- ivy--length))))
+
+(defun ivy-scroll-down-command ()
+  "Scroll the candidates downward by the minibuffer height."
+  (interactive)
+  (setq ivy--index (max (- ivy--index ivy-height)
+                        0)))
 
 (defun ivy-next-line (&optional arg)
   "Move cursor vertically down ARG candidates."
@@ -536,13 +550,19 @@ NAME is a string of words separated by spaces that is used to
 build a regex.
 CANDIDATES is a list of strings."
   (let* ((re (ivy--regex name))
-         (cands (if (and (equal re ivy--old-re)
-                         ivy--old-cands)
-                    ivy--old-cands
-                  (ignore-errors
-                    (cl-remove-if-not
-                     (lambda (x) (string-match re x))
-                     candidates))))
+         (cands (cond ((and (equal re ivy--old-re)
+                            ivy--old-cands)
+                       ivy--old-cands)
+                      ((and ivy--old-re (eq 0 (cl-search ivy--old-re re)))
+                       (ignore-errors
+                         (cl-remove-if-not
+                          (lambda (x) (string-match re x))
+                          ivy--old-cands)))
+                      (t
+                       (ignore-errors
+                         (cl-remove-if-not
+                          (lambda (x) (string-match re x))
+                          candidates)))))
          (tail (nthcdr ivy--index ivy--old-cands))
          (ww (window-width))
          idx)
