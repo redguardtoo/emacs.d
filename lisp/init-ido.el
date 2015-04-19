@@ -3,6 +3,7 @@
 (require 'flx-ido)
 (ido-mode t)  ; use 'buffer rather than t to use only buffer switching
 (ido-everywhere t)
+(flx-ido-mode 1)
 ;; disable ido faces to see flx highlights.
 (setq ido-enable-flex-matching t)
 (setq ido-use-faces nil)
