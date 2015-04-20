@@ -185,7 +185,8 @@
   "sr" 'evil-surround-region
   "sc" 'shell-command
   "ee" 'eval-expression
-  "xc" 'copy-to-x-clipboard
+  "aa" 'copy-to-x-clipboard ; used frequently
+  "zz" 'paste-from-x-clipboard ; used frequently
   "cy" 'strip-convert-lines-into-one-big-string
   "fl" 'cp-filename-line-number-of-current-buffer
   "fn" 'cp-filename-of-current-buffer
@@ -197,7 +198,6 @@
   "tm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
-  "px" 'paste-from-x-clipboard
   ;; "ci" 'evilnc-comment-or-uncomment-lines
   ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
   ;; "cc" 'evilnc-copy-and-comment-lines
