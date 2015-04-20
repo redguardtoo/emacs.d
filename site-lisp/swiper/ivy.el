@@ -46,6 +46,10 @@
   '((t (:inherit highlight)))
   "Face used by Ivy for highlighting first match.")
 
+(defface ivy-subdir
+  '((t (:weight bold)))
+  "Face used by Ivy for highlighting subdirs in the alternatives.")
+
 (defcustom ivy-height 10
   "Number of lines for the minibuffer window."
   :type 'integer)
@@ -147,14 +151,25 @@ When non-nil, it should contain one %d.")
   "Exit the minibuffer with the selected candidate."
   (interactive)
   (delete-minibuffer-contents)
-  (if (zerop ivy--length)
-      (when (memq ivy-require-match '(nil confirm confirm-after-completion))
-        (insert ivy-text)
-        (setq ivy-exit 'done))
-    (if ivy--directory
-        (insert (expand-file-name ivy--current ivy--directory))
-      (insert ivy--current))
-    (setq ivy-exit 'done))
+  (cond (ivy--directory
+         (insert
+          (cond ((string= ivy-text "")
+                 (if (equal ivy--current "./")
+                     ivy--directory
+                   ivy--current))
+                ((zerop ivy--length)
+                 (expand-file-name ivy-text ivy--directory))
+                (t
+                 (expand-file-name ivy--current ivy--directory))))
+         (setq ivy-exit 'done))
+        ((zerop ivy--length)
+         (when (memq ivy-require-match
+                     '(nil confirm confirm-after-completion))
+           (insert ivy-text)
+           (setq ivy-exit 'done)))
+        (t
+         (insert ivy--current)
+         (setq ivy-exit 'done)))
   (exit-minibuffer))
 
 (defun ivy-alt-done ()
@@ -272,6 +287,21 @@ On error (read-only), call `ivy-on-del-error-function'."
        (when ivy-on-del-error-function
          (funcall ivy-on-del-error-function))))))
 
+(defun ivy-sort-file-function-default (x y)
+  "Compare two files X and Y.
+Prioritize directories."
+  (if (get-text-property 0 'dirp x)
+      (if (get-text-property 0 'dirp y)
+          (string< x y)
+        t)
+    (if (get-text-property 0 'dirp y)
+        nil
+      (string< x y))))
+
+(defvar ivy-sort-file-function 'ivy-sort-file-function-default
+  "The function that compares file names.
+It should take two string arguments and return nil and non-nil.")
+
 (defun ivy--sorted-files (dir)
   "Return the list of files in DIR.
 Directories come first."
@@ -279,16 +309,12 @@ Directories come first."
          (seq (all-completions "" 'read-file-name-internal)))
     (if (equal dir "/")
         seq
-      (setq seq (cl-sort
-                 (delete "./" (delete "../" seq))
-                 (lambda (x y)
-                   (if (file-directory-p x)
-                       (if (file-directory-p y)
-                           (string< x y)
-                         t)
-                     (if (file-directory-p y)
-                         nil
-                       (string< x y))))))
+      (setq seq (delete "./" (delete "../" seq)))
+      (when (eq ivy-sort-file-function 'ivy-sort-file-function-default)
+        (setq seq (mapcar (lambda (x)
+                            (propertize x 'dirp (string-match-p "/$" x)))
+                          (delete "./" (delete "../" seq)))))
+      (setq seq (cl-sort seq ivy-sort-file-function))
       (dolist (dir ivy-extra-directories)
         (push dir seq))
       seq)))
@@ -430,10 +456,11 @@ Turning on Ivy mode will set `completing-read-function' to
            (lambda (x)
              (string-match initial-input x))
            candidates)))
-  (cl-position-if
-   (lambda (x)
-     (string-match preselect x))
-   candidates))
+  (or (cl-position preselect candidates :test 'equal)
+      (cl-position-if
+       (lambda (x)
+         (string-match preselect x))
+       candidates)))
 
 ;;* Implementation
 ;;** Regex
@@ -553,7 +580,9 @@ CANDIDATES is a list of strings."
          (cands (cond ((and (equal re ivy--old-re)
                             ivy--old-cands)
                        ivy--old-cands)
-                      ((and ivy--old-re (eq 0 (cl-search ivy--old-re re)))
+                      ((and ivy--old-re
+                            (not (equal ivy--old-re ""))
+                            (eq 0 (cl-search ivy--old-re re)))
                        (ignore-errors
                          (cl-remove-if-not
                           (lambda (x) (string-match re x))
@@ -585,6 +614,12 @@ CANDIDATES is a list of strings."
              (end (min (+ start (1- ivy-height)) ivy--length))
              (cands (cl-subseq cands start end))
              (index (min ivy--index half-height (1- (length cands)))))
+        (when ivy--directory
+          (setq cands (mapcar (lambda (x)
+                                (if (string-match-p "/$" x)
+                                    (propertize x 'face 'ivy-subdir)
+                                  x))
+                              cands)))
         (setq ivy--current (copy-sequence (nth index cands)))
         (setf (nth index cands)
               (ivy--add-face ivy--current 'ivy-current-match))
