@@ -264,7 +264,7 @@
   "gsh" 'git-gutter-reset-to-head-parent
   "gsr" 'git-gutter-reset-to-default
   "hr" 'helm-recentf
-  "qq" 'save-buffers-kill-terminal
+  "xc" 'save-buffers-kill-terminal
   "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items

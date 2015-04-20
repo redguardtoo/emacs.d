@@ -85,7 +85,9 @@
 (require 'guide-key)
 (setq guide-key/guide-key-sequence '
       ("C-x v"
-       ",a" ",b" ",c" ",d"
+       ",a" ",b"
+       ",c" ",cx"
+       ",d"
        ",e" ",ep"
        ",f"
        ",g" ",gs"
