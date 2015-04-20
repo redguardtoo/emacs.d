@@ -31,9 +31,6 @@
 ;; press ";" instead of ":"
 (define-key evil-normal-state-map (kbd ";") 'evil-ex)
 
-(autoload 'find-file-in-project "find-file-in-project" "" t)
-(autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
-
 (require 'evil-mark-replace)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method

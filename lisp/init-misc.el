@@ -10,28 +10,9 @@
 
 ;; {{ find-file-in-project (ffip)
 (autoload 'ivy-read "ivy")
-(setq-default ffip-prune-patterns '(".git"
-                                    ".svn"
-                                    ".hg"
-                                    "node_modules"
-                                    "bower_components"
-                                    ".DS_Store"
-                                    ".cvs"
-                                    "TAGS"
-                                    "GTAGS"
-                                    "GPATH"
-                                    "GRTAGS"
-                                    "*flymake"
-                                    "*.class"
-                                    "*.war"
-                                    "*.jar"
-                                    "#*#"
-                                    "*.swp"
-                                    "*~"
-                                    "*.pyc"
-                                    "*.elc"
-                                    "*min.js"
-                                    "*min.css"))
+(autoload 'find-file-in-project "find-file-in-project" "" t)
+(autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
+
 ;; }}
 
 ;; cmake
