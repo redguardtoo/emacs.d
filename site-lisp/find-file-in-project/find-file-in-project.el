@@ -257,6 +257,12 @@ directory they are found in so that they are unique."
     ))
 
 ;;;###autoload
+(defun ffip-get-project-root-directory ()
+  "Get the the full path of project root directory"
+  (expand-file-name (or ffip-project-root
+                        (ffip-project-root))))
+
+;;;###autoload
 (defun ffip-current-full-filename-match-pattern-p (REGEX)
   "Is current full file name (including directory) match the REGEX?"
   (let ((dir (if (buffer-file-name) (buffer-file-name) "")))

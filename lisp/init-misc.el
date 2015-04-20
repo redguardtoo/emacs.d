@@ -12,7 +12,16 @@
 (autoload 'ivy-read "ivy")
 (autoload 'find-file-in-project "find-file-in-project" "" t)
 (autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
+(autoload 'ffip-get-project-root-directory "find-file-in-project" "" t)
 
+(defun my-vc-git-grep ()
+  (interactive)
+  (let ((re (if (region-active-p)
+                (buffer-substring-no-properties (region-beginning) (region-end))
+              (read-string "Grep pattern: ")))
+        (root (ffip-get-project-root-directory)))
+    (if root (vc-git-grep re "*" root))
+    ))
 ;; }}
 
 ;; cmake
