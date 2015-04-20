@@ -143,6 +143,8 @@ This overrides variable `ffip-project-root' when set.")
 (defvar ffip-full-paths t
   "If non-nil, show fully project-relative paths.")
 
+(defvar ffip-debug nil "Print debug information")
+
 (defun ffip-project-root ()
   "Return the root of the project."
   (let ((project-root (or ffip-project-root
@@ -224,6 +226,8 @@ directory they are found in so that they are unique."
                       (ffip-prune-patterns) (ffip-join-patterns)
                       (if keyword (concat "-name \"*" keyword "*\"") "")
                       ffip-find-options (ffip-limit-find-results)))
+
+    (if ffip-debug (message "run cmd at %s: %s" default-directory cmd))
     (setq rlt
           (mapcar (lambda (file)
                     (if ffip-full-paths
