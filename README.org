@@ -2,18 +2,18 @@
 Please read below checklist at least once:
 - I recommend *Emacs 24.3.1*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
-- Read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
+- Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
 - Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need package from melpa-unstable
 - Other issues are covered in FAQ
 * Features
 - Stable is the first priority
 - 100% usable in terminal
 - Popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
-- Minimum dependency (For example, network connection is OPTIONAL)
+- Minimum dependency (For example, network connection is OPTIONAL to install packages)
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
-- I do NOT re-define new key bindings, so original key bindings from Emacs/Plugins are still there
-- Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Cygwin/Mac/Windows)
+- I do *NOT* re-define key bindings, so original key bindings are still there
+- Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
@@ -24,7 +24,7 @@ You need the section "Install stable version in easiest way" IF and ONLY IF:
 *** Install in normal way
 Please remove the file "~/.emacs.d/init.el" ("~" means the parent directory of your ".emacs.d").
 
-Uninstall any system Emacs packages. For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. It's because all packages will be placed at "~/.emacs.d" from now on.
+Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. It's because all packages will be placed at "~/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
 
@@ -189,7 +189,7 @@ If a package is not installable through MELPA, you can place its source code at 
 ** Non-English users?
 Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8". If and only if you see the "UTF-8", your locale is correct.
 ** Your government blocks the internet?
-People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command line "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
+People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
 ** Email setup?
 If you use Gnus for email (Gmail, for example), check init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** How to toggle Chinese input method?
@@ -197,7 +197,9 @@ Run command `M-x toggle-input-method`.
 ** Cannot download packages through ELPA?
 Some package cannot be downloaded automatically because of network problem.
 
-You need manually `M-x list-packages` and install it or `M-x package-refresh-content` and restart Emacs.
+You could
+- `M-x list-packages` to manually install it
+- Rr `M-x package-refresh-content` and restart Emacs. the package will be installed automatically
 
 ** Use Emacs key bindings instead of Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
@@ -222,7 +224,7 @@ Here is sample setup in "~/.emacs.d/init.el":
 
 In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
 
-** Use color theme in the terminal
+** Enable color theme in the terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
@@ -238,9 +240,11 @@ Insert below code into ~/.emacs.d/init.el,
 (color-theme-molokai)
 #+END_SRC
 
-"M-x color-theme-select" may not work in this setup. It's because of some design flaw in Emacs.
+"M-x color-theme-select" may not work because of some design flaw in Emacs.
 
-Please note color themes may user different versions Emacs APIs. So please read its documentation on setup.
+Please note similar color themes may have different ways to enable. Please read theirs documentation.
+
+My above sample code works for most color themes, but there is always exceptions.
 ** Update from my latest setup
 I suggest pulling from the version tagged as "stable":
 #+begin_src bash
@@ -254,7 +258,7 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 
-** Eim pinyin word file
+** Chinese IME pinyin word file
 By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect my privacy.
 
 The path can be changed in init-eim.el.
