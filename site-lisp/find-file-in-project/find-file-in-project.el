@@ -100,6 +100,7 @@ May be set using .dir-locals.el. Checks each entry if set to a list.")
     ".hg"
     "cscope.files"
     "*.log"
+    "dist"
     "target"
     "node_modules"
     "bower_components"
