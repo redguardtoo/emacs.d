@@ -58,8 +58,9 @@
 
   ;; https://github.com/illusori/emacs-flymake
   ;; javascript support is out of the box
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.json\\'" flymake-javascript-init))
+  ;; DONOT jslint json
+  ;; (add-to-list 'flymake-allowed-file-name-masks
+  ;;              '("\\.json\\'" flymake-javascript-init))
   (flymake-mode 1))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
