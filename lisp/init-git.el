@@ -68,26 +68,25 @@
 
 ;; {{ git-gutter
 
-(when *emacs24*
-  (require 'git-gutter)
+(require 'git-gutter)
 
-  (defun git-gutter-reset-to-head-parent()
-    (interactive)
-    (let (parent)
-      (if (eq git-gutter:vcs-type 'svn)
-          (setq parent "PREV")
-        (setq parent "HEAD^"))
-      (git-gutter:set-start-revision parent)
-      (message "git-gutter:set-start-revision parent of HEAD")
-      ))
+(defun git-gutter-reset-to-head-parent()
+  (interactive)
+  (let (parent)
+    (if (eq git-gutter:vcs-type 'svn)
+        (setq parent "PREV")
+      (setq parent "HEAD^"))
+    (git-gutter:set-start-revision parent)
+    (message "git-gutter:set-start-revision parent of HEAD")
+    ))
 
-  (defun git-gutter-reset-to-default ()
-    (interactive)
-    (git-gutter:set-start-revision nil)
-    (message "git-gutter reset"))
+(defun git-gutter-reset-to-default ()
+  (interactive)
+  (git-gutter:set-start-revision nil)
+  (message "git-gutter reset"))
 
-  ; If you enable global minor mode
-  (global-git-gutter-mode t)
+                                        ; If you enable global minor mode
+(global-git-gutter-mode t)
 
   ;; nobody use bzr
   ;; people are forced use subversion or hg, so they take priority
@@ -106,7 +105,7 @@
   (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
 
   ;; Revert current hunk
-  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk))
+  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
 ;; }}
 
 ;;----------------------------------------------------------------------------
@@ -253,7 +252,7 @@
 (setq cppcm-get-executable-full-path-callback
           (lambda (path type tgt-name)
             ;; extract commit id and put into the kill ring
-            (message "path=%s type=%s tgt-name=%s" path type tgt-name)
-            ))
+            (message "path=%s type=%s tgt-name=%s" path type tgt-name)))
+
 (provide 'init-git)
 

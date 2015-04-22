@@ -109,12 +109,10 @@
               (setq gtags-suggested-key-mapping t)
               (unless (derived-mode-p 'java-mode)
                 (my-c-mode-hook))
-              (when *emacs24*
-                ;; ggtags.el only supports emacs24
-                (ggtags-mode 1)
-                ;; emacs 24.4+ will set up eldoc automatically.
-                ;; so below code is NOT needed.
-                (setq-local eldoc-documentation-function #'ggtags-eldoc-function))
+              (ggtags-mode 1)
+              ;; emacs 24.4+ will set up eldoc automatically.
+              ;; so below code is NOT needed.
+              (setq-local eldoc-documentation-function #'ggtags-eldoc-function)
               )))
 
 (provide 'init-cc-mode)

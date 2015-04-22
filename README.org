@@ -1,6 +1,6 @@
 * Before start
 Please read below checklist at least once:
-- I recommend *Emacs 24.3.1*
+- I recommend Emacs *24.3.1* or *24.4*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
 - Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need package from melpa-unstable
@@ -13,7 +13,8 @@ Please read below checklist at least once:
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
 - I do *NOT* re-define key bindings, so original key bindings are still there
-- Tested with v23.4, v24.3.1, v24.4 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
+- Tested with v24.3.1, v24.4 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
+- Check section "About Emacs 23" if you uses Emacs 23.4
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
@@ -287,11 +288,11 @@ My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is 
 Other directories don't matter.
 
 ** About Emacs 23
-Emacs 23 support will *be dropped* on <2015-04-24 Thu>.
-Currently below packages are not supported on Emacs 23:
-- helm
-- org-mode and its packages
-- company-mode
-- git-gutter
-- yasnippet
-- ggtags-mode
+Emacs 23 support was dropped on <2015-04-21>.
+
+The latest Emacs23 compatible version of setup is 1.2!
+
+Here are the steps to use that setup:
+- Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
+- Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
+- Follow the section "Install stable version in easiest way" but skip the download steps

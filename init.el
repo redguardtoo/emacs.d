@@ -15,7 +15,6 @@
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
 (setq *linux-x* (and window-system *linux*) )
 (setq *xemacs* (featurep 'xemacs) )
-(setq *emacs23* (and (not *xemacs*) (or (>= emacs-major-version 23))) )
 (setq *emacs24* (and (not *xemacs*) (or (>= emacs-major-version 24))) )
 (setq *no-memory* (cond
                    (*is-a-mac*
@@ -71,7 +70,7 @@
 (require 'init-ibuffer)
 (require 'init-flymake)
 (require 'init-smex)
-(if *emacs24* (require 'init-helm))
+(require 'init-helm)
 (require 'init-hippie-expand)
 (require 'init-windows)
 (require 'init-sessions)
@@ -80,16 +79,15 @@
 (require 'init-markdown)
 (require 'init-erlang)
 (require 'init-javascript)
-(when *emacs24*
-  (require 'init-org)
-  (require 'init-org-mime))
+(require 'init-org)
+(require 'init-org-mime)
 (require 'init-css)
 (require 'init-python-mode)
 (require 'init-haskell)
 (require 'init-ruby-mode)
 (require 'init-lisp)
 (require 'init-elisp)
-(if *emacs24* (require 'init-yasnippet))
+(require 'init-yasnippet)
 ;; Use bookmark instead
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
@@ -111,7 +109,7 @@
 (require 'init-web-mode)
 (require 'init-slime)
 (require 'init-clipboard)
-(when *emacs24* (require 'init-company))
+(require 'init-company)
 (require 'init-chinese-pyim) ;; cannot be idle-required
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)

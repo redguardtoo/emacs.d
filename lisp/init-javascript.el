@@ -213,7 +213,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (define-key js2-mode-map "@" 'js-doc-insert-tag))
 
 (cond
- ((and (>= emacs-major-version 24) (>= emacs-minor-version 1) (not *no-memory*))
+ ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
   (autoload 'js2-mode "js2-mode" nil t)
   (add-hook 'js2-mode-hook 'my-js2-mode-setup)
@@ -223,7 +223,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   ))
 ;; }}
 
-(if *emacs24* (add-hook 'coffee-mode-hook 'flymake-coffee-load))
+(add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
 ;; @see https://github.com/Sterlingg/json-snatcher
 (autoload 'jsons-print-path "json-snatcher" nil t)
@@ -262,6 +262,5 @@ sudo pip install jsbeautifier"
                        (if (string-match "/\\* *global *\\(.*?\\) *\\*/" btext) (match-string-no-properties 1 btext) "")
                        " *, *" t))
                 ))))
-
 
 (provide 'init-javascript)
