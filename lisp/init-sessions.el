@@ -3,9 +3,6 @@
 (setq desktop-path '("~/.emacs.d"))
 (setq desktop-save 'if-exists)
 (desktop-save-mode 1)
-(defadvice desktop-read (around trace-desktop-errors)
-  (let ((debug-on-error t))
-    ad-do-it))
 
 
 ;;----------------------------------------------------------------------------
