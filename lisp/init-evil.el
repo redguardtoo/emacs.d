@@ -582,7 +582,10 @@
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
-(require 'evil-nerd-commenter)
-(evilnc-default-hotkeys)
+;; {{ evil-nerd-commenter
+;; comment/uncomment lines
+;; (require 'evil-nerd-commenter)
+;; (evilnc-default-hotkeys)
+;; }}
 
 (provide 'init-evil)
