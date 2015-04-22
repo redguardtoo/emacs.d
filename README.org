@@ -171,7 +171,7 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
-** What are my frequently used commands?
+** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys for them.
 ** GUI version has issues?
 Use terminal version.
@@ -179,14 +179,24 @@ Use terminal version.
 Please remove bundled emacs 22 at first!
 
 You may need remove the obsolete ctags/etags too.
-** Why certain package cannot be upgraded through ELPA?
+
+In shell, run command:
+#+begin_src bash
+emacs --version
+ctags --version
+#+end_src
+** Important packages are locked
 Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I locked their versions.
+
+Those packages are placed at "~/.emacs.d/site-lisp".
+
+They will not be upgraded through ELPA automatically.
 ** C++ developers?
 You need set up the directories to seach C++ header files. Please see the section `clang`.
 ** Use Emacs on Windows?
 I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
 ** [[http://melpa.org][MELPA]] does not include the package?
-If a package is not installable through MELPA, you can place its source code at ~/.emacs.d/site-lisp instead. There are already some samples there.
+If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?
 Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8". If and only if you see the "UTF-8", your locale is correct.
 ** Your government blocks the internet?
@@ -202,7 +212,7 @@ You could
 - `M-x list-packages` to manually install it
 - Rr `M-x package-refresh-content` and restart Emacs. the package will be installed automatically
 
-** Use Emacs key bindings instead of Vim key bindings
+** Use Emacs original key bindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
 
 ** Evil setup
@@ -225,12 +235,12 @@ Here is sample setup in "~/.emacs.d/init.el":
 
 In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
 
-** Enable color theme in the terminal
+** Enable color theme in terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
 
-** Preview&apply a color theme
+** Preview&Apply a color theme
 Check [[http://emacsthemes.caisah.info/]].
 
 Write down the name of color theme (for example, molokai).
@@ -259,7 +269,7 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 
-** Chinese IME pinyin word file
+** Chinese IME
 By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect my privacy.
 
 The path can be changed in init-eim.el.
