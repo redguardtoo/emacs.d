@@ -32,4 +32,7 @@
      (setq company-clang-insert-arguments nil)
      ))
 
+;; company should be case sensitive
+(setq company-dabbrev-downcase nil)
+
 (provide 'init-company)
