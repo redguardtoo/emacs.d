@@ -4,8 +4,8 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 <div ng-form="${1:frm}">
-  <label>${2:First Name}</label>
-  <input type="text" ng-model="b.${3:accountNumber}" ng-pattern="/${4:pattern}/" >
+  <label>${2:Credit}</label>
+  <input type="text" ng-model="userAccount.${3:credit}" name="${3:$(yas/substr yas-text "[^ ]*")}" ng-pattern="/^${4:pattern}\$/" >
   <br/>
   <span ng-show="${1:$(yas/substr yas-text "[^ ]*")}.${3:$(yas/substr yas-text "[^ ]*")}.$touched && ${1:$(yas/substr yas-text "[^ ]*")}.${3:$(yas/substr yas-text "[^ ]*")}.$error.pattern" class="has-error">Error message</span>
 </div>
