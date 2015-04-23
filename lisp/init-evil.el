@@ -253,6 +253,7 @@
   "mq" 'lookup-doc-in-man
   "mgh" 'magit-show-head-commit
   "sg" 'w3m-google-by-filetype
+  "sf" 'w3m-search-financial-dictionary
   "sq" 'w3m-stackoverflow-search
   "sj" 'w3m-search-js-api-mdn
   "sa" 'w3m-java-search

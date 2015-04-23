@@ -42,6 +42,8 @@
         ("d" "http://dictionary.reference.com/search?q=%s" utf-8)
         ;; java google search
         ("java" "https://www.google.com.au/search?q=java+%s" utf-8)
+        ;; financial dictionary
+        ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)
         ;; javascript seawrch on mozilla.org
         ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
 
@@ -88,6 +90,11 @@
     (w3m-customized-search-api "s")
     ;; restore the default url
     (w3m-set-url-from-search-engine-alist "s" w3m-search-engine-alist old-url)))
+
+(defun w3m-search-financial-dictionary ()
+  "Search financial dictionary"
+  (interactive)
+  (w3m-customized-search-api "f"))
 
 (defun w3m-search-js-api-mdn ()
   "Search at Mozilla Developer Network (MDN)"
