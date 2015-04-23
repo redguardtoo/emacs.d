@@ -40,22 +40,8 @@
   (save-excursion
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
-(defun flymake-jshint-init ()
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name)))
-         (arglist (list local-file)))
-    (list "jshint" arglist)))
-
 (defun mo-js-mode-hook ()
   (setq imenu-create-index-function 'mo-js-imenu-make-index)
-  (setq flymake-err-line-patterns
-        (cons '(".*: line \\([[:digit:]]+\\), col \\([[:digit:]]+\\), \\(.*\\)$"
-                nil 1 2 3)
-              flymake-err-line-patterns))
-
   ;; https://github.com/illusori/emacs-flymake
   ;; javascript support is out of the box
   ;; DONOT jslint json
@@ -205,18 +191,19 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (require 'js-comint)
   ;; if use node.js, we need nice output
   (setenv "NODE_NO_READLINE" "1")
-
   (js2-imenu-extras-mode)
   (setq mode-name "JS2")
+  (flymake-mode -1)
   (require 'js-doc)
   (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
   (define-key js2-mode-map "@" 'js-doc-insert-tag))
 
+(autoload 'js2-mode "js2-mode" nil t)
+(add-hook 'js2-mode-hook 'my-js2-mode-setup)
+
 (cond
  ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
-  (autoload 'js2-mode "js2-mode" nil t)
-  (add-hook 'js2-mode-hook 'my-js2-mode-setup)
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
