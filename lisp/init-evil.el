@@ -201,10 +201,10 @@
   ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
   "epy" 'emmet-expand-yas
   "epl" 'emmet-expand-line
-  "rd" 'evil-mark-replace-in-defun
-  "rb" 'evil-mark-replace-in-buffer
-  "tt" 'evil-mark-tag-selected-region ;; recommended
-  "rt" 'evil-mark-replace-in-tagged-region ;; recommended
+  "rd" 'evilmr-replace-in-defun
+  "rb" 'evilmr-replace-in-buffer
+  "tt" 'evilmr-tag-selected-region ;; recommended
+  "rt" 'evilmr-replace-in-tagged-region ;; recommended
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
