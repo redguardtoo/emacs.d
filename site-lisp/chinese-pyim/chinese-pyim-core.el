@@ -226,7 +226,7 @@ Chinese-pyim 内建的功能有：
 (defvar pyim-load-hook nil)
 (defvar pyim-active-hook nil)
 
-(defvar pyim-punctuation-translate-p t
+(defvar pyim-punctuation-translate-p nil
   "*Non-nil means will translate punctuation.")
 
 (defvar pyim-pair-punctuation-status
