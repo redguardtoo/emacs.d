@@ -275,6 +275,18 @@ By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs
 The path can be changed in init-eim.el.
 
 A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
+** Install Emacs at HOME directory
+Run below commands:
+#+begin_src sh
+mkdir -p ~/tmp;
+curl http://ftp.gnu.org/gnu/emacs/emacs-24.3.tar.gz | tar xvz -C ~/tmp/emacs-24.3
+cd ~/tmp/emacs-24.3;
+mkdir -p ~/myemacs/24.3;
+rm -rf ~/myemacs/24.3/*;
+./configure --prefix=~/myemacs/24.3 --without-gtk --without-gtk3 --without-aqua --without-x --without-xpm --without-png --without-gif --without-alsa --without-tiff --without-jpeg --without-aqua --without-rsvg --without-xft --without-xaw3d --without-xim --without-xpm --without-dbus --without-makeinfo --with-x-toolkit=no --without-sound --without-sync-input --without-pop;make;make install
+#+end_src
+
+Feel free to replace 24.3 with other version number.
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
@@ -306,3 +318,7 @@ Here are the steps to use that setup:
 - Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section "Install stable version in easiest way" but skip the download steps
+
+Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
+
+Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at HOME directory" for HOW.
