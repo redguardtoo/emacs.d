@@ -38,10 +38,6 @@
 (require 'init-utils)
 (require 'init-site-lisp) ;; Must come before elpa, as it may provide package.el
 
-;; my personal setup, other major-mode specific setup need it.
-;; It's dependent on init-site-lisp.el
-(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
-
 ;; win32 auto configuration, assuming that cygwin is installed at "c:/cygwin"
 ;; (condition-case nil
 ;;     (when *win32*
@@ -148,6 +144,10 @@
 ;; Locales (setting them earlier in this file doesn't work in X)
 ;;----------------------------------------------------------------------------
 (require 'init-locales)
+
+;; my personal setup, other major-mode specific setup need it.
+;; It's dependent on init-site-lisp.el
+(if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
