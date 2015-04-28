@@ -313,9 +313,6 @@ buffer is not visiting a file."
     ad-do-it
     (setenv "GPG_AGENT_INFO" agent)))
 
-;; @see http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
-(if (fboundp 'electric-indent-mode) (electric-indent-mode -1))
-
 ;; http://tapoueh.org/emacs/switch-window.html
 (global-set-key (kbd "C-x o") 'switch-window)
 
