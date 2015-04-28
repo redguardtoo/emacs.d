@@ -287,6 +287,8 @@ rm -rf ~/myemacs/24.3/*;
 #+end_src
 
 Feel free to replace 24.3 with other version number.
+* Tips
+- Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
