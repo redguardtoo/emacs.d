@@ -31,3 +31,5 @@
 
 (eval-after-load "org"
                  '(require 'ox-odt nil t))
+
+(setq org-export-with-sub-superscripts nil)
