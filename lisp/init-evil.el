@@ -320,6 +320,7 @@
   "ma" 'mc/mark-all-like-this-in-defun
   "mw" 'mc/mark-all-words-like-this-in-defun
   "ms" 'mc/mark-all-symbols-like-this-in-defun
+  ;; "opt" is occupied by my-open-project-todo
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
   "oc" 'occur
