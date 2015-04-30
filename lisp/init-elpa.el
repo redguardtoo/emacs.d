@@ -95,7 +95,6 @@ ARCHIVE is the string name of the package archive.")
     db
     creole
     web
-    elnode
     sass-mode
     idomenu
     pointback
@@ -297,8 +296,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'guide-key)
 (require-package 'ag)
 (require-package 'fakir)
-(require-package 'f)
-(require-package 'elnode) ;; elnode dependent on f
+(require-package 'simple-httpd)
 (require-package 'git-gutter '(0 82) nil)
 (require-package 'flx-ido)
 (require-package 'anaconda-mode)

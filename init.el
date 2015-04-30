@@ -109,6 +109,7 @@
 (require 'init-chinese-pyim) ;; cannot be idle-required
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
+(require 'init-httpd)
 
 ;; projectile costs 7% startup time
 
@@ -127,7 +128,6 @@
                              init-textile
                              init-csv
                              init-writting
-                             init-elnode
                              init-doxygen
                              init-pomodoro
                              init-emacspeak

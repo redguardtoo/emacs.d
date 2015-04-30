@@ -327,6 +327,7 @@
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "ww" 'save-buffer
+  "wr" 'httpd-restart-now
   "bk" 'buf-move-up
   "bj" 'buf-move-down
   "bh" 'buf-move-left
