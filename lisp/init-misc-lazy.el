@@ -19,8 +19,9 @@
               tooltip-delay 1.5
               truncate-lines nil
               truncate-partial-width-windows nil
-              ;; no annoying beep on errors
-              visible-bell t)
+              ;; visible-bell has some issue
+              ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/issues/9#issuecomment-97848938
+              visible-bell nil)
 
 ;; use my own bmk if it exists
 (if (file-exists-p (file-truename "~/.emacs.bmk"))
