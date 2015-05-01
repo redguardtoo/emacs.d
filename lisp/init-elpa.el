@@ -85,6 +85,7 @@ ARCHIVE is the string name of the package archive.")
     wgrep
     robe
     inf-ruby
+    simple-httpd
     dsvn
     move-text
     findr
