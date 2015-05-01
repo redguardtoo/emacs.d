@@ -136,6 +136,8 @@
 ;; @see http://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
 (setq-default tab-width 4)
 
+(setq history-delete-duplicates t)
+
 ;;----------------------------------------------------------------------------
 (fset 'yes-or-no-p 'y-or-n-p)
 
