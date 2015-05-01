@@ -6,6 +6,8 @@
 (defun httpd-restart-now ()
   (interactive)
   (httpd-stop)
-  (httpd-start))
+  (httpd-start)
+  (message "http://localhost:%d/ at %s restarted"
+           httpd-port httpd-root))
 
 (provide 'init-httpd)
