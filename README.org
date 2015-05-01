@@ -191,6 +191,10 @@ Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I 
 Those packages are placed at "~/.emacs.d/site-lisp".
 
 They will not be upgraded through ELPA automatically.
+** Open file with Ido
+If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
+
+You can keep pressing `C-f` to ignore the completions and input path manually.
 ** C++ developers?
 You need set up the directories to seach C++ header files. Please see the section `clang`.
 ** Use Emacs on Windows?
