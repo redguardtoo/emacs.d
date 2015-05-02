@@ -1,3 +1,9 @@
+(defun my-yas-reload-all ()
+  (interactive)
+  (unless (featurep 'yasnippet) (require 'yasnippet))
+  (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
+  (yas-reload-all))
+
 (defun my-yas-expand ()
   (interactive)
   (unless (bound-and-true-p yas-global-mode)
@@ -16,11 +22,13 @@
 ;; default TAB key is occupied by auto-complete
 (global-set-key (kbd "C-c k") 'my-yas-expand)
 
+(autoload 'snippet-mode "yasnippet" "")
+(add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
+
 (eval-after-load 'yasnippet
   '(progn
      ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
      (setq-default mode-require-final-newline nil)
-
      ;; my private snippets
      (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
      (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas/snippet-dirs)))

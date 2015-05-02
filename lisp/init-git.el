@@ -10,7 +10,7 @@
 ;; (defun my-setup-develop-environment ()
 ;;   (interactive)
 ;;   (cond
-;;    ((string-match-p (file-truename "~/.emacs.d") (file-name-directory (buffer-file-name))
+;;    ((my-project-name-contains-substring (file-truename "~/.emacs.d"))
 ;;     (setq vc-handled-backends '(Git)))
 ;;    (t (setq vc-handled-backends nil))))
 ;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
@@ -73,10 +73,6 @@
   ; If you enable global minor mode
   (global-git-gutter-mode t)
 
-  ;; nobody use bzr
-  ;; people are forced use subversion or hg, so they take priority
-  (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
-
   (git-gutter:linum-setup)
 
   (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
@@ -90,7 +86,8 @@
   (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
 
   ;; Revert current hunk
-  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk))
+  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+  )
 ;; }}
 
 ;;----------------------------------------------------------------------------
@@ -117,22 +114,12 @@
     (compile (concat "git svn "
                      (ido-completing-read "git-svn command: " git-svn--available-commands nil t)))))
 
-(defun git-get-current-file-relative-path ()
-  (let (rlt)
-    (setq rlt
-          (replace-regexp-in-string
-           (concat "^" (file-name-as-directory default-directory))
-           ""
-           buffer-file-name))
-    ;; (message "rlt=%s" rlt)
-    rlt))
-
 (defun git-reset-current-file ()
   "git reset file of current buffer"
   (interactive)
   (let ((filename))
     (when buffer-file-name
-      (setq filename (git-get-current-file-relative-path))
+      (setq filename (file-truename buffer-file-name))
       (shell-command (concat "git reset " filename))
       (message "DONE! git reset %s" filename)
       )))
@@ -142,7 +129,7 @@
   (interactive)
   (let ((filename))
     (when buffer-file-name
-      (setq filename (git-get-current-file-relative-path))
+      (setq filename (file-truename buffer-file-name))
       (shell-command (concat "git add " filename))
       (message "DONE! git add %s" filename)
       )))
@@ -151,7 +138,7 @@
   "run `git push'"
   (interactive)
   (when buffer-file-name
-    (shell-command "git push")
+    (shell-command (concat "cd " (pwd) ";git push"))
     (message "DONE! git push at %s" default-directory)
     ))
 

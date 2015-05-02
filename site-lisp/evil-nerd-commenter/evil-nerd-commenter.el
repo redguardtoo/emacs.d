@@ -108,13 +108,6 @@
       (re-search-forward "[\n\C-m]" nil 'end (1- line))
       (forward-line (1- line)))))
 
-;; Since web-mode changes, the best way is to replace it with my own API
-(defun evilnc--web-mode-is-comment (&optional pos)
-  (unless pos (setq pos (point)))
-  (not (null (or (eq (get-text-property pos 'tag-type) 'comment)
-                 (eq (get-text-property pos 'block-token) 'comment)
-                 (eq (get-text-property pos 'part-token) 'comment)))))
-
 (defun evilnc--fix-buggy-major-modes ()
   "fix major modes whose comment regex is buggy.
 @see http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html"
@@ -303,12 +296,12 @@
              (goto-char beg)
              (goto-char (line-end-position))
              (re-search-backward "^\\|[^[:space:]]")
-             (evilnc--web-mode-is-comment))
-           (evilnc--web-mode-is-comment (/ (+ beg end) 2))
+             (web-mode-is-comment))
+           (web-mode-is-comment (/ (+ beg end) 2))
            (save-excursion
              (goto-char end)
              (back-to-indentation)
-             (evilnc--web-mode-is-comment))
+             (web-mode-is-comment))
            )
       ;; don't know why, but we need goto the middle of comment
       ;; in order to uncomment, or else trailing spaces will be appended

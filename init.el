@@ -1,6 +1,7 @@
 ;; -*- coding: utf-8 -*-
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
+(add-to-list 'load-path (expand-file-name "~/.emacs.d/wubi"))
 
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)
@@ -21,7 +22,22 @@
                    (*is-a-mac*
                     (< (string-to-number (nth 1 (split-string (shell-command-to-string "sysctl hw.physmem")))) 4000000000))
                    (*linux* nil)
-                   (t nil)))
+                   (t nil)
+                   ))
+
+
+;----------------------------------------------------------------------------
+; Functions (load all files in defuns-dir)
+; Copied from https://github.com/magnars/.emacs.d/blob/master/init.el
+;----------------------------------------------------------------------------
+(setq defuns-dir (expand-file-name "~/.emacs.d/defuns"))
+(dolist (file (directory-files defuns-dir t "\\w+"))
+  (when (file-regular-p file)
+      (load file)))
+;----------------------------------------------------------------------------
+; Load configs for specific features and modes
+;----------------------------------------------------------------------------
+(require 'init-modeline)
 
 ;;----------------------------------------------------------------------------
 ;; Less GC, more memory
@@ -33,7 +49,9 @@
 (setq-default gc-cons-threshold (* 1024 1024 512)
               gc-cons-percentage 0.5)
 
-(require 'init-modeline)
+;;----------------------------------------------------------------------------
+;; Load configs for specific features and modes
+;;----------------------------------------------------------------------------
 (require 'cl-lib)
 (require 'init-compat)
 (require 'init-utils)
@@ -57,6 +75,7 @@
 ;;    ))
 
 (require 'idle-require)
+
 (require 'init-elpa)
 (require 'init-exec-path) ;; Set up $PATH
 (require 'init-frame-hooks)
@@ -64,20 +83,28 @@
 ;; actually, I don't know which major-mode use flyspell.
 (require 'init-spelling)
 (require 'init-xterm)
+(require 'init-osx-keys)
 (require 'init-gui-frames)
 (require 'init-ido)
+(require 'init-maxframe)
+(require 'init-proxies)
 (require 'init-dired)
+(require 'init-isearch)
 (require 'init-uniquify)
 (require 'init-ibuffer)
 (require 'init-flymake)
+(require 'init-recentf)
 (require 'init-smex)
 (if *emacs24* (require 'init-helm))
 (require 'init-hippie-expand)
 (require 'init-windows)
 (require 'init-sessions)
+(require 'init-fonts)
 (require 'init-git)
 (require 'init-crontab)
+(require 'init-textile)
 (require 'init-markdown)
+(require 'init-csv)
 (require 'init-erlang)
 (require 'init-javascript)
 (when *emacs24*
@@ -94,12 +121,16 @@
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
 (require 'init-gud)
+(require 'init-cmake-mode)
+(require 'init-csharp-mode)
 (require 'init-linum-mode)
+(require 'init-which-func)
+(require 'init-move-window-buffer)
 ;; (require 'init-gist)
 (require 'init-moz)
 (require 'init-gtags)
 ;; use evil mode (vi key binding)
-(require 'init-evil)
+;;(require 'init-evil)
 (require 'init-sh)
 (require 'init-ctags)
 (require 'init-ace-jump-mode)
@@ -109,43 +140,43 @@
 (require 'init-workgroups2)
 (require 'init-term-mode)
 (require 'init-web-mode)
+(require 'init-sr-speedbar)
 (require 'init-slime)
-(require 'init-clipboard)
 (when *emacs24* (require 'init-company))
-(require 'init-chinese-pyim) ;; cannot be idle-required
+(require 'init-stripe-buffer)
+(require 'init-eim) ;;  cannot be idle-required
+(require 'init-hs-minor-mode)
 ;; need statistics of keyfreq asap
 (require 'init-keyfreq)
-
-;; projectile costs 7% startup time
+(if *emacs24* (require 'init-projectile))
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
-(require 'init-color-theme)
-(require 'init-emacs-w3m)
 
-;; {{ idle require other stuff
+;; color theme
+(require 'color-theme)
+(require 'color-theme-molokai)
+(color-theme-molokai)
+;; This line must be after color-theme-molokai! Don't know why.
+(setq color-theme-illegal-faces "^\\(w3-\\|dropdown-\\|info-\\|linum\\|yas-\\|font-lock\\)")
+;; (color-theme-select 'color-theme-xp)
+;; (color-theme-xp)
+
 (setq idle-require-idle-delay 3)
-(setq idle-require-symbols '(init-misc-lazy
-                             init-which-func
-                             init-fonts
-                             init-sr-speedbar
-                             init-hs-minor-mode
-                             init-stripe-buffer
-                             init-textile
-                             init-csv
-                             init-writting
+(setq idle-require-symbols '(init-writting
                              init-elnode
                              init-doxygen
                              init-pomodoro
                              init-emacspeak
                              init-artbollocks-mode
+                             init-emacs-w3m
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
-;; }}
 
 (when (require 'time-date nil t)
    (message "Emacs startup time: %d seconds."
-    (time-to-seconds (time-since emacs-load-start-time))))
+    (time-to-seconds (time-since emacs-load-start-time)))
+   )
 
 ;;----------------------------------------------------------------------------
 ;; Locales (setting them earlier in this file doesn't work in X)
@@ -157,7 +188,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
+ '(company-clang-arguments (quote ("")))
+ '(company-clang-insert-arguments t)
+ '(company-dabbrev-code-time-limit 0.3)
  '(session-use-package t nil (session)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -165,7 +198,14 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
-;;; Local Variables:
+ ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
 (put 'erase-buffer 'disabled nil)
+
+(require 'lyzh-custom)
+(require 'wubi)
+
+(register-input-method "chinese-wubi" "Chinese-GB" 'quail-use-package "wubi" "wubi")
+(wubi-load-local-phrases)
+(setq default-input-method "chinese-wubi")

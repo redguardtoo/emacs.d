@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: angular.controller
+# key: acontroller
+# --
+app.controller('${1:MyController}', function ($scope, ${2:$http}) {
+  console.log('${1:$(yas/substr yas-text "[^ ]*")} registered');
+  var that = this;
+  $scope.fn1 = function () {
+    $0
+  };
+});

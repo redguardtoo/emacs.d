@@ -5,7 +5,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/find-and-ctags
 ;; Keywords: find ctags
-;; Version: 0.0.2
+;; Version: 0.0.1
 
 ;; This file is not part of GNU Emacs.
 
@@ -20,14 +20,12 @@
 ;;            CTAGS-OPTS)
 
 ;;        ;; for COOL MYPROJ
-;;        ;; you can use fctags-current-full-filename-match-pattern-p instead
 ;;        (when (fctags-current-path-match-pattern-p "MYPROJ.*/app")
 ;;          (setq proj-dir (if fctags-windows-p "c:/Workspaces/MYPROJ/MACWeb/WebContent/app"
 ;;                      "~/projs/MYPROJ/MACWeb/WebContent/app"))
 ;;          (setq FIND-OPTS "-not -size +64k")
 ;;          (setq CTAGS-OPTS "--exclude=*.min.js --exclude=*.git*")
-;;          ;; you can use setq-local instead
-;;          (setq tags-table-list
+;;          (set tags-table-list
 ;;               (list (fctags-run-ctags-if-needed proj-dir FIND-OPTS CTAGS-OPTS))))
 ;;        ;; for other projects
 ;;        ;; insert more WHENs here
@@ -128,7 +126,7 @@
     (when (or FORCE (not (file-exists-p file)))
       (setq old-dir default-directory)
       ;; "cd dir && find . -name blah | ctags" will NOT work on windows cmd window
-	  (cd dir)
+      (setq default-directory dir)
       ;; use relative directory because TAGS is shared between Cygwin and Window
       (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                         find-exe
@@ -137,8 +135,8 @@
                         CTAGS-OPTS))
       (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
       (shell-command cmd)
-      ;; restore default-directory
-      (cd old-dir))
+      ;; restore default directory
+      (setq default-directory old-dir))
     file))
 
 ;;;###autoload
@@ -149,11 +147,6 @@
                "")))
     (string-match-p REGEX dir)))
 
-;;;###autoload
-(defun fctags-current-full-filename-match-pattern-p (REGEX)
-  "Is current full file name (including directory) match the REGEX?"
-  (let ((dir (if (buffer-file-name) (buffer-file-name) "")))
-    (string-match-p REGEX dir)))
 
 ;;;###autoload
 (defun fctags-update-all-tags-force (&optional is-used-as-api)

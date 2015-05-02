@@ -1,10 +1,16 @@
+;; looks nodejs is more popular, if you prefer rhino, change to "js"
+(setq inferior-js-program-command "node --interactive")
+
+(require 'js-comint)
+;; if use node.js, we need nice output
+(setenv "NODE_NO_READLINE" "1")
+
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
 ;; json
 (setq auto-mode-alist (cons '("\\.json$" . json-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.jason$" . json-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
 
 ;; {{ js2-mode or javascript-mode
 (setq js2-use-font-lock-faces t
@@ -56,9 +62,10 @@
                 nil 1 2 3)
               flymake-err-line-patterns))
 
+  ;; https://github.com/illusori/emacs-flymake
+  ;; javascript support is out of the box
   (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.js\\'" flymake-jshint-init)
-               '("\\.json\\'" flymake-jshint-init))
+               '("\\.json\\'" flymake-javascript-init))
   (flymake-mode 1))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
@@ -198,12 +205,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; }}
 
 (defun my-js2-mode-setup()
-  ;; looks nodejs is more popular, if you prefer rhino, change to "js"
-  (setq inferior-js-program-command "node --interactive")
-  (require 'js-comint)
-  ;; if use node.js, we need nice output
-  (setenv "NODE_NO_READLINE" "1")
-
   (js2-imenu-extras-mode)
   (setq mode-name "JS2")
   (require 'js-doc)

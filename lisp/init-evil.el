@@ -3,17 +3,7 @@
 (setq evil-symbol-word-search t)
 ;; load undo-tree and ert
 (add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
-
-;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-(eval-after-load 'git-timemachine
-  '(progn
-     (evil-make-overriding-map git-timemachine-mode-map 'normal)
-     ;; force update evil keymaps after git-timemachine-mode loaded
-     (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
-
 (require 'evil)
-
-(autoload 'dictionary-new-search "dictionary" "" t nil)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
 ;; cursor is alway black because of evil
@@ -27,11 +17,6 @@
 (require 'evil-surround)
 (global-evil-surround-mode 1)
 ;; }}
-
-;; press ";" instead of ":"
-(define-key evil-normal-state-map (kbd ";") 'evil-ex)
-
-(autoload 'find-file-in-project "find-file-in-project" "" t)
 
 (require 'evil-mark-replace)
 
@@ -60,6 +45,7 @@
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (require 'evil-escape)
+;; key-chord is used by evil-escape
 (setq-default evil-escape-delay 0.2)
 (setq evil-escape-excluded-major-modes '(dired-mode))
 (setq-default evil-escape-key-sequence "kj")
@@ -88,10 +74,12 @@
     "-" 'org-ctrl-c-minus ; change bullet style
     "<" 'org-metaleft ; out-dent
     ">" 'org-metaright ; indent
-    (kbd "TAB") 'org-cycle)
+    (kbd "TAB") 'org-cycle
+    )
 
 (loop for (mode . state) in
-      '((minibuffer-inactive-mode . emacs)
+      '(
+        (minibuffer-inactive-mode . emacs)
         (ggtags-global-mode . emacs)
         (grep-mode . emacs)
         (Info-mode . emacs)
@@ -145,50 +133,93 @@
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
 
+;; {{ evil-matchit
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
+;; }}
 
-;; press ",xx" to expand region
-;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
   '(setq expand-region-contract-fast-key "z"))
+
+;; @see http://stackoverflow.com/questions/10569165/how-to-map-jj-to-esc-in-emacs-evil-mode
+;; @see http://zuttobenkyou.wordpress.com/2011/02/15/some-thoughts-on-emacs-and-vim/
+;; (define-key evil-insert-state-map "k" #'cofi/maybe-exit)
+;; (evil-define-command cofi/maybe-exit ()
+;;   :repeat change
+;;   (interactive)
+;;   (let ((modified (buffer-modified-p)))
+;;     (insert "k")
+;;     (let ((evt (read-event (format "Insert %c to exit insert state" ?j)
+;;                nil 0.5)))
+;;       (cond
+;;        ((null evt) (message ""))
+;;        ((and (integerp evt) (char-equal evt ?j))
+;;     (delete-char -1)
+;;     (set-buffer-modified-p modified)
+;;     (push 'escape unread-command-events))
+;;        (t (setq unread-command-events (append unread-command-events
+;;                           (list evt))))))))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
 (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
+(define-key evil-insert-state-map (kbd "M-a") 'move-beginning-of-line)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
+(define-key evil-insert-state-map (kbd "M-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-(define-key evil-insert-state-map (kbd "TAB") 'my-yas-expand)
+(define-key evil-insert-state-map (kbd "M-k") 'evil-normal-state)
+(define-key evil-visual-state-map (kbd "M-k") 'evil-exit-visual-state)
+(define-key minibuffer-local-map (kbd "M-k") 'abort-recursive-edit)
 (define-key evil-insert-state-map (kbd "M-j") 'my-yas-expand)
 (define-key evil-emacs-state-map (kbd "M-j") 'my-yas-expand)
+(global-set-key (kbd "M-k") 'keyboard-quit)
 (global-set-key (kbd "C-r") 'undo-tree-redo)
 
-;; My frequently used commands are listed here
+;; esc quits
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+
+;; {{ evil-leader config
 (setq evil-leader/leader ",")
+
 (require 'evil-leader)
 (evil-leader/set-key
-  ;; SPACE will evil-ace-jump-word-mode by default
-  "al" 'evil-ace-jump-line-mode ; ,al for Ace Jump (line)
-  "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
+  "ae" 'evil-ace-jump-word-mode ; ,e for Ace Jump (word)
+  "al" 'evil-ace-jump-line-mode ; ,l for Ace Jump (line)
+  "ac" 'evil-ace-jump-char-mode ; ,x for Ace Jump (char)
+  "as" 'ack-same
+  "ac" 'ack
+  "aa" 'ack-find-same-file
+  "af" 'ack-find-file
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" '(lambda () (interactive) (switch-to-buffer nil))
   "ef" 'end-of-defun
-  "db" 'sdcv-search-pointer ; in buffer
+  "db" 'sdcv-search-pointer ;; in another buffer
   "dt" 'sdcv-search-input+ ;; in tip
-  "dd" '(lambda ()
-          (interactive)
-          (dictionary-new-search (cons (if (region-active-p)
-                                           (buffer-substring-no-properties (region-beginning) (region-end))
-                                         (thing-at-point 'symbol)) dictionary-default-dictionary)))
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
-  "sr" 'evil-surround-region
+  "ss" 'evil-surround-region
   "sc" 'shell-command
-  "spt" 'sr-speedbar-toggle
-  "spr" 'sr-speedbar-refresh-toggle
+  "srt" 'sr-speedbar-toggle
+  "srr" 'sr-speedbar-refresh-toggle
   "ee" 'eval-expression
   "cx" 'copy-to-x-clipboard
   "cy" 'strip-convert-lines-into-one-big-string
@@ -198,10 +229,7 @@
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "ff" 'toggle-full-window ;; I use WIN+F in i3
-  "ip" 'find-file-in-project
   "tm" 'get-term
-  "tff" 'toggle-frame-fullscreen
-  "tfm" 'toggle-frame-maximized
   "px" 'paste-from-x-clipboard
   ;; "ci" 'evilnc-comment-or-uncomment-lines
   ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
@@ -211,8 +239,10 @@
   "epl" 'emmet-expand-line
   "rd" 'evil-mark-replace-in-defun
   "rb" 'evil-mark-replace-in-buffer
-  "tt" 'evil-mark-tag-selected-region ;; recommended
-  "rt" 'evil-mark-replace-in-tagged-region ;; recommended
+  "tt" 'evil-mark-tag-selected-region
+  "rt" 'evil-mark-replace-in-tagged-region
+  "rs" 'evil-mark-show-tagged-region
+  "ro" 'evil-mark-replace-in-text-object-operator
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
@@ -237,51 +267,49 @@
   "W" 'save-some-buffers
   "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
+  "ii" 'rimenu-jump
   "lh" 'highlight-symbol-at-point
   "ln" 'highlight-symbol-next
   "lp" 'highlight-symbol-prev
   "lq" 'highlight-symbol-query-replace
   "bm" 'pomodoro-start ;; beat myself
   "im" 'helm-imenu
-  "ii" 'ido-imenu
-  "ij" 'rimenu-jump
   "." 'evil-ex
-  ;; @see https://github.com/pidu/git-timemachine
-  ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
-  "gm" 'git-timemachine-toggle
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
+  "gn" 'git-timemachine-show-next-revisio
+  "gp" 'git-timemachine-show-previous-revision
+  "gw" 'git-timemachine-kill-abbreviated-revision
   "ov" '(lambda () (interactive) (set-selective-display (if selective-display nil 1)))
   "or" 'open-readme-in-git-root-directory
   "mq" '(lambda () (interactive) (man (concat "-k " (thing-at-point 'symbol))))
   "mgh" '(lambda () (interactive) (magit-show-commit "HEAD"))
-  "sg" 'w3m-google-by-filetype
-  "sq" 'w3m-stackoverflow-search
-  "sj" 'w3m-search-js-api-mdn
-  "sa" 'w3m-java-search
-  "sh" 'w3mext-hacker-search ; code search in all engines with firefox
+  "gg" '(lambda () (interactive) (w3m-search "g" (thing-at-point 'symbol)))
+  "qq" '(lambda () (interactive) (w3m-search "q" (thing-at-point 'symbol)))
   "gss" 'git-gutter:set-start-revision
   "gsh" '(lambda () (interactive) (git-gutter:set-start-revision "HEAD^")
            (message "git-gutter:set-start-revision HEAD^"))
   "gsr" '(lambda () (interactive) (git-gutter:set-start-revision nil)
            (message "git-gutter reset")) ;; reset
   "hr" 'helm-recentf
-  "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
   "jpp" 'jsons-print-path
   "se" 'string-edit-at-point
-  "xe" 'eval-last-sexp
+  "s0" 'delete-window
+  "s1" 'delete-other-windows
+  "s2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
+  "s3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
+  "su" 'winner-undo
   "x0" 'delete-window
   "x1" 'delete-other-windows
   "x2" '(lambda () (interactive) (if *emacs23* (split-window-vertically) (split-window-right)))
   "x3" '(lambda () (interactive) (if *emacs23* (split-window-horizontally) (split-window-below)))
-  "xr" 'rotate-windows
-  "xt" 'toggle-window-split
   "xu" 'winner-undo
   "to" 'toggle-web-js-offset
   "cam" 'org-tags-view ;; "C-c a m" search items in org-file-apps by tag
   "cf" 'helm-for-files ;; "C-c f"
+  "pf" 'projectile-find-file ;; "C-c p f"
   "sl" 'sort-lines
   "ulr" 'uniquify-all-lines-region
   "ulb" 'uniquify-all-lines-buffer
@@ -300,11 +328,7 @@
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
   "ws" 'w3mext-hacker-search
-  "ss" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
-  "st" '(lambda () (interactive)
-          (swiper (if (region-active-p)
-                    (buffer-substring-no-properties (region-beginning) (region-end))
-                    (thing-at-point 'symbol))))
+  "hsp" 'helm-swoop
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
@@ -327,11 +351,12 @@
   "ms" 'mc/mark-all-symbols-like-this-in-defun
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
+  "rw" 'rotate-windows
   "oc" 'occur
   "om" 'toggle-org-or-message-mode
   "ops" 'my-org2blog-post-subtree
   "ut" 'undo-tree-visualize
-  "ar" 'align-regexp
+  "al" 'align-regexp
   "ww" 'save-buffer
   "bk" 'buf-move-up
   "bj" 'buf-move-down
@@ -361,10 +386,11 @@
   "vr" 'vr/replace
   "vq" 'vr/query-replace
   "vm" 'vr/mc-mark
+  "rr" 'evil-show-registers
   "js" 'w3mext-search-js-api-mdn
-  "jde" 'js2-display-error-list
-  "jte" 'js2-mode-toggle-element
-  "jtf" 'js2-mode-toggle-hide-functions
+  "je" 'js2-display-error-list
+  "te" 'js2-mode-toggle-element
+  "tf" 'js2-mode-toggle-hide-functions
   "xh" 'mark-whole-buffer
   "xk" 'ido-kill-buffer
   "xs" 'save-buffer
@@ -372,6 +398,7 @@
   "xvv" 'vc-next-action
   "xva" 'git-add-current-file
   "xvp" 'git-push-remote-origin
+  "xrf" 'git-reset-current-file
   "xvu" 'git-add-option-update
   "xvg" 'vc-annotate
   "xv=" 'git-gutter:popup-hunk
@@ -387,11 +414,9 @@
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "ycr" (lambda ()
-          (interactive)
-          (unless (featurep 'yasnippet) (require 'yasnippet))
-          (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
-          (yas-reload-all))
+  "xw" 'widen
+  "xd" 'narrow-to-defun
+  "ycr" (lambda () (interactive) (yas-compile-directory (file-truename "~/.emacs.d/snippets")) (yas-reload-all))
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
   "zv" '(lambda (wg)
@@ -406,7 +431,9 @@
   "zb" 'wg-switch-to-buffer
   "zwr" 'wg-redo-wconfig-change
   "zws" 'wg-save-wconfig
-  "wf" 'popup-which-function)
+  "wf" 'popup-which-function
+  )
+;; }}
 
 ;; change mode-line color by evil state
 (lexical-let ((default-color (cons (face-background 'mode-line)
@@ -421,7 +448,10 @@
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
+;; {{ evil-nerd-commenter
+;; comment/uncomment lines
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
+;; }}
 
 (provide 'init-evil)
