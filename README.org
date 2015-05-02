@@ -25,7 +25,7 @@ You need the section "Install stable version in easiest way" IF and ONLY IF:
 *** Install in normal way
 Please remove the file "~/.emacs.d/init.el" ("~" means the parent directory of your ".emacs.d").
 
-Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. It's because all packages will be placed at "~/.emacs.d" from now on.
+Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. All packages will be placed at "~/.emacs.d" from now on.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
 
@@ -41,7 +41,7 @@ You don't need git or network any more. All you need are only two zip files.
 Here are the *exact steps* to follow:
 - Remove the file "~/.emacs".
 - Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
-- Extract its content into empty directory "~/.emacs.d" ("~" means HOME directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
+- Extract its content into empty directory "~/.emacs.d" ("~" means home directory, the environment variable HOME contains the path of home directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
@@ -180,7 +180,7 @@ Please remove bundled emacs 22 at first!
 
 You may need remove the obsolete ctags/etags too.
 
-In shell, run command:
+To find out the version of your Emacs/Ctags, please run below command in shell:
 #+begin_src bash
 emacs --version
 ctags --version
@@ -273,13 +273,13 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 
-** Chinese IME
-By default, the word files path is at "~/.eim/py.txt". I put it out of the emacs setup folder in order to protect my privacy.
+** Chinese Input Method Editor
+By default, the word files path is at "~/.eim/py.txt". I place it out of the emacs root folder in order to protect my privacy.
 
 The path can be changed in init-eim.el.
 
 A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
-** Install Emacs at HOME directory
+** Install Emacs at home directory
 Run below commands:
 #+begin_src sh
 mkdir -p ~/tmp;
@@ -293,6 +293,7 @@ rm -rf ~/myemacs/24.3/*;
 Feel free to replace 24.3 with other version number.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
+- Git skills are extremely useful for maintainting your emacs.d in the long term
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
@@ -327,4 +328,4 @@ Here are the steps to use that setup:
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
-Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at HOME directory" for HOW.
+Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
