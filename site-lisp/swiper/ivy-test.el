@@ -45,12 +45,6 @@
 
 (ert-deftest ivy-read ()
   (should (equal
-           (ivy-read "pattern: " nil)
-           nil))
-  (should (equal
-           (ivy-read "pattern: " '("42"))
-           "42"))
-  (should (equal
            (ivy-with '(ivy-read "pattern: " '("blue" "yellow"))
                      "C-m")
            "blue"))
@@ -65,4 +59,4 @@
   (should (equal
            (ivy-with '(ivy-read "pattern: " '("blue" "yellow"))
                      "z C-m")
-           nil)))
+           "z")))
