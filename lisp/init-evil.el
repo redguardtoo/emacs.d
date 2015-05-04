@@ -228,10 +228,9 @@
   "W" 'save-some-buffers
   "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
-  "lh" 'highlight-symbol-at-point
-  "ln" 'highlight-symbol-next
-  "lp" 'highlight-symbol-prev
+  "ls" 'highlight-symbol
   "lq" 'highlight-symbol-query-replace
+  "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "bm" 'pomodoro-start ;; beat myself
   "im" 'helm-imenu
   "ii" 'ido-imenu
@@ -284,7 +283,6 @@
   "sl" 'sort-lines
   "ulr" 'uniquify-all-lines-region
   "ulb" 'uniquify-all-lines-buffer
-  "ls" 'package-list-packages
   "lo" 'moz-console-log-var
   "lj" 'moz-load-js-file-and-send-it
   "lk" 'latest-kill-to-clipboard

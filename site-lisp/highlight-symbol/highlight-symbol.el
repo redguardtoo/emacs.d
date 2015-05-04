@@ -1,9 +1,9 @@
 ;;; highlight-symbol.el --- automatic and manual symbol highlighting
 ;;
-;; Copyright (C) 2007-2009, 2013 Nikolaj Schumacher
+;; Copyright (C) 2007-2009, 2013-2015 Nikolaj Schumacher
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.2
+;; Version: 1.3
 ;; Keywords: faces, matching
 ;; URL: http://nschum.de/src/emacs/highlight-symbol/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -27,25 +27,34 @@
 ;;
 ;; Add the following to your .emacs file:
 ;; (require 'highlight-symbol)
-;; (global-set-key [(control f3)] 'highlight-symbol-at-point)
+;; (global-set-key [(control f3)] 'highlight-symbol)
 ;; (global-set-key [f3] 'highlight-symbol-next)
 ;; (global-set-key [(shift f3)] 'highlight-symbol-prev)
 ;; (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
 ;;
-;; Use `highlight-symbol-at-point' to toggle highlighting of the symbol at
+;; Use `highlight-symbol' to toggle highlighting of the symbol at
 ;; point throughout the current buffer.  Use `highlight-symbol-mode' to keep the
 ;; symbol at point highlighted.
 ;;
 ;; The functions `highlight-symbol-next', `highlight-symbol-prev',
 ;; `highlight-symbol-next-in-defun' and `highlight-symbol-prev-in-defun' allow
-;; for cycling through the locations of any symbol at point.
-;; When `highlight-symbol-on-navigation-p' is set, highlighting is triggered
-;; regardless of `highlight-symbol-idle-delay'.
+;; for cycling through the locations of any symbol at point.  Use
+;; `highlight-symbol-nav-mode' to enable key bindings (M-p and M-p) for
+;; navigation. When `highlight-symbol-on-navigation-p' is set, highlighting is
+;; triggered regardless of `highlight-symbol-idle-delay'.
 ;;
 ;; `highlight-symbol-query-replace' can be used to replace the symbol.
 ;;
 ;;; Change Log:
 ;;
+;; 2015-04-30
+;;    Added `highlight-symbol-print-occurrence-count'.
+;;
+;; 2015-04-22 (1.3)
+;;    Added `highlight-symbol-count'.
+;;    Renamed `highlight-symbol-at-point' to `highlight-symbol' because
+;;      hi-lock took that name.
+;;    Added `highlight-symbol-nav-mode'.  (thanks to Sebastian Wiesner)
 ;;    Added `highlight-symbol-foreground-color'.  (thanks to rubikitch)
 ;;
 ;; 2013-01-10 (1.2)
@@ -133,7 +142,7 @@ disabled for all buffers."
 (defcustom highlight-symbol-colors
   '("yellow" "DeepPink" "cyan" "MediumPurple1" "SpringGreen1"
     "DarkOrange" "HotPink1" "RoyalBlue1" "OliveDrab")
-  "Colors and/or faces used by `highlight-symbol-at-point'.
+  "Colors and/or faces used by `highlight-symbol'.
 highlighting the symbols will use these colors/faces in order."
   :type '(repeat (choice color face))
   :group 'highlight-symbol)
@@ -162,6 +171,19 @@ highlighting the symbols will use these colors/faces in order."
                  (const :tag "Keep original text color" nil))
   :group 'highlight-symbol)
 
+(defcustom highlight-symbol-print-occurrence-count 'explicit
+  "*If t, message the number of occurrences of the current symbol.
+If nil, don't message the number of occurrences.  If `explicit',
+message only when `highlight-symbol' is called explicitly.  If
+`temporary', message only when the symbol under point is
+temporarily highlighted by `highlight-symbol-mode'."
+  :type '(choice
+          (const :tag "Don't message occurrences count" nil)
+          (const :tag "Always message occurrences count" t)
+          (const :tag "Message only for explicit highlighting" explicit)
+          (const :tag "Message only for temporary highlighting" temporary))
+  :group 'highlight-symbol)
+
 ;;;###autoload
 (define-minor-mode highlight-symbol-mode
   "Minor mode that highlights the symbol under point throughout the buffer.
@@ -178,16 +200,23 @@ Highlighting takes place after `highlight-symbol-idle-delay'."
     (kill-local-variable 'highlight-symbol)))
 
 ;;;###autoload
-(defun highlight-symbol-at-point ()
+(defalias 'highlight-symbol-at-point 'highlight-symbol)
+
+;;;###autoload
+(defun highlight-symbol (&optional symbol)
   "Toggle highlighting of the symbol at point.
 This highlights or unhighlights the symbol at point using the first
 element in of `highlight-symbol-faces'."
   (interactive)
-  (let ((symbol (highlight-symbol-get-symbol)))
-    (unless symbol (error "No symbol at point"))
+  (let ((symbol (or symbol
+                    (highlight-symbol-get-symbol)
+                    (error "No symbol at point"))))
     (if (highlight-symbol-symbol-highlighted-p symbol)
         (highlight-symbol-remove-symbol symbol)
-      (highlight-symbol-add-symbol symbol))))
+      (highlight-symbol-add-symbol symbol)
+      (when (or (eq highlight-symbol-print-occurrence-count t)
+                (eq highlight-symbol-print-occurrence-count 'explicit))
+        (highlight-symbol-count symbol)))))
 
 (defun highlight-symbol-symbol-highlighted-p (symbol)
   "Test if the a symbol regexp is currently highlighted."
@@ -246,6 +275,17 @@ element in of `highlight-symbol-faces'."
                 'face (assoc symbol (highlight-symbol-uncompiled-keywords)))))
 
 ;;;###autoload
+(defun highlight-symbol-count (&optional symbol)
+  "Print the number of occurrences of symbol at point."
+  (interactive)
+  (message "%d occurrences in buffer"
+           (let ((case-fold-search nil))
+             (how-many (or symbol
+                           (highlight-symbol-get-symbol)
+                           (error "No symbol at point"))
+                       (point-min) (point-max)))))
+
+;;;###autoload
 (defun highlight-symbol-next ()
   "Jump to the next location of the symbol at point within the buffer."
   (interactive)
@@ -272,6 +312,32 @@ element in of `highlight-symbol-faces'."
   (save-restriction
     (narrow-to-defun)
     (highlight-symbol-jump -1)))
+
+(defvar highlight-symbol-nav-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\M-n" 'highlight-symbol-next)
+    (define-key map "\M-p" 'highlight-symbol-prev)
+    map)
+  "Keymap for `highlight-symbol-nav-mode'.")
+
+;;;###autoload
+(define-minor-mode highlight-symbol-nav-mode
+  "Navigate occurrences of the symbol at point.
+
+When called interactively, toggle `highlight-symbol-nav-mode'.
+With prefix ARG, enable `highlight-symbol-nav-mode' if ARG is
+positive, otherwise disable it.
+
+When called from Lisp, enable `highlight-symbol-nav-mode' if ARG
+is omitted, nil or positive.  If ARG is `toggle', toggle
+`highlight-symbol-nav-mode'.  Otherwise behave as if called
+interactively.
+
+In `highlight-symbol-nav-mode' provide the following key bindings
+to navigate between occurrences of the symbol at point in the
+current buffer.
+
+\\{highlight-symbol-nav-mode-map}")
 
 ;;;###autoload
 (defun highlight-symbol-query-replace (replacement)
@@ -315,7 +381,10 @@ before if NLINES is negative."
         (when symbol
           (setq highlight-symbol symbol)
           (highlight-symbol-add-symbol-with-face symbol 'highlight-symbol-face)
-          (font-lock-fontify-buffer))))))
+          (font-lock-fontify-buffer)
+          (when (or (eq highlight-symbol-print-occurrence-count t)
+                    (eq highlight-symbol-print-occurrence-count 'temporary))
+            (highlight-symbol-count)))))))
 
 (defun highlight-symbol-mode-remove-temp ()
   "Remove the temporary symbol highlighting."
@@ -332,7 +401,8 @@ create the new one."
         (highlight-symbol-temp-highlight))
     (if (eql highlight-symbol-idle-delay 0)
         (highlight-symbol-temp-highlight)
-      (highlight-symbol-mode-remove-temp))))
+      (unless (equal highlight-symbol (highlight-symbol-get-symbol))
+        (highlight-symbol-mode-remove-temp)))))
 
 (defun highlight-symbol-jump (dir)
   "Jump to the next or previous occurence of the symbol at point.

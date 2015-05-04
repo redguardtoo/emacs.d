@@ -250,7 +250,13 @@ buffer is not visiting a file."
 (autoload 'vimrc-mode "vimrc-mode")
 (add-to-list 'auto-mode-alist '("\\.?vim\\(rc\\)?$" . vimrc-mode))
 
+;; {{ https://github.com/nschum/highlight-symbol.el
 (autoload 'highlight-symbol-at-point "highlight-symbol" "" t)
+(autoload 'highlight-symbol-next "highlight-symbol" "" t)
+(autoload 'highlight-symbol-prev "highlight-symbol" "" t)
+(autoload 'highlight-symbol-nav-mode "highlight-symbol" "" t)
+(autoload 'highlight-symbol-query-replace "highlight-symbol" "" t)
+;; }}
 
 ;; {{ show email sent by `git send-email' in gnus
 (eval-after-load 'gnus
