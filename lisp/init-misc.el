@@ -24,6 +24,11 @@
     ))
 ;; }}
 
+;; {{ groovy-mode
+ (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
+ (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+;; }}
+
 ;; cmake
 (setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
                               '(("\\.cmake\\'" . cmake-mode))

@@ -84,6 +84,7 @@ ARCHIVE is the string name of the package archive.")
     color-theme
     wgrep
     robe
+    groovy-mode
     inf-ruby
     simple-httpd
     dsvn
@@ -260,6 +261,7 @@ ARCHIVE is the string name of the package archive.")
 ;; I don't use multiple-cursors, but js2-refactor requires it
 (require-package 'multiple-cursors)
 (require-package 'rinari)
+(require-package 'groovy-mode)
 (require-package 'ruby-compilation)
 (require-package 'csharp-mode)
 (require-package 'emmet-mode)

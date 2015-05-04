@@ -81,7 +81,7 @@
               (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0)
               ;; gtags (GNU global) stuff
               (setq gtags-suggested-key-mapping t)
-              (unless (derived-mode-p 'java-mode)
+              (unless (or (derived-mode-p 'java-mode) (derived-mode-p 'groovy-mode))
                 (my-c-mode-hook))
               (ggtags-mode 1)
               ;; emacs 24.4+ will set up eldoc automatically.
