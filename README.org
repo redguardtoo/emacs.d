@@ -158,7 +158,7 @@ Read wikipedia in order to know,
 - What is environment variable
 - What is pipe, stdout, stdin
 *** Step 2, read official tutorial at least once
-Press "C-h t" ("C" means Ctrl) to read bundled tutorial.
+Press "C-h t" ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
 - How to move cursor
@@ -199,6 +199,16 @@ You can keep pressing `C-f` to ignore the completions and input path manually.
 You need set up the directories to seach C++ header files. Please see the section `clang`.
 ** Use Emacs on Windows?
 I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
+** Yasnippet key bindings
+By default, yasnippet is *NOT* loaded because it takes too much Emacs startup time.
+
+Instead of "M-x yas-expand", you can use my wrapper "M-x my-yas-expand" whose hotkey is "C-c k" globally and "M-j" in evil-insert-mode.
+
+If you prefer loading yasnippet at startup, insert below lines anywhere (~/.emacs.d/init.el, ~/.custom.el, ... etc):
+#+begin_src elisp
+(require 'yasnippet)
+(yas-global-mode 1)
+#+end_src
 ** [[http://melpa.org][MELPA]] does not include the package?
 If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?
