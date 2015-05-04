@@ -73,27 +73,30 @@
 
 ;; {{ guide-key-mode
 (require 'guide-key)
-(setq guide-key/guide-key-sequence '
-      ("C-x v"
-       ",a" ",b"
-       ",c" ",ca" ",cx"
-       ",d"
-       ",e" ",ep"
-       ",f"
-       ",g" ",gs"
-       ",h" ",hs"
-       ",i" ",j" ",jd" ",jt"
-       ",k" ",l"
-       ",m" ",mg"
-       ",o" ",p" ",q"
-       ",r" ",rn"
-       ",s" ",t" ",tu" ",tf"
-       ",u" ",ul"
-       ",v"
-	   ",x" ",xn" ",xv"
-	   ",y"
-	   ",z" ",zw"))
+(setq guide-key/guide-key-sequence
+      '("C-x v" ; VCS commands
+        "C-c"
+        ",a"
+        ",b"
+        ",c"
+        ",d"
+        ",e"
+        ",f"
+        ",g"
+        ",h"
+        ",i"
+        ",k"
+        ",m"
+        ",o"
+        ",r"
+        ",s"
+        ",u"
+        ",v"
+        ",x"
+        ",y"
+        ",z"))
 (guide-key-mode 1)  ; Enable guide-key-mode
+(setq guide-key/recursive-key-sequence-flag t)
 (setq guide-key/idle-delay 0.5)
 ;; }}
 
