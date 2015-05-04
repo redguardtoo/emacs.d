@@ -307,7 +307,7 @@ candidate."
    :require-match (ivy-state-require-match ivy-last)
    :initial-input ivy-text
    :history (ivy-state-history ivy-last)
-   :preselect ivy--current
+   :preselect (regexp-quote ivy--current)
    :keymap (ivy-state-keymap ivy-last)
    :update-fn (ivy-state-update-fn ivy-last)
    :sort (ivy-state-sort ivy-last)
@@ -769,6 +769,26 @@ When GREEDY is non-nil, join words in a greedy way."
                               ".*"
                             ".*?")))))
                     ivy--regex-hash)))))
+
+(defun ivy--regex-ignore-order (str)
+  "Re-build regex from STR by splitting it on spaces.
+Ignore the order of each group."
+  (let* ((subs (split-string str " +" t))
+         (len (length subs)))
+    (cl-case len
+      (1
+       (setq ivy--subexps 0)
+       (car subs))
+      (t
+       (setq ivy--subexps len)
+       (let ((all (mapconcat #'identity subs "\\|")))
+         (mapconcat
+          (lambda (x)
+            (if (string-match "^\\\\(.*\\\\)$" x)
+                x
+              (format "\\(%s\\)" x)))
+          (make-list len all)
+          ".*?"))))))
 
 (defun ivy--regex-plus (str)
   "Build a regex sequence from STR.
