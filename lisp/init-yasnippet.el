@@ -55,19 +55,20 @@
      (setq-default mode-require-final-newline nil)
      ;; my private snippets
      (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
-     (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas/snippet-dirs)))
-         (add-to-list 'yas/snippet-dirs my-yasnippets))
-     ;; (message "yas/snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
+     (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas-snippet-dirs)))
+         (add-to-list 'yas-snippet-dirs my-yasnippets))
+     (message "yas-snippet-dirs=%s" yas-snippet-dirs)
+     ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
      ;; default hotkey `C-c C-s` is still valid
      ;; (global-set-key (kbd "C-c l") 'yas-insert-snippet)
-     ;; give yas/dropdown-prompt in yas/prompt-functions a chance
+     ;; give yas-dropdown-prompt in yas/prompt-functions a chance
      (require 'dropdown-list)
      (setq yas-prompt-functions '(yas-dropdown-prompt
                                   yas-ido-prompt
                                   yas-completing-prompt))
 
-     ;; use yas/completing-prompt when ONLY when `M-x yas-insert-snippet'
+     ;; use yas-completing-prompt when ONLY when `M-x yas-insert-snippet'
      ;; thanks to capitaomorte for providing the trick.
      (defadvice yas-insert-snippet (around use-completing-prompt activate)
        "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
