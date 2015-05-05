@@ -326,7 +326,8 @@
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "ww" 'save-buffer
-  "wr" 'httpd-restart-now
+  "wrn" 'httpd-restart-now
+  "wrd" 'httpd-restart-at-default-directory
   "bk" 'buf-move-up
   "bj" 'buf-move-down
   "bh" 'buf-move-left

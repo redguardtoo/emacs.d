@@ -10,4 +10,9 @@
   (message "http://localhost:%d/ at %s restarted"
            httpd-port httpd-root))
 
+(defun httpd-restart-at-default-directory ()
+  (interactive)
+  (setq httpd-root default-directory)
+  (httpd-restart-now))
+
 (provide 'init-httpd)
