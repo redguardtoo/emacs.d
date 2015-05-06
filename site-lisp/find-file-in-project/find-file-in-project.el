@@ -91,38 +91,68 @@ May be set using .dir-locals.el. Checks each entry if set to a list.")
   "List of patterns to look for with `find-file-in-project'.")
 
 (defvar ffip-prune-patterns
-  '(".git"
+  '(;; VCS
+    ".git"
     ".svn"
     ".cvs"
-    ".metadata"
     ".bzr"
-    "bin"
     ".hg"
-    "cscope.files"
+    ;; project misc
     "*.log"
+    "bin"
     "dist"
     "target"
-    "node_modules"
-    "bower_components"
+    ;; Mac
     ".DS_Store"
+    ;; Ctags
     "tags"
     "TAGS"
+    ;; Global/Cscope
     "GTAGS"
     "GPATH"
     "GRTAGS"
-    "*flymake"
+    "cscope.files"
+    ;; html/javascript/css
+    "*min.js"
+    "*min.css"
+    "node_modules"
+    "bower_components"
+    ;; Images
+    "*.png"
+    "*.jpg"
+    "*.jpeg"
+    "*.gif"
+    "*.bmp"
+    "*.tiff"
+    ;; documents
+    "*.doc"
+    "*.docx"
+    "*.pdf"
+    ;; C/C++
+    "*.obj"
+    "*.o"
+    "*.a"
+    "*.dylib"
+    "*.lib"
+    "*.d"
+    "*.dll"
+    "*.exe"
+    ;; Java
+    ".metadata"
+    ".gradle"
     "*.class"
     "*.war"
     "*.jar"
+    ;; Emacs/Vim
+    "*flymake"
     "#*#"
     ".#*"
     "*.swp"
     "*~"
-    "*.pyc"
     "*.elc"
-    "*min.js"
-    "*min.css"
-    ".cask")
+    ".cask"
+    ;; Python
+    "*.pyc")
   "List of directory/file patterns to not descend into when listing files in `find-file-in-project'.")
 
 (defvar ffip-find-options ""
@@ -258,12 +288,6 @@ directory they are found in so that they are unique."
     ))
 
 ;;;###autoload
-(defun ffip-get-project-root-directory ()
-  "Get the the full path of project root directory"
-  (expand-file-name (or ffip-project-root
-                        (ffip-project-root))))
-
-;;;###autoload
 (defun ffip-current-full-filename-match-pattern-p (REGEX)
   "Is current full file name (including directory) match the REGEX?"
   (let ((dir (if (buffer-file-name) (buffer-file-name) "")))
@@ -279,6 +303,12 @@ a `ffip-project-file' (It's value is \".git\" by default.
 You can override this by setting the variable `ffip-project-root'."
   (interactive)
   (ffip-find-files))
+
+;;;###autoload
+(defun ffip-get-project-root-directory ()
+  "Get the the full path of project root directory"
+  (expand-file-name (or ffip-project-root
+                        (ffip-project-root))))
 
 ;;;###autoload
 (defun find-file-in-project-by-selected ()
