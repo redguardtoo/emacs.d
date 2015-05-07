@@ -30,7 +30,8 @@
 
 (defun my-yas-expand ()
   (interactive)
-  (unless (bound-and-true-p yas-global-mode)
+  (unless (featurep 'yasnippet)
+    (require 'yasnippet)
     (yas-global-mode 1))
 
   (if (buffer-file-name)
