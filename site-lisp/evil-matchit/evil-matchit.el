@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 1.5.0
+;; Version: 1.5.1
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -272,7 +272,7 @@ If this flag is nil, then 50 means jump 50 times.")
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "1.5.0"))
+(defun evilmi-version() (interactive) (message "1.5.1"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
