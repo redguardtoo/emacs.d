@@ -225,8 +225,7 @@
   "ui" 'gud-stepi
   "uc" 'gud-cont
   "uf" 'gud-finish
-  "W" 'save-some-buffers
-  "K" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
+  "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
   "ls" 'highlight-symbol
   "lq" 'highlight-symbol-query-replace
