@@ -263,7 +263,7 @@ buffer is not visiting a file."
 (add-to-list 'auto-mode-alist '("\\.?vim\\(rc\\)?$" . vimrc-mode))
 
 ;; {{ https://github.com/nschum/highlight-symbol.el
-(autoload 'highlight-symbol-at-point "highlight-symbol" "" t)
+(autoload 'highlight-symbol "highlight-symbol" "" t)
 (autoload 'highlight-symbol-next "highlight-symbol" "" t)
 (autoload 'highlight-symbol-prev "highlight-symbol" "" t)
 (autoload 'highlight-symbol-nav-mode "highlight-symbol" "" t)
