@@ -1,7 +1,9 @@
 * Before start
 Please read below checklist at least once:
-- I recommend Emacs *24.3.1* or *24.4*
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
+- I recommend Emacs *24.3.1* or *24.4*
+- Tested with v24.3.1, v24.4, v24.5 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
+- Check section "About Emacs 23" if you uses Emacs 23.4
 - Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
 - Packages from [[http://melpa.org][melpa-unstable]] are *invisible* by default. Modify variable *melpa-include-packages* in init-elpa.el if you need package from melpa-unstable
 - Other issues are covered in FAQ
@@ -13,8 +15,6 @@ Please read below checklist at least once:
 - Optimized for cross-platform C++ development
 - Real time HTML syntax checker
 - I do *NOT* re-define key bindings, so original key bindings are still there
-- Tested with v24.3.1, v24.4 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
-- Check section "About Emacs 23" if you uses Emacs 23.4
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
