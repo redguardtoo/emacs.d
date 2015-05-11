@@ -23,23 +23,20 @@
     </div>
     <div ng-view></div>
     <script type="text/javascript">
-      var ${1:app}= angular.module('${2:myApp}', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']);
-      ${1:$(yas/substr yas-text "[^ ]*")}.config(['$routeProvider', function($routeProvider) {
+      angular.module('${2:myApp}', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']).config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/index', {
           templateUrl: 'main.html',
           controller: 'MainCtrl'
         }).otherwise({
           redirectTo: '/index'
         });
-      }]);
-      ${1:$(yas/substr yas-text "[^ ]*")}.run(function($httpBackend) {
+      }]).run(function($httpBackend) {
          // hack $http
          $httpBackend.whenPOST('MY_POST_URL').respond(function(method, url, data, headers){
            return [200, {}, {}];
          });
          $httpBackend.whenGET(/^.*/).passThrough();
-      });
-      ${1:$(yas/substr yas-text "[^ ]*")}.controller('MainCtrl', function ($scope) {
+      }).controller('MainCtrl', function ($scope) {
         $scope.message = 'Hello World';
       });
     </script>
