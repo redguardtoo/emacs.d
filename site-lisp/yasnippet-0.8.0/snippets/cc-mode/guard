@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: guard
+# key: guard
+# --
+#ifndef ${1:NAME}_H
+#define $1_H
+
+$0
+
+#endif // $1

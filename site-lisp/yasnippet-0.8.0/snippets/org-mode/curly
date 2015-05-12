@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: curly
+# key: curly
+# --
+${1:def} =
+\left \{
+\begin{array}{ll}
+$0
+\end{array}
+\right

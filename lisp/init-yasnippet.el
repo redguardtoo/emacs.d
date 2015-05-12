@@ -1,3 +1,5 @@
+(require 'yasnippet-autoloads)
+
 (defun my-yas-reload-all ()
   (interactive)
   (unless (featurep 'yasnippet) (require 'yasnippet))

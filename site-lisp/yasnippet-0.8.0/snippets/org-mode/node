@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: node
+# key: node
+# --
+t${1:0} [ label = "${2:label}" ];
+$0

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: crypt
+# key: crypt
+# --
+-*- mode: org; epa-file-encrypt-to: (“andrea.crotti.0@gmail.com”) -*-
+$0

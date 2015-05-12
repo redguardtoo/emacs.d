@@ -280,7 +280,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'pomodoro)
 (require-package 'flymake-lua)
 (require-package 'dropdown-list)
-(require-package 'yasnippet)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
