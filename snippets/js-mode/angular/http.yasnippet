@@ -4,11 +4,8 @@
 # group: angular
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-$http.${1:post}(${2:url})
-  .success(function(resp) {
-    console.log('resp=', resp);
-    $0
-  })
-  .error(function(reason) {
-    console.log('reason=', reason);
-  });
+$http.${1:post}(${2:url}).success(function(resp) {console.log('resp=', resp);
+  $0
+}).error(function(reason) {
+  console.log('reason=', reason);
+});

@@ -3,7 +3,7 @@
 # group: angular
 # key: aservice
 # --
-${1:app}.service('${2:serviceId}Service', ['$http', function($http){
+angular.module('${1:myApp}').service('${2:serviceId}Service', ['$http', function($http){
   // @see http://stackoverflow.com/questions/14324451/angular-service-vs-angular-factory
   // Service: This function will be new-ed
   // Factory: This function (constructor) will be invoked

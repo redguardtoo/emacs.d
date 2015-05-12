@@ -2,7 +2,7 @@
 # name: angular.directive
 # key: adirective
 # --
-${1:app}.directive('${2:prefixDirectiveId}', function ($3) {
+angular.module('${1:myApp}').directive('${2:prefixDirectiveId}', function ($3) {
   // @see https://docs.angularjs.org/guide/directive
   return function (scope, element, attrs) {
     $0

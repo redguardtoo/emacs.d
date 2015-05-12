@@ -3,21 +3,19 @@
 # key: adirective
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-${1:app}.directive('${2:prefixDirectiveId}', function() {
+angular.module('${1:myApp}').directive('${2:prefixDirectiveId}', function() {
   return {
     restrict: 'A', // A - match attribute, E - match element name, C, match attribute name
     require: 'ngModel',
-    link: function(scope, element, attr, ngModel) {
+    link: function(scope, element, attr, modelCtrl) {
       var elementFocused;
       var forceDataBinding = function(ctrl) {
         var value = ctrl.$modelValue;
         var formatters = ctrl.$formatters,
         idx = formatters.length;
-
         while(idx--) {
           value = formatters[idx](value);
         }
-
         if (ctrl.$viewValue !== value) {
           ctrl.$viewValue = value;
           ctrl.$render();
@@ -25,18 +23,18 @@ ${1:app}.directive('${2:prefixDirectiveId}', function() {
       };
       element.on('focus', function () {
         elementFocused = true;
-        forceDataBinding(ngModel);
+        forceDataBinding(modelCtrl);
       });
       element.on('blur', function () {
         elementFocused = false;
-        forceDataBinding(ngModel);
+        forceDataBinding(modelCtrl);
       });
-      ngModel.$parsers.push(function (v) {
+      modelCtrl.$parsers.push(function (v) {
         $0
         // from user input
         return v;
       });
-      ngModel.$formatters.push(function (v) {
+      modelCtrl.$formatters.push(function (v) {
         // to user input
         return v;
       });

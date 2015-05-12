@@ -3,7 +3,7 @@
 # group: angular
 # key: afilter
 # --
-filter('${1:filterName}', [${2:$http}, function(${2:$(yas/substr yas-text "[^ ]*")}) {
+angular.module('myApp').filter('${1:filterName}', [${2:$http}, function(${2:$(yas/substr yas-text "[^ ]*")}) {
   return function (input) {
     return input;
   };
