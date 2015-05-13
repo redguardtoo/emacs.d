@@ -1,6 +1,6 @@
 ;;; helm-config.el --- Applications library for `helm.el' -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -199,23 +199,11 @@
      ("(\\<\\(helm-aif\\)\\>" 1 font-lock-keyword-face))))
 
 
-;;; Compatibility emacs-24.4+
-;; Inlined from Emacs trunk.
-(defalias 'function-put
-  ;; We don't want people to just use `put' because we can't conveniently
-  ;; hook into `put' to remap old properties to new ones.  But for now, there's
-  ;; no such remapping, so we just call `put'.
-  #'(lambda (f prop value) (put f prop value))
-  "Set function F's property PROP to VALUE.
-The namespace for PROP is shared with symbols.
-So far, F can only be a symbol, not a lambda expression.")
-
-
 ;;; Load the autoload file
 ;;  It should have been generated either by
 ;;  package.el or the make file.
 
-(load "helm-autoloads")
+(load "helm-autoloads" nil t)
 
 (provide 'helm-config)
 

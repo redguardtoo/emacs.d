@@ -1,6 +1,6 @@
 ;;; helm-elisp-package.el --- helm interface for package.el -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -19,6 +19,18 @@
 (require 'cl-lib)
 (require 'helm)
 (require 'package)
+
+(defgroup helm-el-package nil
+  "helm elisp packages."
+  :group 'helm)
+
+(defcustom helm-el-package-initial-filter 'all
+  "Show only installed, upgraded or all packages at startup."
+  :group 'helm-el-package
+  :type '(radio :tag "Initial filter for elisp packages"
+          (const :tag "Show all packages" all)
+          (const :tag "Show installed packages" installed)
+          (const :tag "Show upgradable packages" upgrade)))
 
 ;; internals vars
 (defvar helm-el-package--show-only 'all)
@@ -45,7 +57,7 @@
   (setq helm-el-package--upgrades (helm-el-package-menu--find-upgrades))
   (if helm-force-updating-p
       (message "Refreshing packages list done")
-      (setq helm-el-package--show-only 'all))
+      (setq helm-el-package--show-only helm-el-package-initial-filter))
   (kill-buffer "*Packages*"))
 
 (defun helm-el-package-describe (candidate)
@@ -291,6 +303,12 @@
           (helm-make-source "list packages" 'helm-list-el-package-source)))
   (helm :sources 'helm-source-list-el-package
         :buffer "*helm list packages*"))
+
+;;;###autoload
+(defun helm-list-elisp-packages-no-fetch ()
+  (interactive)
+  (let ((helm-el-package--initialized-p t))
+    (helm-list-elisp-packages nil)))
 
 (provide 'helm-elisp-package)
 

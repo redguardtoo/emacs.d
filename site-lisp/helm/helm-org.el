@@ -1,6 +1,6 @@
 ;;; helm-org.el --- Helm for org headlines and keywords completion -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -93,19 +93,25 @@ NOTE: This will be slow on large org buffers."
 
 (defun helm-get-org-candidates-in-file (filename min-depth max-depth
                                         &optional fontify nofname)
-  (with-current-buffer (find-file-noselect filename)
+  (with-current-buffer (pcase filename
+                         ((pred bufferp) filename)
+                         ((pred stringp) (find-file-noselect filename)))
     (and fontify (jit-lock-fontify-now))
     (let ((match-fn (if fontify 'match-string 'match-string-no-properties)))
       (save-excursion
         (goto-char (point-min))
-        (cl-loop while (re-search-forward org-complex-heading-regexp nil t)
-              if (let ((num-stars (length (match-string-no-properties 1))))
-                   (and (>= num-stars min-depth) (<= num-stars max-depth)))
-              collect `(,(let ((heading (funcall match-fn 4))
-                               (file (unless nofname (concat (helm-basename filename) ":"))))
-                           (org-format-outline-path
-                            (append (org-get-outline-path) (list heading)) nil file))
-                         . ,(point-marker)))))))
+        (cl-loop with width = (window-width)
+                 while (re-search-forward org-complex-heading-regexp nil t)
+                 if (let ((num-stars (length (match-string-no-properties 1))))
+                      (and (>= num-stars min-depth) (<= num-stars max-depth)))
+                 collect `(,(let ((heading (funcall match-fn 4))
+                                  (file (unless nofname
+                                          (concat (helm-basename filename) ":")))
+                                  (level (length (match-string-no-properties 1))))
+                              (org-format-outline-path
+                               (append (org-get-outline-path t level heading)
+                                       (list heading)) width file))
+                           . ,(point-marker)))))))
 
 ;;;###autoload
 (defun helm-org-agenda-files-headings ()
@@ -117,10 +123,11 @@ NOTE: This will be slow on large org buffers."
 ;;;###autoload
 (defun helm-org-in-buffer-headings ()
   (interactive)
-  (helm :sources (helm-source-org-headings-for-files
-                  (list (buffer-file-name (current-buffer))))
-        :candidate-number-limit 99999
-        :buffer "*helm org inbuffer*"))
+  (let ((helm-org-headings--nofilename t))
+    (helm :sources (helm-source-org-headings-for-files
+                    (list (current-buffer)))
+          :candidate-number-limit 99999
+          :buffer "*helm org inbuffer*")))
 
 ;;;###autoload
 (defun helm-org-capture-templates ()

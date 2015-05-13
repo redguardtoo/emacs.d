@@ -1,6 +1,6 @@
 ;;; helm-locate.el --- helm interface for locate. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -97,10 +97,17 @@ the opposite of \"locate\" command."
     (define-key map (kbd "M-g s")   'helm-ff-run-grep)
     (define-key map (kbd "M-g z")   'helm-ff-run-zgrep)
     (define-key map (kbd "M-g p")   'helm-ff-run-pdfgrep)
+    (define-key map (kbd "M-R")     'helm-ff-run-rename-file)
+    (define-key map (kbd "M-C")     'helm-ff-run-copy-file)
+    (define-key map (kbd "M-B")     'helm-ff-run-byte-compile-file)
+    (define-key map (kbd "M-L")     'helm-ff-run-load-file)
+    (define-key map (kbd "M-S")     'helm-ff-run-symlink-file)
+    (define-key map (kbd "M-H")     'helm-ff-run-hardlink-file)
     (define-key map (kbd "M-D")     'helm-ff-run-delete-file)
     (define-key map (kbd "C-=")     'helm-ff-run-ediff-file)
     (define-key map (kbd "C-c =")   'helm-ff-run-ediff-merge-file)
     (define-key map (kbd "C-c o")   'helm-ff-run-switch-other-window)
+    (define-key map (kbd "C-c C-o") 'helm-ff-run-switch-other-frame)
     (define-key map (kbd "M-i")     'helm-ff-properties-persistent)
     (define-key map (kbd "C-c C-x") 'helm-ff-run-open-file-externally)
     (define-key map (kbd "C-c X")   'helm-ff-run-open-file-with-default-tool)
@@ -261,7 +268,7 @@ See also `helm-locate'."
                        '(" " mode-line-buffer-identification " "
                          (:eval (format "L%s" (helm-candidate-number-at-point))) " "
                          (:eval (propertize
-                                 (format "[Locate Process Finish- (%s results)]"
+                                 (format "[Locate process finished - (%s results)]"
                                          (max (1- (count-lines
                                                    (point-min) (point-max)))
                                               0))

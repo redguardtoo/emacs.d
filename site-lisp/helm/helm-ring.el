@@ -1,6 +1,6 @@
 ;;; helm-ring.el --- kill-ring, mark-ring, and register browsers for helm. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -188,11 +188,8 @@ replace with STR as yanked string."
   (with-current-buffer (marker-buffer marker)
     (goto-char marker)
     (forward-line 0)
-    (let (line)
-      (if (string= "" line)
-          (setq line  "<EMPTY LINE>")
-        (setq line (car (split-string (thing-at-point 'line)
-                                      "[\n\r]"))))
+    (let ((line (car (split-string (thing-at-point 'line) "[\n\r]"))))
+      (when (string= "" line) (setq line  "<EMPTY LINE>")) 
       (format "%7d:%s:    %s"
               (line-number-at-pos) (marker-buffer marker) line))))
 
@@ -200,13 +197,13 @@ replace with STR as yanked string."
   (let ((marks global-mark-ring))
     (when marks
       (cl-loop for i in marks
-            for gm = (unless (or (string-match
-                                  "^ " (format "%s" (marker-buffer i)))
-                                 (null (marker-buffer i)))
-                       (helm-global-mark-ring-format-buffer i))
-            when (and gm (not (member gm recip)))
-            collect gm into recip
-            finally return recip))))
+               for mb = (marker-buffer i)
+               for gm = (unless (or (string-match "^ " (format "%s" mb))
+                                    (null mb))
+                          (helm-global-mark-ring-format-buffer i))
+               when (and gm (not (member gm recip)))
+               collect gm into recip
+               finally return recip))))
 
 
 ;;;; <Register>

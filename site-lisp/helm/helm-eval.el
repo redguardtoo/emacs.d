@@ -1,6 +1,6 @@
 ;;; helm-eval.el --- eval expressions from helm. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -38,10 +38,26 @@ Should take one arg: the string to display."
   :group 'helm-eval)
 
 
-(declare-function eldoc-current-symbol "eldoc")
-(declare-function eldoc-get-fnsym-args-string "eldoc" (sym &optional index))
-(declare-function eldoc-get-var-docstring "eldoc" (sym))
-(declare-function eldoc-fnsym-in-current-sexp "eldoc")
+;;; Eldoc compatibility between emacs-24 and emacs-25
+;;
+(if (require 'elisp-mode nil t)    ; emacs-25
+    ;; Maybe the eldoc functions have been
+    ;; already aliased by eldoc-eval.
+    (cl-loop for (f . a) in '((eldoc-current-symbol .
+                               elisp--current-symbol)
+                              (eldoc-fnsym-in-current-sexp .
+                               elisp--fnsym-in-current-sexp) 
+                              (eldoc-get-fnsym-args-string .
+                               elisp-get-fnsym-args-string) 
+                              (eldoc-get-var-docstring .
+                               elisp-get-var-docstring))
+             unless (fboundp f)
+             do (defalias f a))
+    ;; Emacs-24.
+    (declare-function eldoc-current-symbol "eldoc")
+    (declare-function eldoc-get-fnsym-args-string "eldoc" (sym &optional index))
+    (declare-function eldoc-get-var-docstring "eldoc" (sym))
+    (declare-function eldoc-fnsym-in-current-sexp "eldoc"))
 
 ;;; Evaluation Result
 ;;
@@ -102,7 +118,7 @@ Should take one arg: the string to display."
         (when (member buf helm-eldoc-active-minibuffers-list)
           (with-current-buffer buf
             (let* ((sym     (save-excursion
-                              (unless (looking-back ")\\|\"")
+                              (unless (looking-back ")\\|\"" (1- (point)))
                                 (forward-char -1))
                               (eldoc-current-symbol)))
                    (info-fn (eldoc-fnsym-in-current-sexp))

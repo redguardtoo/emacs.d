@@ -1,6 +1,6 @@
 ;;; helm-misc.el --- Various functions for helm -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -171,22 +171,22 @@ It is added to `extended-command-history'.
 ;;
 ;;
 (defvar helm-source-minibuffer-history
-  '((name . "Minibuffer History")
-    (header-name . (lambda (name)
-                     (format "%s (%s)" name minibuffer-history-variable)))
-    (candidates
-     . (lambda ()
-         (let ((history (cl-loop for i in
-                              (symbol-value minibuffer-history-variable)
-                              unless (string= "" i) collect i)))
-           (if (consp (car history))
-               (mapcar 'prin1-to-string history)
-             history))))
-    (migemo)
-    (multiline)
-    (action . (lambda (candidate)
-                (delete-minibuffer-contents)
-                (insert candidate)))))
+  (helm-build-sync-source "Minibuffer History"
+    :header-name (lambda (name)
+                   (format "%s (%s)" name minibuffer-history-variable))
+    :candidates
+     (lambda ()
+       (let ((history (cl-loop for i in
+                               (symbol-value minibuffer-history-variable)
+                               unless (string= "" i) collect i)))
+         (if (consp (car history))
+             (mapcar 'prin1-to-string history)
+             history)))
+    :migemo t
+    :multiline t
+    :action (lambda (candidate)
+              (delete-minibuffer-contents)
+              (insert candidate))))
 
 ;;; Shell history
 ;;
@@ -287,7 +287,6 @@ It is added to `extended-command-history'.
   (helm-other-buffer 'helm-source-stumpwm-commands
                      "*helm stumpwm commands*"))
 
-
 ;;;###autoload
 (defun helm-mini ()
   "Preconfigured `helm' lightweight version \(buffer -> recentf\)."
@@ -306,8 +305,8 @@ It is added to `extended-command-history'.
   "Preconfigured `helm' for `minibuffer-history'."
   (interactive)
   (let ((enable-recursive-minibuffers t))
-    (helm-other-buffer 'helm-source-minibuffer-history
-                       "*helm minibuffer-history*")))
+    (helm :sources 'helm-source-minibuffer-history
+          :buffer "*helm minibuffer-history*")))
 
 ;;;###autoload
 (defun helm-comint-input-ring ()

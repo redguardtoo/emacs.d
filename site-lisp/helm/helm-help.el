@@ -1,6 +1,6 @@
 ;;; helm-help.el --- Help messages for Helm. -*- lexical-binding: t -*-
 
-;; Copyright (C) 2012 ~ 2014 Thierry Volpiatto <thierry.volpiatto@gmail.com>
+;; Copyright (C) 2012 ~ 2015 Thierry Volpiatto <thierry.volpiatto@gmail.com>
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -72,9 +72,8 @@ Find here the documentation of all sources actually documented."
       (erase-buffer)
       (cl-loop for elm in helm-help--string-list
             for str = (symbol-value elm)
-            do (if (functionp str)
-                   (insert (funcall str))
-                 (insert str)))))
+            do (insert (substitute-command-keys
+                        (if (functionp str) (funcall str) str))))))
   (let ((helm-org-headings--nofilename t))
     (helm :sources (helm-source-org-headings-for-files
                     (list helm-documentation-file))
@@ -334,16 +333,23 @@ Italic     => A non--file buffer.
   "\n* Helm Find Files\n
 
 ** Helm find files tips:
-\n*** Enter `~/' at end of pattern to quickly reach home directory.
 
-*** Enter `/' at end of pattern to quickly reach root of your file system.
+*** Quick pattern expansion:
 
-*** Enter `./' at end of pattern to quickly reach `default-directory' (initial start of session).
+\n**** Enter `~/' at end of pattern to quickly reach home directory.
+
+**** Enter `/' at end of pattern to quickly reach root of your file system.
+
+**** Enter `./' at end of pattern to quickly reach `default-directory' (initial start of session).
   If you are already in `default-directory' this will move cursor on top.
 
-*** Enter `../' at end of pattern will reach upper directory, moving cursor on top.
-  NOTE: This different to using `C-l' in that `C-l' don't move cursor on top but stay on previous
+**** Enter `../' at end of pattern will reach upper directory, moving cursor on top.
+  NOTE: This is different to using `C-l' in that `C-l' don't move cursor on top but stay on previous
   subdir name.
+
+**** Enter any environment var (e.g `$HOME') at end of pattern, it will be expanded.
+
+**** You can yank any valid filename after pattern, it will be expanded.
 
 *** You can complete with partial basename (start on third char entered)
 
@@ -407,6 +413,32 @@ On completion:
 - target starts by ~/           => insert abbreviate file name.
 - target starts by / or [a-z]:/ => insert full path.
 - otherwise                     => insert relative file name.
+
+*** Using wildcard to select multiple files
+
+Use of wilcard is supported to give a set of files to an action:
+
+e.g
+You can copy all the files with \".el\" extension by using \"*.el\"
+and then run your copy action.
+
+You can do the same but with \"**.el\" (note the two stars),
+this will select recursively all \".el\" files under current directory.
+
+NOTE: When using an action that involve an external backend (e.g grep), using \"**\"
+is not advised (even if it works fine) because it will be slower to select all your files,
+you have better time letting the backend doing it, it will be faster.
+However, if you know you have not many files it is reasonable to use this,
+also using not recursive wilcard (e.g \"*.el\") is perfectly fine for this.
+
+This feature (\"**\") is activated by default with the option `helm-file-globstar'.
+The directory selection with \"**foo/\" like bash shopt globstar option is not supported yet.
+
+*** Bookmark your `helm-find-files' session
+
+You can bookmark your `helm-find-files' session with `C-x r m'.
+You can retrieve later these bookmarks easily by using M-x helm-filtered-bookmarks
+or from the current `helm-find-files' session just hitting `C-x r b'.
 
 \n** Specific commands for `helm-find-files':\n
 \\<helm-find-files-map>
@@ -803,7 +835,42 @@ the command is called once for each file like this:
   "\n* Helm Moccur\n
 ** Helm Moccur tips:
 
+*** Matching
 Multiple regexp matching is allowed, just enter a space to separate your regexps.
+
+Matching empty lines is supported with the regexp \"^$\", you will get the results
+with only the buffer-name and the line number, you can of course save and edit these
+results.
+
+*** Jump to the corresponding line in the searched buffer
+You can do this with `C-j' (persistent-action), to do it repetitively
+you can use `C-<up>' and `C-<down>' or enable `helm-follow-mode' with `C-c C-f'.
+
+*** Saving results
+Same as with helm-grep, you can save the results with `C-x C-s'.
+Of course if you don't save your results, you can get back your session
+with `helm-resume'.
+
+*** Refreshing the resumed session.
+When the buffer(s) where you ran helm-(m)occur have been modified, you will be
+warned of this with the buffer flashing to red, you can refresh the buffer by running
+`C-c C-u'.
+This can be done automatically by customizing `helm-moccur-auto-update-on-resume'.
+
+*** Refreshing a saved buffer
+Just hit `g' to update your buffer.
+
+*** Edit a saved buffer
+
+To do so you have to install wgrep
+https://github.com/mhayashi1120/Emacs-wgrep
+and then:
+
+1) C-c C-p to edit the buffer(s).
+2) C-x C-s to save your changes.
+
+Tip: Use the excellent iedit https://github.com/tsdh/iedit
+to modify occurences in your buffer.
 
 \n** Specific commands for Helm Moccur:\n
 \\<helm-moccur-map>
@@ -1004,7 +1071,8 @@ the amount of prefix args entered.
 Use persistent action to run your kmacro as many time as needed,
 you can change of kmacro with `helm-next-line' `helm-previous-line'.
 
-NOTE: You can't record keys running helm commands.
+NOTE: You can't record keys running helm commands except `helm-M-x' unless
+you don't choose from there a command using helm completion.
 
 \n** Specific commands for Helm kmacro:\n
 \\<helm-kmacro-map>
@@ -1474,11 +1542,6 @@ HELM-ATTRIBUTE should be a symbol."
   `re-search-forward'. This attribute is meant to be used with
   (candidates . helm-candidates-in-buffer) or
   (candidates-in-buffer) in short.")
-
-(helm-document-attribute 'search-from-end "optional"
-  "  Make `helm-candidates-in-buffer' search from the end of buffer.
-  If this attribute is specified, `helm-candidates-in-buffer'
-  uses `re-search-backward' instead.")
 
 (helm-document-attribute 'get-line "optional"
   "  A function like `buffer-substring-no-properties' or `buffer-substring'.
