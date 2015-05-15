@@ -314,26 +314,52 @@ The full path into relative path insert it as a local file link in org-mode"
       (insert (format "[[file:%s]]" str))
       )))
 
-(defun convert-image-to-css-code ()
-  "convert a image into css code (base64 encode)"
+(defun font-file-to-base64 (file)
+  (let ((str "")
+        (file-base (file-name-sans-extension file))
+        (file-ext (file-name-extension file)))
+
+    (if (file-exists-p file)
+        (with-temp-buffer
+          (shell-command (concat "cat " file "|base64") 1)
+          (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
+    str))
+
+(defun convert-binary-to-css-code ()
+  "Convert binary (image, font...) into css"
   (interactive)
   (let (str
         rlt
-        (file (read-file-name "The path of image:")))
-    (with-temp-buffer
-      (shell-command (concat "cat " file "|base64") 1)
-      (setq str (replace-regexp-in-string "\n" "" (buffer-string)))
-      )
-    (setq rlt (concat "background:url(\"data:image/"
-                      (car (last (split-string file "\\.")))
-                      ";base64,"
-                      str
-                      "\") no-repeat 0 0;"
-                      ))
+        (file (read-file-name "The path of image:"))
+        file-ext
+        file-base)
+
+    (setq file-ext (file-name-extension file))
+    (setq file-base (file-name-sans-extension file))
+    (cond
+     ((member file-ext '("ttf" "eot" "woff"))
+      (setq rlt (concat "@font-face {\n"
+                        "  font-family: familarName;\n"
+                        "  src: url('data:font/eot;base64," (font-file-to-base64 (concat file-base ".eot")) "') format('embedded-opentype'),\n"
+                        "       url('data:application/x-font-woff;base64," (font-file-to-base64 (concat file-base ".woff")) "') format('woff'),\n"
+                        "       url('data:font/ttf;base64," (font-file-to-base64 (concat file-base ".ttf")) "') format('truetype');"
+                        "\n}"
+                        )))
+     (t
+      (with-temp-buffer
+        (shell-command (concat "cat " file "|base64") 1)
+        (setq str (replace-regexp-in-string "\n" "" (buffer-string))))
+      (setq rlt (concat "background:url(\"data:image/"
+                          file-ext
+                          ";base64,"
+                          str
+                          "\") no-repeat 0 0;"
+                          ))))
     (kill-new rlt)
     (copy-yank-str rlt)
-    (message "css code => clipboard & yank ring")
-    ))
+    (message "css code => clipboard & yank ring")))
+
+
 
 (defun current-font-face ()
   "get the font face under cursor"
