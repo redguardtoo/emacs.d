@@ -19,7 +19,7 @@
       <button ng-click="clickMe()" >Click Me</button>
     </div>
     <script type="text/javascript">
-     app= angular.module('myApp', []).controller('MainCtrl', function ($scope) {
+     angular.module('myApp', []).controller('MainCtrl', ['$scope', function($scope) {
        $0
        $scope.count = 1;
        $scope.message = 'Hello World ';
@@ -29,7 +29,7 @@
        $scope.clickMe = function() {
          $scope.count++;
        };
-     });
+     }]);
     </script>
   </body>
 </html>

@@ -36,9 +36,9 @@
            return [200, {}, {}];
          });
          $httpBackend.whenGET(/^.*/).passThrough();
-      }).controller('MainCtrl', function ($scope) {
+      }).controller('MainCtrl', ['$scope', function ($scope) {
         $scope.message = 'Hello World';
-      });
+      }]);
     </script>
   </body>
 </html>

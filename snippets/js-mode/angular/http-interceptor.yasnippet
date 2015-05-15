@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name:  intercept $http
+# group: angular
+# key: ahttp
+# --
+angular.module('${1:myApp}').factory('${2:http}Injector', ['${3:thirdPartyService}', function(${3:$(yas/substr yas-text "[^ ]*")}) {
+  return {
+    request: function(config) {
+      $0
+      return config;
+    },
+    response: function(resp) {
+      return resp;
+    }
+  };
+}]).config(['$httpProvider', function($httpProvider) {
+  $httpProvider.interceptors.push('${2:$(yas/substr yas-text "[^ ]*")}Injector');
+}]);
