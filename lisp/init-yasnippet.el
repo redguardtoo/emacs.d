@@ -1,4 +1,7 @@
-(require 'yasnippet-autoloads)
+;; loading yasnippet will slow the startup
+;; but it's necessary cost
+(require 'yasnippet)
+(yas-global-mode 1)
 
 (defun my-yas-reload-all ()
   (interactive)
@@ -32,22 +35,7 @@
 
 (defun my-yas-expand ()
   (interactive)
-  (unless (featurep 'yasnippet)
-    (require 'yasnippet)
-    (yas-global-mode 1))
-
-  (if (buffer-file-name)
-      (let ((ext (car (cdr (split-string (buffer-file-name) "\\."))) )
-            (old-yas-flag yas-indent-line))
-        (if (or (string= ext "ftl") (string= ext "jsp"))
-          (setq yas-indent-line nil))
-        (yas-expand)
-        ;; restore the flag
-        (setq yas-indent-line old-yas-flag))
-    (yas-expand)))
-
-;; default TAB key is occupied by auto-complete
-(global-set-key (kbd "C-c k") 'my-yas-expand)
+  (yas-expand))
 
 (autoload 'snippet-mode "yasnippet" "")
 (add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
@@ -60,7 +48,6 @@
      (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
      (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas-snippet-dirs)))
          (add-to-list 'yas-snippet-dirs my-yasnippets))
-     (message "yas-snippet-dirs=%s" yas-snippet-dirs)
      ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
      ;; default hotkey `C-c C-s` is still valid
