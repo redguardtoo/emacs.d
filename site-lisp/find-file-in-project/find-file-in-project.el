@@ -231,6 +231,9 @@ This overrides variable `ffip-project-root' when set.")
 (defun ffip-completing-read (prompt collection)
   (let (rlt)
     (cond
+     ( (= 1 (length collection))
+       ;; open file directly
+       (setq rlt (car collection)))
      ((fboundp 'ivy-read)
       (setq rlt (ivy-read prompt collection)))
      ((and (boundp 'ido-mode) ido-mode)
