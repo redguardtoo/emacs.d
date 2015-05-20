@@ -299,7 +299,7 @@ By default, the word files path is at "~/.eim/py.txt". I place it out of the ema
 
 The path can be changed in init-eim.el.
 
-A sample py.txt can be downloaded [[https://gist.githubusercontent.com/redguardtoo/8dae2cd040996089cd61/raw/69f29362fdf880b8428012a4b5057d8dc6f5fc70/py.txt][HERE]].
+A sample file can be downloaded [[https://github.com/tumashu/chinese-pyim-bigdict/raw/gh-pages/pyim-bigdict.pyim][HERE]]. After downloading, rename it to py.txt.
 ** Install Emacs at home directory
 Run below commands:
 #+begin_src sh
