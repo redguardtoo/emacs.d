@@ -320,6 +320,7 @@
   ;; "opt" is occupied by my-open-project-todo
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
+  "otl" 'org-toggle-link-display
   "oc" 'occur
   "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
