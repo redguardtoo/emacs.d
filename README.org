@@ -211,15 +211,10 @@ You need set up the directories to seach C++ header files. Please see the sectio
 ** Use Emacs on Windows?
 I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
 ** Yasnippet key bindings
-By default, yasnippet is *NOT* loaded because it takes too much Emacs startup time.
+Instead of "M-x yas-expand", you can use hotkey "C-c k" globally and "M-j" in evil-insert-mode.
 
-Instead of "M-x yas-expand", you can use my wrapper "M-x my-yas-expand" whose hotkey is "C-c k" globally and "M-j" in evil-insert-mode.
+I don't suggest use default TAB key to expand snippet because TAB keys is used by other plugins
 
-If you prefer loading yasnippet at startup, insert below lines anywhere (~/.emacs.d/init.el, ~/.custom.el, ... etc):
-#+begin_src elisp
-(require 'yasnippet)
-(yas-global-mode 1)
-#+end_src
 ** [[http://melpa.org][MELPA]] does not include the package?
 If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?

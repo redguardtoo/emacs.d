@@ -156,9 +156,8 @@
 (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
 (define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-(define-key evil-insert-state-map (kbd "TAB") 'my-yas-expand)
-(define-key evil-insert-state-map (kbd "M-j") 'my-yas-expand)
-(define-key evil-emacs-state-map (kbd "M-j") 'my-yas-expand)
+(define-key evil-insert-state-map (kbd "M-j") 'yas-expand)
+(define-key evil-emacs-state-map (kbd "M-j") 'yas-expand)
 (global-set-key (kbd "C-r") 'undo-tree-redo)
 
 ;; My frequently used commands are listed here
@@ -384,7 +383,7 @@
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "ycr" 'my-yas-reload-all
+  "ycr" 'yas-reload-all
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
   "zv" 'my-wg-swich-to-workgroup
