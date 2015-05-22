@@ -344,7 +344,6 @@
   "9" 'select-window-9
   "xm" 'smex
   "mx" 'helm-M-x
-  "md" 'my-open-project-todo
   "xx" 'er/expand-region
   "xf" 'ido-find-file
   "xb" 'ido-switch-buffer
