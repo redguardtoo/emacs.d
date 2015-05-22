@@ -17,7 +17,9 @@
 
 (setq javascript-common-imenu-regex-list
       '(("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
+        ("Controller" "[. \t]controllerAs:[ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Filter" "[. \t]filter([ \t]*['\"]\\([^'\"]+\\)" 1)
+        ("State" "[. \t]state([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Factory" "[. \t]factory([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Service" "[. \t]service([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Module" "[. \t]module([ \t]*['\"]\\([a-zA-Z0-9_\.]+\\)" 1)
