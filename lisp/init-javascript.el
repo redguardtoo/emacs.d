@@ -204,9 +204,11 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 (cond
  ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))
   ))
 ;; }}
 
