@@ -29,6 +29,19 @@
  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 ;; }}
 
+;; {{ gradle
+(defun my-run-gradle-in-shell (cmd)
+  (interactive "sEnter a string:")
+  (let ((old-dir default-directory)
+        (root-dir (locate-dominating-file default-directory
+                                          "build.gradle")))
+    (message "root-dir=%s cmd=%s" root-dir cmd)
+    (when root-dir
+      (cd root-dir)
+      (shell-command (concat "gradle " cmd "&"))
+      (cd old-dir))))
+;; }}
+
 ;; {{ crontab
 ;; in shell "EDITOR='emacs -nw' crontab -e" to edit cron job
 (add-to-list 'auto-mode-alist '("crontab.*\\'" . crontab-mode))
