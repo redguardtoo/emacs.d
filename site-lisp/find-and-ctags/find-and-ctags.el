@@ -136,6 +136,7 @@
                         ctags-exe
                         CTAGS-OPTS))
       (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
+      (message "find-and-ctags running shell command: %s" cmd)
       (shell-command cmd)
       ;; restore default-directory
       (cd old-dir))
