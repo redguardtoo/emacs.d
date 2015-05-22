@@ -9,6 +9,18 @@
 
 (yas-global-mode 1)
 
+(defun my-yas-get-first-name-from-to-field ()
+  (let ((rlt "AGENT_NAME") str)
+    (save-excursion
+      (goto-char (point-min))
+      ;; first line in email could be some hidden line containing NO to field
+      (setq str (buffer-substring-no-properties (point-min) (point-max))))
+    (message "str=%s" str)
+    (if (string-match "^To: \"\\([^ ,]+\\)" str)
+        (setq rlt (match-string 1 str)))
+    ;; (message "rlt=%s" rlt)
+	rlt))
+
 (defun my-yas-camelcase-to-string-list (str)
   "Convert camelcase string into string list"
   (let ((old-case case-fold-search)
