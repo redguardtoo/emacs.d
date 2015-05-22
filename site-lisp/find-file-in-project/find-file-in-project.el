@@ -309,7 +309,7 @@ You can override this by setting the variable `ffip-project-root'."
 
 ;;;###autoload
 (defun ffip-get-project-root-directory ()
-  "Get the the full path of project root directory"
+  "Get the full path of project root directory"
   (expand-file-name (or ffip-project-root
                         (ffip-project-root))))
 
