@@ -1,0 +1,27 @@
+# -*- mode: snippet -*-
+# name: RESTful controller
+# expand-env: ((yas-indent-line 'fixed))
+# key: controller
+# --
+package ${1:mynamespace};
+
+import org.slf4j.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/")
+public class ${2:`(file-name-base buffer-file-name)`} {
+    final Logger logger = LoggerFactory.getLogger(${2:$(yas/substr yas-text "[^ ]*")}.class);
+
+    @Autowired
+    ${3:MyService} svc;
+
+    @RequestMapping(value="/${4:home}", method=RequestMethod.POST)
+    public ${5:MyType} ${4:$(yas/substr yas-text "[^ ]*")}() {
+        logger.info("${4:$(yas/substr yas-text "[^ ]*")}() called");
+
+        ${5:$(yas/substr yas-text "[^ ]*")} u = new ${5:$(yas/substr yas-text "[^ ]*")}($0);
+        return u;
+    }
+}
