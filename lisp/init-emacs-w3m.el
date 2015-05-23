@@ -18,6 +18,7 @@
       ;; show images in the browser
       ;; setq w3m-default-display-inline-images t
       ;; w3m-use-tab     nil
+      w3m-confirm-leaving-secure-page nil
       w3m-search-default-engine "g"
       w3m-key-binding 'info)
 
