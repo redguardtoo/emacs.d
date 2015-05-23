@@ -56,7 +56,7 @@
   (interactive)
   (switch-to-buffer nil))
 
-(defun my-lookup-dictionary ()
+(defun my-lookup-dict-org ()
   (interactive)
   (dictionary-new-search (cons (if (region-active-p)
                                    (buffer-substring-no-properties (region-beginning) (region-end))

@@ -132,6 +132,7 @@ ARCHIVE is the string name of the package archive.")
     anaconda-mode
     ;; make all the color theme packages available
     afternoon-theme
+    define-word
     ahungry-theme
     alect-themes
     ample-theme
@@ -300,6 +301,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'simple-httpd)
 (require-package 'git-gutter)
 (require-package 'flx-ido)
+(require-package 'define-word)
 (require-package 'anaconda-mode)
 (require-package 'company-anaconda)
 

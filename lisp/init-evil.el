@@ -171,9 +171,11 @@
   "bu" 'backward-up-list
   "bb" 'back-to-previous-buffer
   "ef" 'end-of-defun
-  "db" 'sdcv-search-pointer ; in buffer
-  "dt" 'sdcv-search-input+ ;; in tip
-  "dd" 'my-lookup-dictionary
+  "ddb" 'sdcv-search-pointer ; in buffer
+  "ddt" 'sdcv-search-input+ ;; in tip
+  "ddd" 'my-lookup-dict-org
+  "ddw" 'define-word
+  "ddp" 'define-word-at-point
   "mf" 'mark-defun
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
