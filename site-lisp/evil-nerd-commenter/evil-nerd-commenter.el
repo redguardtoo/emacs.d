@@ -1,6 +1,6 @@
 ;;; evil-nerd-commenter --- Comment/uncomment lines efficiently. Like Nerd Commenter in Vim
 
-;; Copyright (C) 2013 Chen Bin
+;; Copyright (C) 2013-2015, Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
@@ -31,14 +31,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-;;; WARNING:
-
-;; Emacs v24.4 has some issue if and only if you install evil-nerd-commenter from package manager (elpa/melpa/...).
-;;
-;; This can be *easily resolved* by running below command line in shell,
-;; find ~/.emacs.d -type f -iwholename '*/evil-nerd-commenter*.elc' | xargs rm
-
 ;;; Commentary:
+
 ;;
 ;; This program emulates nerd-commenter.vim by Marty Grenfell.
 ;;
@@ -90,14 +84,8 @@
 
 ;;; Code:
 
-;; Example, press ",,a{" will change C code:
-;;   {printf("hello");} => /* {printf("hello");}*/
-;; google "vim text object for more syntax"
-(defcustom evilnc-hotkey-comment-operator ",," "The hot key for evilnc-comment-operator to (un)comment text object"
-  :type 'string
-  :group 'evil-nerd-commenter)
-
-(defvar evilnc-invert-comment-line-by-line nil "if t then invert region comment status line by line")
+(defvar evilnc-invert-comment-line-by-line nil
+  "if t then invert region comment status line by line")
 
 ;; shamelessly copied from goto-line
 (defun evilnc--goto-line (line)
@@ -532,10 +520,14 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 (defun evilnc-default-hotkeys ()
   "Set the hotkeys of evil-nerd-comment"
   (interactive)
+
+  ;; Install hotkeys for Emacs mode
   (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
   (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
   (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
   (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
+
+  ;; Install key bindings for evil
   (eval-after-load 'evil
     '(progn
        (define-key evil-normal-state-map ",ci" 'evilnc-comment-or-uncomment-lines)
@@ -544,7 +536,14 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
        (define-key evil-normal-state-map ",cc" 'evilnc-copy-and-comment-lines)
        (define-key evil-normal-state-map ",cp" 'evilnc-comment-or-uncomment-paragraphs)
        (define-key evil-normal-state-map ",cr" 'comment-or-uncomment-region)
-       (define-key evil-normal-state-map ",cv" 'evilnc-toggle-invert-comment-line-by-line))))
+       (define-key evil-normal-state-map ",cv" 'evilnc-toggle-invert-comment-line-by-line)))
+
+  ;; Install operator for evil text objects
+  (eval-after-load 'evil-nerd-commenter-operator
+    '(progn
+       (define-key evil-normal-state-map ",," 'evilnc-comment-operator)
+       (define-key evil-visual-state-map ",," 'evilnc-comment-operator)))
+  )
 
 ;; Attempt to define the operator on first load.
 ;; Will only work if evil has been loaded

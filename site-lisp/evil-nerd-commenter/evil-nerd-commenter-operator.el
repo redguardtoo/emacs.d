@@ -1,10 +1,10 @@
 ;;; evil-nerd-commenter-operator --- Provides an evil operator for evil-nerd-commenter
 
-;; Copyright (C) 2013 Chen Bin
+;; Copyright (C) 2013-2015, Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.12
+;; Version: 1.5.14
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -68,9 +68,6 @@ Save in REGISTER or in the kill-ring with YANK-HANDLER."
   (when (and (evil-called-interactively-p)
              (eq type 'line))
     (evil-first-non-blank)))
-
-(define-key evil-normal-state-map evilnc-hotkey-comment-operator 'evilnc-comment-operator)
-(define-key evil-visual-state-map evilnc-hotkey-comment-operator 'evilnc-comment-operator)
 
 (provide 'evil-nerd-commenter-operator)
 
