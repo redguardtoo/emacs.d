@@ -35,6 +35,7 @@
 (defun evilmi-html-get-tag ()
   (let ((b (line-beginning-position))
         (e (line-end-position))
+        (looping t)
         (html-tag-char (string-to-char "<"))
         (char (following-char))
         (p (point))
@@ -43,13 +44,16 @@
 
     (save-excursion
       ;; search backward
-      (if (not (= char html-tag-char))
-          (while (and (<= b (point)) (not (= char 60)))
-            (setq char (following-char))
-            (setq p (point))
-            (backward-char)
-            )
-        )
+      (unless (= char html-tag-char)
+        (while (and looping (<= b (point)) (not (= char 60)))
+          (setq char (following-char))
+          (setq p (point))
+          (if (= p (point-min))
+              ;; need get out of loop anyway
+              (setq looping nil)
+            (backward-char))
+          ))
+
       ;; search forward
       (if (not (= char html-tag-char))
           (save-excursion
