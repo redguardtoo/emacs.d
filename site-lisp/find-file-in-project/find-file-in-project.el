@@ -242,7 +242,7 @@ This overrides variable `ffip-project-root' when set.")
       (setq rlt (completing-read prompt collection))))
     rlt))
 
-(defun ffip-project-files (&optional keyword)
+(defun ffip-project-files (keyword NUM)
   "Return an alist of all filenames in the project and their path.
 
 Files with duplicate filenames are suffixed with the name of the
@@ -255,11 +255,14 @@ directory they are found in so that they are unique."
                                     (error "No project root found")))))
     (cd (file-name-as-directory root))
     ;; make the prune pattern more general
-    (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s %s -print %s"
+    (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s %s %s -print %s"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
-                      (ffip-prune-patterns) (ffip-join-patterns)
+                      (ffip-prune-patterns)
+                      (ffip-join-patterns)
                       (if keyword (concat "-name \"*" keyword "*\"") "")
-                      ffip-find-options (ffip-limit-find-results)))
+                      (if (and NUM (> NUM 0)) (format "-mtime -%d" NUM) "")
+                      ffip-find-options
+                      (ffip-limit-find-results)))
 
     (if ffip-debug (message "run cmd at %s: %s" default-directory cmd))
     (setq rlt
@@ -278,8 +281,8 @@ directory they are found in so that they are unique."
     (cd old-default-directory)
     rlt))
 
-(defun ffip-find-files (&optional keyword)
-  (let* ((project-files (ffip-project-files keyword))
+(defun ffip-find-files (keyword NUM)
+  (let* ((project-files (ffip-project-files keyword NUM))
          (files (mapcar 'car project-files))
          file root)
     (cond
@@ -297,15 +300,17 @@ directory they are found in so that they are unique."
     (string-match-p REGEX dir)))
 
 ;;;###autoload
-(defun find-file-in-project ()
+(defun find-file-in-project (&optional NUM)
   "Prompt with a completing list of all files in the project to find one.
+If NUM is given, only files modfied NUM days before will be selected.
 
 The project's scope is defined as the first directory containing
 a `ffip-project-file' (It's value is \".git\" by default.
 
 You can override this by setting the variable `ffip-project-root'."
-  (interactive)
-  (ffip-find-files))
+
+  (interactive "P")
+  (ffip-find-files nil NUM))
 
 ;;;###autoload
 (defun ffip-get-project-root-directory ()
@@ -314,15 +319,17 @@ You can override this by setting the variable `ffip-project-root'."
                         (ffip-project-root))))
 
 ;;;###autoload
-(defun find-file-in-project-by-selected ()
+(defun find-file-in-project-by-selected (&optional NUM)
   "Similar to find-file-in-project.
 But use string from selected region to search files in the project.
-If no region is selected, you need provide one."
-  (interactive)
+If no region is selected, you need provide one.
+If NUM is given, only files modfied NUM days before will be selected.
+"
+  (interactive "P")
   (let ((keyword (if (region-active-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
                    (read-string "Enter keyword:"))))
-    (ffip-find-files keyword)))
+    (ffip-find-files keyword NUM)))
 
 ;;;###autoload
 (defalias 'ffip 'find-file-in-project)
