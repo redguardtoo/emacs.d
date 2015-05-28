@@ -219,6 +219,12 @@ I don't suggest use default TAB key to expand snippet because TAB keys is used b
 If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?
 Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8". If and only if you see the "UTF-8", your locale is correct.
+** Behind Corperate firewall?
+In shell, input below commmand:
+#+begin_src bash
+http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
+#+end_src
+
 ** Your government blocks the internet?
 People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]] to download packages. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
 ** Email setup?
