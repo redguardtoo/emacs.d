@@ -175,38 +175,6 @@ if non-nil, then display leftmost(last) duplicate items in `kill-ring'."
   :type 'boolean
   :group 'browse-kill-ring)
 
-(defadvice kill-new (around browse-kill-ring-no-kill-new-duplicates)
-  "An advice for not adding duplicate elements to `kill-ring'.
-Even after being \"activated\", this advice will only modify the
-behavior of `kill-new' when `browse-kill-ring-no-duplicates'
-is non-nil."
-  (if browse-kill-ring-no-duplicates
-      (setq kill-ring (delete (ad-get-arg 0) kill-ring)))
-  ad-do-it)
-
-(defcustom browse-kill-ring-no-duplicates nil
-  "If non-nil, then the `b-k-r-no-kill-new-duplicates' advice will operate.
-This means that duplicate entries won't be added to the `kill-ring'
-when you call `kill-new'.
-
-If you set this variable via customize, the advice will be activated
-or deactivated automatically.  Otherwise, to enable the advice, add
-
-B (ad-enable-advice 'kill-new 'around 'browse-kill-ring-no-kill-new-duplicates)
- (ad-activate 'kill-new)
-
-to your init file."
-  :type 'boolean
-  :set (lambda (symbol value)
-         (set symbol value)
-         (if value
-             (ad-enable-advice 'kill-new 'around
-                               'browse-kill-ring-no-kill-new-duplicates)
-           (ad-disable-advice 'kill-new 'around
-                              'browse-kill-ring-no-kill-new-duplicates))
-         (ad-activate 'kill-new))
-  :group 'browse-kill-ring)
-
 (defcustom browse-kill-ring-depropertize nil
   "If non-nil, remove text properties from `kill-ring' items.
 This only changes the items for display and insertion from
@@ -765,42 +733,52 @@ update entry and quit -- \\[browse-kill-ring-edit-abort] to abort.")))
                 'browse-kill-ring-preview-update-for-edit nil t))
     (setq browse-kill-ring-edit-target target-cell)))
 
+(defun browse-kill-ring-edit-finalise (entry)
+  "Common code called after `browse-kill-ring-edit' has finished
+
+This common code is called after `browse-kill-ring-edit-finish'
+and `browse-kill-ring-edit-abort'.  It kills the edit buffer, and
+reselects ENTRY in the `*Kill Ring*' buffer."
+  ;; Kill the edit buffer.  Maybe we should do more to keep track of
+  ;; the edit buffer so we can kill it even if we're not in it?
+  (when (eq major-mode 'browse-kill-ring-edit-mode)
+    (kill-buffer))
+  ;; The user might have rearranged the windows
+  (when (eq major-mode 'browse-kill-ring-mode)
+    (browse-kill-ring-setup (current-buffer)
+                            browse-kill-ring-original-buffer
+                            browse-kill-ring-original-window
+                            nil
+                            browse-kill-ring-original-window-config)
+    (browse-kill-ring-resize-window)
+    (when entry
+      (browse-kill-ring-find-entry entry))))
+
 (defun browse-kill-ring-edit-finish ()
-  "Commit the changes to the `kill-ring'."
+  "Commit the edit changes to the `kill-ring'."
   (interactive)
+  (unless browse-kill-ring-edit-target
+    (error "Not editing a kill-ring item"))
   (let* ((updated-entry (buffer-string))
          (delete-entry? (string= updated-entry ""))
+         (current-entry browse-kill-ring-edit-target)
          (select-entry nil))
-    (if browse-kill-ring-edit-target
-        (if delete-entry?
-            ;; Find the previous entry in the list to select, then
-            ;; delete the entry that was just edited to empty.
-            (progn
-              (setq select-entry
-                    (cadr browse-kill-ring-edit-target))
-              (setq kill-ring
-                    (delete (car browse-kill-ring-edit-target) kill-ring))
-              (unless select-entry
-                (setq select-entry (car (last kill-ring)))))
-          ;; Update the entry that was just edited, and arrange to
-          ;; select it.
-          (setcar browse-kill-ring-edit-target updated-entry)
-          (setq select-entry updated-entry))
-      (unless delete-entry?
-        (when (y-or-n-p "The item has been deleted; add to front? ")
-          (push updated-entry kill-ring)
-          (setq select-entry updated-entry))))
-    (kill-buffer)
-    ;; The user might have rearranged the windows
-    (when (eq major-mode 'browse-kill-ring-mode)
-      (browse-kill-ring-setup (current-buffer)
-                              browse-kill-ring-original-buffer
-                              browse-kill-ring-original-window
-                              nil
-                              browse-kill-ring-original-window-config)
-      (browse-kill-ring-resize-window)
-      (when select-entry
-        (browse-kill-ring-find-entry select-entry)))))
+    (setq browse-kill-ring-edit-target nil)
+    (if delete-entry?
+        ;; Find the previous entry in the list to select, then
+        ;; delete the entry that was just edited to empty.
+        (progn
+          (setq select-entry
+                (cadr current-entry))
+          (setq kill-ring
+                (delete (car current-entry) kill-ring))
+          (unless select-entry
+            (setq select-entry (car (last kill-ring)))))
+      ;; Update the entry that was just edited, and arrange to select
+      ;; it.
+      (setcar current-entry updated-entry)
+      (setq select-entry updated-entry))
+    (browse-kill-ring-edit-finalise select-entry)))
 
 (defun browse-kill-ring-edit-abort ()
   "Abort the edit of the `kill-ring' item."
@@ -808,17 +786,8 @@ update entry and quit -- \\[browse-kill-ring-edit-abort] to abort.")))
   (let ((current-entry (if browse-kill-ring-edit-target
                            (car browse-kill-ring-edit-target)
                          nil)))
-    (kill-buffer)
-    ;; The user might have rearranged the windows
-    (when (eq major-mode 'browse-kill-ring-mode)
-      (browse-kill-ring-setup (current-buffer)
-                              browse-kill-ring-original-buffer
-                              browse-kill-ring-original-window
-                              nil
-                              browse-kill-ring-original-window-config)
-      (browse-kill-ring-resize-window))
-    (if current-entry
-        (browse-kill-ring-find-entry current-entry))))
+    (setq browse-kill-ring-edit-target nil)
+    (browse-kill-ring-edit-finalise current-entry)))
 
 (defmacro browse-kill-ring-add-overlays-for (item &rest body)
   (let ((beg (gensym "browse-kill-ring-add-overlays-"))
@@ -1145,18 +1114,19 @@ start of the buffer."
   "Display items in the `kill-ring' in another buffer."
   (interactive)
   (if (eq major-mode 'browse-kill-ring-mode)
-      (message "Already viewing the kill ring")
-    (let* ((orig-win (selected-window))
-           (orig-buf (window-buffer orig-win))
-           (buf (get-buffer-create "*Kill Ring*"))
-           (kill-ring-yank-pointer-string
-            (if kill-ring-yank-pointer
-                (substring-no-properties (car kill-ring-yank-pointer)))))
-      (browse-kill-ring-setup buf orig-buf orig-win)
-      (pop-to-buffer buf)
-      (browse-kill-ring-resize-window)
-      (unless (eq kill-ring kill-ring-yank-pointer)
-        (browse-kill-ring-find-entry kill-ring-yank-pointer-string)))))
+      (error "Already viewing the kill ring"))
+
+  (let* ((orig-win (selected-window))
+         (orig-buf (window-buffer orig-win))
+         (buf (get-buffer-create "*Kill Ring*"))
+         (kill-ring-yank-pointer-string
+          (if kill-ring-yank-pointer
+              (substring-no-properties (car kill-ring-yank-pointer)))))
+    (browse-kill-ring-setup buf orig-buf orig-win)
+    (pop-to-buffer buf)
+    (browse-kill-ring-resize-window)
+    (unless (eq kill-ring kill-ring-yank-pointer)
+      (browse-kill-ring-find-entry kill-ring-yank-pointer-string))))
 
 (provide 'browse-kill-ring)
 
