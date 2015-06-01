@@ -384,7 +384,7 @@
   "xnw" 'widen
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
-  "ycr" 'yas-reload-all
+  "ycr" 'my-yas-reload-all
   "zc" 'wg-create-workgroup
   "zk" 'wg-kill-workgroup
   "zv" 'my-wg-swich-to-workgroup

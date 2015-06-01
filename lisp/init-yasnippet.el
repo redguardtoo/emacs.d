@@ -9,6 +9,11 @@
 
 (yas-global-mode 1)
 
+(defun my-yas-reload-all ()
+  (interactive)
+  (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
+  (yas-reload-all))
+
 (defun my-yas-get-first-name-from-to-field ()
   (let ((rlt "AGENT_NAME") str)
     (save-excursion
