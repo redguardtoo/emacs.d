@@ -532,10 +532,6 @@ Current position is preserved."
 ;; (blink-cursor-mode -1)
 
 
-;; https://github.com/browse-kill-ring/browse-kill-ring
-(require 'browse-kill-ring)
-(browse-kill-ring-default-keybindings)
-
 (defun create-scratch-buffer nil
   "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
   (interactive)

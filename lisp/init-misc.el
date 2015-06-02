@@ -29,6 +29,20 @@
  (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 ;; }}
 
+;; {{ https://github.com/browse-kill-ring/browse-kill-ring
+(require 'browse-kill-ring)
+;; no duplicates
+(setq browse-kill-ring-display-duplicates nil)
+;; preview is annoying
+(setq browse-kill-ring-show-preview nil)
+(browse-kill-ring-default-keybindings)
+;; hotkeys:
+;; n/p => next/previous
+;; s/r => search
+;; l => filter with regex
+;; g => update/refresh
+;; }}
+
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
   (interactive "sEnter a string:")
