@@ -151,6 +151,9 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 *** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
+*** Python 3rd party packages
+- Required by anaconda-mode
+- Check its [[https://github.com/proofit404/anaconda-mode][README]]
 * Tutorial (OPTIONAL)
 ** Basic tutorial
 *** Step 1, learn OS basics
