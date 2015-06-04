@@ -3,7 +3,7 @@
 # key: adirective
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-angular.module('${1:myApp}').directive('${2:prefixDirectiveId}', function() {
+.directive('${1:prefixDirectiveId}', function() {
   return {
     restrict: 'A', // A - match attribute, E - match element name, C, match attribute name
     require: 'ngModel',
@@ -40,4 +40,4 @@ angular.module('${1:myApp}').directive('${2:prefixDirectiveId}', function() {
       });
     }
   };
-});
+})

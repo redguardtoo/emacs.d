@@ -12,13 +12,16 @@ angular.module('myApp', ['ui.bootstrap', 'ngMockE2E']).config(function($interpol
   // if you need deal with django
   $interpolateProvider.startSymbol('[{');
   $interpolateProvider.endSymbol('}]');
-}).run(function($httpBackend) {
+})
+.run(function($httpBackend) {
   // if you need mockup $http
   $httpBackend.whenPOST('MY_POST_URL').respond(function(method, url, data, headers){
     return [200, {}, {}];
   });
   $httpBackend.whenGET(/^.*/).passThrough();
-}).controller('MainCtrl', function ($scope) {
+})
+.controller('MainCtrl', function ($scope) {
   $scope.max = 100;
   $scope.dynamic = 50;
-});
+})
+;

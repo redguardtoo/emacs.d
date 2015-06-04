@@ -4,8 +4,8 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 // <span ng-bind-html="... | unsafe"></span>
-app.filter('unsafe',["$sce", function($sce) {
+.filter('unsafe',["$sce", function($sce) {
   return function(val) {
-	return $sce.trustAsHtml(val);
+    return $sce.trustAsHtml(val);
   };
-}]);
+}])

@@ -3,7 +3,7 @@
 # group: angular
 # key: afactory
 # --
-angular.module('${1:myApp}').factory('${2:serviceId}Factory', ['$http', function($http){
+.factory('${1:serviceId}Factory', ['$http', function($http){
   // @see http://stackoverflow.com/questions/14324451/angular-service-vs-angular-factory
   // Service: This function will be new-ed
   // Factory: This function (constructor) will be invoked
@@ -13,4 +13,4 @@ angular.module('${1:myApp}').factory('${2:serviceId}Factory', ['$http', function
   var globalStorage = {};
   $0
   return globalStorage;
-}]);
+}])
