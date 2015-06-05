@@ -1,5 +1,5 @@
 # -*- coding: utf-8; mode: snippet -*-
-# name: <div ng-model="..." number-only />
+# name: <div ng-model="..." filter-user-input /> 
 # key: adirective
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
@@ -9,6 +9,7 @@
   function link(scope, element, attrs, ctrl) {
     // ngModel from {require:'ngModel'}
     // @see https://docs.angularjs.org/guide/directive
+    // analyze user input, so user need press key or move mouse at first
     ctrl.$parsers.push(function (origVal) {
       if (!origVal) {
           return '';
@@ -22,7 +23,8 @@
     });
   }
   return {
-  require: 'ngModel',
-  link: link
+    restrict: 'A', // A - match attribute, E - match element name, C, match attribute name
+    require: 'ngModel',
+    link: link
   };
 })

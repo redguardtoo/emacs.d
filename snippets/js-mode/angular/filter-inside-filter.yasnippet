@@ -1,0 +1,18 @@
+# -*- mode: snippet -*-
+# name: extend built in filter
+# group: angular
+# key: afilter
+# --
+.filter('${1:fromAustraliaDateString}', ['$filter', function(filter) {
+  // @see http://stackoverflow.com/questions/13301367/angularjs-extending-built-in-filters
+  return function (str) {
+    if(!str || str === '') {
+        return '';
+    }
+    var d1 = str.split('/');
+    if(d1.length !== 3) {
+        return '';
+    }
+    return filter('date')(new Date(d1[2], (d1[1] - 1), d1[1]), 'dd MMM yyyy');
+  };
+}])

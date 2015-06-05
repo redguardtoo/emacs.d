@@ -7,7 +7,7 @@
   return {
     restrict: 'A', // A - match attribute, E - match element name, C, match attribute name
     require: 'ngModel',
-    link: function(scope, element, attr, modelCtrl) {
+    link: function(scope, element, attr, ctrl) {
       var elementFocused;
       var forceDataBinding = function(ctrl) {
         var value = ctrl.$modelValue;
@@ -23,20 +23,20 @@
       };
       element.on('focus', function () {
         elementFocused = true;
-        forceDataBinding(modelCtrl);
+        forceDataBinding(ctrl);
       });
       element.on('blur', function () {
         elementFocused = false;
-        forceDataBinding(modelCtrl);
+        forceDataBinding(ctrl);
       });
-      modelCtrl.$parsers.push(function (v) {
+      ctrl.$parsers.push(function (origVal) {
         $0
         // from user input
-        return v;
+        return origVal;
       });
-      modelCtrl.$formatters.push(function (v) {
-        // to user input
-        return v;
+      ctrl.$formatters.push(function (origVal) {
+        // to user display
+        return origVal;
       });
     }
   };
