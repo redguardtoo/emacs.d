@@ -151,9 +151,10 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 *** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
-*** Python 3rd party packages
-- Required by anaconda-mode
-- Check its [[https://github.com/proofit404/anaconda-mode][README]]
+*** jedi & service_factory
+- Python 3rd party packages installed through `pip install jedi service_factory`
+- Required by anaconda-mode which provides Python intellisense
+- If you feel anaconda-mode make Emacs *less responsive*, disable it by remove line `(anaconda-mode)` in init-python-mode.el
 * Tutorial (OPTIONAL)
 ** Basic tutorial
 *** Step 1, learn OS basics
