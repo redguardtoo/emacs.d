@@ -7,7 +7,14 @@
 (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas-snippet-dirs)))
 	(add-to-list 'yas-snippet-dirs my-yasnippets))
 
-(yas-global-mode 1)
+(yas-reload-all)
+(defun yasnippet-generic-setup-for-mode-hook ()
+  (unless (is-buffer-file-temp)
+	;; highlight FIXME/BUG/TODO in comment
+    (yas-minor-mode 1)))
+
+(add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'text-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)

@@ -73,15 +73,16 @@
 
 (defun elisp-mode-hooks ()
   "lisp-mode-hooks"
-  (when (require 'eldoc nil t)
-    (setq eldoc-idle-delay 0.2)
-    (setq eldoc-echo-area-use-multiline-p t)
-    (turn-on-eldoc-mode))
+  (unless (is-buffer-file-temp)
+    (when (require 'eldoc nil t)
+      (setq eldoc-idle-delay 0.2)
+      (setq eldoc-echo-area-use-multiline-p t)
+      (turn-on-eldoc-mode))
     (enable-paredit-mode)
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)
     (flymake-mode)
-    (checkdoc-minor-mode))
+    (checkdoc-minor-mode)))
 
 (add-hook 'emacs-lisp-mode-hook 'elisp-mode-hooks)
 

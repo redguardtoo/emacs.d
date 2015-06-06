@@ -43,13 +43,14 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun mo-js-mode-hook ()
-  (setq imenu-create-index-function 'mo-js-imenu-make-index)
-  ;; https://github.com/illusori/emacs-flymake
-  ;; javascript support is out of the box
-  ;; DONOT jslint json
-  ;; (add-to-list 'flymake-allowed-file-name-masks
-  ;;              '("\\.json\\'" flymake-javascript-init))
-  (flymake-mode 1))
+  (unless (is-buffer-file-temp)
+    (setq imenu-create-index-function 'mo-js-imenu-make-index)
+    ;; https://github.com/illusori/emacs-flymake
+    ;; javascript support is out of the box
+    ;; DONOT jslint json
+    ;; (add-to-list 'flymake-allowed-file-name-masks
+    ;;              '("\\.json\\'" flymake-javascript-init))
+    (flymake-mode 1)))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
@@ -188,17 +189,18 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; }}
 
 (defun my-js2-mode-setup()
-  ;; looks nodejs is more popular, if you prefer rhino, change to "js"
-  (setq inferior-js-program-command "node --interactive")
-  (require 'js-comint)
-  ;; if use node.js, we need nice output
-  (setenv "NODE_NO_READLINE" "1")
-  (js2-imenu-extras-mode)
-  (setq mode-name "JS2")
-  (flymake-mode -1)
-  (require 'js-doc)
-  (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
-  (define-key js2-mode-map "@" 'js-doc-insert-tag))
+  (unless (is-buffer-file-temp)
+    ;; looks nodejs is more popular, if you prefer rhino, change to "js"
+    (setq inferior-js-program-command "node --interactive")
+    (require 'js-comint)
+    ;; if use node.js, we need nice output
+    (setenv "NODE_NO_READLINE" "1")
+    (js2-imenu-extras-mode)
+    (setq mode-name "JS2")
+    (flymake-mode -1)
+    (require 'js-doc)
+    (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
+    (define-key js2-mode-map "@" 'js-doc-insert-tag)))
 
 (autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)

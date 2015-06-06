@@ -148,6 +148,13 @@
                   (w3m-browse-url url t))))))
     ad-do-it))
 
+(defadvice org-publish (around org-publish-advice activate)
+  "Stop running major-mode hook when org-publish"
+  (let ((old load-user-customized-major-mode-hook))
+	(setq load-user-customized-major-mode-hook nil)
+    ad-do-it
+	(setq load-user-customized-major-mode-hook old)))
+
 ;; {{ org2nikola set up
 (setq org2nikola-output-root-directory "~/.config/nikola")
 (setq org2nikola-use-google-code-prettify t)

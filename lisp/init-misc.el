@@ -155,21 +155,22 @@
   (define-key global-map (kbd "C-M-@") 'er/contract-region))
 ;; }}
 
-(add-hook 'prog-mode-hook
-          '(lambda ()
-             (unless (is-buffer-file-temp)
-               ;; highlight FIXME/BUG/TODO in comment
-               (require 'fic-mode)
-               (fic-mode 1)
-               ;; enable for all programming modes
-               ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-               (subword-mode)
-               (electric-pair-mode 1)
-               ;; eldoc, show API doc in minibuffer echo area
-               (turn-on-eldoc-mode)
-               ;; show trailing spaces in a programming mod
-               (setq show-trailing-whitespace t)
-               )))
+(defun generic-prog-mode-hook-setup ()
+  (unless (is-buffer-file-temp)
+	;; highlight FIXME/BUG/TODO in comment
+	(require 'fic-mode)
+	(fic-mode 1)
+	;; enable for all programming modes
+	;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+	(subword-mode)
+	(electric-pair-mode 1)
+	;; eldoc, show API doc in minibuffer echo area
+	(turn-on-eldoc-mode)
+	;; show trailing spaces in a programming mod
+	(setq show-trailing-whitespace t)
+	))
+
+(add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
 
 ;; turns on auto-fill-mode, don't use text-mode-hook because for some
 ;; mode (org-mode for example), this will make the exported document

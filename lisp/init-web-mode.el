@@ -36,16 +36,16 @@
          )
     (flymake-mode t)))
 
-(add-hook 'web-mode-hook
-          (lambda ()
-            (flymake-html-load)
-            (unless *no-memory*
-              (flyspell-mode 1))
-            (remove-hook 'yas-after-exit-snippet-hook
-                         'web-mode-yasnippet-exit-hook t)
-            (remove-hook 'yas/after-exit-snippet-hook
-                         'web-mode-yasnippet-exit-hook t)
-            ))
+(defun web-mode-hook-setup ()
+  (unless (is-buffer-file-temp)
+	(flymake-html-load)
+	(unless *no-memory*
+	  (flyspell-mode 1))
+	(remove-hook 'yas-after-exit-snippet-hook
+				 'web-mode-yasnippet-exit-hook t)
+	(remove-hook 'yas/after-exit-snippet-hook
+				 'web-mode-yasnippet-exit-hook t)))
+(add-hook 'web-mode-hook 'web-mode-hook-setup)
 
 (eval-after-load 'web-mode
   '(progn

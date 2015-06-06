@@ -99,6 +99,7 @@
              (progn ,@forms)
            (select-frame ,prev-frame))))))
 
+(defvar load-user-customized-major-mode-hook t)
 (defvar cached-normal-file-full-path nil)
 (defun is-buffer-file-temp ()
   (interactive)
@@ -107,6 +108,7 @@
         org
         (rlt t))
     (cond
+     ((not load-user-customized-major-mode-hook) t)
      ((not f)
       ;; file does not exist at all
       (setq rlt t))

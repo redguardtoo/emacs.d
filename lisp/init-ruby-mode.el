@@ -3,13 +3,14 @@
 (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
 (setq ruby-use-encoding-map nil)
 
-(add-hook 'ruby-mode-hook
-          (lambda ()
-            (require 'rinari)
-            (robe-mode)
-            (push 'company-robe company-backends)
-            (setq compile-command "rake ")
-            (flymake-ruby-load)))
+(defun ruby-mode-hook-setup ()
+  (unless (is-buffer-file-temp)
+    (require 'rinari)
+    (robe-mode)
+    (push 'company-robe company-backends)
+    (setq compile-command "rake ")
+    (flymake-ruby-load)))
+(add-hook 'ruby-mode-hook 'ruby-mode-hook-setup)
 
 ;; doc look up
 (autoload 'yari-helm "yari" "" t nil)
