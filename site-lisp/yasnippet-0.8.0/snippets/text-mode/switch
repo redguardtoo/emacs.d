@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: switch
-# key: switch
-# --
-switch (${1:var}) {
-       case ${2:0}:
-       $0
-       break;
-}

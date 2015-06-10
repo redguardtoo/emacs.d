@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: main
-# key: main
-# --
-main = do $0

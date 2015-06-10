@@ -1,4 +1,0 @@
-#name : each { |...| ... }
-#group : collections
-# --
-each { |${e}| $0 }

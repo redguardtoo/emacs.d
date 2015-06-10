@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: outfile
-# key: out
-# --
-outFile "${1:setup}.exe"

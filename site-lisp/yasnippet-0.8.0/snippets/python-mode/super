@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: super
-# key: super
-# group: object oriented
-# --
-super(${1:Class}, self).${2:function}(${3:args})

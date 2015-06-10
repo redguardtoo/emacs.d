@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: cls
-# key: cls
-# group: object oriented
-# --
-class ${1:class}:
-      $0

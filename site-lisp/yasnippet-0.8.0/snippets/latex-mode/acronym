@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: acronym
-# key: ac
-# --
-\newacronym{${1:label}}{${1:$(upcase text)}}{${2:Name}}

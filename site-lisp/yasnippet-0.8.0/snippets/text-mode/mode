@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: mode
-# key: mode
-# --
-`(ca-with-comment "-*- mode: ${1:mode} -*-")`

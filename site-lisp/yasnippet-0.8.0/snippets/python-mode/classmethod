@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: classmethod
-# key: cm
-# group: object oriented
-# --
-@classmethod
-def ${1:meth}(cls, $0):
-    

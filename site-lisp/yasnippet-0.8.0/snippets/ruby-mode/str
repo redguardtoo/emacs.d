@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: str
-# key: s
-# --
-#{$0}

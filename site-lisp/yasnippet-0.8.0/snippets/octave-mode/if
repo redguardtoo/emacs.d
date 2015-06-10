@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: if
-# key: if
-# --
-if ${1:cond}
-   $0
-${2:else
-        ${3:other}}
-endif

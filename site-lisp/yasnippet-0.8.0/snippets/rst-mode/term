@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: term
-# key: term
-# --
-:term:\`$0\`

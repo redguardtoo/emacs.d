@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: assertRaises
-# key: ar
-# group: testing
-# --
-self.assertRaises(${1:Exception}, ${2:fun})

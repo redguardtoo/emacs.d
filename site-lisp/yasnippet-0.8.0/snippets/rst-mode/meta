@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: meta
-# key: :
-# --
-:${1:var}: $0

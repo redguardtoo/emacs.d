@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ENV
-# key: env
-# --
-ENV{$1}$0

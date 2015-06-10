@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: return
-# key: r
-# --
-return $0

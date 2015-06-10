@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: ifthenelse
-# key: if
-# --
-if ${1:cond} then
-   $2
-else
-        $0

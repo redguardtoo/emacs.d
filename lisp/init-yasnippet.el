@@ -5,12 +5,12 @@
 ;; my private snippets, should be placed before enabling yasnippet
 (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
 (if (and  (file-exists-p my-yasnippets) (not (member my-yasnippets yas-snippet-dirs)))
-	(add-to-list 'yas-snippet-dirs my-yasnippets))
+    (add-to-list 'yas-snippet-dirs my-yasnippets))
 
 (yas-reload-all)
 (defun yasnippet-generic-setup-for-mode-hook ()
   (unless (is-buffer-file-temp)
-	;; highlight FIXME/BUG/TODO in comment
+    ;; highlight FIXME/BUG/TODO in comment
     (yas-minor-mode 1)))
 
 (add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
@@ -31,7 +31,7 @@
     (if (string-match "^To: \"\\([^ ,]+\\)" str)
         (setq rlt (match-string 1 str)))
     ;; (message "rlt=%s" rlt)
-	rlt))
+    rlt))
 
 (defun my-yas-camelcase-to-string-list (str)
   "Convert camelcase string into string list"

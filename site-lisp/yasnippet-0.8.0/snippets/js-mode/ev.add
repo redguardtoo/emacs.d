@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-#name : addEvent
-# --
-addEvent('${1:event}', function($2) {
-  $0
-});

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: srcname
-# key: name
-# --
-#+srcname: $0

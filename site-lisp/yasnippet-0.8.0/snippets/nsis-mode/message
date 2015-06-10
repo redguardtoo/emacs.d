@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: message
-# key: msg
-# --
-MessageBox MB_OK "${1:hello}"

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: chan
-# key: chan
-# --
-channel Channel extends ${1:ned.DelayChannel} {
-        $0
-}

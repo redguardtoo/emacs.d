@@ -1,9 +1,0 @@
-# -*- mode: snippet -*-
-# name: pack
-# key: pack
-# --
-void cNetCommBuffer::pack(${1:type}) {
-
-}
-
-$0

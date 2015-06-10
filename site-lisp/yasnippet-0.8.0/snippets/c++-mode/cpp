@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: cpp
-# key: cpp
-# --
-#include "`(file-name-nondirectory (file-name-sans-extension (buffer-file-name)))`.h"

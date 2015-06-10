@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: match
-# key: match
-# --
-match ${1:to_match} with
-      | ${2:matching} -> $0

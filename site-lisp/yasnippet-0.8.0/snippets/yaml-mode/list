@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: list
-# key: list
-# --
-[$1]
-$0

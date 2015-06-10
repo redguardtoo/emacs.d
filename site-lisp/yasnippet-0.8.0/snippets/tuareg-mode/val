@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: val
-# key: val
-# --
-val ${1:fun} : $0

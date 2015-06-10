@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: ternary
-# key: ?
-# --
-(${1:cond}) ? ${2:then} : ${3:else};

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: add
-# key: add
-# --
-ACTION=="add", $0

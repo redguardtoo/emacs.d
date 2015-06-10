@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: bash
-# key: bash
-# --
-#!/bin/bash
-$0

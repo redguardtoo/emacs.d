@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: automodule
-# key: auto
-# --
-.. automodule:: ${1:module_name}

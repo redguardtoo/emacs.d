@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: import
-# key: import
-# --
-import${1: qualified} ${2:Module${3:(symbols)}}${4: as ${5:alias}}

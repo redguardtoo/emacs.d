@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: d+=
-# key: d+=
-# --
-${1:MyClass}& operator+=(${2:const $1 &});

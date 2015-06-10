@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: digraph
-# key: graph
-# --
-.. digraph:: $1
-
-   $0

@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: all
-# key: a
-# --
-__all__ = [
-        $0
-]

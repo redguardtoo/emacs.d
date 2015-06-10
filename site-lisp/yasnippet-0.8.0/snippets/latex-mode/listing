@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: listing
-# key: lst
-# --
-\begin{lstlisting}[float,label=lst:${1:label},caption=nextHopInfo: ${2:caption}]
-$0
-\end{lstlisting}

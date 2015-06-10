@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: map
-# key: map
-# --
-map[${1:string}] ${2:int} {
-  ${3:"X": 100,}
-  $0
-}

@@ -58,9 +58,6 @@ ARCHIVE is the string name of the package archive.")
 ;; Lock org-mode temporarily:
 ;; (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
 
-
-;; well, melpa does not bother supporting emacs23 any more, but cl-lib is still required
-;; TODO: in half a year, I will remove gnu elpa because emacs 24.3 is the minimum version
 (setq package-archives '(("melpa" . "http://melpa.org/packages/")
                          ("melpa-stable" . "http://stable.melpa.org/packages/")
                          ;; uncomment below line if you need use GNU ELPA
@@ -287,7 +284,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'json-mode)
 (require-package 'js2-mode)
 (require-package 'tagedit)
-;; company-mode drop emacs 23 support
+(require-package 'yasnippet)
 (require-package 'company)
 (require-package 'company-c-headers)
 (require-package 'legalese)

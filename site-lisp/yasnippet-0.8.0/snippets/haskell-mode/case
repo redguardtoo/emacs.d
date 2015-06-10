@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: case
-# key: case
-# --
-case ${1:var} of
-     ${2:cond} -> ${3:value}
-     $0
-     otherwise -> ${4:other}

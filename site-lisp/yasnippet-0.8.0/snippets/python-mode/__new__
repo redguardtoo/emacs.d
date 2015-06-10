@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# name: __new__
-# key: new
-# group: dunder methods
-# --
-def __new__(mcs, name, bases, dict):
-    $0
-    return type.__new__(mcs, name, bases, dict)

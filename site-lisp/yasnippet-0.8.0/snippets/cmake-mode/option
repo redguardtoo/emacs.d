@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: option
-# key: opt
-# --
-option (${1:OPT} "${2:docstring}" ${3:value})

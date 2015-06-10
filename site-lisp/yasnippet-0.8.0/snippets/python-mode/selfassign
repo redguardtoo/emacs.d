@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: selfassign
-# key: sn
-# group: object oriented
-# --
-self.$1 = $1

@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: cin
-# key: cin
-# --
-cin >> $0;

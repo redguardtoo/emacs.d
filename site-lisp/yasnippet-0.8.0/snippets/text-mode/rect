@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: rect
-# key: rect
-# --
-<rect x="${1:1}" y="${2:1}" width="${3:1198}" height="${4:398}"
-        fill="${5:none}" stroke="${6:blue}" stroke-width="${7:2}"/>

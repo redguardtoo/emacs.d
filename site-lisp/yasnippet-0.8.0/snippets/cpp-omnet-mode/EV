@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: EV
-# key: ev
-# --
-EV << "${1:string}"$0;
