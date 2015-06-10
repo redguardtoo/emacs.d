@@ -108,7 +108,6 @@ ARCHIVE is the string name of the package archive.")
     legalese
     htmlize
     scratch
-    mic-paren
     session
     crontab-mode
     bookmark+
@@ -237,7 +236,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'htmlize)
 (require-package 'diminish)
 (require-package 'scratch)
-(require-package 'mic-paren)
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
 (require-package 'coffee-mode)
