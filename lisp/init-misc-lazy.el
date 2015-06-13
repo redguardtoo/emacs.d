@@ -3,26 +3,6 @@
 
 (recentf-mode 1)
 
-(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
-
-(setq-default buffers-menu-max-size 30
-              case-fold-search t
-              compilation-scroll-output t
-              ediff-split-window-function 'split-window-horizontally
-              ediff-window-setup-function 'ediff-setup-windows-plain
-              grep-highlight-matches t
-              grep-scroll-output t
-              indent-tabs-mode nil
-              line-spacing 0.2
-              mouse-yank-at-point t
-              set-mark-command-repeat-pop t
-              tooltip-delay 1.5
-              truncate-lines nil
-              truncate-partial-width-windows nil
-              ;; visible-bell has some issue
-              ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/issues/9#issuecomment-97848938
-              visible-bell nil)
-
 ;; use my own bmk if it exists
 (if (file-exists-p (file-truename "~/.emacs.bmk"))
     (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
@@ -434,10 +414,6 @@ version control automatically"
         (when (vc-backend filename)
           (vc-register)
           )))))
-
-;; @see http://www.emacswiki.org/emacs/SavePlace
-(require 'saveplace)
-(setq-default save-place t)
 
 (defun toggle-env-http-proxy ()
   "set/unset the environment variable http_proxy which w3m uses"

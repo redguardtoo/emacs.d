@@ -8,6 +8,41 @@
 ;; C#
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
 
+;; {{ isearch
+;; Use regex to search by default
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-backward)
+(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
+;; }}
+
+(setq-default buffers-menu-max-size 30
+              case-fold-search t
+              compilation-scroll-output t
+              ediff-split-window-function 'split-window-horizontally
+              ediff-window-setup-function 'ediff-setup-windows-plain
+              save-interprogram-paste-before-kill t
+              grep-highlight-matches t
+              grep-scroll-output t
+              indent-tabs-mode nil
+              line-spacing 0.2
+              mouse-yank-at-point t
+              set-mark-command-repeat-pop t
+              tooltip-delay 1.5
+              ;; void problems with crontabs, etc.
+              require-final-newline t
+              truncate-lines nil
+              truncate-partial-width-windows nil
+              ;; visible-bell has some issue
+              ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/issues/9#issuecomment-97848938
+              visible-bell nil)
+
+;; @see http://www.emacswiki.org/emacs/SavePlace
+(require 'saveplace)
+(setq-default save-place t)
+
+
 ;; {{ find-file-in-project (ffip)
 (autoload 'ivy-read "ivy")
 (autoload 'find-file-in-project "find-file-in-project" "" t)
