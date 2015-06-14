@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.12
+;; Version: 1.5.15
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -106,20 +106,19 @@
 (defun evilnc--fix-buggy-major-modes ()
   "fix major modes whose comment regex is buggy.
 @see http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html"
-  (when (eq major-mode 'autoconf-mode)
+  (if (eq major-mode 'autoconf-mode)
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
-    ;; make sure the its first parenthesized expression match the string exactly before
-    ;; the "dnl", check the comment-start-skip in lisp-mode may give you some hint.
+    ;; make sure its first parenthesized expression match the string exactly before
+    ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
     ;; See code in (defun comment-search-forward) from emacs 24.2.1:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
     ;;     (or (match-end 1) (match-beginning 0)))
     ;;     (do-something))
     ;; My regex makes sure (match-end 1) return the position of comment starter
-    (when (and (boundp 'comment-use-syntax) (not comment-use-syntax))
+    (if (and (boundp 'comment-use-syntax) (not comment-use-syntax))
         ;; Maybe autoconf.el will (setq comment-use-syntax t) in the future?
-        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))
-    ))
+        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))))
 
 (defun evilnc--operation-on-lines-or-region (fn &optional NUM)
   (if (not (region-active-p))
@@ -150,10 +149,7 @@
           (setq e (line-end-position))
           (funcall fn b e)
           ))
-      )
-    )
-  )
-
+      )))
 
 (defun evilnc--get-one-paragraph-region ()
   (let (b e)
@@ -214,8 +210,7 @@
           (if (> newend end) (decf newend))
 
           (list newbeg newend)
-          )
-        )
+          ))
     (list beg end)
     ))
 
@@ -237,7 +232,7 @@
                  b e)
 
         (forward-line -1)
-        (when (or (= (line-beginning-position) b) (< (line-end-position) beg))
+        (if (or (= (line-beginning-position) b) (< (line-end-position) beg))
           (setq done t))
         ))))
 
@@ -336,6 +331,7 @@
     ))
 
 ;; ==== below this line are public commands
+
 ;;;###autoload
 (defun evilnc-comment-or-uncomment-paragraphs (&optional NUM)
   "Comment or uncomment paragraph(s). A paragraph is a continuation non-empty lines.
@@ -514,7 +510,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-version ()
   (interactive)
-  (message "1.5.12"))
+  (message "1.5.15"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()

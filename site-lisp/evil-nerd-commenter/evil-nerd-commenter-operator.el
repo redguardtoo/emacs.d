@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.14
+;; Version: 1.5.15
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -27,6 +27,7 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
+
 ;;
 ;; Provides an operator for evil-mode.
 
@@ -34,16 +35,9 @@
 
 (require 'evil)
 
-(evil-define-operator evilnc-comment-operator (beg end type register yank-handler)
-  "Comments text from BEG to END with TYPE.
-Save in REGISTER or in the kill-ring with YANK-HANDLER."
-  (interactive "<R><x><y>")
-  (unless register
-    (let ((text (filter-buffer-substring beg end)))
-      (unless (string-match-p "\n" text)
-        ;; set the small delete register
-        (evil-set-register ?- text))))
-  (evil-yank beg end type register yank-handler)
+(evil-define-operator evilnc-comment-operator (beg end type)
+  "Comments text from BEG to END with TYPE."
+  (interactive "<R>")
   (cond
    ((eq type 'block)
     (let ((newpos (evilnc--extend-to-whole-comment beg end) ))
