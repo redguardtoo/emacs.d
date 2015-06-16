@@ -9,12 +9,11 @@ Please read below checklist at least once:
 - Other issues are covered in FAQ
 * Features
 - Stable is the first priority
+- I do *NOT* re-define key bindings, so original key bindings are still there
 - 100% usable in terminal
 - Popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 - Minimum dependency (For example, network connection is OPTIONAL to install packages)
 - Optimized for cross-platform C++ development
-- Real time HTML syntax checker
-- I do *NOT* re-define key bindings, so original key bindings are still there
 * Installation
 ** Minimum installation
 Most users should follow the section "Install in normal way".
@@ -175,10 +174,10 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** Why certain key binding doesn't work?
+Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x`]].
 ** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys for them.
-** GUI version has issues?
-Use terminal version.
 ** OS X user?
 Please remove bundled emacs 22 at first!
 
