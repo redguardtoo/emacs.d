@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 1.5.15
+;; Version: 2.0
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -121,35 +121,69 @@
         (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))))
 
 (defun evilnc--operation-on-lines-or-region (fn &optional NUM)
-  (if (not (region-active-p))
-      (let ((b (line-beginning-position)) e)
-        (save-excursion
-          (forward-line (- NUM 1))
-          (setq e (line-end-position))
-          )
-        (funcall fn b e))
-    ;; expand selected region
-    (progn
+  (cond
+   ((not (region-active-p))
+    (let ((b (line-beginning-position)) e)
       (save-excursion
-        (let ((b (region-beginning))
-              (e (region-end))
-              )
-          ;; another work around for evil-visual-line bug:
-          ;; in evil-mode, if we use hot key V `M-x evil-visual-line` to select line
-          ;; the (line-beginning-position) of the line which is after the last selected
-          ;; line is always (region-end)! Don't know why.
-          (if (and (> e b)
-                     (save-excursion (goto-char e) (= e (line-beginning-position)))
-                     (boundp 'evil-state) (eq evil-state 'visual))
-              (setq e (1- e)))
+        (forward-line (- NUM 1))
+        (setq e (line-end-position))
+        )
+      (funcall fn b e)))
+   ((and (<= (line-beginning-position) (region-beginning))
+          (<= (region-end) (line-end-position)))
+    ;; Select region inside ONE line
+    (cond
+     ;; Well, looks current comment syntax is NOT fit for comment out a region.
+     ;; So we also need hack the comment-start and comment-end
+     ((and (string= "" comment-end)
+           (member major-mode '(java-mode
+                                javascript-mode
+                                js-mode
+                                js2-mode
+                                js3-mode
+                                c++-mode
+                                objc-mode)))
+      (let ((comment-start-old comment-start)
+            (comment-end-old comment-end)
+            (comment-start-skip-old comment-start-skip)
+            (comment-end-skip-old comment-end-skip))
 
-          (goto-char b)
-          (setq b (line-beginning-position))
-          (goto-char e)
-          (setq e (line-end-position))
-          (funcall fn b e)
-          ))
-      )))
+        ;; use C comment syntax temporarily
+        (setq comment-start "/* ")
+        (setq comment-end " */")
+        (setq comment-start-skip "\\(//+\\|/\\*+\\)\\s *")
+        (setq comment-end-skip "[ 	]*\\(\\s>\\|\\*+/\\)")
+
+        (funcall fn (region-beginning) (region-end))
+
+        ;; Restore the original comment syntax
+        (setq comment-start comment-start-old)
+        (setq comment-end comment-end-old)
+        (setq comment-start-skip comment-start-skip-old)
+        (setq comment-end-skip comment-end-skip-old)))
+     ;; just comment out the region
+     (t (funcall fn (region-beginning) (region-end)))))
+   (t
+    ;; selected region spans MORE than one line
+    (save-excursion
+      (let ((b (region-beginning))
+            (e (region-end)))
+        ;; Another work around for evil-visual-line bug:
+        ;; In evil-mode, if we use hotkey V or `M-x evil-visual-line` to select line,
+        ;; the (line-beginning-position) of the line which is after the last selected
+        ;; line is always (region-end)! Don't know why.
+        (if (and (> e b)
+                 (save-excursion (goto-char e) (= e (line-beginning-position)))
+                 (boundp 'evil-state) (eq evil-state 'visual))
+            (setq e (1- e)))
+
+        (goto-char b)
+        (setq b (line-beginning-position))
+        (goto-char e)
+        (setq e (line-end-position))
+        (funcall fn b e)
+        )))
+   ))
 
 (defun evilnc--get-one-paragraph-region ()
   (let (b e)
@@ -299,12 +333,11 @@
       (web-mode-uncomment (/ (+ beg end) 2))
       )
      (t
-      (when (not (region-active-p))
+      (unless (region-active-p)
         (push-mark beg t t)
         (goto-char end))
       (web-mode-comment (/ (+ beg end) 2)))
-     )
-    )
+     ))
     (t
      (evilnc--working-on-region beg end 'comment-or-uncomment-region))
     ))
@@ -428,7 +461,9 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
    Case 1: If no region selected, comment/uncomment on current line. if NUM>1, comment/uncomment
    extra N-1 lines from next line
    Case 2: If a region selected, the region is expand to make sure the region contain
-   whole lines. Then we comment/uncomment the expanded region. NUM is ignored."
+   whole lines. Then we comment/uncomment the expanded region. NUM is ignored.
+   Case 3: If a region in ONE line is selected, we comment/uncomment that region.
+   In this case, CORRECT comment syntax will be used for C++/Java/Javascript."
   (interactive "p")
   ;; donot move the cursor
   ;; support negative number
@@ -510,7 +545,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 ;;;###autoload
 (defun evilnc-version ()
   (interactive)
-  (message "1.5.15"))
+  (message "2.0"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
