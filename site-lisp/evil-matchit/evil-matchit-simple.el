@@ -40,10 +40,8 @@
         (setq cur-line (buffer-substring-no-properties
                         (line-beginning-position) (line-end-position)))
         (if (string-match "^[ \t]*{ *$" cur-line)
-            (setq rlt 2)
-          )
-        )
-      )
+            (setq rlt 2))
+        ))
     rlt))
 
 ;;;###autoload
@@ -53,21 +51,24 @@
         rlt
         (cur-line (buffer-substring-no-properties
                    (line-beginning-position) (line-end-position)))
-        )
+        (tag-chars (string-to-list "{[(}}])")))
 
-    ;; only handle open tag
-    (if (not (memq (following-char) (string-to-list "{[(}}])")))
-        (if (setq forward-line-num (evilmi--simple-find-open-brace cur-line))
-            (when forward-line-num
-              (setq p (line-beginning-position))
-              (forward-line (1- forward-line-num))
-              (search-forward "{" nil nil)
-              (backward-char)
-              (setq rlt (list p))
-              )
-          )
-      (setq rlt (list (point)))
-      )
+    ;; Only handle open tag
+    (cond
+     ;; In evil-visual-state, the (preceding-char) is actually the character under cursor
+     ((and (not (memq (following-char) tag-chars))
+           (not (memq (preceding-char) tag-chars)))
+      (if (setq forward-line-num (evilmi--simple-find-open-brace cur-line))
+          (when forward-line-num
+            (setq p (line-beginning-position))
+            (forward-line (1- forward-line-num))
+            (search-forward "{" nil nil)
+            (backward-char)
+            (setq rlt (list p))
+            )))
+     (t
+      ;; use evil's own evil-jump-item
+      (setq rlt (list (point)))))
     rlt))
 
 ;;;###autoload
