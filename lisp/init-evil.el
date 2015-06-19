@@ -103,6 +103,7 @@
         (direx:direx-mode . emacs)
         (yari-mode . emacs)
         (erc-mode . emacs)
+        (neotree-mode . emacs)
         (w3m-mode . emacs)
         (gud-mode . emacs)
         (help-mode . emacs)
@@ -186,6 +187,11 @@
   "aa" 'copy-to-x-clipboard ; used frequently
   "zz" 'paste-from-x-clipboard ; used frequently
   "cy" 'strip-convert-lines-into-one-big-string
+  "ntt" 'neotree-toggle
+  "ntf" 'neotree-find ; open file in current buffer in neotree
+  "ntd" 'neotree-project-dir
+  "nth" 'neotree-hide
+  "nts" 'neotree-show
   "fl" 'cp-filename-line-number-of-current-buffer
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
