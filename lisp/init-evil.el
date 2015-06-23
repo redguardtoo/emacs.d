@@ -401,6 +401,15 @@
   "zws" 'wg-save-wconfig
   "wf" 'popup-which-function)
 
+(defun evil-prog-mode-hook-setup ()
+  (if (or (derived-mode-p 'js2-mode)
+          (derived-mode-p 'js-mode)
+          (derived-mode-p 'javascript-mode)
+          (derived-mode-p 'emacs-lisp-mode))
+      (setq-local evilmi-ignore-comments nil)
+      ))
+(add-hook 'prog-mode-hook 'evil-prog-mode-hook-setup)
+
 ;; change mode-line color by evil state
 (lexical-let ((default-color (cons (face-background 'mode-line)
                                    (face-foreground 'mode-line))))

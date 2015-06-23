@@ -2,6 +2,7 @@
 
 ;; Copyright (C) 2014  Chen Bin <chenbin.sh@gmail.com>
 
+
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 
 ;; This file is not part of GNU Emacs.
@@ -47,6 +48,7 @@
 ;;;###autoload
 (defun evilmi-simple-get-tag ()
   (let (p
+        ch
         forward-line-num
         rlt
         (cur-line (buffer-substring-no-properties
@@ -54,10 +56,10 @@
         (tag-chars (string-to-list "{[(}}])")))
 
     ;; Only handle open tag
+    (setq ch (evilmi--get-char-under-cursor))
     (cond
      ;; In evil-visual-state, the (preceding-char) is actually the character under cursor
-     ((and (not (memq (following-char) tag-chars))
-           (not (memq (preceding-char) tag-chars)))
+     ((not (memq ch tag-chars))
       (if (setq forward-line-num (evilmi--simple-find-open-brace cur-line))
           (when forward-line-num
             (setq p (line-beginning-position))
@@ -67,7 +69,7 @@
             (setq rlt (list p))
             )))
      (t
-      ;; use evil's own evil-jump-item
+      ;; use evil's own evilmi--simple-jump
       (setq rlt (list (point)))))
     rlt))
 
@@ -75,8 +77,7 @@
 (defun evilmi-simple-jump (rlt NUM)
   (let (cur-line)
     (when rlt
-      (evil-jump-item)
-
+      (evilmi--simple-jump)
       (setq cur-line (buffer-substring-no-properties
                       (line-beginning-position)
                       (line-end-position)))

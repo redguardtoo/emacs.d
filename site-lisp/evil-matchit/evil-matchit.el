@@ -1,10 +1,10 @@
 ;;; evil-matchit.el --- Vim matchit ported to Evil
 
-;; Copyright (C) 2014 Chen Bin
+;; Copyright (C) 2014,2015 Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 1.5.2
+;; Version: 2.0
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -42,11 +42,176 @@
 
 (defvar evilmi-plugins '(emacs-lisp-mode
                          ((evilmi-simple-get-tag evilmi-simple-jump)))
-  "The table to define which algorithm to use and when to to jump items")
+  "The table to define which algorithm to use and when to jump items")
 
 (defvar evilmi-may-jump-by-percentage t
   "Simulate evil-jump-item behaviour. For example, press 50% to jump to 50 percentage in buffer.
 If this flag is nil, then 50 means jump 50 times.")
+
+
+(defvar evilmi-ignore-comments t "Ignore comments when mathing")
+
+(defvar evilmi-forward-chars (string-to-list "[{("))
+(defvar evilmi-backward-chars (string-to-list "]})"))
+(defvar evilmi-quote-chars (string-to-list "'\"/"))
+(defvar evilmi-debug nil)
+
+(defun evilmi--get-char-at-position (pos)
+  (let (ch)
+    ;; evil load
+    (setq ch (char-after pos))
+    (if evilmi-debug (message "evilmi-debug called. Return: %s" (string ch)))
+    ch))
+
+(defun evilmi--get-char-under-cursor ()
+  "Return: (previous-character current-character position)"
+  (let (ch p)
+    (cond
+     ;; evil load
+     ((eq evil-state 'visual)
+      ;; (preceding-char) (following-char) are written in C
+      (setq ch (preceding-char))
+      (setq p (- (point) 1)))
+     (t
+      (setq ch (following-char))
+      (setq p (point))))
+    (if evilmi-debug (message "evilmi--get-char-under-cursor called. Return: (%d %s)" ch p))
+    (list ch p)))
+
+(defun evilmi--is-jump-forward ()
+  "Return: (forward-direction font-face-under-cursor character-under-cursor)
+If font-face-under-cursor is NOT nil, the quoted string is being processed"
+  (let (tmp
+        p
+        ff
+        ch
+        rlt)
+    (setq tmp (evilmi--get-char-under-cursor))
+    (setq ch (car tmp))
+    (setq p (cadr tmp))
+    (cond
+     ((memq ch evilmi-forward-chars)
+      (setq rlt t))
+     ((memq ch evilmi-backward-chars)
+      (setq rlt nil))
+     ((memq ch evilmi-quote-chars)
+      (setq ff (get-text-property p 'face))
+      (setq rlt (eq ff (get-text-property (+ 1 p) 'face))))
+     (t (setq rlt t)))
+
+    (if evilmi-debug (message "evilmi--is-jump-forward called. Return: (%s %s %s)"
+                              rlt ff (string ch)))
+
+    (list rlt ff ch)))
+
+(defun evilmi--scan-sexps (is-forward)
+  (let (rlt
+        start-pos
+        (arg (if is-forward 1 -1)))
+    (cond
+     ((eq evil-state 'visual)
+      (setq start-pos (if is-forward (- (point) 1)
+                        (point))))
+     (t
+      ;; normal state and other state
+      (setq start-pos (if is-forward (point) (+ 1 (point))))
+      ))
+    (setq rlt (scan-sexps start-pos arg))
+    (if evilmi-debug (message "evilmi--scan-sexps called. Return: %s" rlt))
+    rlt))
+
+(defun evilmi--adjust-quote-jumpto (is-forward pos)
+  (let (rlt)
+    (if (eq evil-state 'visual)
+        (setq rlt (if is-forward (- pos 1) pos (+ 1 pos)))
+        (setq rlt (if is-forward pos (+ 1 pos))))
+    (if evilmi-debug (message "evilmi--adjust-quote-jumpto called. Return: %s" rlt))
+    rlt))
+
+(defun evilmi--above-the-other-quote-char (ch pos ff delta)
+  (and (= ch (evilmi--get-char-at-position (- pos delta)))
+       (not (eq ff (get-text-property pos 'face)))))
+
+(defun evilmi--find-the-other-quote-char (ff is-forward ch)
+"The end character under cursor has different font-face from ff"
+  (let (rlt
+        pos
+        (got nil)
+        (delta (if is-forward 1 -1))
+        (end (if is-forward (point-max) (point-min))))
+    (setq pos (+ delta (point)))
+    (while (not got)
+      (if (or (= pos end)
+              (evilmi--above-the-other-quote-char ch pos ff delta))
+          (progn
+            (setq rlt (evilmi--adjust-quote-jumpto is-forward pos))
+            (setq got t))
+        (setq pos (+ delta pos))))
+    (if evilmi-debug (message "evilmi--find-the-other-quote-char called Return: %s" rlt))
+    rlt))
+
+(defun evilmi--adjust-jumpto (is-forward rlt)
+  (cond
+   ((eq evil-state 'visual)
+    (if is-forward (setq rlt (+ rlt 1)))
+    )
+   (t
+    (if is-forward (setq rlt (- rlt 1)))))
+  (if evilmi-debug (message "evilmi--adjust-jumpto called. Return: %s" rlt))
+  rlt)
+
+;; @see http://emacs.stackexchange.com/questions/13222/a-elisp-function-to-jump-between-matched-pair
+(defun evilmi--find-position-to-jump (ff is-forward ch)
+  "Non-nil ff means jumping between quotes"
+  (let (rlt)
+    (if ff (setq rlt (evilmi--find-the-other-quote-char ff is-forward ch))
+      (setq rlt (evilmi--scan-sexps is-forward)))
+    (setq rlt (evilmi--adjust-jumpto is-forward rlt))
+    (if evilmi-debug (message "evilmi--find-position-to-jump called. Return: %s" rlt))
+    rlt))
+
+(defun evilmi--tweak-selected-region-finally (ff jump-forward)
+  (if (eq evil-state 'visual)
+      (cond
+       (jump-forward
+        ;; if ff is non-nil, I control the jump flow from character level,
+        ;; so hack to workaround scan-sexps is NOT necessary
+        (unless ff
+          (evil-backward-char)))
+       (t
+        (exchange-point-and-mark)
+        (evil-forward-char)
+        (exchange-point-and-mark)))
+    ))
+
+(defun evilmi--simple-jump ()
+  "Alternative for evil-jump-item"
+  ;; parse-sexp-ignore-comments is used
+  (interactive)
+  (let ((old-flag parse-sexp-ignore-comments)
+        tmp
+        ch
+        jumpto
+        ff
+        jump-forward)
+    (setq tmp (evilmi--is-jump-forward))
+    (setq jump-forward (car tmp))
+    ;; if ff is not nil, it's jump between quotes
+    ;; so we should not use (scan-sexps)
+    (setq ff (nth 1 tmp))
+    (setq ch (nth 2 tmp))
+
+    (unless evilmi-ignore-comments
+      (setq parse-sexp-ignore-comments nil))
+
+    ;; need pass the char
+    (setq jumpto (evilmi--find-position-to-jump ff jump-forward ch))
+    (goto-char jumpto)
+    (evilmi--tweak-selected-region-finally ff jump-forward)
+
+    (unless evilmi-ignore-comments
+      (setq parse-sexp-ignore-comments old-flag))
+    ))
 
 (defun evilmi--operate-on-item (NUM &optional FUNC)
   (let ((plugin (plist-get evilmi-plugins major-mode))
@@ -68,20 +233,18 @@ If this flag is nil, then 50 means jump 50 times.")
              ;; jump only once if the jump is successful
              (setq jumped t)
              ))
-         plugin
-         ))
+         plugin))
 
     (when (not jumped)
       (if FUNC (funcall FUNC (list (point))))
-      (evil-jump-item)
-      (setq where-to-jump-in-theory (point))
-      )
-    where-to-jump-in-theory
-    ))
+      (evilmi--simple-jump)
+      (setq where-to-jump-in-theory (point)))
+
+    (if evilmi-debug (message "evilmi--operate-on-item called. Return: %s" where-to-jump-in-theory))
+    where-to-jump-in-theory))
 
 (defun evilmi--push-mark (rlt)
-    (push-mark (nth 0 rlt) t t)
-  )
+    (push-mark (nth 0 rlt) t t))
 
 (defun evilmi-init-plugins ()
   (interactive)
@@ -202,6 +365,7 @@ If this flag is nil, then 50 means jump 50 times.")
         (forward-line -1)
         (setq e (line-end-position)))
       )
+    (if evilmi-debug (message "evilmi--region-to-select-or-delete called. Return: %s" (list b e)))
     (list b e)))
 
 (evil-define-text-object evilmi-inner-text-object (&optional NUM begin end type)
@@ -263,7 +427,7 @@ If this flag is nil, then 50 means jump 50 times.")
 
 ;;;###autoload
 (defun evilmi-jump-items (&optional NUM)
-  "jump between item/tag(s)"
+  "Jump between item/tag(s)"
   (interactive "P")
   (cond
    ((and evilmi-may-jump-by-percentage NUM)
@@ -272,7 +436,7 @@ If this flag is nil, then 50 means jump 50 times.")
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "1.5.2"))
+(defun evilmi-version() (interactive) (message "2.0"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
