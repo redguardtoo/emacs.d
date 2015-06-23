@@ -19,6 +19,18 @@
     (set-face-attribute 'helm-source-header nil :height 1.0)))
 (add-hook 'helm-before-initialize-hook 'helm-toggle-header-line)
 
+;; {{ Helm window always opens in current window we are working on, from @tuhdo
+(setq helm-echo-input-in-header-line t)
+(defun helm-hide-minibuffer-maybe ()
+  (when (with-helm-buffer helm-echo-input-in-header-line)
+    (let ((ov (make-overlay (point-min) (point-max) nil nil t)))
+      (overlay-put ov 'window (selected-window))
+      (overlay-put ov 'face (let ((bg-color (face-background 'default nil)))
+                              `(:background ,bg-color :foreground ,bg-color)))
+      (setq-local cursor-type nil))))
+
+(add-hook 'helm-minibuffer-set-up-hook 'helm-hide-minibuffer-maybe)
+;; }}
 
 (eval-after-load 'helm
   '(progn
