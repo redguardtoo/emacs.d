@@ -33,10 +33,11 @@
 
 ;; ruby/bash/lua/vimrc
 (defvar evilmi-script-match-tags
-  '((("unless" "if") ("elif" "elsif" "elseif" "else") ( "end" "fi" "endif") "")
-    ("begin" ("rescue" "ensure") "end" "")
-    ("case" ("when" "else") ("esac" "end") "")
-    (("fun!" "function!" "class" "def" "while" "function" "do") () ("end" "endfun" "endfunction") "")
+  '((("unless" "if") ("elif" "elsif" "elseif" "else") ("end" "fi" "endif"))
+    ("begin" ("rescue" "ensure") "end")
+    ("case" ("when" "else") ("esac" "end"))
+    ("for" () "end")
+    (("fun!" "function!" "class" "def" "while" "function" "do") () ("end" "endfun" "endfunction"))
     ("repeat" ()  "until")
     ))
 
