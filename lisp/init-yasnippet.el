@@ -15,6 +15,7 @@
 
 (add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'text-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)
