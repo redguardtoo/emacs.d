@@ -41,14 +41,19 @@
     ("repeat" ()  "until")
     ))
 
+(defvar evilmi-script-extract-keyword-howtos
+  '(("^.*= *\\(function\\) *(.*$" 1)
+    ("^[ \t]*\\([a-z]+\!?\\)\\( .*\\| *\\)$" 1)
+    ("^.* \\(do\\) |[a-z0-9A-Z,|]+|$" 1)))
+
 ;;;###autoload
 (defun evilmi-script-get-tag ()
-  (evilmi-sdk-get-tag evilmi-script-match-tags evilmi-sdk-extract-keyword-howtos)
+  (evilmi-sdk-get-tag evilmi-script-match-tags evilmi-script-extract-keyword-howtos)
   )
 
 ;;;###autoload
 (defun evilmi-script-jump (rlt NUM)
-  (evilmi-sdk-jump rlt NUM evilmi-script-match-tags evilmi-sdk-extract-keyword-howtos)
+  (evilmi-sdk-jump rlt NUM evilmi-script-match-tags evilmi-script-extract-keyword-howtos)
   )
 
 (provide 'evil-matchit-script)
