@@ -218,6 +218,13 @@
 
 (add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
 
+;; {{ display long lines in truncated style (end line with $)
+(defun truncate-lines-setup ()
+  (toggle-truncate-lines 1))
+(add-hook 'grep-mode-hook 'truncate-lines-setup)
+;; (add-hook 'org-mode-hook 'truncate-lines-setup)
+;; }}
+
 ;; turns on auto-fill-mode, don't use text-mode-hook because for some
 ;; mode (org-mode for example), this will make the exported document
 ;; ugly!

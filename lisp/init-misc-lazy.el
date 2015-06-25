@@ -228,7 +228,6 @@ grab matched string, cssize them, and insert into kill ring"
                   "elpa"))
        (add-to-list 'grep-find-ignored-directories v))
      ))
-(add-hook 'grep-mode-hook (lambda () (toggle-truncate-lines 1)))
 
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
