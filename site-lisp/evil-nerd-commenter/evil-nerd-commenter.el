@@ -85,7 +85,8 @@
 ;;; Code:
 
 (defvar evilnc-invert-comment-line-by-line nil
-  "if t then invert region comment status line by line")
+  "If t then invert region comment status line by line.
+Please note it has NOT effect on evil text object!")
 
 ;; shamelessly copied from goto-line
 (defun evilnc--goto-line (line)
@@ -249,7 +250,7 @@
     ))
 
 (defun evilnc--invert-comment (beg end)
-  "scan the region line by line, invert its comment status"
+  "Scan the region line by line, invert its comment status"
   (let (done b e)
     (save-excursion
       (goto-char end)
@@ -435,6 +436,7 @@ or 'C-u 3 M-x evilnc-quick-comment-or-uncomment-to-the-line' to comment to the l
 
 ;;;###autoload
 (defun evilnc-toggle-invert-comment-line-by-line ()
+  "Please note this command may NOT work on complex evil text objects"
   (interactive)
   (if evilnc-invert-comment-line-by-line
       (setq evilnc-invert-comment-line-by-line nil)

@@ -52,7 +52,7 @@
          (=  (char-before beg) ?\n))
     (evilnc--comment-or-uncomment-region (1- beg) end))
    ((eq type 'line)
-    (evilnc--comment-or-uncomment-region beg end))
+    (evilnc--comment-or-uncomment-region beg (1- end)))
    (t
     (let ((newpos (evilnc--extend-to-whole-comment beg end) ))
       (evilnc--comment-or-uncomment-region (nth 0 newpos) (nth 1 newpos))
