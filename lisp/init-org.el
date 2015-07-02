@@ -129,9 +129,9 @@
         "Make lines wrap at window edge and on word boundary,
         in current buffer."
         (interactive)
+        ;; display wrapped lines instead of truncated lines
         (setq truncate-lines nil)
-        (setq word-wrap t)
-        )
+        (setq word-wrap t))
       (add-hook 'org-mode-hook '(lambda ()
                                   (setq evil-auto-indent nil)
                                   (soft-wrap-lines)
