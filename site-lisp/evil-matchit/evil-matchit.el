@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.0
+;; Version: 2.0.1
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -333,10 +333,12 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
 
   (autoload 'evilmi-ruby-get-tag "evil-matchit-ruby" nil)
   (autoload 'evilmi-ruby-jump "evil-matchit-ruby" nil)
+  ;; @see https://github.com/syl20bnr/spacemacs/issues/2093
+  ;; spacemacs use enh-ruby-mode
   (mapc (lambda (mode)
           (plist-put evilmi-plugins mode '((evilmi-simple-get-tag evilmi-simple-jump)
                                            (evilmi-ruby-get-tag evilmi-ruby-jump))))
-        '(ruby-mode))
+        '(ruby-mode enh-ruby-mode))
   )
 
 (defun evilmi--region-to-select-or-delete (NUM &optional is-inner)
@@ -436,7 +438,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.0"))
+(defun evilmi-version() (interactive) (message "2.0.1"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode

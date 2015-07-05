@@ -42,9 +42,9 @@
     ))
 
 (defvar evilmi-script-extract-keyword-howtos
-  '(("^.*= *\\(function\\) *(.*$" 1)
-    ("^[ \t]*\\([a-z]+\!?\\)\\( .*\\| *\\)$" 1)
-    ("^.* \\(do\\) |[a-z0-9A-Z,|]+|$" 1)))
+  '(("^.*\\(=\\|local\s\\)\s*\\(function\\)\s*.*$" 2)
+    ("^\s*\\([a-z]+\!?\\)\\(\s.*\\| *\\)$" 1)
+    ("^.*\s\\(do\\)\s|[a-z0-9A-Z,|]+|$" 1)))
 
 ;;;###autoload
 (defun evilmi-script-get-tag ()
