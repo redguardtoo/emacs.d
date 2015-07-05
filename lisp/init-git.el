@@ -61,13 +61,7 @@
 (when *is-a-mac*
   (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)]))))
 
-(eval-after-load 'magit
-  '(progn
-     (require 'magit-key-mode)
-     ))
-
 ;; {{ git-gutter
-
 (require 'git-gutter)
 
 (defun git-gutter-reset-to-head-parent()
