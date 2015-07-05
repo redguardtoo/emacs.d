@@ -116,11 +116,15 @@
   (interactive)
   (switch-to-buffer nil))
 
+;; {{ dictionary setup
+(autoload 'dictionary-new-search "dictionary" "" t nil)
 (defun my-lookup-dict-org ()
   (interactive)
   (dictionary-new-search (cons (if (region-active-p)
                                    (buffer-substring-no-properties (region-beginning) (region-end))
                                  (thing-at-point 'symbol)) dictionary-default-dictionary)))
+
+;; }}
 
 (defun my-gud-gdb ()
   (interactive)

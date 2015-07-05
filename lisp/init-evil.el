@@ -13,8 +13,6 @@
 
 (require 'evil)
 
-(autoload 'dictionary-new-search "dictionary" "" t nil)
-
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
 ;; cursor is alway black because of evil
 ;; here is the workaround
