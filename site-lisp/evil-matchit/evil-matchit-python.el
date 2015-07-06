@@ -61,18 +61,17 @@
         )
 
     ;; extract keyword from current line
-    (if (string-match "^[ \t]*\\([a-z]+\\) *.*:$" cur-line)
+    (if (string-match "^[ \t]*\\([a-z]+\\) *.*:\s*\\(#.*\\)?$" cur-line)
         (setq keyword (match-string 1 cur-line))
       )
 
     (cond
      ((string= keyword "else")
-      (setq regexp "^[ \t]*\\(if\\) *.*:$")
+      (setq regexp "^[ \t]*\\(if\\) *.*:\s*\\(#.*\\)?$")
       )
      ((or (string= keyword "finally") (string= keyword "except"))
-       (setq regexp "^[ \t]*\\(try\\) *.*:$")
-       )
-     )
+       (setq regexp "^[ \t]*\\(try\\) *.*:\s*\\(#.*\\)?$")
+       ))
 
     (when regexp
       (save-excursion
@@ -111,13 +110,13 @@
         )
     (cond
      ((string= keyword "try")
-      (setq regexp "^[ \t]*\\(except\\) *.*:$")
+      (setq regexp "^[ \t]*\\(except\\) *.*:\s*\\(#.*\\)?$")
       )
      ((string= keyword "except")
-      (setq regexp "^[ \t]*\\(except\\|finally\\) *.*:$")
+      (setq regexp "^[ \t]*\\(except\\|finally\\) *.*:\s*\\(#.*\\)?$")
       )
      ( (or (string= keyword "elif") (string= keyword "if"))
-       (setq regexp "^[ \t]*\\(elif\\|else\\) *.*:$")
+       (setq regexp "^[ \t]*\\(elif\\|else\\) *.*:\s*\\(#.*\\)?$")
        )
      )
 
@@ -150,7 +149,7 @@
 ;;;###autoload
 (defun evilmi-python-get-tag ()
   (let (rlt
-        (regexp "^[ \t]*\\([a-z]+\\) *.*:$")
+        (regexp "^[ \t]*\\([a-z]+\\) *.*:\s*\\(#.*\\)?$")
         (cur-line (buffer-substring-no-properties
                    (line-beginning-position)
                    (line-end-position)))
@@ -209,9 +208,8 @@
       )
 
     (setq rlt (list p tag-type keyword))
-    rlt
-    )
-  )
+    (if (and evilmi-debug rlt) (message "evilmi-python-get-tag called. rlt=%s" rlt))
+    rlt))
 
 ;;;###autoload
 (defun evilmi-python-jump (rlt NUM)
@@ -223,10 +221,11 @@
                    (line-end-position)))
         cur-indent
         dendent
-        where-to-jump-in-theory
-        )
+        where-to-jump-in-theory)
+
     (setq cur-indent (evilmi--python-calculate-indent cur-line))
 
+    (if evilmi-debug (message "evilmi-python-jump called. tag-type=%d p=%d" tag-type p))
     ;; start from closed tag
     (cond
      ((=  1 tag-type)
@@ -249,8 +248,7 @@
                 (evilmi--python-move-to-first-open-tag (1- cur-indent))
                 (setq where-to-jump-in-theory (point))
                 )
-            )
-          )
+            ))
         )
       )
 
@@ -281,8 +279,7 @@
       (if where-to-jump-in-theory (goto-char where-to-jump-in-theory))
 
       (evilmi--python-move-to-next-open-tag keyword cur-indent)
-      )
-     )
+      ))
     where-to-jump-in-theory))
 
 (provide 'evil-matchit-python)

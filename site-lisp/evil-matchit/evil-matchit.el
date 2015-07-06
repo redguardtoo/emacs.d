@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.0.1
+;; Version: 2.0.2
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -56,11 +56,32 @@ If this flag is nil, then 50 means jump 50 times.")
 (defvar evilmi-quote-chars (string-to-list "'\"/"))
 (defvar evilmi-debug nil)
 
+(defun evilmi--char-is-simple (ch)
+  (let (rlt)
+    (setq rlt
+          (or (memq ch evilmi-forward-chars)
+              (memq ch evilmi-backward-chars)
+              ;; sorry we could not jump between ends of string in python-mode
+              (memq ch evilmi-quote-chars)))
+
+    (when (and (memq major-mode '(python-mode))
+               ;; in evil-visual-state, (point) could equal to (line-end-position)
+               (>= (point) (1- (line-end-position))))
+      ;; handle follow python code,
+      ;;
+      ;; if true:
+      ;;     a = "hello world"
+      ;;
+      ;; If current cursor is at end of line , rlt should be nil!
+      ;; or else, matching algorithm can't work in above python sample
+      (setq rlt nil))
+    rlt))
+
 (defun evilmi--get-char-at-position (pos)
   (let (ch)
     ;; evil load
     (setq ch (char-after pos))
-    (if evilmi-debug (message "evilmi-debug called. Return: %s" (string ch)))
+    (if evilmi-debug (message "evilmi--get-char-at-position called. Return: %s" (string ch)))
     ch))
 
 (defun evilmi--get-char-under-cursor ()
@@ -438,7 +459,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.0.1"))
+(defun evilmi-version() (interactive) (message "2.0.2"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
