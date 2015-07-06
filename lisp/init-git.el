@@ -23,44 +23,6 @@
 ;; (add-hook 'c++-mode-hook 'my-setup-develop-environment)
 ;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
-(setq magit-save-some-buffers nil
-      magit-process-popup-time 10
-      magit-completing-read-function 'magit-ido-completing-read)
-
-(defun magit-status-somedir ()
-  (interactive)
-  (let ((current-prefix-arg t))
-    (magit-status default-directory)))
-
-;; Sometimes I check other developer's commit
-;; show file of specific version
-(autoload 'magit-show "magit" "" t nil)
-;; show the commit
-(autoload 'magit-show-commit "magit" "" t nil)
-
-(global-set-key [(meta f12)] 'magit-status)
-(global-set-key [(shift meta f12)] 'magit-status-somedir)
-
-(eval-after-load 'magit
-  '(progn
-     ;; Don't let magit-status mess up window configurations
-     ;; http://whattheemacsd.com/setup-magit.el-01.html
-     (defadvice magit-status (around magit-fullscreen activate)
-       (window-configuration-to-register :magit-fullscreen)
-       ad-do-it
-       (delete-other-windows))
-
-     (defun magit-quit-session ()
-       "Restores the previous window configuration and kills the magit buffer"
-       (interactive)
-       (kill-buffer)
-       (jump-to-register :magit-fullscreen))
-
-     (define-key magit-status-mode-map (kbd "q") 'magit-quit-session)))
-
-(when *is-a-mac*
-  (add-hook 'magit-mode-hook (lambda () (local-unset-key [(meta h)]))))
-
 ;; {{ git-gutter
 (require 'git-gutter)
 
@@ -175,58 +137,20 @@
 
 ;; {{ goto next/previous hunk/section
 (defun my-goto-next-section (arg)
-  "wrap magit and other diff plugins next/previous command"
   (interactive "p")
-  (cond
-   ((string= major-mode "magit-commit-mode")
-    (setq arg (abs arg))
-    (while (> arg 0)
-      (condition-case nil
-          ;; buggy when start from first line
-          (magit-goto-next-sibling-section)
-        (error
-         (magit-goto-next-section)))
-      (setq arg (1- arg))))
-   (t (git-gutter:next-hunk arg))
-   ))
+  (git-gutter:next-hunk arg))
 
 (defun my-goto-previous-section (arg)
-  "wrap magit and other diff plugins next/previous command"
   (interactive "p")
-  (cond
-   ((string= major-mode "magit-commit-mode")
-    (setq arg (abs arg))
-    (while (> arg 0)
-      (condition-case nil
-          ;; buggy when start from first line
-          (magit-goto-previous-sibling-section)
-        (error
-         (magit-goto-previous-section)))
-      (setq arg (1- arg))))
-   (t (git-gutter:previous-hunk arg))
-   ))
+  (git-gutter:previous-hunk arg))
 
 (defun my-goto-next-hunk (arg)
-  "wrap magit and other diff plugins next/previous command"
   (interactive "p")
-  (cond
-   ((string= major-mode "magit-commit-mode")
-    (diff-hunk-next arg))
-   (t (git-gutter:next-hunk arg))
-   ))
+  (git-gutter:next-hunk arg))
 
 (defun my-goto-previous-hunk (arg)
-  "wrap magit and other diff plugins next/previous command"
   (interactive "p")
-  (cond
-   ((string= major-mode "magit-commit-mode")
-    (diff-hunk-prev arg))
-   (t (git-gutter:previous-hunk arg))
-   ))
-
-;; turn off the overlay, I do NOT want to lose original syntax highlight!
-(setq magit-highlight-overlay t)
-;; }}
+  (git-gutter:previous-hunk arg))
 
 ;; {{ git-messenger
 (autoload 'git-messenger:popup-message "git-messenger" "" t)

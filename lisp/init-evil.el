@@ -121,16 +121,6 @@
         )
       do (evil-set-initial-state mode state))
 
-(evil-define-key 'motion magit-commit-mode-map
-  (kbd "TAB") 'magit-toggle-section
-  (kbd "RET") 'magit-visit-item
-  (kbd "C-w") 'magit-copy-item-as-kill)
-
-(evil-define-key 'motion magit-diff-mode-map
-  (kbd "TAB") 'magit-toggle-section
-  (kbd "RET") 'magit-visit-item
-  (kbd "C-w") 'magit-copy-item-as-kill)
-
 (define-key evil-ex-completion-map (kbd "M-p") 'previous-complete-history-element)
 (define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
 
@@ -254,7 +244,6 @@
   "cxo" 'org-clock-out ; `C-c C-x C-o'
   "cxr" 'org-clock-report ; `C-c C-x C-r'
   "mq" 'lookup-doc-in-man
-  "mgh" 'magit-show-head-commit
   "sg" 'w3m-google-by-filetype
   "sf" 'w3m-search-financial-dictionary
   "sq" 'w3m-stackoverflow-search

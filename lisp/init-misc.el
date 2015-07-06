@@ -138,10 +138,6 @@
   (interactive)
   (man (concat "-k " (thing-at-point 'symbol))))
 
-(defun magit-show-head-commit ()
-  (interactive)
-  (magit-show-commit "HEAD"))
-
 ;; {{ swiper
 (autoload 'swiper "swiper" "" t)
 (defun swiper-the-thing ()

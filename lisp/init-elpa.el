@@ -207,8 +207,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'expand-region) ;; use latest version if possible
 (require-package 'fringe-helper)
 (require-package 'haskell-mode)
-(require-package 'magit)
-(require-package 'git-commit)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
 (require-package 'yagist)
