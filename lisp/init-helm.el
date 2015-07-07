@@ -57,6 +57,7 @@
              (tmm-menubar . nil)
              (dired-do-copy . nil)
              (dired-do-rename . nil)
+             (vc-copy-file-and-rename-buffer . nil)
              (dired-create-directory . nil)
              (find-file . ido)
              (copy-file-and-rename-buffer . nil)
