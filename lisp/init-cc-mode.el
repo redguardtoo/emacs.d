@@ -68,13 +68,17 @@
     ;; c-eldoc (https://github.com/mooz/c-eldoc)
     (c-turn-on-eldoc-mode)
 
-    ;; @see https://github.com/seanfisk/cmake-flymake
-    ;; make sure you project use cmake
+    ;; @see https://github.com/redguardtoo/cpputils-cmake
+    ;; Make sure your project use cmake!
+    ;; Or else, you need comment out below code:
+    ;; {{
     (flymake-mode 1)
     (if (executable-find "cmake")
         (if (not (or (string-match "^/usr/local/include/.*" buffer-file-name)
                      (string-match "^/usr/src/linux/include/.*" buffer-file-name)))
             (cppcm-reload-all)))
+    ;; }}
+
     ))
 
 ;; donot use c-mode-common-hook or cc-mode-hook because many major-modes use this hook
