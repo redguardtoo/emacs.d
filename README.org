@@ -53,23 +53,26 @@ That's it. You will never need internet in the future. I tested it on Emacs 24.3
 
 Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
 
-** Third party tools installation (OPTIONAL)
-You can install those tools in any way you like. But using "OS package manager" might be easier.
+** Third party tools (OPTIONAL)
+*** Installation
+You can install them in any way you like. But "OS package manager" is easier.
 
 "OS package manager" means:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
 - any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
+*** Tools List
+These tools are *OPTIONAL*.
 
-These tools are *OPTIONAL*. Please ignore any related error message. For example, if you didn't install either aspell or hunspell which flyspell requires, you need ignore all the flyspell error messages.
-*** w3m (web browser in console)
+Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
+**** w3m (web browser in console)
 - needed by `w3m` (w3m is emacs package name written in elisp)
 - install through OS package manager
 - please note only emacs with GUI can display image
-*** lua
+**** lua
 - required by `flymake-lua`
 - install through OS package manager
-*** aspell or hunspell
+**** aspell or hunspell
 - needed by `flyspell`
 - hunspell is the alternative of `aspell`. So you need only one of them.
 - install through OS package manager
@@ -77,80 +80,80 @@ These tools are *OPTIONAL*. Please ignore any related error message. For example
 - I force the dictionary to "en_US" in init-spelling.el. You can modify it.
 - I recommend aspell for programmers
 
-*** sbcl (lisp environment)
+**** sbcl (lisp environment)
 - needed by lisp `slime`
 - install through OS package manager
 
-*** tidy or html5-tidy
+**** tidy or html5-tidy
 - needed by `web-mode` for real time HTML syntax check
 - install through OS package manager
 - For html5-tidy, you need [[https://github.com/w3c/tidy-html5/archive/master.zip][download its source code]] and build it manually
 - I recommend html5-tidy because it supports html5, obviously
 
-*** csslint
+**** csslint
 - install `node.js` through OS package manager, then `sudo npm install -g csslint`
 
-*** zip and unzip
+**** zip and unzip
 - needed by `org-mode` to export org file to odt file
 - install through OS package manager
 
-*** jshint
+**** jshint
 - install `node.js` through OS package manager, then `sudo npm install -g jshint`
 - required by js-mode
 - by default I use js2-mode which does NOT need jshint
 
-*** xsel
+**** xsel
 - needed by my clipboard command `copy-to-x-clipboard` and `paste-from-x-clipboard` under Linux
 - install through OS package manager
 
-*** [[http://www.cmake.org][CMake]]
+**** [[http://www.cmake.org][CMake]]
 - needed by `cpputils-cmake`
 - install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
 
-*** [[http://clang.llvm.org][Clang]]
+**** [[http://clang.llvm.org][Clang]]
 - needed by `cpputils-cmake`, `company-clang`
 - install through OS package manager
 - If you use `cpputils-cmake` and `cmake`, `cpputils-cmake` will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use `company-clang`, add `(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))` into ~/.emacs.d/init.el
 
-*** GCC/Make
+**** GCC/Make
 - needed by `flymake`
 - install through OS package manager
 
-*** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
+**** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
 - needed by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
 - used by Firefox
 
-*** [[http://ctags.sourceforge.net][CTags]]
+**** [[http://ctags.sourceforge.net][CTags]]
 - it creates tags file for code navigation
 - needed by many tags related packages
 - install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]] if you prefer my way
 
-*** [[http://www.gnu.org/software/global][GNU Global]]
+**** [[http://www.gnu.org/software/global][GNU Global]]
 - needed by `ggtags.el`
 - it creates index files for code navigation
 - more advanced than ctags, supports references and better performance
 - install through OS package manager
 
-*** pyflakes
+**** pyflakes
 - You need pyflakes for real time python syntax checker like `flymake-python`
 - Install pip through OS package manager, then `pip install pyflakes`
 - On cygwin you need install `setuptool` in order to install `pip`.
 
-*** libreoffice
+**** libreoffice
 - Only one executable `soffice` needed when converting odt file into doc (Microsoft Word 97)
 - conversion will happen automatically when exporting org-mode to odt
 - The conversion command is in variable `org-export-odt-convert-processes`
 - Install through OS package manager
-*** js-beautify
+**** js-beautify
 - To beautify javascript code (insert extra space, for example)
 - Install pip through OS package manager, then `pip install jsbeautifier`
-*** syntaxerl
+**** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
-*** jedi & service_factory
+**** jedi & service_factory
 - Python 3rd party packages installed through `pip install jedi service_factory`
 - Required by anaconda-mode which provides Python intellisense
 - If you feel anaconda-mode make Emacs *less responsive*, disable it by remove line `(anaconda-mode)` in init-python-mode.el
@@ -174,6 +177,9 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** Emacs is not responsive?
+- Disable flymake by commenting out line `(flymake-mode 1)` in "~/.emacs.d/lisp/init-*.el"
+- Disable flyspell by commenting out line `(flyspell-mode 1)` in "~/.emacs.d/lisp/init-*.el"
 ** Why certain key binding doesn't work?
 Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x`]].
 ** My frequently used commands
@@ -211,6 +217,8 @@ If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/Interactivel
 You can keep pressing `C-f` to ignore the completions and input path manually.
 ** C++ developers?
 You need set up the directories to seach C++ header files. Please see the section `clang`.
+
+If you don't use cmake, you could disable flymake-mode in init-cc-mode.el.
 ** Use Emacs on Windows?
 I strongly suggest [[http://www.cygwin.com/][Cygwin]]. But the setup is still usable in native windows version if you set up *environment variable HOME*.
 ** Yasnippet key bindings

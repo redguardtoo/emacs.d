@@ -35,8 +35,8 @@
 
 (eval-after-load 'flyspell
   '(progn
-	 (require 'flyspell-lazy)
-	 (flyspell-lazy-mode 1)))
+     (require 'flyspell-lazy)
+     (flyspell-lazy-mode 1)))
 
 ;; better performance
 (setq flyspell-issue-message-flag nil)
