@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: fprintf(stderr, description,object)
+# key: lo
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+fprintf(stderr,"${1:object}=%s\n", ${1:$(yas/substr yas-text "[^ ]*")});
