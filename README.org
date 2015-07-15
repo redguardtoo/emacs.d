@@ -18,19 +18,22 @@ Please read below checklist at least once:
 ** Minimum installation
 Most users should follow the section "Install in normal way".
 
-You need the section "Install stable version in easiest way" IF and ONLY IF:
+You need the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
 *** Install in normal way
-Please remove the file "~/.emacs.d/init.el" ("~" means the parent directory of your ".emacs.d").
+Please remove the file "~/.emacs.d/init.el" and "~/.emacs". "~" means the parent directory of your ".emacs.d".
 
-Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. All packages will be placed at "~/.emacs.d" from now on.
+Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu.
 
-Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
+All packages should be placed at "~/.emacs.d" from now on.
 
-Or you can use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]] which has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] every 3 months.
+There are three ways to install this setup:
+Way 1, Download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d".
 
-If you've installed [[http://git-scm.com/][Git]], run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d` in terminal.
+Way 2, you've installed [[http://git-scm.com/][Git]], run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d` in terminal.
+
+Way 3, you can use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]] which has [[https://github.com/redguardtoo/emacs.d/issues/169][been regression tested by volunteers]] every 3 months.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
