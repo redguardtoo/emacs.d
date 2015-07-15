@@ -1,3 +1,4 @@
+
 ;; -*- coding: utf-8 -*-
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
@@ -25,12 +26,13 @@
 ;;----------------------------------------------------------------------------
 ;; Less GC, more memory
 ;;----------------------------------------------------------------------------
-;; By default Emacs will initiate GC every 0.76 MB allocated
-;; (gc-cons-threshold == 800000).
-;; we increase this to 512MB
-;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Garbage-Collection.html
-(setq-default gc-cons-threshold (* 1024 1024 512)
-              gc-cons-percentage 0.5)
+(defun my-optimize-gc (NUM PER)
+"By default Emacs will initiate GC every 0.76 MB allocated (gc-cons-threshold == 800000).
+@see http://www.gnu.org/software/emacs/manual/html_node/elisp/Garbage-Collection.html
+We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
+  (setq-default gc-cons-threshold (* 1024 1024 NUM)
+                gc-cons-percentage PER))
+
 
 (require 'init-modeline)
 (require 'cl-lib)
