@@ -31,7 +31,7 @@
               set-mark-command-repeat-pop t
               tooltip-delay 1.5
               ;; void problems with crontabs, etc.
-              require-final-newline t
+              ;; require-final-newline t ; bad idea, could accidently edit others' code
               truncate-lines nil
               truncate-partial-width-windows nil
               ;; visible-bell has some issue
