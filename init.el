@@ -98,7 +98,6 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 (require 'init-evil)
 (require 'init-sh)
 (require 'init-ctags)
-(require 'init-ace-jump-mode)
 (require 'init-bbdb)
 (require 'init-gnus)
 (require 'init-lua-mode)

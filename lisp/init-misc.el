@@ -429,9 +429,29 @@ buffer is not visiting a file."
 ;; http://tapoueh.org/emacs/switch-window.html
 (global-set-key (kbd "C-x o") 'switch-window)
 
-;; move window
+;; {{ move focus between sub-windows
 (require 'window-numbering)
 (custom-set-faces '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold)))))
 (window-numbering-mode 1)
+;; }}
 
+;; {{ avy, jump between texts, like easymotion in vim
+;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
+;; emacs key binding, copied from avy website
+(global-set-key (kbd "C-:") 'avy-goto-char)
+;; evil, my favorite
+(eval-after-load "evil"
+  '(progn
+     (define-key evil-normal-state-map (kbd "gp") #'avy-goto-subword-1)
+     (define-key evil-normal-state-map (kbd "gP") #'avy-goto-line)
+     ;; press "dp" to delete to the word
+     (define-key evil-motion-state-map (kbd "p") #'avy-goto-subword-1)
+     ;; press "dl" to delete to the lin;e
+     (define-key evil-motion-state-map (kbd "P") #'avy-goto-line)
+     (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-subword-1)))
+;; dired
+(eval-after-load "dired"
+  '(progn
+     (define-key dired-mode-map (kbd "SPC") 'avy-goto-subword-1)))
+;; }}
 (provide 'init-misc)

@@ -153,9 +153,6 @@
 (setq evil-leader/leader ",")
 (require 'evil-leader)
 (evil-leader/set-key
-  ;; SPACE will evil-ace-jump-word-mode by default
-  "al" 'evil-ace-jump-line-mode ; ,al for Ace Jump (line)
-  "ac" 'evil-ace-jump-char-mode ; ,ac for Ace Jump (char)
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" 'back-to-previous-buffer

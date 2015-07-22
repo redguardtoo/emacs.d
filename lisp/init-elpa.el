@@ -203,7 +203,7 @@ ARCHIVE is the string name of the package archive.")
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'color-theme)
 (require-package 'auto-compile)
-(require-package 'ace-jump-mode)
+(require-package 'avy)
 (require-package 'expand-region) ;; use latest version if possible
 (require-package 'fringe-helper)
 (require-package 'haskell-mode)
