@@ -29,8 +29,8 @@
       ;; first line in email could be some hidden line containing NO to field
       (setq str (buffer-substring-no-properties (point-min) (point-max))))
     (message "str=%s" str)
-    (if (string-match "^To: \"\\([^ ,]+\\)" str)
-        (setq rlt (match-string 1 str)))
+    (if (string-match "^To: \"?\\([a-zA-Z]+\\)" str)
+        (setq rlt (capitalize (match-string 1 str))))
     ;; (message "rlt=%s" rlt)
     rlt))
 
