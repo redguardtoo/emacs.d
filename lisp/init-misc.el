@@ -406,7 +406,7 @@ buffer is not visiting a file."
                         "/home/[a-z]\+/\\."))
 ;; }}
 
-;; {{ which-func
+;; {{ popup functions
 (autoload 'which-function "which-func")
 (autoload 'popup-tip "popup")
 (defun popup-which-function ()
@@ -415,6 +415,19 @@ buffer is not visiting a file."
     (popup-tip msg)
     (copy-yank-str msg)
     ))
+;; }}
+
+;; {{
+(defun mpc-which-song ()
+  (interactive)
+  (let ((msg (car (split-string (shell-command-to-string "mpc") "\n+"))))
+    (message msg)
+    (copy-yank-str msg)))
+
+(defun mpc-next-prev-song (&optional prev)
+  (interactive)
+  (message (car (split-string (shell-command-to-string
+                               (concat "mpc " (if prev "prev" "next"))) "\n+"))))
 ;; }}
 
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
@@ -453,5 +466,14 @@ buffer is not visiting a file."
 (eval-after-load "dired"
   '(progn
      (define-key dired-mode-map (kbd "SPC") 'avy-goto-subword-1)))
+;; }}
+
+;; {{ @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
+(defun goto-edge-by-comparing-font-face (STEP)
+  "Goto either the begin or end of string/comment/whatever"
+  (interactive)
+  (let ( )
+
+    ))
 ;; }}
 (provide 'init-misc)

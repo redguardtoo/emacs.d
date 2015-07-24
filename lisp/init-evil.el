@@ -163,6 +163,9 @@
   "ddw" 'define-word
   "ddp" 'define-word-at-point
   "mf" 'mark-defun
+  "mmm" 'mpc-which-song
+  "mmn" 'mpc-next-prev-song
+  "mmp" '(lambda () (interactive) (mpc-next-prev-song t))
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
