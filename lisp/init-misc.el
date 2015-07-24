@@ -417,7 +417,7 @@ buffer is not visiting a file."
     ))
 ;; }}
 
-;; {{
+;; {{ music
 (defun mpc-which-song ()
   (interactive)
   (let ((msg (car (split-string (shell-command-to-string "mpc") "\n+"))))
@@ -428,6 +428,15 @@ buffer is not visiting a file."
   (interactive)
   (message (car (split-string (shell-command-to-string
                                (concat "mpc " (if prev "prev" "next"))) "\n+"))))
+(defun lyrics()
+  "Prints the lyrics for the current song"
+  (interactive)
+  (let ((song (shell-command-to-string "lyrics")))
+    (if (equal song "")
+        (message "No lyrics - Opening browser.")
+      (switch-to-buffer (create-file-buffer "Lyrics"))
+      (insert song)
+      (goto-line 0))))
 ;; }}
 
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
