@@ -478,11 +478,24 @@ buffer is not visiting a file."
 ;; }}
 
 ;; {{ @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
-(defun goto-edge-by-comparing-font-face (STEP)
-  "Goto either the begin or end of string/comment/whatever"
-  (interactive)
-  (let ( )
-
-    ))
+(defun goto-edge-by-comparing-font-face (&optional step)
+"Goto either the begin or end of string/comment/whatever.
+If step is -1, go backward."
+  (interactive "P")
+  (let ((cf (get-text-property (point) 'face))
+        (p (point))
+        rlt
+        found
+        end)
+    (unless step (setq step 1)) ;default value
+    (setq end (if (> step 0) (point-max) (point-min)))
+    (while (and (not found) (not (= end p)))
+      (if (not (eq (get-text-property p 'face) cf))
+          (setq found t)
+        (setq p (+ p step))))
+    (if found (setq rlt (- p step))
+      (setq rlt p))
+    ;; (message "rlt=%s found=%s" rlt found)
+    (goto-char rlt)))
 ;; }}
 (provide 'init-misc)

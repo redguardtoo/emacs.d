@@ -175,6 +175,8 @@
   "aa" 'copy-to-x-clipboard ; used frequently
   "zz" 'paste-from-x-clipboard ; used frequently
   "cy" 'strip-convert-lines-into-one-big-string
+  "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
+  "es" 'goto-edge-by-comparing-font-face
   "ntt" 'neotree-toggle
   "ntf" 'neotree-find ; open file in current buffer in neotree
   "ntd" 'neotree-project-dir
