@@ -478,6 +478,16 @@ buffer is not visiting a file."
 ;; }}
 
 ;; {{ @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
+(defun font-face-is-similar (f1 f2)
+  (let (rlt)
+    ;; (message "f1=%s f2=%s" f1 f2)
+    (if (eq f1 f2) (setq rlt t)
+      ;; C++ comment has different font face for limit and content
+      ;; f1 or f2 could be a function object because of rainbow mode
+      (if (and (string-match "-comment-" (format "%s" f1)) (string-match "-comment-" (format "%s" f2)))
+          (setq rlt t)))
+    rlt))
+
 (defun goto-edge-by-comparing-font-face (&optional step)
 "Goto either the begin or end of string/comment/whatever.
 If step is -1, go backward."
@@ -490,7 +500,7 @@ If step is -1, go backward."
     (unless step (setq step 1)) ;default value
     (setq end (if (> step 0) (point-max) (point-min)))
     (while (and (not found) (not (= end p)))
-      (if (not (eq (get-text-property p 'face) cf))
+      (if (not (font-face-is-similar (get-text-property p 'face) cf))
           (setq found t)
         (setq p (+ p step))))
     (if found (setq rlt (- p step))
