@@ -89,6 +89,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; Use bookmark instead
 (require 'init-zencoding-mode)
 (require 'init-cc-mode)
+(require 'init-glsl-mode)
 (require 'init-gud)
 (require 'init-linum-mode)
 ;; (require 'init-gist)
