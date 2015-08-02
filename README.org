@@ -234,8 +234,8 @@ I don't suggest use default TAB key to expand snippet because TAB keys is used b
 ** [[http://melpa.org][MELPA]] does not include the package?
 If a package is not installable through MELPA, you can place its source code at "~/.emacs.d/site-lisp" instead. There are already some samples there.
 ** Non-English users?
-Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8". If and only if you see the "UTF-8", your locale is correct.
-** Behind Corperate firewall?
+Please make sure your locale is *UTF-8 compatible*. For example, if I type `locale` in shell, I will get the  output "zh_CN.UTF-8".
+** Behind Corporate firewall?
 In shell, input below commmand:
 #+begin_src bash
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
