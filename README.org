@@ -180,6 +180,8 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** How to setup [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
+Comment out `(require 'init-modeline)` in init.el at first.
 ** Emacs is not responsive?
 - Disable flymake by commenting out line `(flymake-mode 1)` in "~/.emacs.d/lisp/init-*.el"
 - Disable flyspell by commenting out line `(flyspell-mode 1)` in "~/.emacs.d/lisp/init-*.el"
