@@ -409,12 +409,18 @@ buffer is not visiting a file."
 ;; {{ popup functions
 (autoload 'which-function "which-func")
 (autoload 'popup-tip "popup")
+
+(defun my-which-function ()
+  ;; clean the imenu cache
+  ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
+  (setq imenu--index-alist nil)
+  (which-function))
+
 (defun popup-which-function ()
   (interactive)
-  (let ((msg (which-function)))
+  (let ((msg (my-which-function)))
     (popup-tip msg)
-    (copy-yank-str msg)
-    ))
+    (copy-yank-str msg)))
 ;; }}
 
 ;; {{ music
