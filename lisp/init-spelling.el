@@ -92,7 +92,8 @@
   (setq ispell-local-dictionary "en_US")
   (setq ispell-local-dictionary-alist
         '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8))))
- (t (setq ispell-program-name nil)))
+ (t (setq ispell-program-name nil)
+    (message "You need install either aspell or hunspell for ispell")))
 
 ;; ispell-cmd-args is useless, it's the list of *extra* command line arguments we will append to the ispell process when ispell-send-string()
 ;; ispell-extra-args is the command arguments which will *always* be used when start ispell process
@@ -123,7 +124,7 @@
 ;; Add auto spell-checking in comments for all programming language modes
 ;; if and only if there is enough memory
 ;; You can use prog-mode-hook instead.
-(unless *no-memory*
+(if (and (not *no-memory*) ispell-program-name)
   (dolist (hook '(lisp-mode-hook
                   emacs-lisp-mode-hook
                   scheme-mode-hook
