@@ -54,6 +54,78 @@
 (define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
+;; {{ file path in current line as text object,
+;;      - "vif" to select only basename
+;;      - "vaf" to select the full path
+;;  Example: "/hello/world" "/test/back.exe"
+(defun evil-filepath-extract-region ()
+  (interactive)
+  "Find the closest file path"
+  (let (rlt
+        (ch (following-char))
+        (path-chars (string-to-list "_.-/") )
+        f1 l1
+        f2 l2
+        (re-path "[^a-zA-Z0-9_.-/]\\([a-zA-Z0-9_.-/]*/[a-zA-Z0-9_.-]+\\)"))
+
+    ;; maybe (point) is in the middle of the path
+    (when (or (and (>= ch 97) (<= ch 122)) ; a-z
+              (and (>= ch 65) (<= ch 90)) ; A-Z
+              (and (>= ch 48) (<= ch 57)) ; 0-9
+              (memq ch path-chars))
+      (let (b e s)
+        (save-excursion
+          (setq b (search-backward-regexp "[^a-zA-Z0-9_.-/]" (point-min) t)))
+        (save-excursion
+          (setq e (search-forward-regexp "[^a-zA-Z0-9_.-/]" (point-max) t)))
+        (when (and b e)
+          (setq b (+ 1 b))
+          (setq e (- e 1))
+          (setq s (buffer-substring-no-properties b e))
+          (when (string-match "[a-zA-Z0-9_.-/]*/[a-zA-Z0-9_.-]+" s)
+            (setq f1 b)
+            (setq l1 (length s))))))
+
+    ;; a file path is a string contains "/"
+    (unless f1
+      (save-excursion
+        (setq f1 (search-backward-regexp re-path (point-min) t))
+        (setq l1 (length (match-string 1))))
+      (save-excursion
+        (setq f2 (search-forward-regexp re-path (point-max) t))
+        (setq l2 (length (match-string 1))))
+
+      ;; from now on, we use f1,l1
+      (if (> (- (point) (+ f1 l1)) (- (- f2 l2) (point)))
+          (setq f1 (- f2 l2)
+                l1 l2)
+        (setq f1 (+ f1 1))))
+
+    (if (and f1 l1)
+        (setq rlt (list f1
+                        (save-excursion
+                          (goto-char (+ f1 l1))
+                          (search-backward "/")
+                          (+ 1 (point)))
+                        (+ f1 l1 -1))))
+    rlt))
+
+(evil-define-text-object evil-filepath-inner-text-object (&optional count begin end type)
+  "File name of nearby path"
+  (let ((selected-region (evil-filepath-extract-region)))
+    (if selected-region
+        (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
+
+(evil-define-text-object evil-filepath-outer-text-object (&optional NUM begin end type)
+  "Nearby path"
+  (let ((selected-region (evil-filepath-extract-region)))
+    (if selected-region
+        (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
+
+(define-key evil-inner-text-objects-map "f" 'evil-filepath-inner-text-object)
+(define-key evil-outer-text-objects-map "f" 'evil-filepath-outer-text-object)
+;; }}
+
 ;; {{ https://github.com/syl20bnr/evil-escape
 (require 'evil-escape)
 (setq-default evil-escape-delay 0.2)
