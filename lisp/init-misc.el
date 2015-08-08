@@ -487,6 +487,11 @@ buffer is not visiting a file."
 (defun font-face-is-similar (f1 f2)
   (let (rlt)
     ;; (message "f1=%s f2=%s" f1 f2)
+    ;; in emacs-lisp-mode, the '^' from "^abde" has list of faces:
+    ;;   (font-lock-negation-char-face font-lock-string-face)
+    (if (listp f1) (setq f1 (nth 1 f1)))
+    (if (listp f2) (setq f2 (nth 1 f2)))
+
     (if (eq f1 f2) (setq rlt t)
       ;; C++ comment has different font face for limit and content
       ;; f1 or f2 could be a function object because of rainbow mode
