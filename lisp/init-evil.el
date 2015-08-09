@@ -54,60 +54,92 @@
 (define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
-;; {{ file path in current line as text object,
+;; {{ nearby file path as text object,
 ;;      - "vif" to select only basename
 ;;      - "vaf" to select the full path
-;;  Example: "/hello/world" "/test/back.exe"
+;;
+;;  example: "/hello/world" "/test/back.exe"
+;;               "C:hello\\hello\\world\\test.exe" "D:blah\\hello\\world\\base.exe"
+;;
+;; tweak evil-filepath-is-nonname to re-define a path
+(defun evil-filepath-is-separator-char (ch)
+  "Check ascii table"
+  (let (rlt)
+    (if (or (= ch 47)
+            (= ch 92))
+        (setq rlt t))
+    rlt))
+
+(defun evil-filepath-not-path-char (ch)
+  "Check ascii table for charctater "
+  (let (rlt)
+    (if (or (and (<= 0 ch) (<= ch 44))
+            (and (<= 59 ch) (<= ch 63))
+            (= 127 ch))
+        (setq rlt t))
+    rlt))
+
+(defun evil-filepath-calculate-path (b e)
+  (let (rlt f)
+    (when (and b e)
+      (setq b (+ 1 b))
+      (when (save-excursion
+                (goto-char e)
+                (setq f (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+                (and f (>= f b)))
+        (setq rlt (list b (+ 1 f) (- e 1)))))
+    rlt))
+
+(defun evil-filepath-get-path-already-inside ()
+  (let (b e)
+    (save-excursion
+      (setq b (evil-filepath-search-forward-char 'evil-filepath-not-path-char t)))
+    (save-excursion
+      (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char)))
+    (evil-filepath-calculate-path b e)))
+
+(defun evil-filepath-search-forward-char (fn &optional backward)
+  (let (found rlt)
+    (save-excursion
+      (while (or (= (point) (if backward (point-min) (point-max)))
+                 (not (setq found (apply fn (list (following-char))))))
+        (if backward (backward-char) (forward-char)))
+      (if found (setq rlt (point))))
+    rlt))
+
 (defun evil-filepath-extract-region ()
-  (interactive)
   "Find the closest file path"
   (let (rlt
-        (ch (following-char))
-        (path-chars (string-to-list "_.-/") )
-        f1 l1
-        f2 l2
-        (re-path "[^a-zA-Z0-9_.-/]\\([a-zA-Z0-9_.-/]*/[a-zA-Z0-9_.-]+\\)"))
+        b
+        f1
+        f2)
 
-    ;; maybe (point) is in the middle of the path
-    (when (or (and (>= ch 97) (<= ch 122)) ; a-z
-              (and (>= ch 65) (<= ch 90)) ; A-Z
-              (and (>= ch 48) (<= ch 57)) ; 0-9
-              (memq ch path-chars))
-      (let (b e s)
-        (save-excursion
-          (setq b (search-backward-regexp "[^a-zA-Z0-9_.-/]" (point-min) t)))
-        (save-excursion
-          (setq e (search-forward-regexp "[^a-zA-Z0-9_.-/]" (point-max) t)))
-        (when (and b e)
-          (setq b (+ 1 b))
-          (setq e (- e 1))
-          (setq s (buffer-substring-no-properties b e))
-          (when (string-match "[a-zA-Z0-9_.-/]*/[a-zA-Z0-9_.-]+" s)
-            (setq f1 b)
-            (setq l1 (length s))))))
-
-    ;; a file path is a string contains "/"
-    (unless f1
+    (if (and (not (evil-filepath-not-path-char (following-char)))
+             (setq rlt (evil-filepath-get-path-already-inside)))
+        ;; maybe (point) is in the middle of the path
+        t
+      ;; need search forward AND backward to find the right path
       (save-excursion
-        (setq f1 (search-backward-regexp re-path (point-min) t))
-        (setq l1 (length (match-string 1))))
+        ;; path in backward direction
+        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+          (goto-char b)
+          (setq f1 (evil-filepath-get-path-already-inside))))
       (save-excursion
-        (setq f2 (search-forward-regexp re-path (point-max) t))
-        (setq l2 (length (match-string 1))))
+        ;; path in forward direction
+        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char))
+          (goto-char b)
+          (setq f2 (evil-filepath-get-path-already-inside))))
+      ;; pick one path as the final result
+      (cond
+       ((and f1 f2)
+        (if (> (- (point) (nth 2 f1)) (- (nth 0 f2) (point)))
+            (setq rlt f2)
+          (setq rlt f1)))
+       (f1
+        (setq rlt f1))
+       (f2
+        (setq rlt f2))))
 
-      ;; from now on, we use f1,l1
-      (if (> (- (point) (+ f1 l1)) (- (- f2 l2) (point)))
-          (setq f1 (- f2 l2)
-                l1 l2)
-        (setq f1 (+ f1 1))))
-
-    (if (and f1 l1)
-        (setq rlt (list f1
-                        (save-excursion
-                          (goto-char (+ f1 l1))
-                          (search-backward "/")
-                          (+ 1 (point)))
-                        (+ f1 l1 -1))))
     rlt))
 
 (evil-define-text-object evil-filepath-inner-text-object (&optional count begin end type)
