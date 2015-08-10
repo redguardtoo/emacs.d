@@ -73,7 +73,8 @@
 (defun evil-filepath-not-path-char (ch)
   "Check ascii table for charctater "
   (let (rlt)
-    (if (or (and (<= 0 ch) (<= ch 44))
+    (if (or (and (<= 0 ch) (<= ch 32))
+            (= ch 34) ; double quotes
             (and (<= 59 ch) (<= ch 63))
             (= 127 ch))
         (setq rlt t))
