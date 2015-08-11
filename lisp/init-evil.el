@@ -74,11 +74,18 @@
   "Check ascii table for charctater "
   (let (rlt)
     (if (or (and (<= 0 ch) (<= ch 32))
+            (= ch 96) ; `
+            (= ch 39) ; single quote
             (= ch 34) ; double quotes
             (and (<= 59 ch) (<= ch 63))
             (= 127 ch))
         (setq rlt t))
     rlt))
+
+(defun evil-filepath-char-not-placed-at-end-of-path (ch)
+  (or (= 44 ch) ; ,
+      (= 46 ch) ; .
+      ))
 
 (defun evil-filepath-calculate-path (b e)
   (let (rlt f)
@@ -96,7 +103,13 @@
     (save-excursion
       (setq b (evil-filepath-search-forward-char 'evil-filepath-not-path-char t)))
     (save-excursion
-      (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char)))
+      (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char))
+      (when e
+        (goto-char (- e 1))
+        ;; example: hello/world,
+        (if (evil-filepath-char-not-placed-at-end-of-path (following-char))
+            (setq e (- e 1)))
+        ))
     (evil-filepath-calculate-path b e)))
 
 (defun evil-filepath-search-forward-char (fn &optional backward)
