@@ -521,14 +521,7 @@
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
-;; {{ commenter
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
-;; }}
-
-;; {{ evil-jumper
-(require 'evil-jumper)
-(global-evil-jumper-mode)
-;; }}
 
 (provide 'init-evil)
