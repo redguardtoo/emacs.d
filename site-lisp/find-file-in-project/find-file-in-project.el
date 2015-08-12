@@ -239,8 +239,10 @@ This overrides variable `ffip-project-root' when set.")
 (defun ffip--create-filename-pattern-for-gnufind (keyword)
   (let ((rlt ""))
     (cond
+     ((not keyword)
+      (setq rlt ""))
      ((not ffip-filename-rules)
-      (if keyword (setq rlt (concat "-name \"*" keyword "*\"" ))))
+      (setq rlt (concat "-name \"*" keyword "*\"" )))
      (t
       (dolist (f ffip-filename-rules rlt)
         (let (tmp)
