@@ -113,11 +113,17 @@
     (evil-filepath-calculate-path b e)))
 
 (defun evil-filepath-search-forward-char (fn &optional backward)
-  (let (found rlt)
+  (let (found rlt (limit (if backward (point-min) (point-max))) out)
     (save-excursion
-      (while (or (= (point) (if backward (point-min) (point-max)))
-                 (not (setq found (apply fn (list (following-char))))))
-        (if backward (backward-char) (forward-char)))
+      (while (not out)
+        ;; for the char, exit
+        (if (setq found (apply fn (list (following-char))))
+            (setq out t)
+          ;; reach the limit, exit
+          (if (= (point) limit)
+              (setq out t)
+            ;; keep moving
+            (if backward (backward-char) (forward-char)))))
       (if found (setq rlt (point))))
     rlt))
 
