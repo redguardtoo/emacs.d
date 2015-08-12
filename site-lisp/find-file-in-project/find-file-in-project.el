@@ -4,8 +4,7 @@
 ;;   Phil Hagelberg, Doug Alcorn, and Will Farrington
 ;; Author: Phil Hagelberg, Doug Alcorn, and Will Farrington
 ;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
-;; URL: http://www.emacswiki.org/cgi-bin/wiki/FindFileInProject
-;; Git: git://github.com/technomancy/find-file-in-project.git
+;; URL: https://github.com/technomancy/find-file-in-project
 ;; Version: 3.5
 ;; Created: 2008-03-18
 ;; Keywords: project, convenience
@@ -78,7 +77,14 @@
 
 ;;; Code:
 
-(require 'cl)
+(require 'cl-lib)
+(eval-when-compile
+  (require 'cl))
+
+(defvar ffip-filename-rules
+  '(ffip-filename-identity
+    ffip-filename-dashes-to-camelcase
+    ffip-filename-camelcase-to-dashes))
 
 (defvar ffip-find-executable nil "Path of GNU find. If nil, we will find `find' path automatically")
 
@@ -100,8 +106,6 @@ May be set using .dir-locals.el. Checks each entry if set to a list.")
     ;; project misc
     "*.log"
     "bin"
-    "dist"
-    "target"
     ;; Mac
     ".DS_Store"
     ;; Ctags
@@ -182,7 +186,7 @@ This overrides variable `ffip-project-root' when set.")
                           (if (functionp ffip-project-root-function)
                               (funcall ffip-project-root-function)
                             (if (listp ffip-project-file)
-                                (some (apply-partially 'locate-dominating-file
+                                (cl-some (apply-partially 'locate-dominating-file
                                                        default-directory)
                                       ffip-project-file)
                               (locate-dominating-file default-directory
@@ -190,6 +194,64 @@ This overrides variable `ffip-project-root' when set.")
     (or project-root
         (progn (message "No project was defined for the current file.")
                nil))))
+
+(defun ffip-filename-identity (keyword)
+  " HelloWorld => [Hh]elloWorld "
+  (let (rlt
+        (c (elt keyword 0))
+        nc)
+    ;; a => 97, z => 122
+    (if (and (<= 97 c) (<= c 122)) (setq nc (- c 32)))
+    ;; A => 65, Z => 90
+    (if (and (<= 65 c) (<= c 90)) (setq nc (+ c 32)))
+    (setq rlt (replace-regexp-in-string "^[a-zA-Z]" (concat "[" (string c nc) "]") keyword t))
+    (if (and rlt ffip-debug) (message "ffip-filename-identity called. rlt=%s" rlt))
+    rlt))
+
+(defun ffip-filename-camelcase-to-dashes (keyword)
+  " HelloWorld => hello-world"
+  (let (rlt
+        (old-flag case-fold-search))
+    (setq case-fold-search nil)
+    ;; case sensitive replace
+    (setq rlt (downcase (replace-regexp-in-string "\\([a-z]\\)\\([A-Z]\\)" "\\1-\\2" keyword)))
+    (setq case-fold-search old-flag)
+
+    (if (string= rlt (downcase keyword)) (setq rlt nil))
+
+    (if (and rlt ffip-debug)
+        (message "ffip-filename-camelcase-to-dashes called. rlt=%s" rlt))
+    rlt))
+
+(defun ffip-filename-dashes-to-camelcase (keyword)
+  " hello-world => [Hh]elloWorld "
+  (let (rlt)
+    (setq rlt (mapconcat '(lambda (s) (capitalize s)) (split-string keyword "-") ""))
+
+    (if (string= rlt (capitalize keyword)) (setq rlt nil)
+      (setq rlt (ffip-filename-identity rlt)))
+
+    (if (and rlt ffip-debug)
+        (message "ffip-filename-dashes-to-camelcase called. rlt=%s" rlt))
+
+    rlt))
+
+(defun ffip--create-filename-pattern-for-gnufind (keyword)
+  (let ((rlt ""))
+    (cond
+     ((not ffip-filename-rules)
+      (if keyword (setq rlt (concat "-name \"*" keyword "*\"" ))))
+     (t
+      (dolist (f ffip-filename-rules rlt)
+        (let (tmp)
+          (setq tmp (funcall f keyword))
+          (when tmp
+            (setq rlt (concat rlt (unless (string= rlt "") " -o") " -name \"*" tmp "*\"")))))
+      (unless (string= "" rlt)
+        (setq rlt (concat "\\(" rlt " \\)")))
+      ))
+    (if ffip-debug (message "ffip--create-filename-pattern-for-gnufind called. rlt=%s" rlt))
+    rlt))
 
 (defun ffip--guess-gnu-find ()
   (let ((rlt "find"))
@@ -209,15 +271,14 @@ This overrides variable `ffip-project-root' when set.")
           (setq rlt "e:\\\\cygwin\\\\bin\\\\find"))))
     rlt))
 
-(defun ffip-join-patterns ()
+(defun ffip--join-patterns (patterns)
   "Turn `ffip-patterns' into a string that `find' can use."
   (if ffip-patterns
-      (format "\\( %s \\)"
-              (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
-                         ffip-patterns " -or "))
+      (format "\\( %s \\)" (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
+                         patterns " -or "))
     ""))
 
-(defun ffip-prune-patterns ()
+(defun ffip--prune-patterns ()
   "Turn `ffip-prune-patterns' into a string that `find' can use."
   (mapconcat (lambda (pat) (format "-name \"%s\"" pat))
              ffip-prune-patterns " -or "))
@@ -257,9 +318,9 @@ directory they are found in so that they are unique."
     ;; make the prune pattern more general
     (setq cmd (format "%s . \\( %s \\) -prune -o -type f %s %s %s %s -print %s"
                       (if ffip-find-executable ffip-find-executable (ffip--guess-gnu-find))
-                      (ffip-prune-patterns)
-                      (ffip-join-patterns)
-                      (if keyword (concat "-name \"*" keyword "*\"") "")
+                      (ffip--prune-patterns)
+                      (ffip--join-patterns ffip-patterns)
+                      (ffip--create-filename-pattern-for-gnufind keyword)
                       (if (and NUM (> NUM 0)) (format "-mtime -%d" NUM) "")
                       ffip-find-options
                       (ffip-limit-find-results)))
