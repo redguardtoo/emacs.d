@@ -206,17 +206,15 @@ Those packages are placed at "~/.emacs.d/site-lisp".
 
 They will not be upgraded through ELPA automatically unless you delete corresponding folders at "~/.emacs.d/site-lisp".
 ** Customize global variables
-Some variables are hard coded in this setup so you cannot "M-x customize" to modify them.
+Some variables are hard coded so you cannot "M-x customize" to modify them.
 
-So you have to modify it by tweaking Emacs Lisp code.
-
-Here are the steps:
-- Find the variable description by "M-x customize". The description is "Company Clang Insert Arguments", for example
-- Search text "company-clang-insert-argument" in files in ~/.emacs.d/lisp/
-- Find "init-company.el" and modify company-clang-insert-argument's value
+Here are the steps to change their values:
+- Find the variable description by "M-x customize".
+- For text "Company Clang Insert Arguments", search "company-clang-insert-argument" in ~/.emacs.d/lisp/
+- You will find "init-company.el" and modify company-clang-insert-argument's value
 
 BTW, please *read my comments* above the code at first.
-# ** Open file with Ido
+** Open file with Ido
 If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
 
 You can keep pressing `C-f` to ignore the completions and input path manually.
