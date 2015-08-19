@@ -74,10 +74,17 @@
   "Check ascii table for charctater "
   (let (rlt)
     (if (or (and (<= 0 ch) (<= ch 32))
-            (= ch 96) ; `
-            (= ch 39) ; single quote
             (= ch 34) ; double quotes
-            (and (<= 59 ch) (<= ch 63))
+            (= ch 39) ; single quote
+            (= ch 40) ; (
+            (= ch 41) ; )
+            (= ch 60) ; <
+            (= ch 62) ; >
+            (= ch 91) ; [
+            (= ch 93) ; ]
+            (= ch 96) ; `
+            (= ch 123) ; {
+            (= ch 125) ; }
             (= 127 ch))
         (setq rlt t))
     rlt))
