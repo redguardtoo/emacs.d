@@ -530,10 +530,8 @@
   "xvl" 'vc-print-log
   "xvb" 'git-messenger:popup-message
   "xv=" 'git-gutter:popup-hunk
-  "ps" 'my-goto-previous-section
-  "ns" 'my-goto-next-section
-  "pp" 'my-goto-previous-hunk
   "nn" 'my-goto-next-hunk
+  "pp" 'my-goto-previous-hunk
   "xnn" 'narrow-or-widen-dwim
   "xnw" 'widen
   "xnd" 'narrow-to-defun

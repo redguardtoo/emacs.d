@@ -135,22 +135,22 @@
     ))
 
 
-;; {{ goto next/previous hunk/section
-(defun my-goto-next-section (arg)
-  (interactive "p")
-  (git-gutter:next-hunk arg))
-
-(defun my-goto-previous-section (arg)
-  (interactive "p")
-  (git-gutter:previous-hunk arg))
-
+;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
   (interactive "p")
-  (git-gutter:next-hunk arg))
+  (forward-line)
+  (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
+      (goto-char (line-beginning-position))
+    (forward-line -1)
+    (git-gutter:next-hunk arg)))
 
 (defun my-goto-previous-hunk (arg)
   (interactive "p")
-  (git-gutter:previous-hunk arg))
+  (forward-line -1)
+  (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
+      (goto-char (line-beginning-position))
+    (forward-line -1)
+    (git-gutter:previous-hunk arg)))
 
 ;; {{ git-messenger
 (autoload 'git-messenger:popup-message "git-messenger" "" t)
