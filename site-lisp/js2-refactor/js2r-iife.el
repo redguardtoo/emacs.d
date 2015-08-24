@@ -1,3 +1,27 @@
+;;; js2r-iife.el --- IIFE wrapping functions for js2-refactor
+
+;; Copyright (C) 2012-2014 Magnar Sveen
+;; Copyright (C) 2015 Magnar Sveen and Nicolas Petton
+
+;; Author: Magnar Sveen <magnars@gmail.com>,
+;;         Nicolas Petton <nicolas@petton.fr>
+;; Keywords: conveniences
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
 (defvar js2r--iife-regexp "^(function (")
 
 (defun js2r-wrap-buffer-in-iife ()
@@ -62,3 +86,4 @@
       (replace-string name short t beg end))))
 
 (provide 'js2r-iife)
+;;; js2-iife.el ends here

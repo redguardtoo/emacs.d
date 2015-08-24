@@ -486,6 +486,34 @@
   "jde" 'js2-display-error-list
   "jte" 'js2-mode-toggle-element
   "jtf" 'js2-mode-toggle-hide-functions
+  "jjeo" 'js2r-expand-object
+  "jjco" 'js2r-contract-object
+  "jjeu" 'js2r-expand-function
+  "jjcu" 'js2r-contract-function
+  "jjea" 'js2r-expand-array
+  "jjca" 'js2r-contract-array
+  "jjwi" 'js2r-wrap-buffer-in-iife
+  "jjig" 'js2r-inject-global-in-iife
+  "jjev" 'js2r-extract-var
+  "jjiv" 'js2r-inline-var
+  "jjrv" 'js2r-rename-var
+  "jjvt" 'js2r-var-to-this
+  "jjag" 'js2r-add-to-globals-annotation
+  "jjsv" 'js2r-split-var-declaration
+  "jjss" 'js2r-split-string
+  "jjef" 'js2r-extract-function
+  "jjem" 'js2r-extract-method
+  "jjip" 'js2r-introduce-parameter
+  "jjlp" 'js2r-localize-parameter
+  "jjtf" 'js2r-toggle-function-expression-and-declaration
+  "jjao" 'js2r-arguments-to-object
+  "jjuw" 'js2r-unwrap
+  "jjwl" 'js2r-wrap-in-for-loop
+  "jj3i" 'js2r-ternary-to-if
+  "jjlt" 'js2r-log-this
+  "jjsl" 'js2r-forward-slurp
+  "jjba" 'js2r-forward-barf
+  "jjk" 'js2r-kill
   "xh" 'mark-whole-buffer
   "xk" 'ido-kill-buffer
   "xs" 'save-buffer

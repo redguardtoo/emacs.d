@@ -1,10 +1,32 @@
-(require 'cl)
+;;; js2r-functions.el --- Function manipulation functions for js2-refactor
+
+;; Copyright (C) 2012-2014 Magnar Sveen
+;; Copyright (C) 2015 Magnar Sveen and Nicolas Petton
+
+;; Author: Magnar Sveen <magnars@gmail.com>,
+;;         Nicolas Petton <nicolas@petton.fr>
+;; Keywords: conveniences
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
 (require 'dash)
 (require 'yasnippet)
 
-;; Turn parameter into local var in local function
-
 (defun js2r-localize-parameter ()
+  "Turn parameter into local var in local function."
   (interactive)
   (js2r--guard)
   (if (js2-name-node-p (js2-node-at-point))
@@ -14,13 +36,13 @@
 (defun js2r--localize-parameter-push ()
   (let* ((node (js2-node-at-point))
          (arg-node (or (js2r--closest-node-where 'js2r--parent-is-call-node node)
-                       (error "Place cursor on argument to localize.")))
+                       (error "Place cursor on argument to localize")))
          (call-node (js2-node-parent arg-node))
          (value (js2-node-string arg-node))
          (target (js2-call-node-target call-node))
          (fn (if (js2-name-node-p target)
                  (js2r--local-fn-from-name-node target)
-               (error "Can only localize parameter for local functions.")))
+               (error "Can only localize parameter for local functions")))
          (usages (js2r--function-usages fn))
          (index (car (--keep (when (eq arg-node it) it-index)
                              (js2-call-node-args call-node))))
@@ -31,11 +53,11 @@
   (let* ((name-node (js2-node-at-point))
          (name (if (js2-name-node-p name-node)
                    (js2-name-node-name name-node)
-                 (error "Place cursor on parameter to localize.")))
-         (fn (or (js2r--closest-node-where 'js2r--is-local-function name-node)
-                 (error "Can only localize parameter in local functions.")))
+                 (error "Place cursor on parameter to localize")))
+         (fn (or (js2r--closest-node-where #'js2r--is-local-function name-node)
+                 (error "Can only localize parameter in local functions")))
          (index (or (js2r--param-index-for name fn)
-                    (error "%S isn't a parameter to this function." name)))
+                    (error "%S isn't a parameter to this function" name)))
          (usages (js2r--function-usages fn))
          (examples (-distinct (--map (js2r--argument index it) usages)))
          (value (js2r--choose-one "Value: " examples)))
@@ -56,8 +78,8 @@
 (defun js2r--local-fn-from-name-node (name-node)
   (->> name-node
     (js2r--local-usages-of-name-node)
-    (-map 'js2-node-parent)
-    (-first 'js2-function-node-p)))
+    (-map #'js2-node-parent)
+    (-first #'js2-function-node-p)))
 
 (defun js2r--param-index-for (name fn)
   (car (--keep (when (equal name (js2-name-node-name it)) it-index)
@@ -87,38 +109,37 @@
         (completing-read prompt examples)
       (car examples))))
 
-;; Introduce parameter in local function
-
 (defun js2r-introduce-parameter ()
+  "Introduce a parameter in a local function."
   (interactive)
   (js2r--guard)
   (if (use-region-p)
       (js2r--introduce-parameter-between (region-beginning) (region-end))
-    (let ((node (js2r--closest 'js2r--expression-p)))
+    (let ((node (js2r--closest-extractable-node)))
       (js2r--introduce-parameter-between (js2-node-abs-pos node)
                                          (js2-node-abs-end node)))))
 
 (defun js2r--introduce-parameter-between (beg end)
   (unless (js2r--single-complete-expression-between-p beg end)
-    (error "Can only introduce single, complete expressions as parameter."))
+    (error "Can only introduce single, complete expressions as parameter"))
 
-  (let ((fn (js2r--closest-node-where 'js2r--is-local-function (js2-node-at-point))))
+  (let ((fn (js2r--closest-node-where #'js2r--is-local-function (js2-node-at-point))))
     (unless fn
-      (error "Can only introduce parameter in local functions."))
+      (error "Can only introduce parameter in local functions"))
     (save-excursion
       (let ((name (read-string "Parameter name: "))
             (val (buffer-substring beg end))
             (usages (js2r--function-usages fn)))
         (goto-char beg)
         (save-excursion
-          (-each usages (-partial 'js2r--add-parameter val)))
+          (-each usages (-partial #'js2r--add-parameter val)))
         (delete-char (- end beg))
         (insert name)
         (js2r--add-parameter name fn)
         (query-replace val name nil (js2-node-abs-pos fn) (js2r--fn-body-end fn))))))
 
 (defun js2r--function-usages (fn)
-  (-map 'js2-node-parent (js2r--function-usages-name-nodes fn)))
+  (-map #'js2-node-parent (js2r--function-usages-name-nodes fn)))
 
 (defun js2r--function-usages-name-nodes (fn)
   (let ((name-node (or (js2-function-node-name fn)
@@ -173,9 +194,8 @@
          (not (js2-var-init-node-p parent))
          (not (js2-object-prop-node-p parent)))))
 
-;; Change from a list of arguments to a parameter object
-
 (defun js2r-arguments-to-object ()
+  "Change from a list of arguments to a parameter object."
   (interactive)
   (js2r--guard)
   (let ((node (js2-node-at-point)))
@@ -183,7 +203,7 @@
                  (or (js2-function-node-p node)
                      (js2-call-node-p node)
                      (js2-new-node-p node)))
-      (error "Place point right before the opening paren in the call or function."))
+      (error "Place point right before the opening paren in the call or function"))
 
     (-when-let* ((target (js2r--node-target node))
                  (fn (and (js2-name-node-p target)
@@ -196,7 +216,7 @@
 (defun js2r--arguments-to-object-for-function (function-node)
   (let ((params (js2-function-node-params function-node)))
     (when (null params)
-      (error "No params to convert."))
+      (error "No params to convert"))
     (save-excursion
       (js2r--execute-changes
        (-concat
@@ -214,13 +234,13 @@
                                                  params))
                (local-param-name-usages (--remove (js2-function-node-p (js2-node-parent it))
                                                   local-param-name-nodes))
-               (local-param-name-positions (-map 'js2-node-abs-pos local-param-name-usages)))
+               (local-param-name-positions (-map #'js2-node-abs-pos local-param-name-usages)))
           (--map
            (list :beg it :end it :contents "params.")
            local-param-name-positions))
 
         ;; update usages of function
-        (let ((names (-map 'js2-name-node-name params))
+        (let ((names (-map #'js2-name-node-name params))
               (usages (js2r--function-usages function-node)))
           (--map
            (js2r--changes/arguments-to-object it names)
@@ -234,7 +254,7 @@
 
 (defun js2r--arguments-to-object-for-args-with-unknown-function (args)
   (when (null args)
-    (error "No arguments to convert."))
+    (error "No arguments to convert"))
   (let ((names (--map-indexed
                 (format "${%d:%s}"
                         (1+ it-index)
@@ -259,46 +279,46 @@
                                               (js2-node-abs-end arg))))))
     (concat "({\n" (substring result 0 -2) "\n})")))
 
-;; Extract Function and Extract Method
-
 (defun js2r-extract-function (name)
+  "Extract a function from the closest statement expression from the point."
   (interactive "sName of new function: ")
   (js2r--extract-fn
    name
-   #'(lambda ()
+   (lambda ()
        (unless (js2r--looking-at-function-declaration)
-         (goto-char (js2-node-abs-pos (js2r--closest 'js2-expr-stmt-node-p)))))
+         (goto-char (js2-node-abs-pos (js2r--closest #'js2-expr-stmt-node-p)))))
    "%s(%s);"
    "function %s(%s) {\n%s\n}\n\n"))
 
 (defun js2r-extract-method (name)
+  "Extract a method from the closest statement expression from the point."
   (interactive "sName of new method: ")
   (js2r--extract-fn
    name
-   #'(lambda ()
-       (goto-char (js2-node-abs-pos (js2r--closest 'js2-object-prop-node-p))))
+   (lambda ()
+       (goto-char (js2-node-abs-pos (js2r--closest #'js2-object-prop-node-p))))
    "this.%s(%s);"
    "%s: function (%s) {\n%s\n},\n\n"))
 
 (defun js2r--extract-fn (name goto-position call-template function-template)
   (js2r--guard)
   (unless (use-region-p)
-    (error "Mark the expressions to extract first."))
+    (error "Mark the expressions to extract first"))
   (save-excursion
     (let* ((parent (js2r--first-common-ancestor-in-region (region-beginning) (region-end)))
-           (block (js2r--closest-node-where 'js2-block-node-p parent))
-           (fn (js2r--closest-node-where 'js2-function-node-p block))
+           (block (js2r--closest-node-where #'js2-block-node-p parent))
+           (fn (js2r--closest-node-where #'js2-function-node-p block))
            (exprs (js2r--marked-expressions-in-block block))
-           (vars (-mapcat 'js2r--name-node-decendants exprs))
+           (vars (-mapcat #'js2r--name-node-decendants exprs))
            (local (--filter (js2r--local-to-fn-p fn it) vars))
            (names (-distinct (-map 'js2-name-node-name local)))
-           (declared-in-exprs (-map 'js2r--var-init-node-target-name (-mapcat 'js2r--var-init-node-decendants exprs)))
+           (declared-in-exprs (-map #'js2r--var-init-node-target-name (-mapcat #'js2r--var-init-node-decendants exprs)))
            (outside-exprs (-difference (js2-block-node-kids block) exprs))
-           (outside-var-uses (-map 'js2-name-node-name (-mapcat 'js2r--name-node-decendants outside-exprs)))
+           (outside-var-uses (-map #'js2-name-node-name (-mapcat #'js2r--name-node-decendants outside-exprs)))
            (declared-in-but-used-outside (-intersection declared-in-exprs outside-var-uses))
            (export-var (car declared-in-but-used-outside))
            (params (-difference names declared-in-exprs))
-           (params-string (mapconcat 'identity (reverse params) ", "))
+           (params-string (mapconcat #'identity (reverse params) ", "))
            (first (car exprs))
            (last (car (last exprs)))
            (beg (js2-node-abs-pos (car exprs)))
@@ -324,14 +344,14 @@
 
 (defun js2r--function-around-region ()
   (or
-   (js2r--closest-node-where 'js2-function-node-p
+   (js2r--closest-node-where #'js2-function-node-p
                              (js2r--first-common-ancestor-in-region
                               (region-beginning)
                               (region-end)))
    (error "This only works when you mark stuff inside a function")))
 
 (defun js2r--marked-expressions-in-block (fn)
-  (-select 'js2r--node-is-marked (js2-block-node-kids fn)))
+  (-select #'js2r--node-is-marked (js2-block-node-kids fn)))
 
 (defun js2r--node-is-marked (node)
   (and
@@ -339,15 +359,15 @@
    (>= (region-end) (js2-node-abs-pos node))))
 
 (defun js2r--name-node-decendants (node)
-  (-select 'js2-name-node-p (js2r--decendants node)))
+  (-select #'js2-name-node-p (js2r--decendants node)))
 
 (defun js2r--var-init-node-decendants (node)
-  (-select 'js2-var-init-node-p (js2r--decendants node)))
+  (-select #'js2-var-init-node-p (js2r--decendants node)))
 
 (defun js2r--decendants (node)
   (let (vars)
     (js2-visit-ast node
-                   '(lambda (node end-p)
+                   (lambda (node end-p)
                       (unless end-p
                         (setq vars (cons node vars)))))
     vars))
@@ -367,7 +387,7 @@
     (cond
      ((js2r--looking-at-var-function-expression) (js2r--transform-function-expression-to-declaration))
      ((js2r--looking-at-function-declaration) (js2r--transform-function-declaration-to-expression))
-     (t (error "Can only toggle between function declarations and free standing function expressions.")))))
+     (t (error "Can only toggle between function declarations and free standing function expressions")))))
 
 (defun js2r--find-closest-function ()
   (end-of-line)
@@ -412,3 +432,4 @@
     (insert ";")))
 
 (provide 'js2r-functions)
+;;; js2-functions.el ends here

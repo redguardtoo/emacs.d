@@ -183,9 +183,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
                (save-excursion
                  (imenu--generic-function js2-imenu-extra-generic-expression)))
          (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
-         ad-return-value))
-     (require 'js2-refactor)
-     (js2r-add-keybindings-with-prefix "C-c C-m")))
+         ad-return-value))))
 ;; }}
 
 (defun my-js2-mode-setup()
@@ -197,6 +195,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
     (setenv "NODE_NO_READLINE" "1")
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
+    (require 'js2-refactor)
+    (js2-refactor-mode 1)
     (flymake-mode -1)
     (require 'js-doc)
     (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)

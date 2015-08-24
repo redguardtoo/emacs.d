@@ -1,3 +1,27 @@
+;;; js2r-paredit.el --- Paredit-like extensions for js2-refactor
+
+;; Copyright (C) 2012-2014 Magnar Sveen
+;; Copyright (C) 2015 Magnar Sveen and Nicolas Petton
+
+;; Author: Magnar Sveen <magnars@gmail.com>,
+;;         Nicolas Petton <nicolas@petton.fr>
+;; Keywords: conveniences
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
 (require 'dash)
 
 (defun js2r--nesting-node-p (node)
@@ -32,12 +56,21 @@ function foo() {|2 + 3} -> function foo() {}
 
 (defun js2r--kill-line ()
   "Kill a line, but respecting node boundaries."
-  (let ((node (js2-node-at-point)))
+  (let ((node (js2r--next-node)))
     (cond
      ((js2-comment-node-p node) (kill-line))
      ((js2-string-node-p node) (js2r--kill-line-in-string))
      (t (js2r--kill-line-in-sexp))))
   (js2r--cleanup-after-kill))
+
+(defun js2r--next-node ()
+  "Return the node at point, or the node after the point if the
+  point is at the exact end of a node."
+  (save-excursion
+    (when (= (js2-node-abs-end (js2-node-at-point))
+             (point))
+      (forward-char 1))
+    (js2-node-at-point)))
 
 (defun js2r--cleanup-after-kill ()
   (while (looking-at ";")
@@ -108,8 +141,8 @@ When at the beginning of the node, kill from outside of it."
         (js2r--kill-line-in-sexp)
       (kill-region beg (1- node-end)))))
 
-(defun js2r-forward-slurp ()
-  (interactive)
+(defun js2r-forward-slurp (&optional arg)
+  (interactive "p")
   (js2r--guard)
   (let* ((nesting (js2r--closest 'js2r--nesting-node-p))
          (standalone (if (js2r--standalone-node-p nesting)
@@ -117,7 +150,15 @@ When at the beginning of the node, kill from outside of it."
                        (js2-node-parent-stmt nesting)))
          (next-sibling (js2-node-next-sibling standalone))
          (beg (js2-node-abs-pos next-sibling))
-         (end (1+ (js2-node-abs-end next-sibling))) ;; include whitespace after statement
+         (last-sibling (if (wholenump arg)
+                           (let ((num arg)
+                                 (iter-sibling next-sibling))
+                             (while (> num 1) ;; Do next-sibling arg nbr of times
+                               (setq iter-sibling (js2-node-next-sibling iter-sibling))
+                               (setq num (1- num)))
+                             iter-sibling)
+                         next-sibling)) ;; No optional arg. Just use next-sibling
+         (end (1+ (js2-node-abs-end last-sibling))) ;; include whitespace after statement
          (text (buffer-substring beg end)))
     (save-excursion
       (delete-region beg end)
@@ -128,8 +169,8 @@ When at the beginning of the node, kill from outside of it."
       (insert text)
       (indent-region beg end))))
 
-(defun js2r-forward-barf ()
-  (interactive)
+(defun js2r-forward-barf (&optional arg)
+  (interactive "p")
   (js2r--guard)
   (let* ((nesting (js2r--closest 'js2r--nesting-node-p))
          (standalone (if (js2r--standalone-node-p nesting)
@@ -139,8 +180,16 @@ When at the beginning of the node, kill from outside of it."
          (last-child (car (last (if (js2-if-node-p nesting)
                                     (js2-scope-kids (js2r--closest 'js2-scope-p))
                                   (js2r--node-kids nesting)))))
+         (first-barf-child (if (wholenump arg)
+                               (let ((num arg)
+                                     (iter-child last-child))
+                                 (while (> num 1) ;; Do prev-sibling arg nbr of times
+                                   (setq iter-child (js2-node-prev-sibling iter-child))
+                                   (setq num (1- num)))
+                                 iter-child)
+                             last-child)); No optional arg. Just use last-child
          (last-child-beg (save-excursion
-                           (goto-char (js2-node-abs-pos last-child))
+                           (goto-char (js2-node-abs-pos first-barf-child))
                            (skip-syntax-backward " ")
                            (while (looking-back "\n") (backward-char))
                            (point)))
@@ -153,5 +202,4 @@ When at the beginning of the node, kill from outside of it."
         (list :beg standalone-end :end standalone-end :contents text))))))
 
 (provide 'js2r-paredit)
-
 ;;; js2r-paredit.el ends here
