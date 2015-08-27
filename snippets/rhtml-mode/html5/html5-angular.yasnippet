@@ -1,10 +1,10 @@
 # -*- mode: snippet -*-
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
-# name: <html> angular+angular-ui+bootstrap
+# name: angular-ui+bootstrap+mokcup+promise
 # key: html5
 # --
 <!DOCTYPE html>
-<html ng-app="${2:$(yas/substr yas-text "[^ ]*")}">
+<html ng-app="myApp">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -23,22 +23,66 @@
     </div>
     <div ng-view></div>
     <script type="text/javascript">
-      angular.module('${2:myApp}', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']).config(['$routeProvider', function($routeProvider) {
-        $routeProvider.when('/index', {
-          templateUrl: 'main.html',
-          controller: 'MainCtrl'
-        }).otherwise({
-          redirectTo: '/index'
-        });
-      }]).run(function($httpBackend) {
-         // hack $http
-         $httpBackend.whenPOST('MY_POST_URL').respond(function(method, url, data, headers){
-           return [200, {}, {}];
+     angular.module('myApp', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']).config(['$routeProvider', function($routeProvider) {
+       $routeProvider.when('/index', {
+         template: '<div>This is main.html</div><div><button ng-click="good()">Good</button><button ng-click="bad()">Bad</button><button ng-click="helloWorld()">hello world</button></div>',
+         controller: 'MainCtrl'
+       }).otherwise({
+         redirectTo: '/index'
+       });
+     }]).run(function($httpBackend) {
+       // HTTP status: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+       // hack $http
+       $httpBackend.whenPOST('MY_POST_URL1').respond(200, {hello:'hello'});
+       $httpBackend.whenPOST('MY_POST_URL2').respond(function(method, url, data, headers){
+         return [400, {bye: 'bye'}, {}];
+       });
+       $httpBackend.whenPOST('MY_POST_URL3').respond(function(method, url, data, headers){
+         return [200, {world: 'world'}, {}];
+       });
+       $httpBackend.whenGET(/^.*/).passThrough();
+     }).controller('MainCtrl', ['$scope', '$http', function ($scope, $http) {
+       $scope.message = 'Hello World';
+
+       $scope.good = function() {
+         console.log('$scope.good called!');
+         var p = $http.post('MY_POST_URL1');
+
+         p.then(function(resp) {
+           console.log('resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
          });
-         $httpBackend.whenGET(/^.*/).passThrough();
-      }).controller('MainCtrl', ['$scope', function ($scope) {
-        $scope.message = 'Hello World';
-      }]);
+       };
+
+       $scope.bad = function() {
+         console.log('$scope.bad called!');
+         var p = $http.post('MY_POST_URL2');
+         p.then(function(resp) {
+           console.log('resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+
+       $scope.helloWorld = function() {
+         console.log('helloWorld called');
+         var p = $http.post('MY_POST_URL1');
+
+         p.then(function(resp) {
+           console.log('resp=', resp);
+           if(resp.data.hello === 'hello') {
+             // often true
+             return p.reject({hello:'reject'});
+           }
+           return $http.post('MY_POST_URL2');
+         }).then(function(resp){
+           console.log('final resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+     }]);
     </script>
   </body>
 </html>
