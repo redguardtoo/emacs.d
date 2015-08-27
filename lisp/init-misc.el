@@ -470,12 +470,8 @@ buffer is not visiting a file."
 ;; evil, my favorite
 (eval-after-load "evil"
   '(progn
-     (define-key evil-normal-state-map (kbd "gp") #'avy-goto-subword-1)
-     (define-key evil-normal-state-map (kbd "gP") #'avy-goto-line)
-     ;; press "dp" to delete to the word
-     (define-key evil-motion-state-map (kbd "p") #'avy-goto-subword-1)
-     ;; press "dl" to delete to the lin;e
-     (define-key evil-motion-state-map (kbd "P") #'avy-goto-line)
+     ;; press "d " to delete to the word
+     (define-key evil-motion-state-map (kbd "SPC") #'avy-goto-subword-1)
      (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-subword-1)))
 ;; dired
 (eval-after-load "dired"
