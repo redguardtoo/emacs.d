@@ -13,6 +13,8 @@
 (setq keyfreq-excluded-commands '(evil-next-visual-line
                                   evil-previous-visual-line
                                   evil-next-line
+                                  evil-force-normal-state
+                                  evil-exit-visual-state
                                   evil-previous-line
                                   evil-forward-char
                                   evil-backward-char
@@ -22,12 +24,23 @@
                                   evil-find-char
                                   save-buffer
                                   evil-escape-minibuffer
+                                  ivy-done
+                                  ivy-next-line
+                                  ivy-previous-line
+                                  ivy-backward-delete-char
+                                  helm-previous-line
+                                  helm-next-line
                                   minibuffer-complete
                                   minibuffer-keyboard-quit
                                   evil-normal-state
                                   evil-forward-word-begin
                                   evil-backward-word-begin
                                   evil-forward-word-end
+                                  evil-first-non-blank
+                                  evil-change-line
+                                  evil-a-WORD
+                                  evil-delete-line
+                                  evil-ex-command
                                   evil-search-word-forward
                                   evil-search-next
                                   evil-search-forward
@@ -56,16 +69,22 @@
                                   evil-delete-backward-char-and-join
                                   evil-ret
                                   evil-escape-isearch
+                                  ispell-minor-check
+                                  isearch-abort
+                                  yas-next-field-or-maybe-expand
+                                  evil-ex-delete-backward-char
                                   mwheel-scroll
                                   abort-recursive-edit
                                   quit-window
                                   forward-word
+                                  term-send-raw
                                   backward-word
                                   org-cycle
                                   org-self-insert-command
                                   org-end-of-line
                                   org-beginning-of-line
                                   org-return
+                                  org-ctrl-c-ctrl-c
                                   scroll-up-command
                                   scroll-down-command
                                   isearch-forward-regexp
