@@ -301,6 +301,8 @@
   "sc" 'shell-command
   "ee" 'eval-expression
   "aa" 'copy-to-x-clipboard ; used frequently
+  "aw" 'ace-swap-window
+  "af" 'ace-maximize-window
   "zz" 'paste-from-x-clipboard ; used frequently
   "cy" 'strip-convert-lines-into-one-big-string
   "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))

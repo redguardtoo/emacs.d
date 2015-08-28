@@ -100,7 +100,6 @@ ARCHIVE is the string name of the package archive.")
     buffer-move
     regex-tool
     csharp-mode
-    switch-window
     quack
     legalese
     htmlize
@@ -264,7 +263,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'idomenu)
 (require-package 'ggtags)
 (require-package 'buffer-move)
-(require-package 'switch-window)
+(require-package 'ace-window)
 (require-package 'cmake-mode)
 (require-package 'cpputils-cmake)
 (require-package 'flyspell-lazy)
