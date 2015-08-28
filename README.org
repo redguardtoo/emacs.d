@@ -42,9 +42,9 @@ You don't need git or network any more. All you need are only two zip files.
 
 Here are the *exact steps* to follow:
 - Remove the file "~/.emacs".
-- Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
+- Download [[https://github.com/redguardtoo/emacs.d/archive/2.0.zip]]
 - Extract its content into empty directory "~/.emacs.d" ("~" means home directory, the environment variable HOME contains the path of home directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
-- Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
+- Download [[https://github.com/redguardtoo/myelpa/archive/2.0.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
 - Uncomment below code in init-elpa.el and start Emacs now!

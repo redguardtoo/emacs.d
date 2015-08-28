@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/elpa-mirror
-;; Version: 1.1.5
+;; Version: 1.2.0
 ;; Keywords: cloud mirror elpa
 ;;
 ;; This file is not part of GNU Emacs.
@@ -28,8 +28,9 @@
 
 ;;; Commentary:
 ;;
-;;  `M-x elpamr-create-mirror-for-installed` is the only command you need run.
-;;
+;;  - `M-x elpamr-create-mirror-for-installed` to create local repository
+;;  - Insert `(setq package-archives '(("myelpa" . "~/myelpa")))` into ~/.emacs
+;;    to use that local repository
 
 ;;; Code:
 (require 'package)
@@ -292,7 +293,7 @@
 ;;;###autoload
 (defun elpamr--version ()
   (interactive)
-  (message "1.1.5"))
+  (message "1.2.0"))
 
 ;;;###autoload
 (defun elpamr-create-mirror-for-installed ()
