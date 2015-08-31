@@ -29,7 +29,7 @@
 
        $stateProvider.state('index', {
          url: "/index",
-         template: '<div>This is main.html</div><div><button ng-click="good()">Good</button><button ng-click="bad()">Bad</button><button ng-click="helloWorld()">hello world</button></div>',
+         template: '<div>This is main.html</div><div><button ng-click="good()">Good</button><button ng-click="bad()">Bad</button><button ng-click="helloWorld()">hello world</button></div><a ui-sref="state1.list">state1.list</a>',
          controller: 'IndexCtrl'
        }).state('state1', {
          url: "/state1",
