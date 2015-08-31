@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
-# name: angular-ui+angular-router+bootstrap+mokcup+promise
+# name: angularui-router+angularui-router+bootstrap+mokcup+promise+resolve
 # expand-env: ((yas-indent-line 'fixed))
 # key: html5
 # --
@@ -12,7 +12,7 @@
     <meta name="description" content="" />
     <title>Angular Sandbox (with Bootstrap)</title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-route.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-mocks.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
     <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" />
@@ -22,15 +22,27 @@
     <div class="container" ng-controller="MainCtrl">
       <h1>{{message}}</h1>
     </div>
-    <div ng-view></div>
+    <div ui-view></div>
     <script type="text/javascript">
-     angular.module('myApp', ['ui.bootstrap', 'ngRoute', 'ngMockE2E']).config(['$routeProvider', function($routeProvider) {
-       $routeProvider.when('/index', {
+     angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngMockE2E']).config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+       $urlRouterProvider.otherwise("/index");
+
+       $stateProvider.state('index', {
+         url: "/index",
          template: '<div>This is main.html</div><div><button ng-click="good()">Good</button><button ng-click="bad()">Bad</button><button ng-click="helloWorld()">hello world</button></div>',
-         controller: 'MainCtrl'
-       }).otherwise({
-         redirectTo: '/index'
+         controller: 'IndexCtrl'
+       }).state('state1', {
+         url: "/state1",
+         template: "<h1>State 1</h1><hr/><a ui-sref='state1.list'>Show List</a><div ui-view></div>"
+       }).state('state1.list', {
+         url: "/list",
+         template:"<h3>List of State 1 Items</h3><ul><li ng-repeat='item in items'>{{ item }}</li></ul>",
+         controller: function($scope) {
+           console.log('state1.list.controller called');
+           $scope.items = ["A", "List", "Of", "Items"];
+         }
        });
+
      }]).run(function($httpBackend) {
        // HTTP status: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
        // hack $http
@@ -43,19 +55,14 @@
        });
        $httpBackend.whenGET(/^.*/).passThrough();
      }).controller('MainCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
-       var deferred = $q.defer();
+       console.log('MainCtrl called');
+
        $scope.message = 'Hello World';
 
-       $scope.good = function() {
-         console.log('$scope.good called!');
-         var p = $http.post('MY_POST_URL1');
+     }]).controller('IndexCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+       console.log('IndexCtrl called');
 
-         p.then(function(resp) {
-           console.log('resp=', resp);
-         }).catch(function(reason) {
-           console.log('reason=', reason);
-         });
-       };
+       var deferred = $q.defer();
 
        $scope.bad = function() {
          console.log('$scope.bad called!');
@@ -67,16 +74,25 @@
          });
        };
 
+       $scope.good = function() {
+         console.log('$scope.good called!');
+         var p = $http.post('MY_POST_URL1');
+         p.then(function(resp) {
+           console.log('resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+
        $scope.helloWorld = function() {
          console.log('helloWorld called');
          var p = $http.post('MY_POST_URL1');
-
          p.then(function(resp) {
            console.log('resp=', resp);
            if(resp.data.hello === 'hello') {
              // often true
              deferred.reject({hello:'reject'});
-             return deferred.promise; // will jump to catch(...)
+             return deferred.promise;
            }
            return $http.post('MY_POST_URL2');
          }).then(function(resp){
@@ -89,3 +105,4 @@
     </script>
   </body>
 </html>
+
