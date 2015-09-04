@@ -13,8 +13,15 @@
 (setq keyfreq-excluded-commands
       '(
         abort-recursive-edit
+        ace-jump-done
+        ace-jump-move
+        ace-window
+        avy-goto-line
         backward-char
+        backward-kill-word
         backward-word
+        browse-kill-ring-insert-and-quit
+        browse-kill-ring-quit
         clipboard-kill-ring-save
         company-complete-common
         company-complete-number
@@ -40,6 +47,7 @@
         evil-escape-insert-state
         evil-escape-isearch
         evil-escape-minibuffer
+        evil-escape-motion-state
         evil-escape-visual-state
         evil-ex
         evil-ex-command
@@ -56,6 +64,7 @@
         evil-indent
         evil-insert
         evil-join
+        evil-jump-forward
         evil-next-line
         evil-next-visual-line
         evil-normal-state
@@ -63,6 +72,7 @@
         evil-paste-after
         evil-previous-line
         evil-previous-visual-line
+        evil-record-macro
         evil-replace
         evil-ret
         evil-scroll-page-down
@@ -75,8 +85,10 @@
         evil-visual-line
         evil-yank
         exit-minibuffer
+        ffip
         forward-char
         forward-word
+        helm-keyboard-quit
         helm-next-line
         helm-previous-line
         ido-complete
@@ -86,24 +98,33 @@
         indent-new-comment-line
         isearch-abort
         isearch-backward-regexp
+        isearch-cancel
         isearch-delete-char
         isearch-exit
         isearch-forward-regexp
         isearch-printing-char
         isearch-repeat-forward
+        isearch-ring-retreat
         ispell-minor-check
         ivy-backward-delete-char
         ivy-done
         ivy-next-line
         ivy-previous-line
+        js-mode
+        js2-line-break
         keyboard-escape-quit
         keyboard-quit
         keyfreq-mode
         keyfreq-save-now
         keyfreq-show
+        kill-sentence
+        left-char
+        right-char
         minibuffer-complete
         minibuffer-complete-and-exit
         minibuffer-keyboard-quit
+        move-beginning-of-line
+        move-end-of-line
         mwheel-scroll
         newline-and-indent
         next-history-element
@@ -112,26 +133,36 @@
         org-ctrl-c-ctrl-c
         org-cycle
         org-end-of-line
+        org-force-self-insert
         org-return
         org-self-insert-command
+        org-todo
+        package-menu-execute
         paredit-backward-delete
         paredit-backward-kill-word
         paredit-close-round
         paredit-newline
         paredit-open-round
         paredit-semicolon
+        pcomplete
         previous-history-element
         previous-line
+        push-button
         quit-window
-        save-buffer
         save-buffer
         save-buffers-kill-terminal
         scroll-down-command
         scroll-up-command
+        select-window-0
         select-window-1
         select-window-2
         select-window-3
         select-window-4
+        select-window-5
+        select-window-6
+        select-window-7
+        select-window-8
+        select-window-9
         self-insert-command
         smarter-move-beginning-of-line
         smex
@@ -141,8 +172,13 @@
         undefined ;; lambda function
         undo-tree-redo
         undo-tree-undo
+        w3m-goto-url
+        w3m-next-anchor
+        w3m-view-this-url
+        yas-compile-directory
         yas-expand
         yas-next-field-or-maybe-expand
+        yank
         ))
 
 (unless (file-exists-p (file-truename keyfreq-file))
