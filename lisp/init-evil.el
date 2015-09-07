@@ -421,8 +421,7 @@
   "rnl" 'rinari-find-log
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
-  "ss" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
-  "st" 'swiper-the-thing
+  "ss" 'swiper-the-thing ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
@@ -447,7 +446,6 @@
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
   "otl" 'org-toggle-link-display
-  "oc" 'occur
   "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
@@ -478,10 +476,6 @@
   "ri" 'yari-helm
   "vv" 'scroll-other-window
   "vu" 'scroll-other-window-up
-  "vr" 'vr/replace
-  "vq" 'vr/query-replace
-  "vm" 'vr/mc-mark
-  "js" 'w3mext-search-js-api-mdn
   "jde" 'js2-display-error-list
   "jte" 'js2-mode-toggle-element
   "jtf" 'js2-mode-toggle-hide-functions
