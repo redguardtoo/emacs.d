@@ -318,7 +318,7 @@
   "dj" 'dired-jump ;; open the dired from current file
   "ff" 'toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
-  "is" 'find-file-in-project-by-selected
+  "kk" 'find-file-in-project-by-selected
   "tm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
