@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.0.9
+;; Version: 1.2.3
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -41,6 +41,8 @@
 (define-key evil-normal-state-map "d" 'evil-delete)
 (define-key evil-normal-state-map "D" 'evil-delete-line)
 (define-key evil-normal-state-map "i" 'evil-insert)
+(define-key evil-normal-state-map (kbd "<insert>") 'evil-insert)
+(define-key evil-normal-state-map (kbd "<insertchar>") 'evil-insert)
 (define-key evil-normal-state-map "I" 'evil-insert-line)
 (define-key evil-normal-state-map "J" 'evil-join)
 (define-key evil-normal-state-map "m" 'evil-set-marker)
@@ -55,6 +57,7 @@
 (define-key evil-normal-state-map "S" 'evil-change-whole-line)
 (define-key evil-normal-state-map "x" 'evil-delete-char)
 (define-key evil-normal-state-map "X" 'evil-delete-backward-char)
+(define-key evil-normal-state-map [deletechar] 'evil-delete-char)
 (define-key evil-normal-state-map "y" 'evil-yank)
 (define-key evil-normal-state-map "Y" 'evil-yank-line)
 (define-key evil-normal-state-map "&" 'evil-ex-repeat-substitute)
@@ -138,13 +141,9 @@
 (define-key evil-window-map "\C-b" 'evil-window-bottom-right)
 (define-key evil-window-map "\C-c" 'evil-window-delete)
 (define-key evil-window-map (kbd "C-S-h") 'evil-window-move-far-left)
-(define-key evil-window-map "\C-h" 'evil-window-left)
 (define-key evil-window-map (kbd "C-S-j") 'evil-window-move-very-bottom)
-(define-key evil-window-map "\C-j" 'evil-window-down)
 (define-key evil-window-map (kbd "C-S-k") 'evil-window-move-very-top)
-(define-key evil-window-map "\C-k" 'evil-window-up)
 (define-key evil-window-map (kbd "C-S-l") 'evil-window-move-far-right)
-(define-key evil-window-map "\C-l" 'evil-window-right)
 (define-key evil-window-map "\C-n" 'evil-window-new)
 (define-key evil-window-map "\C-o" 'delete-other-windows)
 (define-key evil-window-map "\C-p" 'evil-window-mru)
@@ -336,6 +335,8 @@
 (define-key evil-visual-state-map "z=" 'ispell-word)
 (define-key evil-visual-state-map "a" evil-outer-text-objects-map)
 (define-key evil-visual-state-map "i" evil-inner-text-objects-map)
+(define-key evil-visual-state-map (kbd "<insert>") 'undefined)
+(define-key evil-visual-state-map (kbd "<insertchar>") 'undefined)
 (define-key evil-visual-state-map [remap evil-repeat] 'undefined)
 (define-key evil-visual-state-map [escape] 'evil-exit-visual-state)
 
@@ -347,6 +348,7 @@
 
 ;;; Insert state
 
+(define-key evil-insert-state-map "\C-v" 'quoted-insert)
 (define-key evil-insert-state-map "\C-k" 'evil-insert-digraph)
 (define-key evil-insert-state-map "\C-o" 'evil-execute-in-normal-state)
 (define-key evil-insert-state-map "\C-r" 'evil-paste-from-register)
@@ -358,6 +360,7 @@
 (define-key evil-insert-state-map "\C-x\C-p" 'evil-complete-previous-line)
 (define-key evil-insert-state-map "\C-t" 'evil-shift-right-line)
 (define-key evil-insert-state-map "\C-d" 'evil-shift-left-line)
+(define-key evil-insert-state-map "\C-a" 'evil-paste-last-insertion)
 (define-key evil-insert-state-map [remap delete-backward-char] 'evil-delete-backward-char-and-join)
 (define-key evil-insert-state-map [delete] 'delete-char)
 (define-key evil-insert-state-map [escape] 'evil-normal-state)
@@ -461,10 +464,13 @@
 (evil-ex-define-cmd "set-initial-state" 'evil-ex-set-initial-state)
 (evil-ex-define-cmd "show-digraphs" 'evil-ex-show-digraphs)
 (evil-ex-define-cmd "sor[t]" 'evil-ex-sort)
+(evil-ex-define-cmd "res[ize]" 'evil-ex-resize)
 
 ;; search command line
 (define-key evil-ex-search-keymap "\d" #'evil-ex-delete-backward-char)
 (define-key evil-ex-search-keymap "\C-r" 'evil-paste-from-register)
+(define-key evil-ex-search-keymap "\C-n" 'next-history-element)
+(define-key evil-ex-search-keymap "\C-p" 'previous-history-element)
 
 ;; ex command line
 (define-key evil-ex-completion-map "\d" #'evil-ex-delete-backward-char)
@@ -478,7 +484,7 @@
 (define-key evil-ex-completion-map "\C-g" 'abort-recursive-edit)
 (define-key evil-ex-completion-map "\C-k" 'evil-insert-digraph)
 (define-key evil-ex-completion-map "\C-l" 'evil-ex-completion)
-(define-key evil-ex-completion-map "\C-p" #'next-complete-history-element)
+(define-key evil-ex-completion-map "\C-p" #'previous-complete-history-element)
 (define-key evil-ex-completion-map "\C-r" 'evil-paste-from-register)
 (define-key evil-ex-completion-map "\C-n" #'next-complete-history-element)
 (define-key evil-ex-completion-map "\C-u" 'evil-delete-whole-line)
