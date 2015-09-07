@@ -65,7 +65,9 @@
   (let ((re (if (region-active-p)
                 (buffer-substring-no-properties (region-beginning) (region-end))
               (read-string "Grep pattern: ")))
-        (root (ffip-get-project-root-directory)))
+        root)
+    ;; root should be initialize here, or else emacs crash
+    (setq root (ffip-get-project-root-directory))
     (if root (vc-git-grep re "*" root))
     ))
 ;; }}
