@@ -166,6 +166,7 @@ ARCHIVE is the string name of the package archive.")
     firebelly-theme
     firecode-theme
     flatland-black-theme
+    pythonic
     flatland-theme
     flatui-theme
     gandalf-theme
@@ -297,10 +298,10 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'flx-ido)
 (require-package 'neotree)
 (require-package 'define-word)
+(require-package 'quack) ;; for scheme
 (require-package 'anaconda-mode)
 (require-package 'company-anaconda)
 
-(require-package 'quack) ;; for scheme
 
 ;; (require-package 'command-frequency)
 
