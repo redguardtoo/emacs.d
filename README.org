@@ -190,11 +190,17 @@ Other softwares may intercept the key bindings. For example, someone [[https://g
 ** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys for them.
 ** OS X user?
-Please remove bundled emacs 22 at first!
+You need remove emacs 22 bundled with freshly installed OSX:
+#+begin_src bash
+sudo rm -rf /usr/bin/emacs /usr/share/emacs
+#+end_src
 
-You may need remove the obsolete ctags/etags too.
+You need remove the obsolete ctags/etags too:
+#+begin_src bash
+sudo rm /usr/bin/ctags /usr/bin/etags
+#+end_src
 
-To find out the version of your Emacs/Ctags, please run below command in shell:
+To find out the version of your Emacs/Ctags, run below command in shell:
 #+begin_src bash
 emacs --version
 ctags --version
