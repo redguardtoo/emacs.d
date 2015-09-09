@@ -5,7 +5,7 @@
 ;; Author: Sylvain Benner <sylvain.benner@gmail.com>
 ;; Keywords: convenience editing evil
 ;; Created: 22 Oct 2014
-;; Version: 3.05
+;; Version: 3.07
 ;; Package-Requires: ((emacs "24") (evil "1.0.9"))
 ;; URL: https://github.com/syl20bnr/evil-escape
 
@@ -55,6 +55,9 @@
 ;; The delay between the two key presses can be customized with
 ;; the variable `evil-escape-delay'. Default is `0.1'.
 
+;; The key sequence can be entered in any order by setting
+;; the variable `evil-escape-unordered-key-sequence' to non nil.
+
 ;; A major mode can be excluded by adding it to the list
 ;; `evil-escape-excluded-major-modes'.
 
@@ -88,6 +91,12 @@
 (defcustom evil-escape-delay 0.1
   "Max time delay between two key presses."
   :type 'number
+  :group 'evil-escape)
+
+(defcustom evil-escape-unordered-key-sequence nil
+  "If non-nil then the key sequence can also be entered with the second
+key first."
+  :type 'boolean
   :group 'evil-escape)
 
 (defcustom evil-escape-excluded-major-modes nil
@@ -124,19 +133,24 @@ with a key sequence."
     (`replace (evil-normal-state))
     (`lisp (evil-normal-state))
     (`iedit (evil-iedit-state/quit-iedit-mode))
-    (`iedit-insert (evil-iedit-state/quit-iedit-mode))))
+    (`iedit-insert (evil-iedit-state/quit-iedit-mode))
+    (_ (evil-escape--escape-normal-state))))
 
 (defun evil-escape-pre-command-hook ()
   "evil-escape pre-command hook."
   (when (evil-escape-p)
     (let ((modified (buffer-modified-p))
           (inserted (evil-escape--insert))
+          (fkey (elt evil-escape-key-sequence 0))
           (skey (elt evil-escape-key-sequence 1))
           (evt (read-event nil nil evil-escape-delay)))
       (when inserted (evil-escape--delete))
       (set-buffer-modified-p modified)
       (cond
-       ((and (integerp evt) (char-equal evt skey))
+       ((and (integerp evt)
+             (or (char-equal evt skey)
+                 (and evil-escape-unordered-key-sequence
+                      (char-equal evt fkey))))
         (evil-escape)
         (setq this-command 'ignore))
        ((null evt))
@@ -152,7 +166,9 @@ with a key sequence."
        (not (memq major-mode evil-escape-excluded-major-modes))
        (or (not evil-escape-enable-only-for-major-modes)
            (memq major-mode evil-escape-enable-only-for-major-modes))
-       (equal (this-command-keys) (evil-escape--first-key))))
+       (or (equal (this-command-keys) (evil-escape--first-key))
+           (and evil-escape-unordered-key-sequence
+                (equal (this-command-keys) (evil-escape--second-key))))))
 
 (defun evil-escape--escape-normal-state ()
   "Escape from normal state."
@@ -192,6 +208,12 @@ with a key sequence."
   "Return the first key string in the key sequence."
   (let* ((first-key (elt evil-escape-key-sequence 0))
          (fkeystr (char-to-string first-key)))
+    fkeystr))
+
+(defun evil-escape--second-key ()
+  "Return the second key string in the key sequence."
+  (let* ((sec-key (elt evil-escape-key-sequence 1))
+         (fkeystr (char-to-string sec-key)))
     fkeystr))
 
 (defun evil-escape--insert-func ()
