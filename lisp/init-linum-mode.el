@@ -6,6 +6,7 @@
                                       shell-mode
                                       dictionary-mode
                                       erc-mode
+                                      etags-select-mode
                                       dired-mode
                                       help-mode
                                       text-mode

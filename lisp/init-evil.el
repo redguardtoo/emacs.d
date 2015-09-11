@@ -259,6 +259,8 @@
 (define-key evil-normal-state-map (kbd "M-y") 'browse-kill-ring)
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+(define-key evil-normal-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
 
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
@@ -335,7 +337,8 @@
   "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
   "yu" 'cb-get-url-from-controller
-  "ht" 'helm-etags-select ;; better than find-tag (C-])
+  "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
+  "hp" 'etags-select-find-tag
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
   "hh" 'browse-kill-ring

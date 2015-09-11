@@ -88,6 +88,8 @@
   "*etags select mode."
   :group 'etags)
 
+(defvar etags-select-confirm-before-select-digit nil)
+
 ;;;###autoload
 (defcustom etags-select-no-select-for-one-match t
   "*If non-nil, don't open the selection window if there is only one
@@ -223,7 +225,10 @@ Only works with GNU Emacs."
 found, see the `etags-select-no-select-for-one-match' variable to decide what
 to do."
   (interactive)
-  (etags-select-find (find-tag-default)))
+  ;; if region selected, use select regions as tagname
+  (etags-select-find (if (region-active-p)
+                         (buffer-substring-no-properties (region-beginning) (region-end))
+                       (find-tag-default))))
 
 ;;;###autoload
 (defun etags-select-find-tag ()
@@ -420,7 +425,9 @@ Use the C-u prefix to prevent the etags-select window from closing."
   (let ((current-point (point)) tag-num)
     (if (and etags-select-go-if-unambiguous (not (re-search-forward (concat "^" first-digit) nil t 2)))
         (setq tag-num first-digit)
-      (setq tag-num (read-from-minibuffer "Tag number? " first-digit)))
+      (setq tag-num (if etags-select-confirm-before-select-digit
+                        (read-from-minibuffer "Tag number? " first-digit)
+                      (if (string= first-digit "0") "10" first-digit))))
     (goto-char (point-min))
     (if (re-search-forward (concat "^" tag-num) nil t)
         (etags-select-goto-tag)
@@ -433,13 +440,12 @@ Use the C-u prefix to prevent the etags-select window from closing."
 (defvar etags-select-mode-map nil "'etags-select-mode' keymap.")
 (if (not etags-select-mode-map)
     (let ((map (make-keymap)))
-      (define-key map [(return)] 'etags-select-goto-tag)
-      (define-key map [(meta return)] 'etags-select-goto-tag-other-window)
-      (define-key map [(down)] 'etags-select-next-tag)
-      (define-key map [(up)] 'etags-select-previous-tag)
+      (define-key map (kbd "RET") 'etags-select-goto-tag)
+      (define-key map (kbd "SPC") 'etags-select-goto-tag-other-window)
       (define-key map "n" 'etags-select-next-tag)
       (define-key map "p" 'etags-select-previous-tag)
       (define-key map "q" 'etags-select-quit)
+      (define-key map (kbd "C-g") 'etags-select-quit)
       (define-key map "0" (lambda () (interactive) (etags-select-by-tag-number "0")))
       (define-key map "1" (lambda () (interactive) (etags-select-by-tag-number "1")))
       (define-key map "2" (lambda () (interactive) (etags-select-by-tag-number "2")))
