@@ -1,0 +1,286 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: Proof General</title>
+
+<meta name="description" content="Proof General: Proof General">
+<meta name="keywords" content="Proof General: Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<a name="Top"></a>
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<a name="Proof-General"></a>
+<h1 class="settitle">Proof General</h1>
+
+<p>This file documents version 4.2pre of <b>Proof General</b>, a
+generic Emacs interface for proof assistants.
+</p>
+<p>Proof General 4.2pre has been tested with GNU Emacs
+23.3 on Linux.  It is supplied ready to use for the proof
+assistants LEGO, Coq, Isabelle, and PhoX.  Experimental support is
+provided for several other provers.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="ProofGeneral_1.html#Preface">Preface</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                     
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_2.html#Introducing-Proof-General">1. Introducing Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_3.html#Basic-Script-Management">2. Basic Script Management</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing">3. Advanced Script Management and Editing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support">4. Unicode symbols and special layout support</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_6.html#Support-for-other-Packages">5. Support for other Packages</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_7.html#Subterm-Activation-and-Proof-by-Pointing">6. Subterm Activation and Proof by Pointing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_8.html#Graphical-Proof_002dTree-Visualization">7. Graphical Proof-Tree Visualization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_9.html#Customizing-Proof-General">8. Customizing Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_10.html#Hints-and-Tips">9. Hints and Tips</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_11.html#LEGO-Proof-General">10. LEGO Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_12.html#Coq-Proof-General">11. Coq Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_13.html#Isabelle-Proof-General">12. Isabelle Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_14.html#HOL-Light-Proof-General">13. HOL Light Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_15.html#Shell-Proof-General">14. Shell Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_16.html#Obtaining-and-Installing">A. Obtaining and Installing</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_17.html#Bugs-and-Enhancements">B. Bugs and Enhancements</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_18.html#References">References</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                  
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_19.html#History-of-Proof-General">History of Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_20.html#Function-Index">Function and Command Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_21.html#Variable-Index">Variable and User Option Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_22.html#Keystroke-Index">Keystroke Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">             
+</td></tr>
+<tr><td align="left" valign="top"><a href="ProofGeneral_23.html#Concept-Index">Concept Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+</table>
+
+<hr size="1">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

@@ -1,0 +1,7 @@
+?package(ProofGeneral):\
+  needs=X11\
+  section="Applications/Sciences/Computer science"\
+  title="Proof General"\
+  longtitle="Interface to Proof Assistants"\
+  command="/usr/bin/proofgeneral"\
+  icon="pgicon.png"

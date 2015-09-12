@@ -1,0 +1,69 @@
+Coq Proof General
+
+Originally written by  Healfdene Goguen.
+Later contributions by Patrick Loiseleur, Pierre Courtieu, 
+		       David Aspinall, Stefan Monier, Hendrik Tews
+
+Status:		supported
+Maintainer:	Pierre Courtieu
+Coq version:	8.3
+Coq homepage:	http://coq.inria.fr/
+
+===========================================================================
+
+Coq Proof General has support for Unicode Tokens, using simple character
+sequences rather than a special language of tokens.  See notes below.
+
+There is a tags program, coqtags.
+
+===========================================================================
+
+Installation notes:
+
+Check the values of coq-tags and coq-prog-name in coq.el to see that
+they correspond to the paths for coqtop and the library on your system.
+
+Install coqtags in a standard place or add <proof-home>/coq to your PATH.
+NB: You may need to change the path to perl at the top of the file.
+
+Generate a TAGS file for the library by running
+
+	coqtags `find . -name \*.v -print`
+
+in the root directory of the library, $COQTOP/theories.  
+
+
+===========================================================================
+
+Grammar for Unicode Tokens:
+
+  Symbols include sequences naming Greek letters ("Lambda", "lambda", etc),
+  connectives /\, \/, etc.  See the token list (Unicode Tokens -> List Tokens)
+  for tokens availabe --- these are just a sample set and you can add your own.
+
+  See coq-unicode-tokens.el for the tables and further instructions.
+
+  a symbol is encoded only if 
+   - preceded by _ or ' or some space or some symbol
+  **and**
+   - followed by _ or ' or some space or some symbol
+
+  Grammar for sub/superscript: 
+
+   - a double _ introduces a subscript that ends at the first space
+   - a double ^ introduces a superscript that ends at the first space
+  
+   - a , followed by { introduces a subscript expression that ends at
+     the first } (_{...} was not possible due to coq notation mechanism)
+
+   - a ^ followed by { introduces a superscript expression that ends
+     at the first }
+
+	See example-tokens.v in this directory for examples.
+
+  Please suggest any extensions/improvements on Trac, at
+  http://proofgeneral.inf.ed.ac.uk/trac/
+
+========================================
+
+README,v 11.3 2011/10/03 09:04:25 da Exp

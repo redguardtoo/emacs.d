@@ -1,0 +1,18 @@
+PhoX Proof General, for Phox.
+
+Written by Christophe Raffalli and others
+
+Status:	       supported
+Maintainer:    Christophe Raffalli <Christophe.Raffalli@univ-savoie.fr>
+PhoX version:  0.8
+PhoX homepage:  http://www.lama.univ-savoie.fr/~RAFFALLI/phox.html
+
+===========================================================================
+
+This mode has support for script management with PhoX, and some
+other features ported from PhoX's own Emacs mode.
+
+
+
+README,v 12.0 2011/10/13 10:54:51 da Exp
+

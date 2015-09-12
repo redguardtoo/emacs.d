@@ -1,0 +1,576 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 1. Introducing Proof General</title>
+
+<meta name="description" content="Proof General: 1. Introducing Proof General">
+<meta name="keywords" content="Proof General: 1. Introducing Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_1.html#Preface" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_3.html#Basic-Script-Management" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Introducing-Proof-General"></a>
+<a name="Introducing-Proof-General-1"></a>
+<h1 class="chapter">1. Introducing Proof General</h1>
+<a name="index-proof-assistant"></a>
+<a name="index-Proof-General"></a>
+
+<img src="ProofGeneral.jpg" alt="[ Proof General logo ]" >
+<p><em>Proof General</em> is a generic Emacs interface for interactive proof
+assistants,<a name="DOCF1" href="ProofGeneral_fot.html#FOOT1">(1)</a> developed at the LFCS in
+the University of Edinburgh.  
+</p>
+<p>You do not have to be an Emacs militant to use Proof General!  
+</p>
+<p>The interface is designed to be very easy to use.  You develop your
+proof script<a name="DOCF2" href="ProofGeneral_fot.html#FOOT2">(2)</a>
+ in-place rather than line-by-line and later reassembling the pieces.
+Proof General keeps track of which proof steps have been processed by
+the prover, and prevents you editing them accidently.  You can undo
+steps as usual.
+</p>
+<p>The aim of Proof General is to provide a powerful and configurable
+interface for numerous interactive proof assistants.  We target Proof
+General mainly at intermediate or expert users, so that the interface
+should be useful for large proof developments.  
+</p>
+<p>Please help us!
+</p>
+<p>Send us comments, suggestsions, or (the best) patches to improve support
+for your chosen proof assistant.  Contact us at
+<a href="http://proofgeneral.inf.ed.ac.uk/trac">http://proofgeneral.inf.ed.ac.uk/trac</a>.
+</p>
+<p>If your chosen proof assistant isn&rsquo;t supported, read the accompanying
+<i>Adapting Proof General</i> manual to find out how to configure PG for a
+new prover.  
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Installing-Proof-General">1.1 Installing Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Quick-start-guide">1.2 Quick start guide</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">           
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Features-of-Proof-General">1.3 Features of Proof General</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">   
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Supported-proof-assistants">1.4 Supported proof assistants</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Prerequisites-for-this-manual">1.5 Prerequisites for this manual</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Organization-of-this-manual">1.6 Organization of this manual</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+
+<hr size="6">
+<a name="Installing-Proof-General"></a>
+<a name="Installing-Proof-General-1"></a>
+<h2 class="section">1.1 Installing Proof General</h2>
+
+<p>If Proof General has not already been installed for you, you should 
+unpack it and insert the line:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">        (load &quot;<var>proof-general-home</var>/generic/proof-site.el&quot;)
+</pre></td></tr></table>
+<p>into your &lsquo;<tt>~/.emacs</tt>&rsquo; file, where <var>proof-general-home</var> is the
+top-level directory that was created when Proof General was unpacked.
+</p>
+<p>For much more information, See section <a href="ProofGeneral_16.html#Obtaining-and-Installing">Obtaining and Installing</a>.
+</p>
+
+<hr size="6">
+<a name="Quick-start-guide"></a>
+<a name="Quick-start-guide-1"></a>
+<h2 class="section">1.2 Quick start guide</h2>
+
+<p>Once Proof General is correctly installed, the corresponding Proof
+General mode will be invoked automatically when you visit a proof
+script file for your proof assistant, for example:
+</p>
+<table>
+<tr><td width="35%"><b>Prover</b></td><td width="30%"><b>Extensions</b></td><td width="35%"><b>Mode</b></td></tr>
+<tr><td width="35%">LEGO</td><td width="30%">&lsquo;<tt>.l</tt>&rsquo;</td><td width="35%"><code>lego-mode</code></td></tr>
+<tr><td width="35%">Coq</td><td width="30%">&lsquo;<tt>.v</tt>&rsquo;</td><td width="35%"><code>coq-mode</code></td></tr>
+<tr><td width="35%">Isabelle</td><td width="30%">&lsquo;<tt>.thy</tt>&rsquo;</td><td width="35%"><code>isar-mode</code></td></tr>
+<tr><td width="35%">Phox</td><td width="30%">&lsquo;<tt>.phx</tt>&rsquo;</td><td width="35%"><code>phox-mode</code></td></tr>
+<tr><td width="35%">HOL98</td><td width="30%">&lsquo;<tt>.sml</tt>&rsquo;</td><td width="35%"><code>hol98-mode</code></td></tr>
+<tr><td width="35%">HOL Light</td><td width="30%">&lsquo;<tt>.ml</tt>&rsquo;</td><td width="35%"><code>hol-light-mode</code></td></tr>
+<tr><td width="35%">ACL2</td><td width="30%">&lsquo;<tt>.acl2</tt>&rsquo;</td><td width="35%"><code>acl2-mode</code></td></tr>
+<tr><td width="35%">Twelf</td><td width="30%">&lsquo;<tt>.elf</tt>&rsquo;</td><td width="35%"><code>twelf-mode</code></td></tr>
+<tr><td width="35%">Plastic</td><td width="30%">&lsquo;<tt>.lf</tt>&rsquo;</td><td width="35%"><code>plastic-mode</code></td></tr>
+<tr><td width="35%">Lambda-CLAM</td><td width="30%">&lsquo;<tt>.lcm</tt>&rsquo;</td><td width="35%"><code>lclam-mode</code></td></tr>
+<tr><td width="35%">CCC</td><td width="30%">&lsquo;<tt>.ccc</tt>&rsquo;</td><td width="35%"><code>ccc-mode</code></td></tr>
+<tr><td width="35%">PG-Shell</td><td width="30%">&lsquo;<tt>.pgsh</tt>&rsquo;</td><td width="35%"><code>pgshell-mode</code></td></tr>
+</table>
+<p>(the exact list of Proof Assistants supported may vary according to the
+version of Proof General and its local configuration).  You can also
+invoke the mode command directly, e.g., type <kbd>M-x lego-mode</kbd>, to
+turn a buffer into a lego script buffer.
+</p>
+<p>You&rsquo;ll find commands to process the proof script are available from the
+toolbar, menus, and keyboard.  Type <kbd>C-h m</kbd> to get a list of the
+keyboard shortcuts for the current mode.  The commands available should
+be easy to understand, but the rest of this manual describes them in
+some detail.
+</p>
+<p>The proof assistant itself is started automatically inside Emacs as an
+&quot;inferior&quot; process when you ask for some of the proof script to be
+processed.  You can start the proof assistant manually with the
+menu command &quot;Start proof assistant&quot;.
+</p>
+<p>To follow an example use of Proof General on a Isabelle proof, 
+see section <a href="ProofGeneral_3.html#Walkthrough-example-in-Isabelle">Walkthrough example in Isabelle</a>.  If you know the syntax for proof
+scripts in another theorem prover, you can easily adapt the details 
+given there.
+</p>
+
+
+<hr size="6">
+<a name="Features-of-Proof-General"></a>
+<a name="Features-of-Proof-General-1"></a>
+<h2 class="section">1.3 Features of Proof General</h2>
+<a name="index-Features"></a>
+<a name="index-Why-use-Proof-General_003f"></a>
+
+<p>Why would you want to use Proof General?
+</p>
+
+<p>Proof General is designed to be useful for novices and expert users
+alike.  It will be useful to you if you use a proof assistant, and you&rsquo;d
+like an interface with the following features: simplified interaction,
+script management, multiple file scripting, a script editing mode, proof
+by pointing, proof-tree visualization,
+toolbar and menus, syntax highlighting, real symbols,
+functions menu, tags, and finally, adaptability.
+</p>
+<p>Here is an outline of some of these features.   Look in the contents
+page or index of this manual to find out about the others!
+</p>
+<ul>
+<li> <i>Simplified interaction</i><br>
+  Proof General is designed for proof assistants which have a
+  command-line shell interpreter.  When using Proof General, the proof
+  assistant&rsquo;s shell is hidden from the user.  Communication takes
+  place via three buffers (Emacs text widgets).
+Communication takes place via three buffers.  The <em>script
+buffer</em> holds input, the commands to construct a proof.  The <em>goals
+buffer</em> displays the current list of subgoals to be solved.  The
+<em>response buffer</em> displays other output from the proof assistant.
+By default, only two of these three buffers are displayed. 
+This means that the user normally only sees the output from the most
+recent interaction, rather than a screen full of output from the proof
+assistant.  
+
+<p>Proof General does not commandeer the proof assistant shell: the user
+still has complete access to it if necessary.
+</p>
+<p>For more details, see section <a href="ProofGeneral_3.html#Summary-of-Proof-General-buffers">Summary of Proof General buffers</a>
+and see section <a href="ProofGeneral_9.html#Display-customization">Display customization</a>.
+</p>
+
+</li><li> <i>Script management</i><br>
+Proof General colours proof script regions blue when they have 
+been processed by the prover, and colours regions red when the prover is
+currently processing them.  The appearance of Emacs buffers always
+matches the proof assistant&rsquo;s state. Coloured parts of the buffer cannot
+be edited.  Proof General has functions for <em>asserting</em> or
+<em>retracting</em> parts of a proof script, which alters the coloured
+regions.
+
+<p>For more details, see section <a href="ProofGeneral_3.html#Basic-Script-Management">Basic Script Management</a>,
+<a href="ProofGeneral_3.html#Script-processing-commands">Script processing commands</a>,
+and <a href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing">Advanced Script Management and Editing</a>.
+</p>
+</li><li> <i>Script editing mode</i><br>
+Proof General provides useful facilities for editing proof scripts,
+including syntax hilighting and a menu to jump to particular goals,
+definitions, or declarations.
+Special editing functions send lines of proof script to the proof
+assistant, or undo previous proof steps.
+
+<p>For more details, see section <a href="ProofGeneral_3.html#Script-editing-commands">Script editing commands</a>,
+and <a href="ProofGeneral_3.html#Script-processing-commands">Script processing commands</a>.
+</p>
+</li><li> <i>Proof-tree visualization</i><br>
+In cooperation with the external program Prooftree
+(available from the <a href="http://askra.de/software/prooftree/">Prooftree website</a>), Proof General can display proof trees
+graphically and provide visual information about the proof status
+of different branches in a proof. The proof-tree display provides
+additional means for inspecting the proof tree and thus helps
+against loosing track in proofs.
+
+<p>The graphical proof-tree visualization is currently only
+supported for Coq. For more details, see section <a href="ProofGeneral_8.html#Graphical-Proof_002dTree-Visualization">Graphical Proof-Tree Visualization</a>. 
+</p>
+
+</li><li> <i>Toolbar and menus</i><br>
+A script buffer has a toolbar with navigation buttons for processing
+parts of the proof script.  A menu provides further functions for
+operations in the proof assistant, as well as customization of Proof
+General.
+
+<p>For more details, see section <a href="ProofGeneral_3.html#Toolbar-commands">Toolbar commands</a>, <a href="ProofGeneral_3.html#Proof-assistant-commands">Proof assistant commands</a>, and <a href="ProofGeneral_9.html#Customizing-Proof-General">Customizing Proof General</a>.
+</p>
+</li><li> <i>Proof by pointing</i><br>
+Proof General has support for proof-by-pointing and similar features.
+Proof by pointing allows you to click on a subterm of a goal to be
+proved, and automatically apply an appropriate proof rule or tactic.
+Proof by pointing is specific to the proof assistant (and logic) in use;
+therefore it is configured mainly on the proof assistant side.  If you
+would like to see proof by pointing support for Proof General in a
+particular proof assistant, petition the developers of the proof
+assistant to provide it.
+</li></ul>
+
+
+<hr size="6">
+<a name="Supported-proof-assistants"></a>
+<a name="Supported-proof-assistants-1"></a>
+<h2 class="section">1.4 Supported proof assistants</h2>
+
+<p>Proof General comes ready-customized for several
+proof assistants, including these:
+</p>
+<ul>
+<li> 
+<b>LEGO Proof General</b> for LEGO Version 1.3.1<br>
+See section <a href="ProofGeneral_11.html#LEGO-Proof-General">LEGO Proof General</a>, for more details.
+</li><li> 
+<b>Coq Proof General</b> for Coq Version 8.2<br>
+See section <a href="ProofGeneral_12.html#Coq-Proof-General">Coq Proof General</a>, for more details.
+</li><li> 
+<b>Isabelle Proof General</b> for Isabelle2009-2<br>
+See section <a href="ProofGeneral_13.html#Isabelle-Proof-General">Isabelle Proof General</a>, and documentation supplied with
+Isabelle for more details.
+</li><li>
+<b>HOL Light Proof General</b> for HOL Light<br>
+See section <a href="ProofGeneral_14.html#HOL-Light-Proof-General">HOL Light Proof General</a>, for more details.
+</li><li>
+<b>Shell Proof General</b> for shell scripts (not really a proof assistant!)<br>
+See section <a href="ProofGeneral_15.html#Shell-Proof-General">Shell Proof General</a>, for more details.
+</li></ul>
+<p>Proof General is designed to be generic, so if you know how
+to write regular expressions, you can make:
+</p><ul>
+<li>
+<b>Your Proof General</b> for your favourite proof assistant.<br>
+For more details of how to make Proof General work
+with another proof assistant,
+see the accompanying manual <i>Adapting Proof General</i>.
+</li></ul>
+<p>The exact list of Proof Assistants supported may vary according to the
+version of Proof General you have and its local configuration; only the
+standard instances documented in this manual are listed above.
+</p>
+<p>Note that there is some variation between the features supported by
+different instances of Proof General.  The main variation is proof by
+pointing, which is only supported in LEGO at the moment.  For advanced
+features like this, some extensions to the output routines of the proof
+assistant are required, typically.  If you like Proof General, <b>please
+help us by asking the implementors of your favourite proof assistant to
+support Proof General</b> as much as possible.
+</p>
+<hr size="6">
+<a name="Prerequisites-for-this-manual"></a>
+<a name="Prerequisites-for-this-manual-1"></a>
+<h2 class="section">1.5 Prerequisites for this manual</h2>
+<a name="index-Meta"></a>
+<a name="index-Alt"></a>
+<a name="index-key-sequences"></a>
+
+<p>This manual assumes that you understand a little about using Emacs, for
+example, switching between buffers using <kbd>C-x b</kbd> and understanding
+that a key sequence like <kbd>C-x b</kbd> means &quot;control with x, followed by b&quot;.
+A key sequence like <kbd>M-z</kbd> means &quot;meta with z&quot;.  (&lt;Meta&gt; may be
+labelled &lt;Alt&gt; on your keyboard).
+</p>
+<p>The manual also assumes you have a basic understanding of your proof
+assistant and the language and files it uses for proof scripts.  But
+even without this, Proof General is not useless: you can use the
+interface to <em>replay</em> proof scripts for any proof assistant without
+knowing how to start it up or issue commands, etc.  This is the beauty
+of a common interface mechanism.
+</p>
+<p>To get more from Proof General and adapt it to your liking, it helps to
+know a little bit about how Emacs lisp packages can be customized via
+the Customization mechanism.  It&rsquo;s really easy to use.  For details,
+see section <a href="ProofGeneral_9.html#How-to-customize">How to customize</a>.  See <a href="../(emacs/_0029Customization.html#g_t_0029Customization">((emacs))Customization</a>,
+for documentation in Emacs.
+</p>
+<p>To get the absolute most from Proof General, to improve it or to adapt
+it for new provers, you&rsquo;ll need to know a little bit of Emacs lisp.
+Emacs is self-documenting, so you can begin from <kbd>C-h</kbd> and find out
+everything!  Here are some useful commands:
+</p>
+<dl compact="compact">
+<dt> <kbd>C-h i</kbd></dt>
+<dd><p><code>info</code>
+</p></dd>
+<dt> <kbd>C-h m</kbd> </dt>
+<dd><p><code>describe-mode</code>
+</p></dd>
+<dt> <kbd>C-h b</kbd> </dt>
+<dd><p><code>describe-bindings</code>
+</p></dd>
+<dt> <kbd>C-h f</kbd> </dt>
+<dd><p><code>describe-function</code>
+</p></dd>
+<dt> <kbd>C-h v</kbd> </dt>
+<dd><p><code>describe-variable</code>
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Organization-of-this-manual"></a>
+<a name="Organization-of-this-manual-1"></a>
+<h2 class="section">1.6 Organization of this manual</h2>
+
+<p>This manual covers the user-level view and customization of Proof
+General.  The accompanying <i>Adapting Proof General</i> manual considers
+adapting Proof General to new proof assistants, and documents some of
+the internals of Proof General.
+</p>
+<p>Three appendices of this manual contain some details about obtaining and
+installing Proof General and some known bugs.  The contents of these
+final chapters is also covered in the files &lsquo;<tt>INSTALL</tt>&rsquo; and
+&lsquo;<tt>BUGS</tt>&rsquo; contained in the distribution.  Refer to those files
+for the latest information.
+</p>
+<p>The manual concludes with some references and indexes.  See the table of
+contents for full details.
+</p>
+
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Introducing-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_3.html#Basic-Script-Management" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

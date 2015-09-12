@@ -1,0 +1,51 @@
+-*- outline -*-  
+
+** important: deal with different levels of the "in" keyword
+
+let x := y in      : expression
+eval x in y        : commande
+unfold x in y      : tactique
+
+
+** important: Have an option for indenting style:
+
+Current behavior:
+
+Lemma foo: forall x,
+            f x = 0.
+
+and: 
+
+functionfoo bar1 bar2
+    	    bar3
+
+
+Commonly used behavior:
+
+Lemma foo: forall x,
+  f x = 0.
+
+and
+
+functionfoo bar1 bar2
+  bar3
+
+
+** (less important) Indent correctly this:
+
+Proof with auto.
+           intro.
+
+instead of:
+
+Proof with auto.
+  intro.
+
+
+Workaroud for the moment, write the script like this:
+
+Proof with
+  auto.
+  intro.
+
+

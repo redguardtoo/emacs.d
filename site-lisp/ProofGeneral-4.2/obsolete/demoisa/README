@@ -1,0 +1,55 @@
+Example Proof General instance for Isabelle
+
+Written by David Aspinall.
+
+Status:	demonstration, only works for obsolete Isabelle versions
+
+========================================
+
+
+		"Isabelle Proof General in 30 setqs"
+
+This is a whittled down version of Isabelle Proof General, supplied as
+an (almost) minimal demonstration of how to instantiate Proof General
+to a particular proof assistant.  You can use this as a template to
+get support for a new assistant going. (I did for HOL Proof General).
+
+This mode uses the unadulterated terminal interface of Isabelle, to
+demonstrate that hacking the proof assistant is not necessary to get
+basic features working.
+
+And it really works!  You you get a toolbar, menus, short-cut keys,
+script management for multiple files, a function menu, ability to
+run proof assistant remotely, etc, etc.
+
+To try it out, set in the shell PROOFGENERAL_ASSISTANTS=demoisa
+before invoking Emacs.  (Of course, you need Isabelle installed).
+
+What's missing? 
+
+ 1. A few handy commands (e.g. proof-find-theorems-command)
+ 2. Syntax settings and highlighting for proof scripts
+ 3. Indentation for proof scripts
+ 4. Special markup characters in output for robustness 
+ 5. True script management for multiple files (automatic mode is used)
+ 6. Proof by pointing
+
+How easy is it to add all that?
+
+ 1. Trivial.  2. A table specifying syntax codes for characters
+ (strings, brackets, etc) and some regexps; depends on complexity
+ of syntax.  3. A bit of elisp to scan script; depends on
+ complexity of syntax.  4. Needs hacking in the proof assistant:
+ how hard is to hack your assistant to do this?  5. Depends on file
+ management mechanism in the prover, may need hacking there to send
+ messages. But automatic multiple files may be all you need anyway.
+ 6. Non trivial (but worth a go).
+
+See demoisa.el and demoisa-easy.el for more details.
+
+
+
+========================================
+
+README,v 12.0 2011/10/13 10:54:51 da Exp
+

@@ -1,0 +1,945 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 8. Customizing Proof General</title>
+
+<meta name="description" content="Proof General: 8. Customizing Proof General">
+<meta name="keywords" content="Proof General: 8. Customizing Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_8.html#Graphical-Proof_002dTree-Visualization" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_10.html#Hints-and-Tips" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Customizing-Proof-General"></a>
+<a name="Customizing-Proof-General-1"></a>
+<h1 class="chapter">8. Customizing Proof General</h1>
+<a name="index-Customization"></a>
+
+
+<p>There are two ways of customizing Proof General: it can be customized
+for a user&rsquo;s preferences using a particular proof assistant, or it can
+be customized by a developer to add support for a new proof assistant.
+The latter kind of customization we call instantiation, or
+<em>adapting</em>. See the <i>Adapting Proof General</i> manual for how to do
+this.  Here we cover the user-level customization for Proof General.
+</p>
+<p>There are two kinds of user-level settings in Proof General: 
+</p><ul>
+<li> Settings that apply <em>globally</em> to all proof assistants.
+</li><li> those that can be adjusted for each proof assistant <em>individually</em>.
+</li></ul>
+<p>The first sort have names beginning with <code>proof-</code>.  The second sort
+have names which begin with a symbol corresponding to the proof
+assistant: for example, <code>isa-</code>, <code>coq-</code>, etc.  The symbol is
+the root of the mode name.  See section <a href="ProofGeneral_2.html#Quick-start-guide">Quick start guide</a>, for a table of the
+supported modes.  To stand for an arbitrary proof assistant, we write
+<code><em>PA</em>-</code> for these names.
+</p>
+<p>In this chapter we only consider the generic settings: ones which apply
+to all proof assistants (globally or individually).  The support for a
+particular proof assistant may provide extra individual customization
+settings not available in other proof assistants.  See the chapters
+covering each assistant for details of those settings.
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Basic-options">8.1 Basic options</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#How-to-customize">8.2 How to customize</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">          
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Display-customization">8.3 Display customization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">       
+</td></tr>
+<tr><td align="left" valign="top"><a href="#User-options">8.4 User options</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">                
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Changing-faces">8.5 Changing faces</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Tweaking-configuration-settings">8.6 Tweaking configuration settings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Basic-options"></a>
+<a name="Basic-options-1"></a>
+<h2 class="section">8.1 Basic options</h2>
+
+<p>Proof General has some common options which you can toggle directly from
+the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   Proof-General -&gt; Quick Options
+</pre></td></tr></table>
+<p>The effect of changing one of these options will be seen immediately (or
+in the next proof step).  The window-control options
+on this menu are described shortly.  See section <a href="#Display-customization">Display customization</a>.
+</p>
+<p>To save the current settings for these options (only), use the Save
+Options command in the submenu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   Proof-General -&gt; Quick Options -&gt; Save Options
+</pre></td></tr></table>
+<p>or <code>M-x customize-save-customized</code>.
+</p>
+<p>The options on this sub-menu are also available in the complete user
+customization options group for Proof General.  For this you need
+to know a little bit about how to customize in Emacs.
+</p>
+
+<hr size="6">
+<a name="How-to-customize"></a>
+<a name="How-to-customize-1"></a>
+<h2 class="section">8.2 How to customize</h2>
+<a name="index-Using-Customize"></a>
+<a name="index-Emacs-customization-library"></a>
+
+<p>Proof General uses the Emacs customization library to provide a friendly
+interface.  You can access all the customization settings for Proof
+General via the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   Proof-General -&gt; Advanced -&gt; Customize
+</pre></td></tr></table>
+
+<p>Using the customize facility is straightforward.  You can select the
+setting to customize via the menus, or with <code>M-x
+customize-variable</code>.  When you have selected a setting, you are shown a
+buffer with its current value, and facility to edit it.  Once you have
+edited it, you can use the special buttons <var>set</var>, <var>save</var> and
+<var>done</var>.  You must use one of <var>set</var> or <var>save</var> to get any
+effect.  The <var>save</var> button stores the setting in your &lsquo;<tt>.emacs</tt>&rsquo;
+file.  The command <kbd>M-x customize-save-customized</kbd> or Emacs menubar 
+item <code>Options -&gt; Save Options</code> saves all
+settings you have edited.
+</p>
+<p>A technical note.  In the customize menus, the variable names mentioned
+later in this chapter may be abbreviated &mdash; the &quot;<code>proof</code>-&quot; or
+similar prefixes are omitted.  Also, some of the option settings may
+have more descriptive names (for example, <var>on</var> and <var>off</var>) than
+the low-level lisp values (non-<code>nil</code>, <code>nil</code>) which are
+mentioned in this chapter.  These features make customize rather more
+friendly than raw lisp.
+</p>
+<p>You can also access the customize settings for Proof General from
+other (non-script) buffers.  Use the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   Options -&gt; Customize Emacs -&gt; Top-level Customization Group
+</pre></td></tr></table>
+<p>and select the <code>External</code> and then <code>Proof-General</code> groups.
+</p>
+<p>The complete set of customization settings will only be available after
+Proof General has been fully loaded.  Proof General is fully loaded when
+you visit a script file for the first time, or if you type <kbd>M-x
+load-library RET proof RET</kbd>.
+</p>
+<p>For more help with customize, see See <a href="../(emacs/_0029Customization.html#g_t_0029Customization">((emacs))Customization</a>.
+</p>
+
+
+<hr size="6">
+<a name="Display-customization"></a>
+<a name="Display-customization-1"></a>
+<h2 class="section">8.3 Display customization</h2>
+<a name="index-display-customization"></a>
+<a name="index-multiple-windows"></a>
+<a name="index-buffer-display-customization"></a>
+<a name="index-frames"></a>
+<a name="index-multiple-frames"></a>
+<a name="index-three_002dbuffer-interaction"></a>
+<a name="index-auto-raise"></a>
+
+<p>By default, Proof General displays two buffers during scripting, in a
+split window on the display.  One buffer is the script buffer.  The
+other buffer is either the goals buffer (<code>*goals*</code>) or the response
+buffer (<code>*response*</code>).  Proof General raises and switches between
+these last two automatically.  
+</p>
+<p>Proof General allows several ways to customize this default display
+model, by splitting the Emacs frames in different ways and maximising
+the amount of information shown, or by using multiple frames.
+The customization options are explained below; they are also available 
+on the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  Proof-General -&gt; Quick Options -&gt; Display
+</pre></td></tr></table>
+<p>and you can save your preferred default. 
+</p>
+<p>If your screen is large enough, you may prefer to display all three of
+the interaction buffers at once.  This is useful, for example, to see
+output from the <code>proof-find-theorems</code> command at the same time as
+the subgoal list.  Set the user option <code>proof-three-window-enable</code> to
+make Proof General keep both the goals and response buffer displayed.
+</p>
+<p>If you prefer to switch windows and buffers manually when you want to
+see the prover output, you can customize the user option
+<code>proof-auto-raise-buffers</code> to prevent the automatic behaviour.
+You can browse interaction output by hovering the mouse over the
+command regions in the proof script.
+</p>
+<dl>
+<dt><a name="index-proof_002dauto_002draise_002dbuffers"></a><u>User Option:</u> <b>proof-auto-raise-buffers</b></dt>
+<dd><p>If non-nil, automatically raise buffers to display latest output.<br>
+If this is not set, buffers and windows will not be managed by
+Proof General.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dthree_002dwindow_002denable"></a><u>User Option:</u> <b>proof-three-window-enable</b></dt>
+<dd><p>Whether response and goals buffers have dedicated windows.<br>
+If non-nil, Emacs windows displaying messages from the prover will not
+be switchable to display other windows.
+</p>
+<p>This option can help manage your display.
+</p>
+<p>Setting this option triggers a three-buffer mode of interaction where
+the goals buffer and response buffer are both displayed, rather than
+the two-buffer mode where they are switched between.  It also prevents
+Emacs automatically resizing windows between proof steps.
+</p>
+<p>If you use several frames (the same Emacs in several windows on the
+screen), you can force a frame to stick to showing the goals or
+response buffer.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<p>Sometimes during script management, there is no response from the proof
+assistant to some command.  In this case you might like the empty
+response window to be hidden so you have more room to see the proof
+script.  The setting <code>proof-delete-empty-windows</code> helps you do this.
+</p>
+<dl>
+<dt><a name="index-proof_002ddelete_002dempty_002dwindows"></a><u>User Option:</u> <b>proof-delete-empty-windows</b></dt>
+<dd><p>If non-nil, automatically remove windows when they are cleaned.<br>
+For example, at the end of a proof the goals buffer window will
+be cleared; if this flag is set it will automatically be removed.
+If you want to fix the sizes of your windows you may want to set this
+variable to <code>'nil'</code> to avoid windows being deleted automatically.
+If you use multiple frames, only the windows in the currently
+selected frame will be automatically deleted.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+<p>This option only has an effect when you have set
+<code>proof-three-window-mode</code>.
+</p>
+<p>If you are working on a machine with a window system, you can use Emacs
+to manage several <i>frames</i> on the display, to keep the goals buffer
+displayed in a fixed place on your screen and in a certain font, for
+example.  A convenient way to do this is via the user option
+</p>
+<dl>
+<dt><a name="index-proof_002dmultiple_002dframes_002denable"></a><u>User Option:</u> <b>proof-multiple-frames-enable</b></dt>
+<dd><p>Whether response and goals buffers have separate frames.<br>
+If non-nil, Emacs will make separate frames (screen windows) for
+the goals and response buffers, by altering the Emacs variable
+&lsquo;<samp><code>special-display-regexps</code></samp>&rsquo;.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+<p>Multiple frames work best when <code>proof-delete-empty-windows</code> is off
+and <code>proof-three-window-mode</code> is on.
+</p>
+
+<p>Finally, there are two commands available which help to switch between
+buffers or refresh the window layout.  These are on the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  Proof-General -&gt; Buffers
+</pre></td></tr></table>
+
+<dl>
+<dt><a name="index-proof_002ddisplay_002dsome_002dbuffers-1"></a><u>Command:</u> <b>proof-display-some-buffers</b></dt>
+<dd><p>Display the reponse, trace, goals, or shell buffer, rotating.<br>
+A fixed number of repetitions of this command switches back to
+the same buffer.
+Also move point to the end of the response buffer if it&rsquo;s selected.
+If in three window or multiple frame mode, display two buffers.
+The idea of this function is to change the window-&gt;buffer mapping
+without adjusting window layout.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dlayout_002dwindows"></a><u>Command:</u> <b>proof-layout-windows</b><i> &amp;optional nohorizontalsplit</i></dt>
+<dd><p>Refresh the display of windows according to current display mode.
+</p>
+<p>For single frame mode, this uses a canonical layout made by splitting
+Emacs windows vertically in equal proportions.  You can then adjust
+the proportions by dragging the separating bars.  In three pane mode,
+the canonical layout is to split both horizontally and vertically, to
+display the prover responses in two panes on the right-hand side, and
+the proof script in a taller pane on the left.  A prefix argument will
+prevent the horizontal split, and result in three windows spanning the
+full width of the Emacs frame.
+</p>
+<p>For multiple frame mode, this function obeys the setting of
+&lsquo;<samp><code>pg-response-eagerly-raise</code></samp>&rsquo;, which see.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshrink_002dwindows_002dtofit"></a><u>User Option:</u> <b>proof-shrink-windows-tofit</b></dt>
+<dd><p>If non-nil, automatically shrink output windows to fit contents.<br>
+In single-frame mode, this option will reduce the size of the
+goals and response windows to fit their contents.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dcolour_002dlocked"></a><u>User Option:</u> <b>proof-colour-locked</b></dt>
+<dd><p>If non-nil, colour the locked region with &lsquo;<samp><code>proof-locked-face</code></samp>&rsquo;.<br>
+If this is not set, buffers will have no special face set
+on locked regions.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002doutput_002dtooltips"></a><u>User Option:</u> <b>proof-output-tooltips</b></dt>
+<dd><p>Non-nil causes Proof General to add tooltips for prover output.<br>
+Hovers will be added when this option is non-nil.  Prover outputs
+can be displayed when the mouse hovers over the region that
+produced it and output is available (see &lsquo;<samp><code>proof-full-annotation</code></samp>&rsquo;).
+If output is not available, the type of the output region is displayed.
+Changes of this option will not be reflected in already-processed 
+regions of the script.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="User-options"></a>
+<a name="User-options-1"></a>
+<h2 class="section">8.4 User options</h2>
+<a name="index-User-options"></a>
+<a name="index-Strict-read_002donly"></a>
+<a name="index-Undo-in-read_002donly-region"></a>
+<a name="index-Query-program-name"></a>
+<a name="index-Dedicated-windows"></a>
+<a name="index-Remote-host"></a>
+<a name="index-Toolbar-follow-mode"></a>
+<a name="index-Toolbar-disabling"></a>
+<a name="index-Toolbar-button-enablers"></a>
+<a name="index-Proof-script-indentation"></a>
+<a name="index-Indentation"></a>
+<a name="index-Remote-shell"></a>
+<a name="index-Running-proof-assistant-remotely"></a>
+<a name="index-Input-ring-1"></a>
+
+<p>Here is a list of the important user options for Proof General, apart from
+the display options mentioned above.  
+</p>
+<p>User options can be set via the customization system already mentioned,
+via the old-fashioned <code>M-x edit-options</code> mechanism, or simply by
+adding <code>setq</code>&rsquo;s to your &lsquo;<tt>.emacs</tt>&rsquo; file.  The first approach is
+strongly recommended.
+</p>
+<p>Unless mentioned, all of these settings can be changed dynamically,
+without needing to restart Emacs to see the effect.  But you must use
+customize to be sure that Proof General reconfigures itself properly.
+</p>
+<dl>
+<dt><a name="index-proof_002dsplash_002denable"></a><u>User Option:</u> <b>proof-splash-enable</b></dt>
+<dd><p>If non-nil, display a splash screen when Proof General is loaded.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002delectric_002dterminator_002denable"></a><u>User Option:</u> <b>proof-electric-terminator-enable</b></dt>
+<dd><p>If non-nil, use electric terminator mode.<br>
+If electric terminator mode is enabled, pressing a terminator will
+automatically issue &lsquo;<samp>proof-assert-next-command</samp>&rsquo; for convenience,
+to send the command straight to the proof process.  If the command
+you want to send already has a terminator character, you don&rsquo;t
+need to delete the terminator character first.  Just press the
+terminator somewhere nearby.  Electric!
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dnext_002dcommand_002dinsert_002dspace"></a><u>User Option:</u> <b>proof-next-command-insert-space</b></dt>
+<dd><p>If non-nil, PG will use heuristics to insert newlines or spaces in scripts.<br>
+In particular, if electric terminator is switched on, spaces or newlines will
+be inserted as the user types commands to the prover.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dtoolbar_002denable"></a><u>User Option:</u> <b>proof-toolbar-enable</b></dt>
+<dd><p>If non-nil, display Proof General toolbar for script buffers.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dquery_002dfile_002dsave_002dwhen_002dactivating_002dscripting"></a><u>User Option:</u> <b>proof-query-file-save-when-activating-scripting</b></dt>
+<dd><p>If non-nil, query user to save files when activating scripting.
+</p>
+<p>Often, activating scripting or executing the first scripting command
+of a proof script will cause the proof assistant to load some files
+needed by the current proof script.  If this option is non-nil, the
+user will be prompted to save some unsaved buffers in case any of
+them corresponds to a file which may be loaded by the proof assistant.
+</p>
+<p>You can turn this option off if the save queries are annoying, but
+be warned that with some proof assistants this may risk processing
+files which are out of date with respect to the loaded buffers!
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dscript_002dindent"></a><u>User Option:</u> <b>PA-script-indent</b></dt>
+<dd><p>If non-nil, enable indentation code for proof scripts.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002done_002dcommand_002dper_002dline"></a><u>User Option:</u> <b>PA-one-command-per-line</b></dt>
+<dd><p>If non-nil, format for newlines after each command in a script.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dprog_002dname_002dask"></a><u>User Option:</u> <b>proof-prog-name-ask</b></dt>
+<dd><p>If non-nil, query user which program to run for the inferior process.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-PA_002dprog_002dargs"></a><u>Variable:</u> <b>PA-prog-args</b></dt>
+<dd><p>Arguments to be passed to &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo; to run the proof assistant.<br>
+If non-nil, will be treated as a list of arguments for &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo;.
+Otherwise &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo; will be split on spaces to form arguments.
+</p>
+<p>Remark: Arguments are interpreted strictly: each one must contain only one
+word, with no space (unless it is the same word). For example if the
+arguments are -x foo -y bar, then the list should be &rsquo;(&quot;-x&quot; &quot;foo&quot;
+&quot;-y&quot; &quot;bar&quot;), notice that &rsquo;(&quot;-x foo&quot; &quot;-y bar&quot;) is <strong>wrong</strong>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dprog_002denv"></a><u>Variable:</u> <b>PA-prog-env</b></dt>
+<dd><p>Modifications to &lsquo;<samp><code>process-environment</code></samp>&rsquo; made before running &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo;.<br>
+Each element should be a string of the form ENVVARNAME=<var>value</var>.  They will be
+added to the environment before launching the prover (but not pervasively).
+For example for coq on Windows you might need something like:
+(setq <code>coq-prog-env</code> &rsquo;(&quot;HOME=C:\Program Files\Coq\&quot;))
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dprog_002dname_002dguess"></a><u>User Option:</u> <b>proof-prog-name-guess</b></dt>
+<dd><p>If non-nil, use &lsquo;<samp><code>proof-guess-command-line</code></samp>&rsquo; to guess &lsquo;<samp><code>proof-prog-name</code></samp>&rsquo;.<br>
+This option is compatible with &lsquo;<samp><code>proof-prog-name-ask</code></samp>&rsquo;.
+No effect if &lsquo;<samp><code>proof-guess-command-line</code></samp>&rsquo; is nil.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dtidy_002dresponse"></a><u>User Option:</u> <b>proof-tidy-response</b></dt>
+<dd><p>Non-nil indicates that the response buffer should be cleared often.<br>
+The response buffer can be set either to accumulate output, or to
+clear frequently.
+</p>
+<p>With this variable non-nil, the response buffer is kept tidy by
+clearing it often, typically between successive commands (just like the
+goals buffer).
+</p>
+<p>Otherwise the response buffer will accumulate output from the prover.
+</p>
+<p>The default value is <code>t</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dkeep_002dresponse_002dhistory"></a><u>User Option:</u> <b>proof-keep-response-history</b></dt>
+<dd><p>Whether to keep a browsable history of responses.<br>
+With this feature enabled, the buffers used for prover responses will have a
+history that can be browsed without processing/undoing in the prover.
+(Changes to this variable take effect after restarting the prover).
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dinput_002dring_002dsize"></a><u>User Option:</u> <b>pg-input-ring-size</b></dt>
+<dd><p>Size of history ring of previous successfully processed commands.
+</p>
+<p>The default value is <code>32</code>.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dgeneral_002ddebug"></a><u>User Option:</u> <b>proof-general-debug</b></dt>
+<dd><p>Non-nil to run Proof General in debug mode.<br>
+This changes some behaviour (e.g. markup stripping) and displays
+debugging messages in the response buffer.  To avoid erasing
+messages shortly after they&rsquo;re printed, set &lsquo;<samp><code>proof-tidy-response</code></samp>&rsquo; to nil.
+This is only useful for PG developers.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+
+
+<dl>
+<dt><a name="index-proof_002dfollow_002dmode"></a><u>User Option:</u> <b>proof-follow-mode</b></dt>
+<dd><p>Choice of how point moves with script processing commands.<br>
+One of the symbols: <code>'locked</code>, <code>'follow</code>, <code>'followdown</code>, <code>'ignore</code>.
+</p>
+<p>If <code>'locked</code>, point sticks to the end of the locked region.
+If <code>'follow</code>, point moves just when needed to display the locked region end.
+If <code>'followdown</code>, point if necessary to stay in writeable region
+If <code>'ignore</code>, point is never moved after movement commands or on errors.
+</p>
+<p>If you choose <code>'ignore</code>, you can find the end of the locked using
+M-x <code>proof-goto-end-of-locked</code>
+</p>
+<p>The default value is <code>locked</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dauto_002daction_002dwhen_002ddeactivating_002dscripting"></a><u>User Option:</u> <b>proof-auto-action-when-deactivating-scripting</b></dt>
+<dd><p>If <code>'retract</code> or <code>'process</code>, do that when deactivating scripting.
+</p>
+<p>With this option set to <code>'retract</code> or <code>'process</code>, when scripting
+is turned off in a partly processed buffer, the buffer will be
+retracted or processed automatically.
+</p>
+<p>With this option unset (nil), the user is questioned instead.
+</p>
+<p>Proof General insists that only one script buffer can be partly
+processed: all others have to be completely processed or completely
+unprocessed.  This is to make sure that handling of multiple files
+makes sense within the proof assistant.
+</p>
+<p>NB: A buffer is completely processed when all non-whitespace is
+locked (coloured blue); a buffer is completely unprocessed when there
+is no locked region.
+</p>
+<p>For some proof assistants (such as Coq) fully processed buffers make
+no sense. Setting this option to <code>'process</code> has then the same effect
+as leaving it unset (nil). (This behaviour is controlled by
+&lsquo;<samp><code>proof-no-fully-processed-buffer</code></samp>&rsquo;.)
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002drsh_002dcommand"></a><u>User Option:</u> <b>proof-rsh-command</b></dt>
+<dd><p>Shell command prefix to run a command on a remote host.<br>
+For example,
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   ssh bigjobs
+</pre></td></tr></table>
+<p>Would cause Proof General to issue the command &lsquo;<samp>ssh bigjobs isabelle</samp>&rsquo;
+to start Isabelle remotely on our large compute server called &lsquo;<samp>bigjobs</samp>&rsquo;.
+</p>
+<p>The protocol used should be configured so that no user interaction
+(passwords, or whatever) is required to get going.  For proper
+behaviour with interrupts, the program should also communicate
+signals to the remote host.
+</p>
+<p>The default value is <code>nil</code>.
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Changing-faces"></a>
+<a name="Changing-faces-1"></a>
+<h2 class="section">8.5 Changing faces</h2>
+
+<p>The numerous fonts and colours that Proof General uses are configurable.
+If you alter faces through the customize menus (or the command <kbd>M-x
+customize-face</kbd>), only the particular kind of display in use (colour
+window system, monochrome window system, console, &hellip;) will be
+affected.  This means you can keep separate default settings for each
+different display environment where you use Proof General.
+</p>
+<p>As well as the faces listed below, Proof General may use the regular
+<code>font-lock-</code> faces (eg <code>font-lock-keyword-face</code>,
+<code>font-lock-variable-name-face</code>, etc) for fontifying the proof
+script or proof assistant output.  These can be altered to your taste
+just as easily, but note that changes will affect all other modes
+which use them!
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Script-buffer-faces">8.5.1 Script buffer faces</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Goals-and-response-faces">8.5.2 Goals and response faces</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Script-buffer-faces"></a>
+<a name="Script-buffer-faces-1"></a>
+<h3 class="subsection">8.5.1 Script buffer faces</h3>
+
+<dl>
+<dt><a name="index-proof_002dqueue_002dface"></a><u>Face:</u> <b>proof-queue-face</b></dt>
+<dd><p>Face for commands in proof script waiting to be processed.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dlocked_002dface"></a><u>Face:</u> <b>proof-locked-face</b></dt>
+<dd><p>Face for locked region of proof script (processed commands).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dscript_002dsticky_002derror_002dface"></a><u>Face:</u> <b>proof-script-sticky-error-face</b></dt>
+<dd><p>Proof General face for marking an error in the proof script. 
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dscript_002dhighlight_002derror_002dface"></a><u>Face:</u> <b>proof-script-highlight-error-face</b></dt>
+<dd><p>Proof General face for highlighting an error in the proof script. 
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dmouse_002dhighlight_002dface"></a><u>Face:</u> <b>proof-mouse-highlight-face</b></dt>
+<dd><p>General mouse highlighting face used in script buffer.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dhighlight_002ddependent_002dface"></a><u>Face:</u> <b>proof-highlight-dependent-face</b></dt>
+<dd><p>Face for showing (backwards) dependent parts.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dhighlight_002ddependency_002dface"></a><u>Face:</u> <b>proof-highlight-dependency-face</b></dt>
+<dd><p>Face for showing (forwards) dependencies.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002ddeclaration_002dname_002dface"></a><u>Face:</u> <b>proof-declaration-name-face</b></dt>
+<dd><p>Face for declaration names in proof scripts.<br>
+Exactly what uses this face depends on the proof assistant.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dtacticals_002dname_002dface"></a><u>Face:</u> <b>proof-tacticals-name-face</b></dt>
+<dd><p>Face for names of tacticals in proof scripts.<br>
+Exactly what uses this face depends on the proof assistant.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Goals-and-response-faces"></a>
+<a name="Goals-and-response-faces-1"></a>
+<h3 class="subsection">8.5.2 Goals and response faces</h3>
+
+<dl>
+<dt><a name="index-proof_002derror_002dface"></a><u>Face:</u> <b>proof-error-face</b></dt>
+<dd><p>Face for error messages from proof assistant.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dwarning_002dface"></a><u>Face:</u> <b>proof-warning-face</b></dt>
+<dd><p>Face for warning messages.<br>
+Warning messages can come from proof assistant or from Proof General itself.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002ddebug_002dmessage_002dface"></a><u>Face:</u> <b>proof-debug-message-face</b></dt>
+<dd><p>Face for debugging messages from Proof General.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dboring_002dface"></a><u>Face:</u> <b>proof-boring-face</b></dt>
+<dd><p>Face for boring text in proof assistant output.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dactive_002darea_002dface"></a><u>Face:</u> <b>proof-active-area-face</b></dt>
+<dd><p>Face for showing active areas (clickable regions), outside of subterm markup.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002deager_002dannotation_002dface"></a><u>Face:</u> <b>proof-eager-annotation-face</b></dt>
+<dd><p>Face for important messages from proof assistant.
+</p></dd></dl>
+
+<p>The slightly bizarre name of the last face comes from the idea that
+while large amounts of output are being sent from the prover, some
+messages should be displayed to the user while the bulk of the output is
+hidden.  The messages which are displayed may have a special annotation
+to help Proof General recognize them, and this is an &quot;eager&quot; annotation
+in the sense that it should be processed as soon as it is observed by
+Proof General.
+</p>
+
+
+
+<hr size="6">
+<a name="Tweaking-configuration-settings"></a>
+<a name="Tweaking-configuration-settings-1"></a>
+<h2 class="section">8.6 Tweaking configuration settings</h2>
+
+<p>This section is a note for advanced users.
+</p>
+<p>Configuration settings are the per-prover customizations of Proof
+General.  These are not intended to be adjusted by the user.  But
+occasionally you may like to test changes to these settings to improve
+the way Proof General works.  You may want to do this when a proof
+assistant has a flexible proof script language in which one can define
+new tactics or even operations, and you want Proof General to recognize
+some of these which the default settings don&rsquo;t mention.  So please feel
+free to try adjusting the configuration settings and report to us if you
+find better default values than the ones we have provided.
+</p>
+<p>The configuration settings appear in the customization group
+<code>prover-config</code>, or via the menu
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">    Proof-General -&gt; Internals -&gt;  Prover Config
+</pre></td></tr></table>
+
+<p>One basic example of a setting you may like to tweak is:
+</p>
+<dl>
+<dt><a name="index-proof_002dassistant_002dhome_002dpage"></a><u>Variable:</u> <b>proof-assistant-home-page</b></dt>
+<dd><p>Web address for information on proof assistant.<br>
+Used for Proof General&rsquo;s help menu.
+</p></dd></dl>
+
+<p>Most of the others are more complicated.  For more details of the
+settings, see <i>Adapting Proof General</i> for full details.  To browse
+the settings, you can look through the customization groups
+<code>prover-config</code>, <code>proof-script</code> and <code>proof-shell</code>.  The
+group <code>proof-script</code> contains the configuration variables for
+scripting, and the group <code>proof-shell</code> contains those for
+interacting with the proof assistant.
+</p>
+<p>Unfortunately, although you can use the customization mechanism to set
+and save these variables, saving them may have no practical effect
+because the default settings are mostly hard-wired into the proof
+assistant code.  Ones we expect may need changing appear as proof
+assistant specific configurations.  For example,
+<code>proof-assistant-home-page</code> is set in the LEGO code from the value
+of the customization setting <code>lego-www-home-page</code>.  At present
+there is no easy way to save changes to other configuration variables
+across sessions, other than by editing the source code.  (In future
+versions of Proof General, we plan to make all configuration
+settings editable in Customize, by shadowing the settings as 
+prover specific ones using the <code><em>PA</em>-</code> mechanism).
+</p>
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Customizing-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_10.html#Hints-and-Tips" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

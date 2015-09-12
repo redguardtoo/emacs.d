@@ -1,0 +1,72 @@
+# g `(!x. x = x) /\ (!y.y = y) /\ (!z.z = z)`;;
+Warning: inventing type variables
+val it : xgoalstack = 1 subgoal (1 total)
+
+`(!x. x = x) /\ (!y. y = y) /\ (!z. z = z)`
+
+# e (REPEAT CONJ_TAC);;
+val it : xgoalstack = 3 subgoals (3 total)
+
+`!z. z = z`
+
+`!y. y = y`
+
+`!x. x = x`
+
+# e (GEN_TAC);;
+val it : xgoalstack = 1 subgoal (3 total)
+
+`x = x`
+
+# e (REFL_TAC);;
+val it : xgoalstack = 1 subgoal (2 total)
+
+`!y. y = y`
+
+# e (GEN_TAC);;
+val it : xgoalstack = 1 subgoal (2 total)
+
+`y = y`
+
+# e (REFL_TAC);;
+val it : xgoalstack = 1 subgoal (1 total)
+
+`!z. z = z`
+
+# e (GEN_TAC);;
+val it : xgoalstack = 1 subgoal (1 total)
+
+`z = z`
+
+# e (REFL_TAC);;
+val it : xgoalstack = No subgoals
+
+# print_executed_proof ();;
+e (REPEAT CONJ_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+
+val it : unit = ()
+# print_flat_proof ();;
+e (CONJ_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+e (CONJ_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+e (GEN_TAC);;
+e (REFL_TAC);;
+
+val it : unit = ()
+# print_thenl_proof ();;
+e (CONJ_TAC THENL [GEN_TAC THEN REFL_TAC; CONJ_TAC THENL [GEN_TAC THEN REFL_TAC; GEN_TAC THEN REFL_TAC]]);;
+
+val it : unit = ()
+# print_optimal_proof ();;
+e (REPEAT CONJ_TAC THEN GEN_TAC THEN REFL_TAC);;
+val it : unit = ()
+# 

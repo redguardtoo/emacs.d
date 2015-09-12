@@ -1,0 +1,22 @@
+ACL2 Proof General, for ACL2.
+
+Written by David Aspinall.
+
+Status:	       alpha; unsupported
+Maintainer:    volunteer required
+ACL2 version:  Tested briefly with acl2.5
+ACL2 homepage: http://www.cs.utexas.edu/users/moore/acl2
+
+========================================
+
+This is the absolute bare beginnings of a PG instance for ACL2.
+At the moment, only basic script management is configured.
+
+I have written this in the hope that somebody from the ACL2 community
+will adopt it, maintain and improve it, and thus turn it into a proper
+instantiation of Proof General.
+
+
+
+README,v 12.0 2011/10/13 10:54:47 da Exp
+

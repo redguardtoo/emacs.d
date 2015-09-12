@@ -1,0 +1,440 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 9. Hints and Tips</title>
+
+<meta name="description" content="Proof General: 9. Hints and Tips">
+<meta name="keywords" content="Proof General: 9. Hints and Tips">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_9.html#Customizing-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_11.html#LEGO-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Hints-and-Tips"></a>
+<a name="Hints-and-Tips-1"></a>
+<h1 class="chapter">9. Hints and Tips</h1>
+
+<p>Apart from the packages officially supported in Proof General, 
+many other features of Emacs are useful when using Proof General, even
+though they need no specific configuration for Proof General.  It is
+worth taking a bit of time to explore the Emacs manual to find out about
+them.
+</p>
+<p>Here we provide some hints and tips for a couple of Emacs features which
+users have found valuable with Proof General.  Further contributions to
+this chapter are welcomed!
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Adding-your-own-keybindings">9.1 Adding your own keybindings</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Using-file-variables">9.2 Using file variables</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Using-abbreviations">9.3 Using abbreviations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Adding-your-own-keybindings"></a>
+<a name="Adding-your-own-keybindings-1"></a>
+<h2 class="section">9.1 Adding your own keybindings</h2>
+<a name="index-keybindings"></a>
+
+<p>Proof General follows Emacs convention for file modes in using &lt;C-c&gt;
+prefix key-bindings for its own functions, which is why some of the
+default keyboard short-cuts are quite lengthy.
+</p>
+<p>Some users may prefer to add additional key-bindings for shorter
+sequences.  This can be done interactively with the command
+<code>M-x local-set-key</code>, or for longevity, by adding 
+code like this to your &lsquo;<tt>.emacs</tt>&rsquo; file:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">
+(eval-after-load &quot;proof-script&quot; '(progn
+ (define-key proof-mode-map [(control n)] 
+                            'proof-assert-next-command-interactive)
+ (define-key proof-mode-map [(control b)] 
+                            'proof-undo-last-successful-command)
+ ))
+</pre></td></tr></table>
+
+<p>This lisp fragment adds bindings for every buffer in proof script
+mode (the Emacs keymap is called <code>proof-mode-map</code>).  To just
+affect one prover, use a keymap name like <code>isar-mode-map</code> and
+evaluate after the library <code>isar</code> has been loaded.
+</p>
+<p>To find the names of the functions you may want to bind, look in this
+manual, or query current bindings interactively with <kbd>C-h k</kbd>.  This
+command (<code>describe-key</code>) works for menu operations as well; also
+use it to discover the current key-bindings which you&rsquo;re losing by
+declarations such as those above.  By default, <kbd>C-n</kbd> is
+<code>next-line</code> and <kbd>C-b</kbd> is <code>backward-char-command</code>; neither
+are really needed if you have working cursor keys.
+</p>
+
+<p>If your keyboard has a <i>super</i> modifier (on my
+PC keyboard it has a Windows symbol and is next to the control key), you
+ can freely bind keys on that modifier globally (since none are used
+by default).  Use lisp like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(global-set-key [?\s-l] 'maths-menu-insert-lambda)
+(global-set-key [?\s-l] 'maths-menu-insert-lambda)
+
+(global-set-key [?\s-l] 'maths-menu-insert-lambda)
+(global-set-key [?\s-L] 'maths-menu-insert-Lambda)
+(global-set-key [?\s-D] 'maths-menu-insert-Delta)
+
+(global-set-key [?\s-a] 'maths-menu-insert-for-all)
+(global-set-key [?\s-e] 'maths-menu-insert-there-exists)
+(global-set-key [?\s-t] 'maths-menu-insert-down-tack)
+(global-set-key [?\s-b] 'maths-menu-insert-up-tack)
+
+(global-set-key [?\s-\#] 'maths-menu-insert-music-sharp-sign)
+(global-set-key [?\s-\.] 'maths-menu-insert-horizontal-ellipsis)
+
+(global-set-key [?\s-3] 'proof-three-window-toggle)
+</pre></td></tr></table>
+<p>This defines a bunch of short-cuts for inserting symbols taken
+from the Maths Menu, see section <a href="ProofGeneral_5.html#Unicode-symbols-and-special-layout-support">Unicode symbols and special layout support</a>
+and a short-cut for enabling three window mode,
+see section <a href="ProofGeneral_9.html#Display-customization">Display customization</a>.
+</p>
+
+<hr size="6">
+<a name="Using-file-variables"></a>
+<a name="Using-file-variables-1"></a>
+<h2 class="section">9.2 Using file variables</h2>
+<a name="index-file-variables"></a>
+
+<p>A very convenient way to customize file-specific variables is to use 
+File Variables (See <a href="../emacs/File-Variables.html#File-Variables">(emacs)File Variables</a>). This feature of
+Emacs permits to specify values for certain Emacs variables
+when a file is loaded. File variables and their values 
+are written as a list at the end of
+the file.
+</p>
+<p>For example, in Coq projects involving multiple directories, it is necessary
+to set the variable <code>coq-load-path</code> 
+(<a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">Customizing Coq Multiple File Support</a>). 
+Here is an example:
+Assume the file &lsquo;<tt>.../dir/bar/foo.v</tt>&rsquo; depends on modules in
+<code>.../dir/theories/</code>. Then you can put the following at the
+end of &lsquo;<tt>foo.v</tt>&rsquo;:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">(* 
+*** Local Variables: ***
+*** coq-load-path: (&quot;../theories&quot;) ***
+*** End: ***
+*)
+</pre></td></tr></table>
+
+<p>This way, the right command line arguments are passed to the
+invocation of
+<code>coqtop</code> when scripting starts in
+&lsquo;<tt>foo.v</tt>&rsquo;. Note that the load path <code>&quot;../theories&quot;</code> is
+project or even file specific, and that therefore a global
+setting via the
+configuration tool would be inappropriate.
+With file variables, Emacs will set <code>coq-load-path</code>
+automatically when visiting <code>foo.v</code>. Moreover, the setting of
+<code>coq-load-path</code> in different files or buffers will not be
+affected. (File variables become buffer local.) 
+</p>
+<p>Extending the previous example, if the makefile for &lsquo;<tt>foo.v</tt>&rsquo; is
+located in directory &lsquo;<tt>.../dir/</tt>&rsquo;, you can add the right compile
+command. You can also specify a &quot;-R&quot; command. And if you want a non
+standard coq executable to be used, here is what you should put in
+variables:
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">(* 
+*** Local Variables: ***
+*** coq-prog-name: &quot;../../coqsrc/bin/coqtop&quot; ***
+*** coq-load-path: ((&quot;../util&quot; &quot;util&quot;) &quot;../theories&quot;) ***
+*** compile-command: &quot;make -C .. -k bar/foo.vo&quot; ***
+*** End:***
+*)
+</pre></td></tr></table>
+
+<p>And then the right call to make will be done if you use the <kbd>M-x
+compile</kbd> command. Note that the lines are commented in order to be
+ignored by the proof assistant. It is possible to use this mechanism for
+all variables, See <a href="../emacs/File-Variables.html#File-Variables">(emacs)File Variables</a>.
+</p>
+<p>One can also specify file variables on a per directory basis,
+See <a href="../emacs/Directory-Variables.html#Directory-Variables">(emacs)Directory Variables</a>. For instance,
+assume you have a Coq project with several subdirectories and you
+want to put each subdirectory into <code>coq-load-path</code> for every
+file in the project. You can achieve this by storing
+</p>
+<table><tr><td>&nbsp;</td><td><pre class="lisp">((coq-mode . ((coq-load-path . (&quot;../dir_1&quot; &quot;../dir_2&quot; ... )))))
+</pre></td></tr></table>
+
+<p>into the file <code>.dir-locals.el</code> in one of the parent
+directories. The value in this file must be an alist that maps
+mode names to alists, where these latter alists map variables to
+values, See <a href="../emacs/Directory-Variables.html#Directory-Variables">(emacs)Directory Variables</a>.
+</p>
+
+
+<hr size="6">
+<a name="Using-abbreviations"></a>
+<a name="Using-abbreviations-1"></a>
+<h2 class="section">9.3 Using abbreviations</h2>
+
+<p>A very useful package of Emacs supports automatic expansions of
+abbreviations as you type, See <a href="../(emacs/_0029Abbrevs.html#g_t_0029Abbrevs">((emacs))Abbrevs</a>.
+</p>
+<p>For example, the proof assistant Coq has many command strings that are
+long, such as &ldquo;reflexivity,&rdquo; &ldquo;Inductive,&rdquo; &ldquo;Definition&rdquo; and
+&ldquo;Discriminate.&rdquo;  Here is a part of the Coq Proof General
+abbreviations:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">&quot;abs&quot; &quot;absurd &quot;
+&quot;ap&quot; &quot;apply &quot;
+&quot;as&quot; &quot;assumption&quot;
+</pre></td></tr></table>
+<p>The above list was taken from the file that Emacs saves between
+sessions.  The easiest way to configure abbreviations is as you write,
+by using the key presses <kbd>C-x a g</kbd> (<code>add-global-abbrev</code>) or
+<kbd>C-x a i g</kbd> (<code>inverse-add-global-abbrev</code>).  To enable automatic
+expansion of abbreviations (which can be annoying), the <code>Abbrev</code>
+minor mode, type <kbd>M-x abbrev-mode RET</kbd>. When you are not in Abbrev
+mode you can expand an abbreviation by pressing <kbd>C-x '</kbd>
+(<code>expand-abbrev</code>). See the Emacs manual for more details.
+</p>
+<p>Coq Proof General has a special experimental feature called &quot;Holes&quot;
+which makes use of the abbreviation mechanism and includes a large list
+of command abbreviations. See section <a href="ProofGeneral_12.html#Holes-feature">Holes feature</a>, for details.  With other
+provers, you may use the standard Emacs commands above to set up your
+own abbreviation tables.
+</p>
+
+
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Hints-and-Tips" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_11.html#LEGO-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

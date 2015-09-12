@@ -1,0 +1,20 @@
+Proof General for shell scripts/simple command interpreters.
+
+Author:		David Aspinall
+Status:		Supported; experimental
+
+====================================================================
+
+This instance of PG is handy just for using script management to
+cut-and-paste into a buffer running an ordinary shell of some kind.
+
+I'm providing this so that tool demonstrators may use it instead of
+tediously doing cut-and-paste of commands from a file.  No history
+management, and nothing to do with theorem proving really!
+
+To use this instance of PG, visit a file with the ".pgsh" extension.
+
+You can modify the settings in pgshell.el to suit your application
+(e.g. run some program other than the shell).
+
+Feedback welcome.

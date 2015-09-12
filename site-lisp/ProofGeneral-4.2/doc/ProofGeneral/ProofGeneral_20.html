@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: Function and Command Index</title>
+
+<meta name="description" content="Proof General: Function and Command Index">
+<meta name="keywords" content="Proof General: Function and Command Index">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_19.html#History-of-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_21.html#Variable-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Function-Index"></a>
+<a name="Function-and-Command-Index"></a>
+<h1 class="unnumbered">Function and Command Index</h1>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-and-Command-Index_fn_letter-A" class="summary-letter"><b>A</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-fn">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Function-and-Command-Index_fn_letter-A">A</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-add_002dcompletions_002dfrom_002dtags_002dtable"><code>add-completions-from-tags-table</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Support-for-tags">5.5 Support for tags</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Function-and-Command-Index_fn_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-complete"><code>complete</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Support-for-completion">5.4 Support for completion</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Function-and-Command-Index_fn_letter-I">I</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-indent_002dfor_002dtab_002dcommand"><code>indent-for-tab-command</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_13.html#index-isabelle_002dchoose_002dlogic"><code>isabelle-choose-logic</code></a></td><td valign="top"><a href="ProofGeneral_13.html#Choosing-logic-and-starting-isabelle">12.1 Choosing logic and starting isabelle</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_13.html#index-isar_002dstrip_002dterminators"><code>isar-strip-terminators</code></a></td><td valign="top"><a href="ProofGeneral_13.html#Isabelle-commands">12.2 Isabelle commands</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Function-and-Command-Index_fn_letter-P">P</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_7.html#index-pg_002dgoals_002dbutton_002daction"><code>pg-goals-button-action</code></a></td><td valign="top"><a href="ProofGeneral_7.html#Goals-buffer-commands">6.1 Goals buffer commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dhide_002dall_002dproofs"><code>pg-hide-all-proofs</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_7.html#index-pg_002didentifier_002dunder_002dmouse_002dquery"><code>pg-identifier-under-mouse-query</code></a></td><td valign="top"><a href="ProofGeneral_7.html#Goals-buffer-commands">6.1 Goals buffer commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dnext_002dinput"><code>pg-next-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dnext_002dmatching_002dinput"><code>pg-next-matching-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dnext_002dmatching_002dinput_002dfrom_002dinput"><code>pg-next-matching-input-from-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dprevious_002dinput"><code>pg-previous-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dprevious_002dmatching_002dinput"><code>pg-previous-matching-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dprevious_002dmatching_002dinput_002dfrom_002dinput"><code>pg-previous-matching-input-from-input</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Editing-features">3.10 Editing features</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-pg_002dresponse_002dclear_002ddisplays"><code>pg-response-clear-displays</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dshow_002dall_002dproofs"><code>pg-show-all-proofs</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-pg_002dtoggle_002dvisibility"><code>pg-toggle-visibility</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dactive_002darea_002dface"><code>proof-active-area-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dassert_002dnext_002dcommand_002dinteractive"><code>proof-assert-next-command-interactive</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dassert_002duntil_002dpoint_002dinteractive"><code>proof-assert-until-point-interactive</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002dautosend_002dtoggle"><code>proof-autosend-toggle</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Automatic-processing">3.2 Automatic processing</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dboring_002dface"><code>proof-boring-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dctxt"><code>proof-ctxt</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002ddebug_002dmessage_002dface"><code>proof-debug-message-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002ddeclaration_002dname_002dface"><code>proof-declaration-name-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002ddisplay_002dsome_002dbuffers"><code>proof-display-some-buffers</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002ddisplay_002dsome_002dbuffers-1"><code>proof-display-some-buffers</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002deager_002dannotation_002dface"><code>proof-eager-annotation-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002delectric_002dterminator_002dtoggle"><code>proof-electric-terminator-toggle</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002derror_002dface"><code>proof-error-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dfind_002dtheorems"><code>proof-find-theorems</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002dfrob_002dlocked_002dend"><code>proof-frob-locked-end</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Escaping-script-management">3.9 Escaping script management</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dgoto_002dcommand_002dend"><code>proof-goto-command-end</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dgoto_002dcommand_002dstart"><code>proof-goto-command-start</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dgoto_002dend_002dof_002dlocked"><code>proof-goto-end-of-locked</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dgoto_002dpoint"><code>proof-goto-point</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dhelp"><code>proof-help</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dhighlight_002ddependency_002dface"><code>proof-highlight-dependency-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dhighlight_002ddependent_002dface"><code>proof-highlight-dependent-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dinterrupt_002dprocess"><code>proof-interrupt-process</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dissue_002dgoal"><code>proof-issue-goal</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Toolbar-commands">2.8 Toolbar commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dissue_002dsave"><code>proof-issue-save</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Toolbar-commands">2.8 Toolbar commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dlayout_002dwindows"><code>proof-layout-windows</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dlocked_002dface"><code>proof-locked-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dminibuffer_002dcmd"><code>proof-minibuffer-cmd</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dmouse_002dhighlight_002dface"><code>proof-mouse-highlight-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dprf"><code>proof-prf</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dprocess_002dbuffer"><code>proof-process-buffer</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dquery_002didentifier"><code>proof-query-identifier</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dqueue_002dface"><code>proof-queue-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dretract_002dbuffer"><code>proof-retract-buffer</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dretract_002duntil_002dpoint_002dinteractive"><code>proof-retract-until-point-interactive</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dscript_002dhighlight_002derror_002dface"><code>proof-script-highlight-error-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dscript_002dsticky_002derror_002dface"><code>proof-script-sticky-error-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dshell_002dexit"><code>proof-shell-exit</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dshell_002drestart"><code>proof-shell-restart</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dshell_002dstart"><code>proof-shell-start</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Proof-assistant-commands">2.7 Proof assistant commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dtacticals_002dname_002dface"><code>proof-tacticals-name-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Script-buffer-faces">8.5.1 Script buffer faces</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dtoggle_002dactive_002dscripting"><code>proof-toggle-active-scripting</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Active-scripting-buffer">2.3.3 Active scripting buffer</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dundo_002dand_002ddelete_002dlast_002dsuccessful_002dcommand"><code>proof-undo-and-delete-last-successful-command</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dundo_002dlast_002dsuccessful_002dcommand"><code>proof-undo-last-successful-command</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-processing-commands">2.6 Script processing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dwarning_002dface"><code>proof-warning-face</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Goals-and-response-faces">8.5.2 Goals and response faces</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Function-and-Command-Index_fn_letter-U">U</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dcopy"><code>unicode-tokens-copy</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Moving-between-Unicode-and-tokens">4.5 Moving between Unicode and tokens</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dfraktur_002dfont_002dface"><code>unicode-tokens-fraktur-font-face</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Special-layout">4.4 Special layout</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dlist_002dshortcuts"><code>unicode-tokens-list-shortcuts</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Finding-available-tokens-shortcuts-and-symbols">4.6 Finding available tokens shortcuts and symbols</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dlist_002dtokens"><code>unicode-tokens-list-tokens</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Finding-available-tokens-shortcuts-and-symbols">4.6 Finding available tokens shortcuts and symbols</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dlist_002dunicode_002dchars"><code>unicode-tokens-list-unicode-chars</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Finding-available-tokens-shortcuts-and-symbols">4.6 Finding available tokens shortcuts and symbols</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dpaste"><code>unicode-tokens-paste</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Moving-between-Unicode-and-tokens">4.5 Moving between Unicode and tokens</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dsans_002dfont_002dface"><code>unicode-tokens-sans-font-face</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Special-layout">4.4 Special layout</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dscript_002dfont_002dface"><code>unicode-tokens-script-font-face</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Special-layout">4.4 Special layout</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dserif_002dfont_002dface"><code>unicode-tokens-serif-font-face</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Special-layout">4.4 Special layout</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dsymbol_002dfont_002dface"><code>unicode-tokens-symbol-font-face</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Selecting-suitable-fonts">4.7 Selecting suitable fonts</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Function-and-Command-Index_fn_letter-A" class="summary-letter"><b>A</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Function-and-Command-Index_fn_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_19.html#History-of-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_21.html#Variable-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

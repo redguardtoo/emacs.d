@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: Variable and User Option Index</title>
+
+<meta name="description" content="Proof General: Variable and User Option Index">
+<meta name="keywords" content="Proof General: Variable and User Option Index">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_22.html#Keystroke-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Variable-Index"></a>
+<a name="Variable-and-User-Option-Index"></a>
+<h1 class="unnumbered">Variable and User Option Index</h1>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-and-User-Option-Index_vr_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-L" class="summary-letter"><b>L</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+<table border="0" class="index-vr">
+<tr><td></td><th align="left">Index Entry</th><th align="left"> Section</th></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-C">C</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dauto_002dsave"><code>coq-compile-auto-save</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dbefore_002drequire"><code>coq-compile-before-require</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dcommand"><code>coq-compile-command</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dignore_002dlibrary_002ddirectory"><code>coq-compile-ignore-library-directory</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dignored_002ddirectories"><code>coq-compile-ignored-directories</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcompile_002dsubstitution_002dlist"><code>coq-compile-substitution-list</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dconfirm_002dexternal_002dcompilation"><code>coq-confirm-external-compilation</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dcoqdep_002derror_002dregexp"><code>coq-coqdep-error-regexp</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dload_002dpath"><code>coq-load-path</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dload_002dpath_002dinclude_002dcurrent"><code>coq-load-path-include-current</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002dlock_002dancestors"><code>coq-lock-ancestors</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-coq_002dmode_002dhooks"><code>coq-mode-hooks</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Syntax-highlighting">5.1 Syntax highlighting</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002drequire_002dcommand_002dregexp"><code>coq-require-command-regexp</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_12.html#index-coq_002drequire_002did_002dregexp"><code>coq-require-id-regexp</code></a></td><td valign="top"><a href="ProofGeneral_12.html#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-I">I</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-isa_002dmode_002dhooks"><code>isa-mode-hooks</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Syntax-highlighting">5.1 Syntax highlighting</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_13.html#index-isabelle_002dchosen_002dlogic"><code>isabelle-chosen-logic</code></a></td><td valign="top"><a href="ProofGeneral_13.html#Choosing-logic-and-starting-isabelle">12.1 Choosing logic and starting isabelle</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_13.html#index-isabelle_002dprogram_002dname_002doverride"><code>isabelle-program-name-override</code></a></td><td valign="top"><a href="ProofGeneral_13.html#Choosing-logic-and-starting-isabelle">12.1 Choosing logic and starting isabelle</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_13.html#index-isabelle_002dweb_002dpage"><code>isabelle-web-page</code></a></td><td valign="top"><a href="ProofGeneral_13.html#Isabelle-customizations">12.4 Isabelle customizations</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-L">L</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-lego_002dmode_002dhooks"><code>lego-mode-hooks</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Syntax-highlighting">5.1 Syntax highlighting</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_11.html#index-lego_002dtags"><code>lego-tags</code></a></td><td valign="top"><a href="ProofGeneral_11.html#LEGO-customizations">10.3 LEGO customizations</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_11.html#index-lego_002dwww_002dhome_002dpage"><code>lego-www-home-page</code></a></td><td valign="top"><a href="ProofGeneral_11.html#LEGO-customizations">10.3 LEGO customizations</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-P">P</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-PA_002dcompletion_002dtable"><code>PA-completion-table</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Support-for-completion">5.4 Support for completion</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-PA_002done_002dcommand_002dper_002dline"><code>PA-one-command-per-line</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-PA_002dprog_002dargs"><code>PA-prog-args</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-PA_002dprog_002denv"><code>PA-prog-env</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-PA_002dscript_002dindent"><code>PA-script-indent</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-pg_002dinput_002dring_002dsize"><code>pg-input-ring-size</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dassistant_002dhome_002dpage"><code>proof-assistant-home-page</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Tweaking-configuration-settings">8.6 Tweaking configuration settings</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dauto_002daction_002dwhen_002ddeactivating_002dscripting"><code>proof-auto-action-when-deactivating-scripting</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dauto_002draise_002dbuffers"><code>proof-auto-raise-buffers</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002dautosend_002denable"><code>proof-autosend-enable</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Automatic-processing">3.2 Automatic processing</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dcolour_002dlocked"><code>proof-colour-locked</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002ddelete_002dempty_002dwindows"><code>proof-delete-empty-windows</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002ddisappearing_002dproofs"><code>proof-disappearing-proofs</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Visibility-of-completed-proofs">3.3 Visibility of completed proofs</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002delectric_002dterminator_002denable"><code>proof-electric-terminator-enable</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dfollow_002dmode"><code>proof-follow-mode</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002dfull_002dannotation"><code>proof-full-annotation</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Document-centred-working">3.1 Document centred working</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dgeneral_002ddebug"><code>proof-general-debug</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-proof_002dgoal_002dwith_002dhole_002dregexp"><code>proof-goal-with-hole-regexp</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Imenu-and-Speedbar">5.2 Imenu and Speedbar</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_6.html#index-proof_002dgoal_002dwith_002dhole_002dresult"><code>proof-goal-with-hole-result</code></a></td><td valign="top"><a href="ProofGeneral_6.html#Imenu-and-Speedbar">5.2 Imenu and Speedbar</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dkeep_002dresponse_002dhistory"><code>proof-keep-response-history</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dmultiple_002dframes_002denable"><code>proof-multiple-frames-enable</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dnext_002dcommand_002dinsert_002dspace"><code>proof-next-command-insert-space</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002doutput_002dtooltips"><code>proof-output-tooltips</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dprog_002dname_002dask"><code>proof-prog-name-ask</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dprog_002dname_002dguess"><code>proof-prog-name-guess</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dquery_002dfile_002dsave_002dwhen_002dactivating_002dscripting"><code>proof-query-file-save-when-activating-scripting</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002drsh_002dcommand"><code>proof-rsh-command</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dscript_002dindent"><code>proof-script-indent</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dshrink_002dwindows_002dtofit"><code>proof-shrink-windows-tofit</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dsplash_002denable"><code>proof-splash-enable</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_4.html#index-proof_002dstrict_002dread_002donly"><code>proof-strict-read-only</code></a></td><td valign="top"><a href="ProofGeneral_4.html#Document-centred-working">3.1 Document centred working</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_3.html#index-proof_002dterminal_002dstring"><code>proof-terminal-string</code></a></td><td valign="top"><a href="ProofGeneral_3.html#Script-editing-commands">2.5 Script editing commands</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dthree_002dwindow_002denable"><code>proof-three-window-enable</code></a></td><td valign="top"><a href="ProofGeneral_9.html#Display-customization">8.3 Display customization</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dtidy_002dresponse"><code>proof-tidy-response</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_9.html#index-proof_002dtoolbar_002denable"><code>proof-toolbar-enable</code></a></td><td valign="top"><a href="ProofGeneral_9.html#User-options">8.4 User options</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+<tr><th><a name="Variable-and-User-Option-Index_vr_letter-U">U</a></th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dfont_002dfamily_002dalternatives"><code>unicode-tokens-font-family-alternatives</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Selecting-suitable-fonts">4.7 Selecting suitable fonts</a></td></tr>
+<tr><td></td><td valign="top"><a href="ProofGeneral_5.html#index-unicode_002dtokens_002dhighlight_002dunicode"><code>unicode-tokens-highlight-unicode</code></a></td><td valign="top"><a href="ProofGeneral_5.html#Moving-between-Unicode-and-tokens">4.5 Moving between Unicode and tokens</a></td></tr>
+<tr><td colspan="3"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a href="#Variable-and-User-Option-Index_vr_letter-C" class="summary-letter"><b>C</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-I" class="summary-letter"><b>I</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-L" class="summary-letter"><b>L</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-P" class="summary-letter"><b>P</b></a>
+ &nbsp; 
+<a href="#Variable-and-User-Option-Index_vr_letter-U" class="summary-letter"><b>U</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_22.html#Keystroke-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

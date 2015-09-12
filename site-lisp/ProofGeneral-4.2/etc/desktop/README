@@ -1,0 +1,18 @@
+You can install files in this directory to add desktop integration
+for Proof General.  This is presently done in the RPM file.
+
+See http://standards.freedesktop.org/desktop-entry-spec/
+
+Please add i18n alternatives and other improvements if you'd like to
+see them on your desktop, and send them back to me.  - da
+
+---
+
+Notes:
+
+application-registry/ } for GNOME
+mime-info/	      } 
+
+
+
+

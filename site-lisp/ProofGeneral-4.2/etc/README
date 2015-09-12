@@ -1,0 +1,35 @@
+Files in the PG/etc directory
+=============================
+
+Files in this directory are auxiliary documentation and test files,
+not needed for a running Proof General installation.
+
+README                 this file
+
+ProofGeneral.spec      Sample specfile for building the Proof General RPM.
+		       Use "rpm -tb" to build from tarball.
+
+ProofGeneral.menu      Menu file for some Linux versions.  
+		       Install in /usr/lib/menu.
+
+ProofGeneral.desktop   Menu file for some Linux versions.  
+		       Install in /etc/X11/applnk/Applications/
+
+lego		       Files for testing: LEGO Proof General
+isa					  Isabelle Proof General
+isar					  Isar PG
+demoisa					  Isabelle Demo PG
+coq					  Coq
+<otherprover>				   .. others, similarly
+
+
+cvs-tips.txt	       Notes on  cvs with PG project
+development-tips.txt   Notes on  development
+profiling.txt			 profiling
+
+proviola/	       See README therein.
+
+testsuite/	       Test suites (replaced by generic/pg-autotest)
+
+trac/		       Test cases for reported bugs to check 
+		       regression (manually)

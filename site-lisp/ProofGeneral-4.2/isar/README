@@ -1,0 +1,33 @@
+Isabelle/Isar Proof General
+
+Written by Markus Wenzel and David Aspinall.
+
+Contributions from David von Oheimb, Stefan Berghofer, 
+ Sebastian Skalberg, Gerwin Klein, Tjark Weber.
+
+Status:		    supported
+Maintainers:	    David Aspinall, Makarius Wenzel
+Isabelle versions:  Isabelle2011 (earlier versions not guaranteed)
+Isabelle homepage:  http://www.cl.cam.ac.uk/Research/HVG/Isabelle/
+
+===========================================================================
+
+Isabelle/Isar Proof General has full support for multiple file
+scripting, with dependencies between theories communicated between
+Isabelle and Proof General.  
+
+There is full support for Unicode Tokens, using the Isabelle print
+mode for X Symbol tokens.  Many Isabelle theories have X Symbol syntax
+already defined and it's easy to add to your own theories.
+
+The script `interface' and file 'interface-setup.el' are used
+internally to start Isabelle Proof General via the 'isabelle' shell
+command.  This is the default way to invoke Proof General from the
+Isabelle perspective; it enables Isabelle to provide a consistent
+process and file-system environment, including the all-important
+isar-keywords.el file.
+
+========================================
+
+README,v 12.0 2011/10/13 10:54:50 da Exp
+

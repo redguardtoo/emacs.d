@@ -1,0 +1,27 @@
+Twelf Proof General, for Twelf.
+
+Written by David Aspinall.
+
+Status:	        not officially supported yet
+Maintainer:     volunteer required
+Twelf version:  Twelf 1.2 (and later, I hope)
+Twelf homepage: http://www.twelf.org
+
+========================================
+
+
+This is a "technology demonstration" of Proof General for Twelf.
+
+It has basic script management support, with some support for
+decoration taken from the present Twelf Emacs mode.
+
+There is support for X Symbol, but not using a proper token language,
+and it seems fairly broken because Twelf's syntax highlighting
+doesn't work properly with font lock.
+
+I have written this in the hope that somebody from the Twelf community
+will adopt it, maintain and improve it, and thus turn it into a proper
+instantiation of Proof General.
+
+README,v 12.0 2011/10/13 10:54:51 da Exp
+

@@ -24,45 +24,47 @@
 ;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
 ;; {{ git-gutter
-(require 'git-gutter)
-
-(defun git-gutter-reset-to-head-parent()
-  (interactive)
-  (let (parent)
-    (if (eq git-gutter:vcs-type 'svn)
-        (setq parent "PREV")
-      (setq parent "HEAD^"))
-    (git-gutter:set-start-revision parent)
-    (message "git-gutter:set-start-revision parent of HEAD")
-    ))
-
-(defun git-gutter-reset-to-default ()
-  (interactive)
-  (git-gutter:set-start-revision nil)
-  (message "git-gutter reset"))
-
-                                        ; If you enable global minor mode
-(global-git-gutter-mode t)
-
-  ;; nobody use bzr
-  ;; people are forced use subversion or hg, so they take priority
-  (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
-
-  (git-gutter:linum-setup)
-
-  (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
-  (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
-
-  ;; Jump to next/previous hunk
-  (global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)
-  (global-set-key (kbd "C-x n") 'git-gutter:next-hunk)
-
-  ;; Stage current hunk
-  (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
-
-  ;; Revert current hunk
-  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
-;; }}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; (require 'git-gutter)						     ;;
+;; 									     ;;
+;; (defun git-gutter-reset-to-head-parent()				     ;;
+;;   (interactive)							     ;;
+;;   (let (parent)							     ;;
+;;     (if (eq git-gutter:vcs-type 'svn)				     ;;
+;;         (setq parent "PREV")						     ;;
+;;       (setq parent "HEAD^"))						     ;;
+;;     (git-gutter:set-start-revision parent)				     ;;
+;;     (message "git-gutter:set-start-revision parent of HEAD")		     ;;
+;;     ))								     ;;
+;; 									     ;;
+;; (defun git-gutter-reset-to-default ()				     ;;
+;;   (interactive)							     ;;
+;;   (git-gutter:set-start-revision nil)				     ;;
+;;   (message "git-gutter reset"))					     ;;
+;; 									     ;;
+;;                                         ; If you enable global minor mode ;;
+;; (global-git-gutter-mode t)						     ;;
+;; 									     ;;
+;;   ;; nobody use bzr							     ;;
+;;   ;; people are forced use subversion or hg, so they take priority	     ;;
+;;   (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))     ;;
+;; 									     ;;
+;;   (git-gutter:linum-setup)						     ;;
+;; 									     ;;
+;;   (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)		     ;;
+;;   (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)		     ;;
+;; 									     ;;
+;;   ;; Jump to next/previous hunk					     ;;
+;;   (global-set-key (kbd "C-x p") 'git-gutter:previous-hunk)		     ;;
+;;   (global-set-key (kbd "C-x n") 'git-gutter:next-hunk)		     ;;
+;; 									     ;;
+;;   ;; Stage current hunk						     ;;
+;;   (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)		     ;;
+;; 									     ;;
+;;   ;; Revert current hunk						     ;;
+;;   (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)		     ;;
+;; ;; }}								     ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;----------------------------------------------------------------------------
 ;; git-svn conveniences

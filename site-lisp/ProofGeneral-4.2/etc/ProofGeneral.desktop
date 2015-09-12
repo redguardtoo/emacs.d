@@ -1,0 +1,9 @@
+[Desktop Entry]
+Value=1.0
+Type=Application
+Name=Proof General
+Comment=Interface to Proof Assistants
+Icon=pgicon.png
+Exec=proofgeneral
+Terminal=false
+Categories=Development;Math;

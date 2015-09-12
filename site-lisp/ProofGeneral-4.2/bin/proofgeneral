@@ -1,0 +1,105 @@
+#!/bin/sh
+#
+# Simple shell script for launching Proof General.
+#
+# Set EMACS to override choice of Emacs version
+#
+# PGHOME must be set to the directory where the lisp files of Proof
+# General are installed.  Script checks standard locations in
+# /usr/share/emacs/site-lisp, or uses PGHOMEDEFAULT defined at top.
+#
+# We load ~/.proofgeneral instead of ~/.emacs if it exists.
+#
+# Thanks to Achim Brucker for suggestions.
+#
+# proofgeneral,v 12.0 2011/10/13 10:54:47 da Exp
+#
+
+# The default path should work if you are using the Proof General RPM
+# or unpack Proof General in your home directory.  Otherwise edit below.
+# NB: no trailing backslash here!
+# On Mac, maybe:
+# /Applications/Emacs.app/Contents/MacOS/Emacs/site-lisp/ProofGeneral
+PGHOMEDEFAULT=$HOME/ProofGeneral
+
+NAME=`basename $0`
+
+HELP="Usage: proofgeneral [OPTION] [FILE]...
+Launches Emacs Proof General, editing the proof script FILE.
+
+Options:
+  --emacs <EMACS>     startup Proof General with emacs binary <EMACS>
+  --pghome <PGDIR>    startup Proof General from directory PGDIR
+  -h, --help          show this help and exit
+  -v, --version       output version information and exit
+
+Unrecognized options are passed to Emacs, along with file names.
+
+Examples:
+  $NAME Example.thy   Load Proof General editing Isar file Example.thy
+  $NAME example.v     Load Proof General editing Coq file Example.v
+
+For documentation and latest versions, visit http://proofgeneral.inf.ed.ac.uk
+Report bugs at http://proofgeneral.inf.ed.ac.uk/trac"
+
+VERSIONBLURB='David Aspinall.
+
+Copyright (C) 1998-2009 LFCS, University of Edinburgh, UK.
+This is free software; see the source for copying conditions.'
+
+   
+while 
+  case $1 in 
+    -h) 
+	echo "$HELP"
+	exit 0;;
+    --help)
+	echo "$HELP"
+	exit 0;;
+    --emacs)
+	EMACS="$2"
+	shift;;
+    --pghome)
+	PGHOME="$2"
+	shift;;
+    --version|-v) 
+	VERSION=`grep proof-general-version $PGHOME/generic/proof-site.el | head -1 | sed -e 's/.*Version //g' | sed -e 's/\. .*//g'`
+	echo "$NAME" "--- script to launch Proof General $VERSION"
+	echo "$VERSIONBLURB"
+	exit 0;;
+    *) break;;
+  esac
+do shift; done
+
+# Try to find Proof General directory
+if [ -z "$PGHOME" ] || [ ! -d "$PGHOME" ]; then
+    # default relative to this script, otherwise PGHOMEDEFAULT
+    MYDIR="`readlink --canonicalize "$0" | sed -ne 's,/bin/proofgeneral$,,p'`"
+    if [ -d "$MYDIR" ]; then
+	PGHOME="$MYDIR"
+    elif [ -d "$PGHOMEDEFAULT" ]; then
+	PGHOME="$PGHOMEDEFAULT"
+    else
+	echo "Cannot find the Proof General lisp files: Set PGHOME or use --pghome."
+	exit 1
+    fi
+fi
+
+# Try to find an Emacs executable 
+if [ -z "$EMACS" ] || [ ! -x "$EMACS" ]; then
+    if which emacs > /dev/null; then 
+	EMACS=`which emacs`
+    else 
+	echo "$NAME: cannot find an Emacs executable.  Change PATH, set EMACS, use --emacs to specify." 1>&2
+	exit 1
+    fi 
+fi
+
+# User may use .proofgeneral in preference to .emacs or .xemacs/init.el
+if [ -f $HOME/.proofgeneral ]; then
+    STARTUP="-q -l $HOME/.proofgeneral"
+else
+    STARTUP=""
+fi
+
+exec $EMACS $STARTUP -eval "(or (featurep (quote proof-site)) (load \"$PGHOME/generic/proof-site.el\"))" -f proof-splash-display-screen "$@"

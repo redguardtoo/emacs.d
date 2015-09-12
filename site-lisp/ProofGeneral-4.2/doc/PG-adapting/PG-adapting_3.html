@@ -1,0 +1,392 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 2. Menus, toolbar, and user-level commands</title>
+
+<meta name="description" content="Adapting Proof General: 2. Menus, toolbar, and user-level commands">
+<meta name="keywords" content="Adapting Proof General: 2. Menus, toolbar, and user-level commands">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_2.html#Beginning-with-a-New-Prover" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_4.html#Proof-Script-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Menus-and-Toolbar-and-User_002dlevel-Commands"></a>
+<a name="Menus_002c-toolbar_002c-and-user_002dlevel-commands"></a>
+<h1 class="chapter">2. Menus, toolbar, and user-level commands</h1>
+
+<p>The variables described in this chapter configure the menus, toolbar,
+and user-level commands.  They should be set in the script mode
+before <code>proof-config-done</code> is called.  (Toolbar configuration must
+be made before &lsquo;<tt>proof-toolbar.el</tt>&rsquo; is loaded, which usually is
+triggered automatically by an attempt to display the toolbar).
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Settings-for-generic-user_002dlevel-commands">2.1 Settings for generic user-level commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Menu-configuration">2.2 Menu configuration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Toolbar-configuration">2.3 Toolbar configuration</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Settings-for-generic-user_002dlevel-commands"></a>
+<a name="Settings-for-generic-user_002dlevel-commands-1"></a>
+<h2 class="section">2.1 Settings for generic user-level commands</h2>
+
+<dl>
+<dt><a name="index-proof_002dassistant_002dhome_002dpage"></a><u>Variable:</u> <b>proof-assistant-home-page</b></dt>
+<dd><p>Web address for information on proof assistant.<br>
+Used for Proof General&rsquo;s help menu.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dcontext_002dcommand"></a><u>Variable:</u> <b>proof-context-command</b></dt>
+<dd><p>Command to display the context in proof assistant.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dinfo_002dcommand"></a><u>Variable:</u> <b>proof-info-command</b></dt>
+<dd><p>Command to ask for help or information in the proof assistant.<br>
+String or fn.  If a string, the command to use.
+If a function, it should return the command string to insert.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dshowproof_002dcommand"></a><u>Variable:</u> <b>proof-showproof-command</b></dt>
+<dd><p>Command to display proof state in proof assistant.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dgoal_002dcommand"></a><u>Variable:</u> <b>proof-goal-command</b></dt>
+<dd><p>Command to set a goal in the proof assistant.  String or fn.<br>
+If a string, the format character &lsquo;<samp>%s</samp>&rsquo; will be replaced by the
+goal string.
+If a function, it should return the command string to insert.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dsave_002dcommand"></a><u>Variable:</u> <b>proof-save-command</b></dt>
+<dd><p>Command to save a proved theorem in the proof assistant.  String or fn.<br>
+If a string, the format character &lsquo;<samp>%s</samp>&rsquo; will be replaced by the
+theorem name.
+If a function, it should return the command string to insert.
+</p></dd></dl>
+<dl>
+<dt><a name="index-proof_002dfind_002dtheorems_002dcommand"></a><u>Variable:</u> <b>proof-find-theorems-command</b></dt>
+<dd><p>Command to search for a theorem containing a given term.  String or fn.<br>
+If a string, the format character &lsquo;<samp>%s</samp>&rsquo; will be replaced by the term.
+If a function, it should return the command string to send.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Menu-configuration"></a>
+<a name="Menu-configuration-1"></a>
+<h2 class="section">2.2 Menu configuration</h2>
+
+<p>As well as the generic Proof General menu, each proof assistant is
+provided with a specific menu which can have prover-specific commands.
+Proof General puts some default things on this menu, including the
+commands to start/stop the prover, and the user-extensible &quot;Favourites&quot;
+menu.
+</p>
+<dl>
+<dt><a name="index-PA_002dmenu_002dentries"></a><u>Variable:</u> <b>PA-menu-entries</b></dt>
+<dd><p>Extra entries for proof assistant specific menu.<br>
+A list of menu items [<var>name</var> <var>callback</var> <var>enabler</var> ...].  See the documentation
+of &lsquo;<samp><code>easy-menu-define</code></samp>&rsquo; for more details.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dhelp_002dmenu_002dentries"></a><u>Variable:</u> <b>PA-help-menu-entries</b></dt>
+<dd><p>Extra entries for help submenu for proof assistant specific help menu.<br>
+A list of menu items [<var>name</var> <var>callback</var> <var>enabler</var> ...].  See the documentation
+of &lsquo;<samp><code>easy-menu-define</code></samp>&rsquo; for more details.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Toolbar-configuration"></a>
+<a name="Toolbar-configuration-1"></a>
+<h2 class="section">2.3 Toolbar configuration</h2>
+
+<p>Unlike the menus, Proof General has only one toolbar.  For the &quot;generic&quot;
+aspect of Proof General to work well, we shouldn&rsquo;t change (the meaning
+of) the existing toolbar buttons too far.  This would discourage people
+from experimenting with different proof assistants when they don&rsquo;t
+really know them, which is one of the advantages that Proof General
+brings.
+</p>
+<p>But in case it is hard to map some of the generic buttons
+onto functions in particular provers, and to allow extra
+buttons, there is a mechanism for adjustment.
+</p>
+<p>I used The Gimp to create the buttons for Proof General.  The
+development distribution includes a button blank and some notes in
+&lsquo;<tt>etc/notes.txt</tt>&rsquo; about making new buttons.
+</p>
+
+<dl>
+<dt><a name="index-proof_002dtoolbar_002dentries_002ddefault"></a><u>Variable:</u> <b>proof-toolbar-entries-default</b></dt>
+<dd><p>Example value for proof-toolbar-entries.  Also used to define scripting menu.<br>
+This gives a bare toolbar that works for any prover, providing the
+appropriate configuration variables are set.
+To add/remove prover specific buttons, adjust the &lsquo;<samp>&lt;PA&gt;-toolbar-entries</samp>&rsquo;
+variable, and follow the pattern in &lsquo;<samp>proof-toolbar.el</samp>&rsquo; for
+defining functions, images.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-PA_002dtoolbar_002dentries"></a><u>Variable:</u> <b>PA-toolbar-entries</b></dt>
+<dd><p>List of entries for Proof General toolbar and Scripting menu.<br>
+Format of each entry is (<var>token</var> <var>menuname</var> <var>tooltip</var> <var>toolbar-p</var> [VISIBLE-P]).
+</p>
+<p>For each <var>token</var>, we expect an icon with base filename <var>token</var>,
+a function proof-toolbar-&lt;TOKEN&gt;, and (optionally) a dynamic enabler
+proof-toolbar-&lt;TOKEN&gt;-enable-p.
+</p>
+<p>If <var>visible-p</var> is absent, or evaluates to non-nil, the item will
+appear on the toolbar or menu.  If it evaluates to nil, the item
+is not shown.
+</p>
+<p>If <var>menuname</var> is nil, item will not appear on the scripting menu.
+</p>
+<p>If <var>toolbar-p</var> is nil, item will not appear on the toolbar.
+</p>
+<p>The default value is &lsquo;<samp><code>proof-toolbar-entries-default</code></samp>&rsquo; which contains
+the standard Proof General buttons.
+</p></dd></dl>
+
+<p>Here&rsquo;s an example of how to remove a button, from &lsquo;<tt>af2.el</tt>&rsquo;:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(setq af2-toolbar-entries
+      (assq-delete-all 'state af2-toolbar-entries))
+</pre></td></tr></table>
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Menus-and-Toolbar-and-User_002dlevel-Commands" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_4.html#Proof-Script-Settings" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

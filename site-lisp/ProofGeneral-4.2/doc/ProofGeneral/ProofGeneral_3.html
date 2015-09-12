@@ -1,0 +1,1264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 2. Basic Script Management</title>
+
+<meta name="description" content="Proof General: 2. Basic Script Management">
+<meta name="keywords" content="Proof General: 2. Basic Script Management">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_2.html#Introducing-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Basic-Script-Management"></a>
+<a name="Basic-Script-Management-1"></a>
+<h1 class="chapter">2. Basic Script Management</h1>
+
+<p>This chapter is an introduction to using the script management
+facilities of Proof General.  We begin with a quick walkthrough example,
+then describe the concepts and functions in more detail.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Walkthrough-example-in-Isabelle">2.1 Walkthrough example in Isabelle</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Proof-scripts">2.2 Proof scripts</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Script-buffers">2.3 Script buffers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">              
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Summary-of-Proof-General-buffers">2.4 Summary of Proof General buffers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">               
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Script-editing-commands">2.5 Script editing commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Script-processing-commands">2.6 Script processing commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Proof-assistant-commands">2.7 Proof assistant commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">    
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Toolbar-commands">2.8 Toolbar commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">            
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Interrupting-during-trace-output">2.9 Interrupting during trace output</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr size="6">
+<a name="Walkthrough-example-in-Isabelle"></a>
+<a name="Walkthrough-example-in-Isabelle-1"></a>
+<h2 class="section">2.1 Walkthrough example in Isabelle</h2>
+
+<p>Here&rsquo;s a short example in Isabelle to see how script management
+is used.  The file you are asked to type below is included in the
+distribution as &lsquo;<tt>isar/Example.thy</tt>&rsquo;.  If you&rsquo;re not using
+Isabelle, substitute some lines from a simple proof for your proof
+assistant, or consult the example file supplied with Proof General for
+your prover, called something like &lsquo;<tt>foo/example.foo</tt>&rsquo; for a proof
+assistant Foo.
+</p>
+<p>This walkthrough is keyboard based, but you could easily use the toolbar
+and menu functions instead.  The best way to learn Emacs key bindings is
+by using the menus.  You&rsquo;ll find the keys named below listed on the
+menus.
+</p>
+<ul>
+<li>
+First, start Emacs with Proof General loaded.  According to how you
+have installed Proof General, this may be by typing
+<code>proofgeneral</code>, selecting it from a menu, or simply by starting
+Emacs itself.
+</li><li>
+Next, find a new file by <kbd>C-x C-f</kbd> and typing as the filename
+&lsquo;<tt>Walkthrough.thy</tt>&rsquo;.  This should load Isabelle Proof General and the
+toolbar and Proof General menus will appear.  You should have an empty
+buffer displayed.
+</li></ul>
+
+<p>The notation <kbd>C-x C-f</kbd> means control key with &lsquo;x&rsquo; followed by
+control key with &lsquo;f&rsquo;.  This is a standard notation for Emacs key
+bindings, used throughout this manual.  This function also appears on
+the <code>File</code> menu of Emacs.  The remaining commands used will be on
+the <code>Proof-General</code> menu or toolbar.
+</p>
+<p>If you&rsquo;re not using Isabelle, you must choose a different file
+extension, appropriately for your proof assistant.  If you don&rsquo;t know
+what to use, see the previous chapter for the list of supported
+assistants and file extensions.
+</p>
+<ul>
+<li>
+Turn on <em>electric terminator</em> by typing <kbd>C-c ;</kbd> and
+enter:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">theory Walkthrough imports Main begin;
+</pre></td></tr></table>
+<p>This first command begins the definition of a new theory inside
+Isabelle, which extends the theory <code>Main</code>.  (We&rsquo;re assuming that
+you have Isabelle/HOL available, which declares the <code>Main</code>
+theory.  You should be able to see the list of installed logics in
+Isabelle on the <code>Logics</code> menu).
+</p></li></ul>
+
+<p>Electric terminator sends commands to the proof assistant as you type
+them. 
+At the moment you type the semicolon, the <code>theory</code> command will
+be sent to Isabelle behind the scenes.  First, there is a short delay
+while Isabelle is launched; you may see a welcome message.  Then, you
+may notice that the command briefly is given an orange/pink background
+(or shown in inverse video if you don&rsquo;t have a colour display), before
+you see a window containing text like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">theory Walkthrough 
+</pre></td></tr></table>
+<p>which reflects the command just executed.
+</p>
+
+<p>In this case of this first command, it is hard to see the orange/pink
+stage because the command is processed very quickly on modern machines.
+But in general, processing commands can take an arbitrary amount of time
+(or not terminate at all).  For this reason, Proof General maintains a
+queue of commands which are sent one-by-one from the proof script.  As
+Isabelle successfully processes commands in the queue, they will turn
+from the orange/pink colour into blue.  
+</p>
+<p>The blue regions indicate text that has been read by the prover and
+should not be edited, to avoid confusion between what the prover has
+processed and what you are looking at.  To enforce this (and avoid
+potentially expensive reprocessing) the blue region can be made
+read-only.  This is controlled by the menu item: 
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  Proof-General -&gt; Quick Options -&gt; Read Only
+</pre></td></tr></table>
+<p>The first option &lsquo;Strict Read Only&rsquo; was formerly the default for Proof
+General, and causes the blue region to be <i>locked</i>.  Because of this,
+the term <em>locked region</em> term is used in Proof General documentation
+to mean the blue portion of the text which has been processed, although
+it is no longer locked by default.  The current default is &lsquo;Undo on
+Edit&rsquo; which causes the prover to undo back to any user edits.  So if you
+change a processed piece of text you will need to re-process it.  The
+final option, &lsquo;Freely Edit&rsquo;, allows you to freely edit the buffer
+without causing the prover to reprocess it.  This can quickly lead to
+confusion and a loss of synchronization between what you are reading and
+what the prover has processed, so it is best used sparingly.
+</p>
+<p>Electric terminator mode is popular, but not enabled by default because
+of the principle of least surprise.  Moreover, in Isabelle, the
+semicolon terminators are optional so proof scripts are usually written
+without them to avoid clutter.  You&rsquo;ll notice that although you typed a
+semi-colon it was not included in the buffer!  The electric terminator
+tries to be smart about comments and strings but sometimes it may be
+confused (e.g., adding a semi-colon inside an already written comment),
+or you may need to type several terminator commands together.
+In this case you can use the standard Emacs <b>quote next character</b>,
+typing <kbd>C-q ;</kbd> to quote the semi-colon.  Alternatively you can use
+a prefix argument, as in <kbd>M-3 ;</kbd> to type three semi-colons.
+</p>
+<p>Without using electric terminator, you can trigger processing the text
+up to the current position of the point with the key <kbd>C-c C-RET</kbd>, or
+just up to the next command with <kbd>C-c C-n</kbd>.  We show the rest of the
+example in Isabelle with semi-colons, but these will not appear in the
+final text.
+</p>
+<p>Coq, on the other hand, requires a full-stop terminator at the end of
+each line, so <kbd>C-c C-.</kbd> is the key binding used to turn on
+electric terminator.  If you don&rsquo;t know what the terminator character
+is, you can find the option anyway on the menu:
+<code>Proof-General -&gt; Quick Options -&gt; Processing -&gt; Electric Terminator</code>
+which also shows the key binding.
+</p>
+<p>If you want to use electric terminator, you can customize Proof
+General to enable it everytime if you want, See section <a href="ProofGeneral_9.html#Customizing-Proof-General">Customizing Proof General</a>.  For the common options, customization is easy: just
+use the menu item <code>Proof General -&gt; Quick Options</code> to make your choices,
+and <code>Proof-General -&gt; Quick Options -&gt; Save Options</code> to
+save your choices.
+</p>
+
+
+<ul>
+<li>
+Next type on a new line:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">theorem my_theorem: &quot;A &amp; B --&gt; B &amp; A&quot;;
+</pre></td></tr></table>
+</li></ul>
+
+<p>The goal we have set ourselves to prove
+should be displayed in the <i>goals buffer</i>.
+</p>
+<ul>
+<li> 
+Now type:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">proof
+  assume &quot;A &amp; C&quot;;
+</pre></td></tr></table>
+</li></ul>
+<p>This will update the goals buffer.
+</p>
+<p>But whoops!  That was the wrong command, we typed <code>C</code> instead
+of <code>B</code>.
+</p>
+<ul>
+<li>
+Press <kbd>C-c C-BS</kbd> to pretend that didn&rsquo;t happen.
+</li></ul>
+<p>Note: <kbd>BS</kbd> means the backspace key.  This key press sends an undo
+command to Isabelle, and deletes the <code>assume</code> command from the proof
+script.  If you just want to undo without deleting, you can type
+<kbd>C-c C-u</kbd> instead, or use the left-arrow toolbar navigation button.
+</p>
+<ul>
+<li>
+Instead, let&rsquo;s try:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">  assume &quot;A &amp; B&quot;;
+</pre></td></tr></table>
+<p>Which is better.  
+</p>
+</li><li>
+From this assumption we can get <code>B</code> and <code>A</code> by the
+trivial step <code>..</code> which splits the assumption using an elimination
+step:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">  then obtain B and A ..;
+</pre></td></tr></table>
+
+</li><li>
+Finally, we establish the goal by the trivial step
+<code>..</code> again, which triggers an introduction rule:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">  then show &quot;B &amp; A&quot; ..;
+</pre></td></tr></table>
+</li></ul>
+
+<p>After this proof step, the message from Isabelle indicates that the
+proof has succeeded, so we can conclude the proof with the <code>qed</code>
+command.
+</p>
+<ul>
+<li>
+Finally, type:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">qed;
+</pre></td></tr></table>
+</li></ul>
+
+<p>This last command closes the proof and saves the proved theorem.
+</p>
+<p>Moving the mouse pointer over the qed command now reveals that the
+entire proof has been aggregated into a single segment (if you did this
+before, you would see highlighting of each command separately).
+</p>
+<ul>
+<li> 
+Suppose we decide to call the theorem something more sensible. Move the
+cursor up into the locked region, somewhere between &lsquo;<samp>theorem</samp>&rsquo; and
+&lsquo;<samp>qed</samp>&rsquo;, enter <kbd>C-c C-RET</kbd>.  
+</li></ul>
+
+<p>You see that the locked segment for the whole proof is now unlocked (and
+uncoloured): it is transferred back into the editing region.
+</p>
+<p>The command <kbd>C-c C-RET</kbd> moves the end of the locked region to the
+cursor position, or as near as possible above or below it, sending
+undoing commands or proof commands as necessary.  In this case, the
+locked region will always be moved back to the end of the <code>theory</code>
+line, since that is the closest possible position to the cursor that
+appears before it.  If you simply want to <i>retract</i> the whole file in
+one go, you can use the key <kbd>C-c C-r</kbd> (which corresponds to the up
+arrow on the toolbar), which will automatically move the cursor to
+the top of the file.
+</p>
+<ul>
+<li> 
+Now improve the goal name, for example:
+<table><tr><td>&nbsp;</td><td><pre class="lisp">theorem and_commutes: &quot;A &amp; B --&gt; B &amp; A&quot;
+</pre></td></tr></table>
+<p>You can swiftly replay the rest of the buffer now
+with <kbd>C-c C-b</kbd> (or the down arrow on the toolbar).
+</p></li><li> 
+At the end of the buffer, you may insert the command
+<table><tr><td>&nbsp;</td><td><pre class="lisp">end
+</pre></td></tr></table>
+<p>to complete the theory.  
+</p></li></ul>
+
+<p>Notice that if you right-click on one of the highlighted regions in the
+blue area you will see a context menu for the region.  This includes a
+&ldquo;show/hide&rdquo; option for <i>folding</i> a proof, as well as some editing
+commands for copying the region or rearranging its order in the
+processed text: &ldquo;move up/move down&rdquo;. (These latter commands
+occasionally help you reorder text without needing to reprove it,
+although they risk breaking the proof!)
+</p>
+
+<p>Finally, once you are happy with your theory, you should save the file
+with <kbd>C-x C-s</kbd> before moving on to edit another file or exiting
+Emacs.  If you forget to do this, Proof General or Emacs will surely
+prompt you sooner or later!
+</p>
+
+<hr size="6">
+<a name="Proof-scripts"></a>
+<a name="Proof-scripts-1"></a>
+<h2 class="section">2.2 Proof scripts</h2>
+<a name="index-proof-script"></a>
+<a name="index-scripting"></a>
+
+<p>A <em>proof script</em> is a sequence of commands which constructs
+definitions, declarations, theories, and proofs in a proof
+assistant. Proof General is designed to work with text-based
+<i>interactive</i> proof assistants, where the mode of working is usually a
+dialogue between the human and the proof assistant.  
+</p>
+<p>Primitive interfaces for proof assistants simply present a <em>shell</em>
+(command interpreter) view of this dialogue: the human repeatedly types
+commands to the shell until the proof is completed.  The system responds
+at each step, perhaps with a new list of subgoals to be solved, or
+perhaps with a failure report.  Proof General manages the dialogue to
+show the human only the information which is relevant at each step.
+</p>
+<p>Often we want to keep a record of the proof commands used to prove a
+theorem, to build up a library of proved results.  An easy way to store
+a proof is to keep a text file which contains a proof script; proof
+assistants usually provide facilities to read a proof script from a file
+instead of the terminal.  Using the file, we can <em>replay</em> the proof
+script to prove the theorem again.
+</p>
+<p>Using only a primitive shell interface, it can be tedious to construct
+proof scripts with cut-and-paste.  Proof General helps out by issuing
+commands directly from a proof script file, while it is being written
+and edited.  Proof General can also be used conveniently to replay a
+proof step-by-step, to see the progress at each stage.
+</p>
+<p><em>Scripting</em> is the process of building up a proof script file or
+replaying a proof.  When scripting, Proof General sends proof commands
+to the proof assistant one at a time, and prevents you from editing
+commands which have been successfully completed by the proof assistant,
+to keep synchronization.  Regions of the proof script are analysed
+based on their syntax and the behaviour of the proof assistant after each
+proof command.
+</p>
+
+<hr size="6">
+<a name="Script-buffers"></a>
+<a name="Script-buffers-1"></a>
+<h2 class="section">2.3 Script buffers</h2>
+<a name="index-script-buffer"></a>
+<a name="index-proof-script-mode"></a>
+
+<p>A <em>script buffer</em> is a buffer displaying a proof script.  Its Emacs
+mode is particular to the proof assistant you are using (but it inherits
+from <em>proof-mode</em>).
+</p>
+
+<p>A script buffer is divided into three regions: <em>locked</em>,
+<em>queue</em> and <em>editing</em>.  The proof commands
+in the script buffer can include a number of
+<em>Goal-save sequences</em>.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Locked-queue-and-editing-regions">2.3.1 Locked, queue, and editing regions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">  
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Goal_002dsave-sequences">2.3.2 Goal-save sequences</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">         
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Active-scripting-buffer">2.3.3 Active scripting buffer</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">     
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Locked-queue-and-editing-regions"></a>
+<a name="Locked_002c-queue_002c-and-editing-regions"></a>
+<h3 class="subsection">2.3.1 Locked, queue, and editing regions</h3>
+<a name="index-Locked-region"></a>
+<a name="index-Queue-region"></a>
+<a name="index-Editing-region"></a>
+<a name="index-blue-text"></a>
+<a name="index-pink-text"></a>
+
+
+<p>The three regions that a script buffer is divided into are: </p>
+<ul>
+<li> The <em>locked</em> region, which appears in blue (underlined on monochrome
+displays) and contains commands which have been sent to the proof
+process and verified. The commands in the locked region cannot be
+edited.
+
+</li><li> The <em>queue</em> region, which appears in pink (inverse video) and contains
+commands waiting to be sent to the proof process. Like those in the
+locked region, these commands can&rsquo;t be edited.
+
+</li><li> The <em>editing</em> region, which contains the commands the user is working
+on, and can be edited as normal Emacs text.
+</li></ul>
+
+<p>These three regions appear in the buffer in the order above; that is,
+the locked region is always at the start of the buffer, and the editing
+region always at the end. The queue region only exists if there is input
+waiting to be processed by the proof process.
+</p>
+<p>Proof General has two fundamental operations which transfer commands
+between these regions: <em>assertion</em> (or processing) and
+<em>retraction</em> (or undoing).
+</p>
+<a name="index-Assertion"></a>
+<p><strong>Assertion</strong> causes commands from the editing region to be
+transferred to the queue region and sent one by one to the proof
+process. If the command is accepted, it is transferred to the locked
+region, but if an error occurs it is signalled to the user, and the
+offending command is transferred back to the editing region together
+with any remaining commands in the queue.
+</p>
+<p>Assertion corresponds to processing proof commands, and makes the locked
+region grow.
+</p>
+<a name="index-Retraction"></a>
+<p><strong>Retraction</strong> causes commands to be transferred from the locked
+region to the editing region (again via the queue region) and the
+appropriate &rsquo;undo&rsquo; commands to be sent to the proof process.
+</p>
+<p>Retraction corresponds to undoing commands, and makes the locked region
+shrink.  For details of the commands
+available for doing assertion and retraction,
+See section <a href="#Script-processing-commands">Script processing commands</a>.
+</p>
+
+<hr size="6">
+<a name="Goal_002dsave-sequences"></a>
+<a name="Goal_002dsave-sequences-1"></a>
+<h3 class="subsection">2.3.2 Goal-save sequences</h3>
+<a name="index-goal"></a>
+<a name="index-save"></a>
+<a name="index-goal_002dsave-sequences"></a>
+
+<p>A proof script contains a sequence of commands used to prove one or more
+theorems.
+</p>
+<p>As commands in a proof script are transferred to the locked region, they
+are aggregated into segments which constitute the smallest units which
+can be undone. Typically a segment consists of a declaration or
+definition, or all the text from a <em>goal</em> command to the
+corresponding <em>save</em> (e.g. <code>qed</code>) command, or the individual
+commands in the proof of an unfinished goal.  As the mouse moves over
+the the region, the segment containing the pointer will be highlighted.
+</p>
+<p>Proof General therefore assumes that the proof script has a series of
+proofs which look something like this:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">   goal <var>mythm</var> is <var>G</var>
+   &hellip;
+   save theorem <var>mythm</var>
+</pre></td></tr></table>
+<p>interspersed with comments, definitions, and the like.  Of course, the
+exact syntax and terminology will depend on the proof assistant you use.
+</p>
+<p>The name <var>mythm</var> can appear in a menu for the proof script to help
+quickly find a proof (see section <a href="ProofGeneral_6.html#Imenu-and-Speedbar">Imenu and Speedbar</a>).
+</p>
+
+
+<hr size="6">
+<a name="Active-scripting-buffer"></a>
+<a name="Active-scripting-buffer-1"></a>
+<h3 class="subsection">2.3.3 Active scripting buffer</h3>
+<a name="index-active-scripting-buffer"></a>
+
+<p>You can edit as many script buffers as you want simultaneously, but only
+one buffer at a time can be used to process a proof script
+incrementally: this is the <em>active scripting buffer</em>.
+</p>
+<p>The active scripting buffer has a special indicator: the word
+<code>Scripting</code> appears in its mode line at the bottom of
+the screen.  This is coloured to indicate the status:
+if it has a pink or blue background, the prover is processing the
+text (busy when pink).  If it is in green, the buffer is
+completely processed.
+</p>
+<p>When you use a scripting command, it will automatically turn a buffer
+into the active scripting mode.  You can also do this by hand, via the
+menu command &rsquo;Toggle Scripting&rsquo; or the key <kbd>C-c C-s</kbd>.
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-s</kbd></dt>
+<dd><p><code>proof-toggle-active-scripting</code>
+</p></dd>
+</dl>
+
+<p>When active scripting mode is turned on, several things may happen to
+get ready for scripting (exactly what happens depends on which proof
+assistant you are using and some user settings).  First, the proof
+assistant is started if it is not already running.  Second, a command is
+sent to the proof assistant to change directory to the directory of the
+current buffer.  If the current buffer corresponds to a file, this is
+the directory the file lives in.  This is in case any scripting commands
+refer to files in the same directory as the script.  The third thing
+that may happen is that you are prompted to save some unsaved buffers.
+This is in case any scripting commands may read in files which you are
+editing.  Finally, some proof assistants may automatically read in
+files which the current file depends on implicitly.  In Isabelle, for
+example, there is an implicit dependency between a <code>.ML</code> script
+file and a <code>.thy</code> theory file which defines its theory.
+</p>
+<p>If you have a partly processed scripting buffer and use <kbd>C-c C-s</kbd>,
+or you attempt to use script processing in a new buffer, Proof General
+will ask you if you want to retract what has been proved so far,
+<code>Scripting incomplete in buffer myproof.l, retract?</code>
+or if you want to process the remainder of the active buffer, 
+<code>Completely process buffer myproof.l instead?</code>
+before you can start scripting in a new buffer.  If you refuse to do
+either, Proof General will give an error message: 
+<code>Cannot have more than one active scripting buffer!</code>.
+</p>
+<p>To turn off active scripting, the buffer must be completely processed
+(all blue), or completely unprocessed.  There are two reasons for this.
+First, it would certainly be confusing if it were possible to split
+parts of a proof arbitrarily between different buffers; the dependency
+between the commands would be lost and it would be tricky to replay the
+proof.<a name="DOCF3" href="ProofGeneral_fot.html#FOOT3">(3)</a>  Second, we want to interface
+with file management in the proof assistant.  Proof General assumes that
+a proof assistant may have a notion of which files have been processed,
+but that it will only record files that have been <i>completely</i>
+processed.  For more explanation of the handling of multiple files,
+See section <a href="ProofGeneral_4.html#Switching-between-proof-scripts">Switching between proof scripts</a>.
+</p>
+<dl>
+<dt><a name="index-proof_002dtoggle_002dactive_002dscripting"></a><u>Command:</u> <b>proof-toggle-active-scripting</b><i> &amp;optional arg</i></dt>
+<dd><p>Toggle active scripting mode in the current buffer.<br>
+With <var>arg</var>, turn on scripting iff <var>arg</var> is positive.
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Summary-of-Proof-General-buffers"></a>
+<a name="Summary-of-Proof-General-buffers-1"></a>
+<h2 class="section">2.4 Summary of Proof General buffers</h2>
+<a name="index-shell-buffer"></a>
+<a name="index-goals-buffer"></a>
+<a name="index-response-buffer"></a>
+<a name="index-proof-by-pointing"></a>
+
+<p>Proof General manages several kinds of buffers in Emacs.  Here is a
+summary of the different kinds of buffers you will use when developing
+proofs.
+</p>
+<ul>
+<li> The <em>proof shell buffer</em> is an Emacs shell buffer
+ used to run your proof assistant.  Usually it is hidden from view
+ (but see section <a href="ProofGeneral_4.html#Escaping-script-management">Escaping script management</a>).
+ Communication with the proof shell takes place via two or three
+ intermediate buffers.
+</li><li>  A <em>script buffer</em>, as we have explained, is a buffer for editing a
+ proof script.  The <em>active scripting buffer</em> is the script buffer
+ which is currently being used to send commands to the proof shell.
+</li><li> The <em>goals buffer</em> displays the list of subgoals to be
+ solved for a proof in progress.  During a proof it is usually
+ displayed together with the script buffer.
+ The goals buffer has facility for <em>proof-by-pointing</em>.
+</li><li> The <em>response buffer</em> displays other output from the proof
+ assistant, for example error messages or informative messages.
+ The response buffer is displayed whenever Proof General puts
+ a new message in it.
+</li><li> The <em>trace buffer</em> is a special version of the response
+ buffer.  It may be used to display unusual debugging output from the
+ prover, for example, tracing proof tactics or rewriting procedures.
+ This buffer is also displayed whenever Proof General puts a new message
+ in it (although it may be quickly replaced with the response or goals
+ buffer in two-buffer mode).
+</li></ul>
+
+<p>Normally Proof General will automatically reveal and hide the goals and
+response buffers as necessary during scripting.  However there are ways
+to customize the way the buffers are displayed, for example, to prevent
+auxiliary buffers being displayed at all (see section <a href="ProofGeneral_9.html#Display-customization">Display customization</a>).
+</p>
+<p>The menu <code>Proof General -&gt; Buffers</code> provides a convenient way to
+display or switch to a Proof General buffer: the active scripting
+buffer; the goal or response buffer; the tracing buffer; or the shell
+buffer.  Another command on this menu, <code>Clear Responses</code>, clears
+the response and tracing buffer.
+</p>
+
+<hr size="6">
+<a name="Script-editing-commands"></a>
+<a name="Script-editing-commands-1"></a>
+<h2 class="section">2.5 Script editing commands</h2>
+
+<p>Proof General provides a few functions for editing proof scripts.  The
+generic functions mainly consist of commands to navigate within the
+script.  Specific proof assistant code may add more to these basics.
+</p>
+<a name="index-indent_002dfor_002dtab_002dcommand"></a>
+<a name="index-proof_002dscript_002dindent"></a>
+<p>Indentation is controlled by the user option <code>proof-script-indent</code>
+(see section <a href="ProofGeneral_9.html#User-options">User options</a>).  When indentation is enabled, Proof General
+will indent lines of proof script with the usual Emacs functions,
+particularly <kbd>TAB</kbd>, <code>indent-for-tab-command</code>.
+Unfortunately, indentation in Proof General 4.2pre is somewhat
+slow.  Therefore with large proof scripts, we recommend
+<code>proof-script-indent</code> is turned off.
+</p>
+<p>Here are the commands for moving around in a proof script,
+with their default key-bindings:
+<a name="index-C_002dc-C_002da"></a>
+<a name="index-C_002dc-C_002de"></a>
+<a name="index-C_002dc-C_002d_002e"></a>
+</p><dl compact="compact">
+<dt> <kbd>C-c C-a</kbd></dt>
+<dd><p><code>proof-goto-command-start</code>
+</p></dd>
+<dt> <kbd>C-c C-e</kbd></dt>
+<dd><p><code>proof-goto-command-end</code>
+</p></dd>
+<dt> <kbd>C-c C-.</kbd></dt>
+<dd><p><code>proof-goto-end-of-locked</code>
+</p></dd>
+</dl>
+
+<dl>
+<dt><a name="index-proof_002dgoto_002dcommand_002dstart"></a><u>Command:</u> <b>proof-goto-command-start</b></dt>
+<dd><p>Move point to start of current (or final) command of the script.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dgoto_002dcommand_002dend"></a><u>Command:</u> <b>proof-goto-command-end</b></dt>
+<dd><p>Set point to end of command at point.
+</p></dd></dl>
+
+<a name="index-proof_002dterminal_002dstring"></a>
+<p>The variable <code>proof-terminal-string</code> is a prover-specific string
+to terminate proof commands.  LEGO and Isabelle use a semicolon,
+&lsquo;<samp>;</samp>&rsquo;. Coq employs a full-stop &lsquo;<samp>.</samp>&rsquo;.
+</p>
+<dl>
+<dt><a name="index-proof_002dgoto_002dend_002dof_002dlocked"></a><u>Command:</u> <b>proof-goto-end-of-locked</b><i> &amp;optional switch</i></dt>
+<dd><p>Jump to the end of the locked region, maybe switching to script buffer.<br>
+If called interactively or <var>switch</var> is non-nil, switch to script buffer.
+If called interactively, a mark is set at the current location with &lsquo;<samp><code>push-mark</code></samp>&rsquo;
+</p></dd></dl>
+
+
+
+
+
+
+<hr size="6">
+<a name="Script-processing-commands"></a>
+<a name="Script-processing-commands-1"></a>
+<h2 class="section">2.6 Script processing commands</h2>
+<a name="index-C_002dc-C_002dn"></a>
+<a name="index-C_002dc-C_002du"></a>
+<a name="index-C_002dc-C_002dBS"></a>
+<a name="index-C_002dc-C_002db"></a>
+<a name="index-C_002dc-C_002dr"></a>
+<a name="index-C_002dc-C_002dRET"></a>
+<a name="index-prefix-argument"></a>
+
+<p>Here are the commands for asserting and retracting portions of the proof
+script, together with their default key-bindings.  Sometimes assertion
+and retraction commands can only be issued when the queue is empty.  You
+will get an error message <code>Proof Process Busy!</code> if you try to
+assert or retract when the queue is being processed.<a name="DOCF4" href="ProofGeneral_fot.html#FOOT4">(4)</a>
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-n</kbd></dt>
+<dd><p><code>proof-assert-next-command-interactive</code>
+</p></dd>
+<dt> <kbd>C-c C-u</kbd></dt>
+<dd><p><code>proof-undo-last-successful-command</code>
+</p></dd>
+<dt> <kbd>C-c C-BS</kbd></dt>
+<dd><p><code>proof-undo-and-delete-successful-command</code>
+</p></dd>
+<dt> <kbd>C-c C-RET</kbd></dt>
+<dd><p><code>proof-goto-point</code>
+</p></dd>
+<dt> <kbd>C-c C-b</kbd></dt>
+<dd><p><code>proof-process-buffer</code>
+</p></dd>
+<dt> <kbd>C-c C-r</kbd></dt>
+<dd><p><code>proof-retract-buffer</code>
+</p></dd>
+<dt> <kbd>C-c <var>terminator-character</var></kbd></dt>
+<dd><p><code>proof-electric-terminator-toggle</code>
+</p></dd>
+</dl>
+
+<p>The last command, <code>proof-electric-terminator-toggle</code>, is triggered
+using the character which terminates proof commands for your proof
+assistant&rsquo;s script language.  For LEGO and Isabelle, use <kbd>C-c ;</kbd>,
+for Coq, use <kbd>C-c .</kbd>.  This not really a script processing
+command. Instead, if enabled, it causes subsequent key presses of
+<kbd>;</kbd> or <kbd>.</kbd> to automatically activate
+<code>proof-assert-next-command-interactive</code> for convenience.
+</p>
+<p>Rather than use a file command inside the proof assistant to read a
+proof script, a good reason to use <kbd>C-c C-b</kbd>
+(<code>proof-process-buffer</code>) is that with a faulty proof script (e.g.,
+a script you are adapting to prove a different theorem), Proof General
+will stop exactly where the proof script fails, showing you the error
+message and the last processed command.  So you can easily continue
+development from exactly the right place in the script.
+</p>
+<p>Here is the full set of script processing commands.
+</p>
+<dl>
+<dt><a name="index-proof_002dassert_002dnext_002dcommand_002dinteractive"></a><u>Command:</u> <b>proof-assert-next-command-interactive</b></dt>
+<dd><p>Process until the end of the next unprocessed command after point.<br>
+If inside a comment, just process until the start of the comment.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dundo_002dlast_002dsuccessful_002dcommand"></a><u>Command:</u> <b>proof-undo-last-successful-command</b></dt>
+<dd><p>Undo last successful command at end of locked region.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dundo_002dand_002ddelete_002dlast_002dsuccessful_002dcommand"></a><u>Command:</u> <b>proof-undo-and-delete-last-successful-command</b></dt>
+<dd><p>Undo and delete last successful command at end of locked region.<br>
+Useful if you typed completely the wrong command.
+Also handy for proof by pointing, in case the last proof-by-pointing
+command took the proof in a direction you don&rsquo;t like.
+</p>
+<p>Notice that the deleted command is put into the Emacs kill ring, so
+you can use the usual &lsquo;<samp>yank</samp>&rsquo; and similar commands to retrieve the
+deleted text.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-proof_002dgoto_002dpoint"></a><u>Command:</u> <b>proof-goto-point</b></dt>
+<dd><p>Assert or retract to the command at current position.<br>
+Calls &lsquo;<samp><code>proof-assert-until-point</code></samp>&rsquo; or &lsquo;<samp><code>proof-retract-until-point</code></samp>&rsquo; as
+appropriate.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dprocess_002dbuffer"></a><u>Command:</u> <b>proof-process-buffer</b></dt>
+<dd><p>Process the current (or script) buffer, and maybe move point to the end.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dretract_002dbuffer"></a><u>Command:</u> <b>proof-retract-buffer</b><i> &amp;optional called-interactively</i></dt>
+<dd><p>Retract the current buffer, and maybe move point to the start.<br>
+Point is only moved according to &lsquo;<samp><code>proof-follow-mode</code></samp>&rsquo;, if
+<var>called-interactively</var> is non-nil, which is the case for all
+interactive calls.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002delectric_002dterminator_002dtoggle"></a><u>Command:</u> <b>proof-electric-terminator-toggle</b><i> &amp;optional arg</i></dt>
+<dd><p>Toggle &lsquo;<samp><code>proof-electric-terminator-enable</code></samp>&rsquo;. With <var>arg</var>, turn on iff ARG&gt;0.<br>
+This function simply uses <code>customize-set-variable</code> to set the variable.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dassert_002duntil_002dpoint_002dinteractive"></a><u>Command:</u> <b>proof-assert-until-point-interactive</b></dt>
+<dd><p>Process the region from the end of the locked-region until point.<br>
+If inside a comment, just process until the start of the comment.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dretract_002duntil_002dpoint_002dinteractive"></a><u>Command:</u> <b>proof-retract-until-point-interactive</b><i> &amp;optional delete-region</i></dt>
+<dd><p>Tell the proof process to retract until point.<br>
+If invoked outside a locked region, undo the last successfully processed
+command.  If called with a prefix argument (<var>delete-region</var> non-nil), also
+delete the retracted region from the proof-script.
+</p></dd></dl>
+
+<p>As experienced Emacs users will know, a <i>prefix argument</i> is a numeric
+argument supplied by some key sequence typed before a command key
+sequence.  You can supply a specific number by typing &lt;Meta&gt; with
+the digits, or a &ldquo;universal&rdquo; prefix of <kbd>C-u</kbd>.  See
+See <a href="../(emacs/_0029Arguments.html#g_t_0029Arguments">((emacs))Arguments</a> for more details.  Several Proof General
+commands, like <code>proof-retract-until-point-interactive</code>, may accept
+a <i>prefix argument</i> to adjust their behaviour somehow.
+</p>
+
+<hr size="6">
+<a name="Proof-assistant-commands"></a>
+<a name="Proof-assistant-commands-1"></a>
+<h2 class="section">2.7 Proof assistant commands</h2>
+<a name="index-C_002dc-C_002dp"></a>
+<a name="index-C_002dc-C_002dh"></a>
+<a name="index-C_002dc-C_002dc"></a>
+<a name="index-C_002dc-C_002dv"></a>
+<a name="index-C_002dc-C_002df"></a>
+<a name="index-C_002dc-C_002dt"></a>
+
+<p>There are several commands for interacting with the proof assistant and
+Proof General, which do not involve the proof script.  Here are the
+key-bindings and functions.
+</p>
+<dl compact="compact">
+<dt> <kbd>C-c C-l</kbd></dt>
+<dd><p><code>proof-display-some-buffers</code>
+</p></dd>
+<dt> <kbd>C-c C-p</kbd></dt>
+<dd><p><code>proof-prf</code>
+</p></dd>
+<dt> <kbd>C-c C-t</kbd></dt>
+<dd><p><code>proof-ctxt</code>
+</p></dd>
+<dt> <kbd>C-c C-h</kbd></dt>
+<dd><p><code>proof-help</code>
+</p></dd>
+<dt> <kbd>C-c C-i</kbd></dt>
+<dd><p><code>proof-query-identifier</code>
+</p></dd>
+<dt> <kbd>C-c C-f</kbd></dt>
+<dd><p><code>proof-find-theorems</code>
+</p></dd>
+<dt> <kbd>C-c C-w</kbd></dt>
+<dd><p><code>pg-response-clear-displays</code>
+</p></dd>
+<dt> <kbd>C-c C-c</kbd></dt>
+<dd><p><code>proof-interrupt-process</code>
+</p></dd>
+<dt> <kbd>C-c C-v</kbd></dt>
+<dd><p><code>proof-minibuffer-cmd</code>
+</p></dd>
+<dt> <kbd>C-c C-s</kbd></dt>
+<dd><p><code>proof-shell-start</code>
+</p></dd>
+<dt> <kbd>C-c C-x</kbd></dt>
+<dd><p><code>proof-shell-exit</code>
+</p></dd>
+</dl>
+
+
+<dl>
+<dt><a name="index-proof_002ddisplay_002dsome_002dbuffers"></a><u>Command:</u> <b>proof-display-some-buffers</b></dt>
+<dd><p>Display the reponse, trace, goals, or shell buffer, rotating.<br>
+A fixed number of repetitions of this command switches back to
+the same buffer.
+Also move point to the end of the response buffer if it&rsquo;s selected.
+If in three window or multiple frame mode, display two buffers.
+The idea of this function is to change the window-&gt;buffer mapping
+without adjusting window layout.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dprf"></a><u>Command:</u> <b>proof-prf</b></dt>
+<dd><p>Show the current proof state.<br>
+Issues a command to the assistant based on <code>proof-showproof-command</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dctxt"></a><u>Command:</u> <b>proof-ctxt</b></dt>
+<dd><p>Show the current context.<br>
+Issues a command to the assistant based on <code>proof-context-command</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dhelp"></a><u>Command:</u> <b>proof-help</b></dt>
+<dd><p>Show a help or information message from the proof assistant.<br>
+Typically, a list of syntax of commands available.
+Issues a command to the assistant based on <code>proof-info-command</code>.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dquery_002didentifier"></a><u>Command:</u> <b>proof-query-identifier</b><i> string</i></dt>
+<dd><p>Query the prover about the identifier <var>string</var>.<br>
+If called interactively, <var>string</var> defaults to the current word near point.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dfind_002dtheorems"></a><u>Command:</u> <b>proof-find-theorems</b><i> arg</i></dt>
+<dd><p>Search for items containing given constants.<br>
+Issues a command based on <var>arg</var> to the assistant, using <code>proof-find-theorems-command</code>.
+The user is prompted for an argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-pg_002dresponse_002dclear_002ddisplays"></a><u>Command:</u> <b>pg-response-clear-displays</b></dt>
+<dd><p>Clear Proof General response and tracing buffers.<br>
+You can use this command to clear the output from these buffers when
+it becomes overly long.  Particularly useful when &lsquo;<samp><code>proof-tidy-response</code></samp>&rsquo;
+is set to nil, so responses are not cleared automatically.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dinterrupt_002dprocess"></a><u>Command:</u> <b>proof-interrupt-process</b></dt>
+<dd><p>Interrupt the proof assistant.  Warning! This may confuse Proof General.
+</p>
+<p>This sends an interrupt signal to the proof assistant, if Proof General
+thinks it is busy.
+</p>
+<p>This command is risky because we don&rsquo;t know whether the last command
+succeeded or not.  The assumption is that it didn&rsquo;t, which should be true
+most of the time, and all of the time if the proof assistant has a careful
+handling of interrupt signals.
+</p>
+<p>Some provers may ignore (and lose) interrupt signals, or fail to indicate
+that they have been acted upon yet stop in the middle of output.
+In the first case, PG will terminate the queue of commands at the first
+available point.  In the second case, you may need to press enter inside
+the prover command buffer (e.g., with Isabelle<var>2009</var> press RET inside <strong>isabelle</strong>).
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dminibuffer_002dcmd"></a><u>Command:</u> <b>proof-minibuffer-cmd</b><i> cmd</i></dt>
+<dd><p>Send <var>cmd</var> to proof assistant.  Interactively, read from minibuffer.<br>
+The command isn&rsquo;t added to the locked region.
+</p>
+<p>If a prefix arg is given and there is a selected region, that is
+pasted into the command.  This is handy for copying terms, etc from
+the script.
+</p>
+<p>If &lsquo;<samp><code>proof-strict-state-preserving</code></samp>&rsquo; is set, and &lsquo;<samp><code>proof-state-preserving-p</code></samp>&rsquo;
+is configured, then the latter is used as a check that the command
+will be safe to execute, in other words, that it won&rsquo;t ruin
+synchronization.  If when applied to the command it returns false,
+then an error message is given.
+</p>
+<p><var>warning</var>: this command risks spoiling synchronization if the test
+&lsquo;<samp><code>proof-state-preserving-p</code></samp>&rsquo; is not configured, if it is
+only an approximate test, or if &lsquo;<samp><code>proof-strict-state-preserving</code></samp>&rsquo;
+is off (nil).
+</p></dd></dl>
+
+<p>As if the last two commands weren&rsquo;t risky enough, there&rsquo;s also a command
+which explicitly adjusts the end of the locked region, to be used in
+extreme circumstances only.  See section <a href="ProofGeneral_4.html#Escaping-script-management">Escaping script management</a>.
+</p>
+
+<p>There are a few commands for starting, stopping, and restarting the
+proof assistant process.  The first two have key bindings but restart
+does not.  As with any Emacs command, you can invoke these with
+<kbd>M-x</kbd> followed by the command name.
+</p>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dstart"></a><u>Command:</u> <b>proof-shell-start</b></dt>
+<dd><p>Initialise a shell-like buffer for a proof assistant.<br>
+Does nothing if proof assistant is already running.
+</p>
+<p>Also generates goal and response buffers.
+</p>
+<p>If &lsquo;<samp><code>proof-prog-name-ask</code></samp>&rsquo; is set, query the user for the
+process command.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002dexit"></a><u>Command:</u> <b>proof-shell-exit</b><i> &amp;optional dont-ask</i></dt>
+<dd><p>Query the user and exit the proof process.
+</p>
+<p>This simply kills the &lsquo;<samp><code>proof-shell-buffer</code></samp>&rsquo; relying on the hook function
+</p>
+<p>&lsquo;<samp><code>proof-shell-kill-function</code></samp>&rsquo; to do the hard work. If optional
+argument <var>dont-ask</var> is non-nil, the proof process is terminated
+without confirmation.
+</p>
+<p>The kill function uses &lsquo;<samp>&lt;PA&gt;-quit-timeout</samp>&rsquo; as a timeout to wait
+after sending &lsquo;<samp><code>proof-shell-quit-cmd</code></samp>&rsquo; before rudely killing the process.
+</p>
+<p>This function should not be called if
+&lsquo;<samp><code>proof-shell-exit-in-progress</code></samp>&rsquo; is t, because a recursive call of
+&lsquo;<samp><code>proof-shell-kill-function</code></samp>&rsquo; will give strange errors.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dshell_002drestart"></a><u>Command:</u> <b>proof-shell-restart</b></dt>
+<dd><p>Clear script buffers and send &lsquo;<samp><code>proof-shell-restart-cmd</code></samp>&rsquo;.<br>
+All locked regions are cleared and the active scripting buffer
+deactivated.
+</p>
+<p>If the proof shell is busy, an interrupt is sent with
+&lsquo;<samp><code>proof-interrupt-process</code></samp>&rsquo; and we wait until the process is ready.
+</p>
+<p>The restart command should re-synchronize Proof General with the proof
+assistant, without actually exiting and restarting the proof assistant
+process.
+</p>
+<p>It is up to the proof assistant how much context is cleared: for
+example, theories already loaded may be &quot;cached&quot; in some way,
+so that loading them the next time round only performs a re-linking
+operation, not full re-processing.  (One way of caching is via
+object files, used by Lego and Coq).
+</p></dd></dl>
+
+
+
+
+<hr size="6">
+<a name="Toolbar-commands"></a>
+<a name="Toolbar-commands-1"></a>
+<h2 class="section">2.8 Toolbar commands</h2>
+
+<p>The toolbar provides a selection of functions for asserting and
+retracting portions of the script, issuing non-scripting commands to
+inspect the prover&rsquo;s state, and inserting &quot;goal&quot; and &quot;save&quot; type
+commands.  The latter functions are not available on keys, but are
+available from the from the menu, or via <kbd>M-x</kbd>, as well as the
+toolbar.
+</p>
+<dl>
+<dt><a name="index-proof_002dissue_002dgoal"></a><u>Command:</u> <b>proof-issue-goal</b><i> arg</i></dt>
+<dd><p>Write a goal command in the script, prompting for the goal.<br>
+Issues a command based on <var>arg</var> to the assistant, using <code>proof-goal-command</code>.
+The user is prompted for an argument.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-proof_002dissue_002dsave"></a><u>Command:</u> <b>proof-issue-save</b><i> arg</i></dt>
+<dd><p>Write a save/qed command in the script, prompting for the theorem name.<br>
+Issues a command based on <var>arg</var> to the assistant, using <code>proof-save-command</code>.
+The user is prompted for an argument.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Interrupting-during-trace-output"></a>
+<a name="Interrupting-during-trace-output-1"></a>
+<h2 class="section">2.9 Interrupting during trace output</h2>
+
+<p>If your prover generates output which is recognized as tracing output in
+Proof General, you may need to know about a special provision for
+interrupting the prover process.
+If the trace output is voluminous, perhaps looping, it may be difficult
+to interrupt with the ordinary <kbd>C-c C-c</kbd>
+(<code>proof-interrupt-process</code>) or the corresponding button/menu.  In
+this case, you should try Emacs&rsquo;s <b>quit key</b>, <kbd>C-g</kbd>.  This will
+cause a quit in any current editing commands, as usual, but during
+tracing output it will also send an interrupt signal to the prover.
+Hopefully this will stop the tracing output, and Emacs should catch up
+after a short delay.
+</p>
+<p>Here&rsquo;s an explanation of the reason for this special provision.  When
+large volumes of output from the prover arrive quickly in Emacs, as
+typically is the case during tracing (especially tracing looping
+tactics!), Emacs may hog the CPU and spend all its time updating the
+display with the trace output.  This is especially the case when
+features like output fontification and token display are active.  If
+this happens, ordinary user input in Emacs is not processed, and it
+becomes difficult to do normal editing.  The root of the problem is that
+Emacs runs in a single thread, and pending process output is dealt with
+before pending user input.  Whether or not you see this problem depends
+partly on the processing power of your machine (or CPU available to
+Emacs when the prover is running).  One way to test is to start an Emacs
+shell with <kbd>M-x shell</kbd> and type a command such as <code>yes</code> which
+produces output indefinitely.  Now see if you can interrupt the process!
+(Warning &mdash; on slower machines especially, this can cause lockups, so
+use a fresh Emacs.)
+</p>
+
+
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Basic-Script-Management" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

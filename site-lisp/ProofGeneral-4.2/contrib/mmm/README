@@ -1,0 +1,122 @@
+
+                          MMM Mode for Emacs
+                          ==================
+
+OVERVIEW
+
+  MMM Mode is a minor mode for Emacs that allows Multiple Major Modes
+  to coexist in one buffer.  It is well-suited to editing:
+
+  * Preprocessed code, such as server-side Perl or PHP embedded in HTML
+  * Code generating code, such as HTML output by CGI scripts
+  * Embedded code, such as Javascript in HTML
+  * Literate programming: code interspersed with documentation, e.g. Noweb
+
+INSTALLATION
+
+  MMM Mode has a standard GNU configure-driven installation.  (See the
+  file INSTALL for generic instructions, most of which don't apply.)
+  To install in the standard locations, unpack the archive, `cd' to
+  the mmm-mode-X.X.X directory created, and run these commands:
+
+    ./configure
+    make
+    make install
+
+  Alternately, since currently MMM Mode is written in pure Emacs Lisp,
+  you could just copy all the *.el files in the distribution to a
+  directory in your `load-path', and optionally byte-compile them
+  manually (see the Emacs Manual).  The configure installation also
+  installs the MMM Mode info manual in your site info directory, so if
+  you're installing manually, you might want to do that too.
+
+  If you're installing from the CVS version, you won't have the
+  configure script.  If you have the automake/autoconf tools
+  installed, you can run the script `autogen.sh' first, and then
+  proceed as above.  Otherwise, you'll have to copy the *.el files
+  manually as described above.
+
+  If you have more than one version of emacs installed and want to
+  use MMM in a version other than /usr/bin/emacs, you must set the
+  environment variable EMACS before running `configure', e.g.
+
+    EMACS=/usr/bin/xemacs ./configure
+    make
+    make install
+
+  If you want to use MMM in more than one version of emacs, you must
+  either have separate site-lisp directories (such as Debian does), or
+  load it from source every time; byte-compiled files are not portable
+  between emacsen.
+
+CONFIGURATION
+
+  Once MMM Mode is installed, it has to be configured correctly.  This
+  can be done in a site-start file or in user's initialization files;
+  usually the latter is preferable, except possibly for autoloads.
+  First the package needs to be loaded, with either
+
+    (require 'mmm-mode)
+
+  or instead, to save time during emacs startup,
+
+    (require 'mmm-auto)
+
+  Then you will probably want to set something like this:
+
+    (setq mmm-global-mode 'maybe)
+    (mmm-add-mode-ext-class 'html-mode "\\.php\\'" 'html-php)
+
+  The first line tells MMM Mode to load itself whenever you open an
+  appropriate file, and the second is an example which says to notice
+  PHP regions in html-mode files having a `.php' extension.  Both
+  lines are necessary.
+
+  You will, of course, want to change and duplicate the second line
+  according to your needs. either of the first two parameters can be
+  `nil', meaning not to consider that criterion.  For example, if all
+  your html files, regardless of extension, are Mason components, you
+  will want something like:
+
+    (mmm-add-mode-ext-class 'html-mode nil 'mason)
+
+  whereas if all your files with a `.nw' extension, regardless of
+  primary mode (some may be LaTeX, others HTML, say) are Noweb, you
+  will prefer
+
+    (mmm-add-mode-ext-class nil "\\.nw\\'" 'noweb)
+
+  See the info file for more extensive documentation, and for other
+  configuration options.
+
+DOCUMENTATION
+
+  For further information, see (in order) the accompanying info file,
+  the documentation strings of functions and variables, the comments
+  in the source code, and the source code itself.
+
+UPDATES
+
+  The latest version of MMM Mode should always be available from
+  http://sourceforge.net/projects/mmm-mode
+
+BUG REPORTS
+
+  Bug reports and suggestions can be submitted at
+  <http://sourceforge.net/tracker/?group_id=8658&atid=108658>, or
+  through email to <viritrilbia@users.sourceforge.net>.
+
+CONTACT INFO
+
+  MMM Mode is written and maintained by Michael Shulman,
+  <viritrilbia@users.sourceforge.net>, and others; a list of some
+  contributors can be found on the Sourceforge project.
+
+MAILING LIST
+
+  To subscribe to the MMM Mode mailing list, visit
+  <http://lists.sourceforge.net/mailman/listinfo/mmm-mode-discuss>.
+  The mailing list receives announcements of new releases and provides
+  a forum for discussion of bugs and features.
+
+  Thanks for using MMM Mode!

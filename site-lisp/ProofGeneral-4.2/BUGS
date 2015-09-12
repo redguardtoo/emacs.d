@@ -1,0 +1,111 @@
+-*- outline -*-
+
+* Known Bugs and Workarounds for Proof General.
+
+For latest, see: http://proofgeneral.inf.ed.ac.uk/trac
+See also FAQ:    http://proofgeneral.inf.ed.ac.uk/FAQ
+
+The bugs here are split into problems which are generic,
+and those which only apply to particular provers.  
+
+The FAQ mentions other issues which are not necessarily PG bugs.
+
+This list is incomplete and only occasionally updated, please search
+on Trac for current issues.
+
+
+* Reporting bugs
+
+If you have a problem that is not mentioned here, please visit the
+Trac at the address above to add a ticket.  Please describe your
+problem carefully, include a short demonstration file and tell us the
+exact version of Emacs and Proof General that you are using.
+
+
+* General issues
+
+** If the proof assistant goes into a loop displaying lots of information
+
+It may be difficult or impossible to interrupt it, because Emacs
+doesn't get a chance to process the C-c C-c keypress or "Stop" button
+push (or anything else).  In this situation, you will need to send an
+interrupt to the (e.g.) Isabelle process from another shell.  If that 
+doesn't stop things, you can try 'kill -FPE <emacs-pid>'.  
+This problem can happen with looping rewrite rules in the Isabelle
+simplifier, when tracing rewriting.  It seems to be worse on 
+certain architectures, and slower machines.  
+
+** Glitches in display handling, esp with multiple frames
+
+Unfortunately the handling of the display is very difficult to manage
+because the API provided by Emacs is quirky and varies between
+versions.  If the eager display/tear-down of frames is annoying you,
+you may customize the variable `proof-shell-fiddle-frames' to nil to
+reduce it a bit.  To prevent eagerly displaying new frames at on
+starting the shell, you can also add a mode hook to set
+`proof-eagerly-raise' e.g.:
+  
+  (add-hook 'proof-goals-mode-hook 
+    (lambda () (setq proof-eagerly-raise nil)))
+  (add-hook 'proof-response-mode-hook 
+    (lambda () (setq proof-eagerly-raise nil)))
+
+Generally, the best way of working with multiple frames is to try not
+to stop/start the proof assistant too much (this involves killing
+buffers, which spoils the frame/buffer correspondence).
+
+** Using C-g can leave script management in a mess (rare).  
+
+The code is not fully protected from Emacs interrupts.
+Workaround: Don't type C-g while script management is processing.  
+If you do, use proof-restart-scripting to be sure of synchronizing.
+
+** When proof-rsh-command is set to "ssh host", C-c C-c broken
+
+The whole process may be killed instead of interrupted.  This isn't a
+bug in Proof General, but the behaviour of ssh.  Try using rsh
+instead, it is said to forward signals to the remote command.
+
+** In tty mode, the binding C-c C-RET has no effect.  
+
+Workaround: manually bind C-c RET to 'proof-goto-point instead.
+
+** Prover does not lock/may not notice dirty files
+
+Files are not locked when they are being read by the prover, so a long
+file could be edited and saved as the prover is processing it,
+resulting in a loss of synchronization between Emacs and the proof
+assistant.  Files ought to be coloured red while they are being
+processed, just as single lines are.  Workaround: be careful not to
+edit a file as it is being read by the proof assistant.
+
+* Problems with Isabelle
+
+** Issues with tracing mode 
+
+Large volumes of output can cause Emacs to hog CPU spending
+all its time processing the output (esp with fontifying and X-symbol
+decoding).   It becomes difficult to use normal editing commands,
+even C-c C-c to interrupt the prover.  Workaround: hitting C-g,
+the Emacs quit key, will interrupt the prover in this state.
+See manual for further description of this.
+
+
+* Problems with Coq
+
+** Multiple file handling and auto-compilation is incomplete
+
+** C-c C-a C-i on long intro lines breaks line the wrong way.
+
+** coqtags doesn't find all declarations. 
+
+It cannot handle lists e.g., with "Parameter x,y:nat" it only tags x
+but not y. [The same problem exists for legotags] Workaround: don't
+rely too much on the etags mechanism.
+
+
+* LEGO Proof General Bugs
+
+See lego/BUGS
+
+

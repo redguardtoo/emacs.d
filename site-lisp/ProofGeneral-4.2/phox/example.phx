@@ -1,0 +1,22 @@
+(*
+    Example proof script for PhoX Proof General
+
+    example.phx,v 12.0 2011/10/13 10:54:51 da Exp
+*)
+
+(*
+goal /\n:N (ack n N1 >= N2).
+intro 2.
+elim H.
+trivial.
+elim -1 [case] H0.
+trivial.
+trivial.
+save ack_lem7.
+*)
+
+prop (* test *) (* just un test *) test /\X (X -> X).
+print $0.
+trivial.
+save.
+

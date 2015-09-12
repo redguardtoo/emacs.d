@@ -1,0 +1,871 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 11. Coq Proof General</title>
+
+<meta name="description" content="Proof General: 11. Coq Proof General">
+<meta name="keywords" content="Proof General: 11. Coq Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_11.html#LEGO-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_13.html#Isabelle-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Coq-Proof-General"></a>
+<a name="Coq-Proof-General-1"></a>
+<h1 class="chapter">11. Coq Proof General</h1>
+
+<p>Coq Proof General is an instantiation of Proof General for the Coq proof
+assistant.  It supports most of the generic features of Proof General.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Coq_002dspecific-commands">11.1 Coq-specific commands</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Multiple-File-Support">11.2 Multiple File Support</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Editing-multiple-proofs">11.3 Editing multiple proofs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#User_002dloaded-tactics">11.4 User-loaded tactics</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Holes-feature">11.5 Holes feature</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Proof_002dTree-Visualization">11.6 Proof-Tree Visualization</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Coq_002dspecific-commands"></a>
+<a name="Coq_002dspecific-commands-1"></a>
+<h2 class="section">11.1 Coq-specific commands</h2>
+<a name="index-C_002dc-C_002da-C_002di-1"></a>
+<a name="index-C_002dc-C_002da-C_002da"></a>
+<a name="index-C_002dc-C_002da-C_002ds"></a>
+<a name="index-C_002dc-C_002da-C_002de"></a>
+<a name="index-C_002dc-C_002da-C_002do"></a>
+
+<p>Coq Proof General supplies the following key-bindings:
+</p><dl compact="compact">
+<dt> <kbd>C-c C-a C-i</kbd>   </dt>
+<dd><p>Inserts &ldquo;Intros &rdquo; 
+</p></dd>
+<dt> <kbd>C-c C-a C-a</kbd></dt>
+<dd><p>Inserts &ldquo;Apply &rdquo; 
+</p></dd>
+<dt> <kbd>C-c C-a C-s</kbd></dt>
+<dd><p>Inserts &ldquo;Section &rdquo;
+</p></dd>
+<dt> <kbd>C-c C-a C-e</kbd></dt>
+<dd><p>Inserts &ldquo;End &lt;section-name&gt;.&rdquo; (this should work well with nested sections).
+</p></dd>
+<dt> <kbd>C-c C-a C-o</kbd></dt>
+<dd><p>Prompts for a SearchIsos argument.
+</p></dd>
+</dl>
+
+
+<hr size="6">
+<a name="Multiple-File-Support"></a>
+<a name="Multiple-File-Support-1"></a>
+<h2 class="section">11.2 Multiple File Support</h2>
+
+<p>Since version 4.1 Coq Proof General has multiple file support. It
+consists of the following points:
+</p>
+<dl compact="compact">
+<dt> Restarting <code>coqtop</code> when changing the active scripting buffer</dt>
+<dd><p>Different buffers may require different load path&rsquo; or different
+sets of <code>-I</code> options. Because Coq cannot undo changes in the
+load path, Proof General is forced to restart <code>coqtop</code> when
+the active scripting buffer changes.
+</p></dd>
+<dt> Locking ancestors</dt>
+<dd><p>Locking those buffers on which the current active scripting
+buffer depends. This is controlled by the user option
+<code>coq-lock-ancestors</code>, 
+<a href="#Customizing-Coq-Multiple-File-Support">Customizing Coq Multiple File Support</a> and 
+<a href="#Locking-Ancestors">Locking Ancestors</a>.
+</p></dd>
+<dt> (Re-)Compilation </dt>
+<dd><p>Before a <code>Require</code> command is processed it may be necessary
+to save and compile some buffers. Because this feature
+conflicts with existing customization habits, it is switched off
+by default. When it is properly configured, one can freely switch
+between different buffers. Proof General will compile the
+necessary files whenever a <code>Require</code> command is processed. 
+</p>
+<p>The compilation feature does currently not support ML modules.
+</p></dd>
+</dl>
+
+<p>The current version works reliably, even when stress-tested with
+changing random files in large Coq projects. However, some
+features have been spared for the next release, <a href="#Current-Limitations">Current Limitations</a>.
+</p>
+<p>To enable the automatic compilation feature there are three
+points to adhere to:
+</p>
+<ul>
+<li>
+The option <code>coq-compile-before-require</code> must be
+turned on (menu <code>Coq -&gt; Settings -&gt; Compile Before Require</code>).
+</li><li> 
+Nonstandard load path elements <em>must</em> be configured in the
+option <code>coq-load-path</code>. <code>-I</code> options in
+<code>coq-prog-name</code> or <code>coq-prog-args</code> must be deleted.
+</li><li>
+In <code>coq-load-path</code> use strings <code>&quot;dir&quot;</code> for <code>-I</code>
+options and lists of two strings <code>(&quot;dir&quot; &quot;path&quot;)</code> for
+<code>-R &quot;dir&quot; -as &quot;path&quot;</code> (for more details see the
+documentation of &lsquo;coq-load-path&rsquo; or <a href="#Customizing-Coq-Multiple-File-Support">Customizing Coq Multiple File Support</a>).
+</li><li>
+For a nonstandard compilation procedure and limited ML module
+support, <code>coq-compile-command</code> can be set to an external
+compilation command. For standard dependency analysis with
+<code>coqdep</code> and compilation with <code>coqc</code> the option
+<code>coq-compile-command</code> can be left empty. In this case Proof
+General calls <code>coqdep</code> and <code>coqc</code> as needed.
+</li></ul>
+
+
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Automatic-Compilation-in-Detail">11.2.1 Automatic Compilation in Detail</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Locking-Ancestors">11.2.2 Locking Ancestors</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Customizing-Coq-Multiple-File-Support">11.2.3 Customizing Coq Multiple File Support</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Current-Limitations">11.2.4 Current Limitations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Automatic-Compilation-in-Detail"></a>
+<a name="Automatic-Compilation-in-Detail-1"></a>
+<h3 class="subsection">11.2.1 Automatic Compilation in Detail</h3>
+
+<p>When <code>coq-compile-before-require</code> is enabled, Proof
+General looks for <code>Require</code> commands in text that gets
+asserted (i.e., in text that is moved from the editing region to
+the queue region, <a href="ProofGeneral_3.html#Locked-queue-and-editing-regions">Locked, queue, and editing regions</a>). If
+Proof General finds a <code>Require</code> command, it checks the
+dependencies and (re-)compiles files as necessary. Only after
+this compilation is finished, Proof General starts sending the
+asserted text to the Coq process. 
+</p>
+<p><code>Declare ML Module</code> commands are currently not recognized.
+</p>
+<p>Proof General uses <code>coqdep</code> in order to translate the
+qualified identifiers in <code>Require</code> commands to coq library
+file names. Therefore, in Coq version prior to <code>8.3pl2</code>,
+<code>Require Arith</code> works, while
+<code>Require Arith.Le</code> gives an error. The use of <code>coqdep</code>
+is also the reason
+why nonstandard load path elements must be configured in
+<code>coq-load-path</code>. 
+</p>
+<p>Once the library file name has been determined, its dependencies
+must be checked and out-of-date files must be compiled. This can
+either be done internally, by Proof General itself, or by an
+external command. If <code>coq-compile-command</code> is the empty
+string, Proof General does dependency checking and compilation
+itself. Otherwise the command in <code>coq-compile-command</code> is
+started as an external process after substituting certain keys,
+<a href="#Customizing-Coq-Multiple-File-Support">Customizing Coq Multiple File Support</a>. 
+</p>
+<p>For an external compilation command Proof General uses the
+general compilation facilities of Emacs
+(See <a href="../emacs/Compilation.html#Compilation">(emacs)Compilation</a>) with its own customization variables.
+The compilation command must be customized in
+<code>coq-compile-command</code> and the flag
+<code>coq-confirm-external-compilation</code> (menu <code>Coq -&gt;
+Settings -&gt; Confirm External Compilation</code>)
+determines
+whether the user must confirm the compilation command. The output
+of the compilation appears then in the <code>*compilation*</code>
+buffer.
+</p>
+<p>When Proof General compiles itself, output is only shown in case
+of errors. It then appears in the buffer
+<code>*coq-compile-response*</code>. With internal as well as with external
+compilation 
+one can use <code>C-x `</code> (bound to <code>next-error</code>,
+See <a href="../emacs/Compilation-Mode.html#Compilation-Mode">(emacs)Compilation Mode</a>) to jump to error locations.
+Note however, that <code>coqdep</code> does not produce error messages
+with location information, so <code>C-x `</code> cannot work for errors
+from <code>coqdep</code>.
+</p>
+<p>For simplicity, internal compilation is currently done with
+synchronously running external commands. Therefore, for internal
+compilation, Emacs is locked and unresponsive until the
+compilation finishes.
+</p>
+<p>Proof General cannot know if some library files have been updated
+outside of Proof General, therefore, it must perform the
+dependency checking for each <code>Require</code> command. If the
+continuous confirmation of the external compilation commands
+becomes tedious, disable
+<code>coq-confirm-external-compilation</code> (see menu <code>Coq -&gt;
+Settings</code>).
+</p>
+<p>When a <code>Require</code> command causes a compilation of some files
+one may wish to save some buffers to disk beforehand. The option
+<code>coq-compile-auto-save</code> controls how and which files are
+saved. There are two orthogonal choices: One may wish to save all
+or only the Coq source files, and, one may or may not want to
+confirm the saving of each file. 
+</p>
+
+<hr size="6">
+<a name="Locking-Ancestors"></a>
+<a name="Locking-Ancestors-1"></a>
+<h3 class="subsection">11.2.2 Locking Ancestors</h3>
+
+
+<p>Locking ancestor files works as a side effect of dependency
+checking. This means that ancestor locking does only work when
+Proof General performs dependency checking and compilation
+itself. If an external command is used, Proof General does not see
+all dependencies and can therefore only lock direct ancestors.
+</p>
+<p>Currently, locking ancestor files might not exactly do what Coq
+users expect. There are two ways around this problem: 
+You can either switch ancestor locking completely off via
+<code>coq-lock-ancestors</code> (<a href="#Customizing-Coq-Multiple-File-Support">Customizing Coq Multiple File Support</a>) or you can generally permit editing in locked
+sections with selecting 
+<code>Proof-General</code> -&gt; <code>Quick Options</code> -&gt; <code>Read Only</code>
+-&gt; <code>Freely Edit</code> (which will set the option
+<code>proof-strict-read-only</code> to <code>nil</code>).
+</p>
+<p>In the default setting,
+when you want to edit a locked ancestor, you are
+forced to completely retract the current scripting buffer. The
+right behaviour for Coq would be to retract the current scripting
+buffer only up to the point before the appropriate <code>Require</code>
+command. At the users choice it should also be possible to unlock
+the ancestor without retracting the current scripting buffer. The
+latter would be adequate, if you just want to add a lemma in the
+ancestor <em>and</em> want to continue the development in the
+current scripting buffer without interruption.
+</p>
+
+
+<hr size="6">
+<a name="Customizing-Coq-Multiple-File-Support"></a>
+<a name="Customizing-Coq-Multiple-File-Support-1"></a>
+<h3 class="subsection">11.2.3 Customizing Coq Multiple File Support</h3>
+
+<p>The customization settings for multiple file support of Coq Proof
+General are in a separate customization group, the
+<code>coq-auto-compile</code> group. To view all options in this
+group do <code>M-x customize-group coq-auto-compile</code> or select
+menu entry <code>Proof-General -&gt; Advanced -&gt; Customize -&gt; Coq -&gt;
+Coq Auto Compile -&gt; Coq Auto Compile</code>. 
+</p>
+
+<dl>
+<dt><a name="index-coq_002dcompile_002dbefore_002drequire"></a><u>Variable:</u> <b>coq-compile-before-require</b></dt>
+<dd><p>If non-nil, check dependencies of required modules and compile if necessary.<br>
+If non-nil ProofGeneral intercepts &quot;Require&quot; commands and checks if the
+required library module and its dependencies are up-to-date. If not, they
+are compiled from the sources before the &quot;Require&quot; command is processed.
+</p>
+<p>This option can be set/reset via menu
+&lsquo;<samp>Coq -&gt; Settings -&gt; Compile Before Require</samp>&rsquo;.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002dcompile_002dauto_002dsave"></a><u>Variable:</u> <b>coq-compile-auto-save</b></dt>
+<dd><p>Buffers to save before checking dependencies for compilation.<br>
+There are two orthogonal choices: Firstly one can save all or only the coq
+buffers, where coq buffers means all buffers in coq mode except the current
+buffer. Secondly, Emacs can ask about each such buffer or save all of them
+unconditionally.
+</p>
+<p>This makes four permitted values: <code>'ask-coq</code> to confirm saving all
+modified Coq buffers, <code>'ask-all</code> to confirm saving all modified
+buffers, <code>'save-coq</code> to save all modified Coq buffers without
+confirmation and <code>'save-all</code> to save all modified buffers without
+confirmation.
+</p></dd></dl>
+
+
+<p>The following two options deal with the load path. Proof General
+divides the load path into the standard load path (which is
+hardwired in the tools and need not be set explicitly), the
+nonstandard load path (which must always be set explicitly), and
+the current directory (which must be set explicitly for
+<code>coqdep</code>). The option <code>coq-load-path</code> determines the
+nonstandard load path and <code>coq-load-path-include-current</code>
+determines whether the current directory is put into the load
+path of <code>coqdep</code>.
+</p>
+<dl>
+<dt><a name="index-coq_002dload_002dpath"></a><u>Variable:</u> <b>coq-load-path</b></dt>
+<dd><p>Non-standard coq library load path.<br>
+This list specifies the LoadPath extension for coqdep, coqc and
+coqtop. Usually, the elements of this list are strings (for
+&quot;-I&quot;) or lists of two strings (for &quot;-R&quot; dir &quot;-as&quot; path).
+</p>
+<p>The possible forms of elements of this list correspond to the 3
+forms of include options (&rsquo;-I&rsquo; and <code>'-R'</code>). An element can be
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  - A string, specifying a directory to be mapped to the empty
+    logical path ('-I').
+  - A list of the form '(rec dir path)' (where dir and path are
+    strings) specifying a directory to be recursively mapped to the
+    logical path <code>'path'</code> ('-R dir -as path').
+  - A list of the form '(norec dir path)', specifying a directory
+    to be mapped to the logical path <code>'path'</code> ('-I dir -as path').
+</pre></td></tr></table>
+<p>For convenience the symbol <code>'rec'</code> can be omitted and entries of
+the form &rsquo;(dir path)&rsquo; are interpreted as &rsquo;(rec dir path)&rsquo;.
+</p>
+<p>Under normal circumstances this list does not need to
+contain the coq standard library or &quot;.&quot; for the current
+directory (see &lsquo;<samp><code>coq-load-path-include-current</code></samp>&rsquo;).
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002dload_002dpath_002dinclude_002dcurrent"></a><u>Variable:</u> <b>coq-load-path-include-current</b></dt>
+<dd><p>If &lsquo;<samp>t</samp>&rsquo; let coqdep search the current directory too.<br>
+Should be &lsquo;<samp>t</samp>&rsquo; for normal users. If &lsquo;<samp>t</samp>&rsquo; pass &quot;-I dir&quot; to coqdep when
+processing files in directory &quot;dir&quot; in addition to any entries
+in &lsquo;<samp><code>coq-load-path</code></samp>&rsquo;.
+</p></dd></dl>
+
+
+<p>The following two options configure an external compilation
+process.
+</p>
+
+<dl>
+<dt><a name="index-coq_002dcompile_002dcommand"></a><u>Variable:</u> <b>coq-compile-command</b></dt>
+<dd><p>External compilation command. If empty ProofGeneral compiles itself.<br>
+If unset (the empty string) ProofGeneral computes the dependencies of
+required modules with coqdep and compiles as necessary. This internal
+dependency checking does currently not handle ML modules.
+</p>
+<p>If a non-empty string, the denoted command is called to do the
+dependency checking and compilation. Before executing this
+command the following keys are substituted as follows:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">  %p  the (physical) directory containing the source of
+      the required module
+  %o  the Coq object file in the physical directory that will
+      be loaded
+  %s  the Coq source file in the physical directory whose
+      object will be loaded
+  %q  the qualified id of the &quot;Require&quot; command
+  %r  the source file containing the &quot;Require&quot;
+</pre></td></tr></table>
+<p>For instance, &quot;make -C %p %o&quot; expands to &quot;make -C bar foo.vo&quot;
+when module &quot;foo&quot; from directory &quot;bar&quot; is required.
+</p>
+<p>After the substitution the command can be changed in the
+minibuffer if &lsquo;<samp><code>coq-confirm-external-compilation</code></samp>&rsquo; is t.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002dconfirm_002dexternal_002dcompilation"></a><u>Variable:</u> <b>coq-confirm-external-compilation</b></dt>
+<dd><p>If set let user change and confirm the compilation command.<br>
+Otherwise start the external compilation without confirmation.
+</p>
+<p>This option can be set/reset via menu
+&lsquo;<samp>Coq -&gt; Settings -&gt; Confirm External Compilation</samp>&rsquo;.
+</p></dd></dl>
+
+
+<p>Locking ancestors can be disabled with the following option.
+</p>
+<dl>
+<dt><a name="index-coq_002dlock_002dancestors"></a><u>Variable:</u> <b>coq-lock-ancestors</b></dt>
+<dd><p>If non-nil, lock ancestor module files.<br>
+If external compilation is used (via &lsquo;<samp><code>coq-compile-command</code></samp>&rsquo;) then
+only the direct ancestors are locked. Otherwise all ancestors are
+locked when the &quot;Require&quot; command is processed.
+</p></dd></dl>
+
+
+<p>The following option controls which warnings of <code>coqdep</code>
+are treated as errors.
+</p>
+<dl>
+<dt><a name="index-coq_002dcoqdep_002derror_002dregexp"></a><u>Variable:</u> <b>coq-coqdep-error-regexp</b></dt>
+<dd><p>Regexp to match errors in the output of coqdep.<br>
+coqdep indicates errors not always via a non-zero exit status,
+but sometimes only via printing warnings. This regular expression
+is used for recognizing error conditions in the output of
+coqdep (when coqdep terminates with exit status 0). Its default
+value matches the warning that some required library cannot be
+found on the load path and ignores the warning for finding a
+library at multiple places in the load path. If you want to turn
+the latter condition into an error, then set this variable to
+&quot;^\*\*\* Warning&quot;.
+</p></dd></dl>
+
+
+<p>The following two options do only influence the behaviour if
+Proof General does dependency checking and compilation itself.
+These options determine whether Proof General should descend into
+other Coq libraries and into the Coq standard library. 
+</p>
+<dl>
+<dt><a name="index-coq_002dcompile_002dignored_002ddirectories"></a><u>Variable:</u> <b>coq-compile-ignored-directories</b></dt>
+<dd><p>Directories in which ProofGeneral should not compile modules.<br>
+List of regular expressions for directories in which ProofGeneral
+should not compile modules. If a library file name matches one
+of the regular expressions in this list then ProofGeneral does
+neither compile this file nor check its dependencies for
+compilation. It makes sense to include non-standard coq library
+directories here if they are not changed and if they are so big
+that dependency checking takes noticeable time.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002dcompile_002dignore_002dlibrary_002ddirectory"></a><u>Variable:</u> <b>coq-compile-ignore-library-directory</b></dt>
+<dd><p>If non-nil, ProofGeneral does not compile modules from the coq library.<br>
+Should be &lsquo;<samp>t</samp>&rsquo; for normal coq users. If &lsquo;<samp>nil</samp>&rsquo; library modules are
+compiled if their sources are newer.
+</p>
+<p>This option has currently no effect, because Proof General uses
+coqdep to translate qualified identifiers into library file names
+and coqdep does not output dependencies in the standard library.
+</p></dd></dl>
+
+
+<p>The last three Emacs constants are internal parameters. They only
+need to be changed under very special, unforeseen circumstances.
+They can only be set in Emacs lisp code because they are no
+customizable user options.
+</p>
+<dl>
+<dt><a name="index-coq_002dcompile_002dsubstitution_002dlist"></a><u>Variable:</u> <b>coq-compile-substitution-list</b></dt>
+<dd><p>Substitutions for &lsquo;<samp><code>coq-compile-command</code></samp>&rsquo;.<br>
+Value must be a list of substitutions, where each substitution is
+a 2-element list. The first element of a substitution is the
+regexp to substitute, the second the replacement. The replacement
+is evaluated before passing it to &lsquo;<samp><code>replace-regexp-in-string</code></samp>&rsquo;, so
+it might be a string, or one of the symbols <code>'physical-dir</code>,
+<code>'module-object</code>, <code>'module-source</code>, <code>'qualified-id</code> and
+<code>'requiring-file</code>, which are bound to, respectively, the physical
+directory containing the source file, the Coq object file in
+<code>'physical-dir</code> that will be loaded, the Coq source file in
+<code>'physical-dir</code> whose object will be loaded, the qualified module
+identifier that occurs in the &quot;Require&quot; command, and the file
+that contains the &quot;Require&quot;.
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002drequire_002dcommand_002dregexp"></a><u>Variable:</u> <b>coq-require-command-regexp</b></dt>
+<dd><p>Regular expression matching Require commands in Coq.<br>
+Should match &quot;Require&quot; with its import and export variants up to (but not
+including) the first character of the first required module. The required
+modules are matched separately with &lsquo;<samp><code>coq-require-id-regexp</code></samp>&rsquo;
+</p></dd></dl>
+
+
+<dl>
+<dt><a name="index-coq_002drequire_002did_002dregexp"></a><u>Variable:</u> <b>coq-require-id-regexp</b></dt>
+<dd><p>Regular expression matching one Coq module identifier.<br>
+Should match precisely one complete module identifier and surrounding
+white space. The module identifier must be matched with group number 1.
+Note that the trailing dot in &quot;Require A.&quot; is not part of the module
+identifier and should therefore not be matched by this regexp.
+</p></dd></dl>
+
+
+
+<hr size="6">
+<a name="Current-Limitations"></a>
+<a name="Current-Limitations-1"></a>
+<h3 class="subsection">11.2.4 Current Limitations</h3>
+
+<p>In the current release some aspects of multiple file support have
+not been implemented. The following points will hopefully
+addressed in the next release:
+</p>
+<ul>
+<li>
+Support <code>Declare ML Module</code> commands.
+</li><li>
+Improved undo behaviour for locked ancestors.
+</li><li>
+Use always asynchronous processes for compilation and do not lock
+up Emacs in internal compilation mode.
+</li><li>
+Increase precision when comparing modification times. Because of
+an Emacs limitation, modification time stamps of files have only a
+precision of 1 second. If several compiled Coq object files have
+been created in the same second, Proof General is optimistic and
+does not recompile. (Note that GNU make behaves the same on file
+systems that record time stamps only with a precision of 1
+second.)
+</li></ul>
+
+
+<hr size="6">
+<a name="Editing-multiple-proofs"></a>
+<a name="Editing-multiple-proofs-1"></a>
+<h2 class="section">11.3 Editing multiple proofs</h2>
+
+<p>Coq allows the user to enter top-level commands while editing a proof
+script.  For example, if the user realizes that the current proof will
+fail without an additional axiom, he or she can add that axiom to the
+system while in the middle of the proof.  Similarly, the user can
+nest lemmas, beginning a new lemma while in the middle of an earlier
+one, and as the lemmas are proved or their proofs aborted they are
+popped off a stack.
+</p>
+<p>Coq Proof General supports this feature of Coq.  Top-level commands
+entered while in a proof are well backtracked. If new lemmas are
+started, Coq Proof General lets the user work on the proof of the new
+lemma, and when the lemma is finished it falls back to the previous
+one.  This is supported to any nesting depth that Coq allows.
+</p>
+<p>Warning! Using Coq commands for navigating inside the different proofs
+(<code>Resume</code> and especially <code>Suspend</code>) are not supported,
+backtracking will break syncronization.
+</p>
+<p><b>Special note:</b> The old feature that moved nested proofs outside the
+current proof is disabled.
+</p>
+<hr size="6">
+<a name="User_002dloaded-tactics"></a>
+<a name="User_002dloaded-tactics-1"></a>
+<h2 class="section">11.4 User-loaded tactics</h2>
+
+<p>Another feature that Coq allows is the extension of the grammar of the
+proof assistant by new tactic commands.  This feature interacts with the
+proof script management of Proof General, because Proof General needs to
+know when a tactic is called that alters the proof state.  When the user
+tries to retract across an extended tactic in a script, the algorithm
+for calculating how far to undo has a default behavior that is not
+always accurate in proof mode: do &quot;<code>Undo</code>&quot;.
+</p>
+<p>Coq Proof General does not currently support dynamic tactic extension in
+Coq: this is desirable but requires assistance from the Coq core.
+Instead we provide a way to add tactic and command names in the
+&lsquo;<tt>.emacs</tt>&rsquo; file. Four Configurable variables allows to register
+personal new tactics and commands into four categories:
+</p><ul>
+<li> <em>state changing commands</em>, 
+which need &quot;<code>Back</code>&quot; to be backtracked;
+</li><li> <em>state changing tactics</em>,
+which need &quot;<code>Undo</code>&quot; to be backtracked; 
+</li><li> <em>state preserving commands</em>,
+which do not need to be backtracked; 
+</li><li> <em>state preserving tactics</em>,
+which do not need to be backtracked; 
+</li></ul>
+
+<p>We give an example of existing commands that fit each category.
+</p>
+<ul>
+<li> <code>coq-user-state-preserving-commands</code>: example: &quot;<code>Print</code>&quot;
+
+</li><li> <code>coq-user-state-changing-commands</code>: example: &quot;<code>Require</code>&quot;
+
+</li><li> <code>coq-user-state-changing-tactics</code>: example: &quot;<code>Intro</code>&quot;
+ 
+</li><li> <code>coq-user-state-preserving-tactics</code>: example: &quot;<code>Idtac</code>&quot;
+</li></ul>
+
+<p>This variables are regexp string lists. See their documentations in
+emacs (<code>C-h v coq-user...</code>)  for details on how to set them in your
+&lsquo;<tt>.emacs</tt>&rsquo; file.
+</p>
+<p>Here is a simple example:
+</p><table><tr><td>&nbsp;</td><td><pre class="lisp">(setq coq-user-state-changing-commands 
+      '(&quot;MyHint&quot; &quot;MyRequire&quot;))
+(setq coq-user-state-preserving-commands 
+      '(&quot;Show\\s-+Mydata&quot;))
+</pre></td></tr></table>
+
+<p>The regexp character sequence <code>\\s-+</code> means &quot;one or more
+whitespaces&quot;. See the Emacs documentation of <code>regexp-quote</code> for the
+syntax and semantics.  WARNING: you need to restart Emacs to make the
+changes to these variables effective.
+</p>
+<p>In case of losing synchronization, the user can use <kbd>C-c C-z</kbd> to
+move the locked region to the proper position,
+(<code>proof-frob-locked-end</code>, see section <a href="ProofGeneral_4.html#Escaping-script-management">Escaping script management</a>) or
+<kbd>C-c C-v</kbd> to re-issue an erroneously back-tracked tactic without
+recording it in the script.
+</p>
+<hr size="6">
+<a name="Holes-feature"></a>
+<a name="Holes-feature-1"></a>
+<h2 class="section">11.5 Holes feature</h2>
+
+<p><em>Holes</em> are an experimental feature for complex expression editing
+by filling in templates. It is inspired from other tools, like Pcoq
+(<a href="http://www-sop.inria.fr/lemme/pcoq/index.html">http://www-sop.inria.fr/lemme/pcoq/index.html</a>).  The principle
+is simple, holes are pieces of text that can be &quot;filled&quot; by various
+means. The Coq command insertion menu system makes use of the holes
+system.  Almost all holes operations are available in the Holes menu.
+</p>
+<p><b>Notes:</b> Holes make use of the Emacs abbreviation mechanism, it will
+work without problem if you don&rsquo;t have an abbrev table defined for Coq
+in your config files.  Use <code>C-h v abbrev-file-name</code> to see the name
+of the abbreviation file. 
+</p>
+<p>If you already have such a table it won&rsquo;t be automatically overwritten
+(so that you keep your own abbreviations).  But you must read the abbrev
+file given in the Proof General sources to be able to use the command
+insertion menus.  You can do the following to merge your abbreviations
+with ProofGeneral&rsquo;s abbreviations: <code>M-x read-abbrev-file</code>, then
+select the file named <code>coq-abbrev.el</code> in the
+<code>ProofGeneral/coq</code> directory. At Emacs exit you will be asked if
+you want to save abbrevs; answer yes.
+</p>
+
+<hr size="6">
+<a name="Proof_002dTree-Visualization"></a>
+<a name="Proof_002dTree-Visualization-1"></a>
+<h2 class="section">11.6 Proof-Tree Visualization</h2>
+
+<p>Starting with Proof General version 4.2 and Coq version 8.4, Coq
+Proof General has full support for proof-tree visualization, 
+see section <a href="ProofGeneral_8.html#Graphical-Proof_002dTree-Visualization">Graphical Proof-Tree Visualization</a>.
+</p>
+<p>Proof-tree visualization does currently neither support bullets
+and braces nor the command &ldquo;Grab Existential Variables&rdquo;.
+</p>
+<p>For the visualization to work properly, proofs must be started
+with &ldquo;Proof.&rdquo;, which is encouraged practice anyway (see Coq Bug
+#2776).
+</p>
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Coq-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_13.html#Isabelle-Proof-General" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

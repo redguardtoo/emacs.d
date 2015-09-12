@@ -1,0 +1,14 @@
+Proof General for the Casl Consistency Checker
+
+Author:	Christoph Lüth <cxl@informatik.uni-bremen.de>
+       
+=================================================================
+
+This is a fairly straightforward instantiation of Proof General for
+the Casl Consistency Checker, CCC. 
+
+CASL is the standard algebraic specification language, and CCC is a
+tool to check consistency of CASL specifications.
+
+For more information, hasten thee browser yonder:
+  http://www.informatik.uni-bremen.de/cofi/ccc

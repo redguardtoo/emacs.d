@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Adapting Proof General: 8. Handling Multiple Files</title>
+
+<meta name="description" content="Adapting Proof General: 8. Handling Multiple Files">
+<meta name="keywords" content="Adapting Proof General: 8. Handling Multiple Files">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_8.html#Global-Constants" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_10.html#Configuring-Editing-Syntax" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Handling-Multiple-Files"></a>
+<a name="Handling-Multiple-Files-1"></a>
+<h1 class="chapter">8. Handling Multiple Files</h1>
+<a name="index-Multiple-files"></a>
+
+<p>Large proof developments are typically spread across multiple files.
+Many provers support such developments by keeping track of dependencies
+and automatically processing scripts. Proof General supports this
+mechanism. The user&rsquo;s point of view is considered in the user manual.
+Here, we describe the more technical nitty gritty.  This is what you
+need to know when you customise another proof assistant to work with
+Proof General.
+</p>
+<p>Documentation for the configuration settings mentioned here appears in
+the previous sections, this section is intended to help explain the use
+of those settings.
+</p>
+<p>Proof General maintains a list <code>proof-included-files-list</code> of files
+which it thinks have been processed by the proof assistant.  When a file
+which is on this list is visited in Emacs, it will be coloured entirely
+blue to indicate that it has been processed.  No editing of the file
+will be allowed (unless <code>proof-strict-read-only</code> allows it).
+</p>
+
+<dl>
+<dt><a name="index-proof_002dincluded_002dfiles_002dlist-2"></a><u>Variable:</u> <b>proof-included-files-list</b></dt>
+<dd><p>List of files currently included in proof process.<br>
+This list contains files in canonical truename format
+(see &lsquo;<samp><code>file-truename</code></samp>&rsquo;).
+</p>
+<p>Whenever a new file is being processed, it gets added to this list
+via the &lsquo;<samp><code>proof-shell-process-file</code></samp>&rsquo; configuration settings.
+When the prover retracts a file, this list is resynchronised via the
+&lsquo;<samp><code>proof-shell-retract-files-regexp</code></samp>&rsquo; and &lsquo;<samp><code>proof-shell-compute-new-files-list</code></samp>&rsquo;
+configuration settings.
+</p>
+<p>Only files which have been <strong>fully</strong> processed should be included here.
+Proof General itself will automatically add the filenames of a script
+buffer which has been completely read when scripting is deactivated.
+It will automatically remove the filename of a script buffer which
+is completely unread when scripting is deactivated.
+</p>
+<p>NB: Currently there is no generic provision for removing files which
+are only partly read-in due to an error, so ideally the proof assistant
+should only output a processed message when a file has been successfully
+read.
+</p></dd></dl>
+
+<p>The way that <code>proof-included-files-list</code> is maintained is the key
+to multiple file management.  Ideally you should not set this
+variable directly, but instead use (some of) the various
+configuration settings that enable functionality inside Proof
+General for managing <code>proof-included-files-list</code> (see below
+if the configuration setting do not suffice).
+</p>
+<a name="index-proof_002dshell_002dprocess_002dfile-1"></a>
+<a name="index-proof_002dshell_002dretract_002dfiles_002dregexp-1"></a>
+<a name="index-proof_002dshell_002dcompute_002dnew_002dfiles_002dlist-1"></a>
+<a name="index-proof_002dcannot_002dreopen_002dprocessed_002dfiles-1"></a>
+
+<p>There is a range of strategies for managing multiple files.  Ideally,
+file dependencies should be managed by the proof assistant.  Proof
+General will use the prover&rsquo;s low-level commands to process a whole file
+and its requirements non-interactively, without going through script
+management.  So that the user knows which files have been processed, the
+proof assistant should issue messages which Proof General can recognize
+(&ldquo;file <code>foo</code> has been processed&rdquo;) &mdash; see
+<code>proof-shell-process-file</code>.  When the user wants to edit a file
+which has been processed, the file must be retracted (unlocked).  The
+proof assistant should provide a command corresponding to this action,
+which undoes a given file and all its dependencies.  As each file is
+undone, a message should be issued which Proof General can recognize
+(&ldquo;file <code>foo</code> has been undone&rdquo;) &ndash; see
+<code>proof-shell-retract-files-regexp</code>.  (The function
+<code>proof-shell-compute-new-files-list</code> should be set to calculate the
+new value for <code>proof-included-files-list</code> after a retract message
+has been seen).
+</p>
+
+
+<p>As well as this communication from the assistant to Proof General about
+processed or retracted files, Proof General can communicate the other
+way: it will tell the proof assistant when it has processed or retracted
+a file via script management.  This is because during script management,
+the proof assistant may not be aware that it is actually dealing with a
+file of proof commands (rather than just terminal input).
+</p>
+<p>Proof General will provide this information in two special instances.
+First, when scripting is turned off in a file that has been completely
+processed, Proof General will tell the proof assistant using
+<code>proof-shell-inform-file-processed-cmd</code>.  Second, when scripting is
+turned on in a file which is completely processed, Proof General will
+tell the proof assistant to reconsider: the file should not be
+considered completely processed yet.  This uses the setting
+<code>proof-shell-inform-file-retracted-cmd</code>.  This second, retracting,
+case might lead to a series of messages from the prover telling Proof
+General to unlock files which depend on the present one, again via
+<code>proof-shell-retract-files-regexp</code>.  
+</p>
+<p>The special case for retracting is the primary file the user wishes to
+edit: this is automatically removed from
+<code>proof-included-files-list</code>, but it depends on the proof assistant
+whether or not it is possible to revert to a partially processed version
+of the file (or &quot;undo into&quot; it).  This is the reason for the setting
+<code>proof-cannot-reopen-processed-files</code>.  If this is non-nil, any
+attempt to undo a fully processed file will unlock the entire file
+(whether or not Proof General itself has history information for the
+file).
+</p>
+<p>What we have described so far is the ideal case, but it may require some
+support from the proof assistant to set up (for example, if file-level
+undo is not normally supported, or the messages during file processing
+are not suitable).  Moreover, some proof assistants may not have file
+handling with dependencies, or may have a particularly simple case of a
+linear context: each file depends on all the ones processed before it.
+Proof General allows you a shortcut to get automatic management of
+multiple files in these cases by setting the flag
+<code>proof-auto-multiple-files</code>.  This setting is probably an
+approximation to the right thing for any proof assistant.  More files
+than necessary will be retracted if the prover has a tree-like file
+dependency rather than a linear one.
+</p>
+<a name="index-proof_002dshell_002deager_002dannotation_002dstart-1"></a>
+<a name="index-proof_002dshell_002deager_002dannotation_002dend-1"></a>
+<p>Finally, we should mention how Proof General recognizes file processing
+messages from the proof assistant.  Proof General considers <var>output</var>
+delimited by the the two regular expressions
+<code>proof-shell-eager-annotation-start</code> and
+<code>proof-shell-eager-annotation-end</code> as being important. It displays
+the <var>output</var> in the Response buffer and analyses the contents
+further. Among other important messages characterised by these regular
+expressions (warnings, errors, or information), the prover can tell the
+interface whenever it processes or retracts a file.
+</p>
+
+<p>To summarize, the settings for multiple file management that may be
+customized are as follows. To recognize file-processing,
+<code>proof-shell-process-file</code>.  To recognize messages about file
+undoing, <code>proof-shell-retract-files-regexp</code> and
+<code>proof-shell-compute-new-files-list</code>.  See section <a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">Settings for matching urgent messages from proof process</a>.  To tell the prover about files
+handled with script management, use
+ <code>proof-shell-inform-file-processed-cmd</code> and
+ <code>proof-shell-inform-file-retracted-cmd</code>.  See section <a href="PG-adapting_5.html#Proof-shell-commands">Commands</a>.
+If your prover does not allow re-opening of closed
+files, set <code>proof-cannot-reopen-processed-files</code> to <code>t</code>.
+  Finally, set the flag <code>proof-auto-multiple-files</code> 
+for a automatic approximation to multiple file handling.
+See section <a href="PG-adapting_4.html#Proof-Script-Settings">Proof Script Settings</a>.
+</p>
+<p>Internally Proof General uses
+<code>proof-register-possibly-new-processed-file</code> to add a file
+to <code>proof-included-files-list</code> and to possibly inform the
+prover about this fact, See section <a href="PG-adapting_15.html#Proof-script-mode">Proof script mode</a>. The function
+<code>proof-shell-process-urgent-message-retract</code> is responsible
+for taking (possibly several) files off
+<code>proof-included-files-list</code>. It relies on
+<code>proof-shell-compute-new-files-list</code> (see section <a href="PG-adapting_5.html#Settings-for-matching-urgent-messages-from-proof-process">Settings for matching urgent messages from proof process</a>) to compute the new
+value of <code>proof-included-files-list</code> and then calls
+<code>proof-restart-buffers</code> on all those buffers that have been
+taken off from <code>proof-included-files-list</code>, See section <a href="PG-adapting_15.html#Proof-script-mode">Proof script mode</a>.
+</p>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="PG-adapting_8.html#Global-Constants" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_10.html#Configuring-Editing-Syntax" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="PG-adapting.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_18.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="PG-adapting_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

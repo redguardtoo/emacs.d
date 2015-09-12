@@ -1,0 +1,10 @@
+application/x-proofgeneral:
+	description=Proof General theorem prover file
+	open=proofgeneral %f
+	view=proofgeneral %f
+	icon-filename=/usr/share/pixmaps/proofgeneral.png
+	short_list_application_ids=mrproject
+	short_list_application_ids_for_novice_user_level=mrproject
+	short_list_application_ids_for_intermediate_user_level=mrproject
+	short_list_application_ids_for_advanced_user_level=mrproject
+	category=Documents/Theorem Prover

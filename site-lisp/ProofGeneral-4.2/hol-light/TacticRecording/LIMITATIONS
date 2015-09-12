@@ -1,0 +1,18 @@
+ML objects that get recorded need to be promoted
+- and the promoted subgoal package commands don't work for unpromoted ML objects
+- implementor needs to write promotion functions for each type shape
+- implementor needs to apply these promotion functions to lots of tactics/thms
+- user needs to promote their own stuff, e.g. their own rules/thms
+
+Tactic proofs with embedded arbitrary ML are problematic
+- sometimes this can still get recorded, and if so then exported ML will work
+- but exported ML is unlikely to faithfully reproduce original ML text
+
+Limitations in HOL Light's pretty printer for HOL terms
+- it outputs ambiguous expressions without type annotations
+- this is used by my ML exporter
+
+However, in practice the appraoch works well
+- the same old pool of 100 tactics, 100 rules, 1000 theorems get used
+- and any promotion that needs doing is easy anyway
+- hand tweaks are occasionally required for aribitrary ML and type annotations

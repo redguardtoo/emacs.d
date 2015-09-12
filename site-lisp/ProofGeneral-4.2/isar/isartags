@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+#
+# Or perhaps: /usr/local/bin/perl
+#
+# FIXME: this code is just borrowed from legotags program,
+#        it isn't yet working!   Please send us fixes.
+#
+# isartags,v 12.0 2011/10/13 10:54:50 da Exp
+#
+undef $/;
+
+if($#ARGV<$[) {die "No Files\n";}
+open(tagfile,">TAGS") || die "Couldn't open TAGS: $!\n";
+
+while(<>)	
+{ 
+  print "Tagging $ARGV\n";
+  $a=$_;
+  $cp=1;
+  $lp=1;
+  $tagstring="";
+
+  while(1) 
+  { 
+
+#   ---- Get the next statement starting on a newline ---- 
+
+    if($a=~/^[ \t\n]*\(\*/)
+    { while($a=~/^\s*\(\*/) 
+      { $d=1; $a=$'; $cp+=length $&; $lp+=(($wombat=$&)=~tr/\n/\n/);
+        while($d>0 && $a=~/\(\*|\*\)/)
+        { $a=$'; $cp+=2+length $`; $lp+=(($wombat=$`)=~tr/\n/\n/);
+          if($& eq "(*") {$d++} else {$d--};
+        }
+        if($d!=0) {die "Unbalanced Comment?";}
+      }
+    }
+
+    if($cp>1 && $a=~/.*\n/) {$a=$'; $cp+=length $&; $lp++;}
+    while($a=~/^\n/) {$cp++;$lp++;$a=$'}
+
+    if($a=~/^[^;]*;/) 
+    { $stmt=$&; 
+      $newa=$'; 
+      $newcp=$cp+length $&; 
+      $newlp=$lp+(($wombat=$&)=~tr/\n/\n/); }
+    else { last;}
+
+# ---- The above embarrasses itself if there are semicolons inside comments or
+# ---- inside commands. Could do better.
+
+#  print "----- (",$lp,",",$cp,")\n", $stmt, "\n";
+
+    if($stmt=~/^([ \t]*\$?theory\s*([\w\']+))\s*:/)
+       { $tagstring.=$1."\177".$2."\001".$lp.",".$cp."\n"; }
+
+    elsif($stmt=~/^([ \t]*\$?\[\s*[\w\']+)/)
+       { do adddecs($stmt,$1) }
+
+    elsif($stmt=~/^([ \t]*Inductive\s*\[\s*[\w\']+)/)
+       { do adddecs($stmt,$1) }
+
+#   ---- Maybe do something smart with discharge as well?
+
+    $cp=$newcp; $lp=$newlp; $a=$newa;
+  }  
+  print tagfile "\f\n".$ARGV.",".(length $tagstring)."\n".$tagstring;
+}
+close tagfile;
+
+
+sub adddecs {
+  $wk=$_[0];
+  $tag=$_[1];
+  while($wk=~/\[\s*([\w\']+)/)
+  { $tagstring.=$tag."\177".$1."\001".$lp.",".$cp."\n"; $wk=$';
+    while($wk=~/^\s*,\s*([\w\']+)/)
+    { $tagstring.=$tag."\177".$1."\001".$lp.",".$cp."\n"; $wk=$'; }
+    $d=1;
+    while($d>0 && $wk=~/\[|\]/)
+    { $wk=$'; if($& eq "[") {$d++} else {$d--};
+    }
+  }
+  0;
+}
+

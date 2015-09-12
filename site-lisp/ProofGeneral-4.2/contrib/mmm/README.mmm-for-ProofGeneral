@@ -1,0 +1,26 @@
+The code in this directory is taken from  
+
+	http://mmm-mode.sourceforge.net/
+
+This is version 0.4.8.
+
+Some minor changes have been made for Proof General to
+remove compilation warnings.
+
+Some files have not be included here.
+
+
+=================================================================
+
+
+		MMM Mode for Emacs
+
+MMM Mode is an emacs add-on package providing a minor mode that allows
+Multiple Major Modes to coexist in one buffer. It is particularly
+well-suited to editing embedded code or code that generates other
+code, such as Mason or Embperl server-side Perl code, or HTML output
+by CGI scripts. 
+
+It is written and maintained by Michael Abraham Shulman .
+
+

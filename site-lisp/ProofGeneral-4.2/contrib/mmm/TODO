@@ -1,0 +1,67 @@
+Hey Emacs, this is a -*-text-*- file!
+
+                       To Do List for MMM Mode
+                       =======================
+
+It would be nice to have a "split region" command which would insert
+a _back_ delimiter followed by a _front_ delimiter at point and split
+the current region into two regions.  Say for PHP.
+
+Custom mode functions like `mason-mode'.
+
+Make Mason work a little better with PSGML.  The fix I've found works,
+but it would be nifty if MMM could do it automatically.  Maybe the
+custom-mode thing could set the variables, or a hook somewhere.
+
+Apostrophes mess up Perl parsing in XEmacs but not Emacs.  I thought
+it was because XEmacs sets `font-lock-beginning-of-syntax-function'
+after MMM does, but changing that that didn't fix it.
+
+Improve re-parsing current region to use inclusion/offsets/etc.
+
+Support for: ASP, PHP
+
+DEB and/or RPM packages would be nice.
+
+The local-variables improvements can probably be used to set minor
+modes locally to submode regions.  This could replace tmmofl,
+especially if we search for regions other than by regexps, say by
+syntax properties.
+
+Trap paragraph motion commands to stop at submode boundaries?
+
+On text insertion (in `after-change-functions'), do two things.
+First, if inside in a region, or after a hanging one, scan for its
+back and adjust if necessary.  Second, scan both for complete regions
+and for hanging fronts.  In the latter case, we may insert the back or
+start a hanging region; user option.  Don't just scan the inserted
+text, but backwards, using `mmm-looking-back-at'.  Remember to handle
+delimiter inclusion and offsets as best possible.
+
+It would be nice if C-j ended a Mason one-liner and began a new one on
+the next line.  This is a rather Mason-specific thing, but other
+classes might have similar single-line regions.  Add a new submode
+class argument, such as KEYMAP, or even ONE-LINE?
+
+Allow a submode class to specify its allowable "parent" submode
+classes.  This could also be used to implement htp.p, by first
+scanning for the function calls as a major-mode submode region, then
+requiring that parent type for the HTML mode class.  Nested submodes
+alternate highlight colors, say with `mmm-secondary-submode-face'.
+
+Ought %text in Mason to be a non-submode, since any Mason tags inside
+it will probably be /edited/ as Perl (being, say, code examples)?
+Only problem is it might confuse the programmer into thinking that
+code will get executed. Maybe use a different face.  Could do that
+with another grouping class, say uneval-mason, that overrides the
+faces of mason and has :parent mason-text, and allow a mode to specify
+what about it changes depending on its parent, or a parent to specify
+changes to its children, or a group to specify changes to its members.
+
+If font-locking needs more help, try narrowing the region before
+fontifying, or even advising `parse-partial-sexp' and friends.  At
+present, it seems good enough, though.
+
+It'd be nice if submode regions could preserve the indentation of the
+dominant major mode code around them. For example, Perl code embedded
+in HTML where the HTML is indented such as for a table.

@@ -1,0 +1,595 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: History of Proof General</title>
+
+<meta name="description" content="Proof General: History of Proof General">
+<meta name="keywords" content="Proof General: History of Proof General">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_18.html#References" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="History-of-Proof-General"></a>
+<a name="History-of-Proof-General-1"></a>
+<h1 class="unnumbered">History of Proof General</h1>
+<a name="index-lego_002dmode-1"></a>
+<a name="index-history"></a>
+
+<p>It all started some time in 1994. There was no Emacs interface for LEGO.
+Back then, Emacs militants worked directly with the Emacs shell to
+interact with the LEGO system. 
+</p>
+<p>David Aspinall convinced Thomas Kleymann that programming in
+Emacs Lisp wasn&rsquo;t so difficult after all. In fact, Aspinall had already
+implemented an Emacs interface for Isabelle with bells and whistles,
+called <a href="http://homepages.inf.ed.ac.uk/da/Isamode">Isamode</a>. Soon
+after, the package <code>lego-mode</code> was born. Users were able to develop
+proof scripts in one buffer. Support was provided to automatically send
+parts of the script to the proof process. The last official version with
+the name <code>lego-mode</code> (1.9) was released in May 1995.
+</p>
+
+<a name="index-proof-by-pointing-1"></a>
+<a name="index-CtCoq"></a>
+<a name="index-Centaur"></a>
+<p>The interface project really took off the ground in November 1996. Yves
+Bertot had been working on a sophisticated user interface for the Coq
+system (CtCoq) based on the generic environment Centaur. He visited the
+Edinburgh LEGO group for a week to transfer proof-by-pointing
+technology. Even though proof-by-pointing is an inherently
+structure-conscious algorithm, within a week, Yves Bertot, Dilip Sequeira 
+and Thomas Kleymann managed to implement a first prototype of
+proof-by-pointing in the Emacs interface for LEGO [BKS97].
+</p>
+<a name="index-structure-editor"></a>
+<a name="index-script-management"></a>
+
+<p>Perhaps we could reuse even more of the CtCoq system. It being a
+structure editor did no longer seem to be such an obstacle. Moreover,
+to conveniently use proof-by-pointing in actual developments, one would
+need better support for script management.
+</p>
+<a name="index-generic"></a>
+<p>In 1997, Dilip Sequeira implemented script management in our Emacs
+interface for LEGO following the recipe in
+[BT98]. Inspired by the project CROAP, the
+implementation made some effort to be generic. A working prototype was
+demonstrated at UITP&rsquo;97.  
+</p>
+<p>In October 1997, Healfdene Goguen ported <code>lego-mode</code> to Coq. Part
+of the generic code in the <code>lego</code> package was outsourced (and made
+more generic) in a new package called <code>proof</code>. Dilip Sequeira
+provided some LEGO-specific support for handling multiple files and
+wrote a few manual pages. The system was reasonably robust and we
+shipped out the package to friends.
+</p>
+<p>In June 1998, David Aspinall reentered the picture by providing an
+instantiation for Isabelle. Actually, our previous version wasn&rsquo;t quite
+as generic as we had hoped. Whereas LEGO and Coq are similar systems in
+many ways, Isabelle was really a different beast. Fierce re-engineering
+and various usability improvements were provided by Aspinall and
+Kleymann to make it easier to instantiate to new proof systems. The
+major technical improvement was a truly generic extension of script
+management to work across multiple files.
+</p>
+<p>It was time to come up with a better name than just <code>proof</code> mode.
+David Aspinall suggested <em>Proof General</em> and set about
+reorganizing the file structure to disentangle the Proof General
+project from LEGO at last.  He cooked up some images and bolted on a
+toolbar, so a naive user can replay proofs without knowing a proof
+assistant language or even Emacs hot-keys.  He also designed some web
+pages, and wrote most of this manual.  
+</p>
+<p>Despite views of some detractors, we demonstrated that an interface
+both friendly and powerful can be built on top of Emacs.  Proof
+General 2.0 was the first official release of the improved program,
+made in December 1998.
+</p>
+<p>Version 2.1 was released in August 1999.  It was used at the Types
+Summer School held in Giens, France in September 1999 (see
+<a href="http://www-sop.inria.fr/types-project/types-sum-school.html">http://www-sop.inria.fr/types-project/types-sum-school.html</a>).
+About 50 students learning Coq, Isabelle, and LEGO used Proof General
+for all three systems.  This experience provided invaluable feedback and
+encouragement to make the improvements that went into Proof General 3.0.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e0">Old News for 3.0</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e1">Old News for 3.1</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e2">Old News for 3.2</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e3">Old News for 3.3</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e4">Old News for 3.4</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e5">Old News for 3.5</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e6">Old News for 3.6</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Old-News-for-3_002e7">Old News for 3.7</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+<hr size="6">
+<a name="Old-News-for-3_002e0"></a>
+<a name="Old-News-for-3_002e0-1"></a>
+<h2 class="unnumberedsec">Old News for 3.0</h2>
+
+<p>Proof General 3.0 (released November 1999) has many improvements over
+2.x releases.
+</p>
+<p>First, there are usability improvements.  The toolbar was somewhat
+impoverished before.  It now has twice as many buttons, and includes all
+of the useful functions used during proof which were previously hidden
+on the menu, or even only available as key-presses.  Key-bindings have
+been re-organized, users of previous versions may notice.  The menu has
+been redesigned and coordinated with the toolbar, and now gives easy
+access to more of the features of Proof General.  Previously several
+features were only likely to be discovered by those keen enough to read
+this manual!
+</p>
+<p>Second, there are improvements, extensions, and bug fixes in the generic
+basis. Proofs which are unfinished and not explicitly closed by a
+&ldquo;save&rdquo; type command are supported by the core, if they are allowed by
+the prover.  The design of switching the active scripting buffer has
+been streamlined.  The management of the queue of commands waiting to be
+sent to the shell has been improved, so there are fewer unnecessary
+&quot;Proof Process Busy!&quot; messages.  The support for scripting with multiple
+files was improved so that it behaves reliably with Isabelle99; file
+reading messages can be communicated in both directions now.  The proof
+shell filter has been optimized to give hungry proof assistants a better
+share of CPU cycles.  Proof-by-pointing has been resurrected; even
+though LEGO&rsquo;s implementation is incomplete, it seems worth maintaining
+the code in Proof General so that the implementors of other proof
+assistants are encouraged to provide support.  For one example, we can
+certainly hope for support in Coq, since the CtCoq proof-by-pointing
+code has been moved into the Coq kernel lately.  We need a volunteer
+from the Coq community to help to do this.
+</p>
+<p>An important new feature in Proof General 3.0 is support for
+<a href="http://x-symbol.sourceforge.net/">X-Symbol</a>, 
+which means that real logical symbols, Greek letters,
+etc can be displayed during proof development, instead of their ASCII
+approximations. This makes Proof General a more serious competitor to
+native graphical user interfaces.  
+</p>
+<p>Finally, Proof General has become much easier to adapt to new provers
+&mdash; it fails gracefully (or not at all!) when particular configuration
+variables are unset, and provides more default settings which work
+out-of-the-box.  An example configuration for Isabelle is provided,
+which uses just 25 or so simple settings.
+</p>
+<p>This manual has been updated and extended for Proof General 3.0.
+Amongst other improvements, it has a better description of how to add
+support for a new prover.
+</p>
+<p>See the <code>CHANGES</code> file in the distribution for more information
+about the latest improvements in Proof General.  Developers should check
+the <code>ChangeLog</code> in the developer&rsquo;s release for detailed comments on
+internal changes.
+</p>
+<p>Most of the work for Proof General 3.0 has been done by David Aspinall.
+Markus Wenzel helped with Isabelle support, and provided invaluable
+feedback and testing, especially for the improvements to multiple file
+handling.  Pierre Courtieu took responsibility from Patrick Loiseleur
+for Coq support, although improvements in both Coq and LEGO instances
+for this release were made by David Aspinall.  Markus Wenzel provided
+support for his Isar language, a new proof language for Isabelle.  David
+von Oheimb helped to develop the generic version of his X-Symbol
+addition which he originally provided for Isabelle.
+</p>
+<p>A new instantiation of Proof General is being worked on for
+<em>Plastic</em>, a proof assistant being developed at the University of
+Durham.
+</p>
+<hr size="6">
+<a name="Old-News-for-3_002e1"></a>
+<a name="Old-News-for-3_002e1-1"></a>
+<h2 class="unnumberedsec">Old News for 3.1</h2>
+<a name="index-news-3"></a>
+
+<p>Proof General 3.1 (released March 2000) is a bug-fix improvement over
+version 3.0.  There are some minor cosmetic improvements, but large
+changes have been held back to ensure stability.  This release solves a
+few minor problems which came to light since the final testing stages
+for 3.0.  It also solves some compatibility problems, so now it works
+with various versions of Emacs which we hadn&rsquo;t tested with before
+(non-mule GNU Emacs, certain Japanese Emacs versions).
+</p>
+<p>We&rsquo;re also pleased to announce HOL Proof General, a new instance of
+Proof General for HOL98.  This is supplied as a &quot;technology
+demonstration&quot; for HOL users in the hope that somebody from the HOL
+community will volunteer to adopt it and become a maintainer and
+developer.  (Otherwise, work on HOL Proof General will not continue).
+</p>
+<p>Apart from that there are a few other small improvements.  Check the
+CHANGES file in the distribution for full details.
+</p>
+<p>The HOL98 support and much of the work on Proof General 3.1 was
+undertaken by David Aspinall while he was visiting ETL, Osaka, Japan,
+supported by the British Council and ETL.
+</p>
+
+<hr size="6">
+<a name="Old-News-for-3_002e2"></a>
+<a name="Old-News-for-3_002e2-1"></a>
+<h2 class="unnumberedsec">Old News for 3.2</h2>
+<a name="index-news-4"></a>
+
+<p>Proof General 3.2 introduced several new features and some bug fixes.
+One noticeable new feature is the addition of a prover-specific menu for
+each of the supported provers.  This menu has a &ldquo;favourites&rdquo; feature
+that you can use to easily define new functions.  Please contribute
+other useful functions (or suggestions) for things you
+would like to appear on these menus.
+</p>
+<p>Because of the new menus and to make room for more commands, we have
+made a new key map for prover specific functions.  These now all begin
+with <kbd>C-c C-a</kbd>.  This has changed a few key bindings slightly.
+</p>
+<p>Another new feature is the addition of prover-specific completion
+tables, to encourage the use of Emacs&rsquo;s completion facility, using
+<kbd>C-RET</kbd>.  See section <a href="ProofGeneral_6.html#Support-for-completion">Support for completion</a>, for full details.
+</p>
+<p>A less obvious new feature is support for turning the proof assistant
+output on and off internally, to improve efficiency when processing
+large scripts.  This means that more of your CPU cycles can be spent on
+proving theorems.
+</p>
+<p>Adapting for new proof assistants continues to be made more flexible,
+and easier in several places.  This has been motivated by adding
+experimental support for some new systems.  One new system which had
+good support added in a very short space of time is <b>PhoX</b> (see
+<a href="http://www.lama.univ-savoie.fr/~RAFFALLI/af2.html">the PhoX home page</a> for more information).  PhoX joins the rank of officially
+supported Proof General instances, thanks to its developer Christophe
+Raffalli.
+</p>
+<p>Breaking the manual into two pieces was overdue: now all details on
+adapting Proof General, and notes on its internals, are in the
+<i>Adapting Proof General</i> manual.  You should find a copy of that
+second manual close to wherever you found this one; consult the
+Proof General home page if in doubt.
+</p>
+<p>The internal code of Proof General has been significantly overhauled for
+this version, which should make it more robust and readable.  The
+generic code has an improved file structure, and there is support for
+automatic generation of autoload functions.  There is also a new
+mechanism for defining prover-specific customization and instantiation
+settings which fits better with the customize library.  These settings
+are named in the form <code><i>PA</i>-setting-name</code> in the documentation;
+you replace <i>PA</i> by the symbol for the proof assistant you are
+interested in.  See section <a href="ProofGeneral_9.html#Customizing-Proof-General">Customizing Proof General</a>, for details.
+</p>
+<p>Finally, important bug fixes include the robustification against
+<code>write-file</code> (<kbd>C-x C-w</kbd>), <code>revert-buffer</code>, and friends.
+These are rather devious functions to use during script management, but
+Proof General now tries to do the right thing if you&rsquo;re deviant enough
+to try them out!
+</p>
+<p>Work on this release was undertaken by David Aspinall between
+May-September 2000, and includes contributions from Markus Wenzel,
+Pierre Courtieu, and Christophe Raffalli.  Markus added some Isar
+documentation to this manual.
+</p>
+
+<hr size="6">
+<a name="Old-News-for-3_002e3"></a>
+<a name="Old-News-for-3_002e3-1"></a>
+<h2 class="unnumberedsec">Old News for 3.3</h2>
+
+<p>Proof General 3.3 includes a few feature additions, but mainly the focus
+has been on compatibility improvements for new versions of provers (in
+particular, Coq 7), and new versions of emacs (in particular, XEmacs
+21.4).
+</p>
+<p>One new feature is control over visibility of completed proofs,
+See section <a href="ProofGeneral_4.html#Visibility-of-completed-proofs">Visibility of completed proofs</a>.  Another new feature is the
+tracking of theorem dependencies inside Isabelle.  A context-sensitive
+menu (right-button on proof scripts) provides facility for browsing the
+ancestors and child theorems of a theorem, and highlighting them.  The
+idea of this feature is that it can help you untangle and rearrange big
+proof scripts, by seeing which parts are interdependent.  The implementation
+is provisional and not documented yet in the body of this manual.  It only
+works for the &quot;classic&quot; version of Isabelle99-2.
+</p>
+
+<hr size="6">
+<a name="Old-News-for-3_002e4"></a>
+<a name="Old-News-for-3_002e4-1"></a>
+<h2 class="unnumberedsec">Old News for 3.4</h2>
+
+<p>Proof General 3.4 adds improvements and also compatibility fixes for
+new versions of Emacs, in particular, for GNU Emacs 21, which adds
+the remaining pretty features that have only been available to XEmacs
+users until now (the toolbar and X-Symbol support).
+</p>
+<p>One major improvement has been to provide better support for
+synchronization with Coq proof scripts; now Coq Proof General should
+be able to retract and replay most Coq proof scripts reliably.  Credit
+is due to Pierre Courtieu, who also updated the documentation in this
+manual.
+</p>
+<p>As of version 3.4, Proof General is distributed under the GNU General
+Public License (GPL).  Compared with the previous more restrictive
+license, this means the program can now be redistributed by third
+parties, and used in any context without applying for a special
+license.  Despite these legal changes, we would still appreciate if
+you send us back any useful improvements you make to Proof General,
+and register your use of Proof General on the web site.
+</p>
+<hr size="6">
+<a name="Old-News-for-3_002e5"></a>
+<a name="Old-News-for-3_002e5-1"></a>
+<h2 class="unnumberedsec">Old News for 3.5</h2>
+
+
+<hr size="6">
+<a name="Old-News-for-3_002e6"></a>
+<a name="Old-News-for-3_002e6-1"></a>
+<h2 class="unnumberedsec">Old News for 3.6</h2>
+
+<p>There was no 3.6 release of Proof General.
+</p>
+<hr size="6">
+<a name="Old-News-for-3_002e7"></a>
+<a name="Old-News-for-3_002e7-1"></a>
+<h2 class="unnumberedsec">Old News for 3.7</h2>
+
+<p>Proof General version 3.7.1 is an updated and enhanced version
+of Proof General 3.7.  See  &lsquo;<tt>CHANGES</tt>&rsquo; for more details.
+</p>
+<p>Proof General version 3.7 collects together a cummulative set of
+improvements to Proof General 3.5.  There are compatibility fixes for
+newer Emacs versions, and particularly for GNU Emacs: credit is due to
+Stefan Monnier for an intense period of debugging and patching.  The
+options menu has been simplified and extended, and the display
+management is improved and repaired for Emacs API changes.  There are
+some other usability improvements, some after feedback from use at TYPES
+Summer Schools.  Many new features have been added to enhance Coq mode
+(thanks to Pierre Courtieu) and several improvements made for Isabelle
+(thanks to Makarius Wenzel, Stefan Berghofer and Tjark Weber).
+</p>
+<p>Support has been added for the useful Emacs packages Speedbar
+and Index Menu, both usually distributed with Emacs.  Compatible
+versions of the Emacs packages Math-Menu (for Unicode symbols) and MMM
+Mode (for multiple modes in one buffer) are bundled with Proof General.
+An experimental Unicode Tokens package has been added which will replace
+X-Symbol.
+</p>
+<p>See the &lsquo;<tt>CHANGES</tt>&rsquo; file in the distribution for more complete
+details of changes since version 3.5, and the appendix
+<a href="#History-of-Proof-General">History of Proof General</a> for old news.
+</p>
+
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#History-of-Proof-General" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

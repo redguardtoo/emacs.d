@@ -1,0 +1,12 @@
+default namespace = ""
+
+start =
+  element movie {
+    element film {
+      element frame {
+        attribute frameNumber { xsd:integer },
+      	element command { text },
+	element response { text }
+     }
+    }+
+  }

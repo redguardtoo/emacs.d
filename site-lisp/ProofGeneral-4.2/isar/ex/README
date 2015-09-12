@@ -1,0 +1,8 @@
+This directory contains some example files copied from the Isabelle
+distribution.
+
+These are re-distributed with Proof General for convenience of trying
+out PG without needing a local installation of Isabelle.
+
+They can also be used as test cases.
+

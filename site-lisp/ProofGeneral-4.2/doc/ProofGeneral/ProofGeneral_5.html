@@ -1,0 +1,669 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html401/loose.dtd">
+<html>
+<!-- Created on October 19, 2012 by texi2html 1.82
+texi2html was written by: 
+            Lionel Cons <Lionel.Cons@cern.ch> (original author)
+            Karl Berry  <karl@freefriends.org>
+            Olaf Bachmann <obachman@mathematik.uni-kl.de>
+            and many others.
+Maintained by: Many creative people.
+Send bugs and suggestions to <texi2html-bug@nongnu.org>
+-->
+<head>
+<title>Proof General: 4. Unicode symbols and special layout support</title>
+
+<meta name="description" content="Proof General: 4. Unicode symbols and special layout support">
+<meta name="keywords" content="Proof General: 4. Unicode symbols and special layout support">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="texi2html 1.82">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+<!--
+/* Style sheet for the Proof General web pages. 
+ * David Aspinall, June 1999.
+ * proofgen.css,v 4.0 2000/03/13 07:36:57 da Exp
+ */
+
+
+a.summary-letter {text-decoration: none}
+blockquote.smallquotation {font-size: smaller}
+pre.display {font-family: serif}
+pre.format {font-family: serif}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+pre.smalldisplay {font-family: serif; font-size: smaller}
+pre.smallexample {font-size: smaller}
+pre.smallformat {font-family: serif; font-size: smaller}
+pre.smalllisp {font-size: smaller}
+span.roman {font-family:serif; font-weight:normal;}
+span.sansserif {font-family:sans-serif; font-weight:normal;}
+ul.toc {list-style: none}
+body{
+ font-family: Verdana, Arial, sans-serif;
+ background: #2D1D03;  /* background brown */
+ background-attachment: fixed;
+ color: #FFFFFF;
+}
+
+p{
+ max-width: 1024px;
+ font-family: Verdana, Arial, sans-serif;
+ color: #FFFFFF;
+}
+pre{
+ color: #FFFFFF;
+}
+h1{
+ color: #FFFFFF;
+ font-size: large;
+ font-weight: bold;
+}
+h2{
+ font-size: medium;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 8px;
+ background: #5D2D13;
+}
+h3{
+ font-size: medium;
+ padding: 2px 2px 2px 8px;
+ margin-right: 50%;
+ background: #4D1D23;
+ color: #FFFFD0;
+}
+h4{
+ font-size: medium;
+ color: #FFD0D0;
+ padding: 2px 2px 2px 8px;
+}
+blockquote,form,input,select{
+ color: #FFFFFF;
+}
+address{
+ font-size: small;
+ color: #FFFFFF;
+}
+select {
+ font-size: 100%;
+ background: #2D1D03;
+ color: #FFFFFF;
+}
+textarea,input {
+ font-size: 100%;
+ background: #4D2D23;
+ color: #FFFFFF;
+}
+input[type=submit],input[type=reset],input[type=Submit] {
+ font-size: 80%;
+ padding-top: 0px;
+ padding-bottom: 0px;
+ background: #401010;
+}
+#button:active{
+ background: #402020;
+}
+
+dl,ul,dir,li{
+ color: #FFFFFF;
+ max-width: 1024px;
+}
+
+dt{ font-style: italic; 
+    padding: 2px 2px 2px 8px;
+    margin-left: 20px;
+    margin-right: 20px;
+    background: #4D1D23; 
+}
+
+table{
+ font-family: Verdana, Arial, sans-serif;	
+ color: #FFFFFF;
+}
+
+table.menubar{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: smaller;
+ color: #FFFFFF;
+}
+
+td,tr{
+ color: #FFFFFF;
+}
+
+a:link,a:visited{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: none;
+ color: #E0D020;
+}
+
+a:active,a:hover{
+ font-family: Verdana, Arial, sans-serif;	
+ text-decoration: underline;
+ color: #E8D830;
+}
+
+pre{
+ background: #2D1D03;
+}
+
+/* Specifics */
+
+p.nb{
+ font-size: smaller;
+ font-style: italic;
+}
+
+/* These bits for Mailman pages for mailing lists */
+TD.head1old {
+ font-family: Verdana, Arial, sans-serif;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: bold;
+  font-size: 110%;
+}
+td.head1{
+ font-family: Verdana, Arial, sans-serif;
+ font-weight: bold;
+ font-size: 110%;
+ text-align: center;
+ color: #FFFFFF;
+}
+td.head2{
+ font-family: Verdana, Arial, sans-serif;
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFFFD0;
+ padding: 2px 4px 4px 4px;
+ background: #7D4D33;
+}
+td.head3{
+ font-family: Verdana, Arial, sans-serif;	
+ padding: 2px 2px 2px 2px;
+ margin-right: 10%;
+ background: #6D3D43;
+ font-size: 80%;
+ color: #FFFFD0;
+}
+td.head4{
+ font-family: Verdana, Arial, sans-serif;	
+ font-size: 100%;
+ font-weight: bold;
+ color: #FFD0D0;
+}
+
+-->
+</style>
+
+
+</head>
+
+<body lang="en" bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#800080" alink="#FF0000">
+
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="ProofGeneral_4.html#Advanced-Script-Management-and-Editing" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_6.html#Support-for-other-Packages" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+
+<hr size="2">
+<a name="Unicode-symbols-and-special-layout-support"></a>
+<a name="Unicode-symbols-and-special-layout-support-1"></a>
+<h1 class="chapter">4. Unicode symbols and special layout support</h1>
+
+<a name="index-symbols"></a>
+<a name="index-X_002dSymbols"></a>
+<a name="index-Greek-letters"></a>
+<a name="index-logical-symbols"></a>
+<a name="index-mathematical-symbols"></a>
+<a name="index-subscripts"></a>
+<a name="index-superscripts"></a>
+<a name="index-Maths-Menu"></a>
+<a name="index-Tokens-Mode"></a>
+
+<p>Proof General inherits support for displaying Unicode (and any other)
+fonts from the underlying Emacs program.  If you are lucky, your system
+will be able to use or synthesise a font that provides a rich set of
+mathematical symbols.  To store symbols directly in files you need to
+use a particular coding, for example UTF-8.  Newer Emacs versions can
+handle a multitude of different coding systems and will try to
+automatically detect an appropriate one; consult the Emacs documentation
+for more details.  Of course, the prover that you are using will need to
+understand the same encodings and symbol meanings.
+</p>
+<p>Alternatively, you can use the <b>Unicode Tokens</b> mode provided in Proof
+General to display mathematical symbols in place of sequences of other
+characters (usually plain ASCII).  This can provide better
+compatibility, portability, and flexibility.  Even if you use real
+Unicode characters as prover input, the Unicode Tokens mode can provide
+some helpful facilities for input shorthands and giving special layout.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top"><a href="#Maths-menu">4.1 Maths menu</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Unicode-Tokens-mode">4.2 Unicode Tokens mode</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Configuring-tokens-symbols-and-shortcuts">4.3 Configuring tokens symbols and shortcuts</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Special-layout">4.4 Special layout</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Moving-between-Unicode-and-tokens">4.5 Moving between Unicode and tokens</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Finding-available-tokens-shortcuts-and-symbols">4.6 Finding available tokens shortcuts and symbols</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top"><a href="#Selecting-suitable-fonts">4.7 Selecting suitable fonts</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+
+
+<hr size="6">
+<a name="Maths-menu"></a>
+<a name="Maths-menu-1"></a>
+<h2 class="section">4.1 Maths menu</h2>
+
+<p>The <b>Maths Menu</b> minor mode (adapted from a menu by Dave Love) simply
+adds a menu <code>Maths</code> to the main menubar for inserting common
+mathematical symbols.  You can enable or disable it via the menu
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Proof-General -&gt; Quick Options -&gt; Minor Modes -&gt; Unicode Maths Menu
+</pre></td></tr></table>
+<p>(<code>proof-maths-menu-toggle</code>).  Whether or not the symbols display
+well the menus depends on the font used to display the menus (which
+depends on the Emacs version, toolkit and platform).  Ordinarily, the
+symbols inserted into the text will be Unicode characters which will be
+saved in the file using the encoding selected by standard Emacs
+mechanisms.
+</p>
+
+<hr size="6">
+<a name="Unicode-Tokens-mode"></a>
+<a name="Unicode-Tokens-mode-1"></a>
+<h2 class="section">4.2 Unicode Tokens mode</h2>
+
+
+<p>The <b>Unicode Tokens</b> minor mode has been written specially for Proof
+General (with thanks to Stefan Monnier for providing inspiration and a
+starting point).  It supports the display of symbols when the underlying
+text of the file and buffer actually contains something else, typically,
+plain ASCII text.  It provides backward compatibility with the older
+X-Symbol mode.
+</p>
+<p>Unicode Tokens can be enabled or disabled using the menu:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Proof-General -&gt; Quick Options -&gt; Display -&gt; Unicode Tokens
+</pre></td></tr></table>
+<p>The mode to allows ASCII tokens (i.e., sequences of plain ASCII
+characters) to be displayed as Unicode character compositions, perhaps
+with additional text properties.  The additional text properties allow
+the use of tokens to cause font changes (bold, italic), text size
+changes, and sub-script/super-script.
+</p>
+<p>For example, the ASCII sequences <code>/\</code> or <code>\&lt;And&gt;</code> could be
+displayed as a conjunction symbol.
+The sequence <code>x __ y</code> might be written to display <code>y</code>
+as subscript.  This allows a file to be stored in perfectly portable plain ASCII
+encoding, but be displayed and edited with real symbols and
+appealing layout.  Of course, the proof assistant needs to understand
+the underlying tokens in each case.
+</p>
+<p>Technically, the mechanism is based on Emacs Font Lock facility, using
+the <code>composition</code> text property to display ASCII character sequence
+tokens as something else.  This means that the underlying buffer text is
+<i>not</i> altered.  This is a major advantage over the older X-Symbol (and
+the experimental version of Unicode Tokens in PG 3.7.1), which had the
+annoying risk of saving your buffer text in a corrupted format.  This
+can never happen with the new mode.
+</p>
+<p>When the Unicode Tokens mode is enabled, Maths Menu is automatically
+modified to insert tokenised versions of the Unicode characters
+(whenever a reverse mapping can be found).  This means that you can
+still use the Maths Menu to conveniently input symbols.  You can easily
+add custom key bindings for particular symbols you need to enter often
+(see section <a href="ProofGeneral_10.html#Adding-your-own-keybindings">Adding your own keybindings</a> for examples).
+</p>
+<p>The Unicode Tokens mode also allows short-cut sequences of ordinary
+characters to quickly type tokens (similarly to the facility provided by
+X-Symbol).  These, along with the token settings themselves, are
+configured on a per-prover basis.
+</p>
+<hr size="6">
+<a name="Configuring-tokens-symbols-and-shortcuts"></a>
+<a name="Configuring-tokens-symbols-and-shortcuts-1"></a>
+<h2 class="section">4.3 Configuring tokens symbols and shortcuts</h2>
+
+<p>To edit the strings used to display tokens, or the collection of 
+short-cuts, you can edit the 
+file <code><i>PA</i>-unicode-tokens.el</code>, or customize the main
+variables it contains, for example <code><i>PA</i>-token-name-alist</code> and 
+<code><i>PA</i>-shortcut-alist</code>. 
+</p>
+<p>E.g., for Isabelle 
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  M-x customize-variable isar-token-name-alist RET
+</pre></td></tr></table>
+<p>provides an interface to the tokens, and
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  M-x customize-variable isar-shortcut-alist
+</pre></td></tr></table>
+<p>an interface to the shortcuts.
+</p>
+<p>Where possible, it is better to use the more fine grained way is
+available to do this, which edits the separate tables which are combine
+to form the big list of tokens.  This is available via the menus, e.g.,
+in Isabelle, use
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Tokens -&gt; Customize -&gt; Extended Symbols
+</pre></td></tr></table>
+<p>to customize the symbols used for the &ldquo;extended&rdquo; (non standard)
+symbol list.
+</p>
+
+<hr size="6">
+<a name="Special-layout"></a>
+<a name="Special-layout-1"></a>
+<h2 class="section">4.4 Special layout</h2>
+
+<p>The Unicode Tokens mode supports both <i>symbol tokens</i> used to display
+character sequences in different ways and <i>control tokens</i> used to
+control the layout of the text in various ways, such as superscript,
+subscript, large, small, bold, italic, etc.  (The size and position
+layout is managed using Emacs&rsquo;s <code>display</code> text property)
+</p>
+<p>As well as displaying token sequences as special symbols, symbol tokens
+themselves can define layout options as well; for example you might
+define a token <code>\&lt;hugeOplus&gt;</code> to display a large circled-plus
+glyph.  If you try the customization mentioned in the section above you
+will see the options available when defining symbols.
+</p>
+<p>These options are fixed layout schemes which also make layout tokens
+easy to configure for provers.  The layout possibilities include the
+ones shown in the table below.  There are two ways of configuring
+control tokens for layout: <i>character controls</i> and <i>region
+controls</i>.  The character controls apply to the next &ldquo;character&rdquo;,
+although this is a prover-specific notion and might actually mean the
+next word or identifier.  An example might be writing <code>BOLDCHAR x</code>
+to make a bold <b>x</b>.  Similarly the region controls apply to a
+delineated region of text, for example, writing <code>BEGINBOLD this is
+bold ENDBOLD</code> could cause the enclosed text <b>this is bold</b> to be
+displayed in a bold font.
+</p>
+<p>The control tokens that have been configured populate the Tokens
+menu, so, for example, you may be able to select a region
+of text and then use the menu item:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Tokens -&gt; Format Region -&gt; Bold
+</pre></td></tr></table>
+<p>to cause the bold region tokens to be inserted around the selected
+text, which should cause the buffer presentation to show the text
+in a bold format (hiding the tokens).
+</p>
+<p>Here is the table of layout controls available.  What you actually
+can use will depend on the configuration for the underlying prover.
+</p><dl compact="compact">
+<dt> <code>sub</code></dt>
+<dd><p>lower the text (subscript)
+</p></dd>
+<dt> <code>sup</code></dt>
+<dd><p>raise the text (superscript)
+</p></dd>
+<dt> <code>bold</code></dt>
+<dd><p>make the text be in the bold weight of the current font
+</p></dd>
+<dt> <code>italic</code></dt>
+<dd><p>make the text be in the italic variant of the current font
+</p></dd>
+<dt> <code>big</code></dt>
+<dd><p>make the text be in a bigger size of the current font
+</p></dd>
+<dt> <code>small</code></dt>
+<dd><p>make the text be in a smaller size of the current font
+</p></dd>
+<dt> <code>underline</code></dt>
+<dd><p>underline the text
+</p></dd>
+<dt> <code>overline</code></dt>
+<dd><p>overline the text
+</p></dd>
+<dt> <code>script</code></dt>
+<dd><p>display the text in a &ldquo;script&rdquo; font
+</p></dd>
+<dt> <code>frakt</code></dt>
+<dd><p>display the text in a &ldquo;fraktur&rdquo; font
+</p></dd>
+<dt> <code>serif</code></dt>
+<dd><p>display the text in a serif font
+</p></dd>
+<dt> <code>sans</code></dt>
+<dd><p>display the text in a sans serif font
+</p></dd>
+<dt> <code>keyword</code></dt>
+<dd><p>display the text in the keyword face (<code>font-lock-keyword-face</code>)
+</p></dd>
+<dt> <code>function</code> </dt>
+<dd><p>display the text in the function name face (<code>font-lock-function-name-face</code>)
+</p></dd>
+<dt> <code>type</code></dt>
+<dd><p>display the text in the type name face (<code>font-lock-type-face</code>)
+</p></dd>
+<dt> <code>preprocessor</code></dt>
+<dd><p>display the text in the preprocessor face (<code>font-lock-preprocessor-face</code>)
+</p></dd>
+<dt> <code>doc</code></dt>
+<dd><p>display the text in the documentation face (<code>font-lock-doc-face</code>)
+</p></dd>
+<dt> <code>builtin</code></dt>
+<dd><p>display the text in the builtin face (<code>font-lock-builtin-face</code>)
+</p></dd>
+</dl>
+
+<p>Notice that the fonts can be set conveniently by the menu commands
+</p><table><tr><td>&nbsp;</td><td><pre class="example">        Tokens -&gt; Set Fonts -&gt; Script
+</pre></td></tr></table>
+<p>etc.  See section <a href="#Selecting-suitable-fonts">Selecting suitable fonts</a>, for more.
+</p>
+<p>The symbols used to select the various font-lock faces (see <code>M-x
+list-faces-display</code> to show them) allow you to define custom colouring
+of text for proof assistant input and output, exploiting rich underlying
+syntax mechanisms of the prover.
+</p>
+
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dserif_002dfont_002dface"></a><u>Face:</u> <b>unicode-tokens-serif-font-face</b></dt>
+<dd><p>Serif (roman) font face.
+</p></dd></dl>
+<dl>
+<dt><a name="index-unicode_002dtokens_002dsans_002dfont_002dface"></a><u>Face:</u> <b>unicode-tokens-sans-font-face</b></dt>
+<dd><p>Sans serif font face.
+</p></dd></dl>
+<dl>
+<dt><a name="index-unicode_002dtokens_002dfraktur_002dfont_002dface"></a><u>Face:</u> <b>unicode-tokens-fraktur-font-face</b></dt>
+<dd><p>Fraktur font face.
+</p></dd></dl>
+<dl>
+<dt><a name="index-unicode_002dtokens_002dscript_002dfont_002dface"></a><u>Face:</u> <b>unicode-tokens-script-font-face</b></dt>
+<dd><p>Script font face.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Moving-between-Unicode-and-tokens"></a>
+<a name="Moving-between-Unicode-and-tokens-1"></a>
+<h2 class="section">4.5 Moving between Unicode and tokens</h2>
+
+<p>If you want to share text between applications (e.g., email some text
+from an Isabelle theory file which heavily uses symbols), it is
+useful to convert to and from Unicode with cut-and-paste operations.
+The default buffer cut and paste functions will copy the underlying text,
+which contains the tokens (ASCII format).  To copy and convert 
+or paste then convert back, use these commands:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Tokens -&gt; Copy as unicode
+  Tokens -&gt; Paste from unicode
+</pre></td></tr></table>
+
+<p>Both of these are necessarily approximate.  The buffer presentation
+may use additional controls (for super/subscript layout or bold fonts,
+etc), which cannot be converted.  Pasting relies on being able to
+identify a unique token mapped from a single Unicode character; the
+token table may not include such an entry, or may be ambiguous.
+</p>
+<dl>
+<dt><a name="index-unicode_002dtokens_002dcopy"></a><u>Command:</u> <b>unicode-tokens-copy</b><i> beg end</i></dt>
+<dd><p>Copy presentation of region between <var>beg</var> and <var>end</var>.<br>
+This is an approximation; it makes assumptions about the behaviour
+of symbol compositions, and will lose layout information.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dpaste"></a><u>Command:</u> <b>unicode-tokens-paste</b></dt>
+<dd><p>Paste text from clipboard, converting Unicode to tokens where possible.
+</p></dd></dl>
+
+<p>If you are using a mixture of &ldquo;real&rdquo; Unicode and tokens like this
+you may want to be careful to check the buffer contents: the command
+<code>unicode-tokens-highlight-unicode</code> helps you to manage this.
+It
+is available on the Tokens menu as
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Tokens -&gt; Highlight Real Unicode Chars
+</pre></td></tr></table>
+<p>Alternative ways to check are to toggle the display of tokens using
+</p><table><tr><td>&nbsp;</td><td><pre class="example">  Tokens -&gt; Reveal Symbol Tokens
+</pre></td></tr></table>
+<p>(the similar entry for <code>Control Tokens</code> displays tokens being used
+to control layout).  Or simply toggle the tokens mode, which will leave
+the true Unicode tokens untouched.
+</p>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dhighlight_002dunicode"></a><u>Variable:</u> <b>unicode-tokens-highlight-unicode</b></dt>
+<dd><p>Non-nil to highlight Unicode characters.
+</p></dd></dl>
+
+
+<hr size="6">
+<a name="Finding-available-tokens-shortcuts-and-symbols"></a>
+<a name="Finding-available-tokens-shortcuts-and-symbols-1"></a>
+<h2 class="section">4.6 Finding available tokens shortcuts and symbols</h2>
+
+<p>Two commands (both on the Tokens menu) allow you to see the tokens and
+shortcuts available:
+</p><table><tr><td>&nbsp;</td><td><pre class="example">        Tokens -&gt; List Tokens
+        Tokens -&gt; List Shortcuts
+</pre></td></tr></table>
+
+<p>Additionally, you can view the complete Unicode character set available
+in the default Emacs font, with
+</p><table><tr><td>&nbsp;</td><td><pre class="example">        Tokens -&gt; List Unicode Characters
+</pre></td></tr></table>
+<p>(this uses a list adapted from Norman Walsh&rsquo;s <code>unichars.el</code>).
+</p>
+<p>Note that the Unicode Tokens modes displays symbols defined by
+symbol tokens in a special font.
+</p>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dlist_002dtokens"></a><u>Command:</u> <b>unicode-tokens-list-tokens</b></dt>
+<dd><p>Show a buffer of all tokens.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dlist_002dshortcuts"></a><u>Command:</u> <b>unicode-tokens-list-shortcuts</b></dt>
+<dd><p>Show a buffer of all the shortcuts available.
+</p></dd></dl>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dlist_002dunicode_002dchars"></a><u>Command:</u> <b>unicode-tokens-list-unicode-chars</b></dt>
+<dd><p>Insert each Unicode character into a buffer.<br>
+Lets you see which characters are available for literal display
+in your emacs font.
+</p>
+<p>(fn)
+</p></dd></dl>
+<hr size="6">
+<a name="Selecting-suitable-fonts"></a>
+<a name="Selecting-suitable-fonts-1"></a>
+<h2 class="section">4.7 Selecting suitable fonts</h2>
+
+<p>The precise set of symbol glyphs that are available to you will depend
+in complicated ways on your operating system, Emacs version,
+configuration options used when Emacs was compiled, installed font sets,
+and (even) command line options used to start Emacs.  So it is hard to
+give comprehensive and accurate advice in this manual.  In general,
+things work <i>much</i> better with Emacs 23 than earlier versions.
+</p>
+<p>To improve flexibility, Unicode Tokens mode allows you to select another
+font to display symbols from the default font that is used to display
+text in the buffer.    This is the font that is configured by the menu
+</p><table><tr><td>&nbsp;</td><td><pre class="example">        Tokens -&gt; Set Fonts -&gt; Symbol
+</pre></td></tr></table>
+<p>its customization name is <code>unicode-tokens-symbol-font-face</code>, but
+notice that only the font family aspect of the face is used.  Similarly,
+other fonts can be configured for controling different font families
+(script, fraktur, etc).
+</p>
+<p>For symbols, good results are possible by using a proportional font for
+displaying symbols that has many symbol glyphs, for example the main font
+StixGeneral font from the Stix Fonts project
+(<a href="http://www.stixfonts.org/">http://www.stixfonts.org/</a>).  At the time of writing you can
+obtain a beta version of these fonts in TTF format from
+<a href="http://olegueret.googlepages.com/stixfonts-ttf">http://olegueret.googlepages.com/stixfonts-ttf</a>.  On recent Linux
+distributions and with an Emacs 23 build that uses Xft, simply copy
+these <code>ttf</code> files into the <code>.fonts</code> directory inside your home
+directory to make them available.
+</p>
+<p>Another font I like is <b>DejaVu Sans Mono</b>.  It covers all of the
+standard Isabelle symbols.  Some of the symbols are currently not
+perfect; however this font is an open source effort so users can
+contribute or suggest improvements.  See <a href="http://dejavu-fonts.org">http://dejavu-fonts.org</a>.
+</p>
+<p>If you are stuck with Emacs 22, you need to use the <i>fontset</i>
+mechanism which configures sets of fonts to use for display.  The
+default font sets may not include enough symbols (typical symptom:
+symbols display as empty boxes).  To address this, the menu command 
+</p><table><tr><td>&nbsp;</td><td><pre class="example">        Tokens -&gt; Set Fonts -&gt; Make Fontsets
+</pre></td></tr></table>
+<p>constructs a number of fontsets at particular point sizes, based on
+several widely available fonts.  See <code>pg-fontsets.el</code> for the code.
+After running this command, you can select from additional fontsets from
+the menus for changing fonts.
+</p>
+
+<p>For further suggestions, please search (and contribute!) to the Proof
+General wiki at <a href="http://proofgeneral.inf.ed.ac.uk/wiki">http://proofgeneral.inf.ed.ac.uk/wiki</a>.
+</p>
+
+<dl>
+<dt><a name="index-unicode_002dtokens_002dsymbol_002dfont_002dface"></a><u>Face:</u> <b>unicode-tokens-symbol-font-face</b></dt>
+<dd><p>The default font used for symbols.  Only :family and :slant attributes are used.
+</p></dd></dl>
+<dl>
+<dt><a name="index-unicode_002dtokens_002dfont_002dfamily_002dalternatives"></a><u>Variable:</u> <b>unicode-tokens-font-family-alternatives</b></dt>
+<dd><p>Not documented.
+</p></dd></dl>
+<hr size="6">
+<table cellpadding="1" cellspacing="1" border="0">
+<tr><td valign="middle" align="left">[<a href="#Unicode-symbols-and-special-layout-support" title="Beginning of this chapter or previous chapter"> &lt;&lt; </a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_6.html#Support-for-other-Packages" title="Next chapter"> &gt;&gt; </a>]</td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left"> &nbsp; </td>
+<td valign="middle" align="left">[<a href="ProofGeneral.html#Top" title="Cover (top) of document">Top</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_toc.html#SEC_Contents" title="Table of contents">Contents</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_20.html#Function-Index" title="Index">Index</a>]</td>
+<td valign="middle" align="left">[<a href="ProofGeneral_abt.html#SEC_About" title="About (help)"> ? </a>]</td>
+</tr></table>
+<p>
+ <font size="-1">
+  This document was generated by <em>David Aspinall</em> on <em>October 19, 2012</em> using <a href="http://www.nongnu.org/texi2html/"><em>texi2html 1.82</em></a>.
+ </font>
+ <br>
+
+</p>
+</body>
+</html>

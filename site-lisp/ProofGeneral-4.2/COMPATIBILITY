@@ -1,0 +1,71 @@
+Compatibility of Proof General
+==============================
+
+This version of Proof General has been tested with these Emacs versions
+on recent Linux systems:
+
+ Emacs 23.4             -- recommended and supported
+ Emacs 23.3,23.2        -- previous versions, should work
+ Emacs 24 (development) -- next version, should work
+ Emacs 23.1, earlier    -- obsolete versions, do NOT work
+
+and (main) prover versions:  Coq 8.3, Isabelle2011[-1]
+
+See below for notes about other operating systems.
+
+Maintaining compatibility across proof assistant versions, Emacs
+versions and operating systems is virtually impossible.  
+
+In the major 4.0 release ** XEmacs compatibility was dropped **
+
+
+Running on Mac OS X
+-------------------
+
+For tips, please see here:
+
+   http://proofgeneral.inf.ed.ac.uk/wiki/PGEmacsOnMacOSX
+
+We recommend the 23.2 build of GNU Emacs, which builds natively on Mac
+OS X (based on the NextStep port).  Binaries are available at various
+websites (e.g., http://emacsformacosx.com), or you can build your own
+by compiling from the FSF CVS. See the Emacs Wiki at
+http://www.emacswiki.org/emacs/EmacsForMacOS for more.
+
+Note that Mac compatibility isn't thoroughly tested.  If you discover
+problems, please send a report and/or fix to the PG trac.  Please
+add tips to the wiki page above.
+
+
+Running on Windows
+------------------
+
+For tips, please see here:
+
+   http://proofgeneral.inf.ed.ac.uk/wiki/PGEmacsOnWindows
+
+We recommend EmacsW32 available at:
+
+   http://www.ourcomments.org/Emacs/EmacsW32.html
+
+Unpack the Proof General tar or zip file, and rename the folder to
+"ProofGeneral" to remove the version number.  Put a line like this:
+
+   (load-file "c:\\ProofGeneral\\generic\\proof-site.el")
+
+into .emacs.  You should put .emacs in value of HOME if you set that,
+or else in directory you installled Emacs in, e.g.  
+c:\Program Files\Emacs\.emacs
+
+Note that Windows compatibility isn't tested by the maintainers.  If
+you discover problems, please add notes on the Wiki page above, and
+submit patches to http://proofgeneral.inf.ed.ac.uk/trac
+
+
+
+
+
+
+
+
+
