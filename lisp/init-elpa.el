@@ -86,6 +86,7 @@ ARCHIVE is the string name of the package archive.")
     simple-httpd
     dsvn
     move-text
+    string-edit ; looks magnars don't update stable tag frequently
     findr
     mwe-log-commands
     dired-details
