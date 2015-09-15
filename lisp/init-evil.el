@@ -11,6 +11,11 @@
      ;; force update evil keymaps after git-timemachine-mode loaded
      (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
 
+(eval-after-load 'browse-kill-ring
+  '(progn
+     (evil-make-overriding-map browse-kill-ring-mode-map 'normal)
+     (add-hook 'browse-kill-ring-mode-hook #'evil-normalize-keymaps)))
+
 (require 'evil)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
@@ -245,6 +250,7 @@
         (speedbar-mode . emacs)
         (magit-commit-mode . normal)
         (magit-diff-mode . normal)
+        (browse-kill-ring-mode . normal)
         (js2-error-buffer-mode . emacs)
         )
       do (evil-set-initial-state mode state))
