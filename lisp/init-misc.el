@@ -2,8 +2,6 @@
 
 ;; M-x without meta
 (global-set-key (kbd "C-x C-m") 'execute-extended-command)
-(global-set-key (kbd "C-.") 'set-mark-command)
-(global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
 ;; C#
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
@@ -300,10 +298,6 @@ buffer is not visiting a file."
 ;; edit confluence wiki
 (autoload 'confluence-edit-mode "confluence-edit" "enable confluence-edit-mode" t)
 (add-to-list 'auto-mode-alist '("\\.wiki\\'" . confluence-edit-mode))
-
-;; {{string-edit.el
-(autoload 'string-edit-at-point "string-edit" "enable string-edit-mode" t)
-;; }}
 
 (defun erase-specific-buffer (num buf-name)
   (let ((message-buffer (get-buffer buf-name))
