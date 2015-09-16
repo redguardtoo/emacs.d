@@ -378,8 +378,9 @@
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
   "c$" 'org-archive-subtree ; `C-c $'
-  "c<" 'org-promote-subtree ; `C-c C-<'
-  "c>" 'org-demote-subtree ; `C-c C->'
+  ;; org-do-demote/org-do-premote support selected region
+  "c<" 'org-do-promote ; `C-c C-<'
+  "c>" 'org-do-demote ; `C-c C->'
   "cam" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
   "cxi" 'org-clock-in ; `C-c C-x C-i'
   "cxo" 'org-clock-out ; `C-c C-x C-o'
