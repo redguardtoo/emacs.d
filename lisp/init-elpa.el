@@ -154,7 +154,6 @@ ARCHIVE is the string name of the package archive.")
     color-theme-solarized
     colorsarenice-theme
     cyberpunk-theme
-    expand-region
     dakrone-theme
     darcula-theme
     dark-krystal-theme
@@ -205,7 +204,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'color-theme)
 (require-package 'auto-compile)
 (require-package 'avy)
-(require-package 'expand-region) ;; use latest version if possible
+(require-package 'expand-region) ;; I prefer stable version
 (require-package 'fringe-helper)
 (require-package 'haskell-mode)
 (require-package 'gitignore-mode)
