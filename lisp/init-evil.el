@@ -16,6 +16,11 @@
      (evil-make-overriding-map browse-kill-ring-mode-map 'normal)
      (add-hook 'browse-kill-ring-mode-hook #'evil-normalize-keymaps)))
 
+(eval-after-load 'etags-select
+  '(progn
+     (evil-make-overriding-map etags-select-mode-map 'normal)
+     (add-hook 'etags-select-mode-hook #'evil-normalize-keymaps)))
+
 (require 'evil)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
@@ -251,6 +256,7 @@
         (magit-commit-mode . normal)
         (magit-diff-mode . normal)
         (browse-kill-ring-mode . normal)
+        (etags-select-mode . normal)
         (js2-error-buffer-mode . emacs)
         )
       do (evil-set-initial-state mode state))
