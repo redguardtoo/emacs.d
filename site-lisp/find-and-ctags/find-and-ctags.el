@@ -24,7 +24,7 @@
 ;;        (when (fctags-current-path-match-pattern-p "MYPROJ.*/app")
 ;;          (setq proj-dir (if fctags-windows-p "c:/Workspaces/MYPROJ/MACWeb/WebContent/app"
 ;;                      "~/projs/MYPROJ/MACWeb/WebContent/app"))
-;;          (setq FIND-OPTS "-not -size +64k")
+;;          (setq FIND-OPTS "-not -size +64k -not -iwholename '*/dist/*'")
 ;;          (setq CTAGS-OPTS "--exclude=*.min.js --exclude=*.git*")
 ;;          ;; you can use setq-local instead
 ;;          (setq tags-table-list
@@ -50,7 +50,7 @@
 
 (defvar fctags-auto-update-tags-interval 600
   "The interval to update TAGS. It's used by fctags-auto-update-tags and in seconds format.
- Default value is 600 which equals 10 minutes.")
+ Default value is 600 which equals 5 minutes.")
 
 (defvar fctags-gnu-find-executable nil
   "The path of GNU Find. If it's nil, it will be automatically detected.")
@@ -125,6 +125,8 @@
         file
         cmd)
     (setq file (concat dir "TAGS"))
+    ;; always record the cli options
+    (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
     (when (or FORCE (not (file-exists-p file)))
       (setq old-dir default-directory)
       ;; "cd dir && find . -name blah | ctags" will NOT work on windows cmd window
@@ -135,7 +137,6 @@
                         FIND-OPTS
                         ctags-exe
                         CTAGS-OPTS))
-      (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
       (message "find-and-ctags running shell command: %s" cmd)
       (shell-command cmd)
       ;; restore default-directory
@@ -174,6 +175,7 @@
 (defun fctags-auto-update-tags()
   (interactive)
   (cond
+
    ((not fctags-updated-timer)
     (setq fctags-updated-timer (current-time)))
 
