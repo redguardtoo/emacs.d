@@ -1,0 +1,19 @@
+# -*- mode: snippet -*-
+# name: formly.isAllFormFieldsValid()
+# group: angular
+# key: afieldsvalid
+# --
+function isAllFormFieldsValid (fields) {
+    var item;
+    for (var i = 0; i < fields.length; i++) {
+        item = fields[i];
+        if(item && !item.noFormControl ) {
+            // if the item does NOT have formControl property
+            // no need to check it
+            if(item.formControl && (!item.formControl.$valid)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
