@@ -1,50 +1,58 @@
-;;; find-and-ctags.el --- Create and update TAGS by combining Find and Ctags for any language on Winows/Linux/OSX
+;;; find-and-ctags.el --- Use ctags&find to create TAGS on Winows/Linux/OSX
 
 ;; Copyright (C) 2014 Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/find-and-ctags
 ;; Keywords: find ctags
-;; Version: 0.0.2
+;; Version: 0.0.3
 
 ;; This file is not part of GNU Emacs.
 
 ;; This file is free software (GPLv3 License)
 
-;; Usage:
-;;
-;; (def my-setup-develop-environment ()
-;;      (interactive)
-;;      (let (proj-dir
-;;            FIND-OPTS
-;;            CTAGS-OPTS)
+;;; Commentary:
 
-;;        ;; for COOL MYPROJ
-;;        ;; you can use fctags-current-full-filename-match-pattern-p instead
-;;        (when (fctags-current-path-match-pattern-p "MYPROJ.*/app")
-;;          (setq proj-dir (if fctags-windows-p "c:/Workspaces/MYPROJ/MACWeb/WebContent/app"
-;;                      "~/projs/MYPROJ/MACWeb/WebContent/app"))
-;;          (setq FIND-OPTS "-not -size +64k -not -iwholename '*/dist/*'")
-;;          (setq CTAGS-OPTS "--exclude=*.min.js --exclude=*.git*")
-;;          ;; you can use setq-local instead
-;;          (setq tags-table-list
-;;               (list (fctags-run-ctags-if-needed proj-dir FIND-OPTS CTAGS-OPTS))))
-;;        ;; for other projects
-;;        ;; insert more WHENs here
-;;        ))
-;; ;; OPTIONAL
-;; (add-hook 'after-save-hook 'fctags-auto-update-tags)
-;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'js2-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'js-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'javascript-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'web-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'c++-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
+;; Insert below setup into ~/.emacs.d/init.el:
+;;     (def my-setup-develop-environment ()
+;;          (interactive)
+;;          (let (proj-dir
+;;                FIND-OPTS
+;;                CTAGS-OPTS)
+
+;;            ;; for COOL MYPROJ
+;;            ;; you can use fctags-current-full-filename-match-pattern-p instead
+;;            (when (fctags-current-path-match-pattern-p "MYPROJ.*/app")
+;;              (setq proj-dir (if fctags-windows-p "c:/Workspaces/MYPROJ/MACWeb/WebContent/app"
+;;                          "~/projs/MYPROJ/MACWeb/WebContent/app"))
+;;              ;; ignore file bigger than 64K, ignore files in "dist/"
+;;              (setq FIND-OPTS "-not -size +64k -not -iwholename '*/dist/*'")
+;;              (setq CTAGS-OPTS "--exclude=*.min.js --exclude=*.git*")
+;;              ;; you can use setq-local instead
+;;              (setq tags-table-list
+;;                   (list (fctags-run-ctags-if-needed proj-dir FIND-OPTS CTAGS-OPTS))))
+;;            ;; for other projects
+;;            ;; insert more WHEN statements here
+;;            ))
+;;     ;; OPTIONAL
+;;     (add-hook 'after-save-hook 'fctags-auto-update-tags)
+;;     (add-hook 'java-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'org-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'js2-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'js-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'javascript-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'web-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'c++-mode-hook 'my-setup-develop-environment)
+;;     (add-hook 'c-mode-hook 'my-setup-develop-environment)
 ;;
-;; https://github.com/redguardtoo/find-and-ctags/blob/master/README.org for more tips
+;; In above setup, TAGS will be updated *automatically* every 5 minutes.
+;; But you can manually update TAGS by `M-x fctags-update-all-tags-force`.
+;; If you want to manually update the TAGS, `M-x fctags-update-all-tags-force`.
+;;
+;; You can `M-x find-tag` to start code navigation
+;;
+;; See https://github.com/redguardtoo/find-and-ctags/blob/master/README.org for more tips
 
 ;;; Code:
 
@@ -125,12 +133,12 @@
         file
         cmd)
     (setq file (concat dir "TAGS"))
-    ;; always record the cli options
+    ;; always update cli options
     (puthash file (list FIND-OPTS CTAGS-OPTS t) fctags-cli-opts-hash)
     (when (or FORCE (not (file-exists-p file)))
       (setq old-dir default-directory)
       ;; "cd dir && find . -name blah | ctags" will NOT work on windows cmd window
-	  (cd dir)
+      (cd dir)
       ;; use relative directory because TAGS is shared between Cygwin and Window
       (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                         find-exe
@@ -192,5 +200,4 @@
    ))
 
 (provide 'find-and-ctags)
-
 ;;; find-and-ctags.el ends here
