@@ -256,7 +256,8 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   (autoload 'evilmi-javascript-get-tag "evil-matchit-javascript" nil)
   (autoload 'evilmi-javascript-jump "evil-matchit-javascript" nil)
   (mapc (lambda (mode)
-          (plist-put evilmi-plugins mode '((evilmi-javascript-get-tag evilmi-javascript-jump))))
+          (plist-put evilmi-plugins mode '((evilmi-simple-get-tag evilmi-simple-jump)
+                                           (evilmi-javascript-get-tag evilmi-javascript-jump))))
         '(js-mode json-mode js2-mode js3-mode javascript-mode))
 
   ;; Html
