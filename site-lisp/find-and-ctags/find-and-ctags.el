@@ -84,21 +84,18 @@ Command line options is value.")
   (let (rlt)
     (if find-and-ctags-windows-p
         (cond
-         ((not (file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ((not (file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ((not (file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ((not (file-executable-p (setq rlt (concat "c:\\\\cygwin\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ((not (file-executable-p (setq rlt (concat "d:\\\\cygwin\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ((not (file-executable-p (setq rlt (concat "e:\\\\cygwin\\\\bin\\\\" name))))
-          (setq rlt nil))
-         ))
+         ((file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+         ((file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+         ((file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+         ((file-executable-p (setq rlt (concat "c:\\\\cygwin\\\\bin\\\\" name ".exe"))))
+         ((file-executable-p (setq rlt (concat "d:\\\\cygwin\\\\bin\\\\" name ".exe"))))
+         ((file-executable-p (setq rlt (concat "e:\\\\cygwin\\\\bin\\\\" name ".exe"))))
+         (t (setq rlt nil))))
     (if rlt rlt name)))
 
+(defun find-and-ctags--escape-options (opts)
+  "Strip dangerous options."
+  (replace-regexp-in-string "\\(\\<exec\\>\\|\\<rm\\>\\|;\\||\\|&\\|`\\)" "" opts))
 
 ;;;###autoload
 (defun find-and-ctags-get-hostname ()
@@ -139,9 +136,9 @@ If FORCE is t, the commmand is executed without consulting the timer."
         ;; restore default-directory
         (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                           find-exe
-                          (shell-quote-argument FIND-OPTS)
+                          (find-and-ctags--escape-options FIND-OPTS)
                           ctags-exe
-                          (shell-quote-argument CTAGS-OPTS)))
+                          (find-and-ctags--escape-options CTAGS-OPTS)))
         (message "find-and-ctags runs command: %s" cmd)
         (shell-command cmd)))
     file))
