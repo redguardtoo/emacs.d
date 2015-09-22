@@ -92,14 +92,12 @@
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
   (interactive "sEnter a string:")
-  (let ((old-dir default-directory)
-        (root-dir (locate-dominating-file default-directory
+  (let ((root-dir (locate-dominating-file default-directory
                                           "build.gradle")))
-    (message "root-dir=%s cmd=%s" root-dir cmd)
-    (when root-dir
-      (cd root-dir)
-      (shell-command (concat "gradle " cmd "&"))
-      (cd old-dir))))
+    (if root-dir
+      (let ((default-directory root-dir))
+        (shell-command (concat "gradle " cmd "&"))))
+    ))
 ;; }}
 
 ;; {{ crontab
