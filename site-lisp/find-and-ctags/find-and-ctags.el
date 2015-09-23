@@ -50,9 +50,16 @@
 ;; But you can manually update TAGS by `M-x find-and-ctags-update-all-tags-force`.
 ;; If you want to manually update the TAGS, `M-x find-and-ctags-update-all-tags-force`.
 ;;
-;; You can `M-x find-tag` to start code navigation
+;; After `'tags-table-list' is set, You can `M-x find-tag' to start code navigation
 ;;
-;; See https://github.com/redguardtoo/find-and-ctags/blob/master/README.org for more tips
+;; You can use `(find-and-ctags-get-hostname)' for per computer setup.
+;; For example, if my home PC hostname is like `AU0247589',
+;; Here is sample code how I specify my C++ setup for home ONLY:
+;;
+;;   (if (string-match "^AU.*" (find-and-ctags-get-hostname))
+;;      (setq my-default-ctags-options "--I IMPLEMENT_ABSTRACT_CLASS"))
+;;
+;; See https://github.com/redguardtoo/find-and-ctags/ for more tips
 
 ;;; Code:
 
@@ -95,7 +102,8 @@ Command line options is value.")
 
 (defun find-and-ctags--escape-options (opts)
   "Strip dangerous options."
-  (replace-regexp-in-string "\\(\\<exec\\>\\|\\<rm\\>\\|;\\||\\|&\\|`\\)" "" opts))
+  (setq opts (replace-regexp-in-string "\\(\\<exec\\>\\|\\<rm\\>\\|;\\||\\|&\\|`\\)" "" opts))
+  opts)
 
 ;;;###autoload
 (defun find-and-ctags-get-hostname ()
@@ -118,12 +126,10 @@ CTAGS-OPTS is the command line options pass `ctags'.
 If FORCE is t, the commmand is executed without consulting the timer."
   ;; TODO save the CTAGS-OPTS into hash
   (let ((dir (file-name-as-directory (file-truename SRC-DIR)) )
-        (find-exe (if find-and-ctags-gnu-find-executable
-                      find-and-ctags-gnu-find-executable
-                    (find-and-ctags--guess-executable "find")))
-        (ctags-exe (if find-and-ctags-ctags-executable
-                       find-and-ctags-ctags-executable
-                     (find-and-ctags--guess-executable "ctags")))
+        (find-exe (or find-and-ctags-gnu-find-executable
+                      (find-and-ctags--guess-executable "find")))
+        (ctags-exe (or find-and-ctags-ctags-executable
+                       (find-and-ctags--guess-executable "ctags")))
         file
         cmd)
     (setq file (concat dir "TAGS"))
