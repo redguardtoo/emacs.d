@@ -153,7 +153,6 @@
     (git-gutter:previous-hunk arg)))
 
 ;; {{ git-messenger
-(autoload 'git-messenger:popup-message "git-messenger" "" t)
 ;; show details to play `git blame' game
 (setq git-messenger:show-detail t)
 (add-hook 'git-messenger:after-popup-hook
@@ -161,16 +160,18 @@
             ;; extract commit id and put into the kill ring
             (when (string-match "\\(commit *: *\\)\\([0-9a-z]+\\)" msg)
               (copy-yank-str (match-string 2 msg))
-              (message "commit hash => clipboard & kill-ring")
+              (message "commit hash %s => clipboard & kill-ring" (match-string 2 msg))
               )))
 (global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
 ;; }}
 
-(setq cppcm-debug t)
-(setq cppcm-get-executable-full-path-callback
-          (lambda (path type tgt-name)
-            ;; extract commit id and put into the kill ring
-            (message "path=%s type=%s tgt-name=%s" path type tgt-name)))
+;; ;; {{ cpputils-cmake.el ; debug only
+;; (setq cppcm-debug t)
+;; (setq cppcm-get-executable-full-path-callback
+;;           (lambda (path type tgt-name)
+;;             ;; extract commit id and put into the kill ring
+;;             (message "path=%s type=%s tgt-name=%s" path type tgt-name)))
+;; ;; }}
 
 (provide 'init-git)
 
