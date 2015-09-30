@@ -32,9 +32,8 @@
          )
     (set (make-local-variable 'flymake-err-line-patterns)
          ;; only validate missing html tags
-         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\|discarding unexpected.*\\)" nil 1 2 4))
-         )
-    (flymake-mode t)))
+         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\|discarding unexpected.*\\)" nil 1 2 4)))
+    (flymake-mode 1)))
 
 (defun web-mode-hook-setup ()
   (unless (is-buffer-file-temp)

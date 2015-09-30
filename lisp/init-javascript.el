@@ -43,13 +43,15 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun mo-js-mode-hook ()
-  (unless (is-buffer-file-temp)
+  (when (and  (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
+    ;; js-mode only setup, js2-mode inherif from js-mode since v20150909
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
     ;; https://github.com/illusori/emacs-flymake
     ;; javascript support is out of the box
     ;; DONOT jslint json
     ;; (add-to-list 'flymake-allowed-file-name-masks
     ;;              '("\\.json\\'" flymake-javascript-init))
+    (message "mo-js-mode-hook called")
     (flymake-mode 1)))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
