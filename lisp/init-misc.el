@@ -474,6 +474,16 @@ buffer is not visiting a file."
      (define-key dired-mode-map (kbd "SPC") 'avy-goto-subword-1)))
 ;; }}
 
+;; ANSI-escape coloring in compilation-mode
+;; {{ http://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
+(ignore-errors
+  (require 'ansi-color)
+  (defun my-colorize-compilation-buffer ()
+    (when (eq major-mode 'compilation-mode)
+      (ansi-color-apply-on-region compilation-filter-start (point-max))))
+  (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
+;; }}
+
 ;; {{ @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
 (defun font-face-is-similar (f1 f2)
   (let (rlt)
