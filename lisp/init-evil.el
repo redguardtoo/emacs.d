@@ -346,9 +346,9 @@
   "rb" 'evilmr-replace-in-buffer
   "tt" 'evilmr-tag-selected-region ;; recommended
   "rt" 'evilmr-replace-in-tagged-region ;; recommended
-  "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
-  "yu" 'cb-get-url-from-controller
+  "cby" 'cb-switch-between-controller-and-view
+  "cbu" 'cb-get-url-from-controller
   "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
   "hp" 'etags-select-find-tag
   "hm" 'helm-bookmarks
@@ -539,6 +539,8 @@
   "xvl" 'vc-print-log
   "xvb" 'git-messenger:popup-message
   "xv=" 'git-gutter:popup-hunk
+  "yy" 'cliphist-paste-item
+  "yu" 'cliphist-select-item
   "nn" 'my-goto-next-hunk
   "pp" 'my-goto-previous-hunk
   "xnn" 'narrow-or-widen-dwim
