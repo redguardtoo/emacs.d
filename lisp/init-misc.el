@@ -500,6 +500,16 @@ buffer is not visiting a file."
           (setq rlt t)))
     rlt))
 
+;; {{ tramp setup
+;; @see http://www.quora.com/Whats-the-best-way-to-edit-remote-files-from-Emacs
+(setq tramp-default-method "ssh")
+(setq tramp-auto-save-directory "~/.backups/tramp/")
+(setq tramp-chunksize 8192)
+;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+(setq tramp-ssh-controlmaster-options
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;; }}
+
 (defun goto-edge-by-comparing-font-face (&optional step)
 "Goto either the begin or end of string/comment/whatever.
 If step is -1, go backward."
