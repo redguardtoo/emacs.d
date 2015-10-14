@@ -374,7 +374,6 @@ The full path into relative path insert it as a local file link in org-mode"
         (switch-to-buffer (find-file-noselect filename nil nil))
       (message "NO README.org or README.md found!"))
     ))
-(global-set-key (kbd "C-c C-q") 'open-readme-in-git-root-directory)
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
 (defun vc-rename-file-and-buffer ()

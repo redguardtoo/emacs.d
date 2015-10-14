@@ -211,15 +211,18 @@
     ))
 
 ;; (evil-set-initial-state 'org-mode 'emacs)
-;; Remap org-mode meta keys for convenience
+
+;; As a general RULE, mode specific evil leader keys started
+;; with uppercased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
+  "S" 'org-store-link
+  "A" 'org-agenda
   "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
   "L" 'org-end-of-line ; smarter behaviour on headlines etc.
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
-  "-" 'org-ctrl-c-minus ; change bullet style
   "<" 'org-metaleft ; out-dent
   ">" 'org-metaright ; indent
   (kbd "TAB") 'org-cycle)
@@ -295,6 +298,10 @@
 (setq evil-leader/leader ",")
 (require 'evil-leader)
 (evil-leader/set-key
+  ;; {{ only usable in GUI emacs
+  "=" 'increase-default-font-height
+  "-" 'decrease-default-font-height
+  ;; }}
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" 'back-to-previous-buffer

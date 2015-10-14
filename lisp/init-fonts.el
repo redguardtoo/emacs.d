@@ -31,9 +31,4 @@ DELTA should be a multiple of 10, in the units used by the
   (interactive)
   (increment-default-font-height -10))
 
-(global-set-key (kbd "C-M-=") 'increase-default-font-height)
-(global-set-key (kbd "C-M--") 'decrease-default-font-height)
-
-
-
 (provide 'init-fonts)
