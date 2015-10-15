@@ -61,6 +61,7 @@
 (define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
+
 ;; {{ nearby file path as text object,
 ;;      - "vif" to select only basename
 ;;      - "vaf" to select the full path
@@ -200,6 +201,11 @@
 (evil-escape-mode 1)
 ;; }}
 
+;; {{ evil-space
+(require 'evil-space)
+(evil-space-mode)
+;; }}
+
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
@@ -283,7 +289,9 @@
 ;; press ",xx" to expand region
 ;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
-  '(setq expand-region-contract-fast-key "z"))
+  '(progn
+     (setq expand-region-contract-fast-key "z")
+     ))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38

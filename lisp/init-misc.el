@@ -454,12 +454,12 @@ buffer is not visiting a file."
 (eval-after-load "evil"
   '(progn
      ;; press "d " to delete to the word
-     (define-key evil-motion-state-map (kbd "SPC") #'avy-goto-subword-1)
-     (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-subword-1)))
+     (define-key evil-motion-state-map (kbd ";") #'avy-goto-subword-1)
+     (define-key evil-normal-state-map (kbd ";") 'avy-goto-subword-1)))
 ;; dired
 (eval-after-load "dired"
   '(progn
-     (define-key dired-mode-map (kbd "SPC") 'avy-goto-subword-1)))
+     (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1)))
 ;; }}
 
 ;; ANSI-escape coloring in compilation-mode

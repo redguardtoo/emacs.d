@@ -49,7 +49,6 @@ if no files marked, always operate on current line in dired-mode
 
      (define-key dired-mode-map "/" 'dired-isearch-filenames)
      (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
-     (define-key dired-mode-map (kbd "SPC") 'avy-goto-word-or-subword-1)
 
      (require 'dired+)
      (setq dired-recursive-deletes 'always)
