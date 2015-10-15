@@ -450,7 +450,6 @@ buffer is not visiting a file."
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
 ;; emacs key binding, copied from avy website
-(global-set-key (kbd "C-:") 'avy-goto-char)
 ;; evil, my favorite
 (eval-after-load "evil"
   '(progn
