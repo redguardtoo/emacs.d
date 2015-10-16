@@ -11,7 +11,7 @@
   (keyfreq-autosave-mode -1))
 
 (setq keyfreq-excluded-commands
-      '(
+      '(self-insert-command
         abort-recursive-edit
         ace-jump-done
         ace-jump-move
