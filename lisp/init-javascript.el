@@ -7,13 +7,15 @@
 (setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
 
 ;; {{ js2-mode or javascript-mode
-(setq js2-use-font-lock-faces t
-      js2-mode-must-byte-compile nil
-      js2-idle-timer-delay 0.5 ;; could not be too big for real time syntax check
-      js2-indent-on-enter-key t
-      js2-skip-preprocessor-directives t
-      js2-auto-indent-p t
-      js2-bounce-indent-p t)
+(setq-default js2-use-font-lock-faces t
+              js2-mode-must-byte-compile nil
+              js2-idle-timer-delay 0.5 ; NOT too big for real time syntax check
+              js2-auto-indent-p nil
+              js2-indent-on-enter-key nil ; annoying instead useful
+              js2-skip-preprocessor-directives t
+              js2-strict-inconsistent-return-warning nil ; return <=> return null
+              js2-enter-indents-newline nil
+              js2-bounce-indent-p t)
 
 (setq javascript-common-imenu-regex-list
       '(("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
@@ -44,7 +46,7 @@
 
 (defun mo-js-mode-hook ()
   (when (and  (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
-    ;; js-mode only setup, js2-mode inherif from js-mode since v20150909
+    ;; js-mode only setup, js2-mode inherit from js-mode since v20150909
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
     ;; https://github.com/illusori/emacs-flymake
     ;; javascript support is out of the box
@@ -190,10 +192,10 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (defun my-js2-mode-setup()
   (unless (is-buffer-file-temp)
-    ;; looks nodejs is more popular, if you prefer rhino, change to "js"
+    ;; looks nodejs is more popular
     (setq inferior-js-program-command "node --interactive")
     (require 'js-comint)
-    ;; if use node.js, we need nice output
+    ;; if use node.js we need nice output
     (setenv "NODE_NO_READLINE" "1")
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
@@ -241,21 +243,30 @@ sudo pip install jsbeautifier"
     (goto-char orig-point)))
 ;; }}
 
-;; After js2 has parsed a js file, we look for jslint globals decl comment ("/* global Fred, _, Harry */") and
-;; add any symbols to a buffer-local var of acceptable global vars
-;; Note that we also support the "symbol: true" way of specifying names via a hack (remove any ":true"
-;; to make it look like a plain decl, and any ':false' are left behind so they'll effectively be ignored as
-;; you can;t have a symbol called "someName:false"
-(add-hook 'js2-post-parse-callbacks
-          (lambda ()
-            (when (> (buffer-size) 0)
-              (let ((btext (replace-regexp-in-string
-                            ": *true" " "
-                            (replace-regexp-in-string "[\n\t ]+" " " (buffer-substring-no-properties 1 (buffer-size)) t t))))
-                (mapc (apply-partially 'add-to-list 'js2-additional-externs)
-                      (split-string
-                       (if (string-match "/\\* *global *\\(.*?\\) *\\*/" btext) (match-string-no-properties 1 btext) "")
-                       " *, *" t))
-                ))))
+(setq-default js2-global-externs
+              '("$"
+                "AccessifyHTML5"
+                "KeyEvent"
+                "Raphael"
+                "React"
+                "angular"
+                "app"
+                "beforeEach"
+                "clearInterval"
+                "clearTimeout"
+                "define"
+                "describe"
+                "expect"
+                "inject"
+                "it"
+                "jQuery"
+                "jasmine"
+                "ko"
+                "log"
+                "module"
+                "require"
+                "setInterval"
+                "setTimeout"
+                "utag"))
 
 (provide 'init-javascript)
