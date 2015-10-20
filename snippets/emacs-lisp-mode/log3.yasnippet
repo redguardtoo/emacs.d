@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (message o1 o2 o3)
+# key: l3
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(message "${1:object}=%s ${2:object}=%s ${3:object}=%s" ${1:$(yas/substr yas-text "[^ ]*")} ${2:$(yas/substr yas-text "[^ ]*")} ${3:$(yas/substr yas-text "[^ ]*")})
