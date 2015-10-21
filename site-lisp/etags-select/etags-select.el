@@ -90,6 +90,8 @@
 
 (defvar etags-select-confirm-before-select-digit nil)
 
+(defvar etags-select-convert-tag-to-find-callback nil)
+
 ;;;###autoload
 (defcustom etags-select-no-select-for-one-match t
   "*If non-nil, don't open the selection window if there is only one
@@ -225,10 +227,15 @@ Only works with GNU Emacs."
 found, see the `etags-select-no-select-for-one-match' variable to decide what
 to do."
   (interactive)
-  ;; if region selected, use select regions as tagname
-  (etags-select-find (if (region-active-p)
-                         (buffer-substring-no-properties (region-beginning) (region-end))
-                       (find-tag-default))))
+  (let (tag)
+    ;; if region selected, use select regions as tagname
+    (setq tag (if (region-active-p)
+                  (buffer-substring-no-properties (region-beginning) (region-end))
+                (find-tag-default)))
+    (etags-select-find (if etags-select-convert-tag-to-find-callback
+                           (funcall etags-select-convert-tag-to-find-callback tag)
+                         tag))
+    ))
 
 ;;;###autoload
 (defun etags-select-find-tag ()
