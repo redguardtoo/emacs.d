@@ -138,11 +138,6 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - more advanced than ctags, supports references and better performance
 - install through OS package manager
 
-**** pyflakes
-- You need pyflakes for real time python syntax checker like `flymake-python`
-- Install pip through OS package manager, then `pip install pyflakes`
-- On cygwin you need install `setuptool` in order to install `pip`.
-
 **** libreoffice
 - Only one executable `soffice` needed when converting odt file into doc (Microsoft Word 97)
 - conversion will happen automatically when exporting org-mode to odt
@@ -150,14 +145,13 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Install through OS package manager
 **** js-beautify
 - Beautify javascript code
-- Install pip through OS package manager, then `pip install jsbeautifier`
+- Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then `pip install jsbeautifier`
 **** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
-**** jedi & service_factory
-- Python 3rd party packages installed through `pip install jedi service_factory`
-- Required by anaconda-mode which provides Python intellisense
-- If you feel anaconda-mode make Emacs *less responsive*, disable it by remove line `(anaconda-mode)` in init-python-mode.el
+**** jedi & flake8
+- Required by [[https://github.com/jorgenschaefer/elpy][elpy]] which is python IDE
+- At least `pip install jedi flake8`. Check elpy website for more tips.
 * Tutorial (OPTIONAL)
 ** Basic tutorial
 *** Step 1, learn OS basics

@@ -12,7 +12,6 @@
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
 
-
 ;;------------------------------------------------------------------------------
 ;; Add support to package.el for pre-filtering available packages
 ;;------------------------------------------------------------------------------
@@ -124,8 +123,6 @@ ARCHIVE is the string name of the package archive.")
     fakir
     erlang
     company-c-headers
-    company-anaconda
-    anaconda-mode
     ;; make all the color theme packages available
     afternoon-theme
     define-word
@@ -241,9 +238,9 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'exec-path-from-shell)
 (require-package 'flymake-css)
 (require-package 'flymake-jslint)
-(require-package 'flymake-python-pyflakes)
 (require-package 'flymake-ruby)
 (require-package 'flymake-sass)
+(require-package 'elpy)
 (require-package 'hl-sexp)
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
@@ -301,10 +298,5 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'neotree)
 (require-package 'define-word)
 (require-package 'quack) ;; for scheme
-(require-package 'anaconda-mode)
-(require-package 'company-anaconda)
-
-
-;; (require-package 'command-frequency)
 
 (provide 'init-elpa)
