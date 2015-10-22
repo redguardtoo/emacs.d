@@ -149,7 +149,7 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - The conversion command is in variable `org-export-odt-convert-processes`
 - Install through OS package manager
 **** js-beautify
-- To beautify javascript code (insert extra space, for example)
+- Beautify javascript code
 - Install pip through OS package manager, then `pip install jsbeautifier`
 **** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
@@ -195,6 +195,10 @@ If you don't like my commits, you can revert them:
 git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
+** Setup indentaion
+Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]].
+
+Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheatsheet" to learn its key bindings.
 ** How to setup [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
