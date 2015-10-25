@@ -42,11 +42,6 @@
 (add-hook 'nxml-mode-hook 'moz-custom-setup)
 (add-hook 'web-mode-hook 'moz-custom-setup)
 
-(eval-after-load 'moz
-  '(progn
-     (global-set-key (kbd "C-x p") 'moz-reload-browser)
-     ))
-
 (defun moz-goto-content-and-run-cmd (cmd)
   (comint-send-string (inferior-moz-process)
                       (concat "repl.enter(content);"

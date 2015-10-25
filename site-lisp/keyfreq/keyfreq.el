@@ -507,7 +507,7 @@ value will take effect only after (re)enabling
   (condition-case nil
       (progn
         (keyfreq-table-save keyfreq-table)
-        (message "kefreq data saved into %s" keyfreq-file))
+        (message "keyfreq data saved into %s" keyfreq-file))
     (error
      (message "%s is corrupt" keyfreq-file))))
 

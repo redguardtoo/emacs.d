@@ -1,9 +1,7 @@
 (defun gtags-ext-produce-tags-if-needed (dir)
    (if (not (= 0 (call-process "global" nil nil nil " -p"))) ; tagfile doesn't exist?
-      (let ((olddir default-directory))
-        (cd dir)
-        (shell-command "gtags && echo 'created tagfile'")
-        (cd olddir)) ; restore
+      (let ((default-directory dir))
+        (shell-command "gtags && echo 'created tagfile'"))
     ;;  tagfile already exists; update it
     (shell-command "global -u && echo 'updated tagfile'"))
   )
@@ -21,22 +19,18 @@
   (let (sl)
   (if (not (file-exists-p (concat (file-name-as-directory libdir) "GTAGS")))
       ;; create tags
-      (let ((olddir default-directory))
-        (cd libdir)
-        (shell-command "gtags && echo 'created tagfile'")
-        (cd olddir)
-        )
-    )
+      (let ((default-directory libdir))
+        (shell-command "gtags && echo 'created tagfile'")))
+
   (setq libdir (directory-file-name libdir)) ;remove final slash
   (setq sl (split-string (if (getenv "GTAGSLIBPATH") (getenv "GTAGSLIBPATH") "")  ":" t))
   (if del (setq sl (delete libdir sl)) (add-to-list 'sl libdir t))
-  (setenv "GTAGSLIBPATH" (mapconcat 'identity sl ":")))
-  )
+  (setenv "GTAGSLIBPATH" (mapconcat 'identity sl ":"))
+  ))
 
 (defun gtags-ext-print-gtagslibpath ()
   "print the GTAGSLIBPATH (for debug purpose)"
   (interactive)
-  (message "GTAGSLIBPATH=%s" (getenv "GTAGSLIBPATH"))
-  )
+  (message "GTAGSLIBPATH=%s" (getenv "GTAGSLIBPATH")))
 
 (provide 'init-gtags)

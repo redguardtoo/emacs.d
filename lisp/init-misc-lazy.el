@@ -23,16 +23,6 @@
 (put 'narrow-to-page 'disabled nil)
 (put 'narrow-to-defun 'disabled nil)
 
-;; {{ tramp setup
-;; @see http://www.quora.com/Whats-the-best-way-to-edit-remote-files-from-Emacs
-(setq tramp-default-method "ssh")
-(setq tramp-auto-save-directory "~/.backups/tramp/")
-(setq tramp-chunksize 8192)
-;; @see https://github.com/syl20bnr/spacemacs/issues/1921
-(setq tramp-ssh-controlmaster-options
-      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-;; }}
-
 ;; But don't show trailing whitespace in SQLi, inf-ruby etc.
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
@@ -384,7 +374,6 @@ The full path into relative path insert it as a local file link in org-mode"
         (switch-to-buffer (find-file-noselect filename nil nil))
       (message "NO README.org or README.md found!"))
     ))
-(global-set-key (kbd "C-c C-q") 'open-readme-in-git-root-directory)
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
 (defun vc-rename-file-and-buffer ()

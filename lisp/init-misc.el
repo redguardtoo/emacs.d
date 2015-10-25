@@ -2,8 +2,6 @@
 
 ;; M-x without meta
 (global-set-key (kbd "C-x C-m") 'execute-extended-command)
-(global-set-key (kbd "C-.") 'set-mark-command)
-(global-set-key (kbd "C-x C-.") 'pop-global-mark)
 
 ;; C#
 (add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
@@ -31,7 +29,7 @@
               set-mark-command-repeat-pop t
               tooltip-delay 1.5
               ;; void problems with crontabs, etc.
-              ;; require-final-newline t ; bad idea, could accidently edit others' code
+              ;; require-final-newline t ; bad idea, could accidentally edit others' code
               truncate-lines nil
               truncate-partial-width-windows nil
               ;; visible-bell has some issue
@@ -65,7 +63,9 @@
   (let ((re (if (region-active-p)
                 (buffer-substring-no-properties (region-beginning) (region-end))
               (read-string "Grep pattern: ")))
-        (root (ffip-get-project-root-directory)))
+        root)
+    ;; root should be initialize here, or else emacs crash
+    (setq root (ffip-get-project-root-directory))
     (if root (vc-git-grep re "*" root))
     ))
 ;; }}
@@ -92,14 +92,12 @@
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
   (interactive "sEnter a string:")
-  (let ((old-dir default-directory)
-        (root-dir (locate-dominating-file default-directory
+  (let ((root-dir (locate-dominating-file default-directory
                                           "build.gradle")))
-    (message "root-dir=%s cmd=%s" root-dir cmd)
-    (when root-dir
-      (cd root-dir)
-      (shell-command (concat "gradle " cmd "&"))
-      (cd old-dir))))
+    (if root-dir
+      (let ((default-directory root-dir))
+        (shell-command (concat "gradle " cmd "&"))))
+    ))
 ;; }}
 
 ;; {{ crontab
@@ -192,17 +190,6 @@
 (guide-key-mode 1)  ; Enable guide-key-mode
 (setq guide-key/recursive-key-sequence-flag t)
 (setq guide-key/idle-delay 0.5)
-;; }}
-
-;; {{expand-region.el
-;; if emacs-nox, use C-@, else, use C-2;
-(if window-system
-  (progn
-    (define-key global-map (kbd "C-2") 'er/expand-region)
-    (define-key global-map (kbd "C-M-2") 'er/contract-region)
-    )
-  (define-key global-map (kbd "C-@") 'er/expand-region)
-  (define-key global-map (kbd "C-M-@") 'er/contract-region))
 ;; }}
 
 (defun generic-prog-mode-hook-setup ()
@@ -298,10 +285,6 @@ buffer is not visiting a file."
 ;; edit confluence wiki
 (autoload 'confluence-edit-mode "confluence-edit" "enable confluence-edit-mode" t)
 (add-to-list 'auto-mode-alist '("\\.wiki\\'" . confluence-edit-mode))
-
-;; {{string-edit.el
-(autoload 'string-edit-at-point "string-edit" "enable string-edit-mode" t)
-;; }}
 
 (defun erase-specific-buffer (num buf-name)
   (let ((message-buffer (get-buffer buf-name))
@@ -454,8 +437,9 @@ buffer is not visiting a file."
     ad-do-it
     (setenv "GPG_AGENT_INFO" agent)))
 
-;; http://tapoueh.org/emacs/switch-window.html
-(global-set-key (kbd "C-x o") 'switch-window)
+;; https://github.com/abo-abo/ace-window
+;; `M-x ace-window ENTER m` to swap window
+(global-set-key (kbd "C-x o") 'ace-window)
 
 ;; {{ move focus between sub-windows
 (require 'window-numbering)
@@ -466,21 +450,26 @@ buffer is not visiting a file."
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
 ;; emacs key binding, copied from avy website
-(global-set-key (kbd "C-:") 'avy-goto-char)
 ;; evil, my favorite
 (eval-after-load "evil"
   '(progn
-     (define-key evil-normal-state-map (kbd "gp") #'avy-goto-subword-1)
-     (define-key evil-normal-state-map (kbd "gP") #'avy-goto-line)
-     ;; press "dp" to delete to the word
-     (define-key evil-motion-state-map (kbd "p") #'avy-goto-subword-1)
-     ;; press "dl" to delete to the lin;e
-     (define-key evil-motion-state-map (kbd "P") #'avy-goto-line)
-     (define-key evil-normal-state-map (kbd "SPC") 'avy-goto-subword-1)))
+     ;; press "d " to delete to the word
+     (define-key evil-motion-state-map (kbd ";") #'avy-goto-subword-1)
+     (define-key evil-normal-state-map (kbd ";") 'avy-goto-subword-1)))
 ;; dired
 (eval-after-load "dired"
   '(progn
-     (define-key dired-mode-map (kbd "SPC") 'avy-goto-subword-1)))
+     (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1)))
+;; }}
+
+;; ANSI-escape coloring in compilation-mode
+;; {{ http://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
+(ignore-errors
+  (require 'ansi-color)
+  (defun my-colorize-compilation-buffer ()
+    (when (eq major-mode 'compilation-mode)
+      (ansi-color-apply-on-region compilation-filter-start (point-max))))
+  (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
 ;; }}
 
 ;; {{ @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
@@ -498,6 +487,16 @@ buffer is not visiting a file."
       (if (and (string-match "-comment-" (format "%s" f1)) (string-match "-comment-" (format "%s" f2)))
           (setq rlt t)))
     rlt))
+
+;; {{ tramp setup
+;; @see http://www.quora.com/Whats-the-best-way-to-edit-remote-files-from-Emacs
+(setq tramp-default-method "ssh")
+(setq tramp-auto-save-directory "~/.backups/tramp/")
+(setq tramp-chunksize 8192)
+;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+(setq tramp-ssh-controlmaster-options
+      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;; }}
 
 (defun goto-edge-by-comparing-font-face (&optional step)
 "Goto either the begin or end of string/comment/whatever.

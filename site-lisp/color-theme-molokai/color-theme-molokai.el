@@ -1,5 +1,7 @@
 ;; Author: Adam Lloyd <adam@alloy-d.net>
 ;;
+;; Package-Requires: ((color-theme "6.6.0"))
+;;
 ;; Note: Based on the molokai theme for vim by Tomas Restrepo, which
 ;; is in turn based on the monokai theme for textmate by Wimer
 ;; Hazenberg and a darker variant by Hamish Stuart Macpherson.

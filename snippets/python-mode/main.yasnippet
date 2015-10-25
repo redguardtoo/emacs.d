@@ -7,7 +7,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; mode: python; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=python:et:sw=4:ts=4:sts=4
 
-import getopt, sys
+import getopt
+import sys
+
+
 def usage():
     print '''
 NAME
@@ -15,6 +18,7 @@ NAME
 Usage
     python ${2:program.py} [options]
 '''[1:-1]
+
 
 if __name__ == '__main__':
     try:
@@ -25,15 +29,15 @@ if __name__ == '__main__':
         usage()
         sys.exit(2)
 
-    file=""
+    file = ""
 
     for o, a in opts:
         if o in ("-h", "--help"):
             usage()
             sys.exit()
         elif o in ("-f", "--file"):
-            file= a
+            file = a
         else:
             assert False, "unhandled option"
 
-    print "hello world";
+    print "hello world"

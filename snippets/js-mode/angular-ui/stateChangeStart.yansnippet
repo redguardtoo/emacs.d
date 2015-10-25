@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: $rootScope.$on('$stateChangeStart', ...)
+# key: astate
+# group: angular
+# --
+$rootScope.$on('$stateChangeStart', function (event, toState, toParams, fromState, fromParams) {
+  event.preventDefault(); //prevent the transition from happening
+  $0
+});

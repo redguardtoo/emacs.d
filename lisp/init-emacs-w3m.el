@@ -113,7 +113,6 @@
        (*is-a-mac* "open")
        (*linux* (executable-find "firefox"))
        ))
-
 (setq browse-url-browser-function 'browse-url-generic)
 
 ;; use external browser to search programming stuff
@@ -146,6 +145,9 @@
         (setq url (or (w3m-anchor) (w3m-image) w3m-current-url)))
     (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))
     ))
-(global-set-key (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
 
+(eval-after-load 'w3m
+  '(progn
+     (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
+     ))
 (provide 'init-emacs-w3m)

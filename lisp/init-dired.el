@@ -26,6 +26,21 @@ if no files marked, always operate on current line in dired-mode
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
 (setq dired-dwim-target t)
 
+(defun my-guess-mplayer-path ()
+  (let ((rlt "mplayer"))
+    (cond
+     ((or *is-a-mac* *unix*) (setq rlt "mplayer -stop-xscreensaver"))
+     (*cygwin*
+      (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
+          (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
+        (setq rlt "/cygdrive/d/mplayer/mplayer.exe")))
+     (t ; windows
+      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
+          (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
+        (setq rlt "c:\\\\\mplayer\\\\mplayer.exe"))
+      ))
+    rlt))
+
 (eval-after-load 'dired
   '(progn
      (setq-default dired-details-hidden-string "")
@@ -34,15 +49,14 @@ if no files marked, always operate on current line in dired-mode
 
      (define-key dired-mode-map "/" 'dired-isearch-filenames)
      (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
-     (define-key dired-mode-map (kbd "SPC") 'avy-goto-word-or-subword-1)
 
      (require 'dired+)
      (setq dired-recursive-deletes 'always)
      (define-key dired-mode-map [mouse-2] 'dired-find-file)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
-                     ((if *unix* "mplayer -stop-xscreensaver" "mplayer")  "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
-                     ("mplayer -playlist" "list" "pls")
+                     ((my-guess-mplayer-path) "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
+                     ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                      ("7z x" "7z")
                      ("djview" "djvu")

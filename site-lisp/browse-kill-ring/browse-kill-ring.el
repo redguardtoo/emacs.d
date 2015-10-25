@@ -48,9 +48,8 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl)
-  (require 'derived))
+(require 'cl-lib)
+(require 'derived)
 
 (defgroup browse-kill-ring nil
   "A package for browsing and inserting the items in `kill-ring'."
@@ -288,6 +287,31 @@ well."
                               (point)
                               quit))
 
+(defun browse-kill-ring-insert-new (insert-action post-action &optional quit)
+  "Insert the kill ring item at point into the last selected buffer.
+`insert-action' can be 'insert 'append 'prepend.
+`post-action' can be nil 'move 'delete.
+If optional argument QUIT is non-nil, close the *Kill Ring* buffer as
+well."
+  (interactive "P")
+  (let* ((buf (current-buffer))
+        (pt (point))
+        (str (browse-kill-ring-current-string buf pt)))
+    (case insert-action
+      ('insert (browse-kill-ring-do-insert buf pt nil))
+      ('append (browse-kill-ring-do-append-insert buf pt nil))
+      ('prepend (browse-kill-ring-do-prepend-insert buf pt nil))
+      (t (error "Unknown insert-action: %s" insert-action)))
+    (case post-action
+      ('move
+        (browse-kill-ring-delete)
+        (kill-new str))
+      ('delete (browse-kill-ring-delete))
+      (t (error "Unknown post-action: %s" post-action)))
+    (if quit
+      (browse-kill-ring-quit)
+      (browse-kill-ring-update))))
+
 (defun browse-kill-ring-insert-and-delete (&optional quit)
   "Insert the kill ring item at point, and remove it from the kill ring.
 If optional argument QUIT is non-nil, close the *Kill Ring* buffer as
@@ -318,7 +342,7 @@ well."
 (defun browse-kill-ring-insert-move-and-quit ()
   "Like `browse-kill-ring-insert-and-move', but close the *Kill Ring* buffer."
   (interactive)
-  (browse-kill-ring-insert-and-move t))
+  (browse-kill-ring-insert-new 'insert 'move t))
 
 (defun browse-kill-ring-prepend-insert (&optional quit)
   "Like `browse-kill-ring-insert', but it places the entry at the beginning
@@ -365,8 +389,9 @@ of the *Kill Ring*."
     (case browse-kill-ring-highlight-inserted-item
       ((pulse t)
        (let ((pulse-delay .05) (pulse-iterations 10))
-         (pulse-momentary-highlight-region
-          start end browse-kill-ring-inserted-item-face)))
+         (with-no-warnings
+           (pulse-momentary-highlight-region
+          start end browse-kill-ring-inserted-item-face))))
       ('solid
        (let ((o (make-overlay start end)))
          (overlay-put o 'face browse-kill-ring-inserted-item-face)
@@ -567,11 +592,11 @@ case retun nil."
   (interactive "p")
   (browse-kill-ring-forward (- arg)))
 
-(defun browse-kill-ring-read-regexp (msg)
+(defun browse-kill-ring-read-regexp (msg &optional empty-is-nil-p)
   (let* ((default (car regexp-history))
          (input
           (read-from-minibuffer
-           (if default
+           (if (and default (not empty-is-nil-p))
                (format "%s for regexp (default `%s'): "
                        msg
                        default)
@@ -579,9 +604,10 @@ case retun nil."
            nil
            nil
            nil
-           'regexp-history)))
+           'regexp-history
+           (if empty-is-nil-p default nil))))
     (if (equal input "")
-        default
+        (if empty-is-nil-p nil default)
       input)))
 
 (defun browse-kill-ring-search-forward (regexp &optional backwards)
@@ -790,8 +816,8 @@ reselects ENTRY in the `*Kill Ring*' buffer."
     (browse-kill-ring-edit-finalise current-entry)))
 
 (defmacro browse-kill-ring-add-overlays-for (item &rest body)
-  (let ((beg (gensym "browse-kill-ring-add-overlays-"))
-        (end (gensym "browse-kill-ring-add-overlays-")))
+  (let ((beg (cl-gensym "browse-kill-ring-add-overlays-"))
+        (end (cl-gensym "browse-kill-ring-add-overlays-")))
     `(let ((,beg (point))
            (,end
             (progn
@@ -853,8 +879,8 @@ reselects ENTRY in the `*Kill Ring*' buffer."
 (defun browse-kill-ring-occur (regexp)
   "Display all `kill-ring' entries matching REGEXP."
   (interactive
-   (list
-    (browse-kill-ring-read-regexp "Display kill ring entries matching")))
+   (list (browse-kill-ring-read-regexp
+          "Display kill ring entries matching" t)))
   (assert (eq major-mode 'browse-kill-ring-mode))
   (browse-kill-ring-setup (current-buffer)
                           browse-kill-ring-original-buffer
@@ -1032,8 +1058,7 @@ it's turned on."
               ;; display leftmost or rightmost duplicate.
               ;; if `browse-kill-ring-display-leftmost-duplicate' is t,
               ;; display leftmost(last) duplicate.
-              (require 'cl)
-              (delete-duplicates items
+              (cl-delete-duplicates items
                                  :test #'equal
                                  :from-end browse-kill-ring-display-leftmost-duplicate))
             (when (stringp regexp)
@@ -1079,8 +1104,9 @@ it's turned on."
             (set-buffer-modified-p nil)
             (goto-char (point-min))
             (browse-kill-ring-forward 0)
-            (when regexp
-              (setq mode-name (concat "Kill Ring [" regexp "]")))
+            (setq mode-name (if regexp
+                                (concat "Kill Ring [" regexp "]")
+                              "Kill Ring"))
             (run-hooks 'browse-kill-ring-hook)))
       (progn
         (setq buffer-read-only t)))))

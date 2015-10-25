@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.0.9
+;; Version: 1.2.3
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -169,6 +169,7 @@ upon reaching the beginning or end of the current line.
        (setq end (max beg (1- end))))
      ;; don't include the newline in Normal state
      (when (and evil-move-cursor-back
+                (not evil-move-beyond-eol)
                 (not (evil-visual-state-p))
                 (not (evil-operator-state-p)))
        (setq end (max beg (1- end))))

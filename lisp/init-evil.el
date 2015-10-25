@@ -11,6 +11,16 @@
      ;; force update evil keymaps after git-timemachine-mode loaded
      (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
 
+(eval-after-load 'browse-kill-ring
+  '(progn
+     (evil-make-overriding-map browse-kill-ring-mode-map 'normal)
+     (add-hook 'browse-kill-ring-mode-hook #'evil-normalize-keymaps)))
+
+(eval-after-load 'etags-select
+  '(progn
+     (evil-make-overriding-map etags-select-mode-map 'normal)
+     (add-hook 'etags-select-mode-hook #'evil-normalize-keymaps)))
+
 (require 'evil)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
@@ -21,13 +31,10 @@
 ;; enable evil-mode
 (evil-mode 1)
 
-;; {{@see https://github.com/timcharper/evil-surround
+;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (require 'evil-surround)
 (global-evil-surround-mode 1)
 ;; }}
-
-;; press ";" instead of ":"
-(define-key evil-normal-state-map (kbd ";") 'evil-ex)
 
 (require 'evil-mark-replace)
 
@@ -54,6 +61,7 @@
 (define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
+
 ;; {{ nearby file path as text object,
 ;;      - "vif" to select only basename
 ;;      - "vaf" to select the full path
@@ -74,10 +82,17 @@
   "Check ascii table for charctater "
   (let (rlt)
     (if (or (and (<= 0 ch) (<= ch 32))
-            (= ch 96) ; `
-            (= ch 39) ; single quote
             (= ch 34) ; double quotes
-            (and (<= 59 ch) (<= ch 63))
+            (= ch 39) ; single quote
+            (= ch 40) ; (
+            (= ch 41) ; )
+            (= ch 60) ; <
+            (= ch 62) ; >
+            (= ch 91) ; [
+            (= ch 93) ; ]
+            (= ch 96) ; `
+            (= ch 123) ; {
+            (= ch 125) ; }
             (= 127 ch))
         (setq rlt t))
     rlt))
@@ -186,6 +201,11 @@
 (evil-escape-mode 1)
 ;; }}
 
+;; {{ evil-space
+(require 'evil-space)
+(evil-space-mode)
+;; }}
+
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
@@ -197,15 +217,18 @@
     ))
 
 ;; (evil-set-initial-state 'org-mode 'emacs)
-;; Remap org-mode meta keys for convenience
+
+;; As a general RULE, mode specific evil leader keys started
+;; with uppercased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
+  "S" 'org-store-link
+  "A" 'org-agenda
   "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
   "L" 'org-end-of-line ; smarter behaviour on headlines etc.
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
-  "-" 'org-ctrl-c-minus ; change bullet style
   "<" 'org-metaleft ; out-dent
   ">" 'org-metaright ; indent
   (kbd "TAB") 'org-cycle)
@@ -241,6 +264,8 @@
         (speedbar-mode . emacs)
         (magit-commit-mode . normal)
         (magit-diff-mode . normal)
+        (browse-kill-ring-mode . normal)
+        (etags-select-mode . normal)
         (js2-error-buffer-mode . emacs)
         )
       do (evil-set-initial-state mode state))
@@ -255,6 +280,8 @@
 (define-key evil-normal-state-map (kbd "M-y") 'browse-kill-ring)
 (define-key evil-normal-state-map (kbd "j") 'evil-next-visual-line)
 (define-key evil-normal-state-map (kbd "k") 'evil-previous-visual-line)
+(define-key evil-normal-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
 
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
@@ -262,7 +289,9 @@
 ;; press ",xx" to expand region
 ;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
-  '(setq expand-region-contract-fast-key "z"))
+  '(progn
+     (setq expand-region-contract-fast-key "z")
+     ))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
@@ -277,6 +306,10 @@
 (setq evil-leader/leader ",")
 (require 'evil-leader)
 (evil-leader/set-key
+  ;; {{ only usable in GUI emacs
+  "=" 'increase-default-font-height
+  "-" 'decrease-default-font-height
+  ;; }}
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" 'back-to-previous-buffer
@@ -297,6 +330,8 @@
   "sc" 'shell-command
   "ee" 'eval-expression
   "aa" 'copy-to-x-clipboard ; used frequently
+  "aw" 'ace-swap-window
+  "af" 'ace-maximize-window
   "zz" 'paste-from-x-clipboard ; used frequently
   "cy" 'strip-convert-lines-into-one-big-string
   "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
@@ -312,7 +347,7 @@
   "dj" 'dired-jump ;; open the dired from current file
   "ff" 'toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
-  "is" 'find-file-in-project-by-selected
+  "kk" 'find-file-in-project-by-selected
   "tm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
@@ -326,10 +361,11 @@
   "rb" 'evilmr-replace-in-buffer
   "tt" 'evilmr-tag-selected-region ;; recommended
   "rt" 'evilmr-replace-in-tagged-region ;; recommended
-  "yy" 'cb-switch-between-controller-and-view
   "tua" 'artbollocks-mode
-  "yu" 'cb-get-url-from-controller
-  "ht" 'helm-etags-select ;; better than find-tag (C-])
+  "cby" 'cb-switch-between-controller-and-view
+  "cbu" 'cb-get-url-from-controller
+  "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
+  "hp" 'etags-select-find-tag
   "hm" 'helm-bookmarks
   "hb" 'helm-back-to-last-point
   "hh" 'browse-kill-ring
@@ -363,8 +399,9 @@
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
   "c$" 'org-archive-subtree ; `C-c $'
-  "c<" 'org-promote-subtree ; `C-c C-<'
-  "c>" 'org-demote-subtree ; `C-c C->'
+  ;; org-do-demote/org-do-premote support selected region
+  "c<" 'org-do-promote ; `C-c C-<'
+  "c>" 'org-do-demote ; `C-c C->'
   "cam" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
   "cxi" 'org-clock-in ; `C-c C-x C-i'
   "cxo" 'org-clock-out ; `C-c C-x C-o'
@@ -415,8 +452,7 @@
   "rnl" 'rinari-find-log
   "rno" 'rinari-console
   "rnt" 'rinari-find-test
-  "ss" 'swiper ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
-  "st" 'swiper-the-thing
+  "ss" 'swiper-the-thing ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
   "hst" 'hs-toggle-fold
   "hsa" 'hs-toggle-fold-all
   "hsh" 'hs-hide-block
@@ -441,7 +477,6 @@
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
   "otl" 'org-toggle-link-display
-  "oc" 'occur
   "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
@@ -472,13 +507,37 @@
   "ri" 'yari-helm
   "vv" 'scroll-other-window
   "vu" 'scroll-other-window-up
-  "vr" 'vr/replace
-  "vq" 'vr/query-replace
-  "vm" 'vr/mc-mark
-  "js" 'w3mext-search-js-api-mdn
   "jde" 'js2-display-error-list
   "jte" 'js2-mode-toggle-element
   "jtf" 'js2-mode-toggle-hide-functions
+  "jjeo" 'js2r-expand-object
+  "jjco" 'js2r-contract-object
+  "jjeu" 'js2r-expand-function
+  "jjcu" 'js2r-contract-function
+  "jjea" 'js2r-expand-array
+  "jjca" 'js2r-contract-array
+  "jjwi" 'js2r-wrap-buffer-in-iife
+  "jjig" 'js2r-inject-global-in-iife
+  "jjev" 'js2r-extract-var
+  "jjiv" 'js2r-inline-var
+  "jjrv" 'js2r-rename-var
+  "jjvt" 'js2r-var-to-this
+  "jjag" 'js2r-add-to-globals-annotation
+  "jjsv" 'js2r-split-var-declaration
+  "jjss" 'js2r-split-string
+  "jjef" 'js2r-extract-function
+  "jjem" 'js2r-extract-method
+  "jjip" 'js2r-introduce-parameter
+  "jjlp" 'js2r-localize-parameter
+  "jjtf" 'js2r-toggle-function-expression-and-declaration
+  "jjao" 'js2r-arguments-to-object
+  "jjuw" 'js2r-unwrap
+  "jjwl" 'js2r-wrap-in-for-loop
+  "jj3i" 'js2r-ternary-to-if
+  "jjlt" 'js2r-log-this
+  "jjsl" 'js2r-forward-slurp
+  "jjba" 'js2r-forward-barf
+  "jjk" 'js2r-kill
   "xh" 'mark-whole-buffer
   "xk" 'ido-kill-buffer
   "xs" 'save-buffer
@@ -495,10 +554,10 @@
   "xvl" 'vc-print-log
   "xvb" 'git-messenger:popup-message
   "xv=" 'git-gutter:popup-hunk
-  "ps" 'my-goto-previous-section
-  "ns" 'my-goto-next-section
-  "pp" 'my-goto-previous-hunk
+  "yy" 'cliphist-paste-item
+  "yu" 'cliphist-select-item
   "nn" 'my-goto-next-hunk
+  "pp" 'my-goto-previous-hunk
   "xnn" 'narrow-or-widen-dwim
   "xnw" 'widen
   "xnd" 'narrow-to-defun

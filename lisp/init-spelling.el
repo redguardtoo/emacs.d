@@ -28,8 +28,7 @@
         (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$" thing))
         rlt))
      (t t))
-    rlt
-    ))
+    rlt))
 
 (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
 
@@ -60,8 +59,7 @@
            (setq args (append args '("--run-together" "--run-together-limit=16" "--run-together-min=2")))))
         ((string-match "hunspell$" ispell-program-name)
          (setq args nil))))
-    args
-    ))
+    args))
 
 ;; Aspell Setup (recommended):
 ;; Skipped because it's easy.

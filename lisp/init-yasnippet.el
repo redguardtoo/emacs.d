@@ -68,7 +68,6 @@
      ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
      ;; default hotkey `C-c C-s` is still valid
-     ;; (global-set-key (kbd "C-c l") 'yas-insert-snippet)
      ;; give yas-dropdown-prompt in yas/prompt-functions a chance
      (require 'dropdown-list)
      (setq yas-prompt-functions '(yas-dropdown-prompt

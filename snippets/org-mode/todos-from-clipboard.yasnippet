@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name : TODOs from clipboard
+# contributor : Chen Bin <chenbin.sh AT gmail.com>
+# key: gclip
+# --
+`(replace-regexp-in-string "^ *\\([^ \n\r]+\\) *$" "\* TODO \\1" (simpleclip-get-contents))`

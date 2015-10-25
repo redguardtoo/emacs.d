@@ -58,8 +58,8 @@
     ;; Only handle open tag
     (setq tmp (evilmi--get-char-under-cursor))
     (if tmp (setq ch (car tmp)))
+    (if evilmi-debug (message "evilmi-simple-get-tag called => %s" ch))
 
-    (if evilmi-debug (message "ch=%d tag-chars=%s" ch tag-chars))
     (cond
      ;; In evil-visual-state, the (preceding-char) is actually the character under cursor
      ((not (evilmi--char-is-simple ch))

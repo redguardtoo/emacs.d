@@ -1,3 +1,27 @@
+;;; js2r-helpers.el --- Private helper functions for js2-refactor
+
+;; Copyright (C) 2012-2014 Magnar Sveen
+;; Copyright (C) 2015 Magnar Sveen and Nicolas Petton
+
+;; Author: Magnar Sveen <magnars@gmail.com>,
+;;         Nicolas Petton <nicolas@petton.fr>
+;; Keywords: conveniences
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Code:
+
 (require 'dash)
 (require 's)
 
@@ -19,7 +43,7 @@
 
 (defun js2r--guard ()
   (when js2-parsed-errors
-    (error "Can't refactor while buffer has parse errors.")))
+    (error "Can't refactor while buffer has parse errors")))
 
 (defun js2r--current-quotes-char ()
   "The char that is the current quote delimiter"
@@ -101,6 +125,26 @@
 
 ;; finding expressions and arguments
 
+(defun js2r--closest-extractable-node ()
+  "Return the most appropriate node the be extracted into a variable or paramter.
+Lookup the closest expression node from the point, or the closest literal node instead.
+If no node is found, signal an error."
+  (or (or (js2r--closest #'js2r--expression-p)
+          (js2r--closest #'js2r--literal-node-p))
+      (error "Cannot perform refactoring: Nothing to extract at point")))
+
+(defun js2r--closest-stmt-node ()
+  "Return the closest standalone statement node.
+Special care is taken for if branch nodes: if a statement node is
+part of an if branch node (like 'else if' nodes), return the
+parent node."
+  (let* ((node (js2-node-parent-stmt (js2-node-at-point)))
+        (parent (js2-node-parent node)))
+    (if (and (js2-if-node-p node)
+             (js2-if-node-p parent))
+        parent
+      node)))
+
 (defun js2r--argument-p (node)
   (let ((parent (js2-node-parent node)))
     (and (js2-call-node-p parent)
@@ -108,10 +152,22 @@
 
 (defun js2r--expression-p (node)
   (or (js2-call-node-p node)
-      (js2-string-node-p node)
       (js2r--argument-p node)
       (and (js2-prop-get-node-p node)
            (not (js2-call-node-p (js2-node-parent node))))))
+
+(defun js2r--literal-node-p (node)
+  (or (js2-object-node-p node)
+      (js2-string-node-p node)
+      (js2-number-node-p node)
+      (js2r--boolean-node-p node)))
+
+(defun js2r--boolean-node-p (node)
+  (let* ((beg (js2-node-abs-pos node))
+         (end (js2-node-abs-end node))
+         (content (buffer-substring beg end)))
+    (and (js2-keyword-node-p node)
+         (member content '("true" "false")))))
 
 (defun js2r--single-complete-expression-between-p (beg end)
   (let ((ancestor (js2r--first-common-ancestor-in-region beg (- end 1))))
@@ -149,3 +205,4 @@
         (set-marker abs-end nil)))))
 
 (provide 'js2r-helpers)
+;;; js2-helpers.el ends here

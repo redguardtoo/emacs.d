@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: extend angular controller from parent
+# key: acontroller
+# --
+ // Initialize the super class and extend it.
+ // Note inject from ParentController is AUTOMATICALLY injected
+ angular.extend(this, $controller('${1:ParentController}', {$scope: $scope}));

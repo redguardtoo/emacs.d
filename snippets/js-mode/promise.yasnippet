@@ -1,0 +1,17 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: promise usage
+# key: promise
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+${1:promise}.then(function(resp) {
+  // reject and resolve returns a promise
+  if(true) {
+    return ${1:$(yas/substr yas-text "[^ ]*")}.resolve(resp);
+  } else {
+    return ${1:$(yas/substr yas-text "[^ ]*")}.reject('failed');
+  }
+}).then(function(resp) {
+  console.log('resp=', resp);
+}).catch(function(reason) {
+  console.log('reason=', reason);
+})

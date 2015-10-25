@@ -40,6 +40,7 @@ Also converts full stops to commas."
       (call-interactively 'upcase-region)
     (call-interactively 'subword-upcase)))
 
+;; these bindings are fine
 (global-set-key "\M-c" 'endless/capitalize)
 (global-set-key "\M-l" 'endless/downcase)
 (global-set-key "\M-u" 'endless/upcase)

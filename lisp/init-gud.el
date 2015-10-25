@@ -31,10 +31,6 @@
 (defadvice select-window-by-number (after select-window-by-number-after activate)
   (hack-gud-mode))
 
-;; from switch-window is from 3rd party plugin switch windows.el
-(defadvice switch-window (after switch-window-after activate)
-  (hack-gud-mode))
-
 ;; windmove-do-window-select is from windmove.el
 (defadvice windmove-do-window-select (after windmove-do-window-select-after activate)
   (hack-gud-mode))

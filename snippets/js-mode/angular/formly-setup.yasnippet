@@ -1,0 +1,45 @@
+# -*- mode: snippet -*-
+# name: formly setup
+# group: angular
+# key: aformly
+# --
+// insert below code into index.html:
+// <script src="//cdnjs.cloudflare.com/ajax/libs/api-check/7.5.0/api-check.min.js"></script>
+// <script src="//cdnjs.cloudflare.com/ajax/libs/angular-formly/7.0.1/formly.min.js"></script>
+angular.module('${1:myApp}').config(function (viewPath, formlyConfigProvider) {
+  // copied from https://github.com/formly-js/angular-formly-templates-bootstrap
+  formlyConfigProvider.setWrapper([{
+    name: 'label',
+    templateUrl: '<div> <label for="{{id}}" class="control-label" ng-if="to.label">{{to.label}} {{to.required ? "*" : ""}}</label><formly-transclude></formly-transclude></div>'
+  }]);
+  formlyConfigProvider.setType({
+    name: 'input',
+    template: '<input class="form-control" ng-model="model[options.key]">',
+    wrapper: ['label']
+  });
+  // insert your own types/wrappers here
+  $0
+}).run(function (formlyConfig, formlyValidationMessages) {
+  formlyConfig.extras.removeChromeAutoComplete = true;
+  formlyValidationMessages.addStringMessage('required', 'This field is required');
+  formlyValidationMessages.messages.parse = function ($viewValue) {
+    return ($viewValue || 'This') + ' is not valid';
+  };
+}).controller('MainController', function ($filter, $state) {
+  var vm = this;
+  vm.init = function() {
+    vm.fields = [
+      {
+        // noFormControl: true,
+        key: 'key1',
+        type: 'input',
+        wrapper: ['label'],
+        templateOptions: {
+          required: true,
+          label: 'hello world'
+        }
+      }
+    ];
+  };
+  vm.init();
+});

@@ -5,10 +5,15 @@
 ;; Don't warn when TAGS files are large
 (setq large-file-warning-threshold nil)
 
-(when *is-a-mac*
+(if *is-a-mac*
   ; Mac's default ctags does not support -e option
   ; If you install Emacs by homebrew, another version of etags is already installed which does not need -e too
-  (setq ctags-command "/usr/local/bin/ctags -e -R ") ;; the best option is to install latest ctags from sf.net
-  )
+  ;; the best option is to install latest ctags from sf.net
+  (setq ctags-command "/usr/local/bin/ctags -e -R "))
+
+;; {{ etags-select
+(autoload 'etags-select-find-tag-at-point "etags-select" "" t nil)
+(autoload 'etags-select-find-tag "etags-select" "" t nil)
+;; }}
 
 (provide 'init-ctags)

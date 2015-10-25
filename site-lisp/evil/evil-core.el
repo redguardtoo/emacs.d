@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.0.9
+;; Version: 1.2.3
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -330,25 +330,15 @@ then this function does nothing."
 ;; When a buffer is created in a low-level way, it is invisible to
 ;; Evil (as well as other globalized minor modes) because no hooks are
 ;; run. This is appropriate since many buffers are used for throwaway
-;; purposes. Passing the buffer to `display-buffer' indicates
+;; purposes. Passing the buffer to `set-window-buffer' indicates
 ;; otherwise, though, so advise this function to initialize Evil.
-(defadvice display-buffer (before evil)
+(defadvice set-window-buffer (before evil)
   "Initialize Evil in the displayed buffer."
   (when evil-mode
-    (when (get-buffer (ad-get-arg 0))
-      (with-current-buffer (ad-get-arg 0)
+    (when (get-buffer (ad-get-arg 1))
+      (with-current-buffer (ad-get-arg 1)
         (unless evil-local-mode
           (evil-local-mode 1))))))
-
-(defadvice switch-to-buffer (before evil)
-  "Initialize Evil in the displayed buffer."
-  (when evil-mode
-    (let* ((arg0 (ad-get-arg 0))
-           (buffer (if arg0 (get-buffer arg0) (other-buffer))))
-      (when buffer
-        (with-current-buffer buffer
-          (unless evil-local-mode
-            (evil-local-mode 1)))))))
 
 ;; Refresh cursor color.
 ;; Cursor color can only be set for each frame but not for each buffer.
@@ -628,7 +618,9 @@ mapping will always be the ESC prefix map."
   (if (and (not evil-inhibit-esc)
            (or evil-local-mode (evil-ex-p))
            (not (evil-emacs-state-p))
-           (equal (this-single-command-keys) [?\e])
+           (let ((keys (this-single-command-keys)))
+             (and (> (length keys) 0)
+                  (= (aref keys (1- (length keys))) ?\e)))
            (sit-for evil-esc-delay))
       (prog1 [escape]
         (when defining-kbd-macro
@@ -1101,7 +1093,7 @@ cursor, or a list of the above." name))
        (defun ,toggle (&optional arg)
          ,(format "Enable %s. Disable with negative ARG.
 If ARG is nil, don't display a message in the echo area.%s" name doc)
-         (interactive "p")
+         (interactive)
          (cond
           ((and (numberp arg) (< arg 1))
            (setq evil-previous-state evil-state
