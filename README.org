@@ -50,7 +50,7 @@ Here are the *exact steps* to follow:
 (setq package-archives '(("myelpa" . "~/projs/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet in the future. I tested it on Emacs 24.3.93.1, Emacs 24.3.1 and Emacs 23.4.
+That's it. You will never need internet in the future. I tested it on Emacs 24.3.93.1, Emacs 24.3.1.
 
 Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
 
@@ -362,7 +362,7 @@ Since most third party plugins don't support Emacs 23 any more. I strongly recom
 Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
-- Git skills are extremely useful for maintainting your emacs.d in the long term
+- Git skills are extremely useful for maintainting your emacs.d in the long term. The book [[https://git-scm.com/book/en/][Pro Git]] has everything you need. You need read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
