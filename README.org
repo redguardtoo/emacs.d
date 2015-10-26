@@ -85,11 +85,9 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - needed by lisp `slime`
 - install through OS package manager
 
-**** tidy or html5-tidy
+**** tidy
 - needed by `web-mode` for real time HTML syntax check
 - install through OS package manager
-- For html5-tidy, you need [[https://github.com/w3c/tidy-html5/archive/master.zip][download its source code]] and build it manually
-- I recommend html5-tidy because it supports html5, obviously
 
 **** csslint
 - install `node.js` through OS package manager, then `sudo npm install -g csslint`
@@ -102,7 +100,6 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - install `node.js` through OS package manager, then `sudo npm install -g jshint`
 - required by js-mode
 - by default I use js2-mode which does NOT need jshint
-
 **** xsel
 - needed by my clipboard command `copy-to-x-clipboard` and `paste-from-x-clipboard` under Linux
 - install through OS package manager
@@ -130,17 +127,17 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - it creates tags file for code navigation
 - needed by many tags related packages
 - install through OS package manager
-- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]] if you prefer my way
+- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - needed by `ggtags.el`
 - it creates index files for code navigation
-- more advanced than ctags, supports references and better performance
+- more advanced than ctags, supports references and has better performance
 - install through OS package manager
 
 **** libreoffice
-- Only one executable `soffice` needed when converting odt file into doc (Microsoft Word 97)
-- conversion will happen automatically when exporting org-mode to odt
+- Only one executable `soffice` needed when converting odt file into doc/pdf
+- conversion happens automatically when exporting org-mode to odt
 - The conversion command is in variable `org-export-odt-convert-processes`
 - Install through OS package manager
 **** js-beautify
@@ -189,7 +186,7 @@ If you don't like my commits, you can revert them:
 git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
-** Setup indentaion
+** Indentaion
 Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]].
 
 Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
@@ -197,13 +194,16 @@ Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheatsheet" to learn its key bindings.
 ** How to setup [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out `(require 'init-modeline)` in init.el at first.
-** Emacs is not responsive?
-- Disable flymake by commenting out line `(flymake-mode 1)` in "~/.emacs.d/lisp/init-*.el"
-- Disable flyspell by commenting out line `(flyspell-mode 1)` in "~/.emacs.d/lisp/init-*.el"
 ** Why certain key binding doesn't work?
 Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x`]].
 ** My frequently used commands
-They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys for them.
+They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys.
+** How to use org-mode
+Press `M-x org-version`, then read corresponding online manual.
+
+I keep the original status of org-mode untouched. So if you find anything does not work out of the box. It's because you haven't do the required setup yet.
+
+For example, `org-capture` need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 ** OS X user?
 You need remove emacs 22 bundled with freshly installed OSX:
 #+begin_src bash
@@ -238,11 +238,7 @@ BTW, please *read my comments* above the code at first.
 ** Open file with Ido
 If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
 
-You can keep pressing `C-f` to ignore the completions and input path manually.
-** C++ developers?
-You need set up the directories to seach C++ header files. Please see the section `clang`.
-
-If you don't use cmake, you could disable flymake-mode in init-cc-mode.el.
+You can keep pressing `C-f` to ignore the completions.
 ** Windows
 I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *environment variable* HOME which points to a user directory `C:\Users\<username>`. You need extract .emacs.d into the directory HOME points to.
 ** Yasnippet key bindings
@@ -274,7 +270,7 @@ Some package cannot be downloaded automatically because of network problem.
 You could
 - `M-x list-packages` to manually install it
 - Or `M-x package-refresh-content` and restart Emacs. the package will be installed automatically
-** Original key bindings
+** NO vi/vim keybindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
 ** Evil setup
 It's defined in "init-evil.el". Press "C-z" to switch between Emacs and Vim key bindings.
@@ -296,12 +292,8 @@ Here is sample code:
 
 In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
 
-** Enable color theme in terminal
-#+BEGIN_SRC sh
-TERM=xterm-256color emacs -nw
-#+END_SRC
-
-** Preview color theme
+** Color theme
+*** Preview color theme
 Check [[http://emacsthemes.caisah.info/]].
 
 Write down the name of color theme (for example, molokai).
@@ -317,6 +309,11 @@ Insert below code into ~/.emacs.d/init.el,
 Please note there is *NO unified way* to enable color theme. You need read color theme's documentation at first.
 
 My sample code works for most color themes.
+*** Use color theme in terminal
+#+BEGIN_SRC sh
+TERM=xterm-256color emacs -nw
+#+END_SRC
+
 ** Chinese Input Method Editor
 Run command `M-x toggle-input-method` to toggle input method.
 
