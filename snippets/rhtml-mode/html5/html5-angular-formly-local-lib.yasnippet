@@ -1,23 +1,24 @@
 # -*- mode: snippet -*-
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
-# name: angularui-formly+angularui-router+bootstrap+mokcup+promise+resolve
+# name: LOCAL angularui-formly+angularui-router+bootstrap+mokcup+promise+resolve
 # expand-env: ((yas-indent-line 'fixed))
 # key: html5
 # --
 <!DOCTYPE html>
 <html ng-app="myApp">
+  <!-- npm install angular angular-ui-router angular-mocks angular angular-formly angular-ui-bootstrap bootstrap -->
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="" />
     <title>Angular Sandbox (with Bootstrap)</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.5/angular-mocks.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/api-check/7.5.0/api-check.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-formly/7.0.1/formly.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.12.0/ui-bootstrap-tpls.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" />
+    <script src="/${1:node_modules}/angular/angular.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-mocks/angular-mocks.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/api-check/dist/api-check.min.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-formly/dist/formly.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-ui-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/${1:$(yas/substr yas-text "[^ ]*")}/bootstrap/dist/css/bootstrap.min.css" />
     <style type="text/css">.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* angular ui bootstrap hack */</style>
   </head>
   <body>

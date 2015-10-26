@@ -1,6 +1,7 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: gruntfile.js main
 # key: main
+# expand-env: ((yas-indent-line 'fixed))
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 module.exports = function(grunt) {
@@ -10,8 +11,8 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
       build: {
-        src: '<%= pkg.name %>.js',
-        dest: '<%= pkg.name %>.min.js'
+        src: '${1:app.js}.js',
+        dest: '${1:$(yas/substr yas-text "[^ ]*")}.min.js'
       }
     }
     $0

@@ -1,0 +1,62 @@
+# -*- mode: snippet -*-
+# name: karma.conf.js
+# key: main
+# --
+// Install npm packages:
+//   npm install --save-dev karma phantomjs jasmine-core karma-chrome-launcher karma-phantomjs-launcher karma-firefox-launcher karma-jasmine
+//
+// Run command:
+//    karma start karma.conf.js --single-run --browsers PhantomJS
+//
+// Directory layout:
+//    - scripts/
+//    - deployment/
+//    - node_modules/
+//    - package.json
+//    - gulpfile.js
+//    - karma.conf.js
+var modules = "node_modules";
+
+var settings = {
+  basePath: './',
+
+  //avoid phantom disconnect, suggestion from:
+  //https://github.com/karma-runner/karma/issues/598
+  browserDisconnectTimeout: 10000,
+  browserDisconnectTolerance: 1,
+  browserNoActivityTimeout: 60000,
+
+  files: [
+    modules + '/moment/min/moment.min.js', // date
+    modules + '/angular/angular.min.js',
+    modules + '/angular-ui-router/release/angular-ui-router.min.js',
+    modules + '/api-check/dist/api-check.min.js',
+    modules + '/angular-formly/dist/formly.js',
+    modules + '/angular-touch/angular-touch.min.js',
+    modules + '/angular-messages/angular-messages.min.js',
+    modules + '/angular-ui-bootstrap/ui-bootstrap-tpls.min.js',
+    'scripts/**/*.js'
+  ],
+  excludes: [
+    'scripts/mocks/**/*', // ignore mock data for frontend
+  ],
+  singleRun: false,
+  autoWatch: true,
+  frameworks: ['jasmine'],
+  browsers: ['Firefox'],
+  plugins: [
+    'karma-chrome-launcher',
+    'karma-phantomjs-launcher',
+    'karma-firefox-launcher',
+    'karma-jasmine'
+  ]
+};
+
+if (process.env.NODE_ENV === "bamboo") {
+  settings.browsers = ['PhantomJS'];
+  settings.singleRun = true;
+}
+
+module.exports = function(config) {
+  config.set(settings);
+};
