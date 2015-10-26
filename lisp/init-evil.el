@@ -270,6 +270,9 @@
         )
       do (evil-set-initial-state mode state))
 
+;; I prefer Emacs way after pressing ":" in evil-mode
+(define-key evil-ex-completion-map (kbd "C-a") 'move-beginning-of-line)
+(define-key evil-ex-completion-map (kbd "C-b") 'backward-char)
 (define-key evil-ex-completion-map (kbd "M-p") 'previous-complete-history-element)
 (define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
 
