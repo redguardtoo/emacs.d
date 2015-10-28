@@ -2,13 +2,15 @@
 ;; you need install the program sbcl, of course
 (setq inferior-lisp-program "sbcl")
 
-(eval-after-load 'slime
-  '(progn
-     (add-to-list 'load-path (concat (directory-of-library "slime") "/contrib"))
-     (setq slime-contribs '(slime-fancy))
-     (setq slime-protocol-version 'ignore)
-     (setq slime-net-coding-system 'utf-8-unix)
-     (setq slime-complete-symbol*-fancy t)
-     ))
+;; (eval-after-load 'slime
+;;   '(progn
+;;      (add-to-list 'load-path (concat (directory-of-library "slime") "/contrib"))
+;;      (setq slime-contribs '(slime-fancy))
+;;      (setq slime-protocol-version 'ignore)
+;;      (setq slime-net-coding-system 'utf-8-unix)
+;;      (setq slime-complete-symbol*-fancy t)
+;;      ))
+;; not show me the fancy!
+(setq slime-contribs '(slime-fancy))
 
 (provide 'init-slime)

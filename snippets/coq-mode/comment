@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: comment
+# key: cm
+# binding: direct-keybinding
+# --
+(${1:$(make-string (- 35 (/ (string-width yas-text) 2)) ?\*)} ${1:-} ${1:$(make-string (- 35 (/ (string-width yas-text) 2)) ?\*)})
+$0
