@@ -178,6 +178,38 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
+(defun js2-print-json-path ()
+  "Print the path to the JSON value under point, and save it in the kill ring."
+  (interactive)
+  (let (next-node node-type rlt key-name)
+    (setq next-node (js2-node-at-point))
+    ;; scanning from AST, no way to optimise `js2-node-at-point'
+    (while (and next-node (arrayp next-node) (> (length next-node) 5))
+      (setq node-type (aref next-node 0))
+      (cond
+       ;; json property node
+       ((eq node-type 'cl-struct-js2-object-prop-node)
+        (setq key-name (js2-prop-node-name (js2-object-prop-node-left next-node)))
+        (if rlt (setq rlt (concat "." key-name rlt))
+          (setq rlt (concat "." key-name))))
+
+       ;; array node
+       ((or (eq node-type 'cl-struct-js2-array-node)
+            (eq node-type 'cl-struct-js2-infix-node))
+        (if rlt (setq rlt (concat "[0]" rlt))
+          (setq rlt "[0]")))
+
+       (t)) ; do nothing
+      ;; get parent node and continue the loop
+      (setq next-node (aref next-node 5)))
+
+    ;; clean the final result
+    (setq rlt (replace-regexp-in-string "^\\." "" rlt))
+    (when rlt
+      (kill-new rlt)
+      (message "%s => kill-ring" rlt))
+    rlt))
+
 (eval-after-load 'js2-mode
   '(progn
      (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
