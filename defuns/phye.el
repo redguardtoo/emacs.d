@@ -14,3 +14,17 @@
 (cd "~/ws/OrgNotes/")
 
 (setq-default evil-escape-key-sequence "jk")
+
+(setq org-capture-templates
+      '(("t" "Todo" entry (file+headline "~/ws/OrgNotes/gtd.org" "Tasks")
+         "* TODO %?\n %i\n %a")
+        ("n" "Note" entry (file+datetree "~/ws/OrgNotes/quick_notes.org")
+         "* %?\nEntered on %U\n %i\n %a")))
+(define-key global-map "\C-cc" 'org-capture)
+
+(setq org-refile-targets
+      '((nil :maxlevel . 5)
+        (org-agenda-files :maxlevel . 5)
+        ("KnowledgeBase.org" :maxlevel . 5)
+        ("done.org" :maxlevel . 5)
+        ("Work@Cisco.org" :maxlevel . 5)))
