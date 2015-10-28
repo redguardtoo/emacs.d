@@ -116,7 +116,8 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 
 ;; misc has some crucial tools I need immediately
 (require 'init-misc)
-(require 'init-color-theme)
+(if (or (display-graphic-p) (string-match-p "256color"(getenv "TERM")))
+    (require 'init-color-theme))
 (require 'init-emacs-w3m)
 
 ;; {{ idle require other stuff
