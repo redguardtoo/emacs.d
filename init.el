@@ -162,6 +162,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
     ("~/ws/OrgNotes/gtd.org" "~/ws/OrgNotes/LearningPlan.org" "~/ws/OrgNotes/Work@Cisco.org" "~/ws/OrgNotes/Birthday.org")))
  '(org-catch-invisible-edits (quote error))
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
+ '(fill-column 80)
  '(session-use-package t nil (session)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
