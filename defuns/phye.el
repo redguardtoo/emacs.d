@@ -12,3 +12,5 @@
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
 (cd "~/ws/OrgNotes/")
+
+(setq-default evil-escape-key-sequence "jk")
