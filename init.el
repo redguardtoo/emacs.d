@@ -158,7 +158,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
  ;; If there is more than one, they won't work right.
  '(org-agenda-files
    (quote
-    ("~/ws/OrgNotes/gtd.org" "~/ws/OrgNotes/LearningPlan.org" "~/ws/OrgNotes/Work@Cisco.org")))
+    ("~/ws/OrgNotes/gtd.org" "~/ws/OrgNotes/LearningPlan.org" "~/ws/OrgNotes/Work@Cisco.org" "~/ws/OrgNotes/Birthday.org")))
  '(org-catch-invisible-edits (quote error))
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
  '(session-use-package t nil (session)))
