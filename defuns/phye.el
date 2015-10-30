@@ -28,3 +28,6 @@
         ("KnowledgeBase.org" :maxlevel . 5)
         ("done.org" :maxlevel . 5)
         ("Work@Cisco.org" :maxlevel . 5)))
+
+(eval-after-load "org"
+                 '(require 'ox-odt nil t))
