@@ -11,3 +11,4 @@
   )
 
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
+(cd "~/ws/OrgNotes/")
