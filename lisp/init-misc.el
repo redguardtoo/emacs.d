@@ -192,6 +192,17 @@
 (setq guide-key/idle-delay 0.5)
 ;; }}
 
+;; {{expand-region.el
+;; if emacs-nox, use C-@, else, use C-2;
+(if window-system
+  (progn
+    (define-key global-map (kbd "C-2") 'er/expand-region)
+    (define-key global-map (kbd "C-M-2") 'er/contract-region)
+    )
+  (define-key global-map (kbd "C-@") 'er/expand-region)
+  (define-key global-map (kbd "C-M-@") 'er/contract-region))
+;; }}
+
 (defun generic-prog-mode-hook-setup ()
   (unless (is-buffer-file-temp)
 	;; highlight FIXME/BUG/TODO in comment
