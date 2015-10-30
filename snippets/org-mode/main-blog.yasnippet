@@ -1,0 +1,30 @@
+# -*- mode: snippet -*-
+# name : content for a new blog file
+# contributor : Chen Bin <chenbin.sh AT gmail.com>
+# expand-env: ((yas-indent-line 'fixed))
+# key: main
+# --
+#+OPTIONS: ^:{} toc:nil H:3
+* ${1:blog-title}
+Some content here
+
+Test *bolded* test /italic text/ =verbatim.key[0].hello.value=
+
+This is _underlined text_.
+
+This is some code,
+#+begin_src javascript
+console.log('object=', object);
+#+end_src
+
+This is [[http://www.google.com][google link]].
+
+Footnote1 [fn:n1] and footnote2 [fn:n2] to explain something.
+
+[fn:n1] The link is: http://orgmode.org
+
+[fn:n2] Just another footnote
+
+#+begin_example
+here is some example
+#+end_example
