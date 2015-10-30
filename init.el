@@ -150,6 +150,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 ;; my personal setup, other major-mode specific setup need it.
 ;; It's dependent on init-site-lisp.el
 (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
+(if (file-exists-p "~/.emacs.d/defuns/phye.el") (load-file "~/.emacs.d/defuns/phye.el"))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
