@@ -1,5 +1,6 @@
 ;;; chinese-pyim-company.el --- Integrate company-mode with Chinese-pyim
-;;; Header:
+
+;; * Header
 ;; Copyright  2015 Feng Shu
 
 ;; Author: Feng Shu <tumashu@163.com>
@@ -22,13 +23,20 @@
 ;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;;; Commentary:
-;; 这个包为 `Chinese-pyim' 添加中文词条 *联想* 功能，其使用方式：
+
+;; * 说明文档                                                           :doc:
+;; 这个文件包含了两个 company 补全后端，与 Chinese-pyim 配合使用
+;; 可以比较方便的补全中文词条。
+
 
 ;; #+BEGIN_EXAMPLE
 ;; (require 'chinese-pyim-company)
 ;; #+END_EXAMPLE
 
 ;;; Code:
+
+;; * 代码                                                               :code:
+;; ** require
 ;; #+BEGIN_SRC emacs-lisp
 (require 'chinese-pyim)
 (require 'company)
@@ -190,7 +198,8 @@
                              pyim-current-str))))
 ;; #+END_SRC
 
-;;; Footer:
+;; * Footer
+
 ;; #+BEGIN_SRC emacs-lisp
 (provide 'chinese-pyim-company)
 
@@ -199,7 +208,7 @@
 ;; coding: utf-8-unix
 ;; tab-width: 4
 ;; indent-tabs-mode: nil
-;; lentic-init: lentic-orgel-org-init
+;; lentic-init: lentic-el2org-init
 ;; End:
 
 ;;; chinese-pyim.el ends here
