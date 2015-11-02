@@ -1,11 +1,6 @@
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
-;; json
-(setq auto-mode-alist (cons '("\\.json$" . json-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jason$" . json-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
-
 ;; {{ js2-mode or javascript-mode
 (setq-default js2-use-font-lock-faces t
               js2-mode-must-byte-compile nil
@@ -245,10 +240,16 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
  ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.json$" . js2-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.jason$" . js2-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.jshintrc$" . js2-mode) auto-mode-alist))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.jason$" . js-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.jshintrc$" . js-mode) auto-mode-alist))
   ))
 ;; }}
 

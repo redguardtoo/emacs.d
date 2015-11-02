@@ -75,7 +75,6 @@ ARCHIVE is the string name of the package archive.")
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
   '(bbdb
-    json-rpc
     kv
     color-theme
     wgrep
@@ -274,7 +273,6 @@ ARCHIVE is the string name of the package archive.")
 ;; C-x r l to list bookmarks
 (require-package 'bookmark+)
 (require-package 'multi-term)
-(require-package 'json-mode)
 (require-package 'js2-mode)
 (require-package 's)
 ;; js2-refactor requires js2, dash, s, multiple-cursors, yasnippet
