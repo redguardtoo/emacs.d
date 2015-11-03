@@ -236,20 +236,18 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 (autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
+(setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jason$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jshintrc$" . js-mode) auto-mode-alist))
+
 (cond
  ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.json$" . js2-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.jason$" . js2-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.jshintrc$" . js2-mode) auto-mode-alist))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.jason$" . js-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.jshintrc$" . js-mode) auto-mode-alist))
   ))
 ;; }}
 
