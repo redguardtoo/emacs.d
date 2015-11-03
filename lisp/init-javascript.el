@@ -173,37 +173,66 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
-(defun js2-print-json-path ()
-  "Print the path to the JSON value under point, and save it in the kill ring."
-  (interactive)
-  (let (next-node node-type rlt key-name)
-    (setq next-node (js2-node-at-point))
-    ;; scanning from AST, no way to optimise `js2-node-at-point'
-    (while (and next-node (arrayp next-node) (> (length next-node) 5))
-      (setq node-type (aref next-node 0))
+;; {{ print json path, will be removed when latest STABLE js2-mode released
+(defun js2-get-element-index-from-array-node (elem array-node &optional hardcoded-array-index)
+  "Get index of ELEM from ARRAY-NODE or 0 and return it as string."
+  (let ((idx 0) elems (rlt hardcoded-array-index))
+    (setq elems (js2-array-node-elems array-node))
+    (if (and elem (not hardcoded-array-index))
+        (setq rlt (catch 'nth-elt
+                    (dolist (x elems)
+                      ;; We know the ELEM does belong to ARRAY-NODE,
+                      (if (eq elem x) (throw 'nth-elt idx))
+                      (setq idx (1+ idx)))
+                    0)))
+    (format "[%s]" rlt)))
+
+(defun js2-print-json-path (&optional hardcoded-array-index)
+  "Print the path to the JSON value under point, and save it in the kill ring.
+If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it."
+  (interactive "P")
+  (let (previous-node current-node
+        key-name
+        rlt)
+
+    ;; The `js2-node-at-point' starts scanning from AST root node.
+    ;; So there is no way to optimize it.
+    (setq current-node (js2-node-at-point))
+
+    (while (not (js2-ast-root-p current-node))
       (cond
-       ;; json property node
-       ((eq node-type 'cl-struct-js2-object-prop-node)
-        (setq key-name (js2-prop-node-name (js2-object-prop-node-left next-node)))
+       ;; JSON property node
+       ((js2-object-prop-node-p current-node)
+        (setq key-name (js2-prop-node-name (js2-object-prop-node-left current-node)))
         (if rlt (setq rlt (concat "." key-name rlt))
           (setq rlt (concat "." key-name))))
 
-       ;; array node
-       ((or (eq node-type 'cl-struct-js2-array-node)
-            (eq node-type 'cl-struct-js2-infix-node))
-        (if rlt (setq rlt (concat "[0]" rlt))
-          (setq rlt "[0]")))
+       ;; Array node
+       ((or (js2-array-node-p current-node))
+        (setq rlt (concat (js2-get-element-index-from-array-node previous-node
+                                                                 current-node
+                                                                 hardcoded-array-index)
+                          rlt)))
 
-       (t)) ; do nothing
-      ;; get parent node and continue the loop
-      (setq next-node (aref next-node 5)))
+       ;; Other nodes are ignored
+       (t))
 
-    ;; clean the final result
-    (setq rlt (replace-regexp-in-string "^\\." "" rlt))
-    (when rlt
+      ;; current node is archived
+      (setq previous-node current-node)
+      ;; Get parent node and continue the loop
+      (setq current-node (js2-node-parent current-node)))
+
+    (cond
+     (rlt
+      ;; Clean the final result
+      (setq rlt (replace-regexp-in-string "^\\." "" rlt))
       (kill-new rlt)
       (message "%s => kill-ring" rlt))
+     (t
+      (message "No JSON path found!")))
+
     rlt))
+;; }}
 
 (eval-after-load 'js2-mode
   '(progn

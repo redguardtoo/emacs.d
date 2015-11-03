@@ -426,7 +426,7 @@
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
-  "jp" 'jsons-print-path
+  "jpp" 'js2-print-json-path
   "se" 'string-edit-at-point
   "xe" 'eval-last-sexp
   "x0" 'delete-window
