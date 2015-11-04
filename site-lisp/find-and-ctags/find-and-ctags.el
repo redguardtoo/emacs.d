@@ -186,7 +186,7 @@ If IS-USED-AS-API is true, friendly message is suppressed"
   (interactive)
   (let (opts-list)
     (dolist (tag tags-table-list)
-      (setq opts-list (gethash tag find-and-ctags-cli-opts-list-hash))
+      (setq opts-list (gethash tag find-and-ctags-cli-opts-hash))
       (if opts-list
           (dolist (opts opts-list)
             (apply 'find-and-ctags-run-ctags-if-needed (file-name-directory tag) opts))
