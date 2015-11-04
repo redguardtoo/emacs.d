@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: find minimum n*32768 greater than newsize
+# key: alloc
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+(${1:newsize} + 32767) & ~32767
