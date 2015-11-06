@@ -23,6 +23,8 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-types)
+(require 'helm-help)
 
 
 (defgroup helm-locate nil
@@ -51,7 +53,7 @@ Normally you should not have to modify this yourself.
 If nil it will be calculated when `helm-locate' startup
 with these default values for different systems:
 
-Gnu/linux: \"locate %s -e -A %s\"
+Gnu/linux: \"locate %s -e -r %s\"
 berkeley-unix: \"locate %s %s\"
 windows-nt: \"es %s %s\"
 Others: \"locate %s %s\"
@@ -88,6 +90,13 @@ the opposite of \"locate\" command."
   :group 'helm-locate
   :type 'boolean)
 
+(defcustom helm-locate-project-list nil
+  "A list of directories, your projects.
+When set, allow browsing recursively files in all
+directories of this list with `helm-projects-find-files'."
+  :group 'helm-locate
+  :type '(repeat string))
+
 
 (defvar helm-generic-files-map
   (let ((map (make-sparse-keymap)))
@@ -97,6 +106,7 @@ the opposite of \"locate\" command."
     (define-key map (kbd "M-g s")   'helm-ff-run-grep)
     (define-key map (kbd "M-g z")   'helm-ff-run-zgrep)
     (define-key map (kbd "M-g p")   'helm-ff-run-pdfgrep)
+    (define-key map (kbd "C-c g")   'helm-ff-run-gid)
     (define-key map (kbd "M-R")     'helm-ff-run-rename-file)
     (define-key map (kbd "M-C")     'helm-ff-run-copy-file)
     (define-key map (kbd "M-B")     'helm-ff-run-byte-compile-file)
@@ -114,7 +124,6 @@ the opposite of \"locate\" command."
     (define-key map (kbd "M-.")     'helm-ff-run-etags)
     (define-key map (kbd "C-w")     'helm-yank-text-at-point)
     (define-key map (kbd "C-c @")   'helm-ff-run-insert-org-link)
-    (define-key map (kbd "C-c ?")   'helm-generic-file-help)
     map)
   "Generic Keymap for files.")
 
@@ -146,6 +155,19 @@ fall back to `default-directory' if FROM-FF is nil."
                  helm-ff-locate-db-filename
                  default-directory))))))
 
+
+(defun helm-locate-create-db-default-function (db-name directory)
+  "Default function used to create a locale locate db file.
+Argument DB-NAME name of the db file.
+Argument DIRECTORY root of file system subtree to scan."
+  (format helm-locate-create-db-command db-name directory))
+
+(defvar helm-locate-create-db-function
+  #'helm-locate-create-db-default-function
+  "Function used to create a locale locate db file.
+It should receive the same arguments as
+`helm-locate-create-db-default-function'.")
+
 (defun helm-locate-1 (&optional localdb init from-ff default)
   "Generic function to run Locate.
 Prefix arg LOCALDB when (4) search and use a local locate db file when it
@@ -156,13 +178,13 @@ INIT is a string to use as initial input in prompt.
 See `helm-locate-with-db' and `helm-locate'."
   (require 'helm-mode)
   (helm-locate-set-command)
-  (let ((pfn #'(lambda (candidate)
+  (let ((pfn (lambda (candidate)
                  (if (file-directory-p candidate)
                      (message "Error: The locate Db should be a file")
                    (if (= (shell-command
-                           (format helm-locate-create-db-command
-                                   candidate
-                                   helm-ff-default-directory))
+                           (funcall helm-locate-create-db-function
+                                    candidate
+                                    helm-ff-default-directory))
                           0)
                        (message "New locatedb file `%s' created" candidate)
                      (error "Failed to create locatedb file `%s'" candidate)))))
@@ -176,7 +198,7 @@ See `helm-locate-with-db' and `helm-locate'."
                                                           (or helm-ff-default-directory
                                                               default-directory))
                          :preselect helm-locate-db-file-regexp
-                         :test #'(lambda (x)
+                         :test (lambda (x)
                                    (if helm-locate-db-file-regexp
                                        ;; Select only locate db files and directories
                                        ;; to allow navigation.
@@ -208,8 +230,7 @@ Argument INITIAL-INPUT is a string to use as initial-input.
 See also `helm-locate'."
   (when (and db (stringp db)) (setq db (list db)))
   (helm-locate-set-command)
-  (let ((helm-ff-transformer-show-only-basename nil)
-        (helm-locate-command
+  (let ((helm-locate-command
          (if db
              (replace-regexp-in-string
               "locate"
@@ -225,6 +246,7 @@ See also `helm-locate'."
     (setq helm-file-name-history (mapcar 'helm-basename file-name-history))
     (helm :sources 'helm-source-locate
           :buffer "*helm locate*"
+          :ff-transformer-show-only-basename nil
           :input initial-input
           :default default
           :history 'helm-file-name-history)))
@@ -261,7 +283,7 @@ See also `helm-locate'."
          cmd)
       (set-process-sentinel
        (get-buffer-process helm-buffer)
-       #'(lambda (_process event)
+       (lambda (_process event)
            (if (string= event "finished\n")
                (with-helm-window
                  (setq mode-line-format
@@ -283,9 +305,8 @@ See also `helm-locate'."
    (requires-pattern :initform 3)
    (history :initform 'helm-file-name-history)
    (keymap :initform helm-generic-files-map)
-   (help-message :initform helm-generic-file-help-message)
-   (candidate-number-limit :initform 9999)
-   (mode-line :initform helm-generic-file-mode-line-string)))
+   (help-message :initform 'helm-generic-file-help-message)
+   (candidate-number-limit :initform 9999)))
 
 (defvar helm-source-locate
   (helm-make-source "Locate" 'helm-locate-source
@@ -301,10 +322,40 @@ See also `helm-locate'."
             (t (helm--mapconcat-pattern pattern)))
       pattern))
 
+(defun helm-locate-find-dbs-in-projects (&optional update)
+  (let* ((pfn (lambda (candidate directory)
+                (unless (= (shell-command
+                            (funcall helm-locate-create-db-function
+                                     candidate
+                                     directory))
+                           0)
+                  (error "Failed to create locatedb file `%s'" candidate)))))
+    (cl-loop for p in helm-locate-project-list
+             for db = (expand-file-name
+                       helm-ff-locate-db-filename
+                       (file-name-as-directory p))
+             if (and (null update) (file-exists-p db))
+             collect db
+             else do (funcall pfn db p)
+             and collect db)))
+
+;;;###autoload
+(defun helm-projects-find-files (update)
+  "Find files with locate in `helm-locate-project-list'.
+With a prefix arg refresh the database in each project."
+  (interactive "P")
+  (helm-locate-set-command)
+  (cl-assert (and (string-match-p "\\`locate" helm-locate-command)
+                  (executable-find "updatedb"))
+             nil "Unsupported locate version")
+  (let ((dbs (helm-locate-find-dbs-in-projects update)))
+    (if dbs
+        (helm-locate-with-db dbs)
+        (user-error "No projects found, please setup `helm-locate-project-list'"))))
+
 ;;;###autoload
 (defun helm-locate-read-file-name (prompt)
-  (let* (helm-ff-transformer-show-only-basename
-         (src `((name . "Locate read fname")
+  (let* ((src `((name . "Locate read fname")
                 (init . helm-locate-set-command)
                 (candidates-process . helm-locate-init)
                 (action . identity)
@@ -315,6 +366,7 @@ See also `helm-locate'."
                 (candidate-number-limit . 9999)
                 (no-matchplugin))))
     (or (helm :sources src
+              :ff-transformer-show-only-basename nil
               :prompt prompt
               :buffer "*helm locate read fname*"
               :resume 'noresume)
@@ -329,8 +381,6 @@ See 'man locate' for valid options and also `helm-locate-command'.
 You can specify a local database with prefix argument ARG.
 With two prefix arg, refresh the current local db or create it
 if it doesn't exists.
-Many databases can be used: navigate and mark them.
-See also `helm-locate-with-db'.
 
 To create a user specific db, use
 \"updatedb -l 0 -o db_path -U directory\".

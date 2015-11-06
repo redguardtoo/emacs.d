@@ -113,7 +113,6 @@ ARCHIVE is the string name of the package archive.")
     dropdown-list
     lua-mode
     pomodoro
-    helm
     auto-compile
     packed
     gitconfig-mode

@@ -19,6 +19,7 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-help)
 (require 'compile) ; Fixme: Is this needed?
 (require 'dired)
 
@@ -33,12 +34,6 @@
 (defcustom helm-su-or-sudo "sudo"
   "What command to use for root access."
   :type 'string
-  :group 'helm-utils)
-
-(defcustom helm-yank-symbol-first nil
-  "`helm-yank-text-at-point' yanks symbol at point on first
-invocation if this is non-nil."
-  :type  'boolean
   :group 'helm-utils)
 
 (defcustom helm-default-kbsize 1024.0
@@ -66,7 +61,13 @@ It is a float, usually 1024.0 but could be 1000.0 on some systems."
 (defvar helm-goto-line-before-hook '(helm-save-current-pos-to-mark-ring)
   "Run before jumping to line.
 This hook run when jumping from `helm-goto-line', `helm-etags-default-action',
-and `helm-imenu-default-action'.")
+and `helm-imenu-default-action'.
+This allow you to retrieve a previous position after using the different helm
+tools for searching (etags, grep, gid, (m)occur etc...).
+By default positions are added to `mark-ring' you can also add to register
+by using instead (or adding) `helm-save-pos-to-register-before-jump'.
+In this case last position is added to the register
+`helm-save-pos-before-jump-register'.")
 
 (defvar helm-save-pos-before-jump-register ?_
   "The register where `helm-save-pos-to-register-before-jump' save position.")
@@ -98,17 +99,6 @@ and `helm-imenu-default-action'.")
 ;;; Utils functions
 ;;
 ;;
-(defun helm-ff-find-printers ()
-  "Return a list of available printers on Unix systems."
-  (when (executable-find "lpstat")
-    (let ((printer-list (with-temp-buffer
-                          (call-process "lpstat" nil t nil "-a")
-                          (split-string (buffer-string) "\n"))))
-      (cl-loop for p in printer-list
-            for printer = (car (split-string p))
-            when printer
-            collect printer))))
-
 (defun helm-switch-to-buffers (buffer-or-name &optional other-window)
   "Switch to buffer BUFFER-OR-NAME.
 If more than one buffer marked switch to these buffers in separate windows.
@@ -137,53 +127,6 @@ in separate windows."
 See `helm-switch-to-buffers' for switching to marked buffers."
   (helm-switch-to-buffers buffer-or-name t))
 
-(cl-defmacro helm-position (item seq &key (test 'eq) all)
-  "A simple and faster replacement of CL `position'.
-Return position of first occurence of ITEM found in SEQ.
-Argument SEQ can be a string, in this case ITEM have to be a char.
-Argument ALL, if non--nil specify to return a list of positions of
-all ITEM found in SEQ."
-  (let ((key (if (stringp seq) 'across 'in)))
-    `(cl-loop for c ,key ,seq
-           for index from 0
-           when (funcall ,test c ,item)
-           if ,all collect index into ls
-           else return index
-           finally return ls)))
-
-(defun helm-substring (str width)
-  "Return the substring of string STR from 0 to WIDTH.
-Handle multibyte characters by moving by columns."
-  (with-temp-buffer
-    (save-excursion
-      (insert str))
-    (move-to-column width)
-    (buffer-substring (point-at-bol) (point))))
-
-(cl-defun helm-substring-by-width (str width &optional (endstr "..."))
-  "Truncate string STR to end at column WIDTH.
-Similar to `truncate-string-to-width'.
-Add ENDSTR (default \"...\") at end of truncated STR.
-Add spaces at end if needed to reach WIDTH when STR is shorter than WIDTH."
-  (cl-loop for ini-str = str
-        then (substring ini-str 0 (1- (length ini-str)))
-        for sw = (string-width ini-str)
-        when (<= sw width) return
-        (concat ini-str endstr (make-string (- width sw) ? ))))
-
-(defun helm-string-multibyte-p (str)
-  "Check if string STR contains multibyte characters."
-  (cl-loop for c across str
-        thereis (> (char-width c) 1)))
-
-(defun helm-get-pid-from-process-name (process-name)
-  "Get pid from running process PROCESS-NAME."
-  (cl-loop with process-list = (list-system-processes)
-        for pid in process-list
-        for process = (assoc-default 'comm (process-attributes pid))
-        when (and process (string-match process-name process))
-        return pid))
-
 (cl-defun helm-current-buffer-narrowed-p (&optional
                                             (buffer helm-current-buffer))
   "Check if BUFFER is narrowed.
@@ -193,9 +136,6 @@ Default is `helm-current-buffer'."
           (end (point-max))
           (total (buffer-size)))
       (or (/= beg 1) (/= end (1+ total))))))
-
-(defun helm-region-active-p ()
-  (and transient-mark-mode mark-active (/= (mark) (point))))
 
 (defun helm-goto-char (loc)
   "Go to char, revealing if necessary."
@@ -257,82 +197,6 @@ With a numeric prefix arg show only the ARG number of candidates."
           collect (buffer-substring-no-properties (point-at-bol)(point-at-eol))
           do (forward-line 1))))
 
-(defun helm-skip-entries (seq regexp-list)
-  "Remove entries which matches one of REGEXP-LIST from SEQ."
-  (cl-loop for i in seq
-        unless (cl-loop for regexp in regexp-list
-                     thereis (and (stringp i)
-                                  (string-match regexp i)))
-        collect i))
-
-(defun helm-shadow-entries (seq regexp-list)
-  "Put shadow property on entries in SEQ matching a regexp in REGEXP-LIST."
-  (let ((face 'italic))
-    (cl-loop for i in seq
-          if (cl-loop for regexp in regexp-list
-                   thereis (and (stringp i)
-                                (string-match regexp i)))
-          collect (propertize i 'face face)
-          else collect i)))
-
-(defun helm-describe-function (func)
-  "FUNC is symbol or string."
-  (describe-function (helm-symbolify func))
-  (message nil))
-
-(defun helm-describe-variable (var)
-  "VAR is symbol or string."
-  (describe-variable (helm-symbolify var))
-  (message nil))
-
-(defun helm-find-function (func)
-  "FUNC is symbol or string."
-  (find-function (helm-symbolify func)))
-
-(defun helm-find-variable (var)
-  "VAR is symbol or string."
-  (find-variable (helm-symbolify var)))
-
-(defun helm-kill-new (candidate &optional replace)
-  "CANDIDATE is symbol or string.
-See `kill-new' for argument REPLACE."
-  (kill-new (helm-stringify candidate) replace))
-
-(cl-defun helm-fast-remove-dups (seq &key (test 'eq))
-  "Remove duplicates elements in list SEQ.
-This is same as `remove-duplicates' but with memoisation.
-It is much faster, especially in large lists.
-A test function can be provided with TEST argument key.
-Default is `eq'."
-  (cl-loop with cont = (make-hash-table :test test)
-        for elm in seq
-        unless (gethash elm cont)
-        do (puthash elm elm cont)
-        finally return
-        (cl-loop for i being the hash-values in cont collect i)))
-
-(defun helm-remove-if-not-match (regexp seq)
-  "Remove all elements of SEQ that don't match REGEXP."
-  (cl-loop for s in seq
-           for str = (cond ((symbolp s)
-                            (symbol-name s))
-                           ((consp s)
-                            (car s))
-                           (t s))
-           when (string-match-p regexp str)
-           collect s))
-
-(defun helm-remove-if-match (regexp seq)
-  "Remove all elements of SEQ that match REGEXP."
-  (cl-loop for s in seq
-           for str = (cond ((symbolp s)
-                            (symbol-name s))
-                           ((consp s)
-                            (car s))
-                           (t s))
-           unless (string-match-p regexp str)
-           collect s))
-
 (defun helm-handle-winner-boring-buffers ()
   "Add `helm-buffer' to `winner-boring-buffers' when quitting/exiting helm.
 Add this function to `helm-cleanup-hook' when you don't want to see helm buffers
@@ -348,7 +212,7 @@ If current selection is a buffer or a file, `helm-find-files'
 from its directory."
   (interactive)
   (require 'helm-grep)
-  (helm-run-after-quit
+  (helm-run-after-exit
    (lambda (f)
      (if (file-exists-p f)
          (helm-find-files-1 (file-name-directory f)
@@ -365,7 +229,8 @@ from its directory."
                           (not grep-line)
                           (replace-regexp-in-string "\\`\\*" "" sel)))
           (bmk       (and bmk-name (assoc bmk-name bookmark-alist)))
-          (buf       (helm-aif (get-buffer sel) (buffer-name it)))
+          (buf       (helm-aif (and (bufferp sel) (get-buffer sel))
+                         (buffer-name it)))
           (default-preselection (or (buffer-file-name helm-current-buffer)
                                     default-directory)))
      (cond
@@ -398,107 +263,37 @@ from its directory."
        ;; Default.
        (t default-preselection)))))
 
-;; Same as `vc-directory-exclusion-list'.
-(defvar helm-walk-ignore-directories
-  '("SCCS" "RCS" "CVS" "MCVS" ".svn" ".git" ".hg" ".bzr"
-    "_MTN" "_darcs" "{arch}" ".gvfs"))
-
-(cl-defun helm-walk-directory (directory &key (path 'basename)
-                                           (directories t)
-                                           match skip-subdirs)
-  "Walk through DIRECTORY tree.
-Argument PATH can be one of basename, relative, full, or a function
-called on file name, default to basename.
-Argument DIRECTORIES when non--nil (default) return also directories names,
-otherwise skip directories names.
-Argument MATCH can be a predicate or a regexp.
-Argument SKIP-SUBDIRS when non--nil will skip `helm-walk-ignore-directories'
-unless it is given as a list of directories, in this case this list will be used
-instead of `helm-walk-ignore-directories'."
-  (let* ((result '())
-         (fn (cl-case path
-               (basename 'file-name-nondirectory)
-               (relative 'file-relative-name)
-               (full     'identity)
-               (t        path))))
-    (cl-labels ((ls-rec (dir)
-                  (unless (and skip-subdirs
-                               (member (helm-basename dir)
-                                       (if (listp skip-subdirs)
-                                           skip-subdirs
-                                         helm-walk-ignore-directories)))
-                    (cl-loop with ls = (sort (file-name-all-completions "" dir)
-                                             'string-lessp)
-                          for f in ls
-                          ;; Use `directory-file-name' to remove the final slash.
-                          ;; Needed to avoid infloop on symlinks symlinking
-                          ;; a directory inside it [1].
-                          for file = (directory-file-name
-                                      (expand-file-name f dir))
-                          unless (member f '("./" "../"))
-                          ;; A directory.
-                          if (char-equal (aref f (1- (length f))) ?/)
-                          do (progn (when directories
-                                      (push (funcall fn file) result))
-                                    ;; Don't recurse in symlinks.
-                                    ;; `file-symlink-p' have to be called
-                                    ;; on the directory with its final
-                                    ;; slash removed [1].
-                                    (and (not (file-symlink-p file))
-                                         (ls-rec file)))
-                          else do
-                          (if match
-                              (and (if (functionp match)
-                                       (funcall match f)
-                                     (and (stringp match)
-                                          (string-match match f)))
-                                   (push (funcall fn file) result))
-                            (push (funcall fn file) result))))))
-      (ls-rec directory)
-      (nreverse result))))
-
 (defun helm-generic-sort-fn (s1 s2)
   "Sort predicate function for helm candidates.
 Args S1 and S2 can be single or \(display . real\) candidates,
 that is sorting is done against real value of candidate."
-  (let* ((reg1  (concat "\\_<" helm-pattern "\\_>"))
-         (reg2  (concat "\\_<" helm-pattern))
-         (split (split-string helm-pattern))
+  (let* ((pattern (regexp-quote helm-pattern))
+         (reg1  (concat "\\_<" pattern "\\_>"))
+         (reg2  (concat "\\_<" pattern))
+         (reg3  helm-pattern)
+         (split (split-string pattern))
          (str1  (if (consp s1) (cdr s1) s1))
          (str2  (if (consp s2) (cdr s2) s2))
-         (score #'(lambda (str r1 r2 lst)
-                    (cond ((string-match r1 str) 4)
-                          ((and (string-match " " helm-pattern)
-                                (string-match (concat "\\_<" (car lst)) str)
-                                (cl-loop for r in (cdr lst)
-                                      always (string-match r str))) 3)
-                          ((and (string-match " " helm-pattern)
-                                (cl-loop for r in lst always (string-match r str))) 2)
-                          ((string-match r2 str) 1)
-                          (t 0))))
-         (sc1 (funcall score str1 reg1 reg2 split))
-         (sc2 (funcall score str2 reg1 reg2 split)))
-    (cond ((or (zerop (string-width helm-pattern))
+         (score (lambda (str r1 r2 r3 lst)
+                    (+ (if (string-match (concat "\\`" pattern) str) 1 0)
+                       (cond ((string-match r1 str) 5)
+                             ((and (string-match " " pattern)
+                                   (string-match (concat "\\_<" (car lst)) str)
+                                   (cl-loop for r in (cdr lst)
+                                            always (string-match r str))) 4)
+                             ((and (string-match " " pattern)
+                                   (cl-loop for r in lst always (string-match r str))) 3)
+                             ((string-match r2 str) 2)
+                             ((string-match r3 str) 1)
+                             (t 0)))))
+         (sc1 (funcall score str1 reg1 reg2 reg3 split))
+         (sc2 (funcall score str2 reg1 reg2 reg3 split)))
+    (cond ((or (zerop (string-width pattern))
                (and (zerop sc1) (zerop sc2)))
            (string-lessp str1 str2))
           ((= sc1 sc2)
            (< (length str1) (length str2)))
           (t (> sc1 sc2)))))
-
-(defun helm-basename (fname &optional ext)
-  "Print FNAME  with any  leading directory  components removed.
-If specified, also remove filename extension EXT."
-  (let ((non-essential t))
-    (if (and ext (or (string= (file-name-extension fname) ext)
-                     (string= (file-name-extension fname t) ext))
-             (not (file-directory-p fname)))
-        (file-name-sans-extension (file-name-nondirectory fname))
-      (file-name-nondirectory (directory-file-name fname)))))
-
-(defun helm-basedir (fname)
-  "Return the base directory of filename."
-  (helm-aif (and fname (file-name-directory fname))
-      (file-name-as-directory it)))
 
 (defun helm-ff-get-host-from-tramp-invalid-fname (fname)
   "Extract hostname from an incomplete tramp file name.
@@ -634,13 +429,6 @@ If STRING is non--nil return instead a space separated string."
             (mapconcat 'identity (list type user group other) " ")
           (list :mode-type type :user user :group group :other other))))
 
-(defun helm-current-directory ()
-  "Return current-directory name at point.
-Useful in dired buffers when there is inserted subdirs."
-  (if (eq major-mode 'dired-mode)
-      (dired-current-directory)
-    default-directory))
-
 (defmacro with-helm-display-marked-candidates (buffer-or-name candidates &rest body)
   (declare (indent 0) (debug t))
   (helm-with-gensyms (buffer window)
@@ -695,7 +483,9 @@ Useful in dired buffers when there is inserted subdirs."
                do (save-excursion
                     (goto-char start-match)
                     (while (condition-case _err
-                               (re-search-forward r end-match t)
+                               (if helm-migemo-mode
+                                   (helm-mm-migemo-forward r end-match t)
+                                   (re-search-forward r end-match t))
                              (invalid-regexp nil))
                       (let ((s (match-beginning 0))
                             (e (match-end 0)))
@@ -731,20 +521,6 @@ Useful in dired buffers when there is inserted subdirs."
 (add-hook 'helm-after-persistent-action-hook 'helm-persistent-autoresize-hook)
 (add-hook 'helm-cleanup-hook 'helm-match-line-cleanup)
 (add-hook 'helm-after-persistent-action-hook 'helm-match-line-update)
-
-(defun helm-w32-prepare-filename (file)
-  "Convert filename FILE to something usable by external w32 executables."
-  (replace-regexp-in-string ; For UNC paths
-   "/" "\\"
-   (replace-regexp-in-string ; Strip cygdrive paths
-    "/cygdrive/\\(.\\)" "\\1:"
-    file nil nil) nil t))
-
-;;;###autoload
-(defun helm-w32-shell-execute-open-file (file)
-  (interactive "fOpen file:")
-  (with-no-warnings
-    (w32-shell-execute "open" (helm-w32-prepare-filename file))))
 
 (defun helm-open-file-with-default-tool (file)
   "Open FILE with the default tool on this platform."
@@ -793,42 +569,6 @@ directory, open this directory."
   (let ((helm--reading-passwd-or-string t))
     (mapc 'find-file (helm-marked-candidates))))
 
-(defun helm-quit-and-execute-action (action)
-  "Quit current helm session and execute ACTION."
-  (setq helm-saved-action action)
-  (helm-exit-minibuffer))
-
-;; Yank text at point.
-;;
-;;
-;; Internal
-(defvar helm-yank-point nil)
-
-;;;###autoload
-(defun helm-yank-text-at-point ()
-  "Yank text at point in `helm-current-buffer' into minibuffer.
-If `helm-yank-symbol-first' is non--nil the first yank
-grabs the entire symbol."
-  (interactive)
-  (with-helm-current-buffer
-    (let ((fwd-fn (if helm-yank-symbol-first
-                      'forward-symbol 'forward-word)))
-      ;; Start to initial point if C-w have never been hit.
-      (unless helm-yank-point (setq helm-yank-point (point)))
-      (save-excursion
-        (goto-char helm-yank-point)
-        (funcall fwd-fn 1)
-        (helm-set-pattern
-         (concat
-          helm-pattern (replace-regexp-in-string
-                        "\\`\n" ""
-                        (buffer-substring-no-properties
-                         helm-yank-point (point)))))
-        (setq helm-yank-point (point))))))
-
-(defun helm-reset-yank-point ()
-  (setq helm-yank-point nil))
-
 (defun helm-read-repeat-string (prompt &optional count)
   "Prompt as many time PROMPT is not empty.
 If COUNT is non--nil add a number after each prompt."
@@ -839,9 +579,6 @@ If COUNT is non--nil add a number after each prompt."
              (setq prompt (concat prompt (int-to-string n) ": ")))
         collect (setq elm (helm-read-string prompt)) into lis
         finally return (remove "" lis)))
-
-(add-hook 'helm-cleanup-hook 'helm-reset-yank-point)
-(add-hook 'helm-after-initialize-hook 'helm-reset-yank-point)
 
 (defun helm-html-bookmarks-to-alist (file url-regexp bmk-regexp)
   "Parse html bookmark FILE and return an alist with (title . url) as elements."

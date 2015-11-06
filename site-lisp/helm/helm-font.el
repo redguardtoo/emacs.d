@@ -19,6 +19,7 @@
 
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-help)
 
 (defvar helm-ucs-map
   (let ((map (make-sparse-keymap)))
@@ -27,7 +28,6 @@
     (define-key map (kbd "<C-left>")      'helm-ucs-persistent-backward)
     (define-key map (kbd "<C-right>")     'helm-ucs-persistent-forward)
     (define-key map (kbd "<C-return>")    'helm-ucs-persistent-insert)
-    (define-key map (kbd "C-c ?")         'helm-ucs-help)
     map)
   "Keymap for `helm-ucs'.")
 
@@ -35,35 +35,36 @@
 ;;; Xfont selection
 ;;
 ;;
-(defun helm-persistent-xfont-action (elm)
-  "Show current font temporarily"
-  (let ((current-font (cdr (assoc 'font (frame-parameters))))
-        (default-font elm))
-    (unwind-protect
-         (progn (set-frame-font default-font 'keep-size) (sit-for 2))
-      (set-frame-font current-font))))
-
 (defvar helm-xfonts-cache nil)
+(defvar helm-previous-font nil)
 (defvar helm-source-xfonts
-  '((name . "X Fonts")
-    (init . (lambda ()
-              (unless helm-xfonts-cache
-                (setq helm-xfonts-cache
-                      (x-list-fonts "*")))))
-    (candidates . helm-xfonts-cache)
-    (action . (("Copy to kill ring" . (lambda (elm)
-                                        (kill-new elm)))
-               ("Set Font" . (lambda (elm)
-                               (kill-new elm)
-                               (set-frame-font elm 'keep-size)
-                               (message "New font have been copied to kill ring")))))
-    (persistent-action . helm-persistent-xfont-action)
-    (persistent-help . "Switch to this font temporarily")))
+  (helm-build-sync-source "X Fonts"
+    :init (lambda ()
+            (unless helm-xfonts-cache
+              (setq helm-xfonts-cache
+                    (x-list-fonts "*")))
+            ;; Save current font so it can be restored in cleanup
+            (setq helm-previous-font (cdr (assoc 'font (frame-parameters)))))
+    :candidates 'helm-xfonts-cache
+    :action '(("Copy font to kill ring" . (lambda (elm)
+                                            (kill-new elm)))
+              ("Set font" . (lambda (elm)
+                              (kill-new elm)
+                              (set-frame-font elm 'keep-size)
+                              (message "Font copied to kill ring"))))
+    :cleanup (lambda ()
+               ;; Restore previous font
+               (set-frame-font helm-previous-font 'keep-size))
+    :persistent-action (lambda (new-font)
+                         (set-frame-font new-font 'keep-size)
+                         (kill-new new-font))
+    :persistent-help "Preview font and copy to kill-ring"))
 
 ;;; 𝕌𝕔𝕤 𝕊𝕪𝕞𝕓𝕠𝕝 𝕔𝕠𝕞𝕡𝕝𝕖𝕥𝕚𝕠𝕟
 ;;
 ;;
-(defvar helm-ucs-max-len 0)
+(defvar helm-ucs--max-len 0)
+(defvar helm-ucs--names nil)
 (defun helm-calculate-ucs-max-len ()
   "Calculate the length of longest `ucs-names' candidate."
   (cl-loop with count = 0
@@ -76,28 +77,17 @@
 (defun helm-ucs-init ()
   "Initialize an helm buffer with ucs symbols.
 Only math* symbols are collected."
-  (unless (> helm-ucs-max-len 0)
-    (setq helm-ucs-max-len
+  (unless (> helm-ucs--max-len 0)
+    (setq helm-ucs--max-len
           (helm-calculate-ucs-max-len)))
-  (with-current-buffer (helm-candidate-buffer
-                        (get-buffer-create "*helm ucs*"))
-    ;; `ucs-names' fn will not run again, data is cached in
-    ;; var `ucs-names'.
-    (cl-loop for (n . v) in (ucs-names)
-          for len = (length n)
-          for diff = (+ (- helm-ucs-max-len len) 2)
-          unless (string= "" n)
-          do (progn (insert (concat
-                             n ":"
-                             (make-string
-                              diff ? )))
-                    (if (fboundp 'ucs-insert)
-                        (ucs-insert v)
-                      ;; call `insert-char' with nil nil
-                      ;; to shutup byte compiler in 24.1.
-                      (insert-char v nil nil))
-                    (insert (format " #x%x" v))
-                    (insert "\n")))))
+  (or helm-ucs--names
+      (setq helm-ucs--names
+            (cl-loop for (n . v) in (ucs-names)
+                     for len = (length n)
+                     for diff = (+ (- helm-ucs--max-len len) 2)
+                     unless (string= "" n)
+                     collect (format "%s:%s%c #x%x"
+                                     n (make-string diff ? ) v v)))))
 
 (defun helm-ucs-forward-char (_candidate)
   (with-helm-current-buffer
@@ -113,7 +103,7 @@ Only math* symbols are collected."
 
 (defun helm-ucs-insert (candidate n)
   (with-helm-current-buffer
-    (string-match "^\\([^:]+\\): +\\(.\\) #x\\([a-f0-9]+\\)$" candidate)
+    (string-match "^\\([^:]+\\): +\\(.\\) \\(#x[a-f0-9]+\\)$" candidate)
     (insert (match-string n candidate))))
 
 (defun helm-ucs-insert-name (candidate)
@@ -150,24 +140,26 @@ Only math* symbols are collected."
     (helm-execute-persistent-action 'action-delete)))
 
 (defvar helm-source-ucs
-  '((name . "Ucs names")
-    (init . helm-ucs-init)
-    (candidate-number-limit . 9999)
-    (candidates-in-buffer)
-    (mode-line . helm-ucs-mode-line-string)
-    (action . (("Insert character" . helm-ucs-insert-char)
-               ("Insert character name" . helm-ucs-insert-name)
-               ("Insert character code in hex" . helm-ucs-insert-code)
-               ("Forward char" . helm-ucs-forward-char)
-               ("Backward char" . helm-ucs-backward-char)
-               ("Delete char backward" . helm-ucs-delete-backward))))
+  (helm-build-in-buffer-source "Ucs names"
+    :data #'helm-ucs-init
+    :help-message 'helm-ucs-help-message
+    :match-part (lambda (candidate) (car (split-string candidate ":")))
+    :filtered-candidate-transformer
+    (lambda (candidates _source) (sort candidates #'helm-generic-sort-fn))
+    :action '(("Insert character" . helm-ucs-insert-char)
+              ("Insert character name" . helm-ucs-insert-name)
+              ("Insert character code in hex" . helm-ucs-insert-code)
+              ("Forward char" . helm-ucs-forward-char)
+              ("Backward char" . helm-ucs-backward-char)
+              ("Delete char backward" . helm-ucs-delete-backward)))
   "Source for collecting `ucs-names' math symbols.")
 
 ;;;###autoload
 (defun helm-select-xfont ()
   "Preconfigured `helm' to select Xfont."
   (interactive)
-  (helm-other-buffer 'helm-source-xfonts "*helm select* xfont"))
+  (helm :sources 'helm-source-xfonts
+        :buffer "*helm select xfont*"))
 
 ;;;###autoload
 (defun helm-ucs ()

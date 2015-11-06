@@ -18,6 +18,11 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-help)
+(require 'helm-types)
+
+(declare-function display-time-world-display "time.el")
+(defvar display-time-world-list)
 
 
 (defgroup helm-misc nil
@@ -28,6 +33,13 @@
   "The time zone of your home"
   :group 'helm-misc
   :type 'string)
+
+(defcustom helm-timezone-actions
+  '(("Set timezone env (TZ)" . (lambda (candidate)
+                                 (setenv "TZ" candidate))))
+  "Actions for helm-timezone."
+  :group 'helm-misc
+  :type '(alist :key-type string :value-type function))
 
 (defcustom helm-mini-default-sources '(helm-source-buffers-list
                                        helm-source-recentf
@@ -45,6 +57,7 @@
     '((t (:foreground "red")))
   "Face used to colorize home time in `helm-world-time'."
   :group 'helm-misc)
+
 
 
 ;;; Latex completion
@@ -92,22 +105,24 @@
 ;;
 (defun helm-time-zone-transformer (candidates _source)
   (cl-loop for i in candidates
-        collect
-        (cond ((string-match (format-time-string "%H:%M" (current-time)) i)
-               (propertize i 'face 'helm-time-zone-current))
-              ((string-match helm-time-zone-home-location i)
-               (propertize i 'face 'helm-time-zone-home))
-              (t i))))
+           for (z . p) in display-time-world-list
+           collect
+           (cons 
+            (cond ((string-match (format-time-string "%H:%M" (current-time)) i)
+                   (propertize i 'face 'helm-time-zone-current))
+                  ((string-match helm-time-zone-home-location i)
+                   (propertize i 'face 'helm-time-zone-home))
+                  (t i))
+            z)))
 
 (defvar helm-source-time-world
-  '((name . "Time World List")
-    (init . (lambda ()
-              (require 'time)
-              (let ((helm-buffer (helm-candidate-buffer 'global)))
-                (with-current-buffer helm-buffer
-                  (display-time-world-display display-time-world-list)))))
-    (candidates-in-buffer)
-    (filtered-candidate-transformer . helm-time-zone-transformer)))
+  (helm-build-in-buffer-source "Time World List"
+    :data (lambda ()
+            (with-temp-buffer
+              (display-time-world-display display-time-world-list)
+              (buffer-string)))
+    :action 'helm-timezone-actions
+    :filtered-candidate-transformer 'helm-time-zone-transformer))
 
 ;;; LaCarte
 ;;
@@ -142,7 +157,7 @@ current local map, current global map, and all current minor maps."
 
 ;;;###autoload
 (defun helm-browse-menubar ()
-  "Helm interface to the menubar using lacarte.el."
+  "Preconfigured helm to the menubar using lacarte.el."
   (interactive)
   (require 'lacarte)
   (helm :sources (mapcar 
@@ -264,7 +279,8 @@ It is added to `extended-command-history'.
 
 ;;;###autoload
 (defun helm-world-time ()
-  "Preconfigured `helm' to show world time."
+  "Preconfigured `helm' to show world time.
+Default action change TZ environment variable locally to emacs."
   (interactive)
   (helm-other-buffer 'helm-source-time-world "*helm world time*"))
 
@@ -283,22 +299,10 @@ It is added to `extended-command-history'.
 
 ;;;###autoload
 (defun helm-stumpwm-commands()
+  "Preconfigured helm for stumpwm commands."
   (interactive)
   (helm-other-buffer 'helm-source-stumpwm-commands
                      "*helm stumpwm commands*"))
-
-;;;###autoload
-(defun helm-mini ()
-  "Preconfigured `helm' lightweight version \(buffer -> recentf\)."
-  (interactive)
-  (require 'helm-files)
-  (unless helm-source-buffers-list
-    (setq helm-source-buffers-list
-          (helm-make-source "Buffers" 'helm-source-buffers)))
-  (let ((helm-ff-transformer-show-only-basename nil))
-    (helm :sources helm-mini-default-sources
-          :buffer "*helm mini*"
-          :truncate-lines t)))
 
 ;;;###autoload
 (defun helm-minibuffer-history ()
@@ -310,7 +314,7 @@ It is added to `extended-command-history'.
 
 ;;;###autoload
 (defun helm-comint-input-ring ()
-  "Predefined `helm' that provide completion of `comint' history."
+  "Preconfigured `helm' that provide completion of `comint' history."
   (interactive)
   (when (derived-mode-p 'comint-mode)
     (helm :sources 'helm-source-comint-input-ring

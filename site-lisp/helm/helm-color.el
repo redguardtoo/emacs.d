@@ -18,6 +18,7 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-help)
 
 ;;; Customize Face
 ;;
@@ -37,16 +38,15 @@
     (kill-buffer "*Faces*")))
 
 (defvar helm-source-customize-face
-  '((name . "Customize Face")
-    (init . helm-custom-faces-init)
-    (candidates-in-buffer)
-    (get-line . buffer-substring)
-    (action . (("Customize"
-                . (lambda (line)
-                    (customize-face (intern (car (split-string line))))))
-               ("Copy name"
-                . (lambda (line)
-                    (kill-new (car (split-string line " " t))))))))
+  (helm-build-in-buffer-source "Customize Face"
+    :init 'helm-custom-faces-init
+    :get-line 'buffer-substring
+    :action '(("Customize"
+               . (lambda (line)
+                   (customize-face (intern (car (split-string line))))))
+              ("Copy name"
+               . (lambda (line)
+                   (kill-new (car (split-string line " " t)))))))
   "See (info \"(emacs)Faces\")")
 
 ;;; Colors browser
@@ -80,22 +80,22 @@
 (defun helm-color-run-insert-name ()
   "Insert name of color from `helm-source-colors'"
   (interactive)
-  (with-helm-alive-p (helm-quit-and-execute-action 'helm-color-insert-name)))
+  (with-helm-alive-p (helm-exit-and-execute-action 'helm-color-insert-name)))
 
 (defun helm-color-run-kill-name ()
   "Kill name of color from `helm-source-colors'"
   (interactive)
-  (with-helm-alive-p (helm-quit-and-execute-action 'helm-color-kill-name)))
+  (with-helm-alive-p (helm-exit-and-execute-action 'helm-color-kill-name)))
 
 (defun helm-color-run-insert-rgb ()
   "Insert RGB of color from `helm-source-colors'"
   (interactive)
-  (with-helm-alive-p (helm-quit-and-execute-action 'helm-color-insert-rgb)))
+  (with-helm-alive-p (helm-exit-and-execute-action 'helm-color-insert-rgb)))
 
 (defun helm-color-run-kill-rgb ()
   "Kill RGB of color from `helm-source-colors'"
   (interactive)
-  (with-helm-alive-p (helm-quit-and-execute-action 'helm-color-kill-rgb)))
+  (with-helm-alive-p (helm-exit-and-execute-action 'helm-color-kill-rgb)))
 
 (defvar helm-color-map
   (let ((map (make-sparse-keymap)))
@@ -104,23 +104,21 @@
     (define-key map (kbd "C-c N") 'helm-color-run-kill-name)
     (define-key map (kbd "C-c r") 'helm-color-run-insert-rgb)
     (define-key map (kbd "C-c R") 'helm-color-run-kill-rgb)
-    (define-key map (kbd "C-c ?") 'helm-color-help)
     map))
 
 (defvar helm-source-colors
-  `((name . "Colors")
-    (init . helm-colors-init)
-    (candidates-in-buffer)
-    (get-line . buffer-substring)
-    (keymap . ,helm-color-map)
-    (persistent-help . "Kill entry in RGB format.")
-    (persistent-action . helm-color-kill-rgb)
-    (mode-line . helm-color-mode-line-string)
-    (action
-     ("Copy Name (C-c N)" . helm-color-kill-name)
-     ("Copy RGB (C-c R)" . helm-color-kill-rgb)
-     ("Insert Name (C-c n)" . helm-color-insert-name)
-     ("Insert RGB (C-c r)" . helm-color-insert-rgb))))
+  (helm-build-in-buffer-source "Colors"
+    :init 'helm-colors-init
+    :get-line 'buffer-substring
+    :keymap helm-color-map
+    :persistent-help "Kill entry in RGB format."
+    :persistent-action 'helm-color-kill-rgb
+    :help-message 'helm-colors-help-message
+    :action
+    '(("Copy Name (C-c N)" . helm-color-kill-name)
+      ("Copy RGB (C-c R)" . helm-color-kill-rgb)
+      ("Insert Name (C-c n)" . helm-color-insert-name)
+      ("Insert RGB (C-c r)" . helm-color-insert-rgb))))
 
 (defun helm-colors-get-name (candidate)
   "Get color name."
@@ -148,9 +146,8 @@
 (defun helm-colors ()
   "Preconfigured `helm' for color."
   (interactive)
-  (helm-other-buffer
-   '(helm-source-colors helm-source-customize-face)
-   "*helm colors*"))
+  (helm :sources '(helm-source-colors helm-source-customize-face)
+        :buffer "*helm colors*"))
 
 (provide 'helm-color)
 

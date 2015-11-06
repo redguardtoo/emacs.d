@@ -21,6 +21,7 @@
 (require 'helm)
 (require 'helm-utils)
 (require 'helm-external)
+(require 'helm-help)
 
 (declare-function term-line-mode "term")
 (declare-function term-char-mode "term")
@@ -40,6 +41,16 @@ If nil default `helm-apt-cache-show-1' will be used."
   :type 'function
   :group 'helm-apt)
 
+(defcustom helm-apt-actions
+  '(("Show package description" . helm-apt-cache-show)
+    ("Install package(s)" . helm-apt-install)
+    ("Reinstall package(s)" . helm-apt-reinstall)
+    ("Remove package(s)" . helm-apt-uninstall)
+    ("Purge package(s)" . helm-apt-purge))
+  "Actions for helm apt."
+  :group 'helm-apt
+  :type '(alist :key-type string :value-type function))
+
 (defface helm-apt-installed
     '((t (:foreground "green")))
   "Face used for apt installed candidates."
@@ -54,7 +65,6 @@ If nil default `helm-apt-cache-show-1' will be used."
 (defvar helm-apt-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map helm-map)
-    (define-key map (kbd "C-c ?") 'helm-apt-help)
     (define-key map (kbd "M-I")   'helm-apt-show-only-installed)
     (define-key map (kbd "M-U")   'helm-apt-show-only-not-installed)
     (define-key map (kbd "M-D")   'helm-apt-show-only-deinstalled)
@@ -63,22 +73,16 @@ If nil default `helm-apt-cache-show-1' will be used."
 
 
 (defvar helm-source-apt
-  `((name . "APT")
-    (init . helm-apt-init)
-    (candidates-in-buffer)
-    (candidate-transformer . helm-apt-candidate-transformer)
-    (display-to-real . helm-apt-display-to-real)
-    (update . helm-apt-refresh)
-    (keymap . ,helm-apt-map)
-    (mode-line . helm-apt-mode-line)
-    (action
-     ("Show package description" . helm-apt-cache-show)
-     ("Install package" . helm-apt-install)
-     ("Reinstall package" . helm-apt-reinstall)
-     ("Remove package" . helm-apt-uninstall)
-     ("Purge package" . helm-apt-purge))
-    (persistent-action . helm-apt-persistent-action)
-    (persistent-help . "Show package description")))
+  (helm-build-in-buffer-source "APT"
+    :init #'helm-apt-init
+    :candidate-transformer #'helm-apt-candidate-transformer
+    :display-to-real #'helm-apt-display-to-real
+    :update #'helm-apt-refresh
+    :keymap helm-apt-map
+    :help-message 'helm-apt-help-message
+    :action 'helm-apt-actions
+    :persistent-action #'helm-apt-persistent-action
+    :persistent-help "Show package description"))
 
 ;;; Internals vars
 (defvar helm-apt-search-command "apt-cache search '%s'")
@@ -244,7 +248,7 @@ Support install, remove and purge actions."
                      (t          (error "Unknown action"))))
         (beg       (point))
         end
-        (cand-list (mapconcat #'(lambda (x) (format "'%s'" x))
+        (cand-list (mapconcat (lambda (x) (format "'%s'" x))
                               (helm-marked-candidates) " ")))
     (goto-char (point-max))
     (insert (concat command cand-list))

@@ -21,9 +21,11 @@
 ;;; Require
 ;;
 ;;
-(require 'easymenu)
 (require 'helm-aliases)
-(require 'async-bytecomp nil t)
+(declare-function async-bytecomp-package-mode "ext:async-bytecomp.el")
+(when (require 'async-bytecomp nil t)
+  (and (fboundp 'async-bytecomp-package-mode)
+       (async-bytecomp-package-mode 1)))
 
 
 (defgroup helm-config nil
@@ -81,6 +83,7 @@
     (define-key map (kbd "t")         'helm-top)
     (define-key map (kbd "/")         'helm-find)
     (define-key map (kbd "i")         'helm-semantic-or-imenu)
+    (define-key map (kbd "I")         'helm-imenu-in-all-buffers)
     (define-key map (kbd "<tab>")     'helm-lisp-completion-at-point)
     (define-key map (kbd "p")         'helm-list-emacs-process)
     (define-key map (kbd "C-x r b")   'helm-filtered-bookmarks)
@@ -93,6 +96,7 @@
     (define-key map (kbd "M-x")       'helm-M-x)
     (define-key map (kbd "M-s o")     'helm-occur)
     (define-key map (kbd "M-g s")     'helm-do-grep)
+    (define-key map (kbd "M-g a")     'helm-do-grep-ag)
     (define-key map (kbd "c")         'helm-colors)
     (define-key map (kbd "F")         'helm-select-xfont)
     (define-key map (kbd "8")         'helm-ucs)
@@ -101,10 +105,13 @@
     (define-key map (kbd "h i")       'helm-info-at-point)
     (define-key map (kbd "h r")       'helm-info-emacs)
     (define-key map (kbd "h g")       'helm-info-gnus)
+    (define-key map (kbd "h h")       'helm-documentation)
     (define-key map (kbd "C-x C-b")   'helm-buffers-list)
     (define-key map (kbd "C-x r i")   'helm-register)
     (define-key map (kbd "C-c C-x")   'helm-run-external-command)
     (define-key map (kbd "b")         'helm-resume)
+    (define-key map (kbd "C-c g")       'helm-gid)
+    (define-key map (kbd "@")         'helm-list-elisp-packages)
     map))
 
 ;; Don't override the keymap we just defined with an empty
@@ -116,60 +123,8 @@
 
 
 ;;; Menu
-;;
-;;
-(easy-menu-add-item
- nil '("Tools")
- '("Helm"
-   ["Find any Files/Buffers" helm-multi-files t]
-   ["Helm Everywhere (Toggle)" helm-mode t]
-   ["Helm resume" helm-resume t]
-   "----"
-   ("Files"
-    ["Find files" helm-find-files t]
-    ["Recent Files" helm-recentf t]
-    ["Locate" helm-locate t]
-    ["Search Files with find" helm-find t]
-    ["Bookmarks" helm-filtered-bookmarks t])
-   ("Buffers"
-    ["Find buffers" helm-buffers-list t])
-   ("Commands"
-    ["Emacs Commands" helm-M-x t]
-    ["Externals Commands" helm-run-external-command t])
-   ("Help"
-    ["Helm Apropos" helm-apropos t])
-   ("Info"
-    ["Info at point" helm-info-at-point t]
-    ["Emacs Manual index" helm-info-emacs t]
-    ["Gnus Manual index" helm-info-gnus t])
-   ("Org"
-    ["Org keywords" helm-org-keywords t]
-    ["Org headlines" helm-org-headlines t])
-   ("Tools"
-    ["Occur" helm-occur t]
-    ["Grep" helm-do-grep t]
-    ["Etags" helm-etags-select t]
-    ["Lisp complete at point" helm-lisp-completion-at-point t]
-    ["Browse Kill ring" helm-show-kill-ring t]
-    ["Browse register" helm-register t]
-    ["Mark Ring" helm-all-mark-rings t]
-    ["Regexp handler" helm-regexp t]
-    ["Colors & Faces" helm-colors t]
-    ["Show xfonts" helm-select-xfont t]
-    ["Ucs Symbols" helm-ucs t]
-    ["Imenu" helm-imenu t]
-    ["Semantic or Imenu" helm-semantic-or-imenu t]
-    ["Google Suggest" helm-google-suggest t]
-    ["Eval expression" helm-eval-expression-with-eldoc t]
-    ["Calcul expression" helm-calcul-expression t]
-    ["Man pages" helm-man-woman t]
-    ["Top externals process" helm-top t]
-    ["Emacs internals process" helm-list-emacs-process t])
-   "----"
-   ["Preferred Options" helm-configuration t])
- "Spell Checking")
 
-(easy-menu-add-item nil '("Tools") '("----") "Spell Checking")
+(require 'helm-easymenu)
 
 
 ;;;###autoload

@@ -15,16 +15,20 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+;;; Commentary:
+;;
 ;; Enable like this in .emacs:
-;;
 ;; (add-hook 'eshell-mode-hook
-;;           #'(lambda ()
-;;               (define-key eshell-mode-map [remap pcomplete] 'helm-esh-pcomplete)))
-;;
+;;           (lambda ()
+;;               (eshell-cmpl-initialize)
+;;               (define-key eshell-mode-map [remap pcomplete] 'helm-esh-pcomplete)
+;;               (define-key eshell-mode-map (kbd "M-p") 'helm-eshell-history)))
+
 
 ;;; Code:
 (require 'cl-lib)
 (require 'helm)
+(require 'helm-help)
 (require 'helm-elisp)
 (require 'helm-regexp)
 
@@ -34,6 +38,17 @@
 (declare-function eshell-parse-arguments "esh-arg" (beg end))
 (declare-function eshell-backward-argument "esh-mode" (&optional arg))
 
+
+(defgroup helm-eshell nil
+  "Helm eshell completion and history."
+  :group 'helm)
+
+(defcustom helm-eshell-hist-ignoredups nil
+  "Same as `eshell-hist-ignoredups' which see but for helm."
+  :group 'helm-eshell
+  :type 'boolean)
+
+
 (defvar helm-eshell-history-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map helm-map)
@@ -48,6 +63,7 @@
     map)
   "Keymap for `helm-esh-pcomplete'.")
 
+
 (defclass helm-esh-source (helm-source-sync)
   ((init :initform (lambda ()
                      (setq pcomplete-current-completions nil
@@ -145,18 +161,19 @@ The function that call this should set `helm-ec-target' to thing at point."
                           ;; Entry should not be here now but double check.
                           (remove entry ls))
                 ls))))))
-
+
 ;;; Eshell history.
 ;;
 ;;
 (defclass helm-eshell-history-source (helm-source-in-buffer)
-  ((init :initform (lambda ()
-                     (let (eshell-hist-ignoredups)
-                       (eshell-write-history eshell-history-file-name t)
-                       (with-current-buffer (helm-candidate-buffer 'global)
-                         (insert-file-contents eshell-history-file-name)))
-                     ;; Same comment as in `helm-source-esh'
-                     (remove-hook 'minibuffer-setup-hook 'eshell-mode)))
+  ((init :initform
+         (lambda ()
+           (let ((eshell-hist-ignoredups helm-eshell-hist-ignoredups))
+             (eshell-write-history eshell-history-file-name t)
+             (with-current-buffer (helm-candidate-buffer 'global)
+               (insert-file-contents eshell-history-file-name)))
+           ;; Same comment as in `helm-source-esh'
+           (remove-hook 'minibuffer-setup-hook 'eshell-mode)))
    (nomark :initform t)
    (keymap :initform helm-eshell-history-map)
    (filtered-candidate-transformer :initform (lambda (candidates sources)
@@ -167,6 +184,7 @@ The function that call this should set `helm-ec-target' to thing at point."
                        (insert candidate))))
   "Helm class to define source for Eshell history.")
 
+
 ;;;###autoload
 (defun helm-esh-pcomplete ()
   "Preconfigured helm to provide helm completion in eshell."
