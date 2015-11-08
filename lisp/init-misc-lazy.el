@@ -3,10 +3,6 @@
 
 (recentf-mode 1)
 
-;; use my own bmk if it exists
-(if (file-exists-p (file-truename "~/.emacs.bmk"))
-    (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
-
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
