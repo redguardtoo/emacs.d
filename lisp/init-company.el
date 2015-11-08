@@ -45,7 +45,7 @@
      ;; https://github.com/company-mode/company-mode/issues/29
      (setq company-global-modes
            '(not
-             eshell-mode comint-mode org-mode erc-mode gud-mode))
+             eshell-mode comint-mode org-mode erc-mode gud-mode rcirc-mode))
      ))
 
 (provide 'init-company)
