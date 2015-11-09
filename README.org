@@ -149,6 +149,11 @@ Please ignore any related error message. For example, if aspell and hunspell are
 **** jedi & flake8
 - Required by [[https://github.com/jorgenschaefer/elpy][elpy]] which is python IDE
 - At least `pip install jedi flake8`. Check elpy website for more tips.
+**** sdcv (console version of StarDict)
+- Required by sdcv.el
+- install through OS package manager
+- `curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic` to install dictionary
+
 * Tutorial (OPTIONAL)
 ** Basic tutorial
 *** Step 1, learn OS basics
