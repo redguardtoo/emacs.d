@@ -26,6 +26,7 @@
      ;; for languages use camel case naming convention
      ;; company should be case sensitive
      (setq company-dabbrev-downcase nil)
+     (setq company-dabbrev-ignore-case nil)
 
      (setq company-show-numbers t)
      (setq company-begin-commands '(self-insert-command))
