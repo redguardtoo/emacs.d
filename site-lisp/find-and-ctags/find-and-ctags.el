@@ -100,14 +100,9 @@ Command line options is value.")
   (setq opts (replace-regexp-in-string "\\(\\<exec\\>\\|\\<rm\\>\\|;\\||\\|&\\|`\\)" "" opts))
   opts)
 
-(defun find-and-ctags--save-cli-options (file opts-list)
+(defun find-and-ctags--save-cli-options (file opts-matrix)
   "FILE as key, OPTS-LIST as value"
-  (let (opts-matrix)
-    (setq opts-matrix (gethash file find-and-ctags-cli-opts-hash))
-    (if (not opts-matrix)
-        (puthash file (list opts-list) find-and-ctags-cli-opts-hash)
-      (add-to-list 'opts-matrix opts-list)
-      (puthash file opts-matrix find-and-ctags-cli-opts-hash))))
+  (puthash file opts-matrix find-and-ctags-cli-opts-hash))
 
 ;;;###autoload
 (defun find-and-ctags-get-hostname ()
@@ -154,7 +149,7 @@ If FORCE is t, the commmand is executed without consulting the timer."
         (setq ctags-opts (cadr row))
         ;; (message "find-opts=%s ctags-opts=%s" find-opts ctags-opts)
         ;; always update cli options
-        (find-and-ctags--save-cli-options file (list find-opts ctags-opts t))
+        (find-and-ctags--save-cli-options file opts-matrix)
         (when doit
           (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                             find-exe
@@ -184,13 +179,16 @@ If FORCE is t, the commmand is executed without consulting the timer."
   "Update all TAGS files listed in `tags-table-list'.
 If IS-USED-AS-API is true, friendly message is suppressed"
   (interactive)
-  (let (opts-list)
+  (let (opts-matrix)
     (dolist (tag tags-table-list)
-      (setq opts-list (gethash tag find-and-ctags-cli-opts-hash))
-      (if opts-list
-          (dolist (opts opts-list)
-            (apply 'find-and-ctags-run-ctags-if-needed (file-name-directory tag) opts))
-        (find-and-ctags-run-ctags-if-needed (file-name-directory tag) "" "" t))
+      (setq opts-matrix (gethash tag find-and-ctags-cli-opts-hash))
+      (if opts-matrix
+          (apply 'find-and-ctags-run-ctags-if-needed
+                 ;; 1st parameter
+                 (file-name-directory tag)
+                 ;; 2nd and 3rd parameter
+                 (list opts-matrix t))
+        (find-and-ctags-run-ctags-if-needed (file-name-directory tag) '(("" "")) t))
       (unless is-used-as-api
         (message "All tag files in `tags-table-list' are updated!")))))
 
