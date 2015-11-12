@@ -208,7 +208,7 @@ Only works with GNU Emacs."
         (save-excursion
           (set-buffer etags-select-buffer-name)
           (when (not (string= filename current-filename))
-            (insert "\nIn: " filename "\n")
+            (insert "In: " filename "\n")
             (setq current-filename filename))
           (insert (int-to-string tag-count) " [" full-tagname "] " tag-line "\n"))))
     (modify-syntax-entry ?_ "_")
