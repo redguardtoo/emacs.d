@@ -4,22 +4,27 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/org2nikola
 ;; Keywords: blog static html export org
-;; Version: 0.1.1
+;; Version: 0.1.4
 
 ;; This file is not part of GNU Emacs.
 
 ;; This file is free software (GPLv3 License)
 
-;;; Setup:
+;;; Commentary:
+
+;; Setup:
 ;;
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/nikola")
 ;; (require 'org2nikola)
 ;; (setq org2nikola-output-root-directory "~/.config/nikola")
 ;;
-
-;;; Usage:
 ;;
-;;  `M-x org2nikola-export-subtree` to create HTML files.
+;; Usage:
+;;   - `M-x org2nikola-export-subtree` to create meta data
+;;   - `nikola build' to create final html files
+;;
+;; You may `M-x org2nikola-rerender-published-posts' at least once
+;; if you haven't published all post on one computer.
 ;;
 ;;  Check https://github.com/redguardtoo/org2nikola for tips on
 ;;  how to use git or FTP to upload HTML files.
@@ -31,13 +36,17 @@
 
 (defvar org2nikola-org-blog-directory nil)
 
+(defvar org2nikola-use-verbose-metadata nil
+  "Produce more verbose metadata required by new version of nikola 7.7+.
+`nikola plugin -i upgrade_metadata;nikola upgrade_metadata' to upgrade legacy metadata.")
+
 (defvar org2nikola-code-prettify-type "highlight.js"
   "Renderred code for certain type. could be nil,
 \"google-prettify\", \"highlight.js\" ")
 
 (defvar org2nikola-prettify-unsupported-language
   '(elisp "lisp"
-          emacs-lisp "lisp"))
+    emacs-lisp "lisp"))
 
 (defcustom org2nikola-after-hook nil
   "Hook after HTML files are created. title and slug are pass as parameters"
@@ -705,9 +714,11 @@ shamelessly copied from org2blog/wp-replace-pre()"
     ;; meta file
     (setq meta-file (concat (file-name-as-directory (org2nikola-guess-output-html-directory)) post-slug ".meta"))
     (with-temp-file meta-file
-      (insert (concat title "\n"
-                      post-slug "\n"
-                      post-date "\n"
+      (insert (format (if org2nikola-use-verbose-metadata ".. title: %s\n.. slug: %s\n.. date: %s\n.. tags: %s"
+                          "%s\n%s\n%s\n%s")
+                      title
+                      post-slug
+                      post-date
                       (mapconcat 'identity tags ","))))
 
     ;; html file

@@ -220,15 +220,6 @@ grab matched string, cssize them, and insert into kill ring"
        (add-to-list 'grep-find-ignored-directories v))
      ))
 
-;; {{ support MY packages which are not included in melpa
-(autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
-(autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
-(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
-(autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
-(autoload 'org2nikola-export-subtree "org2nikola" "" t)
-(autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)
-;; }}
-
 ;; {{ unique lines
 (defun uniquify-all-lines-region (start end)
   "Find duplicate lines in region START to END keeping first occurrence."
