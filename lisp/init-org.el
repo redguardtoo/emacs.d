@@ -1,23 +1,40 @@
 ;; some cool org tricks
 ;; @see http://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 
-;; NO spell check for embedded snippets
-;; Please note flyspell only use ispell-word
-(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
-  (let ((rlt ad-return-value)
+;; {{ NO spell check for embedded snippets
+(defun org-mode-is-code-snippet ()
+  (let (rlt
         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\)")
         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\)")
-        old-flag
+        (old-flag case-fold-search)
         b e)
-    (when ad-return-value
       (save-excursion
-        (setq old-flag case-fold-search)
         (setq case-fold-search t)
         (setq b (re-search-backward begin-regexp nil t))
         (if b (setq e (re-search-forward end-regexp nil t)))
         (setq case-fold-search old-flag))
-      (if (and b e (< (point) e)) (setq rlt nil)))
-    (setq ad-return-value rlt)))
+      (if (and b e (< (point) e)) (setq rlt t))
+    rlt))
+
+;; no spell check for property
+(defun org-mode-current-line-is-property ()
+  (let (cur-line)
+    (setq cur-line (buffer-substring-no-properties
+                    (line-beginning-position) (line-end-position)))
+    ;; (message "cur-line=%s" cur-line)
+    (string-match "^[ \t]+:[A-Z]+:[ \t]+" cur-line)))
+
+;; Please note flyspell only use ispell-word
+(defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
+  (let ((run-spellcheck ad-return-value))
+    (if ad-return-value
+      (cond
+       ((org-mode-is-code-snippet)
+        (setq run-spellcheck nil))
+       ((org-mode-current-line-is-property)
+        (setq run-spellcheck nil))))
+    (setq ad-return-value run-spellcheck)))
+;; }}
 
 ;; Org v8 change log:
 ;; @see http://orgmode.org/worg/org-8.0.html
@@ -86,7 +103,6 @@
 ;; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
 (setq org-outline-path-complete-in-steps t)
 
-
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
               (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)"))))
@@ -120,22 +136,24 @@
      (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu)))
 
 (eval-after-load 'org
-   '(progn
-      (require 'org-clock)
-      ; @see http://irreal.org/blog/?p=671
-      (setq org-src-fontify-natively t)
-      ;; (require 'org-fstree)
-      (defun soft-wrap-lines ()
-        "Make lines wrap at window edge and on word boundary,
-        in current buffer."
-        (interactive)
-        ;; display wrapped lines instead of truncated lines
-        (setq truncate-lines nil)
-        (setq word-wrap t))
-      (add-hook 'org-mode-hook '(lambda ()
-                                  (setq evil-auto-indent nil)
-                                  (soft-wrap-lines)
-                                  ))))
+  '(progn
+     (require 'org-clock)
+     ;; @see http://irreal.org/blog/1
+     (setq org-src-fontify-natively t)))
+
+(defun org-mode-hook-setup ()
+  (setq evil-auto-indent nil)
+  ;; org-mode's own flycheck will be loaded
+  (flyspell-mode 1)
+
+  ;; but I don't want to auto spell check when typing,
+  ;; you can comment out `(flyspell-mode -1)` if prefer auto spell check
+  (flyspell-mode -1)
+
+  ;; display wrapped lines instead of truncated lines
+  (setq truncate-lines nil)
+  (setq word-wrap t))
+(add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
   (let ((browse-url-browser-function
