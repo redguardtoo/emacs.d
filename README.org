@@ -174,7 +174,7 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
-** Synchronize setup using Git
+** Synchronize setup with Git
 Most people should synchronize from my stable setup which is updated every 6 months:
 #+begin_src bash
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git stable
@@ -197,16 +197,24 @@ Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]].
 Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheatsheet" to learn its key bindings.
-** How to setup [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
+** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out `(require 'init-modeline)` in init.el at first.
-** Why certain key binding doesn't work?
+** Key bindings doesn't work?
 Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x`]].
 ** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys.
+** Plugins doesn't work?
+If two plugins conflicts, the more frequently used plugin takes priority.
+
+But I will set up workaround for less used plugin. Check init-evil.el for the list of alternative.
+
+For example, if `which-func-mode` cannot display function name mode-line, you can use `M-x popup-which-function` instead.
+
+`popup-which-function` is mentioned in init-evil.el.
 ** How to use org-mode
 Press `M-x org-version`, then read corresponding online manual.
 
-I keep the original status of org-mode untouched. So if you find anything does not work out of the box. It's because you haven't do the required setup yet.
+I keep the original status of org-mode. If you find anything doesn't work out of the box, it's because you haven't do the required setup yet.
 
 For example, `org-capture` need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 ** OS X user?
@@ -269,7 +277,7 @@ http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]]. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
 ** Email
 If you use Gnus for email (Gmail, for example), check init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
-** Cannot download packages from ELPA?
+** Cannot download ELPA packages?
 Some package cannot be downloaded automatically because of network problem.
 
 You could
@@ -282,7 +290,7 @@ It's defined in "init-evil.el". Press "C-z" to switch between Emacs and Vim key 
 
 Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
-** Why C++ auto-completion doesn't work?
+** C++ auto-completion doesn't work?
 I assume you are using company-mode. Other packages have similar setup.
 
 At minimum:
@@ -327,7 +335,7 @@ By default, the word files path is at "~/.eim/py.txt". I place it out of the ema
 The path can be changed in init-eim.el.
 
 A sample file can be downloaded [[https://github.com/tumashu/chinese-pyim-bigdict/raw/gh-pages/pyim-bigdict.pyim][HERE]]. After downloading, rename it to py.txt.
-** Install Emacs at different directory
+** Install Emacs elsewhere
 Run below commands:
 #+begin_src sh
 mkdir -p ~/tmp;
