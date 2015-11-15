@@ -122,6 +122,9 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 
 (require 'init-emacs-w3m)
 
+;; load personal-misc
+(require 'init-personal-misc)
+
 ;; {{ idle require other stuff
 (setq idle-require-idle-delay 3)
 (setq idle-require-symbols '(init-misc-lazy

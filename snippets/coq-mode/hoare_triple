@@ -1,0 +1,6 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: hoare triple
+# key: ht
+# binding: direct-keybinding
+# --
+{| _ , _, _, _ |} |- {{ ${1:_} }} (${2:_}) {{ ${3:_} }}
