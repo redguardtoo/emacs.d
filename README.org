@@ -4,7 +4,7 @@
 - Tested with Emacs 24.3.1, 24.4, 24.5 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
 - Check section "About Emacs 23" if you uses Emacs 23.4
 - Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
-- It's *my intentional design that you can NOT install packages from [[http://melpa.org][melpa-unstable]]* by default. *Experienced users* can modify variable *melpa-include-packages* in init-elpa.el to install packages from melpa-unstable
+- It's *my intentional design that you can NOT install packages from [[http://melpa.org][melpa-unstable]]* by default. *Experienced users* can modify variable *melpa-include-packages* in "~/.emacs.d/lisp/init-elpa.el" to install packages from melpa-unstable
 - Other issues are covered in FAQ
 * Features
 - Stable is the first priority
@@ -17,13 +17,13 @@
 ** Minimum installation
 Most users should follow the section "Install in normal way".
 
-You need the section "Install stable version in easiest way" *if and only if*:
+You need read the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
 *** Install in normal way
-Please remove the file "~/.emacs.d/init.el" and "~/.emacs". "~" means the parent directory of your ".emacs.d".
+Please remove the file "~/.emacs.d/init.el" and "~/.emacs". "~" means the parent directory of your ".emacs.d" directory.
 
-Uninstall any package which not located in "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu.
+Uninstall any package not installed at "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu.
 
 All packages should be placed at "~/.emacs.d" from now on.
 
@@ -45,15 +45,14 @@ Here are the *exact steps* to follow:
 - Download [[https://github.com/redguardtoo/myelpa/archive/2.0.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
-- Uncomment below code in init-elpa.el and start Emacs now!
+- Uncomment below code in "~/.emacs.d/lisp/init-elpa.el" and start Emacs now!
 #+BEGIN_SRC bash
 (setq package-archives '(("myelpa" . "~/projs/myelpa/")))
 #+END_SRC
 
-That's it. You will never need internet in the future. I tested it on Emacs 24.3.93.1, Emacs 24.3.1.
+That's it. You never need internet in the future because you are using local package repository "~/projs/melpa" now.
 
-Please note that your packages are locked. So you *cannot* upgrade package online in the future *unless you comment out above code line*.
-
+You can switch to the online repository like "http://elpa.gnu.org" or "http://melpa.org" by modifying "~/.emacs.d/lisp/init-elpa.el".
 ** Third party tools (OPTIONAL)
 *** Install
 You can install them in any way you like. But "OS package manager" is easier.
@@ -78,7 +77,7 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - hunspell is the alternative of `aspell`. So you need only one of them.
 - install through OS package manager
 - for aspell, you may need its dictionary like aspell-en
-- I force the dictionary to "en_US" in init-spelling.el. You can modify it.
+- I force the dictionary to "en_US" in "~/.emacs./lisp/init-spelling.el". You can modify it.
 - I recommend aspell for programmers
 
 **** sbcl (lisp environment)
@@ -206,7 +205,7 @@ They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader
 ** Plugins doesn't work?
 If two plugins conflicts, the more frequently used plugin takes priority.
 
-But I will set up workaround for less used plugin. Check init-evil.el for the list of alternative.
+But I will set up workaround for less used plugin. Check "~/.emacs.d/lisp/init-evil.el" for the list of alternative.
 
 For example, if `which-func-mode` cannot display function name mode-line, you can use `M-x popup-which-function` instead.
 
@@ -243,9 +242,9 @@ They will not be upgraded through ELPA automatically unless you delete correspon
 Some variables are hard coded so you cannot "M-x customize" to modify them.
 
 Here are the steps to change their values:
-- Find the variable description by "M-x customize".
-- For text "Company Clang Insert Arguments", search "company-clang-insert-argument" in ~/.emacs.d/lisp/
-- You will find "init-company.el" and modify company-clang-insert-argument's value
+- Find the variable description by "M-x customize"
+- For text "Company Clang Insert Arguments", search "company-clang-insert-argument" in "~/.emacs.d/lisp/"
+- You will find "~/.emacs.d/lisp/init-company.el" and modify company-clang-insert-argument's value
 
 BTW, please *read my comments* above the code at first.
 ** Open file with Ido
@@ -260,7 +259,7 @@ Instead of "M-x yas-expand" or press TAB key, you may use press "M-j" in evil-in
 ** Install packages from source
 Please place the source at "~/.emacs.d/site-lisp" where some samples already exist.
 
-Insert below lines into ~/.emacs.d/init.el:
+Insert below lines into "~/.emacs.d/init.el":
 #+begin_src elisp
 ;; check the package's README to figure out what's the `require` line!
 (require 'cool-package-name)
@@ -286,7 +285,7 @@ You could
 ** NO vi/vim keybindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
 ** Evil setup
-It's defined in "init-evil.el". Press "C-z" to switch between Emacs and Vim key bindings.
+It's defined in "~/.emacs.d/lisp/init-evil.el". Press "C-z" to switch between Emacs and Vim key bindings.
 
 Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
@@ -311,7 +310,7 @@ Check [[http://emacsthemes.caisah.info/]].
 
 Write down the name of color theme (for example, molokai).
 
-Insert below code into ~/.emacs.d/init.el,
+Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
 #+BEGIN_SRC elisp
 (require 'color-theme-molokai)
 (color-theme-molokai)
@@ -332,7 +331,7 @@ Run command `M-x toggle-input-method` to toggle input method.
 
 By default, the word files path is at "~/.eim/py.txt". I place it out of the emacs root folder in order to protect my privacy.
 
-The path can be changed in init-eim.el.
+The path can be changed in "~/.emacs.d/lisp/init-eim.el".
 
 A sample file can be downloaded [[https://github.com/tumashu/chinese-pyim-bigdict/raw/gh-pages/pyim-bigdict.pyim][HERE]]. After downloading, rename it to py.txt.
 ** Install Emacs elsewhere
@@ -348,15 +347,15 @@ rm -rf ~/myemacs/24.3/*;
 
 Feel free to replace 24.3 with other version number.
 ** Directory structure
-init.el is the main file. It includes all the other *.el files.
+"~/.emacs.d/init.el" is the main file. It includes all the other *.el files.
 
-"init-elpa.el" defines how and what packages will be installed from [[http://melpa.org][MELPA]].
+"~/.emacs.d/lisp/init-elpa.el" defines how and what packages will be installed from [[http://melpa.org][MELPA]].
 
-The package manager will extract packages into ~/.emacs.d/elpa/.
+The package manager will extract packages into "~/.emacs.d/elpa/".
 
-I also manually download and extract some packages into ~/.emacs.d/site-lisp/. Packages in ~/.emacs.d/site-lisp/ is not visible to the package manager.
+I also manually download and extract some packages into "~/.emacs.d/site-lisp/". Packages in "~/.emacs.d/site-lisp/" is not visible to the package manager.
 
-My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at ~/.emacs.d/snippets.
+My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at "~/.emacs.d/snippets".
 
 Other directories don't matter.
 
@@ -375,7 +374,7 @@ Since most third party plugins don't support Emacs 23 any more. I strongly recom
 Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
-- Git skills are extremely useful for maintainting your emacs.d in the long term. The book [[https://git-scm.com/book/en/][Pro Git]] has everything you need. You need read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum
+- Git skills are *extremely useful* for maintainting your emacs.d. The book [[https://git-scm.com/book/en/][Pro Git]] has everything. Please read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum.
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
