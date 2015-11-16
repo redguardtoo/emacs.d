@@ -75,7 +75,8 @@ ARCHIVE is the string name of the package archive.")
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
-  '(bbdb
+  '(geiser
+    bbdb
     json-rpc
     kv
     color-theme
@@ -301,7 +302,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'quack) ;; for scheme
 (require-package 'anaconda-mode)
 (require-package 'company-anaconda)
-
+(require-package 'geiser)
 
 ;; (require-package 'command-frequency)
 
