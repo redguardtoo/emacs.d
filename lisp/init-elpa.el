@@ -302,7 +302,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'quack) ;; for scheme
 (require-package 'anaconda-mode)
 (require-package 'company-anaconda)
-(require-package 'geiser)
+;; (require-package 'geiser)
 
 ;; (require-package 'command-frequency)
 
