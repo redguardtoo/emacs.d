@@ -133,7 +133,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
                              init-doxygen
                              init-pomodoro
                              init-emacspeak
-                             init-artbollocks-mode
+                             ;;init-artbollocks-mode
                              init-semantic))
 (idle-require-mode 1) ;; starts loading
 ;; }}
