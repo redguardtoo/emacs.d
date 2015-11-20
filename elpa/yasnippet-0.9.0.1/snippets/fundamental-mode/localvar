@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: var
+# key: var
+# --
+`comment-start`-*- ${1:var}: ${2:value} -*-`comment-end`

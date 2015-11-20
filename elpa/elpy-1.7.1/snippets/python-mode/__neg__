@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __neg__
+# key: __neg__
+# group: Special methods
+# --
+def __neg__(self):
+    return $0

@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: class(parent): ...
+# key: class
+# group: Definitions
+# --
+class ${1:ClassName}(${2:object}):
+    """${3:Documentation for $1}
+
+    """
+    def __init__(self${4:, args}):
+        super($1, self).__init__($5)
+        ${4:$(elpy-snippet-init-assignments yas-text)}
+        $0

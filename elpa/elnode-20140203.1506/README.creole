@@ -1,0 +1,502 @@
+= Elnode =
+
+An evented IO webserver in Emacs Lisp.
+
+
+== Requirements ==
+
+Elnode will not run properly on anything less than Emacs 24.  Elnode
+requires Emacs 24's lexical binding as it makes extensive use of
+closures.
+
+
+== Rationale ==
+
+Elnode is a great for these things:
+
+ * nice simple server with few dependancies (just Emacs and {{{cat}}} basically)
+ * prototyping webapps
+ * browser testing
+ * asynchronous apps, like chat apps
+
+
+== Installation ==
+
+Elnode is packaged in [[http://marmalade-repo.org/packages/elnode|marmalade]]. 
+
+For dealing with package repositories check out the
+[[http://www.emacswiki.org/emacs/ELPA|Emacs Wiki]] but the short version
+is to add the following to your {{{.emacs}}} or your
+{{{.emacs.d/init.el}}}:
+
+{{{
+(add-to-list 
+   'package-archives
+   '("marmalade" . "http://marmalade-repo.org/packages/"))
+}}}
+
+And then do:
+
+{{{
+M-x list-packages
+}}}
+
+find Elnode in the list and press {{{i}}} or {{{ENTER}}} to install it.
+
+If you don't want to use packages you can just install {{{elnode.el}}}
+on your {{{load-path}}} somewhere and:
+
+{{{
+(require 'elnode)
+}}}
+
+=== Install from this repository ===
+
+Installing from the sources is complex and requires the dependancies
+declared in the file {{{recipes/elnode}}}.
+
+The recipe file is used by
+[[http://github.com/nicferrier/elpakit|elpakit]] or other tools to
+build the package.
+
+elpakit can help build elnode, and help with running tests. Install
+elpakit from [[http://marmalade-repo.org/packages/elpakit|marmalade]]
+and then you can build Elnode with elpakit by doing:
+
+{{{
+M-x elpakit-make-multi
+}}}
+
+in the Elnode directory.
+
+You can build the Elnode package and run the Elnode tests on that
+package with the following lisp:
+
+{{{
+(elpakit-test (list elnode-directory) 'elnode-tests 'elnode)
+}}}
+
+Where {{{elnode-directory}}} specifies your local Elnode repository
+directory.
+
+The list //can// include more repository directories which will be
+combined into a single package archive.
+
+== Out of the box ==
+
+When Elnode initializes it automatically starts a webserver and a Wiki
+engine.
+
+If you:
+
+{{{
+M-x customize-group
+elnode
+}}}
+
+you can alter a number of variables pertaining to the default
+configuration, including the directory used to keep files.
+
+By default the package installs files in your {{{.emacs.d}}} - it uses
+a directory called {{{elnode}}} for the Wiki root and the
+webroot. Both are configurable with Elnode config variables.
+
+You can also just ignore the built in stuff completely and write your
+own servers.
+
+=== What Elnode servers are running? ===
+
+Elnode tracks the servers an Emacs instance is running and you can see
+the view of that with:
+
+{{{
+M-x list-elnode-servers
+}}}
+
+The list shows TCP ports and handlers and you can press return on a
+handler and move to it's source code definition.
+
+You can kill a server by hitting "k" on it.
+
+
+== How does it work? ==
+
+The simplest thing that Elnode does is let you start a webserver on a
+directory:
+
+{{{
+M-x elnode-make-webserver [RET] 
+Serve files from: [enter directory] [RET]
+TCP Port (try something over 8000): 8009 [RET]
+}}}
+
+and there will be a webserver started on port 8009 serving files from
+whatever directory you specified.
+
+By default Elnode starts that server on the host specified by
+{{{elnode-init-host}}} which is a variable you can customize:
+
+{{{
+M-x customize-variable [RET] elnode-init-host [RET]
+}}}
+
+Take care though, you don't want to expose your Emacs session to the
+Internet.
+
+You can also use the prefix key to specify the host for just this one
+server:
+
+{{{
+C-u M-x elnode-make-webserver [RET] 
+Docroot: [enter directory] [RET]
+Port: 8009 [RET]
+Host: 0.0.0.0
+}}}
+
+
+=== Basic Elnode for programmers ===
+
+Elnode's power is most visible to programmers though.
+
+You can define a handler function:
+
+{{{
+(defun my-test-handler (httpcon)
+  "Demonstration function"
+  (elnode-http-start httpcon 200 '("Content-type" . "text/html"))
+  (elnode-http-return httpcon "<html><b>HELLO!</b></html>"))
+}}}
+
+And then start the server:
+
+{{{
+(elnode-start 'my-test-handler :port 8010 :host "localhost")
+}}}
+
+You can also start the server interactively... with:
+
+{{{
+M-x elnode-start
+}}}
+
+it interactively asks for the handler function and a port.
+
+=== Stopping the server ===
+
+If you can remember the port you started your server on then you'll be
+able to stop it, like:
+
+{{{
+(elnode-stop 8010)
+}}}
+
+You can also stop interactively:
+
+{{{
+M-x elnode-stop
+}}}
+
+
+
+== API ==
+
+=== Mapping paths to handlers ===
+
+{{{elnode-hostpath-dispatcher}}} takes a-list of path/handler mappings:
+
+{{{
+##!emacs-lisp
+(defvar 
+   my-app-routes 
+   '(("^my-host.example.com//wiki/\\(.*\\)" . elnode-wikiserver)
+     ("^admin.example.com//admintool/\\(.*\\)" . user-admin)
+     ("^.*//\\(.*\\)" . elnode-webserver)))
+
+(defun root-handler (httpcon)
+  (elnode-hostpath-dispatcher httpcon my-app-routes))
+
+(elnode-start 'root-handler :port 8009)
+}}}
+
+This will create a server on port 8009 being handled by
+{{{root-handler}}} which will root the requests to the appropriate handler.
+
+Any request for the host {{{my-host.example.com}}} with the path
+{{{/wiki/}}} will be sent to the Elnode Wiki engine.
+
+Any request for the host {{{admin.example.com}}} with the path
+{{{/admintool/}}} will be sent to the {{{user-admin}}} handler,
+presumably that is defined somewhere.
+
+Any other request will be sent to the default Elnode webserver.
+
+Elnode itself uses a hostpath dispatcher on the default Elnode server.
+This can actually be configured with the variable
+{{{elnode-hostpath-default-table}}}, so you can actually change the
+default behaviour of the Elnode default server just with Emacs config.
+
+
+The use of regexs in Elnode's mapping is supported by other
+tools. Sub-expressions are capturable in mapping support routines such
+as {{{elnode-docroot-for}}}.
+
+When a handler is called by {{{elnode-hostpath-dispatcher}}} then the
+parts of the match are available through the function
+{{{elnode-http-mapping}}}. So we could code the {{{user-admin}}}
+handler like this:
+
+{{{
+##! emacs-lisp
+(defun user-admin (httpcon)
+  (let ((username (elnode-http-mapping httpcon 1)))
+    (user-admin-send-admin-page httpcon username)))
+}}}
+
+The {{{(elnode-http-mapping httpcon 1)}}} accesses the first
+sub-expression of the regex that caused the match:
+
+{{{
+     ("^admin.example.com//admintool/\\(.*\\)" . user-admin)
+}}}
+
+so, everything AFTER the {{{admintool/}}}.
+
+Some tools in Elnode do this for you, so you don't have to. Again,
+look at {{{elnode-docroot-for}}}.
+
+=== Serving files ===
+
+There are several helpers for serving files with Elnode. You can serve
+directories of files directly by making a webserver handler. A
+function {{{elnode-webserver-handler-maker}}} can make webservers:
+
+{{{
+##! emacs-lisp
+
+(setq my-webserver
+      (elnode-webserver-handler-maker "~/my-webroot"))
+
+(elnode-start my-webserver :port 8010)
+}}}
+
+The Elnode webserver also produces index pages and can be configured
+with a number of variables:
+
+* {{{elnode-webserver-index-page-template}}} defines the page template used for the index
+* {{{elnode-webserver-index-file-template}}} defines the template for each file in the index, normally it's just an A tag ponting to the file.
+
+
+=== More controlled serving ===
+
+If you need more control over serving files you can write handlers
+with {{{elnode-docroot-for}}}. This does a lot of complex work for you
+to map a directory tree to a webserver namespace.
+
+This example shows how to use {{{elnode-docroot-for}}}
+
+{{{
+##! emacs-lisp
+
+(defun elnode-org-handler (httpcon)
+  (elnode-docroot-for "~/work/org"
+      with org-file
+      on httpcon
+      do (with-current-buffer (find-file-noselect org-file)
+           (let ((org-html
+                  ;; This might throw errors so you could condition-case it
+                  (org-export-as-html 3 nil nil 'string)))
+             (elnode-send-html httpcon org-html)))))
+}}}
+
+The first argument is the directory of files which you want to serve,
+then {{{with variable}}} specifies the name of a variable to use in
+the body of the code which will be bound to the filename of the file
+the user wants. Then {{{on httpcon}}} specifies the HTTP connection to
+use and then {{{do ....}}} specifies the code to use.
+
+{{{elnode-docroot-for}}} processes incomming requests on the
+{{{httpcon}}} you specify by checking the request matches a file in
+the directory you specify (it sends a 404 if it does not find one). 
+
+It also does last modified caching on the file and sends an HTTP 304
+response if the file has not been updated since the last request.
+
+If a matching file exists and the it is not cached then
+{{{elnode-docroot-for}}} runs the {{{do}}} code to send the response
+correctly.
+
+=== Sending files ===
+
+Elnode also has {{{elnode-send-file}}} for sending files to the response,
+along with {{{elnode-docroot-for}}} this makes a powerful simple
+webserver tool.  {{{elnode-send-file}}} can be used to send any
+arbitary file:
+
+{{{
+##! emacs-lisp
+(defun my-status-page (httpcon)
+  (elnode-http-start httpcon 200 '("Content-type" . "text/html"))
+  (elnode-send-file httpcon "~/static-status-file.html"))
+}}}
+
+A handler that will only ever respond with one static file.  Of
+course, this isn't very interesting, combined with
+{{{elnode-docroot-for}}} it can be used to serve directories and the
+like, or you could work out the filename to be sent with some other
+method.
+
+There is another use for {{{elnode-send-file}}} which is simple
+templating.  You can pass parameters to {{{elnode-send-file}}} and it
+will template them into the file:
+
+{{{
+(defun my-templater(httpcon)
+  (let ((hash (make-hash-table 
+                 :test 'equal 
+                 :data "username" "nicferrier")))
+     (elnode-http-start httpcon 200 '("Content-type" . "text/html"))
+     (elnode-send-file 
+         httpcon "~/my-template.html" 
+         :replacements hash)))
+}}}
+
+The template file must have sections marked up like:
+
+<<html
+&lt;!##E username E##!&gt;
+html>>
+
+for each of the variables.
+
+This makes for simple but quite powerful templating.
+
+=== Really Really simple file sending ===
+
+It's also possible to make send file functions automatically so if you
+want to map a handler that serves just one file in a dispatcher that's
+possible:
+
+{{{
+##! emacs-lisp
+`(("^my-host.example.com//wiki/\\(.*\\)" . elnode-wikiserver)
+  ("^.*//styles.css" . ,(elnode-make-send-file "~/mainstyles.css"))
+  ("^.*//\\(.*\\)" . elnode-webserver))
+}}}
+
+It's also possible to use templating with this style of programming by
+passing a function returning the alist variable map as
+{{{:replacements}}}:
+
+{{{
+##! emacs-lisp
+(defun my-templater ()
+  '(("username" . "william occam")))
+
+`(("^my-host.example.com//wiki/\\(.*\\)" . elnode-wikiserver)
+  ("^.*//styles.css" . ,(elnode-make-send-file 
+                           "~/mainstyles.css"
+                           :replacements 'my-templater))
+  ("^.*//\\(.*\\)" . elnode-webserver))
+}}}
+
+This makes templating and setting up very simple websites very easy
+indeed.
+
+=== Accessing data in the HTTP request ===
+
+There are a bunch of functions that do what you would expect about
+data in the HTTP request:
+
+{{{
+##! emacs-lisp
+
+(elnode-http-method httpcon)
+=> "POST"
+
+(elnode-http-pathinfo httpcon)
+=> "/wiki/blah.creole"
+
+(elnode-http-query httpcon)
+=> "a=10&b=20&c=the+quick+brown+fox"
+
+(elnode-http-params httpcon)
+=> (("a" . "10")("b" . "20")("c" . "the quick brown fox"))
+
+(elnode-http-param httpcon "username")
+=> "nicferrier"
+
+(elnode-http-cookie httpcon "session-id")
+=> "1213313"
+
+(elnode-http-header httpcon "Date")
+=> "Mon, Feb 27 2012 22:10:21 GMT"
+
+(elnode-http-header httpcon 'date)
+=> "Mon, Feb 27 2012 22:10:21 GMT"
+
+(elnode-http-header httpcon 'date :time) ;; with convert flag set to :time
+=> (20299 65357)
+}}}
+
+Note that Elnode generally can accept symbol's as well as strings to
+name things, if it can't it's a bug, 
+[[https://github.com/nicferrier/elnode/issues|please report it]].
+
+Also, Elnode can handle some conversions sometimes. I would like to
+respond to user demand about when and where to do that and what to
+do. Please give me feedback.
+
+=== Elnode's raw data ===
+
+Elnode stores most of it's internal state on the connection object and
+it's all accessible, interesting properties and how to access them:
+
+{{{
+##! emacs-lisp
+
+(process-get httpcon :elnode-http-status)
+=> "GET / HTTP/1.1"
+
+(process-get httpcon :elnode-http-resource)
+=> "/"
+
+(process-get httpcon :elnode-http-version)
+=> "1.1"
+}}}
+
+These are not supported by Elnode at all, there is no guarantee that
+the names of these properties won't change. If you feel that you want
+official support (ie: a function) then make an issue on the Elnode
+github.
+
+
+== To Do? ==
+
+If you're playing with elnode but you can't think of anything to do with it...
+
+* make an elnode param handler that sanitzes input
+** one way to do that was found by aidalgol:
+
+{{{
+(require 'htmlize)
+(htmlize-protect-string
+ "<a href='/blah?a=10&b=2'></a><script>call_func()</script>")
+}}}
+
+* an elpa repository written with elnode
+** turn the package list into html
+** allow packages to be downloaded from elnode
+** upload of packages will require fixing the request management a little
+* an emacsclient with elnode
+** write a command line client that submits data to the server over HTTP
+** it should interact with the emacs user in the same way that emacs server does
+** //why?// because then a single Emacs could have just 1 server socket open for all sorts of different roles
+* alter {{{elnode-webserver-handler-maker}}} to do indexing better
+** take an optional index producing function?
+** take keyword flags that set the behaviour? 
+** eg: {{{:doindexes 't }}}
+* browse-current-buffer
+** start an elnode server on some random port exposing the current buffer
+** automatically open a browser on the started server
+
+{{https://raw.github.com/nicferrier/elnode/master/default-wiki-logo.gif}}

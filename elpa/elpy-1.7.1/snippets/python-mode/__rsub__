@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __rsub__
+# key: __rsub__
+# group: Special methods
+# --
+def __rsub__(self, other):
+    return $0

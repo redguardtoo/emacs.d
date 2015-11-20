@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __set__
+# key: __set__
+# group: Special methods
+# --
+def __set__(self, instance, value):
+    $0

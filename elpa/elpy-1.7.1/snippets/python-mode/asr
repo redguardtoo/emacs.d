@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: Assert Raises
+# key: asr
+# group: Testing
+# --
+with self.assertRaises(${1:Exception}):
+    $0

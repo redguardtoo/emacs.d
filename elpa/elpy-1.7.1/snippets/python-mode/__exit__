@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __exit__
+# key: __exit__
+# group: Special methods
+# --
+def __exit__(self, exc_type, exc_value, traceback):
+    $0

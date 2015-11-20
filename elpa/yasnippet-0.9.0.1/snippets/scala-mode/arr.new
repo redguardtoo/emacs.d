@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : Array[T](..)
+# key: arr.new
+# --
+Array[${1:value}](${2:args}) $0

@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : private[this]
+# key: pri.param
+# --
+private[${1:this}] $0

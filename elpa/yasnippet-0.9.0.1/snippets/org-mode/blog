@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: blog
+# key: blog
+# --
+#+STARTUP: showall indent
+#+STARTUP: hidestars
+#+BEGIN_HTML
+---
+layout: default
+title: ${1:title}
+excerpt: ${2:excerpt}
+---
+$0

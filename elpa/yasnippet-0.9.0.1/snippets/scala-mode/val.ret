@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : val name: T = ..
+# key: val
+# --
+val ${1:name}: ${2:T} = ${3:obj} $0

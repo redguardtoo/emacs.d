@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : map(x => ..)
+# key: map
+# --
+map(${1:x} => ${2:body}) $0

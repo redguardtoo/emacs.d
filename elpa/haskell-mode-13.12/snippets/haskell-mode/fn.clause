@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# key: fn
+# name: clause function
+# condition: (= (length "fn") (current-column))
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+${1:f} :: ${2:a} ${3:-> ${4:b}}
+$1 ${5:pattern} = ${7:undefined}
+$1 ${6:pattern} = ${8:undefined}$0

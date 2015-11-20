@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __hash__
+# key: __hash__
+# group: Special methods
+# --
+def __hash__(self):
+    return $0

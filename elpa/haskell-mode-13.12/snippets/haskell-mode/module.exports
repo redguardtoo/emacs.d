@@ -1,0 +1,17 @@
+# -*- mode: snippet -*-
+# key: mod
+# name: exports module
+# condition: (= (length "mod") (current-column))
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+module ${1:`(if (not buffer-file-name) "Module"
+                (let ((name (file-name-sans-extension (buffer-file-name))))
+                     (if (search "src/" name)
+                         (replace-regexp-in-string "/" "." (car (last (split-string name "src/"))))
+                         (file-name-nondirectory name))))`}
+    ( ${3:export}
+    ${4:, ${5:export}}
+    ) where
+
+$0

@@ -1,0 +1,113 @@
+= Elnode Wiki =
+
+This is Elnode's Wiki.  It is based on the {{{creole}}} wiki language
+and is written completely in EmacsLisp.
+
+{{default-wiki-logo.gif|GNUs sitting on clouds}}
+
+== What does it do? ==
+
+It does syntax coloring:
+
+{{{
+##! emacs-lisp
+(defun elnode-wiki-handler (httpcon wikiroot)
+  "A low level handler for Wiki operations.
+
+Send the Wiki page requested, which must be a file existing under
+the WIKIROOT, back to the HTTPCON.
+
+Update operations are protected by authentication."
+  (elnode-method httpcon
+    (GET
+     (elnode-docroot-for wikiroot
+       with target-path
+       on httpcon
+       do
+       (if (equal target-path (expand-file-name (concat wikiroot "/")))
+           (elnode-wiki-page httpcon (concat wikiroot "/index.creole"))
+           (elnode-wiki-page httpcon target-path))))
+    (POST
+     (elnode-with-auth httpcon 'elnode-wiki-auth
+       (let* ((path (elnode-http-pathinfo httpcon))
+              (text (elnode-wiki--text-param httpcon)))
+         (if (not (elnode-http-param httpcon "preview"))
+             ;; A save request in which case save the new text and then
+             ;; send the wiki text.
+             (elnode-wiki--save-request httpcon wikiroot path text)
+             ;; Might be a preview request in which case send back the WIKI
+             ;; text that's been sent.
+             (with-temp-file "/tmp/preview"
+               (insert text))
+             (elnode-wiki-send httpcon "/tmp/preview" path)))))))
+}}}
+
+It does links, for example to
+[[http://github.com/nicferrier/elwikicreole|Emacs Creole]] which is
+the Wiki render engine used to display pages.
+
+It does all the normal Wiki things like headings and lists.
+
+You can also do some special Emacs things, like org-mode tables:
+
+|       Date | Amount | Description         |
+|------------+--------+---------------------|
+| 2011-11-15 | 100.15 | Expensive lunch out |
+| 2011-11-18 |   7.30 | Dry cleaning        |
+| 2011-11-21 |  22.50 | Takeaway curry      |
+|------------+--------+---------------------|
+|            | 129.95 |                     |
+#+TBLFM: @5$2=vsum(@I..@II)
+
+and lisp callouts:
+
+<<(
+ (mapconcat
+   (lambda (s)
+     (format "* %s" s))
+   '("which" "eval" "lisp" "and" "render" "the" "results")
+   "\n")
+)>>
+
+
+== Authentication ==
+
+By default, the Wiki uses an authentication database in the Emacs
+instance running Elnode and the Wiki server.
+
+If you want to add a user to the Wiki so you can edit pages you can do this in Emacs:
+
+{{{
+M-x elnode-auth-user-add
+}}}
+
+and it will ask you for a username and a password.  The user will be
+stored in a persistent database.
+
+
+== Where the Wiki pages are ==
+
+By default the Elnode Wiki stores files in your {{{~/.emacs.d}}}
+directory which is actually defined by the variable
+{{{user-emacs-directory}}} in Emacs.
+
+There is normally a directory {{{elnode}}} in that directory which
+contains directories for the Web server document root and the Wiki.
+
+The location of the Wiki files can be configured though, try:
+
+{{{
+M-x customize-variable [RET] elnode-wikiserver-wikiroot
+}}}
+
+== More customization ==
+
+There are many other things in Elnode's Wiki that can be customized,
+including the header and footer. Use:
+
+{{{
+M-x customize-group [RET] elnode-wikiserver [RET]
+}}}
+
+There is more to do with the Elnode Wiki server because there is so
+much that Emacs can do.

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __subclasscheck__
+# key: __subclasscheck__
+# group: Special methods
+# --
+def __subclasscheck__(self, instance):
+    return $0

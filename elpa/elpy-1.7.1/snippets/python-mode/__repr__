@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __repr__
+# key: __repr__
+# group: Special methods
+# --
+def __repr__(self):
+    return $0

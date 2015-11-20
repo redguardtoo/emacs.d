@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Assert Equal
+# key: ase
+# group: Testing
+# --
+self.assertEqual(${1:expected}, ${2:actual})

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __call__
+# key: __call__
+# group: Special methods
+# --
+def __call__(self, ${1:*args}):
+    return $0

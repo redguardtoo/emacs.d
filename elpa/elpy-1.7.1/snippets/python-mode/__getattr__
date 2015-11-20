@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __getattr__
+# key: __getattr__
+# group: Special methods
+# --
+def __getattr__(self, name):
+    return $0

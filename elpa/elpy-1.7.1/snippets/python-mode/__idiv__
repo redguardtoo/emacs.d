@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __idiv__
+# key: __idiv__
+# group: Special methods
+# --
+def __idiv__(self, other):
+    return $0

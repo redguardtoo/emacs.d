@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __getitem__
+# key: __getitem__
+# group: Special methods
+# --
+def __getitem__(self, key):
+    return $0

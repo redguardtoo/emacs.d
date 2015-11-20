@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __and__
+# key: __and__
+# group: Special methods
+# --
+def __and__(self, other):
+    return $0

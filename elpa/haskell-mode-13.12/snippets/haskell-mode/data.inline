@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# key: data
+# name: inline data
+# condition: (= (length "data") (current-column))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+data ${1:Type} = ${2:Data}$0 ${3:deriving (${4:Show, Eq})}

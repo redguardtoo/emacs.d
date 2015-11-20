@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : asInstanceOf[T] 
+# key: asof
+# --
+asInstanceOf[${1:type}] $0

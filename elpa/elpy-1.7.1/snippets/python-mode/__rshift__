@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __rshift__
+# key: __rshift__
+# group: Special methods
+# --
+def __rshift__(self, other):
+    return $0

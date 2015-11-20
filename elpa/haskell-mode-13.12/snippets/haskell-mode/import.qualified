@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# key: imp
+# name: qualified import
+# condition: (= (length "imp") (current-column))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+import qualified ${1:Module} as ${2:${1:$(let ((name (car (last (split-string yas-text "\\\.")))))
+                                              (if (= 0 (length name)) ""
+                                                  (subseq name 0 1)))}}$0

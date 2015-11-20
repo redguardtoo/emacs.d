@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# key: main
+# name: main module
+# condition: (= (length "main") (current-column))
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+module Main where
+
+main :: IO ()
+main = do
+  ${1:undefined}$0
+  return ()

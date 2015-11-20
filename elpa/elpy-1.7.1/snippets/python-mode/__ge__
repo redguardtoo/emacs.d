@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __ge__
+# key: __ge__
+# group: Special methods
+# --
+def __ge__(self, other):
+    return $0

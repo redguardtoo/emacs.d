@@ -1,0 +1,64 @@
+This is scratch.info, produced by makeinfo version 5.2 from
+scratch.texi.
+
+Copyright © 2010, Christopher Browne
+
+     Permission is granted to copy, distribute and/or modify this
+     document under the terms of the GNU Free Documentation License,
+     Version 1.2 or any later version published by the Free Software
+     Foundation; with no Invariant Sections, with no Front-Cover Texts,
+     and with no Back-Cover Texts.
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Scratch: (scratch).        Scratch buffers that inherit modes
+END-INFO-DIR-ENTRY
+
+
+File: scratch.info,  Node: Top,  Next: Introduction,  Up: (dir)
+
+Scratch User Manual
+*******************
+
+Scratch is an extension to Emacs that enables one to create scratch
+buffers that are in the same mode as the current buffer.  This is
+notably useful when working on code in some language; you may grab code
+into a scratch buffer, and, by virtue of this extension, do so using the
+Emacs formatting rules for that language.
+
+* Menu:
+
+* Introduction::                
+* Acknowledgments::             
+
+
+File: scratch.info,  Node: Introduction,  Next: Acknowledgments,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+With Scratch, you can switch to a buffer using the same mode as your
+present buffer.
+
+
+File: scratch.info,  Node: Acknowledgments,  Prev: Introduction,  Up: Top
+
+2 Acknowledgments
+*****************
+
+Scratch was written by Ian Eure.
+
+   Documentation by Christopher Browne.
+
+
+
+Tag Table:
+Node: Top553
+Node: Introduction1059
+Node: Acknowledgments1265
+
+End Tag Table
+
+
+Local Variables:
+coding: utf-8
+End:

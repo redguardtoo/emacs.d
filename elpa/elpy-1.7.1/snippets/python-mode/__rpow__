@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __rpow__
+# key: __rpow__
+# group: Special methods
+# --
+def __rpow__(self, other):
+    return $0

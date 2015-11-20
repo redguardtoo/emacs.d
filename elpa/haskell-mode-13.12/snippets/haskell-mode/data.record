@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# key: data
+# name: record data
+# condition: (= (length "data") (current-column))
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+data ${1:Type} = $1
+    { ${2:field} :: ${3:Type}
+    , ${4:field} :: ${5:Type}$0
+    } ${6:deriving (${7:Show, Eq})}

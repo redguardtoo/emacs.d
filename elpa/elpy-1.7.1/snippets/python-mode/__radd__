@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __radd__
+# key: __radd__
+# group: Special methods
+# --
+def __radd__(self, other):
+    return $0

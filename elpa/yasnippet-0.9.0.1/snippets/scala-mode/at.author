@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+#Author : Anders Bach Nielsen <andersbach.nielsen@epfl.ch>
+#name : @author name
+# key: at.author
+# --
+@author ${1:name} $0

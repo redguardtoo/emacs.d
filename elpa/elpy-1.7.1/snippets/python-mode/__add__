@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __add__
+# key: __add__
+# group: Special methods
+# --
+def __add__(self, other):
+    return $0

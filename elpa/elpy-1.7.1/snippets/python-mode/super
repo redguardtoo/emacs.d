@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: super()
+# key: super
+# group: Definitions
+# --
+super`(elpy-snippet-super-form)`(${1:`(elpy-snippet-super-arguments)`})
+$0

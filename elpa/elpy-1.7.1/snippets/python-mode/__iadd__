@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __iadd__
+# key: __iadd__
+# group: Special methods
+# --
+def __iadd__(self, other):
+    return $0

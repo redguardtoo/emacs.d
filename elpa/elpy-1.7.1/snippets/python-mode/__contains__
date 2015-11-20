@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __contains__
+# key: __contains__
+# group: Special methods
+# --
+def __contains__(self, item):
+    return $0

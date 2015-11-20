@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: new class
+# key: class
+# --
+class ${1:Class Name} where
+      $0

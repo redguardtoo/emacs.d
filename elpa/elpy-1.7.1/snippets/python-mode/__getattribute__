@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __getattribute__
+# key: __getattribute__
+# group: Special methods
+# --
+def __getattribute__(self, name):
+    return $0

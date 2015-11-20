@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Assert Not Equal
+# key: asne
+# group: Testing
+# --
+self.assertNotEqual(${1:expected}, ${2:actual})

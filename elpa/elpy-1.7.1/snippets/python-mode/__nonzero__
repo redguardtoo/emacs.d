@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __nonzero__
+# key: __nonzero__
+# group: Special methods
+# --
+def __nonzero__(self):
+    return $0

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __itruediv__
+# key: __itruediv__
+# group: Special methods
+# --
+def __itruediv__(self, other):
+    return $0

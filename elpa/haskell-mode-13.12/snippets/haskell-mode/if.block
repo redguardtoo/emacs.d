@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# key: if
+# name: block if
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+if ${1:condition}
+    then ${2:undefined}
+    else ${3:undefined}$0

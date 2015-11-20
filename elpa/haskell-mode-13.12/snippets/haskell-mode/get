@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# key: <-
+# name: monadic get
+# contributor: Luke Hoersten <luke@hoersten.org>
+# --
+${1:x} <- ${2:undefined}$0

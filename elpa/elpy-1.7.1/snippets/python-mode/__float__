@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __float__
+# key: __float__
+# group: Special methods
+# --
+def __float__(self):
+    return $0

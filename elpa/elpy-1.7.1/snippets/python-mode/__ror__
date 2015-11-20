@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __ror__
+# key: __ror__
+# group: Special methods
+# --
+def __ror__(self, other):
+    return $0

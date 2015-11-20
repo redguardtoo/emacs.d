@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+#Author : Jonas Bonèr <jonas@jonasboner.com>
+#name : abstract class T(args) { .. }
+# key: cl
+# --
+abstract class ${1:name}(${2:args}) {
+  $0
+}

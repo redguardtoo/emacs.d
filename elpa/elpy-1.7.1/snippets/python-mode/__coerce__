@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __coerce__
+# key: __coerce__
+# group: Special methods
+# --
+def __coerce__(self, other):
+    return $0

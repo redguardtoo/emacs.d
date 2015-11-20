@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: return
+# key: ret
+# --
+@return ${1:description}

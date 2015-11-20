@@ -122,7 +122,6 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 
 (require 'init-emacs-w3m)
 
-(require 'init-geiser)
 ;; load personal-misc
 (require 'init-personal-misc)
 

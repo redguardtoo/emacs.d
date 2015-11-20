@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: from MOD import SYM
+# key: from
+# group: Header
+# --
+from ${1:module} import ${2:symbol}
+$0

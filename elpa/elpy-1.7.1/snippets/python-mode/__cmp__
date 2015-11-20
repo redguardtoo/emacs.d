@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __cmp__
+# key: __cmp__
+# group: Special methods
+# --
+def __cmp__(self, other):
+    return $0

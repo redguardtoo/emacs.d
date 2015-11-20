@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: __iand__
+# key: __iand__
+# group: Special methods
+# --
+def __iand__(self, other):
+    return $0
