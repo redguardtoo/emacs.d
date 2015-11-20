@@ -5,7 +5,11 @@
 
 ;; I can't find coq-mode-hook, so specific yasnippet can't run.
 ;; I have to turn on global.
-(yas-global-mode 1)
+;;; This is not recommended.
+
+;; company-coq
+(package-initialize)
+(add-hook 'coq-mode-hook #'company-coq-initialize)
 
 (provide 'init-coq)
 

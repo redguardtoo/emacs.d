@@ -1,5 +1,6 @@
 (add-hook 'prog-mode-hook 'global-company-mode)
 (add-hook 'cmake-mode-hook 'global-company-mode)
+(setq company-global-modes '(not coq-mode))
 
 (setq company-require-match nil)
 ;; press SPACE will accept the highlighted candidate and insert a space

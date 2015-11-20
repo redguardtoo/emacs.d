@@ -75,7 +75,8 @@ ARCHIVE is the string name of the package archive.")
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
-  '(geiser
+  '(company-coq
+    geiser
     bbdb
     json-rpc
     kv
@@ -191,7 +192,7 @@ ARCHIVE is the string name of the package archive.")
          )))
 
 ;; un-comment below code if you prefer use all the package on melpa (unstable) without limitation
-;; (setq package-filter-function nil)
+(setq package-filter-function nil)
 
 ;;------------------------------------------------------------------------------
 ;; Fire up package.el and ensure the following packages are installed.
