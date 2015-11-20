@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.1
+;; Version: 2.1.2
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -359,7 +359,8 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
           )))
 
       ;; for inner text object, backward a line at the end
-      (when is-inner
+      ;; but in python-mode, last line is also code line
+      (when (and is-inner (not (eq major-mode 'python-mode)))
         (goto-char e)
         (forward-line -1)
         (setq e (line-end-position)))
@@ -435,7 +436,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.1"))
+(defun evilmi-version() (interactive) (message "2.1.2"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
