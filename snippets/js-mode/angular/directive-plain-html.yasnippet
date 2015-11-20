@@ -1,0 +1,16 @@
+# -*- mode: snippet -*-
+# name: angular.directive (plain html panel)
+# key: adirective
+# --
+.directive('${1:prefixDirectiveId}', function ($0) {
+  // @see https://docs.angularjs.org/guide/directive
+  return {
+    transclude: true,
+    replace: true,
+    scope: {},
+    template:'<div class="panel panel-default"><div class="panel-heading"><a ng-if="attrs.buttonSref" class="pull-right view-link" ui-sref="{{attrs.buttonSref}}"><i class="fa fa-chevron-right"></i></a><h3><i ng-if="attrs.iconStyles" class="{{::attrs.iconStyles}}"></i>{{::attrs.title}}</h3></div><div class="panel-body"><ng-transclude></ng-transclude></div></div>',
+    link: function(scope, element, attrs, controller) {
+      scope.attrs = attrs;
+    }
+  };
+})
