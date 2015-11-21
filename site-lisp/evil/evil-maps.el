@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.7
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -193,6 +193,8 @@
 (define-key evil-motion-state-map "T" 'evil-find-char-to-backward)
 (define-key evil-motion-state-map "w" 'evil-forward-word-begin)
 (define-key evil-motion-state-map "W" 'evil-forward-WORD-begin)
+(define-key evil-motion-state-map "y" 'evil-yank)
+(define-key evil-motion-state-map "Y" 'evil-yank-line)
 (define-key evil-motion-state-map "gd" 'evil-goto-definition)
 (define-key evil-motion-state-map "ge" 'evil-backward-word-end)
 (define-key evil-motion-state-map "gE" 'evil-backward-WORD-end)

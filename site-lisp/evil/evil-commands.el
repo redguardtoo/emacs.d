@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.7
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -1065,7 +1065,7 @@ or line COUNT to the top of the window."
 (evil-define-text-object evil-a-paragraph (count &optional beg end type)
   "Select a paragraph."
   :type line
-  (evil-select-an-object 'evil-paragraph beg end type count))
+  (evil-select-an-object 'evil-paragraph beg end type count t))
 
 (evil-define-text-object evil-inner-paragraph (count &optional beg end type)
   "Select inner paragraph."
@@ -1506,19 +1506,20 @@ but doesn't insert or remove any spaces."
     (goto-char beg)
     (indent-region beg end))
   ;; We also need to tabify or untabify the leading white characters
-  (let* ((beg-line (line-number-at-pos beg))
-         (end-line (line-number-at-pos end))
-         (ln beg-line)
-         (convert-white (if indent-tabs-mode 'tabify 'untabify)))
-    (save-excursion
-      (while (<= ln end-line)
-        (goto-char (point-min))
-        (forward-line (- ln 1))
-        (back-to-indentation)
-        ;; Whether tab or space should be used is determined by indent-tabs-mode
-        (funcall convert-white (line-beginning-position) (point))
-        (setq ln (1+ ln)))))
-  (back-to-indentation))
+  (when evil-indent-convert-tabs
+    (let* ((beg-line (line-number-at-pos beg))
+           (end-line (line-number-at-pos end))
+           (ln beg-line)
+           (convert-white (if indent-tabs-mode 'tabify 'untabify)))
+      (save-excursion
+        (while (<= ln end-line)
+          (goto-char (point-min))
+          (forward-line (- ln 1))
+          (back-to-indentation)
+          ;; Whether tab or space should be used is determined by indent-tabs-mode
+          (funcall convert-white (line-beginning-position) (point))
+          (setq ln (1+ ln)))))
+    (back-to-indentation)))
 
 (evil-define-operator evil-indent-line (beg end)
   "Indent the line."
@@ -1594,9 +1595,9 @@ the current line."
   (evil-shift-right (line-beginning-position) (line-beginning-position 2) count t))
 
 (evil-define-command evil-shift-left-line (count)
-  "Shift the current line COUNT times to the leeft.
+  "Shift the current line COUNT times to the left.
 The text is shifted to the nearest multiple of
-`evil-shift-width'. Like `evil-shift-leeft' but always works on
+`evil-shift-width'. Like `evil-shift-left' but always works on
 the current line."
   (interactive "<c>")
   (evil-shift-left (line-beginning-position) (line-beginning-position 2) count t))
@@ -1839,6 +1840,18 @@ The return value is the yanked text."
   (interactive "<C>")
   (setq evil-this-register register))
 
+(defvar evil-macro-buffer nil
+  "The buffer that has been active on macro recording.")
+
+(defun evil-abort-macro ()
+  "Abort macro recording when the buffer is changed.
+Macros are aborted when the the current buffer
+is changed during macro recording."
+  (unless (or (minibufferp) (eq (current-buffer) evil-macro-buffer))
+    (remove-hook 'post-command-hook #'evil-abort-macro)
+    (end-kbd-macro)
+    (message "Abort macro recording (changed buffer)")))
+
 (evil-define-command evil-record-macro (register)
   "Record a keyboard macro into REGISTER.
 If REGISTER is :, /, or ?, the corresponding command line window
@@ -1852,6 +1865,8 @@ will be opened instead."
    ((eq register ?\C-g)
     (keyboard-quit))
    ((and evil-this-macro defining-kbd-macro)
+    (remove-hook 'post-command-hook #'evil-abort-macro)
+    (setq evil-macro-buffer nil)
     (condition-case nil
         (end-kbd-macro)
       (error nil))
@@ -1872,7 +1887,9 @@ will be opened instead."
     (when defining-kbd-macro (end-kbd-macro))
     (setq evil-this-macro register)
     (evil-set-register evil-this-macro nil)
-    (start-kbd-macro nil))
+    (start-kbd-macro nil)
+    (setq evil-macro-buffer (current-buffer))
+    (add-hook 'post-command-hook #'evil-abort-macro))
    (t (error "Invalid register"))))
 
 (evil-define-command evil-execute-macro (count macro)
@@ -2403,7 +2420,7 @@ for `isearch-forward',\nwhich lists available keys:\n\n%s"
   (dotimes (var (or count 1))
     (evil-search-word t nil symbol)))
 
-(evil-define-motion evil-search-unbounded-word-backward (count &optiona symbol)
+(evil-define-motion evil-search-unbounded-word-backward (count &optional symbol)
   "Search backward for symbol under point.
 The search is unbounded, i.e., the pattern is not wrapped in
 \\<...\\>."
@@ -2414,7 +2431,7 @@ The search is unbounded, i.e., the pattern is not wrapped in
   (dotimes (var (or count 1))
     (evil-search-word nil t symbol)))
 
-(evil-define-motion evil-search-unbounded-word-forward (count &optiona symbol)
+(evil-define-motion evil-search-unbounded-word-forward (count &optional symbol)
   "Search forward for symbol under point.
 The search is unbounded, i.e., the pattern is not wrapped in
 \\<...\\>."
@@ -3532,20 +3549,21 @@ of the parent of the splitted window are rebalanced."
 (evil-define-command evil-window-bottom-right ()
   "Move the cursor to bottom-right window."
   :repeat nil
-  (select-window
-   (let ((last-sibling (frame-root-window)))
-     (while (not (window-live-p last-sibling))
-       (setq last-sibling (window-last-child last-sibling)))
-     last-sibling)))
+  (let ((last-sibling (frame-root-window)))
+    (while (and last-sibling (not (window-live-p last-sibling)))
+      (setq last-sibling (window-last-child last-sibling)))
+    (when last-sibling
+      (select-window last-sibling))))
 
 (evil-define-command evil-window-top-left ()
   "Move the cursor to top-left window."
   :repeat nil
-  (select-window
-   (let ((first-child (window-child (frame-root-window))))
-     (while (not (window-live-p first-child))
-       (setq first-child (window-child first-child)))
-     first-child)))
+  (let ((first-child (window-child (frame-root-window))))
+    (while (and first-child (not (window-live-p first-child)))
+      (setq first-child (window-child first-child)))
+    (when first-child
+      (select-window
+       first-child))))
 
 (evil-define-command evil-window-mru ()
   "Move the cursor to the previous (last accessed) buffer in another window.

@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.7
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -2020,10 +2020,23 @@ The following special registers are supported.
               (let ((reg (- register ?1)))
                 (and (< reg (length kill-ring))
                      (current-kill reg t))))
-             ((eq register ?*)
-              (x-get-selection-value))
-             ((eq register ?+)
-              (x-get-clipboard))
+             ((memq register '(?* ?+))
+              ;; the following code is modified from
+              ;; `x-selection-value-internal'
+              (let ((what (if (eq register ?*) 'PRIMARY 'CLIPBOARD))
+                    (request-type (or (and (boundp 'x-select-request-type)
+                                           x-select-request-type)
+                                      '(UTF8_STRING COMPOUNT_TEXT STRING)))
+                    text)
+                (unless (consp request-type)
+                  (setq request-type (list request-type)))
+                (while (and request-type (not text))
+                  (condition-case nil
+                      (setq text (x-get-selection what (pop request-type)))
+                    (error nil)))
+                (when text
+                  (remove-text-properties 0 (length text) '(foreign-selection nil) text))
+                text))
              ((eq register ?\C-W)
               (unless (evil-ex-p)
                 (user-error "Register <C-w> only available in ex state"))
@@ -3002,22 +3015,36 @@ linewise, otherwise it is character wise."
     (cond
      ((> dir 0) (goto-char end) (setq other beg))
      (t (goto-char beg) (setq other end)))
-    ;; if current is only selected object ...
-    (when (and (= beg (car bnd)) (= end (cdr bnd)))
-      (if objbnd
-          ;; current match is thing, add whitespace
-          (let ((wsend (evil-bounds-of-not-thing-at-point thing dir)))
-            (if (not wsend) ;; no whitespace at end, try beginning
-                (save-excursion
-                  (goto-char other)
-                  (setq wsend (evil-bounds-of-not-thing-at-point thing (- dir)))
-                  (when wsend (setq other wsend addcurrent t)))
-              ;; add whitespace at end
-              (goto-char wsend)
-              (setq addcurrent t)))
-        ;; current match is whitespace, add thing
-        (forward-thing thing dir)
-        (setq addcurrent t)))
+    (cond
+     ;; do nothing more than only current is selected
+     ((not (and (= beg (car bnd)) (= end (cdr bnd)))))
+     ;; current match is thing, add whitespace
+     (objbnd
+      (let ((wsend (evil-with-restriction
+                       ;; restrict to current line if we do non-line selection
+                       (and (not line) (line-beginning-position))
+                       (and (not line) (line-end-position))
+                     (evil-bounds-of-not-thing-at-point thing dir))))
+        (cond
+         (wsend
+          ;; add whitespace at end
+          (goto-char wsend)
+          (setq addcurrent t))
+         (t
+          ;; no whitespace at end, try beginning
+          (save-excursion
+            (goto-char other)
+            (setq wsend
+                  (evil-with-restriction
+                      ;; restrict to current line if we do non-line selection
+                      (and (not line) (line-beginning-position))
+                      (and (not line) (line-end-position))
+                    (evil-bounds-of-not-thing-at-point thing (- dir))))
+            (when wsend (setq other wsend addcurrent t)))))))
+     ;; current match is whitespace, add thing
+     (t
+      (forward-thing thing dir)
+      (setq addcurrent t)))
     ;; possibly count current object as selection
     (if addcurrent (setq count (1- count)))
     ;; move
@@ -3229,7 +3256,16 @@ function is called from `evil-select-quote'."
           (goto-char (if (> dir 0) beg end))
           (if (and wsboth (setq bnd (bounds-of-thing-at-point 'evil-space)))
               (if (> dir 0) (setq beg (car bnd)) (setq end (cdr bnd)))))))
-      (evil-range beg end 'inclusive :expanded t))))
+      (evil-range beg end
+                  ;; HACK: fixes #583
+                  ;; When not in visual state, an empty range is
+                  ;; possible. However, this cannot be achieved with
+                  ;; inclusive ranges, hence we use exclusive ranges
+                  ;; in this case. In visual state the range must be
+                  ;; inclusive because otherwise the selection would
+                  ;; be wrong.
+                  (if (evil-visual-state-p) 'inclusive 'exclusive)
+                  :expanded t))))
 
 (defun evil-select-quote (quote beg end type count &optional inclusive)
   "Return a range (BEG END) of COUNT quoted text objects.
