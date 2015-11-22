@@ -126,7 +126,6 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
                              init-which-func
                              init-fonts
                              init-hs-minor-mode
-                             init-stripe-buffer
                              init-textile
                              init-csv
                              init-writting

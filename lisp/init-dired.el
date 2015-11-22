@@ -1,5 +1,7 @@
-(require 'dired-details)
-(dired-details-install)
+(autoload 'turn-on-stripe-buffer-mode "stripe-buffer" "" nil)
+(autoload 'turn-on-stripe-table-mode "stripe-buffer" "" nil)
+(add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
+
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)
@@ -43,16 +45,12 @@ if no files marked, always operate on current line in dired-mode
 
 (eval-after-load 'dired
   '(progn
-     (setq-default dired-details-hidden-string "")
-     (define-key dired-mode-map "(" 'dired-details-toggle)
-     (define-key dired-mode-map ")" 'dired-details-toggle)
-
+     ;; from 24.4, dired+ can show/hide dired details by press "("
      (define-key dired-mode-map "/" 'dired-isearch-filenames)
      (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
 
      (require 'dired+)
      (setq dired-recursive-deletes 'always)
-     (define-key dired-mode-map [mouse-2] 'dired-find-file)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
                      ((my-guess-mplayer-path) "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")

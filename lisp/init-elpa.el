@@ -87,7 +87,6 @@ ARCHIVE is the string name of the package archive.")
     string-edit ; looks magnars don't update stable tag frequently
     findr
     mwe-log-commands
-    dired-details
     yaml-mode
     noflet
     db
@@ -286,7 +285,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'company-c-headers)
 (require-package 'legalese)
 (require-package 'string-edit)
-(require-package 'dired-details)
 (require-package 'guide-key)
 (require-package 'fakir)
 (require-package 'simple-httpd)
