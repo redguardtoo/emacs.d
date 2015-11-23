@@ -350,9 +350,9 @@
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
-  "kk" 'toggle-full-window ;; I use WIN+F in i3
+  "ff" 'toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
-  "ff" 'find-file-in-project-by-selected
+  "kk" 'find-file-in-project-by-selected
   "fd" 'find-directory-in-project-by-selected
   "tm" 'get-term
   "tff" 'toggle-frame-fullscreen
