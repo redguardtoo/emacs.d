@@ -249,7 +249,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 (defun my-js2-mode-setup()
   (unless (is-buffer-file-temp)
     ;; looks nodejs is more popular
-    (setq inferior-js-program-command "node --interactive")
     (require 'js-comint)
     ;; if use node.js we need nice output
     (setenv "NODE_NO_READLINE" "1")
