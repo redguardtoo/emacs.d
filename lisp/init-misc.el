@@ -157,6 +157,7 @@
   (man (concat "-k " (thing-at-point 'symbol))))
 
 ;; {{ swiper
+(autoload 'ivy-recentf "ivy" "" t)
 (autoload 'swiper "swiper" "" t)
 (defun swiper-the-thing ()
   (interactive)

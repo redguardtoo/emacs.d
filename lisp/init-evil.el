@@ -423,7 +423,9 @@
   "gsh" 'git-gutter-reset-to-head-parent
   "gsr" 'git-gutter-reset-to-default
   "xc" 'save-buffers-kill-terminal
-  "rr" 'ivy-recentf ; more quick than helm
+  "rr" (lambda () (interactive)
+         (unless recentf-mode (recentf-mode 1))
+         (ivy-recentf)) ; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
