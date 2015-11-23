@@ -27,35 +27,39 @@
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;
-;;  - `M-x elpamr-create-mirror-for-installed` to create local repository
-;;  - Insert `(setq package-archives '(("myelpa" . "~/myelpa")))` into ~/.emacs
+
+;; - `M-x elpamr-create-mirror-for-installed` to create local repository at "~/myelpa"
+;; - Insert `(setq package-archives '(("myelpa" . "~/myelpa")))` into ~/.emacs
 ;;    to use that local repository
+;;
+;; You can also setup repositories on Dropbox and Github.
+;; See https://github.com/redguardtoo/elpa-mirror for how.
 
 ;;; Code:
 (require 'package)
 
 (defvar elpamr-default-output-directory
   nil
-  "The output directory. If nil, user will be required provide one when running `elpamr-create-mirror-for-installed`")
+  "The output directory.
+If nil, you need provide one when `elpamr-create-mirror-for-installed'")
 
 (defvar elpamr-repository-name
   "myelpa"
-  "repository name to be displayed in index.html.")
+  "Repository name to be displayed in index.html.")
 
 (defvar elpamr-repository-path
   "http://myelpa.mydomain.com"
-  "Repository path to be displayed in index.html")
+  "Repository path to be displayed in index.html.")
 
 (defvar elpamr-email
   "name@mydomain.com"
-  "Email to be displayed in index.html")
+  "Email to be displayed in index.html.")
 
 (defvar elpamr-exclude-package-from-repositories
   '("myelpa")
-  "exclude packages from certain repositories")
+  "Exclude packages from certain repositories.")
 
-(defvar elpamr-debug nil "show debug message")
+(defvar elpamr-debug nil "Show debug message.")
 
 (defun elpamr--get-info-array (item)
   (if (elpamr--is-new-package)
@@ -66,7 +70,8 @@
   (eq system-type 'darwin))
 
 (defun elpamr--create-one-item-for-archive-contents (pkg)
-  "We can use package-alist directly. This API will append some meta info into package-alist."
+  "We can use package-alist directly.
+This API will append some meta info into package-alist."
   (let ((name (car pkg))
         item
         package-content
@@ -105,30 +110,29 @@
 
 
 (defun elpamr--extract-info-from-dir (dirname)
-  "return '(package-name integer-version-number) or nil"
+  "Return `(list package-name integer-version-number)' or nil."
   (interactive)
   (let (rlt name version)
     (when (string-match "\\(.*\\)-\\([0-9.]+\\)$" dirname)
       (setq name (match-string 1 dirname))
       (setq version (split-string (match-string 2 dirname) "\\."))
       (setq rlt (list name version)))
-    rlt
-    ))
+    rlt))
 
 (defun elpamr--is-new-package ()
+  "Emacs 24 and Emacs 25 has different data structure from Emacs 23."
   (or (and (>= emacs-major-version 24)
            (>= emacs-minor-version 4))
-      (>= emacs-major-version 25))
-  )
+      (>= emacs-major-version 25)))
 
 (defun elpamr--output-fullpath (file)
-  "return full path of output file give the FILE"
+  "Return full path of output file, given the FILE."
   (file-truename (concat
                   (file-name-as-directory elpamr-default-output-directory)
                   file)))
 
 (defun elpamr--get-html-content ()
-  "npm install -g minify; minify index.html | pclip"
+  "The output of `npm install -g minify; minify index.html | pclip'."
   (let (rlt)
     (setq rlt "<!DOCTYPE html><html lang=en><head><meta charset='utf-8'><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content><title>My Emacs packages</title><style>.clear{clear:both;width:100%}.code{background-color:#DCDCDC;border:1px solid #B5B5B5;border-radius:3px;display:inline-block;margin:0;max-width:100%;overflow:auto;padding:0;vertical-align:middle}.spacer{margin:10px 0}@media screen and (max-width:1024px){ul{list-style-type:none;padding-left:8px}#quickstart,#upgrade,.descr,.name{width:100%}.name{padding-top:5px}.descr{border-bottom:1px solid;padding-bottom:5px}}@media screen and (min-width:1025px){#quickstart{float:left;width:50%}#upgrade{float:right;width:50%}.name{float:left;width:50%}.descr{float:right;width:50%}}</style><body><div class=clear><div id=quickstart><h2>Quick Start</h2><ul id=usage><li><a href=http://repo.or.cz/w/emacs.git/blob_plain/1a0a666f941c99882093d7bd08ced15033bc3f0c:/lisp/emacs-lisp/package.el>First, if you are not using Emacs 24, install package.el</a>.</li><li>Add to your .emacs:<br><pre class='code spacer'>(require 'package)
 (add-to-list 'package-archives
@@ -139,7 +143,7 @@
     rlt))
 
 (defun elpamr--clean-package-description (descr)
-  (replace-regexp-in-string "-\*-.*-\*-" "" descr t))
+  (replace-regexp-in-string "-\*-.*-\*-" "" (replace-regexp-in-string "\"" "" descr t) t))
 
 (defun elpamr--set-version (item version)
   (let ((a (elpamr--get-info-array item)))
@@ -272,7 +276,6 @@
     ))
 
 (defun elpamr--is-single-el-by-name (name pkglist)
-  (interactive)
   (let (rlt)
     (dolist (pkg pkglist)
       (if (string= (car pkg) name)
@@ -286,19 +289,21 @@
             (car final-pkg)
             (elpamr--get-version final-pkg)
             (elpamr--get-dependency final-pkg)
-            (elpamr--get-description final-pkg)
-            (elpamr--get-type final-pkg))
-    ))
+            (elpamr--clean-package-description (elpamr--get-description final-pkg))
+            (elpamr--get-type final-pkg))))
 
 ;;;###autoload
 (defun elpamr--version ()
+  "Current version."
   (interactive)
   (message "1.2.0"))
 
 ;;;###autoload
 (defun elpamr-create-mirror-for-installed ()
-  "Export INSTALLED packages into a new directory. Create html files for the mirror site.
-If elpamr-default-output-directory is not nil, it's assumed that is output directory. Or else, user will be asked to provide the output directory."
+  "Export INSTALLED packages into a new directory.
+Create the html files for the mirror site.
+`elpamr-default-output-directory' is output directory if non-nil.
+Or else, user will be asked to provide the output directory."
   (interactive)
   (let (item final-pkg-list pkg-dirname pkg-info tar-cmd len dirs cnt)
     ;; quoted from manual:
@@ -373,3 +378,4 @@ If elpamr-default-output-directory is not nil, it's assumed that is output direc
     ))
 
 (provide 'elpa-mirror)
+;;; elpa-mirror.el ends here
