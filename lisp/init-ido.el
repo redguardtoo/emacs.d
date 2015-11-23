@@ -15,13 +15,6 @@
 ;; Allow the same buffer to be open in different frames
 (setq ido-default-buffer-method 'selected-window)
 
-(defun steve-ido-choose-from-recentf ()
-  "Use ido to select a recently opened file from the `recentf-list'"
-  (interactive)
-  (if (and ido-use-virtual-buffers (fboundp 'ido-toggle-virtual-buffers))
-      (ido-switch-buffer)
-    (find-file (ido-completing-read "Open file: " recentf-list nil t))))
-
 (defun ido-imenu ()
   "Update the imenu index and then use ido to select a symbol to navigate to.
 Symbols matching the text at point are put first in the completion list."

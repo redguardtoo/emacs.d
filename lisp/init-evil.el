@@ -422,9 +422,8 @@
   "gss" 'git-gutter:set-start-revision
   "gsh" 'git-gutter-reset-to-head-parent
   "gsr" 'git-gutter-reset-to-default
-  "hr" 'helm-recentf
   "xc" 'save-buffers-kill-terminal
-  "rr" 'steve-ido-choose-from-recentf ;; more quick than helm
+  "rr" 'ivy-recentf ; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
