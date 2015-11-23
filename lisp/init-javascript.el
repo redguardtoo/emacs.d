@@ -281,9 +281,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
-;; @see https://github.com/Sterlingg/json-snatcher
-(autoload 'jsons-print-path "json-snatcher" nil t)
-
 ;; {{ js-beautify
 (defun js-beautify ()
   "Beautify a region of javascript using the code from jsbeautify.org.
