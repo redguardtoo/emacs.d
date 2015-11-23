@@ -1,3 +1,15 @@
+;; {{ swiper&ivy-mode
+(autoload 'ivy-recentf "ivy" "" t)
+(autoload 'ivy-read "ivy")
+(autoload 'swiper "swiper" "" t)
+
+(defun swiper-the-thing ()
+  (interactive)
+  (swiper (if (region-active-p)
+              (buffer-substring-no-properties (region-beginning) (region-end))
+            (thing-at-point 'symbol))))
+;; }}
+
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
 (autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
@@ -52,7 +64,6 @@
 
 
 ;; {{ find-file-in-project (ffip)
-(autoload 'ivy-read "ivy")
 (autoload 'find-file-in-project "find-file-in-project" "" t)
 (autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
 (autoload 'ffip-get-project-root-directory "find-file-in-project" "" t)
@@ -155,16 +166,6 @@
 (defun lookup-doc-in-man ()
   (interactive)
   (man (concat "-k " (thing-at-point 'symbol))))
-
-;; {{ swiper
-(autoload 'ivy-recentf "ivy" "" t)
-(autoload 'swiper "swiper" "" t)
-(defun swiper-the-thing ()
-  (interactive)
-  (swiper (if (region-active-p)
-              (buffer-substring-no-properties (region-beginning) (region-end))
-            (thing-at-point 'symbol))))
-;; }}
 
 ;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
