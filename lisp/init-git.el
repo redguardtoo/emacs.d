@@ -159,13 +159,35 @@
 (global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
 ;; }}
 
-;; ;; {{ cpputils-cmake.el ; debug only
-;; (setq cppcm-debug t)
-;; (setq cppcm-get-executable-full-path-callback
-;;           (lambda (path type tgt-name)
-;;             ;; extract commit id and put into the kill ring
-;;             (message "path=%s type=%s tgt-name=%s" path type tgt-name)))
-;; ;; }}
+;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
+(defun counsel-git-grep-function (string &optional _pred &rest _u)
+  "Grep in the current git repository for STRING."
+  (let (cmd)
+    (setq cmd (format
+               "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+               string))
+    (split-string
+     (shell-command-to-string cmd)
+     "\n"
+     t)))
+
+(defun counsel-git-grep ()
+  "Grep for a string in the current git repository."
+  (interactive)
+  (let ((default-directory (locate-dominating-file
+                            default-directory ".git"))
+        (keyword (if (region-active-p)
+                     (buffer-substring-no-properties (region-beginning) (region-end))
+                   (read-string "Enter keyword:")))
+        collection val lst)
+
+    (when (and (setq collection (counsel-git-grep-function keyword))
+               (setq val (ivy-read (format "%s matched:" keyword) collection)))
+        (setq lst (split-string val ":"))
+        (find-file (car lst))
+        (goto-char (point-min))
+        (forward-line (1- (string-to-number (cadr lst)))))))
+;; }}
 
 (provide 'init-git)
 

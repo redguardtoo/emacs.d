@@ -418,6 +418,7 @@
   "sj" 'w3m-search-js-api-mdn
   "sa" 'w3m-java-search
   "sh" 'w3mext-hacker-search ; code search in all engines with firefox
+  "qq" 'counsel-git-grep
   "gg" 'my-vc-git-grep
   "gss" 'git-gutter:set-start-revision
   "gsh" 'git-gutter-reset-to-head-parent
