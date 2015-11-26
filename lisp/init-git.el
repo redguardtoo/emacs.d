@@ -178,11 +178,11 @@
                             default-directory ".git"))
         (keyword (if (region-active-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string "Enter keyword:")))
+                   (read-string "Enter grep pattern:")))
         collection val lst)
 
     (when (and (setq collection (counsel-git-grep-function keyword))
-               (setq val (ivy-read (format "%s matched:" keyword) collection)))
+               (setq val (ivy-read (format "lines matching \"%s\":" keyword) collection)))
         (setq lst (split-string val ":"))
         (find-file (car lst))
         (goto-char (point-min))
