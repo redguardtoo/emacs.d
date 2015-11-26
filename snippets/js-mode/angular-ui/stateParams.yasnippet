@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: $stateParams
+# key: astate
+# group: angular
+# --
+// You also need insert below code
+// $stateProvider.state('someSteate, {
+//     params: {
+//         ${1:$(yas/substr yas-text "[^ ]*")}: null
+//     }
+// });
+if(!$stateParams.${1:paraName}) {
+  $0
+}
