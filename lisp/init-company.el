@@ -46,7 +46,9 @@
      ;; https://github.com/company-mode/company-mode/issues/29
      (setq company-global-modes
            '(not
-             eshell-mode comint-mode org-mode erc-mode gud-mode rcirc-mode))
-     ))
+             eshell-mode comint-mode org-mode erc-mode gud-mode rcirc-mode))))
 
+(eval-after-load 'company-etags
+  '(progn
+     (add-to-list 'company-etags-modes 'web-mode)))
 (provide 'init-company)
