@@ -50,5 +50,6 @@
 
 (eval-after-load 'company-etags
   '(progn
+     (add-to-list 'company-etags-modes 'js2-mode)
      (add-to-list 'company-etags-modes 'web-mode)))
 (provide 'init-company)
