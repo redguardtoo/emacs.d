@@ -1958,6 +1958,7 @@ another auto-completion with different ac-sources (e.g. ac-php)")
 (defvar web-mode-syntax-table
   (let ((table (make-syntax-table)))
     ;; (modify-syntax-entry ?_ "_" table) ;; #563
+    (modify-syntax-entry ?- "w" table)
     (modify-syntax-entry ?_ "w" table)
     (modify-syntax-entry ?< "." table)
     (modify-syntax-entry ?> "." table)
