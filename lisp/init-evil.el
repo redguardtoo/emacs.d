@@ -374,7 +374,7 @@
   "hp" 'etags-select-find-tag
   "hm" 'helm-bookmarks
   "hh" 'browse-kill-ring
-  "cg" 'helm-ls-git-ls
+  "gf" 'counsel-git-find-file
   "rjs" 'run-js
   "rpy" 'run-python
   "rlu" 'run-lua

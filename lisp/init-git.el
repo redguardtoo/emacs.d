@@ -160,33 +160,48 @@
 ;; }}
 
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-git-grep-function (string &optional _pred &rest _u)
+(defun counsel-git-grep-function (string &optional is-find-file)
   "Grep in the current git repository for STRING."
   (let (cmd)
     (setq cmd (format
-               "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+               (if is-find-file "git ls-tree -r HEAD --name-status | grep \"%s\""
+                 "git --no-pager grep --full-name -n --no-color -i -e \"%s\"")
                string))
     (split-string
      (shell-command-to-string cmd)
      "\n"
      t)))
 
-(defun counsel-git-grep ()
-  "Grep for a string in the current git repository."
-  (interactive)
+(defun counsel-git-grep-or-find-api (&optional is-find-file)
+  "Grep a string or fine a file in the current git repository."
   (let ((default-directory (locate-dominating-file
                             default-directory ".git"))
         (keyword (if (region-active-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string "Enter grep pattern:")))
+                   (read-string "Enter pattern:")))
         collection val lst)
 
-    (when (and (setq collection (counsel-git-grep-function keyword))
-               (setq val (ivy-read (format "lines matching \"%s\":" keyword) collection)))
-        (setq lst (split-string val ":"))
-        (find-file (car lst))
-        (goto-char (point-min))
-        (forward-line (1- (string-to-number (cadr lst)))))))
+    (when (and (setq collection (counsel-git-grep-function keyword is-find-file))
+               (> (length collection) 0))
+      (setq val (if (= 1 (length collection)) (car collection)
+                    (ivy-read (format " matching \"%s\":" keyword) collection)))
+      (setq lst (split-string val ":"))
+        (find-file (if (listp lst) (car lst) lst))
+        (let ((linenum (cadr lst)))
+          (when (and linenum (> linenum 0))
+            (goto-char (point-min))
+            (forward-line (1- (string-to-number (cadr lst))))
+            )))))
+
+(defun counsel-git-grep ()
+  "Grep for a string in the current git repository."
+  (interactive)
+  (counsel-git-grep-or-find-api))
+
+(defun counsel-git-find-file ()
+  "Find file  in the current git repository."
+  (interactive)
+  (counsel-git-grep-or-find-api t))
 ;; }}
 
 (provide 'init-git)
