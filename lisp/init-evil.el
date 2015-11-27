@@ -375,6 +375,9 @@
   "hm" 'helm-bookmarks
   "hh" 'browse-kill-ring
   "cg" 'helm-ls-git-ls
+  "rjs" 'run-js
+  "rpy" 'run-python
+  "rlu" 'run-lua
   "ud" 'my-gud-gdb
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
