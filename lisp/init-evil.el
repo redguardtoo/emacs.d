@@ -518,6 +518,7 @@
   "vv" 'scroll-other-window
   "vu" 'scroll-other-window-up
   "jde" 'js2-display-error-list
+  "jne" 'js2-next-error
   "jte" 'js2-mode-toggle-element
   "jtf" 'js2-mode-toggle-hide-functions
   "jjeo" 'js2r-expand-object
