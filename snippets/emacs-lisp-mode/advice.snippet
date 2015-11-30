@@ -1,0 +1,10 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (defadvice ... around)
+# key: advice
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(defadvice ${1:find-file} (around ${1:$(yas/substr yas-text "[^ ]*")}-hack activate)
+  (message "original-args=%s" (ad-get-args))
+  ;; you can use (ad-get-arg 0) and (ad-set-arg 0) to tweank the arguments
+  $0
+  ad-do-it)
