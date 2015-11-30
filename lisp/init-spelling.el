@@ -144,9 +144,18 @@
                   js2-mode-hook))
     (add-hook hook 'flyspell-prog-mode)))
 
-
 ;; you can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
 (global-set-key (kbd "C-c s") 'flyspell-auto-correct-word)
+
+;; {{ avoid spell-checking doublon (double word) in certain major modes
+(defvar flyspell-check-doublon t
+  "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
+ (make-variable-buffer-local 'flyspell-check-doublon)
+
+(defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
+  (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
+      ad-do-it))
+;; }}
 
 (provide 'init-spelling)

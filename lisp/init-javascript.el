@@ -48,6 +48,7 @@
     ;; DONOT jslint json
     ;; (add-to-list 'flymake-allowed-file-name-masks
     ;;              '("\\.json\\'" flymake-javascript-init))
+    (setq flyspell-check-doublon nil)
     (message "mo-js-mode-hook called")
     (flymake-mode 1)))
 
@@ -252,6 +253,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     (require 'js-comint)
     ;; if use node.js we need nice output
     (setenv "NODE_NO_READLINE" "1")
+    (setq flyspell-check-doublon nil)
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
     (require 'js2-refactor)
