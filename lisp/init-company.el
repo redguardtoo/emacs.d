@@ -1,5 +1,4 @@
-(add-hook 'prog-mode-hook 'global-company-mode)
-(add-hook 'cmake-mode-hook 'global-company-mode)
+(add-hook 'after-init-hook 'global-company-mode)
 
 (if (fboundp 'evil-declare-change-repeat)
     (mapc #'evil-declare-change-repeat
@@ -27,9 +26,7 @@
      ;; company should be case sensitive
      (setq company-dabbrev-downcase nil)
      (setq company-dabbrev-ignore-case nil)
-
      (setq company-show-numbers t)
-     (setq company-begin-commands '(self-insert-command))
      (setq company-idle-delay 0.2)
      (setq company-clang-insert-arguments nil)
      (setq company-require-match nil)
@@ -46,7 +43,7 @@
      ;; https://github.com/company-mode/company-mode/issues/29
      (setq company-global-modes
            '(not
-             eshell-mode comint-mode org-mode erc-mode gud-mode rcirc-mode))))
+             eshell-mode comint-mode erc-mode gud-mode rcirc-mode))))
 
 (eval-after-load 'company-etags
   '(progn
