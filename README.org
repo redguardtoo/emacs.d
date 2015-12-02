@@ -310,8 +310,10 @@ Check [[http://emacsthemes.caisah.info/]].
 
 Write down the name of color theme (for example, molokai).
 
+*** Setup color theme manually (recommended)
 Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
 #+BEGIN_SRC elisp
+;; the color theme name "molokai"" could be replaced with other theme name
 (require 'color-theme-molokai)
 (color-theme-molokai)
 #+END_SRC
@@ -321,11 +323,14 @@ Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
 Please note there is *NO unified way* to enable color theme. You need read color theme's documentation at first.
 
 My sample code works for most color themes.
+
+If you *insist on configuring the color theme in a different way*, please,
+- Comment out the line containing `(require 'init-color-theme)` in "~/.emacs.d/init.el" at first
+- Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
 *** Use color theme in terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
-
 ** Chinese Input Method Editor
 Run command `M-x toggle-input-method` to toggle input method.
 
