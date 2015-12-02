@@ -301,7 +301,7 @@ sudo pip install jsbeautifier"
     (goto-char orig-point)))
 ;; }}
 
-(setq-default js2-global-externs
+(setq-default js2-additional-externs
               '("$"
                 "AccessifyHTML5"
                 "KeyEvent"
