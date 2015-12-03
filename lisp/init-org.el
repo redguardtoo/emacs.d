@@ -150,11 +150,6 @@
   ;; you can comment out `(flyspell-mode -1)` if prefer auto spell check
   (flyspell-mode -1)
 
-  ;; @see https://github.com/company-mode/company-mode/issues/50
-  (make-local-variable 'company-backends)
-  (add-to-list 'company-backends 'company-ispell)
-  (setq company-ispell-dictionary ispell-alternate-dictionary)
-
   ;; display wrapped lines instead of truncated lines
   (setq truncate-lines nil)
   (setq word-wrap t))

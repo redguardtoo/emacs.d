@@ -43,9 +43,31 @@
      ;; https://github.com/company-mode/company-mode/issues/29
      (setq company-global-modes
            '(not
-             eshell-mode comint-mode erc-mode gud-mode rcirc-mode))))
+             eshell-mode comint-mode erc-mode gud-mode rcirc-mode
+             minibuffer-inactive-mode))))
+
+;; {{ setup company-ispell
+(defun toggle-company-ispell ()
+  (interactive)
+  (cond
+   ((memq 'company-ispell company-backends)
+    (setq company-backends (delete 'company-ispell company-backends))
+    (message "company-ispell disabled"))
+   (t
+    (add-to-list 'company-backends 'company-ispell)
+    (message "company-ispell enabled!"))))
+
+(defun text-mode-hook-setup ()
+  ;; @see https://github.com/company-mode/company-mode/issues/50
+  (make-local-variable 'company-backends)
+  (add-to-list 'company-backends 'company-ispell)
+  (setq company-ispell-dictionary ispell-alternate-dictionary))
+
+(add-hook 'text-mode-hook 'text-mode-hook-setup)
+;; }}
 
 (eval-after-load 'company-etags
   '(progn
      (add-to-list 'company-etags-modes 'web-mode)))
+
 (provide 'init-company)

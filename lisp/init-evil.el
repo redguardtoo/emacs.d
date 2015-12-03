@@ -390,6 +390,7 @@
   "ui" 'gud-stepi
   "uc" 'gud-cont
   "uf" 'gud-finish
+  "tci" 'toggle-company-ispell
   "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "it" 'issue-tracker-increment-issue-id-under-cursor
   "ls" 'highlight-symbol
