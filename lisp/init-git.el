@@ -172,13 +172,13 @@
      "\n"
      t)))
 
-(defun counsel-git-grep-or-find-api (&optional is-find-file)
+(defun counsel-git-grep-or-find-api (open-another-window &optional is-find-file)
   "Grep a string or fine a file in the current git repository."
   (let ((default-directory (locate-dominating-file
                             default-directory ".git"))
         (keyword (if (region-active-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string "Enter pattern:")))
+                   (read-string (concat "Enter " (if is-find-file "file" "grep") " pattern:" ))))
         collection val lst)
 
     (when (and (setq collection (counsel-git-grep-function keyword is-find-file))
@@ -186,22 +186,25 @@
       (setq val (if (= 1 (length collection)) (car collection)
                     (ivy-read (format " matching \"%s\":" keyword) collection)))
       (setq lst (split-string val ":"))
-        (find-file (if (listp lst) (car lst) lst))
+      (funcall (if open-another-window 'find-file-other-window 'find-file)
+               (if (listp lst) (car lst) lst))
         (let ((linenum (cadr lst)))
           (when (and linenum (> linenum 0))
             (goto-char (point-min))
             (forward-line (1- (string-to-number (cadr lst))))
             )))))
 
-(defun counsel-git-grep ()
-  "Grep for a string in the current git repository."
-  (interactive)
-  (counsel-git-grep-or-find-api))
+(defun counsel-git-grep (&optional open-another-window)
+  "Grep for a string in the current git repository.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+  (interactive "P")
+  (counsel-git-grep-or-find-api open-another-window))
 
-(defun counsel-git-find-file ()
-  "Find file  in the current git repository."
-  (interactive)
-  (counsel-git-grep-or-find-api t))
+(defun counsel-git-find-file (&optional open-another-window)
+  "Find file  in the current git repository.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+  (interactive "P")
+  (counsel-git-grep-or-find-api open-another-window t))
 ;; }}
 
 (provide 'init-git)
