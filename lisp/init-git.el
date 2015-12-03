@@ -188,10 +188,10 @@
       (setq lst (split-string val ":"))
       (funcall (if open-another-window 'find-file-other-window 'find-file)
                (if (listp lst) (car lst) lst))
-        (let ((linenum (cadr lst)))
+        (let ((linenum (string-to-number (cadr lst))))
           (when (and linenum (> linenum 0))
             (goto-char (point-min))
-            (forward-line (1- (string-to-number (cadr lst))))
+            (forward-line (1- linenum))
             )))))
 
 (defun counsel-git-grep (&optional open-another-window)
