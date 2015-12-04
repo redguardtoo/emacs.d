@@ -375,6 +375,7 @@
   "hm" 'helm-bookmarks
   "hh" 'browse-kill-ring
   "gf" 'counsel-git-find-file
+  "gl" 'counsel-git-grep-yank-line
   "rjs" 'run-js
   "rpy" 'run-python
   "rlu" 'run-lua

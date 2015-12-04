@@ -160,51 +160,69 @@
 ;; }}
 
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-git-grep-function (string &optional is-find-file)
-  "Grep in the current git repository for STRING."
-  (let (cmd)
-    (setq cmd (format
-               (if is-find-file "git ls-tree -r HEAD --name-status | grep \"%s\""
-                 "git --no-pager grep --full-name -n --no-color -i -e \"%s\"")
-               string))
-    (split-string
-     (shell-command-to-string cmd)
-     "\n"
-     t)))
-
-(defun counsel-git-grep-or-find-api (open-another-window &optional is-find-file)
-  "Grep a string or fine a file in the current git repository."
+(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window)
+  "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
+IF OPEN-ANOTHER-WINDOW is true, open the file in another window."
   (let ((default-directory (locate-dominating-file
                             default-directory ".git"))
         (keyword (if (region-active-p)
                      (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string (concat "Enter " (if is-find-file "file" "grep") " pattern:" ))))
+                   (read-string (concat "Enter " hint " pattern:" ))))
         collection val lst)
 
-    (when (and (setq collection (counsel-git-grep-function keyword is-find-file))
-               (> (length collection) 0))
+    (setq collection (split-string (shell-command-to-string (format git-cmd keyword))
+                                   "\n"
+                                   t))
+
+    (when (and collection (> (length collection) 0))
       (setq val (if (= 1 (length collection)) (car collection)
                     (ivy-read (format " matching \"%s\":" keyword) collection)))
-      (setq lst (split-string val ":"))
-      (funcall (if open-another-window 'find-file-other-window 'find-file)
-               (if (listp lst) (car lst) lst))
-        (let ((linenum (string-to-number (cadr lst))))
-          (when (and linenum (> linenum 0))
-            (goto-char (point-min))
-            (forward-line (1- linenum))
-            )))))
+      (funcall fn open-another-window val))))
 
 (defun counsel-git-grep (&optional open-another-window)
-  "Grep for a string in the current git repository.
+  "Grep in the current git repository.
 If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
   (interactive "P")
-  (counsel-git-grep-or-find-api open-another-window))
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (let ((lst (split-string val ":")))
+                 (funcall (if open-another-window 'find-file-other-window 'find-file)
+                          (car lst))
+                 (let ((linenum (string-to-number (cadr lst))))
+                   (when (and linenum (> linenum 0))
+                     (goto-char (point-min))
+                     (forward-line (1- linenum)))))))
+
+    (counsel-git-grep-or-find-api fn
+                                  "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+                                  "grep"
+                                  open-another-window)))
 
 (defun counsel-git-find-file (&optional open-another-window)
-  "Find file  in the current git repository.
+  "Find file in the current git repository.
 If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
   (interactive "P")
-  (counsel-git-grep-or-find-api open-another-window t))
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (funcall (if open-another-window 'find-file-other-window 'find-file) val)))
+    (counsel-git-grep-or-find-api fn
+                                  "git ls-tree -r HEAD --name-status | grep \"%s\""
+                                  "file"
+                                  open-another-window)))
+
+(defun counsel-git-grep-yank-line ()
+  "Grep in the current git repository and yank the line."
+  (interactive)
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (let ((lst (split-string val ":")))
+                 (kill-new (nth 2 lst))
+                 (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst)))))
+
+    (counsel-git-grep-or-find-api fn
+                                  "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+                                  "grep"
+                                  nil)))
 ;; }}
 
 (provide 'init-git)
