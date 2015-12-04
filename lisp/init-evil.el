@@ -377,6 +377,7 @@
   "gf" 'counsel-git-find-file
   "gl" 'counsel-git-grep-yank-line
   "rjs" 'run-js
+  "rmz" 'run-mozilla
   "rpy" 'run-python
   "rlu" 'run-lua
   "ud" 'my-gud-gdb
