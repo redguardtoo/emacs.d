@@ -373,7 +373,7 @@
   "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
   "hp" 'etags-select-find-tag
   "hm" 'helm-bookmarks
-  "hh" 'browse-kill-ring
+  "yy" 'browse-kill-ring
   "gf" 'counsel-git-find-file
   "gl" 'counsel-git-grep-yank-line
   "rjs" 'run-js
@@ -567,7 +567,7 @@
   "xvl" 'vc-print-log
   "xvb" 'git-messenger:popup-message
   "xv=" 'git-gutter:popup-hunk
-  "yy" 'cliphist-paste-item
+  "hh" 'cliphist-paste-item
   "yu" 'cliphist-select-item
   "nn" 'my-goto-next-hunk
   "pp" 'my-goto-previous-hunk
