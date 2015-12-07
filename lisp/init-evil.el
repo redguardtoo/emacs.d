@@ -354,7 +354,7 @@
   "ip" 'find-file-in-project
   "kk" 'find-file-in-project-by-selected
   "fd" 'find-directory-in-project-by-selected
-  "tm" 'get-term
+  "trm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
   ;; "ci" 'evilnc-comment-or-uncomment-lines
@@ -376,6 +376,8 @@
   "yy" 'browse-kill-ring
   "gf" 'counsel-git-find-file
   "gl" 'counsel-git-grep-yank-line
+  "gg" 'counsel-git-grep ; quickest grep should be easy to press
+  "gm" 'counsel-git-find-my-file
   "rjs" 'run-js
   "rmz" 'run-mozilla
   "rpy" 'run-python
@@ -405,7 +407,7 @@
   "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
-  "gm" 'git-timemachine-toggle
+  "tmt" 'git-timemachine-toggle
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
@@ -424,7 +426,6 @@
   "sj" 'w3m-search-js-api-mdn
   "sa" 'w3m-java-search
   "sh" 'w3mext-hacker-search ; code search in all engines with firefox
-  "gg" 'counsel-git-grep ; quickest grep should be easy to press
   "qq" 'my-grep
   "gss" 'git-gutter:set-start-revision
   "gsh" 'git-gutter-reset-to-head-parent

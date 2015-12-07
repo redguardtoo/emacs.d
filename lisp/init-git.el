@@ -210,19 +210,42 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
                                   "file"
                                   open-another-window)))
 
-(defun counsel-git-grep-yank-line ()
-  "Grep in the current git repository and yank the line."
-  (interactive)
+(defun counsel-git-grep-yank-line (&optional insert-line)
+  "Grep in the current git repository and yank the line.
+If INSERT-LINE is not nil, insert the line grepped"
+  (interactive "P")
   (let (fn)
-    (setq fn (lambda (open-another-window val)
-               (let ((lst (split-string val ":")))
-                 (kill-new (nth 2 lst))
+    (setq fn (lambda (unused-param val)
+               (let ((lst (split-string val ":")) text-line)
+                 ;; the actual text line could contain ":"
+                 (setq text-line (replace-regexp-in-string (format "^%s:%s:" (car lst) (nth 1 lst)) "" val))
+                 ;; trim the text line
+                 (setq text-line (replace-regexp-in-string (rx (* (any " \t\n")) eos) "" text-line))
+                 (kill-new text-line)
+                 (if insert-line (insert text-line))
                  (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst)))))
 
     (counsel-git-grep-or-find-api fn
                                   "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
                                   "grep"
                                   nil)))
+
+(defvar counsel-my-name-regex ""
+  "My name used by `counsel-git-find-my-file', support regex like '[Tt]om [Cc]hen'.")
+
+(defun counsel-git-find-my-file (&optional open-another-window)
+  "Find file in the current git repository.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+  (interactive "P")
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (funcall (if open-another-window 'find-file-other-window 'find-file) val)))
+    (counsel-git-grep-or-find-api fn
+                                  (concat "git log --pretty=format: --name-only --since=\"6 months ago\" --author=\""
+                                          counsel-my-name-regex
+                                          "\" | grep \"%s\" | sort | uniq")
+                                  "file"
+                                  open-another-window)))
 ;; }}
 
 (provide 'init-git)
