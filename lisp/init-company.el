@@ -32,6 +32,13 @@
      (setq company-require-match nil)
      (setq company-etags-ignore-case t)
 
+     ;; @see https://github.com/redguardtoo/emacs.d/commit/2ff305c1ddd7faff6dc9fa0869e39f1e9ed1182d
+     (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
+       ;; you can use (ad-get-arg 0) and (ad-set-arg 0) to tweak the arguments
+       (if (memq major-mode '(php-mode html-mode web-mode nxml-mode))
+           (setq ad-return-value nil)
+         ad-do-it))
+
      ;; press SPACE will accept the highlighted candidate and insert a space
      ;; `M-x describe-variable company-auto-complete-chars` for details
      ;; That's BAD idea.
