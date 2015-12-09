@@ -233,19 +233,23 @@ If INSERT-LINE is not nil, insert the line grepped"
 (defvar counsel-my-name-regex ""
   "My name used by `counsel-git-find-my-file', support regex like '[Tt]om [Cc]hen'.")
 
-(defun counsel-git-find-my-file (&optional open-another-window)
-  "Find file in the current git repository.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+(defun counsel-git-find-my-file (&optional num)
+  "Find my files in the current git repository.
+If NUM is not nil, find files since NUM weeks ago.
+Or else, find files since 24 weeks (6 months) ago."
   (interactive "P")
-  (let (fn)
+  (let (fn cmd)
     (setq fn (lambda (open-another-window val)
-               (funcall (if open-another-window 'find-file-other-window 'find-file) val)))
-    (counsel-git-grep-or-find-api fn
-                                  (concat "git log --pretty=format: --name-only --since=\"6 months ago\" --author=\""
+               (find-file val)))
+    (unless (and num (> num 0))
+      (setq num 24))
+    (setq cmd (concat "git log --pretty=format: --name-only --since=\""
+                                          (number-to-string num)
+                                          " weeks ago\" --author=\""
                                           counsel-my-name-regex
-                                          "\" | grep \"%s\" | sort | uniq")
-                                  "file"
-                                  open-another-window)))
+                                          "\" | grep \"%s\" | sort | uniq"))
+    (message "cmd=%s" cmd)
+    (counsel-git-grep-or-find-api fn cmd "file" nil)))
 ;; }}
 
 (provide 'init-git)
