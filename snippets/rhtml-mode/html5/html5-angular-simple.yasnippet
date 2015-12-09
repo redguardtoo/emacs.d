@@ -19,7 +19,7 @@
       <button ng-click="clickMe()" >Click Me</button>
     </div>
     <script type="text/javascript">
-     angular.module('myApp', []).controller('MainCtrl', ['$scope', function($scope) {
+     angular.module('myApp', []).controller('MainCtrl', ['$scope', '$filter', function($scope, $filter) {
        $0
        $scope.count = 1;
        $scope.message = 'Hello World ';
