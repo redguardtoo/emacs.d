@@ -33,3 +33,7 @@
                  '(require 'ox-odt nil t))
 
 (setq org-export-with-sub-superscripts nil)
+
+(setq mac-command-modifier 'meta)
+(setq mac-option-modifier nil)
+(setq org-export-with-properties t)
