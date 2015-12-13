@@ -157,12 +157,14 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(c-basic-offset 4)
+ '(c-default-style "linux")
+ '(fill-column 80)
  '(org-agenda-files
    (quote
     ("~/ws/OrgNotes/gtd.org" "~/ws/OrgNotes/LearningPlan.org" "~/ws/OrgNotes/Work@Cisco.org" "~/ws/OrgNotes/Birthday.org")))
  '(org-catch-invisible-edits (quote error))
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
- '(fill-column 80)
  '(session-use-package t nil (session)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
