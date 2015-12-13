@@ -229,6 +229,8 @@
   (unless (is-buffer-file-temp)
 	;; highlight FIXME/BUG/TODO in comment
 	(require 'fic-mode)
+    ;; don't spell check double words
+    (setq flyspell-check-doublon nil)
 	(fic-mode 1)
 	;; enable for all programming modes
 	;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
@@ -237,8 +239,7 @@
 	;; eldoc, show API doc in minibuffer echo area
 	(turn-on-eldoc-mode)
 	;; show trailing spaces in a programming mod
-	(setq show-trailing-whitespace t)
-	))
+	(setq show-trailing-whitespace t)))
 
 (add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
 
