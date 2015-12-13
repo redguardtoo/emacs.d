@@ -91,10 +91,12 @@ Please ignore any related error message. For example, if aspell and hunspell are
 **** csslint
 - install `node.js` through OS package manager, then `sudo npm install -g csslint`
 
+**** indentify from [[http://www.imagemagick.org/][ImageMagick]]
+- needed by `org-mode` to export org file to odt file when image embedded
+- install through OS package manager
 **** zip and unzip
 - needed by `org-mode` to export org file to odt file
 - install through OS package manager
-
 **** jshint
 - install `node.js` through OS package manager, then `sudo npm install -g jshint`
 - required by js-mode
