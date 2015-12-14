@@ -331,7 +331,6 @@
   "em" 'erase-message-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
-  "sr" 'evil-surround-region
   "sc" 'shell-command
   "ee" 'eval-expression
   "aa" 'copy-to-x-clipboard ; used frequently
