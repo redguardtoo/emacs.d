@@ -532,6 +532,7 @@ buffer is not visiting a file."
       "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 ;; }}
 
+;; {{
 (defun goto-edge-by-comparing-font-face (&optional step)
 "Goto either the begin or end of string/comment/whatever.
 If step is -1, go backward."
@@ -552,4 +553,9 @@ If step is -1, go backward."
     ;; (message "rlt=%s found=%s" rlt found)
     (goto-char rlt)))
 ;; }}
+
+(defun string-edit-at-point-hook-setup ()
+  (web-mode))
+(add-hook 'string-edit-at-point-hook 'string-edit-at-point-hook-setup)
+
 (provide 'init-misc)
