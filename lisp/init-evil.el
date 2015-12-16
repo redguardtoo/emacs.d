@@ -400,7 +400,7 @@
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "bm" 'pomodoro-start ;; beat myself
-  "im" 'helm-imenu
+  "im" 'ivy-imenu
   "ii" 'ido-imenu
   "ij" 'rimenu-jump
   "." 'evil-ex
