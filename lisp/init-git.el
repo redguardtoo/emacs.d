@@ -248,7 +248,7 @@ Or else, find files since 24 weeks (6 months) ago."
                                           " weeks ago\" --author=\""
                                           counsel-my-name-regex
                                           "\" | grep \"%s\" | sort | uniq"))
-    (message "cmd=%s" cmd)
+    ;; (message "cmd=%s" cmd)
     (counsel-git-grep-or-find-api fn cmd "file" nil)))
 ;; }}
 
