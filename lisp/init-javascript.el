@@ -316,6 +316,7 @@ sudo pip install jsbeautifier"
                 "describe"
                 "element"
                 "expect"
+                "gBrowser" ; Keysnail
                 "inject"
                 "it"
                 "jQuery"
@@ -327,6 +328,7 @@ sudo pip install jsbeautifier"
                 "require"
                 "setInterval"
                 "setTimeout"
+                "tileTabs" ; Firefox addon
                 "utag"))
 
 (provide 'init-javascript)
