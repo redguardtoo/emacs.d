@@ -35,13 +35,6 @@
 ;;----------------------------------------------------------------------------
 (global-page-break-lines-mode)
 
-;; {{ shell and conf
-(add-to-list 'auto-mode-alist '("\\.[^b][^a][a-zA-Z]*rc$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.aspell\\.en\\.pws\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.meta\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ctags\\'" . conf-mode))
-;; }}
-
 (column-number-mode 1)
 
 ;; my screen is tiny, so I use minimum eshell prompt
