@@ -31,7 +31,6 @@
                                 (mode . ruby-mode)
                                 (mode . scss-mode)
                                 (mode . css-mode)
-                                (mode . csharp-mode)
                                 (mode . objc-mode)
                                 (mode . sql-mode)
                                 (mode . python-mode)

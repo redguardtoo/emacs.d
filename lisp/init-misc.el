@@ -33,9 +33,6 @@
 ;; M-x without meta
 (global-set-key (kbd "C-x C-m") 'execute-extended-command)
 
-;; C#
-(add-to-list 'auto-mode-alist '("\\.cs$" . csharp-mode))
-
 ;; {{ isearch
 ;; Use regex to search by default
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)

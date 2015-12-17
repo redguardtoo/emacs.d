@@ -97,7 +97,6 @@ ARCHIVE is the string name of the package archive.")
     pointback
     buffer-move
     regex-tool
-    csharp-mode
     quack
     legalese
     htmlize
@@ -252,7 +251,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'rinari)
 (require-package 'groovy-mode)
 (require-package 'ruby-compilation)
-(require-package 'csharp-mode)
 (require-package 'emmet-mode)
 (require-package 'session)
 ;; (require-package 'tidy)
