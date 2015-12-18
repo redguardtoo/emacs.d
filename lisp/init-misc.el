@@ -413,29 +413,7 @@ buffer is not visiting a file."
 
 (setq system-time-locale "C")
 
-
-;; {{ imenu
-(setq imenu-max-item-length 128)
-
-(defun ivy-imenu-get-candidates-from (alist  &optional prefix)
-  (cl-loop for elm in alist
-           nconc (if (imenu--subalist-p elm)
-                       (ivy-imenu-get-candidates-from
-                        (cl-loop for (e . v) in (cdr elm) collect
-                                 (cons e (if (integerp v) (copy-marker v) v)))
-                        (concat prefix (if prefix ".") (car elm)))
-                   (and (cdr elm) ; bug in imenu, should not be needed.
-                        (setcdr elm (copy-marker (cdr elm))) ; Same as [1].
-                        (list (cons (concat prefix (if prefix ".") (car elm))
-                                    (copy-marker (cdr elm))))))))
-
-(defun ivy-imenu ()
-  (interactive)
-  (let ((items (imenu--make-index-alist t)))
-    (ivy-read "imenu items:"
-              (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
-              :action (lambda (k) (goto-char k)))))
-;; }}
+(setq imenu-max-item-length 256)
 
 ;; {{ recentf-mode
 (setq recentf-keep '(file-remote-p file-readable-p))

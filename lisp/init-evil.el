@@ -371,7 +371,7 @@
   "cbu" 'cb-get-url-from-controller
   "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
   "hp" 'etags-select-find-tag
-  "hm" 'helm-bookmarks
+  "hm" 'ivy-bookmark-goto
   "yy" 'browse-kill-ring
   "gf" 'counsel-git-find-file
   "gl" 'counsel-git-grep-yank-line
@@ -400,7 +400,7 @@
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "bm" 'pomodoro-start ;; beat myself
-  "im" 'ivy-imenu
+  "im" 'ivy-imenu-goto
   "ii" 'ido-imenu
   "ij" 'rimenu-jump
   "." 'evil-ex

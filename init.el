@@ -69,6 +69,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 (require 'init-flymake)
 (require 'init-smex)
 (require 'init-helm)
+(require 'init-ivy)
 (require 'init-hippie-expand)
 (require 'init-windows)
 (require 'init-sessions)
@@ -157,6 +158,8 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(bmkp-last-as-first-bookmark-file "/home/cb/.emacs.bmk")
+ '(git-gutter:handled-backends (quote (svn hg git)))
  '(safe-local-variable-values (quote ((lentic-init . lentic-orgel-org-init))))
  '(session-use-package t nil (session)))
 (custom-set-faces
