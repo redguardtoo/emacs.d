@@ -137,6 +137,7 @@
 
 (eval-after-load 'org
   '(progn
+     (setq org-imenu-depth 4)
      (require 'org-clock)
      ;; @see http://irreal.org/blog/1
      (setq org-src-fontify-natively t)))
