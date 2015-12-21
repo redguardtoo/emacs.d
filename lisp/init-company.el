@@ -64,13 +64,14 @@
     (add-to-list 'company-backends 'company-ispell)
     (message "company-ispell enabled!"))))
 
-(defun text-mode-hook-setup ()
+(defun company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
   (make-local-variable 'company-backends)
   (add-to-list 'company-backends 'company-ispell)
   (setq company-ispell-dictionary ispell-alternate-dictionary))
-
-(add-hook 'text-mode-hook 'text-mode-hook-setup)
+;; message-mode use company-bbdb.
+;; So we should NOT turn on company-ispell
+(add-hook 'org-mode-hook 'company-ispell-setup)
 ;; }}
 
 (eval-after-load 'company-etags
