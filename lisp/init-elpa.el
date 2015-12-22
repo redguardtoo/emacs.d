@@ -132,6 +132,7 @@ ARCHIVE is the string name of the package archive.")
     base16-theme
     basic-theme
     birds-of-paradise-plus-theme
+    workgroups2
     bliss-theme
     boron-theme
     bubbleberry-theme
@@ -207,6 +208,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'lua-mode)
 (require-package 'robe)
 (require-package 'inf-ruby)
+(require-package 'workgroups2)
 (require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'erlang)
