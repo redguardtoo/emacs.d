@@ -305,6 +305,7 @@ sudo pip install jsbeautifier"
                 "KeyEvent"
                 "Raphael"
                 "React"
+                "_content" ; Keysnail
                 "angular"
                 "app"
                 "beforeEach"
@@ -312,23 +313,33 @@ sudo pip install jsbeautifier"
                 "by"
                 "clearInterval"
                 "clearTimeout"
+                "command" ; Keysnail
+                "content" ; Keysnail
                 "define"
                 "describe"
+                "display" ; Keysnail
                 "element"
                 "expect"
+                "ext" ; Keysnail
                 "gBrowser" ; Keysnail
+                "goDoCommand" ; Keysnail
+                "hook" ; Keysnail
                 "inject"
                 "it"
                 "jQuery"
                 "jasmine"
+                "key" ; Keysnail
                 "ko"
                 "log"
                 "module"
+                "plugins" ; Keysnail
                 "process"
                 "require"
                 "setInterval"
                 "setTimeout"
+                "shell" ; Keysnail
                 "tileTabs" ; Firefox addon
+                "util" ; Keysnail
                 "utag"))
 
 (provide 'init-javascript)
