@@ -28,13 +28,12 @@
 
 (defun git-gutter-reset-to-head-parent()
   (interactive)
-  (let (parent)
+  (let (parent (filename (buffer-file-name)))
     (if (eq git-gutter:vcs-type 'svn)
         (setq parent "PREV")
-      (setq parent "HEAD^"))
+      (setq parent (if filename (concat (shell-command-to-string (concat "git --no-pager log --oneline -n1 --pretty='format:%H' " filename)) "^") "HEAD^")))
     (git-gutter:set-start-revision parent)
-    (message "git-gutter:set-start-revision parent of HEAD")
-    ))
+    (message "git-gutter:set-start-revision HEAD^")))
 
 (defun git-gutter-reset-to-default ()
   (interactive)
