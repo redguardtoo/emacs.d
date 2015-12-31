@@ -421,7 +421,8 @@ buffer is not visiting a file."
       recentf-exclude '("/tmp/"
                         "/ssh:"
                         "/sudo:"
-                        "/home/[a-z]\+/\\."))
+                        ;; ~/.emacs.d/**/*.el included
+                        "/home/[a-z]\+/\\.[a-df-z]"))
 ;; }}
 
 ;; {{ popup functions
