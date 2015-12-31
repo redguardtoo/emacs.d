@@ -156,6 +156,12 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - `curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic` to install dictionary
 
 * Tutorial (OPTIONAL)
+"~/.emacs.d/lisp/init-evil.el" lists the most frequently used key bindings I use.
+
+For example, below line means pressing ",bf" equals to `M-x beginning-of-defun`,
+#+begin_src elisp
+ "bf" 'beginning-of-defun
+#+end_src
 ** Basic tutorial
 *** Step 1, learn OS basics
 Read wikipedia in order to know,
