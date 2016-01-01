@@ -443,7 +443,9 @@
   "x1" 'delete-other-windows
   "x2" 'split-window-vertically
   "x3" 'split-window-horizontally
-  "xr" 'rotate-windows
+  "xrw" 'rotate-windows
+  "xru" 'undo-tree-save-state-to-register ; C-x r u
+  "xrU" 'undo-tree-restore-state-from-register ; C-x r U
   "xt" 'toggle-window-split
   "su" 'winner-undo
   "xu" 'winner-undo
