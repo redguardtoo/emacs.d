@@ -71,10 +71,19 @@
 ;;
 ;; tweak evil-filepath-is-nonname to re-define a path
 (defun evil-filepath-is-separator-char (ch)
-  "Check ascii table"
-  (let (rlt)
-    (if (or (= ch 47)
-            (= ch 92))
+  "Check ascii table that CH is slash characters.
+If the character before and after CH is space or tab, CH is NOT slash"
+  (let (rlt prefix-ch postfix-ch)
+    (when (and (> (point) (point-min)) (< (point) (point-max)))
+        (save-excursion
+          (backward-char)
+          (setq prefix-ch (following-char)))
+        (save-excursion
+          (forward-char)
+          (setq postfix-ch (following-char))))
+    (message "prefix-ch=%s postfix-ch=%s" prefix-ch postfix-ch)
+    (if (and (not (or (= prefix-ch 32) (= postfix-ch 32)))
+             (or (= ch 47) (= ch 92)) )
         (setq rlt t))
     rlt))
 
@@ -128,15 +137,15 @@
     (evil-filepath-calculate-path b e)))
 
 (defun evil-filepath-search-forward-char (fn &optional backward)
-  (let (found rlt (limit (if backward (point-min) (point-max))) out)
+  (let (found rlt (limit (if backward (point-min) (point-max))) out-of-loop)
     (save-excursion
-      (while (not out)
+      (while (not out-of-loop)
         ;; for the char, exit
         (if (setq found (apply fn (list (following-char))))
-            (setq out t)
+            (setq out-of-loop t)
           ;; reach the limit, exit
           (if (= (point) limit)
-              (setq out t)
+              (setq out-of-loop t)
             ;; keep moving
             (if backward (backward-char) (forward-char)))))
       (if found (setq rlt (point))))
