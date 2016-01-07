@@ -3,4 +3,5 @@
 # key: replace
 # contributor: Chen Bin <chenbin.sh AT gmail>
 # --
-${1:str}.replace(/${2:(\w+)\s(\w+)}/, '${\$2, \$1}');
+// swap words
+$0.replace(/(\w+)\s+(\w+)/, '\$2, \$1');
