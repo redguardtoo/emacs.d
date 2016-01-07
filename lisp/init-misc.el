@@ -417,12 +417,13 @@ buffer is not visiting a file."
 
 ;; {{ recentf-mode
 (setq recentf-keep '(file-remote-p file-readable-p))
-(setq recentf-max-saved-items 1000
+(setq recentf-max-saved-items 2048
       recentf-exclude '("/tmp/"
                         "/ssh:"
                         "/sudo:"
                         ;; ~/.emacs.d/**/*.el included
-                        "/home/[a-z]\+/\\.[a-df-z]"))
+                        ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
+                        ))
 ;; }}
 
 ;; {{ popup functions
