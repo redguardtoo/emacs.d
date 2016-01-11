@@ -33,16 +33,37 @@
          controller: 'IndexCtrl'
        }).state('state1', {
          url: "/state1",
-         template: "<h1>State 1</h1><hr/><a ui-sref='state1.list'>Show List</a><div ui-view></div>"
+         template: "<h1>State 1 header</h1><hr/><a ui-sref='state1.list'>Show List</a><hr/><div ui-view></div>"
        }).state('state1.list', {
          url: "/list",
-         template:"<h3>List of State 1 Items</h3><ul><li ng-repeat='item in items'>{{ item }}</li></ul>",
-         controller: function($scope) {
+         template:'<h3>List of state1.list Items</h3><ul><li ng-repeat="item in items">{{ item }}</li></ul><button ng-click="quit()">Quit</button><button ng-click="next()">Next</button>',
+         controller: function($scope, $state) {
            console.log('state1.list.controller called');
            $scope.items = ["A", "List", "Of", "Items"];
+           $scope.next = function() {
+             console.log('$scope.back called! =');
+             $state.go('state1.hello');
+           };
+           $scope.quit = function() {
+             console.log('$scope.home called! =');
+             $state.go('index');
+           };
+         }
+       }).state('state1.hello', {
+         url: "/hello",
+         template:'<h3>hello world state1.hello</h3><button ng-click="back()">Back</button><button ng-click="home()">Home</button>',
+         controller: function($scope, $state) {
+           console.log('state1.hello.controller called');
+           $scope.back = function() {
+             console.log('$scope.back called! =');
+             $state.go('state1.list');
+           };
+           $scope.home = function() {
+             console.log('$scope.home called! =');
+             $state.go('index');
+           };
          }
        });
-
      }]).run(function($httpBackend) {
        // HTTP status: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
        // hack $http
