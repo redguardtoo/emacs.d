@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 2.2
+;; Version: 2.3
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -50,14 +50,12 @@
 ;; code from current line to line 99 if you current line is 91.
 ;;
 ;; Though this program could be used *independently*, though I highly recommend
-;; using it with Evil (http://gitorious.org/evil)
+;; using it with Evil (https://bitbucket.org/lyro/evil/)
 ;;
 ;; Evil makes you take advantage of power of Vi to comment lines.
 ;; For example, you can press key `99,ci` to comment out 99 lines.
 ;;
 ;; Setup:
-;;
-;; Check https://github.com/redguardtoo/evil-nerd-commenter for more use cases.
 ;;
 ;; Use case 1,
 ;; If you use comma as leader key, as most Vim users do, setup is one liner,
@@ -81,6 +79,8 @@
 ;;   "cv" 'evilnc-toggle-invert-comment-line-by-line
 ;;   "\\" 'evilnc-comment-operator
 ;;   )
+;;
+;; See https://github.com/redguardtoo/evil-nerd-commenter for more use cases.
 
 ;;; Code:
 
@@ -89,6 +89,10 @@
 (defvar evilnc-invert-comment-line-by-line nil
   "If t then invert region comment status line by line.
 Please note it has NOT effect on evil text object!")
+
+(defvar evilnc-comment-both-snippet-html nil
+  "Comment both embedded snippet and HTML tag if they are mixed in one line.
+`web-mode' required.")
 
 (defun evilnc--count-lines (beg end)
   "Assume BEG less than END."
@@ -110,8 +114,8 @@ Please note it has NOT effect on evil text object!")
       (forward-line (1- line-num)))))
 
 (defun evilnc--web-mode-is-comment (&optional pos)
-  "Since `web-mode' remote the API we use, we have to create our own.
-Check whether the code at POS is comment."
+  "Check whether the code at POS is comment.
+`web-mode' removes its API, so create our own."
   (unless pos (setq pos (point)))
   (not (null (or (eq (get-text-property pos 'tag-type) 'comment)
                  (eq (get-text-property pos 'block-token) 'comment)
@@ -124,7 +128,7 @@ See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
-    ;; See code in (defun comment-search-forward) from emacs 24.2.2:
+    ;; See code in (defun comment-search-forward) from emacs 24.2.3:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
     ;;     (or (match-end 1) (match-beginning 0)))
@@ -354,16 +358,39 @@ Code snippets embedded in Org-mode is identified and right `major-mode' is used.
     rlt))
 
 (defun evilnc--web-mode-do-current-line ()
-  "In web-mode, you have to select the whole before comment or uncomment it."
-  (let (line-mid-pos
-        (b (line-beginning-position))
-        (e (line-end-position)))
+  "In `web-mode', have to select whole line to comment."
+  (let (first-char-is-snippet e)
 
     (save-excursion
-      (push-mark e t t)
-      (goto-char b)
-      (evilnc--warn-on-web-mode (evilnc--web-mode-is-region-comment b e))
-      (web-mode-comment-or-uncomment))))
+      (goto-char (line-beginning-position))
+      (skip-chars-forward "[:space:]" (line-end-position))
+      (setq first-char-is-snippet (get-text-property (point) 'block-side)))
+
+    ;; comment the snippet block at first
+    (when (and evilnc-comment-both-snippet-html (not first-char-is-snippet))
+      (save-excursion
+        (let (fired)
+          (goto-char (line-beginning-position))
+          ;; please note (line-beginning-position) is changing in (while)
+          (while (< (point) (line-end-position))
+            (forward-char)
+            (if (get-text-property (point) 'block-side)
+                (when (not fired)
+                  (save-excursion
+                    (push-mark (1+ (point)) t t)
+                    (goto-char (point))
+                    (web-mode-comment-or-uncomment))
+                  (setq fired t))
+              (setq fired nil))))))
+
+    ;; comment the html line
+    ;; To comment one line ONLY, you need select a line at first,
+    ;; in order to work around web-mode "feature".
+    (push-mark (setq e (line-end-position)) t t)
+    (goto-char (line-beginning-position))
+    (skip-chars-forward "[:space:]" e)
+    (evilnc--warn-on-web-mode (evilnc--web-mode-is-region-comment (point) e))
+    (web-mode-comment-or-uncomment)))
 
 (defun evilnc--web-mode-comment-or-uncomment (beg end)
   "Comment/uncomment line by line from BEG to END.
@@ -371,7 +398,7 @@ DO-COMMENT decides we comment or uncomment."
 
   ;; end will change when you comment line by line
   (let (line-cnt tmp)
-    ;; switch beg end if needed
+    ;; make sure beg <= end
     (when (> beg end)
       (setq tmp beg)
       (setq beg end)
@@ -618,7 +645,7 @@ Then we operate the expanded region.  NUM is ignored."
 (defun evilnc-version ()
   "The version number."
   (interactive)
-  (message "2.2"))
+  (message "2.3"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
