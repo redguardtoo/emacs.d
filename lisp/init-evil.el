@@ -5,21 +5,16 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
 
 ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-(eval-after-load 'git-timemachine
-  '(progn
-     (evil-make-overriding-map git-timemachine-mode-map 'normal)
-     ;; force update evil keymaps after git-timemachine-mode loaded
-     (add-hook 'git-timemachine-mode-hook #'evil-normalize-keymaps)))
+(defmacro adjust-major-mode-keymap-with-evil (m)
+  `(eval-after-load (quote ,m)
+    '(progn
+       (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+       ;; force update evil keymaps after git-timemachine-mode loaded
+       (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
 
-(eval-after-load 'browse-kill-ring
-  '(progn
-     (evil-make-overriding-map browse-kill-ring-mode-map 'normal)
-     (add-hook 'browse-kill-ring-mode-hook #'evil-normalize-keymaps)))
-
-(eval-after-load 'etags-select
-  '(progn
-     (evil-make-overriding-map etags-select-mode-map 'normal)
-     (add-hook 'etags-select-mode-hook #'evil-normalize-keymaps)))
+(adjust-major-mode-keymap-with-evil "git-timemachine")
+(adjust-major-mode-keymap-with-evil "browse-kill-ring")
+(adjust-major-mode-keymap-with-evil "etags-select")
 
 (require 'evil)
 
