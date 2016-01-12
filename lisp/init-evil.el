@@ -422,12 +422,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "cxo" 'org-clock-out ; `C-c C-x C-o'
   "cxr" 'org-clock-report ; `C-c C-x C-r'
   "mq" 'lookup-doc-in-man
-  "sg" 'w3m-google-by-filetype
-  "sf" 'w3m-search-financial-dictionary
-  "sq" 'w3m-stackoverflow-search
-  "sj" 'w3m-search-js-api-mdn
-  "sa" 'w3m-java-search
-  "sh" 'w3mext-hacker-search ; code search in all engines with firefox
+  "sgg" 'w3m-google-search
+  "sgf" 'w3m-google-by-filetype
+  "sgd" 'w3m-search-financial-dictionary
+  "sgq" 'w3m-stackoverflow-search
+  "sgj" 'w3m-search-js-api-mdn
+  "sga" 'w3m-java-search
+  "sgh" 'w3mext-hacker-search ; code search in all engines with firefox
   "qq" 'my-grep
   "gss" 'git-gutter:set-start-revision
   "gsh" 'git-gutter-reset-to-head-parent

@@ -54,31 +54,41 @@
           (setcdr (car l) (list url))
         (w3m-set-url-from-search-engine-alist k (cdr l) url))))
 
-(defun w3m-get-current-thing ()
+(defvar w3m-global-keyword nil
+  "`w3m-display-hook' must search current buffer with this keyword twice if not nil")
+
+(defun w3m-guess-keyword ()
   (unless (featurep 'w3m) (require 'w3m))
-  (let ((keyword (w3m-url-encode-string
-                  (if (region-active-p)
-                      (buffer-substring-no-properties (region-beginning) (region-end))
-                    (thing-at-point 'symbol)))))
-    keyword))
+  (w3m-url-encode-string
+   (setq w3m-global-keyword
+         (if (region-active-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (read-string "Enter keyword:")))))
 
 (defun w3m-customized-search-api (search-engine)
   (unless (featurep 'w3m) (require 'w3m))
-  (w3m-search search-engine (w3m-get-current-thing)))
+  (w3m-search search-engine (w3m-guess-keyword)))
 
 (defun w3m-stackoverflow-search ()
   (interactive)
+  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "q"))
 
 (defun w3m-java-search ()
   (interactive)
+  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "java"))
+
+(defun w3m-google-search ()
+  "Google search keyword"
+  (interactive)
+  (unless (featurep 'w3m) (require 'w3m))
+  (w3m-customized-search-api "g"))
 
 (defun w3m-google-by-filetype ()
   "Google search 'keyword filetype:file-extension'"
   (interactive)
-  (unless (featurep 'w3m)
-    (require 'w3m))
+  (unless (featurep 'w3m) (require 'w3m))
   (let ((old-url (w3m-get-url-from-search-engine-alist "s" w3m-search-engine-alist))
         new-url)
     ;; change the url to search current file type
@@ -95,11 +105,13 @@
 (defun w3m-search-financial-dictionary ()
   "Search financial dictionary"
   (interactive)
+  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "f"))
 
 (defun w3m-search-js-api-mdn ()
   "Search at Mozilla Developer Network (MDN)"
   (interactive)
+  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "j"))
 
 (defun w3m-mode-hook-setup ()
@@ -116,17 +128,18 @@
 (setq browse-url-browser-function 'browse-url-generic)
 
 ;; use external browser to search programming stuff
-(defun w3-hacker-search ()
+(defun w3mext-hacker-search ()
   "Search on all programming related sites in external browser"
   (interactive)
-  (let ((keyword (w3m-get-current-thing)))
+  (let ((keyword (w3m-guess-keyword)))
     ;; google
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q=%22"
                                 keyword
                                 "%22"
                                 (if buffer-file-name
 									(concat "+filetype%3A" (file-name-extension buffer-file-name))
-									"")  ))
+									"")))
+    ;; stackoverflow.com
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q="
                                 keyword
                                 "+site:stackoverflow.com" ))
@@ -149,5 +162,21 @@
 (eval-after-load 'w3m
   '(progn
      (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
-     ))
+     (add-hook 'w3m-display-hook
+               (lambda (url)
+                 (let ((title (or w3m-current-title url)))
+                   (message "url=%s title=%s w3m-current-title=%s" url title w3m-current-title)
+                   (when w3m-global-keyword
+                     ;; search keyword twice, first is url, second is your input,
+                     ;; third is actual result
+                     (goto-char (point-min))
+                     (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
+                     ;; move the cursor to the beginning of word
+                     (backward-char (length w3m-global-keyword))
+                     ;; cleanup for next search
+                     (setq w3m-global-keyword nil))
+                   ;; rename w3m buffer
+                   (rename-buffer
+                    (format "*w3m: %s*"
+                            (substring title 0 (min 50 (length title)))) t))))))
 (provide 'init-emacs-w3m)

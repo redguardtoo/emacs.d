@@ -185,7 +185,9 @@
 
 (defun lookup-doc-in-man ()
   (interactive)
-  (man (concat "-k " (thing-at-point 'symbol))))
+  (man (concat "-k " (if (region-active-p)
+       (buffer-substring-no-properties (region-beginning) (region-end))
+      (thing-at-point 'symbol)))))
 
 ;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
