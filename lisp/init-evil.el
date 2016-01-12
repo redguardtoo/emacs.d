@@ -582,8 +582,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xnd" 'narrow-to-defun
   "xnr" 'narrow-to-region
   "ycr" 'my-yas-reload-all
-  "wgc" 'wg-create-workgroup
-  "wgs" 'my-wg-switch-workgroup
+  "wgt" 'wg-create-workgroup
+  "wgg" 'my-wg-switch-workgroup
   "wf" 'popup-which-function)
 
 ;; change mode-line color by evil state

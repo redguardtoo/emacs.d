@@ -25,11 +25,21 @@
 
 (eval-after-load 'workgroups2
   '(progn
-     ;; save the session file in real time
-     (defadvice wg-create-workgroup (after wg-create-workgroup-hack activate)
+     ;; make sure wg-create-workgroup always success
+     (defadvice wg-create-workgroup (around wg-create-workgroup-hack activate)
+       (unless wg-current-session
+         ;; code extracted from `wg-open-session'.
+         ;; open session but do NOT load any workgroup.
+         (let ((session (read (f-read-text (file-truename wg-session-file)))))
+           (setf (wg-session-file-name session) wg-session-file)
+           (wg-reset-internal (wg-unpickel-session-parameters session))))
+       ad-do-it
+       ;; save the session file in real time
        (wg-save-session t))
+
      (defadvice wg-reset (after wg-reset-hack activate)
        (wg-save-session t))
+
      ;; I'm fine to to override the original workgroup
      (defadvice wg-unique-workgroup-name-p (around wg-unique-workgroup-name-p-hack activate)
        (setq ad-return-value t))))
