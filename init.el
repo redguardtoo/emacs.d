@@ -122,6 +122,7 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
 (if (or (display-graphic-p) (string-match-p "256color"(getenv "TERM"))) (require 'init-color-theme))
 
 (require 'init-emacs-w3m)
+(require 'init-hydra)
 
 ;; {{ idle require other stuff
 (setq idle-require-idle-delay 3)
