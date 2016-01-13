@@ -5,8 +5,8 @@
 (add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
 
 ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-(defmacro adjust-major-mode-keymap-with-evil (m)
-  `(eval-after-load (quote ,m)
+(defmacro adjust-major-mode-keymap-with-evil (m &optional r)
+  `(eval-after-load (quote ,(if r r m))
     '(progn
        (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
        ;; force update evil keymaps after git-timemachine-mode loaded
