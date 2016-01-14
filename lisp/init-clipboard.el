@@ -70,6 +70,11 @@ If NUM equals 3, copy the upcased string."
 (defun paste-from-x-clipboard()
   "Paste string clipboard"
   (interactive)
+  ;; paste after the cursor in evil normal state
+  (when (and (functionp 'evil-normal-state-p)
+             (functionp 'evil-move-cursor-back)
+             (evil-normal-state-p))
+      (forward-char))
   (insert (simpleclip-get-contents)))
 
 (defun my/paste-in-minibuffer ()
