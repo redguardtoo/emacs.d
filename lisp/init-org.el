@@ -148,8 +148,11 @@
   (flyspell-mode 1)
 
   ;; but I don't want to auto spell check when typing,
-  ;; you can comment out `(flyspell-mode -1)` if prefer auto spell check
+  ;; please comment out `(flyspell-mode -1)` if prefer auto spell check
   (flyspell-mode -1)
+
+  ;; don't spell check double words
+  (setq flyspell-check-doublon nil)
 
   ;; display wrapped lines instead of truncated lines
   (setq truncate-lines nil)
