@@ -18,6 +18,14 @@
 (add-to-list 'auto-mode-alist '("\\.ctags\\'" . conf-mode))
 ;; }}
 
+;; salesforce apex
+(autoload 'apex-mode "apex-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.cls\\'" . apex-mode))
+;; java
+(add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
+;; makefile
+(add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
+
 ;; {{ support MY packages which are not included in melpa
 (autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
 (autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
