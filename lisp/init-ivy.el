@@ -103,7 +103,7 @@ Or else, find files since 24 weeks (6 months) ago."
                         (list (cons (concat prefix (if prefix ".") (car elm))
                                     (copy-marker (cdr elm))))))))
 
-(defun ivy-imenu-goto ()
+(defun counsel-imenu-goto ()
   "Go to buffer position"
   (interactive)
   (let ((imenu-auto-rescan t) items)
@@ -114,7 +114,7 @@ Or else, find files since 24 weeks (6 months) ago."
               (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
               :action (lambda (k) (goto-char k)))))
 
-(defun ivy-bookmark-goto ()
+(defun counsel-bookmark-goto ()
   "Open ANY bookmark"
   (interactive)
   (let (bookmarks filename)
@@ -145,5 +145,11 @@ Or else, find files since 24 weeks (6 months) ago."
               :action (lambda (bookmark)
                         (bookmark-jump bookmark)))
     ))
+
+(defun counsel-recentf-goto ()
+  "Recent files"
+  (interactive)
+  (unless recentf-mode (recentf-mode 1))
+  (ivy-recentf))
 
 (provide 'init-ivy)

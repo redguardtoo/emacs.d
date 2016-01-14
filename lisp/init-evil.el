@@ -374,7 +374,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "cbu" 'cb-get-url-from-controller
   "ht" 'etags-select-find-tag-at-point ;; better than find-tag (C-])
   "hp" 'etags-select-find-tag
-  "hm" 'ivy-bookmark-goto
+  "hm" 'counsel-bookmark-goto
   "yy" 'browse-kill-ring
   "gf" 'counsel-git-find-file
   "gl" 'counsel-git-grep-yank-line
@@ -403,7 +403,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "bm" 'pomodoro-start ;; beat myself
-  "im" 'ivy-imenu-goto
+  "im" 'counsel-imenu-goto
   "ii" 'ido-imenu
   "ij" 'rimenu-jump
   "." 'evil-ex
@@ -434,9 +434,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "gsh" 'git-gutter-reset-to-head-parent
   "gsr" 'git-gutter-reset-to-default
   "xc" 'save-buffers-kill-terminal
-  "rr" (lambda () (interactive)
-         (unless recentf-mode (recentf-mode 1))
-         (ivy-recentf)) ; more quick than helm
+  "rr" 'counsel-recentf-goto ; more quick than helm
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify

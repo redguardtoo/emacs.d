@@ -1,13 +1,27 @@
 ;; @see https://github.com/abo-abo/hydra
 
+;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
-   "Launch"
-   ("h" man "man")
-   ("r" (browse-url "http://www.reddit.com/r/emacs/") "reddit")
-   ("w" (browse-url "http://www.emacswiki.org/") "emacswiki")
-   ("s" ansi-term "shell")
-   ("q" nil "cancel"))
-(global-set-key (kbd "C-c r") 'hydra-launcher/body)
+  "Launch"
+  ("mq" lookup-doc-in-man"man")
+  ("rr" counsel-recentf-goto "Recent files")
+  ("wgt" wg-create-workgroup "New window layout")
+  ("wgg" my-wg-switch-workgroup "Load window layout")
+  ("tr" ansi-term "ansi-term")
+  ("sgg" 'w3m-google-search "Search")
+  ("sgf" 'w3m-google-by-filetype "Search by filetype")
+  ("sgd" 'w3m-search-financial-dictionary "Financial dictionary")
+  ("sgq" 'w3m-stackoverflow-search "StackOverflow")
+  ("sgj" 'w3m-search-js-api-mdn "Javascript API")
+  ("sga" 'w3m-java-search "Java")
+  ("sgh" 'w3mext-hacker-search "Code search")
+  ("ddb" sdcv-search-pointer "Stardict in buffer")
+  ("ddt" sdcv-search-input+  "Stardict in tooltip")
+  ("ddd" my-lookup-dict-org "Lookup dict.org")
+  ("ddw" define-word "Lookup word")
+  ("ddp" define-word-at-point "Lookup word at point")
+  ("q" nil "cancel"))
+(global-set-key (kbd "C-c C-r") 'hydra-launcher/body)
 
 ;; {{ mail
 ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
@@ -70,7 +84,6 @@
        ("ca" mml-attach-file "Attach C-c C-a")
        ("cc" message-send-and-exit "Send C-c C-c")
        ("q" nil "cancel"))
-     ;; y is not used by default
      (global-set-key (kbd "C-c y") 'hydra-message/body)))
 ;; }}
 
