@@ -71,7 +71,7 @@
        ("R" gnus-article-reply-with-original "Reply with original R")
        ("r" gnus-article-reply "Reply r")
        ("W" gnus-article-wide-reply-with-original "Reply all with original S W")
-       ("o" gnus-mime-save-part "Save attachment o")
+       ("o" gnus-mime-save-part "Save attachment at point o")
        ("w" gnus-article-wide-reply "Reply all S w")
        ("q" nil "cancel"))
      ;; y is not used by default
