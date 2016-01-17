@@ -73,7 +73,8 @@ If NUM equals 3, copy the upcased string."
   ;; paste after the cursor in evil normal state
   (when (and (functionp 'evil-normal-state-p)
              (functionp 'evil-move-cursor-back)
-             (evil-normal-state-p))
+             (evil-normal-state-p)
+             (< (point) (point-max)))
       (forward-char))
   (insert (simpleclip-get-contents)))
 
