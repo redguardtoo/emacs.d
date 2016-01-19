@@ -74,7 +74,8 @@ If NUM equals 3, copy the upcased string."
   (when (and (functionp 'evil-normal-state-p)
              (functionp 'evil-move-cursor-back)
              (evil-normal-state-p)
-             (< (point) (point-max)))
+             (not (eolp))
+             (not (eobp)))
       (forward-char))
   (insert (simpleclip-get-contents)))
 
