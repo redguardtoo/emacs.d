@@ -1,4 +1,8 @@
 ;; -*- coding: utf-8 -*-
+;(defvar best-gc-cons-threshold gc-cons-threshold "Best default gc threshold value. Should't be too big.")
+(defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Should't be too big.")
+;; don't GC during startup to save time
+(setq gc-cons-threshold most-positive-fixnum)
 
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
@@ -169,6 +173,8 @@ We increase this to 16MB by `(my-optimize-gc 16 0.5)` "
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(window-numbering-face ((t (:foreground "DeepPink" :underline "DeepPink" :weight bold))) t))
+
+(setq gc-cons-threshold best-gc-cons-threshold)
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:

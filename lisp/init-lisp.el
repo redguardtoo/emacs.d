@@ -1,8 +1,6 @@
 ;; ----------------------------------------------------------------------------
 ;; Paredit
 ;; ----------------------------------------------------------------------------
-(autoload 'enable-paredit-mode "paredit")
-
 (setq-default initial-scratch-message
               (concat ";; Happy hacking " (or user-login-name "") " - Emacs loves you!\n\n"))
 
@@ -21,9 +19,6 @@
      (diminish 'paredit-mode " Par")))
 
 
-;; Use paredit in the minibuffer
-(add-hook 'minibuffer-setup-hook 'conditionally-enable-paredit-mode)
-
 (defvar paredit-minibuffer-commands '(eval-expression
                                       pp-eval-expression
                                       eval-expression-with-eldoc
@@ -31,10 +26,11 @@
                                       ibuffer-do-view-and-eval)
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-(defun conditionally-enable-paredit-mode ()
+(defun conditionally-paredit-mode (flag)
   "Enable paredit during lisp-related minibuffer commands."
   (if (memq this-command paredit-minibuffer-commands)
-      (enable-paredit-mode)))
+      (paredit-mode flag)))
+
 
 
 

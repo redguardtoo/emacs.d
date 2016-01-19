@@ -78,10 +78,6 @@ If NUM equals 3, copy the upcased string."
       (forward-char))
   (insert (simpleclip-get-contents)))
 
-(defun my/paste-in-minibuffer ()
-  (local-set-key (kbd "M-y") 'paste-from-x-clipboard))
-(add-hook 'minibuffer-setup-hook 'my/paste-in-minibuffer)
-
 (defun paste-from-clipboard-and-cc-kill-ring ()
   "Paste from clipboard and cc the content into kill ring"
   (interactive)
