@@ -1,5 +1,6 @@
 (autoload 'web-mode "web-mode")
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.cmp\\'" . web-mode)) ; salesforce
 (add-to-list 'auto-mode-alist '("\\.wp\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tmpl\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
