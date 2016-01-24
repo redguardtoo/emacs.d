@@ -134,8 +134,6 @@ Or else, find files since 24 weeks (6 months) ago."
                                       (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark)))))
                                      ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
                                       ;; bmkp-jump-w3m is from bookmark+
-                                      (unless (featurep 'bookmark+)
-                                        (require 'bookmark+))
                                       (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark)))))
                                      (t
                                       (setq key (car bookmark))))
@@ -143,6 +141,8 @@ Or else, find files since 24 weeks (6 months) ago."
                                     (cons key bookmark)))
                                 bookmarks))
               :action (lambda (bookmark)
+                        (unless (featurep 'bookmark+)
+                          (require 'bookmark+))
                         (bookmark-jump bookmark)))
     ))
 
