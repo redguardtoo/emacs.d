@@ -19,9 +19,10 @@
 (add-to-list 'auto-mode-alist '("\\.mailcap\\'" . conf-mode))
 ;; }}
 
-;; salesforce apex
+;; salesforce
 (autoload 'apex-mode "apex-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.cls\\'" . apex-mode))
+(add-to-list 'auto-mode-alist '("\\.trigger\\'" . apex-mode))
 ;; java
 (add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
 ;; makefile
