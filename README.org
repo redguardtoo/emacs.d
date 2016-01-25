@@ -340,13 +340,12 @@ If you *insist on configuring the color theme in a different way*, please,
 TERM=xterm-256color emacs -nw
 #+END_SRC
 ** Chinese Input Method Editor
-Run command `M-x toggle-input-method` to toggle input method.
+Run command `M-x toggle-input-method` to toggle input method. A 20M chinese dictionary is already provided.
 
-By default, the word files path is at "~/.eim/py.txt". I place it out of the emacs root folder in order to protect my privacy.
+If your *personal* word file "~/.eim/pyim-personal.txt" exists, it will be used.
 
-The path can be changed in "~/.emacs.d/lisp/init-eim.el".
+Or else "~/.emacs.d/pyim/pyim-personal.txt" will be created.
 
-A sample file can be downloaded [[https://github.com/tumashu/chinese-pyim-bigdict/raw/gh-pages/pyim-bigdict.pyim][HERE]]. After downloading, rename it to py.txt.
 ** Install Emacs elsewhere
 Run below commands:
 #+begin_src sh
