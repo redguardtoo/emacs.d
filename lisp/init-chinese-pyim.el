@@ -29,7 +29,7 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
-     (setq pyim-use-tooltip nil)              ; don't use tooltip
+     (setq pyim-use-tooltip 'popup) ; don't use tooltip
      (setq pyim-dicts '((:name "pinyin1" :file "~/.eim/py.txt" :coding utf-8-unix)))
 
      ;; {{ fuzzy pinyin setup
