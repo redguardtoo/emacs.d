@@ -24,6 +24,8 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
 
+(setq pyim-punctuation-translate-p nil) ;; use western punctuation (ban jiao fu hao)
+
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
