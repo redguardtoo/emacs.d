@@ -146,6 +146,24 @@ Or else, find files since 24 weeks (6 months) ago."
                         (bookmark-jump bookmark)))
     ))
 
+(defun counsel-yank-bash-history ()
+  "Copy the history command into yank-ring"
+  (interactive)
+  (let (hist-cmd collection val)
+    (shell-command "history -r") ; reload history
+    (setq collection
+          (nreverse
+           (split-string (with-temp-buffer (insert-file-contents (file-truename "~/.bash_history"))
+                                           (buffer-string))
+                         "\n"
+                         t)))
+    (when (and collection (> (length collection) 0)
+               (setq val (if (= 1 (length collection)) (car collection)
+                           (ivy-read (format "Bash history:") collection))))
+        (kill-new val)
+        (message "%s => kill-ring" val))))
+
+
 (defun counsel-recentf-goto ()
   "Recent files"
   (interactive)

@@ -436,6 +436,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "gsr" 'git-gutter-reset-to-default
   "xc" 'save-buffers-kill-terminal
   "rr" 'counsel-recentf-goto ; more quick than helm
+  "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
