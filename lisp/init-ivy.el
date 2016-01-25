@@ -147,7 +147,7 @@ Or else, find files since 24 weeks (6 months) ago."
     ))
 
 (defun counsel-yank-bash-history ()
-  "Copy the history command into yank-ring"
+  "Yank the bash history"
   (interactive)
   (let (hist-cmd collection val)
     (shell-command "history -r") ; reload history
