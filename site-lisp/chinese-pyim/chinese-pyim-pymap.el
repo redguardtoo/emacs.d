@@ -450,17 +450,61 @@
     ("zui" "最罪嘴醉咀觜蕞")
     ("zun" "尊遵樽鳟撙")
     ("zuo" "作做坐座左昨琢佐凿撮柞嘬怍胙唑笮阼祚酢")))
+
+(defvar pyim-pinyin-pymap-index nil
+  "这个变量保存 `pyim-pinyin-pymap' 的索引，用于加快搜索速度。")
+
+(defun pyim-pinyin-pymap-index-charpy (&optional force)
+  "构建 pymap 的索引，用于加快搜索速度，这个函数
+将索引保存到 `pyim-pinyin-pymap-index' 变量中，
+如果 force 设置为 t, 强制更新索引。"
+  (when (or force (not pyim-pinyin-pymap-index))
+    (let ((index '("a" "ba" "ca" "da" "e" "fa" "ga"
+                   "ha" "ji" "ka" "la" "m" "n"
+                   "o" "pa" "qi" "ran" "sa" "ta"
+                   "wa" "xi" "ya" "za"))
+          (n 0) results)
+      (dolist (py pyim-pinyin-pymap)
+        (when (member (car py) index)
+          (push (cons (substring (car py) 0 1) n) results))
+        (setq n (+ n 1)))
+      (setq pyim-pinyin-pymap-index
+            (reverse results)))))
+
+(defun pyim-pinyin-pymap-get-pinyin-matched-char (pinyin &optional equal-match sort)
+  "获取拼音与 `pinyin' 想匹配的所有汉字，比如：
+
+“man” -> (\"忙茫盲芒氓莽蟒邙漭硭" "满慢漫曼蛮馒瞒蔓颟谩墁幔螨鞔鳗缦熳镘\")
+
+如果 `sort' 设置为 t, 则对结果按照字母顺序排序。"
+ (pyim-pinyin-pymap-index-charpy)
+ (let* ((pymap pyim-pinyin-pymap)
+        (length (length pymap))
+        (beg (substring pinyin 0 1))
+        (end (char-to-string (+ 1 (string-to-char beg))))
+        (beg-index (cdr (assoc beg pyim-pinyin-pymap-index)))
+        (end-index (cdr (assoc end pyim-pinyin-pymap-index)))
+        (n beg-index)
+        results)
+   (while n
+     (let ((element (nth n pymap)))
+       (when (if equal-match
+                 (equal pinyin (car element))
+               (pyim-string-match-p
+                (concat "^" pinyin) (car element)))
+         (push (car (cdr element)) results)))
+     (setq n (+ 1 n))
+     (when (> n (or end-index (- length 1)))
+       (setq n nil)))
+   (if sort
+       (nreverse results)
+     results)))
+
 ;; #+END_SRC
 
 ;; * Footer
 ;; #+BEGIN_SRC emacs-lisp
 (provide 'chinese-pyim-pymap)
-;; Local Variables:
-;; coding: utf-8-unix
-;; tab-width: 4
-;; indent-tabs-mode: nil
-;; lentic-init: lentic-el2org-init
-;; End:
 
 ;;; chinese-pyim-pymap.el ends here
 ;; #+END_SRC

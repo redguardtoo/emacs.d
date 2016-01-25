@@ -116,7 +116,7 @@
 
 BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，结果会包含多余的连接符：
 比如： '你=好' --> 'ni-=-hao'"
-  (if (not (string-match-p "\\cc" string))
+  (if (not (pyim-string-match-p "\\cc" string))
       string
     (let (string-list pinyins-list pinyins-list-permutated pinyins-list-adjusted)
 
@@ -127,7 +127,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
       ;; 将汉字字符串转换为字符list，英文原样输出。
       ;; 比如： “Hello银行” -> ("Hello" "银" "行")
       (setq string-list
-            (if (string-match-p "\\CC" string)
+            (if (pyim-string-match-p "\\CC" string)
                 ;; 处理中英文混合的情况
                 (split-string
                  (replace-regexp-in-string
@@ -148,7 +148,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
             ((> (length str) 1)
              (push (list str) pinyins-list))
             ((and (> (length str) 0)
-                  (string-match-p "\\cc" str))
+                  (pyim-string-match-p "\\cc" str))
              (push (or (pyim-get-char-code (string-to-char str))
                        (list str))
                    pinyins-list))
@@ -305,7 +305,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
           (let* ((line-content (pyim-line-content))
                  (length (length line-content)))
             (if (or (> length 1) ;; 删除只包含 code，但没有词条的行
-                    (string-match-p " *^;+" (car line-content)))
+                    (pyim-string-match-p " *^;+" (car line-content)))
                 (forward-line 1)
               (pyim-delete-line))))
 
@@ -330,7 +330,8 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
   "将词库 buffer 中 `start' 和 `end' 范围内的词条信息按照拼音code排序
 当 unix 工具 sort 存在时，优先使用这个工具，否则使用emacs自带函数
 `sort-regexp-fields'。"
-  (if (and (executable-find "sort")
+  (if (and (eq system-type 'gnu/linux)
+           (executable-find "sort")
            (executable-find "env"))
       (call-process-region start end
                            "env" t t nil "LC_ALL=C"
@@ -348,13 +349,14 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
     (delete-region (line-beginning-position) (line-end-position))
     (setq insert-string
           (mapconcat
-           (lambda (x)
-             ;; 拼音中不能有中文字符。
-             ;; 中文词条中必须有中文字符，并且不能有ascii字符。
-             (unless (or (string-match-p "[^a-z-]" x)
-                         (string-match-p "[:ascii:]" line-content)
-                         (not (string-match-p "\\cc" line-content)))
-               (format "%s  %s" x line-content))) pinyin-list "\n"))
+           #'(lambda (x)
+               ;; 拼音中不能有中文字符。
+               ;; 中文词条中必须有中文字符，并且不能有ascii字符。
+               (unless (or (pyim-string-match-p "[^a-z-]" x)
+                           (pyim-string-match-p "[:ascii:]" line-content)
+                           (not (pyim-string-match-p "\\cc" line-content)))
+                 (format "%s  %s" x line-content)))
+           pinyin-list "\n"))
     (when (> (length insert-string) 1)
       (insert insert-string))))
 
@@ -884,13 +886,6 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
 ;; * Footer
 ;; #+BEGIN_SRC emacs-lisp
 (provide 'chinese-pyim-dictools)
-
-;; Local Variables:
-;; coding: utf-8-unix
-;; tab-width: 4
-;; indent-tabs-mode: nil
-;; lentic-init: lentic-el2org-init
-;; End:
 
 ;;; chinese-pyim-dictools.el ends here
 ;; #+END_SRC

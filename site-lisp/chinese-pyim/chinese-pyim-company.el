@@ -25,177 +25,114 @@
 ;;; Commentary:
 
 ;; * 说明文档                                                           :doc:
-;; 这个文件包含了两个 company 补全后端，与 Chinese-pyim 配合使用
-;; 可以比较方便的补全中文词条。
+;; 通过 Chinese-pyim 让 Company-dabbrev 更好的处理中文。
 
-
-;; #+BEGIN_EXAMPLE
-;; (require 'chinese-pyim-company)
-;; #+END_EXAMPLE
+;; 1. 配置 company-mode, 具体可以参考：[[https://github.com/tumashu/emacs-helper/blob/master/eh-complete.el][emacs-helper's company configure]]
+;; 2. 配置 chinese-pyim-company
+;;    #+BEGIN_EXAMPLE
+;;    (require 'chinese-pyim-company)
+;;    (setq pyim-company-max-length 6)
+;;    #+END_EXAMPLE
 
 ;;; Code:
 
 ;; * 代码                                                               :code:
-;; ** require
+;; ** Require + defcustom
 ;; #+BEGIN_SRC emacs-lisp
 (require 'chinese-pyim)
 (require 'company)
 (require 'company-dabbrev)
 
-(defcustom pyim-company-predict-words-number 10
-  "设置最多可以搜索多少个联想词条，如果设置为 nil
-或者 0 时，关闭联想功能。"
-  :group 'chinese-pyim
-  :type 'number)
+(defcustom pyim-company-complete-chinese-enable t
+  "设置 Company 是否补全中文"
+  :group 'chinese-pyim)
 
-(defcustom pyim-company-variables
-  `((company-backends ,(nconc '((pyim-company-predict-words pyim-company-dabbrev))
-                              company-backends))
-    (company-idle-delay  0.1)
-    (company-minimum-prefix-length  2)
-    (company-selection-wrap-around  t)
-    (company-show-numbers t)
-    (company-dabbrev-downcase nil)
-    (company-dabbrev-ignore-case nil)
-    (company-require-match nil))
-  "`company-mode' 与 `Chinese-pyim' 配合时需要特别设置，
-这个 list 包含了需要设置的 `company-mode' 变量。"
+(defcustom pyim-company-max-length 6
+  "这个用来设置 Company 补全中文时，候选中文词条的最大长度。"
   :group 'chinese-pyim)
 ;; #+END_SRC
 
+;; 判断 Company-mode 是否在补全中文，如果光标前的一个字符为中文字符
+;; 则返回 `t', 反之，返回 nil.
 ;; #+BEGIN_SRC emacs-lisp
-(defun pyim-company-backup-variable (variable)
-  "创建变量 `pyim-<variale>-backup' ，用来保存变量 `variable' 原来的设定"
-  (if (boundp variable)
-      (set (intern (concat "pyim-" (symbol-name variable) "-backup"))
-           (symbol-value variable))
-    (error "Company-mode 默认变量备份失败！请确保 Company-mode 优先加载。")))
-
-(defun pyim-company-revert-variable (variable)
-  "将变量 `variable' 设置为 `pyim-<variale>-backup' 的值。"
-  (when (boundp variable)
-    (let ((variable-backup (intern (concat "pyim-" (symbol-name variable) "-backup"))))
-      (if (boundp variable-backup)
-          (set variable (symbol-value variable-backup))
-        (message "变量还原失败,没有找到备份变量！")))))
+(defun pyim-company-chinese-complete-p ()
+  (let ((string (pyim-char-before-to-string 0)))
+    (pyim-string-match-p "\\cc" string)))
 ;; #+END_SRC
 
+;; `company-dabbrev' 补全命令的简单流程是：
+;; 1. 提取光标前的一个字符串，作为搜索的 `prefix',
+;;    具体细节见： `company-grab-word'
+;; 2. 对 `prefix' 进行进一步处理，生成一个搜索用的 `regexp'.
+;;    具体细节见： `company-dabbrev--make-regexp'
+;; 3. 使用生成的 `regexp' 搜索特定的 buffer.
+;; 4. 将搜索得到的结果进行处理，生成一个候选词条的 `list'.
+;;    具体细节见： `company-dabbrev--search'
+;; 5. 使用菜单显示
+
+;; 中文和英文的书写习惯有很大的不同，对 company-mode 影响最大的一条是：
+
+;; #+BEGIN_EXAMPLE
+;; 中文的词语与词语之间没有 *强制* 的用空格隔开，
+;; #+END_EXAMPLE
+
+;; 这个书写习惯影响上面三个函数的 *正常* 运行。
+
+;; ** 让 company-grab-word 正确的处理中文
+
+;; `company-grab-word' 可以获取光标处的一个英文词语，但只能获取
+;; 光标处的一个 *中文句子* ，使用一个句子来搜索，得到的备选词条往往很少，
+;; 并且用处不大（很少人在一篇文章中重复的写一个句子）。
+
+;; 这里为 `company-grab-word' 添加了一个 advice: 当 company-dabbrev 补全中文时，
+;; 用 `pyim-grab-chinese-word' 函数获取光标前的一个 *中文词条* ，如果获取失败，
+;; 则返回光标前的 *中文字符* 。
+
 ;; #+BEGIN_SRC emacs-lisp
-(defun pyim-company-revert-to-default-settings (x)
-  "`company-mode' 补全完成或者取消后，恢复 `company-mode' 原来的设置。"
-  (mapc 'pyim-company-revert-variable
-        (mapcar 'car pyim-company-variables))
-  (remove-hook 'company-completion-cancelled-hook
-               'pyim-company-revert-to-default-setting t)
-  (remove-hook 'company-completion-finished-hook
-               'pyim-company-revert-to-default-setting t))
+(defun pyim-company-grab-word (orig-fun)
+  (if (pyim-company-chinese-complete-p)
+      (when pyim-company-complete-chinese-enable
+        (pyim-grab-chinese-word
+         0 (pyim-char-before-to-string 0)))
+    (funcall orig-fun)))
 ;; #+END_SRC
 
+;; ** 让 pyim-company-dabbrev--make-regexp 生成合适中文搜索的 regexp
+
+;; 用 `pyim-company-dabbrev--make-regexp' 得到的 regexp, 搜索中文时，会搜索到一个
+;; *中文句子* ， 不太实用，这里添加了一个 advice:
+
+;; 当 company-dabbrev 补全中文时，将搜索得到的结果截取前 `pyim-company-max-length' 个字符，
+;; 默认为6个，这对中文而言应该够用了。
+
 ;; #+BEGIN_SRC emacs-lisp
-;;;###autoload
-(defun pyim-company-complete ()
-  "`company-mode' 补全命令的包装函数，专门用户 `chinese-pyim'"
-  (interactive)
-  (unless company-mode (company-mode))
-  ;; 保存 `company-mode' 变量原来的设定。
-  (mapc 'pyim-company-backup-variable
-        (mapcar 'car pyim-company-variables))
-  ;; 设置 `company-mode' 变量
-  (dolist (list pyim-company-variables)
-    (set (car list) (car (cdr list))))
-  ;; 当 `company-mode' 补全完成或者取消时，恢复原来设置。
-  (add-hook 'company-completion-cancelled-hook
-            'pyim-company-revert-to-default-settings t)
-  (add-hook 'company-completion-finished-hook
-            'pyim-company-revert-to-default-settings t)
-  (company-manual-begin))
+(defun pyim-company-dabbrev--make-regexp (orig-fun prefix)
+  (if (pyim-company-chinese-complete-p)
+      (format "%s[^[:punct:][:blank:]\n]\\{1,%s\\}" prefix pyim-company-max-length)
+    (funcall orig-fun prefix)))
 ;; #+END_SRC
 
+;; ** TODO 让 pyim-company-dabbrev--search 更好的处理中文
+
+;; 本来打算在这个地方对 *候选词条列表* 做一些筛选，比如，用 Chinese-pyim 自带
+;; 的分词函数对候选词条进行分词，然后只提取第一个 *有效* 的中文词语，但由于
+;; 分词函数速度太慢，导致补全时卡顿明显，所以暂时没有这么处理。
+
+
 ;; #+BEGIN_SRC emacs-lisp
-;; `Chinese-pyim' 选词结束后，调用 `pyim-company-complete'.
-(add-hook 'pyim-select-word-finish-hook 'pyim-company-complete)
+(defun pyim-company-dabbrev--search (orig-fun regexp &optional limit other-buffer-modes
+                                              ignore-comments)
+  (if (pyim-company-chinese-complete-p)
+      (when pyim-company-complete-chinese-enable
+        (funcall orig-fun regexp limit other-buffer-modes ignore-comments))
+    (funcall orig-fun regexp limit other-buffer-modes ignore-comments)))
 ;; #+END_SRC
 
-;; #+BEGIN_SRC emacs-lisp
-(defun pyim-company-dabbrev (command &optional arg &rest ignored)
-  "`company-mode' dabbrev 补全后端，是 `company-dabbrev'
-的中文优化版，通过与 Chinese-pyim 配合来补全中文。
-
-`pyim-company-dabbrev' 可以和 `company-dabbrev' 配合使用。具体细节请
-参考 Company-mode group backends 相关文档。"
-  (interactive (list 'interactive))
-  (cl-case command
-    (interactive (company-begin-backend 'pyim-company-dabbrev))
-    (prefix
-     (and (featurep 'chinese-pyim)
-          ;; 光标前字符是否时汉字？
-          (string-match-p "\\cc" (char-to-string (char-before)))
-          (string-match-p "\\cc" pyim-current-str)
-          pyim-current-str))
-    (candidates
-     (let* ((case-fold-search company-dabbrev-ignore-case)
-            (words (company-dabbrev--search
-                    ;; 最多补全六个中文字符，得到太长的中文字符串用处不大。
-                    (format "%s[^[:punct:][:blank:]\n]\\{1,6\\}" arg)
-                    company-dabbrev-time-limit
-                    (pcase company-dabbrev-other-buffers
-                      (`t (list major-mode))
-                      (`all `all))))
-            (downcase-p
-             (if (eq company-dabbrev-downcase 'case-replace)
-                 case-replace
-               company-dabbrev-downcase)))
-       (if downcase-p
-           (mapcar 'downcase words)
-         words)))
-    (ignore-case company-dabbrev-ignore-case)
-    (duplicates t)))
-;; #+END_SRC
 
 ;; #+BEGIN_SRC emacs-lisp
-(defun pyim-get-predict-words (pinyin word)
-  "获取所有词库中以 `word' 开头的中文词条，用于拼音联想输入。
-`pinyin' 选项是为了在词库中快速定位，减少搜索时间。"
-  (when (and pyim-company-predict-words-number
-             (> pyim-company-predict-words-number 0)
-             (> (length pinyin) 0)
-             (> (length word) 0))
-    (let* ((limit pyim-company-predict-words-number)
-           (regexp (concat " +\\(" (regexp-quote word) "\\cc+\\)"))
-           (count 0)
-           predict-words)
-      (dolist (buf pyim-buffer-list)
-        (with-current-buffer (cdr (assoc "buffer" buf))
-          (pyim-bisearch-word pinyin (point-min) (point-max))
-          (save-excursion
-            (forward-line (- 0 limit))
-            (while (and (re-search-forward regexp nil t)
-                        (< count (* 2 limit)))
-              (setq predict-words (delete-dups
-                                   (append predict-words
-                                           (list (match-string 1)))))
-              (goto-char (match-end 0))
-              (setq count (1+ count))))))
-      predict-words)))
-;; #+END_SRC
-
-;; #+BEGIN_SRC emacs-lisp
-(defun pyim-company-predict-words (command &optional arg &rest ignore)
-  "`company-mode' 补全后端，只用于 Chinese-pyim 联想词补全，无其他
-作用。"
-  (interactive (list 'interactive))
-  (cl-case command
-    (interactive (company-begin-backend 'pyim-company-backend))
-    (prefix
-     (and (featurep 'chinese-pyim)
-          ;; 光标前字符是否时汉字？
-          (string-match-p "\\cc" (char-to-string (char-before)))
-          (string-match-p "\\cc" pyim-current-str)
-          pyim-current-key
-          pyim-current-str))
-    (candidates
-     (pyim-get-predict-words pyim-current-key
-                             pyim-current-str))))
+(advice-add 'company-grab-word :around #'pyim-company-grab-word)
+(advice-add 'company-dabbrev--make-regexp :around #'pyim-company-dabbrev--make-regexp)
+(advice-add 'company-dabbrev--search :around #'pyim-company-dabbrev--search)
 ;; #+END_SRC
 
 ;; * Footer
@@ -205,10 +142,6 @@
 
 ;; Local Variables:
 ;; no-byte-compile: t
-;; coding: utf-8-unix
-;; tab-width: 4
-;; indent-tabs-mode: nil
-;; lentic-init: lentic-el2org-init
 ;; End:
 
 ;;; chinese-pyim.el ends here
