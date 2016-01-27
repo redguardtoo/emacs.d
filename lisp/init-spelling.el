@@ -122,8 +122,20 @@
 ;; Add auto spell-checking in comments for all programming language modes
 ;; if and only if there is enough memory
 ;; You can use prog-mode-hook instead.
-(if (and (not *no-memory*) ispell-program-name)
+(defun can-enable-flyspell-mode ()
+  (and (not *no-memory*)
+           ispell-program-name
+           (executable-find ispell-program-name)))
+
+(defun enable-flyspell-mode-conditionally ()
+  (if (and (not *no-memory*)
+           ispell-program-name
+           (executable-find ispell-program-name))
+      (flyspell-mode 1)))
+
+(if (can-enable-flyspell-mode)
     (add-hook 'prog-mode-hook 'flyspell-prog-mode))
+
 
 ;; you can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html

@@ -145,7 +145,7 @@
 (defun org-mode-hook-setup ()
   (setq evil-auto-indent nil)
   ;; org-mode's own flycheck will be loaded
-  (flyspell-mode 1)
+  (enable-flyspell-mode-conditionally)
 
   ;; but I don't want to auto spell check when typing,
   ;; please comment out `(flyspell-mode -1)` if prefer auto spell check
