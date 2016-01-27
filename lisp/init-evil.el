@@ -437,6 +437,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xc" 'save-buffers-kill-terminal
   "rr" 'counsel-recentf-goto ; more quick than helm
   "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
+  "dfa" 'diff-region-tag-selected-as-a
+  "dfb" 'diff-region-compare-with-b
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'js-beautify
