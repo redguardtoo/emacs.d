@@ -23,7 +23,7 @@ You need read the section "Install stable version in easiest way" *if and only i
 *** Install in normal way
 Please remove the file "~/.emacs.d/init.el" and "~/.emacs". "~" means the parent directory of your ".emacs.d" directory.
 
-Uninstall any package not installed at "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu.
+Uninstall any package not installed at "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. If don't know what I mean, then *do nothing*.
 
 All packages should be placed at "~/.emacs.d" from now on.
 
@@ -34,6 +34,8 @@ There are TWO ways to install this setup:
 *Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable` in shell.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
+
+By default, all packages will be installed automatically during startup. Edit ~/.emacs.d/init-elpa.el to avoid certain package be installed automatically.
 
 *** Install stable version in easiest way (OPTIONAL)
 You don't need git or network any more. All you need are only two zip files.
@@ -91,7 +93,7 @@ Please ignore any related error message. For example, if aspell and hunspell are
 **** csslint
 - install `node.js` through OS package manager, then `sudo npm install -g csslint`
 
-**** indentify from [[http://www.imagemagick.org/][ImageMagick]]
+**** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - needed by `org-mode` to export org file to odt file when image embedded
 - install through OS package manager
 **** zip and unzip
