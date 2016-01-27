@@ -29,9 +29,9 @@ All packages should be placed at "~/.emacs.d" from now on.
 
 There are TWO ways to install this setup:
 
-*Way 1*, download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d", OR run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d` in shell.
+*Way 1*, download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d", OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
 
-*Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command `cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable` in shell.
+*Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
@@ -42,9 +42,9 @@ You don't need git or network any more. All you need are only two zip files.
 
 Here are the *exact steps* to follow:
 - Remove the file "~/.emacs".
-- Download [[https://github.com/redguardtoo/emacs.d/archive/2.0.zip]]
+- Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
 - Extract its content into empty directory "~/.emacs.d" ("~" means home directory, the environment variable HOME contains the path of home directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
-- Download [[https://github.com/redguardtoo/myelpa/archive/2.0.zip]]
+- Download [[https://github.com/redguardtoo/myelpa/archive/stable.zip]]
 - Extract the zip somewhere, say "~/projs/myelpa".
 - Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
 - Uncomment below code in "~/.emacs.d/lisp/init-elpa.el" and start Emacs now!
@@ -68,58 +68,58 @@ These tools are *OPTIONAL*.
 
 Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
 **** w3m (web browser in console)
-- needed by `w3m` (w3m is emacs package name written in elisp)
+- needed by =w3m= (w3m is emacs package name written in elisp)
 - install through OS package manager
 - please note only emacs with GUI can display image
 **** lua
-- required by `flymake-lua`
+- required by =flymake-lua=
 - install through OS package manager
 **** aspell or hunspell
-- needed by `flyspell`
-- hunspell is the alternative of `aspell`. So you need only one of them.
+- needed by =flyspell=
+- hunspell is the alternative of =aspell=. So you need only one of them.
 - install through OS package manager
 - for aspell, you may need its dictionary like aspell-en
 - I force the dictionary to "en_US" in "~/.emacs./lisp/init-spelling.el". You can modify it.
 - I recommend aspell for programmers
 
 **** sbcl (lisp environment)
-- needed by lisp `slime`
+- needed by lisp =slime=
 - install through OS package manager
 
 **** tidy
-- needed by `web-mode` for real time HTML syntax check
+- needed by =web-mode= for real time HTML syntax check
 - install through OS package manager
 
 **** csslint
-- install `node.js` through OS package manager, then `sudo npm install -g csslint`
+- install =node.js= through OS package manager, then =sudo npm install -g csslint=
 
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
-- needed by `org-mode` to export org file to odt file when image embedded
+- needed by =org-mode= to export org file to odt file when image embedded
 - install through OS package manager
 **** zip and unzip
-- needed by `org-mode` to export org file to odt file
+- needed by =org-mode= to export org file to odt file
 - install through OS package manager
 **** jshint
-- install `node.js` through OS package manager, then `sudo npm install -g jshint`
+- install =node.js= through OS package manager, then =sudo npm install -g jshint=
 - required by js-mode
 - by default I use js2-mode which does NOT need jshint
 **** xsel
-- needed by my clipboard command `copy-to-x-clipboard` and `paste-from-x-clipboard` under Linux
+- needed by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
 - install through OS package manager
 
 **** [[http://www.cmake.org][CMake]]
-- needed by `cpputils-cmake`
+- needed by =cpputils-cmake=
 - install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
 
 **** [[http://clang.llvm.org][Clang]]
-- needed by `cpputils-cmake`, `company-clang`
+- needed by =cpputils-cmake=, =company-clang=
 - install through OS package manager
-- If you use `cpputils-cmake` and `cmake`, `cpputils-cmake` will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
-- If you use `company-clang`, add `(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))` into ~/.emacs.d/init.el
+- If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
+- If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
 
 **** GCC/Make
-- needed by `flymake`
+- needed by =flymake=
 - install through OS package manager
 
 **** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
@@ -133,34 +133,34 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
-- needed by `ggtags.el`
+- needed by =ggtags.el=
 - it creates index files for code navigation
 - more advanced than ctags, supports references and has better performance
 - install through OS package manager
 
 **** libreoffice
-- Only one executable `soffice` needed when converting odt file into doc/pdf
+- Only one executable =soffice= needed when converting odt file into doc/pdf
 - conversion happens automatically when exporting org-mode to odt
-- The conversion command is in variable `org-export-odt-convert-processes`
+- The conversion command is in variable =org-export-odt-convert-processes=
 - Install through OS package manager
 **** js-beautify
 - Beautify javascript code
-- Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then `pip install jsbeautifier`
+- Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
 **** syntaxerl
 - syntax check [[http://www.erlang.org/][Erlang]] through flymake
 - Install from [[https://github.com/ten0s/syntaxerl]]
 **** jedi & flake8
 - Required by [[https://github.com/jorgenschaefer/elpy][elpy]] which is python IDE
-- At least `pip install jedi flake8`. Check elpy website for more tips.
+- At least =pip install jedi flake8=. Check elpy website for more tips.
 **** sdcv (console version of StarDict)
 - Required by sdcv.el
 - install through OS package manager
-- `curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic` to install dictionary
+- =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
 
 * Tutorial (OPTIONAL)
 "~/.emacs.d/lisp/init-evil.el" lists the most frequently used key bindings I use.
 
-For example, below line means pressing ",bf" equals to `M-x beginning-of-defun`,
+For example, below line means pressing ",bf" equals to =M-x beginning-of-defun=,
 #+begin_src elisp
  "bf" 'beginning-of-defun
 #+end_src
@@ -170,14 +170,15 @@ Read wikipedia in order to know,
 - What is environment variable
 - What is pipe, stdout, stdin
 *** Step 2, read official tutorial at least once
-Press "C-h t" ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
+Press =C-h t= ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
 - How to move cursor
-- How to read help by pressing "C-h v" and "C-h f".
+- How to read help by pressing =C-h v= and =C-h f=.
 *** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is a for notes-keeping and planning.
-Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key you need remember is "Tab".
+
+Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 *** Step 4, solve your first problem
 For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 ** Advanced tutorial
@@ -207,25 +208,25 @@ Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheatsheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
-Comment out `(require 'init-modeline)` in init.el at first.
+Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
-Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x`]].
+Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
 ** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys.
 ** Plugins doesn't work?
 If two plugins conflicts, the more frequently used plugin takes priority.
 
-But I will set up workaround for less used plugin. Check "~/.emacs.d/lisp/init-evil.el" for the list of alternative.
+But there exists workaround for less used plugin. Check "~/.emacs.d/lisp/init-evil.el" for the list of alternative.
 
-For example, if `which-func-mode` cannot display function name mode-line, you can use `M-x popup-which-function` instead.
+For example, if =which-func-mode= cannot display function name at mode-line, you can use =M-x popup-which-function= instead.
 
-`popup-which-function` is mentioned in init-evil.el.
+=popup-which-function= is mentioned in init-evil.el.
 ** How to use org-mode
-Press `M-x org-version`, then read corresponding online manual.
+Press =M-x org-version=, then read corresponding online manual.
 
 I keep the original status of org-mode. If you find anything doesn't work out of the box, it's because you haven't do the required setup yet.
 
-For example, `org-capture` need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
+For example, =org-capture= need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 ** OS X user?
 You need remove emacs 22 bundled with freshly installed OSX:
 #+begin_src bash
@@ -258,44 +259,44 @@ Here are the steps to change their values:
 
 BTW, please *read my comments* above the code at first.
 ** Open file with Ido
-If you press `C-x C-f` to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
+If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the completions.
 
-You can keep pressing `C-f` to ignore the completions.
+You can keep pressing =C-f= to ignore the completions.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *environment variable* HOME which points to a user directory `C:\Users\<username>`. You need extract .emacs.d into the directory HOME points to.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *environment variable* HOME which points to a user directory =C:\Users\<username>=. You need extract .emacs.d into the directory HOME points to.
 ** Yasnippet key bindings
-Instead of "M-x yas-expand" or press TAB key, you may use press "M-j" in evil-insert-mode.
+Instead of =M-x yas-expand= or press TAB key, you may use press "M-j" in evil-insert-mode.
 
 ** Install packages from source
 Please place the source at "~/.emacs.d/site-lisp" where some samples already exist.
 
 Insert below lines into "~/.emacs.d/init.el":
 #+begin_src elisp
-;; check the package's README to figure out what's the `require` line!
+;; check the package's README to figure out what's the =require= line!
 (require 'cool-package-name)
 ;; put whatever setup here
 #+end_src
 ** Non-English users
-Your locale must be *UTF-8 compatible*. For example, as I type `locale` in shell, I got the output "zh_CN.UTF-8".
+Your locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
 ** Behind corporate firewall
 Type below commmand in shell:
 #+begin_src bash
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
 ** Government blocks the internet?
-People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]]. Run command "http_proxy=http://127.0.0.1:8087 emacs -nw" in shell after starting goagent server.
+People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
 ** Email
-If you use Gnus for email (Gmail, for example), check init-gnus.el. Then read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
+If you use Gnus for email, check init-gnus.el and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** Cannot download ELPA packages?
 Some package cannot be downloaded automatically because of network problem.
 
 You could
-- `M-x list-packages` to manually install it
-- Or `M-x package-refresh-content` and restart Emacs. the package will be installed automatically
+- =M-x list-packages= to manually install it
+- Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically
 ** NO vi/vim keybindings
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
 ** Evil setup
-It's defined in "~/.emacs.d/lisp/init-evil.el". Press "C-z" to switch between Emacs and Vim key bindings.
+It's defined in "~/.emacs.d/lisp/init-evil.el". Press =C-z= to switch between Emacs and Vim key bindings.
 
 Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
@@ -328,21 +329,21 @@ Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
 (color-theme-molokai)
 #+END_SRC
 
-"M-x color-theme-select" may not work because of some design flaw in Emacs.
+"M-x color-theme-select" *may not work* because of some design flaw in Emacs.
 
 Please note there is *NO unified way* to enable color theme. You need read color theme's documentation at first.
 
 My sample code works for most color themes.
 
 If you *insist on configuring the color theme in a different way*, please,
-- Comment out the line containing `(require 'init-color-theme)` in "~/.emacs.d/init.el" at first
+- Comment out the line containing =(require 'init-color-theme)= in "~/.emacs.d/init.el" at first
 - Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
 *** Use color theme in terminal
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
 ** Chinese Input Method Editor
-Run command `M-x toggle-input-method` to toggle input method. A 20M chinese dictionary is already provided.
+Run command =M-x toggle-input-method= to toggle input method. A 20M chinese dictionary is already provided.
 
 If your *personal* word file "~/.eim/pyim-personal.txt" exists, it will be used.
 
@@ -379,7 +380,7 @@ Emacs 23 support was dropped on <2015-04-21>.
 The latest Emacs23 compatible version of setup is 1.2!
 
 Here are the steps to use that setup:
-- Download https://github.com/redguardtoo/emacs.d/archive/1.2.zip
+- Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section "Install stable version in easiest way" but skip the download steps
 
@@ -396,4 +397,4 @@ File bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me di
 
 Please contact the original developer if you find any bug from third party packages.
 
-Bug report should include details (OS, Emacs version ...) plus the output of `emacs --debug-init` at minimum.
+Bug report should include details (OS, Emacs version ...) plus the output of =emacs --debug-init= at minimum.
