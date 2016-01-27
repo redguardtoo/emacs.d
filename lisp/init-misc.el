@@ -244,11 +244,9 @@
 
 (defun generic-prog-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-	;; highlight FIXME/BUG/TODO in comment
-	(require 'fic-mode)
+    ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
     (setq flyspell-check-doublon nil)
-	(fic-mode 1)
 	;; enable for all programming modes
 	;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
 	(subword-mode)
