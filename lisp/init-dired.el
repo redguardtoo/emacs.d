@@ -31,7 +31,8 @@ if no files marked, always operate on current line in dired-mode
 (defun my-guess-mplayer-path ()
   (let ((rlt "mplayer"))
     (cond
-     ((or *is-a-mac* *unix*) (setq rlt "mplayer -stop-xscreensaver"))
+     (*is-a-mac* (setq rlt "mplayer"))
+     (*linux* (setq rlt "mplayer -stop-xscreensaver"))
      (*cygwin*
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
           (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
@@ -39,8 +40,7 @@ if no files marked, always operate on current line in dired-mode
      (t ; windows
       (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
           (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
-        (setq rlt "c:\\\\\mplayer\\\\mplayer.exe"))
-      ))
+        (setq rlt "d:\\\\mplayer\\\\mplayer.exe"))))
     rlt))
 
 (eval-after-load 'dired
