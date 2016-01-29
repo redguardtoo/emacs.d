@@ -141,5 +141,19 @@
         (setq rlt "d:\\\\mplayer\\\\mplayer.exe"))))
     rlt))
 
+(defun my-guess-image-viewer-path (file &optional is-stream)
+  (let ((rlt "mplayer"))
+    (cond
+     (*is-a-mac*
+      (setq rlt
+            (format "open %s &" file)))
+     (*linux*
+      (setq rlt
+            (if is-stream (format "curl -L %s | feh -F - &" file) (format "feh -F %s &" file))))
+     (*cygwin* (setq rlt "feh -F"))
+     (t ; windows
+      (setq rlt
+            (format "rundll32.exe %SystemRoot%\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &" file))))
+    rlt))
 
 (provide 'init-utils)

@@ -154,15 +154,24 @@
   "Opens the current link or image or current page's uri or any url-like text under cursor in firefox."
   (interactive)
   (let (url)
-    (if (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
-        (setq url (or (w3m-anchor) (w3m-image) w3m-current-url)))
+    (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
+      (setq url (w3m-anchor))
+      (if (or (not url) (string= url "buffer://"))
+          (setq url (or (w3m-image) w3m-current-url))))
     (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))
     ))
 
 (defun w3mext-open-with-mplayer ()
   (interactive)
-  ;; cache 2M data and don't block UI
-  (shell-command (format "%s -cache 2000 %s &" (my-guess-mplayer-path) (w3m-anchor))))
+  (let (url cmd)
+    (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
+      (setq url (w3m-anchor))
+      (setq cmd (format "%s -cache 2000 %s &" (my-guess-mplayer-path) url))
+      (when (or (not url) (string= url "buffer://"))
+        (setq url (w3m-image))
+        ;; cache 2M data and don't block UI
+        (setq cmd (my-guess-image-viewer-path url t))))
+    (if url (shell-command cmd))))
 
 (eval-after-load 'w3m
   '(progn
