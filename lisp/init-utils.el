@@ -126,4 +126,20 @@
       (setq rlt nil)))
     rlt))
 
+(defun my-guess-mplayer-path ()
+  (let ((rlt "mplayer"))
+    (cond
+     (*is-a-mac* (setq rlt "mplayer"))
+     (*linux* (setq rlt "mplayer -stop-xscreensaver"))
+     (*cygwin*
+      (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
+          (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
+        (setq rlt "/cygdrive/d/mplayer/mplayer.exe")))
+     (t ; windows
+      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
+          (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
+        (setq rlt "d:\\\\mplayer\\\\mplayer.exe"))))
+    rlt))
+
+
 (provide 'init-utils)

@@ -73,6 +73,8 @@
        ("W" gnus-article-wide-reply-with-original "Reply all with original S W")
        ("o" gnus-mime-save-part "Save attachment at point o")
        ("w" gnus-article-wide-reply "Reply all S w")
+       ("v" w3mext-open-with-mplayer "Open video/audio at point")
+       ("b" w3mext-open-link-or-image-or-url "Open link under cursor or page URL with browser")
        ("q" nil "cancel"))
      ;; y is not used by default
      (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))

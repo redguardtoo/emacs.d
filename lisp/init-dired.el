@@ -28,21 +28,6 @@ if no files marked, always operate on current line in dired-mode
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
 (setq dired-dwim-target t)
 
-(defun my-guess-mplayer-path ()
-  (let ((rlt "mplayer"))
-    (cond
-     (*is-a-mac* (setq rlt "mplayer"))
-     (*linux* (setq rlt "mplayer -stop-xscreensaver"))
-     (*cygwin*
-      (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
-          (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
-        (setq rlt "/cygdrive/d/mplayer/mplayer.exe")))
-     (t ; windows
-      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-          (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
-        (setq rlt "d:\\\\mplayer\\\\mplayer.exe"))))
-    rlt))
-
 (eval-after-load 'dired
   '(progn
      ;; from 24.4, dired+ can show/hide dired details by press "("

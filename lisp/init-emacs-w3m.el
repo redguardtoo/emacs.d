@@ -159,6 +159,11 @@
     (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))
     ))
 
+(defun w3mext-open-with-mplayer ()
+  (interactive)
+  ;; cache 2M data and don't block UI
+  (shell-command (format "%s -cache 2000 %s &" (my-guess-mplayer-path) (w3m-anchor))))
+
 (eval-after-load 'w3m
   '(progn
      (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
