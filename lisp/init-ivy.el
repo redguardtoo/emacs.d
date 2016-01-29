@@ -97,11 +97,13 @@ Or else, find files since 24 weeks (6 months) ago."
                        (ivy-imenu-get-candidates-from
                         (cl-loop for (e . v) in (cdr elm) collect
                                  (cons e (if (integerp v) (copy-marker v) v)))
+                        ;; pass the prefix to next recursive call
                         (concat prefix (if prefix ".") (car elm)))
                    (and (cdr elm) ; bug in imenu, should not be needed.
                         (setcdr elm (copy-marker (cdr elm))) ; Same as [1].
-                        (list (cons (concat prefix (if prefix ".") (car elm))
-                                    (copy-marker (cdr elm))))))))
+                        (let ((key (concat prefix (if prefix ".") (car elm))) )
+                          (list (cons key (cons key (copy-marker (cdr elm)))))
+                          )))))
 
 (defun counsel-imenu-goto ()
   "Go to buffer position"
@@ -112,7 +114,7 @@ Or else, find files since 24 weeks (6 months) ago."
     (setq items (imenu--make-index-alist t))
     (ivy-read "imenu items:"
               (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
-              :action (lambda (k) (goto-char k)))))
+              :action (lambda (k) (imenu k)))))
 
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark"
