@@ -67,9 +67,11 @@
 
 (defun company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
-  (make-local-variable 'company-backends)
-  (add-to-list 'company-backends 'company-ispell)
-  (setq company-ispell-dictionary ispell-alternate-dictionary))
+  (when (boundp 'company-backends)
+    (make-local-variable 'company-backends)
+    (add-to-list 'company-backends 'company-ispell)
+    (setq company-ispell-dictionary ispell-alternate-dictionary)))
+
 ;; message-mode use company-bbdb.
 ;; So we should NOT turn on company-ispell
 (add-hook 'org-mode-hook 'company-ispell-setup)
