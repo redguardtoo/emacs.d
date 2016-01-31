@@ -129,16 +129,16 @@
 (defun my-guess-mplayer-path ()
   (let ((rlt "mplayer"))
     (cond
-     (*is-a-mac* (setq rlt "mplayer"))
-     (*linux* (setq rlt "mplayer -stop-xscreensaver"))
+     (*is-a-mac* (setq rlt "mplayer -quiet"))
+     (*linux* (setq rlt "mplayer -quiet -stop-xscreensaver"))
      (*cygwin*
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
-          (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
-        (setq rlt "/cygdrive/d/mplayer/mplayer.exe")))
+          (setq rlt "/cygdrive/c/mplayer/mplayer.exe -quiet")
+        (setq rlt "/cygdrive/d/mplayer/mplayer.exe -quiet")))
      (t ; windows
       (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-          (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
-        (setq rlt "d:\\\\mplayer\\\\mplayer.exe"))))
+          (setq rlt "c:\\\\mplayer\\\\mplayer.exe -quiet")
+        (setq rlt "d:\\\\mplayer\\\\mplayer.exe -quiet"))))
     rlt))
 
 (defun my-guess-image-viewer-path (file &optional is-stream)
