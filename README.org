@@ -265,7 +265,7 @@ You can keep pressing =C-f= to ignore the completions.
 ** Windows
 I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *environment variable* HOME which points to a user directory =C:\Users\<username>=. You need extract .emacs.d into the directory HOME points to.
 ** Yasnippet key bindings
-Instead of =M-x yas-expand= or press TAB key, you may use press "M-j" in evil-insert-mode.
+Instead of =M-x yas-expand= or press TAB key, you may press "M-j" instead.
 
 ** Install packages from source
 Please place the source at "~/.emacs.d/site-lisp" where some samples already exist.
