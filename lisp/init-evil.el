@@ -497,6 +497,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   ;; "opt" is occupied by my-open-project-todo
   ;; recommended in html
   "md" 'mc/mark-all-like-this-dwim
+  "me" 'mc/edit-lines
   "otl" 'org-toggle-link-display
   "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
