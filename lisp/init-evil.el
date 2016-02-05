@@ -31,6 +31,9 @@
 (global-evil-surround-mode 1)
 ;; }}
 
+(require 'evil-visualstar)
+(setq evil-visualstar/persistent t)
+
 (require 'evil-mark-replace)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
