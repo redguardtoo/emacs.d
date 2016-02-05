@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.7
+;; Version: 1.2.10
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -113,7 +113,11 @@
   "Minor mode for setting up Evil in a single buffer."
   :init-value nil
   (cond
-   ((evil-disabled-buffer-p))
+   ((evil-disabled-buffer-p)
+    ;; Don't leave the mode variable on in buffers where evil disabled, because
+    ;; functions that check this variable will get an incorrect result (e.g.,
+    ;; evil-refresh-cursor).
+    (setq evil-local-mode nil))
    (evil-local-mode
     (setq emulation-mode-map-alists
           (evil-concat-lists '(evil-mode-map-alist)
@@ -330,15 +334,25 @@ then this function does nothing."
 ;; When a buffer is created in a low-level way, it is invisible to
 ;; Evil (as well as other globalized minor modes) because no hooks are
 ;; run. This is appropriate since many buffers are used for throwaway
-;; purposes. Passing the buffer to `set-window-buffer' indicates
+;; purposes. Passing the buffer to `display-buffer' indicates
 ;; otherwise, though, so advise this function to initialize Evil.
-(defadvice set-window-buffer (before evil)
+(defadvice display-buffer (before evil)
   "Initialize Evil in the displayed buffer."
   (when evil-mode
-    (when (get-buffer (ad-get-arg 1))
-      (with-current-buffer (ad-get-arg 1)
+    (when (get-buffer (ad-get-arg 0))
+      (with-current-buffer (ad-get-arg 0)
         (unless evil-local-mode
           (evil-local-mode 1))))))
+
+(defadvice switch-to-buffer (before evil)
+  "Initialize Evil in the displayed buffer."
+  (when evil-mode
+    (let* ((arg0 (ad-get-arg 0))
+           (buffer (if arg0 (get-buffer arg0) (other-buffer))))
+      (when buffer
+        (with-current-buffer buffer
+          (unless evil-local-mode
+            (evil-local-mode 1)))))))
 
 ;; Refresh cursor color.
 ;; Cursor color can only be set for each frame but not for each buffer.

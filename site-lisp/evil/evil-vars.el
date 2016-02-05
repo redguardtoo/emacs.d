@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.7
+;; Version: 1.2.10
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -26,9 +26,6 @@
 ;; along with Evil.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;; Code:
-
-(declare-function evil-add-command-properties "evil-common"
-                  (command &rest properties))
 
 ;;; Hooks
 
@@ -434,17 +431,6 @@ before point."
   "Whether \"cw\" behaves like \"ce\"."
   :type 'boolean
   :group 'evil)
-
-(defcustom evil-want-Y-yank-to-eol nil
-  "Whether \"Y\" yanks to the end of the line.
-The default behavior is to yank the whole line."
-  :group 'evil
-  :type 'boolean
-  :initialize #'evil-custom-initialize-pending-reset
-  :set #'(lambda (sym value)
-           (evil-add-command-properties
-            'evil-yank-line
-            :motion (if value 'evil-end-of-line 'evil-line))))
 
 (defcustom evil-echo-state t
   "Whether to signal the current state in the echo area."
@@ -1028,11 +1014,6 @@ uses plain Emacs regular expressions."
                 (const :tag "Disable highlighting." nil))
   :group 'evil)
 
-(defcustom evil-ex-search-persistent-highlight t
-  "If non-nil matches remained highlighted when the search ends."
-  :type 'boolean
-  :group 'evil)
-
 (defcustom evil-ex-search-case 'smart
   "The case behaviour of the search command.
 Smart case means that the pattern is case sensitive if and only
@@ -1343,7 +1324,7 @@ has been repeated.")
   "The information about the number of following lines the
 insertion should be repeated. This is list (LINE COLUMN COUNT)
 where LINE is the line-number where the original insertion
-started and COLUMN is either a number of function determining the
+started and COLUMN is either a number or function determining the
 column where the repeated insertions should take place. COUNT is
 number of repeats (including the original insertion).")
 
@@ -1518,8 +1499,7 @@ Elements have the form (NAME . FUNCTION).")
      :close      hide-ifdef-block)
     ((outline-mode
       outline-minor-mode
-      org-mode
-      markdown-mode)
+      org-mode)
      :open-all   show-all
      :close-all  ,(lambda ()
                     (with-no-warnings (hide-sublevels 1)))
@@ -1732,7 +1712,7 @@ Otherwise the previous command is assumed as substitute.")
           (goto-char (point-min))
           (buffer-substring (point-min) (line-end-position)))
          ;; no repo, use plain version
-         (t "1.2.7")))))
+         (t "1.2.10")))))
   "The current version of Evil")
 
 (defun evil-version ()

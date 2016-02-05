@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.7
+;; Version: 1.2.10
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -2020,23 +2020,10 @@ The following special registers are supported.
               (let ((reg (- register ?1)))
                 (and (< reg (length kill-ring))
                      (current-kill reg t))))
-             ((memq register '(?* ?+))
-              ;; the following code is modified from
-              ;; `x-selection-value-internal'
-              (let ((what (if (eq register ?*) 'PRIMARY 'CLIPBOARD))
-                    (request-type (or (and (boundp 'x-select-request-type)
-                                           x-select-request-type)
-                                      '(UTF8_STRING COMPOUNT_TEXT STRING)))
-                    text)
-                (unless (consp request-type)
-                  (setq request-type (list request-type)))
-                (while (and request-type (not text))
-                  (condition-case nil
-                      (setq text (x-get-selection what (pop request-type)))
-                    (error nil)))
-                (when text
-                  (remove-text-properties 0 (length text) '(foreign-selection nil) text))
-                text))
+             ((eq register ?*)
+              (x-get-selection-value))
+             ((eq register ?+)
+              (x-get-clipboard))
              ((eq register ?\C-W)
               (unless (evil-ex-p)
                 (user-error "Register <C-w> only available in ex state"))
@@ -3256,16 +3243,7 @@ function is called from `evil-select-quote'."
           (goto-char (if (> dir 0) beg end))
           (if (and wsboth (setq bnd (bounds-of-thing-at-point 'evil-space)))
               (if (> dir 0) (setq beg (car bnd)) (setq end (cdr bnd)))))))
-      (evil-range beg end
-                  ;; HACK: fixes #583
-                  ;; When not in visual state, an empty range is
-                  ;; possible. However, this cannot be achieved with
-                  ;; inclusive ranges, hence we use exclusive ranges
-                  ;; in this case. In visual state the range must be
-                  ;; inclusive because otherwise the selection would
-                  ;; be wrong.
-                  (if (evil-visual-state-p) 'inclusive 'exclusive)
-                  :expanded t))))
+      (evil-range beg end 'inclusive :expanded t))))
 
 (defun evil-select-quote (quote beg end type count &optional inclusive)
   "Return a range (BEG END) of COUNT quoted text objects.

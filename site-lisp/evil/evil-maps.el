@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.7
+;; Version: 1.2.10
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -193,8 +193,6 @@
 (define-key evil-motion-state-map "T" 'evil-find-char-to-backward)
 (define-key evil-motion-state-map "w" 'evil-forward-word-begin)
 (define-key evil-motion-state-map "W" 'evil-forward-WORD-begin)
-(define-key evil-motion-state-map "y" 'evil-yank)
-(define-key evil-motion-state-map "Y" 'evil-yank-line)
 (define-key evil-motion-state-map "gd" 'evil-goto-definition)
 (define-key evil-motion-state-map "ge" 'evil-backward-word-end)
 (define-key evil-motion-state-map "gE" 'evil-backward-WORD-end)
@@ -439,6 +437,7 @@
 (evil-ex-define-cmd "x[it]" 'evil-save-modified-and-close)
 (evil-ex-define-cmd "exi[t]" 'evil-save-modified-and-close)
 (evil-ex-define-cmd "bd[elete]" 'evil-delete-buffer)
+(evil-ex-define-cmd "bw[ipeout]" 'evil-delete-buffer)
 (evil-ex-define-cmd "g[lobal]" 'evil-ex-global)
 (evil-ex-define-cmd "v[global]" 'evil-ex-global-inverted)
 (evil-ex-define-cmd "norm[al]" 'evil-ex-normal)

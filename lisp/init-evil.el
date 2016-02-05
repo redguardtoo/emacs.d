@@ -31,13 +31,19 @@
 (global-evil-surround-mode 1)
 ;; }}
 
-;; {{ press `viW*`
+;; {{ For example, press `viW*`
 (require 'evil-visualstar)
 (setq evil-visualstar/persistent t)
 (global-evil-visualstar-mode t)
 ;; }}
 
 ;; {{ https://github.com/gabesoft/evil-mc
+;; `grm' create cursor for all matching selected
+;; `gru' undo all cursors
+;; `grs' pause cursor
+;; `grr' resume cursor
+;; `grh' make cursor here
+;; `C-p', `C-n' previous cursor, next cursor
 (require 'evil-mc)
 (global-evil-mc-mode 1)
 ;; }}
