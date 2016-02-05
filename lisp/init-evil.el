@@ -31,10 +31,19 @@
 (global-evil-surround-mode 1)
 ;; }}
 
+;; {{ press `viW*`
 (require 'evil-visualstar)
 (setq evil-visualstar/persistent t)
+(global-evil-visualstar-mode t)
+;; }}
+
+;; {{ https://github.com/gabesoft/evil-mc
+(require 'evil-mc)
+(global-evil-mc-mode 1)
+;; }}
 
 (require 'evil-mark-replace)
+
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
