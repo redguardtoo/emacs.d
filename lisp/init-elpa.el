@@ -75,7 +75,6 @@ ARCHIVE is the string name of the package archive.")
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
   '(bbdb
-    kv
     color-theme
     wgrep
     robe
@@ -116,7 +115,6 @@ ARCHIVE is the string name of the package archive.")
     gitconfig-mode
     textile-mode
     w3m
-    fakir
     erlang
     company-c-headers
     ;; make all the color theme packages available
@@ -192,7 +190,6 @@ ARCHIVE is the string name of the package archive.")
 
 (package-initialize)
 
-(require-package 'kv)
 (require-package 'dash)
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'color-theme)
@@ -288,7 +285,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'legalese)
 (require-package 'string-edit)
 (require-package 'guide-key)
-(require-package 'fakir)
 (require-package 'simple-httpd)
 (require-package 'git-messenger)
 (require-package 'git-gutter)
