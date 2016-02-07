@@ -38,7 +38,7 @@ if no files marked, always operate on current line in dired-mode
      (setq dired-recursive-deletes 'always)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
-                     ((my-guess-mplayer-path) "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
+                     ((if *unix* (my-guess-mplayer-path) "open")  "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                      ("7z x" "7z")
