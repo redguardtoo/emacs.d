@@ -184,6 +184,10 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** Setup fonts in GUI Emacs
+Non-Chinese use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]] and Chinese use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
+
+Neither package is included in this setup. You need install them manually.
 ** Synchronize setup with Git
 Most people should synchronize from my stable setup which is updated every 6 months:
 #+begin_src bash
