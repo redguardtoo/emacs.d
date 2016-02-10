@@ -4,6 +4,6 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 (defun ${1:major-mode}-hook-setup ()
-  $0)
-
+  $0
+  (local-set-key (kbd "M-;") 'comment-dwim))
 (add-hook '${1:$(yas/substr yas-text "[^ ]*")}-hook '${1:$(yas/substr yas-text "[^ ]*")}-hook-setup)
