@@ -301,6 +301,7 @@ sudo pip install jsbeautifier"
 
 (setq-default js2-additional-externs
               '("$"
+                "$A" ; salesforce lightning component
                 "AccessifyHTML5"
                 "KeyEvent"
                 "Raphael"
