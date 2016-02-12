@@ -572,6 +572,7 @@ If step is -1, go backward."
   ;; Use paredit in the minibuffer
   (conditionally-paredit-mode 1)
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
+  (local-set-key (kbd "C-k") 'kill-line)
   (setq gc-cons-threshold most-positive-fixnum))
 
 (defun my-minibuffer-exit-hook ()
