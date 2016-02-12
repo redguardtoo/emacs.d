@@ -65,6 +65,7 @@
         evil-insert
         evil-join
         evil-jump-forward
+        evil-mc-make-and-goto-next-match
         evil-next-line
         evil-next-visual-line
         evil-normal-state
@@ -88,6 +89,7 @@
         ffip
         forward-char
         forward-word
+        gnus
         helm-keyboard-quit
         helm-next-line
         helm-previous-line
@@ -119,7 +121,6 @@
         keyfreq-show
         kill-sentence
         left-char
-        right-char
         minibuffer-complete
         minibuffer-complete-and-exit
         minibuffer-keyboard-quit
@@ -149,6 +150,7 @@
         previous-line
         push-button
         quit-window
+        right-char
         save-buffer
         save-buffers-kill-terminal
         scroll-down-command
