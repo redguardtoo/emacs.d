@@ -109,6 +109,7 @@ ARCHIVE is the string name of the package archive.")
     inflections
     dropdown-list
     lua-mode
+    tidy
     pomodoro
     auto-compile
     packed
@@ -252,7 +253,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'ruby-compilation)
 (require-package 'emmet-mode)
 (require-package 'session)
-;; (require-package 'tidy)
+(require-package 'tidy)
 (require-package 'unfill)
 (require-package 'w3m)
 (require-package 'idomenu)

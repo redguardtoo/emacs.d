@@ -87,7 +87,7 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - install through OS package manager
 
 **** tidy
-- needed by =web-mode= for real time HTML syntax check
+- needed by =web-mode= for syntax check and =tidy.el= html formatting
 - install through OS package manager
 
 **** csslint

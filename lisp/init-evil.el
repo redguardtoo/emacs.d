@@ -429,6 +429,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
   "tmt" 'git-timemachine-toggle
+  "tdb" 'tidy-buffer
+  "tdl" 'tidy-current-line
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" 'my-overview-of-current-buffer
   "or" 'open-readme-in-git-root-directory
