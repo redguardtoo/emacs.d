@@ -27,7 +27,6 @@
 (defun moz-custom-setup ()
   ;; called when editing a REAL file
   (unless (is-buffer-file-temp)
-    (message "moz-custom-setup called (buffer-file-name)=%s" (buffer-file-name))
     (moz-minor-mode 1)
     (setq moz-quiet t)
     ;; @see  http://www.emacswiki.org/emacs/MozRepl
