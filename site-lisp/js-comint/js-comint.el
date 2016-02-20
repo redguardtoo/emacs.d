@@ -180,9 +180,10 @@ is run).
       (when js-use-nvm
         (unless js-nvm-current-version
           (js-select-node-version)))
-      (setenv "NODE_NO_READLINE" "1")
       (setq inferior-js-program-arguments (split-string cmd))
       (setq inferior-js-program-command (pop inferior-js-program-arguments)))))
+
+  (setenv "NODE_NO_READLINE" "1")
   (if (not (comint-check-proc "*js*"))
       (with-current-buffer
           (apply 'make-comint "js" inferior-js-program-command
