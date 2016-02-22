@@ -163,9 +163,15 @@
 
 (defun w3mext-open-with-mplayer ()
   (interactive)
-  (let (url cmd)
+  (let (url cmd str)
     (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
       (setq url (w3m-anchor))
+      (unless url
+        (save-excursion
+          (goto-char (point-min))
+          (when (string-match "^Archived-at: <?\\([^ <>]*\\)>?" (setq str (buffer-substring-no-properties (point-min) (point-max))))
+            (setq url (match-string 1 str)))))
+
       (setq cmd (format "%s -cache 2000 %s &" (my-guess-mplayer-path) url))
       (when (or (not url) (string= url "buffer://"))
         (setq url (w3m-image))
