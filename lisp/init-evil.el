@@ -454,7 +454,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gsh" 'git-gutter-reset-to-head-parent
        "gsr" 'git-gutter-reset-to-default
        "xc" 'save-buffers-kill-terminal
-       "rr" 'counsel-recentf-goto ; more quick than helm
+       "rr" 'counsel-recentf-goto
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
        "dfa" 'diff-region-tag-selected-as-a
        "dfb" 'diff-region-compare-with-b
@@ -475,7 +475,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "su" 'winner-undo
        "xu" 'winner-undo
        "to" 'toggle-web-js-offset
-       "cf" 'helm-for-files ;; "C-c f"
        "sl" 'sort-lines
        "ulr" 'uniquify-all-lines-region
        "ulb" 'uniquify-all-lines-buffer
@@ -540,12 +539,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "8" 'select-window-8
        "9" 'select-window-9
        "xm" 'smex
-       "mx" 'helm-M-x
        "xx" 'er/expand-region
        "xf" 'ido-find-file
        "xb" 'ido-switch-buffer
-       "xo" 'helm-find-files
-       "ri" 'yari-helm
        "vv" 'scroll-other-window
        "vu" 'scroll-other-window-up
        "xh" 'mark-whole-buffer

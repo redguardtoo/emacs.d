@@ -90,9 +90,6 @@
         forward-char
         forward-word
         gnus
-        helm-keyboard-quit
-        helm-next-line
-        helm-previous-line
         ido-complete
         ido-delete-backward-updir
         ido-exit-minibuffer

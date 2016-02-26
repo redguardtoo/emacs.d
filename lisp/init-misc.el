@@ -19,6 +19,9 @@
 (add-to-list 'auto-mode-alist '("\\.mailcap\\'" . conf-mode))
 ;; }}
 
+;; open header file under cursor
+(global-set-key (kbd "C-x C-o") 'ffap)
+
 ;; salesforce
 (autoload 'apex-mode "apex-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.cls\\'" . apex-mode))

@@ -13,9 +13,7 @@
 (add-hook 'ruby-mode-hook 'ruby-mode-hook-setup)
 
 ;; doc look up
-(autoload 'yari-helm "yari" "" t nil)
 (autoload 'yari "yari" "" t nil)
-(defalias 'ri 'yari-helm)
 
 (add-to-list 'auto-mode-alist '("\\.rhtml\\(\\.erb\\)?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.jst\\.ejs\\'"  . web-mode))

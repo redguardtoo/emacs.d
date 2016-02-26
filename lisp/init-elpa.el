@@ -168,7 +168,6 @@ ARCHIVE is the string name of the package archive.")
     gruber-darker-theme
     gruvbox-theme
     hc-zenburn-theme
-    helm-themes
     hemisu-theme
     heroku-theme)
   "Don't install any Melpa packages except these packages")

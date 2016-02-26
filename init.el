@@ -56,7 +56,6 @@
 (require 'init-ibuffer)
 (require 'init-flymake)
 (require 'init-smex)
-(require 'init-helm)
 (require 'init-ivy)
 (require 'init-hippie-expand)
 (require 'init-windows)
