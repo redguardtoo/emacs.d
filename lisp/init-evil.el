@@ -244,10 +244,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
-  "S" 'org-store-link
-  "A" 'org-agenda
-  "H" 'org-beginning-of-line ; smarter behaviour on headlines etc.
-  "L" 'org-end-of-line ; smarter behaviour on headlines etc.
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" 'org-metaleft ; out-dent
@@ -516,6 +512,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;; recommended in html
        "md" 'mc/mark-all-like-this-dwim
        "me" 'mc/edit-lines
+       "oag" 'org-agenda
        "otl" 'org-toggle-link-display
        "om" 'toggle-org-or-message-mode
        "ut" 'undo-tree-visualize
