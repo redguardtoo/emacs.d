@@ -113,7 +113,7 @@
     (let ((default-directory (setq root (or (and (fboundp 'ffip-get-project-root-directory)
                                                  (ffip-get-project-root-directory))
                                             default-directory))))
-      (setq cmd (format "%s -rsn %s \"%s\""
+      (setq cmd (format "%s -rsn %s \"%s\" *"
                         grep-program my-grep-extra-opts keyword))
       (when (and (setq collection (split-string
                                    (shell-command-to-string cmd)
