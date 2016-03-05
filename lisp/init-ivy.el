@@ -1,13 +1,24 @@
+(defvar counsel-process-filename-string nil
+  "Give you a chance to change file name string for other counsel-* functions")
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
 (defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
-IF OPEN-ANOTHER-WINDOW is true, open the file in another window."
-  (let ((default-directory (locate-dominating-file
+IF OPEN-ANOTHER-WINDOW is true, open the file in another window.
+Yank the file name at the same time."
+  (let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
+        (default-directory (locate-dominating-file
                             default-directory ".git"))
-        (keyword (if (region-active-p)
-                     (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string (concat "Enter " hint " pattern:" ))))
+        keyword
         collection val lst)
+
+    ;; insert base file name into kill ring is possible
+    (kill-new (if counsel-process-filename-string
+                  (funcall counsel-process-filename-string str)
+                str))
+
+    (setq keyword (if (region-active-p)
+                      (buffer-substring-no-properties (region-beginning) (region-end))
+                    (read-string (concat "Enter " hint " pattern:" ))))
 
     (setq collection (split-string (shell-command-to-string (format git-cmd keyword))
                                    "\n"
