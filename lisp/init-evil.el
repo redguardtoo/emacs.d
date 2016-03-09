@@ -570,8 +570,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; all keywords arguments are still supported
 (nvmap :prefix "SPC"
-       "wc" 'wg-create-workgroup
-       "ws" 'my-wg-switch-workgroup
+       "ss" 'wg-create-workgroup ; save windows layout
+       "ll" 'my-wg-switch-workgroup ; load windows layout
        "jde" 'js2-display-error-list
        "jne" 'js2-next-error
        "jte" 'js2-mode-toggle-element
