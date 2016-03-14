@@ -148,7 +148,7 @@
   (enable-flyspell-mode-conditionally)
 
   ;; but I don't want to auto spell check when typing,
-  ;; please comment out `(flyspell-mode -1)` if prefer auto spell check
+  ;; please comment out `(flyspell-mode -1)` if you prefer auto spell check
   (flyspell-mode -1)
 
   ;; don't spell check double words
