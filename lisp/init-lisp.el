@@ -2,7 +2,15 @@
 ;; Paredit
 ;; ----------------------------------------------------------------------------
 (setq-default initial-scratch-message
-              (concat ";; Happy hacking " (or user-login-name "") " - Emacs loves you!\n\n"))
+              (if (executable-find "fortune")
+                (format
+                  ";; %s\n\n"
+                  (replace-regexp-in-string
+                    "\n" "\n;; " ; comment each line
+                    (replace-regexp-in-string
+                      "\n$" ""    ; remove trailing linebreak
+                      (shell-command-to-string "fortune"))))
+                (concat ";; Happy hacking " (or user-login-name "") " - Emacs loves you!\n\n")))
 
 ;; {{ scheme setup
 (setq scheme-program-name "guile")
