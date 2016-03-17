@@ -98,16 +98,17 @@
 
 ;; ** 使用
 ;; *** 常用快捷键
-;; | 输入法快捷键    | 功能             |
-;; |-----------------+------------------|
-;; | C-n 或 M-n 或 + | 向下翻页         |
-;; | C-p 或 M-p 或 - | 向上翻页         |
-;; | C-f             | 选择下一个备选词 |
-;; | C-b             | 选择上一个备选词 |
-;; | SPC             | 确定输入         |
-;; | RET 或 C-m      | 字母上屏         |
-;; | C-c 或 C-g      | 取消输入         |
-;; | TAB             | 模糊音调整       |
+;; | 输入法快捷键    | 功能                       |
+;; |-----------------+----------------------------|
+;; | C-n 或 M-n 或 + | 向下翻页                   |
+;; | C-p 或 M-p 或 - | 向上翻页                   |
+;; | C-f             | 选择下一个备选词           |
+;; | C-b             | 选择上一个备选词           |
+;; | SPC             | 确定输入                   |
+;; | RET 或 C-m      | 字母上屏                   |
+;; | C-c             | 取消输入                   |
+;; | C-g             | 取消输入并保留已输入的中文 |
+;; | TAB             | 模糊音调整                 |
 
 ;; *** 使用双拼模式
 ;; Chinese-pyim 支持双拼模式，用户可以通过变量 `pyim-default-pinyin-scheme' 来设定当前使用的
@@ -142,13 +143,19 @@
 
 ;; GTK 选词框的字体设置可以参考：[[https://www.gnu.org/software/emacs/manual/html_node/emacs/GTK-resources.html#GTK-resources][GTK resources]] 。
 
-;; *** 设置模糊音
-;; Chinese-pyim 使用一个比较 *粗糙* 的方法处理 *模糊音* ，要了解具体细节，
-;; 请运行：
+;; *** 调整 tooltip 选词框的显示样式
+;; Chinese-pyim 的 tooltip 选词框默认使用 *双行显示* 的样式，在一些特
+;; 殊的情况下（比如：popup 显示的菜单错位），用户可以使用 *单行显示*
+;; 的样式：
 
 ;; #+BEGIN_EXAMPLE
-;; C-h v pyim-fuzzy-pinyin-adjust-function
+;; (setq pyim-guidance-format-function 'pyim-guidance-format-function-one-line)
 ;; #+END_EXAMPLE
+
+;; 注：用户也可以自定义 guidance 格式化函数。
+
+;; *** 设置模糊音
+;; 可以通过设置 `pyim-fuzzy-pinyin-alist' 变量来自定义模糊音。
 
 ;; *** 词语联想
 ;; Chinese-pyim *内置* 了5种词语联想方式：
@@ -166,8 +173,7 @@
 ;;     用 `pyim-article2dict-guessdict' 命令生成，不想折腾的用户也可以从
 ;;     下面的地址下载样例词库：(注意：请使用另存为，不要直接点击链接)。
 
-;;    1. http://tumashu.github.io/chinese-pyim-guessdict/pyim-guessdict-a.gpyim
-;;    2. http://tumashu.github.io/chinese-pyim-guessdict/pyim-guessdict-b.gpyim
+;;     http://tumashu.github.io/chinese-pyim-guessdict/pyim-guessdict.gpyim
 
 ;; 5. `dabbrev'  搜索当前 buffer, 或者其他 buffer 中已经存在的中文文本，得到匹配的
 ;;    候选词，通过这些候选词来提高输入法的识别精度。
@@ -277,6 +283,11 @@
 ;; 果用户喜欢阅读 html 格式的文档，可以查看在线文档；
 
 ;;   http://tumashu.github.io/chinese-pyim/
+
+;; *** 将光标处的拼音字符串转换为中文 (与 vimim 的 “点石成金” 功能类似)
+;; #+BEGIN_EXAMPLE
+;; (global-set-key (kbd "M-i") 'pyim-convert-pinyin-at-point)
+;; #+END_EXAMPLE
 
 ;; *** 如何添加自定义拼音词库
 ;; Chinese-pyim 默认没有携带任何拼音词库，用户可以使用下面四种方式，获取
@@ -412,11 +423,6 @@
 
 ;; 另外一个分词相关的函数是 `pyim-split-chinese-string2string', 这个函数仅仅将一个
 ;; 中文字符串分词，在分词的位置用空格或者用户自定义的分隔符隔开，然后返回新的字符串。
-
-;; 用户可以通过运行命令 `pyim-cache-dict-buffer' 来缓存 Chinese-pyim 的词库 buffer，
-;; 使用缓存可以提高分词的速度。
-
-;; 注：仅仅对一般词库有效，个人文件和 guessdict 词库无效。
 
 ;; *** 获取光标处的中文词条
 ;; Chinese-pyim 包含了一个简单的命令：`pyim-get-words-list-at-point', 这个命令
