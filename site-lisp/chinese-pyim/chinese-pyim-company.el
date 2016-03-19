@@ -106,10 +106,10 @@
 ;; 默认为6个，这对中文而言应该够用了。
 
 ;; #+BEGIN_SRC emacs-lisp
-(defun pyim-company-dabbrev--make-regexp (orig-fun)
+(defun pyim-company-dabbrev--make-regexp (orig-fun prefix)
   (if (pyim-company-chinese-complete-p)
-      (format "[^[:punct:][:blank:]\n]\\{1,%s\\}" pyim-company-max-length)
-    (funcall orig-fun)))
+      (format "%s[^[:punct:][:blank:]\n]\\{1,%s\\}" prefix pyim-company-max-length)
+    (funcall orig-fun prefix)))
 ;; #+END_SRC
 
 ;; ** TODO 让 pyim-company-dabbrev--search 更好的处理中文
