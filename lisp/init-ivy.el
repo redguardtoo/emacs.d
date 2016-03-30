@@ -28,7 +28,7 @@ Yank the file name at the same time."
 
     (when (and collection (> (length collection) 0))
       (setq val (if (= 1 (length collection)) (car collection)
-                    (ivy-read (format " matching \"%s\":" keyword) collection)))
+                    (ivy-read (format "matching \"%s\":" keyword) collection)))
       (funcall fn open-another-window val))))
 
 (defun counsel-git-grep (&optional open-another-window)
