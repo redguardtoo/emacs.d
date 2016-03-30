@@ -452,6 +452,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xc" 'save-buffers-kill-terminal
        "rr" 'counsel-recentf-goto
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
+       "rf" 'counsel-goto-recent-directory
        "dfa" 'diff-region-tag-selected-as-a
        "dfb" 'diff-region-compare-with-b
        "di" 'evilmi-delete-items
