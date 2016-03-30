@@ -198,6 +198,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'gitconfig-mode)
 (require-package 'yagist)
 (require-package 'wgrep)
+(require-package 'request) ; http post/get tool
 (require-package 'lua-mode)
 (require-package 'robe)
 (require-package 'inf-ruby)
