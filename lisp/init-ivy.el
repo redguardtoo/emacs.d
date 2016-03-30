@@ -186,15 +186,19 @@ Or else, find files since 24 weeks (6 months) ago."
   (ivy-recentf))
 
 (defun counsel-goto-recent-directory ()
-  "Recent directory"
+  "Recent directories"
   (interactive)
-  (unless recentf-mode (recentf-mode 1))
-  (let ((collection (remove-duplicates (mapcar 'file-name-directory recentf-list)
-                                       :test (lambda (x y) (or (null y) (equal x y)))
-                                       :from-end t)))
-    (when (and collection (> (length collection) 0))
-      (setq val (if (= 1 (length collection)) (car collection)
-                  (ivy-read "directories:" collection)))
-      (if val (dired val)))))
+  (let (collection)
+    (unless recentf-mode (recentf-mode 1))
+    (setq collection
+          (append (remove-duplicates
+                   (mapcar 'file-name-directory recentf-list)
+                   :test (lambda (x y) (or (null y) (equal x y)))
+                   :from-end t)
+                  ;; fasd history
+                  (if (executable-find "fasd")
+                      (mapcar (lambda (v) (replace-regexp-in-string "^[.0-9]+ +" "" v))
+                              (split-string (shell-command-to-string "fasd -d") "\n" t)))))
+    (ivy-read "directories:" collection :action 'dired)))
 
 (provide 'init-ivy)
