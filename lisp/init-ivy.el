@@ -192,7 +192,7 @@ Or else, find files since 24 weeks (6 months) ago."
           (append (mapcar 'file-name-directory recentf-list)
                   ;; fasd history
                   (if (executable-find "fasd")
-                      (split-string (shell-command-to-string "fasd -d") "\n" t))))))
+                      (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
     (ivy-read "directories:" collection
               :action 'dired
               :caller 'counsel-goto-recent-directory)))
