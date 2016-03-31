@@ -197,8 +197,7 @@ Or else, find files since 24 weeks (6 months) ago."
                    :from-end t)
                   ;; fasd history
                   (if (executable-find "fasd")
-                      (mapcar (lambda (v) (replace-regexp-in-string "^[.0-9]+ +" "" v))
-                              (split-string (shell-command-to-string "fasd -d") "\n" t)))))
+                      (split-string (shell-command-to-string "fasd -ld") "\n" t))))
     (ivy-read "directories:" collection :action 'dired)))
 
 (provide 'init-ivy)
