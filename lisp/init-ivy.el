@@ -1,5 +1,3 @@
-(require 'cl)
-
 (defvar counsel-process-filename-string nil
   "Give you a chance to change file name string for other counsel-* functions")
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
@@ -188,16 +186,15 @@ Or else, find files since 24 weeks (6 months) ago."
 (defun counsel-goto-recent-directory ()
   "Recent directories"
   (interactive)
-  (let (collection)
-    (unless recentf-mode (recentf-mode 1))
-    (setq collection
-          (append (remove-duplicates
-                   (mapcar 'file-name-directory recentf-list)
-                   :test (lambda (x y) (or (null y) (equal x y)))
-                   :from-end t)
+  (unless recentf-mode (recentf-mode 1))
+  (let ((collection
+         (delete-dups
+          (append (mapcar 'file-name-directory recentf-list)
                   ;; fasd history
                   (if (executable-find "fasd")
-                      (split-string (shell-command-to-string "fasd -ld") "\n" t))))
-    (ivy-read "directories:" collection :action 'dired)))
+                      (split-string (shell-command-to-string "fasd -d") "\n" t))))))
+    (ivy-read "directories:" collection
+              :action 'dired
+              :caller 'counsel-goto-recent-directory)))
 
 (provide 'init-ivy)
