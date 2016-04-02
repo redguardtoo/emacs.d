@@ -1,16 +1,20 @@
-;; ----------------------------------------------------------------------------
 ;; Paredit
 ;; ----------------------------------------------------------------------------
 (setq-default initial-scratch-message
               (if (executable-find "fortune")
-                (format
-                  ";; %s\n\n"
-                  (replace-regexp-in-string
+                  (format
+                   ";; %s\n\n"
+                   (replace-regexp-in-string
                     "\n" "\n;; " ; comment each line
                     (replace-regexp-in-string
-                      "\n$" ""    ; remove trailing linebreak
-                      (shell-command-to-string "fortune"))))
-                (concat ";; Happy hacking " (or user-login-name "") " - Emacs loves you!\n\n")))
+                     "\n$" ""    ; remove trailing linebreak
+                     (shell-command-to-string "fortune"))))
+                (concat ";; Happy hacking "
+                        (or user-login-name "")
+                        " - Emacs loves you!\n\n")))
+
+;; racket
+(add-to-list 'auto-mode-alist '("\\.rkt\\'" . lisp-mode))
 
 ;; {{ scheme setup
 (setq scheme-program-name "guile")
