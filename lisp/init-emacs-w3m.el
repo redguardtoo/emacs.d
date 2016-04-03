@@ -57,32 +57,34 @@
 (defvar w3m-global-keyword nil
   "`w3m-display-hook' must search current buffer with this keyword twice if not nil")
 
-(defun w3m-guess-keyword ()
+(defun w3m-guess-keyword (&optional encode-space-with-plus)
   (unless (featurep 'w3m) (require 'w3m))
-  (w3m-url-encode-string
-   (setq w3m-global-keyword
-         (if (region-active-p)
+  (let (keyword encoded-keyword)
+    (setq keyword (if (region-active-p)
              (buffer-substring-no-properties (region-beginning) (region-end))
-           (read-string "Enter keyword:")))))
+           (read-string "Enter keyword:")))
+    ;; some search requires plus sign to replace space
+    (setq encoded-keyword
+          (w3m-url-encode-string (setq w3m-global-keyword keyword)))
+    (if encode-space-with-plus
+        (replace-regexp-in-string "%20" " " encoded-keyword)
+      encoded-keyword)))
 
-(defun w3m-customized-search-api (search-engine)
+(defun w3m-customized-search-api (search-engine &optional encode-space-with-plus)
   (unless (featurep 'w3m) (require 'w3m))
-  (w3m-search search-engine (w3m-guess-keyword)))
+  (w3m-search search-engine (w3m-guess-keyword encode-space-with-plus)))
 
 (defun w3m-stackoverflow-search ()
   (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "q"))
 
 (defun w3m-java-search ()
   (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "java"))
 
 (defun w3m-google-search ()
   "Google search keyword"
   (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "g"))
 
 (defun w3m-google-by-filetype ()
@@ -105,13 +107,11 @@
 (defun w3m-search-financial-dictionary ()
   "Search financial dictionary"
   (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
-  (w3m-customized-search-api "f"))
+  (w3m-customized-search-api "f" t))
 
 (defun w3m-search-js-api-mdn ()
   "Search at Mozilla Developer Network (MDN)"
   (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
   (w3m-customized-search-api "j"))
 
 (defun w3m-mode-hook-setup ()
@@ -216,7 +216,6 @@
      (add-hook 'w3m-display-hook
                (lambda (url)
                  (let ((title (or w3m-current-title url)))
-                   (message "url=%s title=%s w3m-current-title=%s" url title w3m-current-title)
                    (when w3m-global-keyword
                      ;; search keyword twice, first is url, second is your input,
                      ;; third is actual result
