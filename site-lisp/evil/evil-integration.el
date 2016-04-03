@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.10
+;; Version: 1.2.11
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -51,7 +51,8 @@
       '(what-cursor-position))
 (mapc #'evil-declare-change-repeat
       '(dabbrev-expand
-        hippie-expand))
+        hippie-expand
+        quoted-insert))
 (mapc #'evil-declare-abort-repeat
       '(balance-windows
         eval-expression
