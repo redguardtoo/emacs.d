@@ -208,7 +208,9 @@
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
-;;Don't echo passwords when communicating with interactive programs:
+;; Don't echo passwords when communicating with interactive programs:
+;; Github prompt is like "Password for 'https://user@github.com/':"
+(setq comint-password-prompt-regexp (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 
 ;; {{ guide-key-mode
