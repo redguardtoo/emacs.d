@@ -193,8 +193,6 @@ Or else, find files since 24 weeks (6 months) ago."
                   ;; fasd history
                   (if (executable-find "fasd")
                       (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-    (ivy-read "directories:" collection
-              :action 'dired
-              :caller 'counsel-goto-recent-directory)))
+    (ivy-read "directories:" collection :action 'dired)))
 
 (provide 'init-ivy)
