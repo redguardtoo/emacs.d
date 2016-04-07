@@ -459,7 +459,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "si" 'evilmi-select-items
        "jb" 'js-beautify
        "jpp" 'js2-print-json-path
-       "se" 'string-edit-at-point
+       "sep" 'string-edit-at-point
+       "sec" 'string-edit-conclude
+       "sea" 'string-edit-abort
        "xe" 'eval-last-sexp
        "x0" 'delete-window
        "x1" 'delete-other-windows
