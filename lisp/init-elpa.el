@@ -186,7 +186,7 @@ ARCHIVE is the string name of the package archive.")
 
 (package-initialize)
 
-(require-package 'dash)
+(require-package 'dash) ; required by string-edit
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'color-theme)
 (require-package 'auto-compile)
@@ -280,7 +280,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'company)
 (require-package 'company-c-headers)
 (require-package 'legalese)
-(require-package 'string-edit)
 (require-package 'guide-key)
 (require-package 'simple-httpd)
 (require-package 'git-messenger)
