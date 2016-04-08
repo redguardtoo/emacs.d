@@ -40,6 +40,9 @@
 (add-hook 'html-mode-hook 'moz-custom-setup)
 (add-hook 'nxml-mode-hook 'moz-custom-setup)
 (add-hook 'web-mode-hook 'moz-custom-setup)
+(add-hook 'js2-mode-hook 'moz-custom-setup)
+(add-hook 'js-mode-hook 'moz-custom-setup)
+(add-hook 'css-mode-hook 'moz-custom-setup)
 
 (defun moz-goto-content-and-run-cmd (cmd)
   (comint-send-string (inferior-moz-process)
