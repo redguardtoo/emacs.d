@@ -394,6 +394,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gg" 'counsel-git-grep ; quickest grep should be easy to press
        "gm" 'counsel-git-find-my-file
        "rjs" 'run-js
+       "jsr" 'js-send-region
        "rmz" 'run-mozilla
        "rpy" 'run-python
        "rlu" 'run-lua
