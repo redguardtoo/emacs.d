@@ -1,3 +1,4 @@
+
 * Checklist
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - I recommend Emacs *24.3.1* or *24.4*
@@ -138,7 +139,7 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - more advanced than ctags, supports references and has better performance
 - install through OS package manager
 
-**** libreoffice
+**** LibreOffice
 - Only one executable =soffice= needed when converting odt file into doc/pdf
 - conversion happens automatically when exporting org-mode to odt
 - The conversion command is in variable =org-export-odt-convert-processes=
@@ -184,6 +185,8 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** Use HTTPS instead of HTTP to download packages
+=(setq melpa-use-https-repo t)=. =melpa-use-https-repo= is defined in init-elpa.el.
 ** Setup fonts in GUI Emacs
 Non-Chinese use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]] and Chinese use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
 
@@ -205,16 +208,16 @@ If you don't like my commits, you can revert them:
 git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
-** Indentaion
+** Indentation
 Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]].
 
 Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
-Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheatsheet" to learn its key bindings.
+Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheat sheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
-Other softwares may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
+Other software may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
 ** My frequently used commands
 They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys.
 ** Plugins doesn't work?
@@ -283,7 +286,7 @@ Insert below lines into "~/.emacs.d/init.el":
 ** Non-English users
 Your locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
 ** Behind corporate firewall
-Type below commmand in shell:
+Type below command in shell:
 #+begin_src bash
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
@@ -297,7 +300,7 @@ Some package cannot be downloaded automatically because of network problem.
 You could
 - =M-x list-packages= to manually install it
 - Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically
-** NO vi/vim keybindings
+** Disable vim keybinding
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
 ** Evil setup
 It's defined in "~/.emacs.d/lisp/init-evil.el". Press =C-z= to switch between Emacs and Vim key bindings.
@@ -347,7 +350,7 @@ If you *insist on configuring the color theme in a different way*, please,
 TERM=xterm-256color emacs -nw
 #+END_SRC
 ** Chinese Input Method Editor
-Run command =M-x toggle-input-method= to toggle input method. A 20M chinese dictionary is already provided.
+Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
 
 If your *personal* word file "~/.eim/pyim-personal.txt" exists, it will be used.
 
@@ -390,10 +393,10 @@ Here are the steps to use that setup:
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
-Emacs is *portalbe* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
+Emacs is *portable* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
-- Git skills are *extremely useful* for maintainting your emacs.d. The book [[https://git-scm.com/book/en/][Pro Git]] has everything. Please read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum.
+- Git skills are *extremely useful* for maintaining your emacs.d. The book [[https://git-scm.com/book/en/][Pro Git]] has everything. Please read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum.
 * Report bug
 Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
 
