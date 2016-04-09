@@ -614,6 +614,7 @@ If step is -1, go backward."
 ;; Diff two regions
 ;; Step 1: Select a region and `M-x diff-region-tag-selected-as-a'
 ;; Step 2: Select another region and `M-x diff-region-compare-with-b'
+;; Press "q" in evil-mode or "C-c C-c" to exit the diff output buffer
 (defun diff-region-format-region-boundary (b e)
   "Make sure lines are selected and B is less than E"
   (let (tmp rlt)
@@ -639,6 +640,11 @@ If step is -1, go backward."
       (setq e (line-end-position)))
     (setq rlt (list b e))
     rlt))
+
+(defun diff-region-exit ()
+  (interactive)
+  (bury-buffer "*Diff-region-output*")
+  (winner-undo))
 
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare"
@@ -689,7 +695,11 @@ If step is -1, go backward."
               (set-buffer rlt-buf)
               (erase-buffer)
               (insert diff-output)
-              (diff-mode))))
+              (diff-mode)
+              (if (fboundp 'evil-local-set-key)
+                           (evil-local-set-key 'normal "q" 'diff-region-exit))
+              (local-set-key (kbd "C-c C-c") 'diff-region-exit)
+              )))
 
         ;; clean the temporary files
         (if (and fa (file-exists-p fa))
