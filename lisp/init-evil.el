@@ -478,7 +478,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "sl" 'sort-lines
        "ulr" 'uniquify-all-lines-region
        "ulb" 'uniquify-all-lines-buffer
-       "lo" 'moz-console-log-var
        "lj" 'moz-load-js-file-and-send-it
        "lk" 'latest-kill-to-clipboard
        "mr" 'moz-console-clear
