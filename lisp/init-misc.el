@@ -267,6 +267,8 @@
 	(setq show-trailing-whitespace t)))
 
 (add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
+;; some major-modes NOT inherited from prog-mode
+(add-hook 'css-mode-hook 'generic-prog-mode-hook-setup)
 
 ;; {{ display long lines in truncated style (end line with $)
 (defun truncate-lines-setup ()
