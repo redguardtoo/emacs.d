@@ -79,6 +79,9 @@
 
 (eval-after-load 'company-etags
   '(progn
-     (add-to-list 'company-etags-modes 'web-mode)))
+     ;; insert major-mode not inherited from prog-mode
+     ;; to make company-etags work
+     (add-to-list 'company-etags-modes 'web-mode)
+     (add-to-list 'company-etags-modes 'lua-mode)))
 
 (provide 'init-company)
