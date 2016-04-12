@@ -29,6 +29,11 @@
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (require 'evil-surround)
 (global-evil-surround-mode 1)
+(defun evil-surround-prog-mode-hook-setup ()
+  (push '(?` . ("`" . "'")) evil-surround-pairs-alist)
+  (push '(40 . ("(" . ")")) evil-surround-pairs-alist)
+  (push '(41 . ("(" . ")")) evil-surround-pairs-alist))
+(add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
 ;; }}
 
 ;; {{ For example, press `viW*`
