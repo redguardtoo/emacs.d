@@ -30,10 +30,12 @@
 (require 'evil-surround)
 (global-evil-surround-mode 1)
 (defun evil-surround-prog-mode-hook-setup ()
-  (push '(?` . ("`" . "'")) evil-surround-pairs-alist)
   (push '(40 . ("(" . ")")) evil-surround-pairs-alist)
   (push '(41 . ("(" . ")")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
+(defun evil-surround-emacs-lisp-mode-hook-setup ()
+  (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
+(add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
 ;; }}
 
 ;; {{ For example, press `viW*`
