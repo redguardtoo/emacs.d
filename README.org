@@ -185,6 +185,10 @@ For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] f
 ** Advanced tutorial
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** To start a shell inside Emacs
+Please =M-x multi-term=.
+
+If you want to use Zsh instead of Bash, please modify init-term-mode.el
 ** Use HTTPS instead of HTTP to download packages
 =(setq melpa-use-https-repo t)=. =melpa-use-https-repo= is defined in init-elpa.el.
 ** Setup fonts in GUI Emacs
