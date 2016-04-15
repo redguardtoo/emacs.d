@@ -44,7 +44,7 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
                      (forward-line (1- linenum)))))))
 
     (counsel-git-grep-or-find-api fn
-                                  "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+                                  "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
                                   "grep"
                                   open-another-window)))
 
@@ -76,7 +76,7 @@ If INSERT-LINE is not nil, insert the line grepped"
                  (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst)))))
 
     (counsel-git-grep-or-find-api fn
-                                  "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+                                  "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
                                   "grep"
                                   nil)))
 
