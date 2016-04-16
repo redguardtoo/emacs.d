@@ -29,10 +29,11 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
-     (setq pyim-enable-words-predict nil)
+     ;; (setq pyim-enable-words-predict nil)
      (setq pyim-use-tooltip nil) ; don't use tooltip
      ;; personal dictionary should be out of ~/.emacs.d if possible
      (setq pyim-personal-file "~/ownCloud/backup/pyim-personal.txt")
+     (setq pyim-property-file "~/ownCloud/backup/pyim-words-property.txt")
      ;; another official dictionary
      (setq pyim-dicts '((:name "pinyin1" :file "~/ownCloud/backup/pyim-bigdict.txt" :coding utf-8-unix)))
 
