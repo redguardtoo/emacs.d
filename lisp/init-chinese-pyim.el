@@ -29,7 +29,7 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
-     (setq pyim-use-tooltip 'popup) ; don't use tooltip
+     (setq pyim-use-tooltip nil) ; don't use tooltip
      ;; personal dictionary should be out of ~/.emacs.d if possible
      (setq pyim-personal-file "~/ownCloud/backup/pyim-personal.txt")
      ;; another official dictionary
