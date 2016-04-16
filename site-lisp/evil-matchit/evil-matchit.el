@@ -320,7 +320,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   (autoload 'evilmi-sh-jump "evil-matchit-sh" nil)
   (plist-put evilmi-plugins 'sh-mode '((evilmi-sh-get-tag evilmi-sh-jump)))
 
-  ;; Lua/Ruby ... any normal script languages
+  ;; Lua or any fine script languages
   (autoload 'evilmi-script-get-tag "evil-matchit-script" nil)
   (autoload 'evilmi-script-jump "evil-matchit-script" nil)
   (mapc (lambda (mode)
@@ -328,6 +328,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
                                            (evilmi-script-get-tag evilmi-script-jump))))
         '(lua-mode vimrc-mode))
 
+  ;; Ruby
   (autoload 'evilmi-ruby-get-tag "evil-matchit-ruby" nil)
   (autoload 'evilmi-ruby-jump "evil-matchit-ruby" nil)
   ;; @see https://github.com/syl20bnr/spacemacs/issues/2093
