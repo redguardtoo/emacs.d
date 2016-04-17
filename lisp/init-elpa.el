@@ -103,7 +103,8 @@ But you may use safer HTTPS instead.")
     gruvbox-theme
     hc-zenburn-theme
     hemisu-theme
-    heroku-theme)
+    heroku-theme
+    chinese-pyim)
   "Don't install any Melpa packages except these packages")
 
 ;; We include the org repository for completeness, but don't use it.
@@ -297,5 +298,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'define-word)
 (require-package 'quack) ;; for scheme
 (require-package 'hydra)
+(require-package 'chinese-pyim)
 
 (provide 'init-elpa)
