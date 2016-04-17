@@ -65,6 +65,8 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
 ;; Aspell Setup (recommended):
 ;; Skipped because it's easy.
 ;;
+(setq
+ ispell-personal-dictionary "/home/weare1217/ownCloud/backup/aspell-persional-dic.en.pws")
 ;; Hunspell Setup:
 ;; 1. Install hunspell from http://hunspell.sourceforge.net/
 ;; 2. Download openoffice dictionary extension from
