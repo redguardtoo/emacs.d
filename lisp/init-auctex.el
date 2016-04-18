@@ -24,7 +24,7 @@
 ;; convert TABs to spaces when saving a buffer, Since TABs may confuse
 ;; auctex's error message parsing
 )
-(setq TeX-electric-escape t
+(setq TeX-electric-escape nil
 ;; If this is non-nil when AUCTEX is loaded, the TEX escape character
 ;; ‘\’ will be bound to TeX-electric-macro
 )
