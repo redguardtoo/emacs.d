@@ -1,10 +1,10 @@
 (defvar counsel-process-filename-string nil
   "Give you a chance to change file name string for other counsel-* functions")
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window)
+(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 IF OPEN-ANOTHER-WINDOW is true, open the file in another window.
-Yank the file name at the same time."
+Yank the file name at the same time.  FILTER is function to filter the collection"
   (let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
         (default-directory (locate-dominating-file
                             default-directory ".git"))
@@ -23,30 +23,61 @@ Yank the file name at the same time."
     (setq collection (split-string (shell-command-to-string (format git-cmd keyword))
                                    "\n"
                                    t))
+    (if filter (setq collection (funcall filter collection)))
 
     (when (and collection (> (length collection) 0))
       (setq val (if (= 1 (length collection)) (car collection)
                     (ivy-read (format "matching \"%s\":" keyword) collection)))
       (funcall fn open-another-window val))))
 
+(defun counsel--open-grepped-file (open-another-window val)
+  (let ((lst (split-string val ":")))
+    (funcall (if open-another-window 'find-file-other-window 'find-file)
+             (car lst))
+    (let ((linenum (string-to-number (cadr lst))))
+      (when (and linenum (> linenum 0))
+        (goto-char (point-min))
+        (forward-line (1- linenum))))))
+
 (defun counsel-git-grep (&optional open-another-window)
   "Grep in the current git repository.
 If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
   (interactive "P")
-  (let (fn)
-    (setq fn (lambda (open-another-window val)
-               (let ((lst (split-string val ":")))
-                 (funcall (if open-another-window 'find-file-other-window 'find-file)
-                          (car lst))
-                 (let ((linenum (string-to-number (cadr lst))))
-                   (when (and linenum (> linenum 0))
-                     (goto-char (point-min))
-                     (forward-line (1- linenum)))))))
+  (counsel-git-grep-or-find-api 'counsel--open-grepped-file
+                                "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
+                                "grep"
+                                open-another-window))
 
-    (counsel-git-grep-or-find-api fn
-                                  "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
-                                  "grep"
-                                  open-another-window)))
+(defvar counsel-git-grep-author-regex nil)
+
+;; `git --no-pager blame -w -L 397,+1 --porcelain lisp/init-evil.el'
+(defun counsel--filter-grepped-by-author (collection)
+  (if counsel-git-grep-author-regex
+      (delq nil
+            (mapcar
+             (lambda (v)
+               (let (blame-cmd (arr (split-string v ":" t)))
+                 (setq blame-cmd
+                       (format "git --no-pager blame -w -L %s,+1 --porcelain %s"
+                               (cadr arr) ; file
+                               (car arr))) ; line number
+                 (if (string-match-p (format "\\(author %s\\|author Not Committed\\)"
+                                               counsel-git-grep-author-regex)
+                                       (shell-command-to-string blame-cmd))
+                   v)))
+             collection))
+    collection))
+
+(defun counsel-git-grep-by-author (&optional open-another-window)
+  "Grep in the current git repository.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window.
+SLOW when more than 20 git blame process start."
+  (interactive "P")
+  (counsel-git-grep-or-find-api 'counsel--open-grepped-file
+                                "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
+                                "grep"
+                                open-another-window
+                                'counsel--filter-grepped-by-author))
 
 (defun counsel-git-find-file (&optional open-another-window)
   "Find file in the current git repository.
