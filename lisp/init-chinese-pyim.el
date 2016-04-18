@@ -24,17 +24,18 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
 
-(setq pyim-punctuation-translate-p nil) ;; use western punctuation (ban jiao fu hao)
+;; (setq pyim-punctuation-translate-p nil) ;; use western punctuation (ban jiao fu hao)
 
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
-     (setq pyim-use-tooltip 'popup) ; don't use tooltip
+     ;; (setq pyim-enable-words-predict nil)
+     (setq pyim-use-tooltip nil) ; don't use tooltip
      ;; personal dictionary should be out of ~/.emacs.d if possible
-     (if (file-exists-p (file-truename "~/.eim/pyim-personal.txt"))
-       (setq pyim-personal-file "~/.eim/pyim-personal.txt"))
+     (setq pyim-personal-file "~/ownCloud/backup/pyim-personal.txt")
+     (setq pyim-property-file "~/ownCloud/backup/pyim-words-property.txt")
      ;; another official dictionary
-     (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix)))
+     (setq pyim-dicts '((:name "pinyin1" :file "~/ownCloud/backup/pyim-bigdict.txt" :coding utf-8-unix)))
 
      ;; {{ fuzzy pinyin setup
      (defun pyim-fuzzy-pinyin-adjust-shanghai ()
@@ -57,7 +58,7 @@ when toggle off input method, switch to evil-normal-state if current state is ev
 
      ;; Comment out below line for default fuzzy algorithm,
      ;; or just `(setq pyim-fuzzy-pinyin-adjust-function nil)`
-     (setq pyim-fuzzy-pinyin-adjust-function 'pyim-fuzzy-pinyin-adjust-shanghai)
+     ;; (setq pyim-fuzzy-pinyin-adjust-function 'pyim-fuzzy-pinyin-adjust-shanghai)
      ;; }}
 
      ))

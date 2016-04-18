@@ -103,7 +103,8 @@ But you may use safer HTTPS instead.")
     gruvbox-theme
     hc-zenburn-theme
     hemisu-theme
-    heroku-theme)
+    heroku-theme
+    chinese-pyim)
   "Don't install any Melpa packages except these packages")
 
 ;; We include the org repository for completeness, but don't use it.
@@ -112,14 +113,14 @@ But you may use safer HTTPS instead.")
 (if melpa-use-https-repo
     (setq package-archives
           '(;; uncomment below line if you need use GNU ELPA
-            ;; ("gnu" . "http://elpa.gnu.org/packages/")
             ("melpa" . "http://melpa.org/packages/")
-            ("melpa-stable" . "http://stable.melpa.org/packages/")))
+            ("melpa-stable" . "http://stable.melpa.org/packages/")
+            ("gnu" . "http://elpa.gnu.org/packages/")))
   (setq package-archives
         '(;; uncomment below line if you need use GNU ELPA
-          ;; ("gnu" . "https://elpa.gnu.org/packages/")
           ("melpa" . "https://melpa.org/packages/")
-          ("melpa-stable" . "https://stable.melpa.org/packages/"))))
+          ("melpa-stable" . "https://stable.melpa.org/packages/")
+          ("gnu" . "https://elpa.gnu.org/packages/"))))
 
 
 ;; Un-comment below line if your extract https://github.com/redguardtoo/myelpa/archive/master.zip into ~/myelpa/
@@ -297,5 +298,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'define-word)
 (require-package 'quack) ;; for scheme
 (require-package 'hydra)
+(require-package 'chinese-pyim)
 
 (provide 'init-elpa)
