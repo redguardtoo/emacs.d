@@ -37,3 +37,6 @@
 (setq mac-command-modifier 'meta)
 (setq mac-option-modifier nil)
 (setq org-export-with-properties t)
+
+(eval-after-load "org"
+                 '(require 'ox-md nil t))
