@@ -385,10 +385,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
        "epy" 'emmet-expand-yas
        "epl" 'emmet-expand-line
-       "rd" '(lambda () "DOCSTRING" (interactive)
-               (if (memq major-mode '(js2-mode))
-                   (js2r-rename-var)
-                 (evilmr-replace-in-defun)))
+       "rd" 'evilmr-replace-in-defun
        "rb" 'evilmr-replace-in-buffer
        "tt" 'evilmr-tag-selected-region ;; recommended
        "rt" 'evilmr-replace-in-tagged-region ;; recommended
