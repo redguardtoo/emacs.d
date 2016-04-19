@@ -27,6 +27,10 @@
   '(progn
      ;; make sure wg-create-workgroup always success
      (defadvice wg-create-workgroup (around wg-create-workgroup-hack activate)
+       (unless (file-exists-p (wg-get-session-file))
+         (wg-reset t)
+         (wg-save-session t))
+
        (unless wg-current-session
          ;; code extracted from `wg-open-session'.
          ;; open session but do NOT load any workgroup.
