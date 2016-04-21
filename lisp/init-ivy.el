@@ -1,7 +1,7 @@
 (defvar counsel-process-filename-string nil
   "Give you a chance to change file name string for other counsel-* functions")
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional filter)
+(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional no-keyword filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 IF OPEN-ANOTHER-WINDOW is true, open the file in another window.
 Yank the file name at the same time.  FILTER is function to filter the collection"
@@ -16,18 +16,21 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                   (funcall counsel-process-filename-string str)
                 str))
 
-    (setq keyword (if (region-active-p)
-                      (buffer-substring-no-properties (region-beginning) (region-end))
-                    (read-string (concat "Enter " hint " pattern:" ))))
+    (unless no-keyword
+      (setq keyword (if (region-active-p)
+                        (buffer-substring-no-properties (region-beginning) (region-end))
+                      (read-string (concat "Enter " hint " pattern:" )))))
 
-    (setq collection (split-string (shell-command-to-string (format git-cmd keyword))
+    (setq collection (split-string (shell-command-to-string (if no-keyword
+                                                                git-cmd
+                                                              (format git-cmd keyword)))
                                    "\n"
                                    t))
     (if filter (setq collection (funcall filter collection)))
 
     (when (and collection (> (length collection) 0))
       (setq val (if (= 1 (length collection)) (car collection)
-                    (ivy-read (format "matching \"%s\":" keyword) collection)))
+                    (ivy-read (if no-keyword hint (format "matching \"%s\":" keyword)) collection)))
       (funcall fn open-another-window val))))
 
 (defun counsel--open-grepped-file (open-another-window val)
@@ -77,6 +80,7 @@ SLOW when more than 20 git blame process start."
                                 "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
                                 "grep"
                                 open-another-window
+                                nil
                                 'counsel--filter-grepped-by-author))
 
 (defun counsel-git-find-file (&optional open-another-window)
@@ -188,6 +192,37 @@ Or else, find files since 24 weeks (6 months) ago."
                         (unless (featurep 'bookmark+)
                           (require 'bookmark+))
                         (bookmark-jump bookmark)))
+    ))
+
+(defun counsel-git-find-file-committed-with-line-at-point ()
+  (interactive)
+  (let ((default-directory (locate-dominating-file
+                            default-directory ".git"))
+        (filename (file-truename buffer-file-name))
+        (linenum (save-restriction
+                   (widen)
+                   (save-excursion
+                     (beginning-of-line)
+                     (1+ (count-lines 1 (point))))))
+        git-cmd
+        str
+        hash)
+    (setq git-cmd
+          (format "git --no-pager blame -w -L %d,+1 --porcelain %s"
+                  linenum
+                  filename))
+    (setq str (shell-command-to-string git-cmd))
+    (cond
+     ((and (string-match "^\\([0-9a-z]\\{40\\}\\) " str)
+           (not (string= (setq hash (match-string 1 str)) "0000000000000000000000000000000000000000")))
+      (message "hash=%s" hash)
+      (counsel-git-grep-or-find-api 'counsel--open-grepped-file
+                                    (format "git --no-pager show --pretty=\"format:\" --name-only \"%s\"" hash)
+                                    (format "files in commit %s:" (substring hash 0 7))
+                                    nil
+                                    t))
+     (t
+      (message "Current line is NOT committed yet!")))
     ))
 
 (defun counsel-yank-bash-history ()
