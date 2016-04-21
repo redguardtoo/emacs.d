@@ -59,8 +59,8 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
                (let (blame-cmd (arr (split-string v ":" t)))
                  (setq blame-cmd
                        (format "git --no-pager blame -w -L %s,+1 --porcelain %s"
-                               (cadr arr) ; file
-                               (car arr))) ; line number
+                               (cadr arr) ; line number
+                               (car arr))) ; file
                  (if (string-match-p (format "\\(author %s\\|author Not Committed\\)"
                                                counsel-git-grep-author-regex)
                                        (shell-command-to-string blame-cmd))
