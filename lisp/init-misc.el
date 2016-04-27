@@ -679,21 +679,19 @@ If step is -1, go backward."
           (setq tmp (diff-region-format-region-boundary (region-beginning) (region-end)))
           (write-region (car tmp) (cadr tmp) fb))
 
-        (setq rlt-buf (get-buffer-create "*Diff-region-output*"))
         (when (and fa (file-exists-p fa) fb (file-exists-p fb))
           ;; save region A as file A
           (save-current-buffer
             (set-buffer (get-buffer-create "*Diff-regionA*"))
             (write-region (point-min) (point-max) fa))
           ;; diff NOW!
-          (setq diff-output (shell-command-to-string (format "diff -Nabur %s %s" fa fb)))
           ;; show the diff output
-          (if (string= diff-output "")
+          (if (string= (setq diff-output (shell-command-to-string (format "diff -Nabur %s %s" fa fb))) "")
               ;; two regions are same
               (message "Two regions are SAME!")
             ;; show the diff
             (save-current-buffer
-              (switch-to-buffer-other-window rlt-buf)
+              (switch-to-buffer-other-window (setq rlt-buf (get-buffer-create "*Diff-region-output*")))
               (set-buffer rlt-buf)
               (erase-buffer)
               (insert diff-output)
