@@ -404,6 +404,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gg" 'counsel-git-grep ; quickest grep should be easy to press
        "ga" 'counsel-git-grep-by-author
        "gm" 'counsel-git-find-my-file
+       "gs" 'counsel-git-show-commit
        "rjs" 'run-js
        "jsr" 'js-send-region
        "rmz" 'run-mozilla
@@ -458,9 +459,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "sga" 'w3m-java-search
        "sgh" 'w3mext-hacker-search ; code search in all engines with firefox
        "qq" 'my-grep
-       "gss" 'git-gutter:set-start-revision
-       "gsh" 'git-gutter-reset-to-head-parent
-       "gsr" 'git-gutter-reset-to-default
        "xc" 'save-buffers-kill-terminal
        "rr" 'counsel-recentf-goto
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
@@ -586,6 +584,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (nvmap :prefix "SPC"
        "ss" 'wg-create-workgroup ; save windows layout
        "ll" 'my-wg-switch-workgroup ; load windows layout
+       "gss" 'git-gutter:set-start-revision
+       "gsh" 'git-gutter-reset-to-head-parent
+       "gsr" 'git-gutter-reset-to-default
        "jde" 'js2-display-error-list
        "jne" 'js2-next-error
        "jte" 'js2-mode-toggle-element

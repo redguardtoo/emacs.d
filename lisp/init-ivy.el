@@ -242,6 +242,18 @@ Or else, find files since 24 weeks (6 months) ago."
         (kill-new val)
         (message "%s => kill-ring" val))))
 
+(defun counsel-git-show-commit ()
+  (interactive)
+  (let ((log-command "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+        collection)
+    (setq collection (split-string (shell-command-to-string log-command) "\n" t))
+    (ivy-read "git log:"
+              collection
+              :action (lambda (line)
+                        (let ((hash (car (split-string line "|" t)))
+                              show-command)
+                          (setq show-command (format "git --no-pager show --no-color %s" hash))
+                          (diff-region-open-diff-output (shell-command-to-string show-command) "*Git-show"))))))
 
 (defun counsel-recentf-goto ()
   "Recent files"

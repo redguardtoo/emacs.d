@@ -643,11 +643,6 @@ If step is -1, go backward."
     (setq rlt (list b e))
     rlt))
 
-(defun diff-region-exit ()
-  (interactive)
-  (bury-buffer "*Diff-region-output*")
-  (winner-undo))
-
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare"
   (interactive)
@@ -690,16 +685,8 @@ If step is -1, go backward."
               ;; two regions are same
               (message "Two regions are SAME!")
             ;; show the diff
-            (save-current-buffer
-              (switch-to-buffer-other-window (setq rlt-buf (get-buffer-create "*Diff-region-output*")))
-              (set-buffer rlt-buf)
-              (erase-buffer)
-              (insert diff-output)
-              (diff-mode)
-              (if (fboundp 'evil-local-set-key)
-                           (evil-local-set-key 'normal "q" 'diff-region-exit))
-              (local-set-key (kbd "C-c C-c") 'diff-region-exit)
-              )))
+            (diff-region-open-diff-output diff-output
+                                          "*Diff-region-output*")))
 
         ;; clean the temporary files
         (if (and fa (file-exists-p fa))

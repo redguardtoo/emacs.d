@@ -156,4 +156,32 @@
             (format "rundll32.exe %SystemRoot%\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &" file))))
     rlt))
 
+
+;; {{ diff region SDK
+(defun diff-region-exit-from-certain-buffer (buffer-name)
+  (bury-buffer buffer-name)
+  (winner-undo))
+
+(defmacro diff-region-open-diff-output (content buffer-name)
+  `(let ((rlt-buf (get-buffer-create ,buffer-name)))
+    (save-current-buffer
+      (switch-to-buffer-other-window rlt-buf)
+      (set-buffer rlt-buf)
+      (erase-buffer)
+      (insert ,content)
+      (diff-mode)
+      (goto-char (point-min))
+      ;; evil keybinding
+      (if (fboundp 'evil-local-set-key)
+          (evil-local-set-key 'normal "q"
+                              (lambda ()
+                                (interactive)
+                                (diff-region-exit-from-certain-buffer ,buffer-name))))
+      ;; Emacs key binding
+      (local-set-key (kbd "C-c C-c")
+                     (lambda ()
+                       (interactive)
+                       (diff-region-exit-from-certain-buffer ,buffer-name)))
+      )))
+;; }}
 (provide 'init-utils)

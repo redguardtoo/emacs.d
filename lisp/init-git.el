@@ -136,19 +136,24 @@
 ;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
   (interactive "p")
-  (forward-line)
-  (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
-      (goto-char (line-beginning-position))
-    (forward-line -1)
-    (git-gutter:next-hunk arg)))
+  (if (memq major-mode '(diff-mode))
+      (diff-hunk-next)
+    (forward-line)
+    (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
+        (goto-char (line-beginning-position))
+      (forward-line -1)
+      (git-gutter:next-hunk arg))
+    ))
 
 (defun my-goto-previous-hunk (arg)
   (interactive "p")
-  (forward-line -1)
-  (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
-      (goto-char (line-beginning-position))
+  (if (memq major-mode '(diff-mode))
+      (diff-hunk-prev)
     (forward-line -1)
-    (git-gutter:previous-hunk arg)))
+    (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
+        (goto-char (line-beginning-position))
+      (forward-line -1)
+      (git-gutter:previous-hunk arg))))
 
 ;; {{ git-messenger
 ;; show details to play `git blame' game
