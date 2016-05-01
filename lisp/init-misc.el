@@ -696,6 +696,9 @@ If step is -1, go backward."
             (delete-file fb)))
     (message "Please select region at first!")))
 
+;; cliphist.el
+(setq cliphist-use-ivy t)
+
 ;; {{ auto-save.el
 (require 'auto-save)
 (auto-save-enable)
