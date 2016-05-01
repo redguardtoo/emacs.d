@@ -552,9 +552,10 @@ buffer is not visiting a file."
 (setq tramp-default-method "ssh")
 (setq tramp-auto-save-directory "~/.backups/tramp/")
 (setq tramp-chunksize 8192)
+
 ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
-(setq tramp-ssh-controlmaster-options
-      "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;; If you tramp is hanging, you can uncomment below line.
+;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 ;; }}
 
 ;; {{
