@@ -223,7 +223,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (require 'evil-escape)
-(setq-default evil-escape-delay 0.2)
+(setq-default evil-escape-delay 0.5)
 (setq evil-escape-excluded-major-modes '(dired-mode))
 (setq-default evil-escape-key-sequence "kj")
 (evil-escape-mode 1)
