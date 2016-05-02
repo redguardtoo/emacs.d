@@ -156,6 +156,10 @@
             (format "rundll32.exe %SystemRoot%\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &" file))))
     rlt))
 
+(defun make-concated-string-from-clipboard (concat-char)
+  (let (rlt (str (replace-regexp-in-string "'" "" (upcase (simpleclip-get-contents)))))
+    (setq rlt (replace-regexp-in-string "[ ,-]+" concat-char str))
+    rlt))
 
 ;; {{ diff region SDK
 (defun diff-region-exit-from-certain-buffer (buffer-name)
