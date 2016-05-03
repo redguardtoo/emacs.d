@@ -3,7 +3,8 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "Launch"
-  ("mq" lookup-doc-in-man"man")
+  ("mq" lookup-doc-in-man "man")
+  ("hm" counsel-bookmark-goto "Bookmark")
   ("rr" counsel-recentf-goto "Recent files")
   ("wgt" wg-create-workgroup "New window layout")
   ("wgg" my-wg-switch-workgroup "Load window layout")
