@@ -344,11 +344,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "bu" 'backward-up-list
        "bb" 'back-to-previous-buffer
        "ef" 'end-of-defun
-       "ddb" 'sdcv-search-pointer ; in buffer
-       "ddt" 'sdcv-search-input+ ;; in tip
-       "ddd" 'my-lookup-dict-org
-       "ddw" 'define-word
-       "ddp" 'define-word-at-point
        "mf" 'mark-defun
        "mmm" 'mpc-which-song
        "mmn" 'mpc-next-prev-song
@@ -410,18 +405,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rmz" 'run-mozilla
        "rpy" 'run-python
        "rlu" 'run-lua
-       "ud" 'my-gud-gdb
-       "uk" 'gud-kill-yes
-       "ur" 'gud-remove
-       "ub" 'gud-break
-       "uu" 'gud-run
-       "up" 'gud-print
-       "ue" 'gud-cls
-       "un" 'gud-next
-       "us" 'gud-step
-       "ui" 'gud-stepi
-       "uc" 'gud-cont
-       "uf" 'gud-finish
        "tci" 'toggle-company-ispell
        "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
        "it" 'issue-tracker-increment-issue-id-under-cursor
@@ -429,8 +412,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "lq" 'highlight-symbol-query-replace
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
        "bm" 'pomodoro-start ;; beat myself
-       "im" 'counsel-imenu-goto
-       "ii" 'ido-imenu
+       "ii" 'counsel-imenu-goto
+       "im" 'ido-imenu
        "ij" 'rimenu-jump
        "." 'evil-ex
        ;; @see https://github.com/pidu/git-timemachine
@@ -468,7 +451,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "di" 'evilmi-delete-items
        "si" 'evilmi-select-items
        "jb" 'js-beautify
-       "jpp" 'js2-print-json-path
+       "jp" 'js2-print-json-path
        "sep" 'string-edit-at-point
        "sec" 'string-edit-conclude
        "sea" 'string-edit-abort
@@ -481,8 +464,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xru" 'undo-tree-save-state-to-register ; C-x r u
        "xrU" 'undo-tree-restore-state-from-register ; C-x r U
        "xt" 'toggle-window-split
-       "su" 'winner-undo
-       "xu" 'winner-undo
+       "uu" 'winner-undo
        "to" 'toggle-web-js-offset
        "sl" 'sort-lines
        "ulr" 'uniquify-all-lines-region
@@ -529,7 +511,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "om" 'toggle-org-or-message-mode
        "ut" 'undo-tree-visualize
        "ar" 'align-regexp
-       "ww" 'save-buffer
        "wrn" 'httpd-restart-now
        "wrd" 'httpd-restart-at-default-directory
        "bk" 'buf-move-up
@@ -551,29 +532,27 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xx" 'er/expand-region
        "xf" 'ido-find-file
        "xb" 'ido-switch-buffer
-       "vv" 'scroll-other-window
-       "vu" 'scroll-other-window-up
        "xh" 'mark-whole-buffer
        "xk" 'ido-kill-buffer
        "xs" 'save-buffer
        "xz" 'suspend-frame
-       "xvm" 'vc-rename-file-and-buffer
-       "xvc" 'vc-copy-file-and-rename-buffer
+       "vm" 'vc-rename-file-and-buffer
+       "vc" 'vc-copy-file-and-rename-buffer
        "xvv" 'vc-next-action
-       "xva" 'git-add-current-file
+       "va" 'git-add-current-file
        "xvp" 'git-push-remote-origin
        "xvu" 'git-add-option-update
        "xvg" 'vc-annotate
-       "xvs" 'git-gutter:stage-hunk
-       "xvr" 'git-gutter:revert-hunk
-       "xvl" 'vc-print-log
-       "xvb" 'git-messenger:popup-message
-       "xv=" 'git-gutter:popup-hunk
+       "vs" 'git-gutter:stage-hunk
+       "vr" 'git-gutter:revert-hunk
+       "vl" 'vc-print-log
+       "vv" 'git-messenger:popup-message
+       "v=" 'git-gutter:popup-hunk
        "hh" 'cliphist-paste-item
        "yu" 'cliphist-select-item
        "nn" 'my-goto-next-hunk
        "pp" 'my-goto-previous-hunk
-       "xnn" 'narrow-or-widen-dwim
+       "ww" 'narrow-or-widen-dwim
        "xnw" 'widen
        "xnd" 'narrow-to-defun
        "xnr" 'narrow-to-region
@@ -584,9 +563,28 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (nvmap :prefix "SPC"
        "ss" 'wg-create-workgroup ; save windows layout
        "ll" 'my-wg-switch-workgroup ; load windows layout
+       "kk" 'scroll-other-window
+       "jj" 'scroll-other-window-up
+       "ddb" 'sdcv-search-pointer ; in buffer
+       "ddt" 'sdcv-search-input+ ;; in tip
+       "ddd" 'my-lookup-dict-org
+       "ddw" 'define-word
+       "ddp" 'define-word-at-point
        "gss" 'git-gutter:set-start-revision
        "gsh" 'git-gutter-reset-to-head-parent
-       "gsr" 'git-gutter-reset-to-default)
+       "gsr" 'git-gutter-reset-to-default
+       "ud" 'my-gud-gdb
+       "uk" 'gud-kill-yes
+       "ur" 'gud-remove
+       "ub" 'gud-break
+       "uu" 'gud-run
+       "up" 'gud-print
+       "ue" 'gud-cls
+       "un" 'gud-next
+       "us" 'gud-step
+       "ui" 'gud-stepi
+       "uc" 'gud-cont
+       "uf" 'gud-finish)
 
 ;; per-major-mode leader setup
 (general-define-key :states '(normal motion insert emacs)
