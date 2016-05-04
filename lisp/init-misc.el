@@ -213,41 +213,9 @@
 (setq comint-password-prompt-regexp (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 
-;; {{ guide-key-mode
-(require 'guide-key)
-(setq guide-key/guide-key-sequence
-      '("C-x v" ; VCS commands
-        "C-c"
-        ",a"
-        ",b"
-        ",c"
-        ",d"
-        ",e"
-        ",f"
-        ",g"
-        ",h"
-        ",i"
-        ",j"
-        ",k"
-        ",l"
-        ",m"
-        ",n"
-        ",o"
-        ",p"
-        ",q"
-        ",r"
-        ",s"
-        "/" ; gnus limit
-        ",t"
-        ",u"
-        ",v"
-        ",w"
-        ",x"
-        ",y"
-        ",z"))
-(guide-key-mode 1)  ; Enable guide-key-mode
-(setq guide-key/recursive-key-sequence-flag t)
-(setq guide-key/idle-delay 0.5)
+;; {{ which-key-mode
+(require 'which-key)
+(which-key-mode)
 ;; }}
 
 (defun generic-prog-mode-hook-setup ()
