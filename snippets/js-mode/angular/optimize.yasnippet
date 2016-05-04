@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: angular.optimize
+# key: aop
+# --
+// https://medium.com/@hackupstate/improving-angular-performance-with-1-line-of-code-a1fb814a6476#.106lbxjiz
+angular.module('myApp').config(['$compileProvider', function ($compileProvider) {
+  $compileProvider.debugInfoEnabled(false);
+}]);
