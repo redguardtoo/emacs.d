@@ -215,7 +215,7 @@ Or else, find files since 24 weeks (6 months) ago."
     (cond
      ((and (string-match "^\\([0-9a-z]\\{40\\}\\) " str)
            (not (string= (setq hash (match-string 1 str)) "0000000000000000000000000000000000000000")))
-      (message "hash=%s" hash)
+      ;; (message "hash=%s" hash)
       (counsel-git-grep-or-find-api 'counsel--open-grepped-file
                                     (format "git --no-pager show --pretty=\"format:\" --name-only \"%s\"" hash)
                                     (format "files in commit %s:" (substring hash 0 7))
