@@ -215,7 +215,7 @@
 
 ;; {{ which-key-mode
 (require 'which-key)
-(which-key-mode)
+(which-key-mode 1)
 ;; }}
 
 (defun generic-prog-mode-hook-setup ()
