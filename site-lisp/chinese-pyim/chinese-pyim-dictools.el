@@ -120,10 +120,6 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
       string
     (let (string-list pinyins-list pinyins-list-permutated pinyins-list-adjusted)
 
-      ;; 确保 `pyim-char-table' 已经生成。
-      (unless (pyim-get-char-code ?文)
-        (pyim-make-char-table))
-
       ;; 将汉字字符串转换为字符list，英文原样输出。
       ;; 比如： “Hello银行” -> ("Hello" "银" "行")
       (setq string-list
@@ -149,7 +145,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
              (push (list str) pinyins-list))
             ((and (> (length str) 0)
                   (pyim-string-match-p "\\cc" str))
-             (push (or (pyim-get-char-code (string-to-char str))
+             (push (or (pyim-cchar2pinyin-get (string-to-char str))
                        (list str))
                    pinyins-list))
             ((> (length str) 0)
@@ -171,7 +167,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
                   ;; pyim-buffer-list 中第一个 buffer 对应的是个人词库文件
                   ;; 个人词库文件中的词条，极有可能存在 *多音字污染*。
                   ;; 这是由 Chinese-pyim 保存词条的机制决定的。
-                  (pyim-get py-str nil t)))
+                  (pyim-get py-str '(pinyin-dict))))
             (when (member string words-from-dicts)
               (push pinyin-list pinyins-list-adjusted))))
         (setq pinyins-list-adjusted
@@ -237,7 +233,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
 
 ;; ** 词库文件生成工具
 ;; #+BEGIN_SRC emacs-lisp
-(defun pyim-sort-words-by-freq (words-list)
+(defun pyim-sort-by-freq (words-list)
   "按照词条出现频率对词条列表排序，频率高词条的排在最前面。"
   (let ((count-table (make-hash-table :test #'equal)))
     (dolist (x words-list)
@@ -261,7 +257,7 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
     ;; 排序，这样频率高的词条就会排在前面。
     (when sort-by-freq
       (setq words-list
-            (pyim-sort-words-by-freq words-list)))
+            (pyim-sort-by-freq words-list)))
 
     ;; 删除重复词条的时候，要注意删除顺序。
     (setq words-list
@@ -342,10 +338,15 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
   "将当前行对应的汉语词条转换为 Chinese-pyim 可以识别的词库格式（ni-hao 你好）。"
   (interactive)
   (let (line-content pinyin-list insert-string)
-    (setq line-content (buffer-substring-no-properties
-                        (line-beginning-position) (line-end-position)))
-    (setq line-content (replace-regexp-in-string "^ +\\| +$" "" line-content))
-    (setq pinyin-list (pyim-hanzi2pinyin line-content nil "-" t))
+    (setq line-content
+          (buffer-substring-no-properties
+           (line-beginning-position) (line-end-position)))
+    (setq line-content
+          (replace-regexp-in-string
+           "^ +\\| +$" "" line-content))
+    (setq pinyin-list
+          (pyim-hanzi2pinyin
+           (car (split-string line-content)) nil "-" t))
     (delete-region (line-beginning-position) (line-end-position))
     (setq insert-string
           (mapconcat
@@ -379,7 +380,12 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
   (interactive)
   (let* ((string (mapconcat
                   #'(lambda (x)
-                      (mapconcat #'identity x " "))
+                      (let ((pinyin-list (pyim-hanzi2pinyin
+                                          (car x) nil "-" t)))
+                        (mapconcat
+                         #'(lambda (pinyin)
+                             (concat pinyin "  " (mapconcat #'identity x " ")))
+                         pinyin-list "\n")))
                   (pyim-guessdict-list-convert (pyim-line-content nil t))
                   "\n")))
     (delete-region (line-beginning-position) (line-end-position))
@@ -456,6 +462,7 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
    1. 安装教程请参考： https://github.com/fxsjy/jieba
    2. 使用命令： python -m jieba -d \" \" 源文件.txt  > 目标文件.txt
    3. 命令帮助： python -m jieba --help
+   注意：如果词条已经使用 *空格* 或者 *换行符* 隔开，可以跳过 “分词处理” 这一步。
 3. 添加拼音：运行下面4个命令
    1. `pyim-article2dict-chars'
    2. `pyim-article2dict-words'

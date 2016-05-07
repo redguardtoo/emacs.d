@@ -91,7 +91,7 @@
   "激活这个 Chinese-pyim 探针函数后，输入 org-structure-template 时，不会开启中文输入。
 
 用于：`pyim-english-input-switch-functions' 。"
-  (when (string= major-mode "org-mode")
+  (when (eq major-mode 'org-mode)
     (let ((line-string (buffer-substring (point-at-bol) (point))))
       (and (looking-at "[ \t]*$")
            (string-match "^[ \t]*<\\([a-zA-Z]*\\)$" line-string)))))
@@ -99,30 +99,27 @@
 (defun pyim-probe-dynamic-english ()
   "激活这个 Chinese-pyim 探针函数后，使用下面的规则动态切换中英文输入：
 
-1. 当前字符为英文字符时，输入下一个字符时默认开启英文输入
-2. 当前字符为中文字符时，输入下一个字符时默认开启中文输入
-3. 无论当前是什么输入模式，当输入1个空格后，自动切换到中文输入模式
+1. 当前字符为中文字符时，输入下一个字符时默认开启中文输入
+2. 当前字符为其他字符时，输入下一个字符时默认开启英文输入
+3. 使用 `pyim-convert-pinyin-at-point' 可以将光标前的拼音字符串转换为中文，
+   所以用户需要给 `pyim-convert-pinyin-at-point' 绑定一个快捷键，比如：
 
-用于：`pyim-english-input-switch-functions' 。"
-  (let ((str-before-1 (pyim-char-before-to-string 0))
-        (str-before-2 (pyim-char-before-to-string 1))
-        (str-before-2 (pyim-char-before-to-string 2))
-        (regexp-chinese "\\cc")
-        (regexp-alpha "[a-zA-Z]")
-        ;; ascii puncts: !\"#$%&'()*+,-./:;<=>?@\^_`{|}~
-        (puncts "#$%&*+,.:;=?@^_`|~!-"))
-    (cond ((and (stringp str-before-1)
-                (stringp str-before-2)
-                (equal str-before-1 " "))
-           nil)
-          ((and (stringp str-before-1)
-                (or (pyim-string-match-p regexp-alpha str-before-1)
-                    (member str-before-1
-                            (mapcar #'char-to-string puncts)))
-                (= (length pyim-guidance-str) 0))
-           t)
-          ((pyim-string-match-p regexp-chinese str-before-1)
-           nil))))
+   #+BEGIN_SRC elisp
+   (global-set-key (kbd \"M-i\") 'pyim-convert-pinyin-at-point)
+   #+END_SRC
+
+这个函数用于：`pyim-english-input-switch-functions' 。"
+  (let ((str-before-1 (pyim-char-before-to-string 0)))
+    (unless (string= (buffer-name) " *temp*") ; Make sure this probe can work with exim of exwm.
+      (if (<= (point) (save-excursion (back-to-indentation)
+				      (point)))
+	  (not (or (pyim-string-match-p "\\cc" (save-excursion
+						 ;; 查找前一个非空格字符。
+						 (if (re-search-backward "[^[:space:]\n]" nil t)
+						     (char-to-string (char-after (point))))))
+		   (> (length pyim-current-key) 0)))
+	(not (or (pyim-string-match-p "\\cc" str-before-1)
+		 (> (length pyim-current-key) 0)))))))
 ;; #+END_SRC
 
 ;; ** 根据环境自动切换到半角标点输入模式
@@ -132,9 +129,10 @@
 
 用于：`pyim-punctuation-half-width-functions' 。"
   (let ((line-string (buffer-substring (point-at-bol) (point))))
-    (and (member (char-to-string char)
-                 (mapcar 'car pyim-punctuation-dict))
-         (string-match "^[ \t]*$" line-string))))
+    (unless (string= (buffer-name) " *temp*") ; Make sure this probe can work with exim of exwm.
+      (and (member (char-to-string char)
+                   (mapcar 'car pyim-punctuation-dict))
+           (string-match "^[ \t]*$" line-string)))))
 
 (defun pyim-probe-punctuation-after-punctuation (char)
   "激活这个 Chinese-pyim 探针函数后，半角标点后再输入一个标点符号时，强制输入半角标点。

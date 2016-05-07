@@ -34,7 +34,7 @@ when toggle off input method, switch to evil-normal-state if current state is ev
      (if (file-exists-p (file-truename "~/.eim/pyim-personal.txt"))
        (setq pyim-personal-file "~/.eim/pyim-personal.txt"))
      ;; another official dictionary
-     (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix)))
+     (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix :dict-type pinyin-dict)))
 
      ;; {{ fuzzy pinyin setup
      (defun pyim-fuzzy-pinyin-adjust-shanghai ()
