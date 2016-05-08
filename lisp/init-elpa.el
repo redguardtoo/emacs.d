@@ -25,7 +25,6 @@ But you may use safer HTTPS instead.")
     db
     creole
     web
-    sass-mode
     idomenu
     pointback
     buffer-move
@@ -220,7 +219,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'nvm)
 (require-package 'writeroom-mode)
 (require-package 'haml-mode)
-(require-package 'sass-mode)
 (require-package 'scss-mode)
 (require-package 'markdown-mode)
 (require-package 'dired+)
@@ -241,7 +239,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'flymake-css)
 (require-package 'flymake-jslint)
 (require-package 'flymake-ruby)
-(require-package 'flymake-sass)
 (require-package 'swiper)
 (require-package 'find-file-in-project)
 (require-package 'elpy)
