@@ -287,18 +287,24 @@
   "Edit currently visited file as root.
 With a prefix ARG prompt for a file to visit.
 Will also prompt for a file to visit if current
-buffer is not visiting a file."
+buffer is not visiting a file.
+You may insert below line into ~/.authinfo.gpg to type less:
+machine 127.0.0.1 login root password ****** port sudo
+See \"Reusing passwords for several connections\" from INFO.
+"
   (interactive "P")
   (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo::"
+      (find-file (concat "/sudo:root@127.0.0.1:"
                          (read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo::" buffer-file-name))))
+    (find-alternate-file (concat "/sudo:@127.0.0.1:"
+                                 buffer-file-name))))
 
 (defadvice ido-find-file (after find-file-sudo activate)
   "Find file as root if necessary."
   (unless (and buffer-file-name
                (file-writable-p buffer-file-name))
-    (find-alternate-file (concat "/sudo::" buffer-file-name))))
+    (find-alternate-file (concat "/sudo:root@127.0.0.1:"
+                                 buffer-file-name))))
 ;; }}
 
 ;; input open source license
