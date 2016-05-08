@@ -107,7 +107,9 @@
     (save-excursion
       (dolist (buf (buffer-list))
         (set-buffer buf)
-        (if (and (buffer-file-name) (buffer-modified-p))
+        (if (and (buffer-file-name)
+                 (buffer-modified-p)
+                 (file-writable-p (buffer-file-name)))
             (progn
               (push (buffer-name) autosave-buffer-list)
               (if auto-save-slient
