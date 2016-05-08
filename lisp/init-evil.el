@@ -460,11 +460,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "x1" 'delete-other-windows
        "x2" 'split-window-vertically
        "x3" 'split-window-horizontally
-       "xrw" 'rotate-windows
-       "xru" 'undo-tree-save-state-to-register ; C-x r u
-       "xrU" 'undo-tree-restore-state-from-register ; C-x r U
+       "rw" 'rotate-windows
+       "ru" 'undo-tree-save-state-to-register ; C-x r u
+       "rU" 'undo-tree-restore-state-from-register ; C-x r U
        "xt" 'toggle-window-split
        "uu" 'winner-undo
+       "UU" 'winner-redo
        "to" 'toggle-web-js-offset
        "sl" 'sort-lines
        "ulr" 'uniquify-all-lines-region
