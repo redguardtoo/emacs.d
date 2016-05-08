@@ -290,15 +290,15 @@ Will also prompt for a file to visit if current
 buffer is not visiting a file."
   (interactive "P")
   (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+      (find-file (concat "/sudo::"
+                         (read-file-name "Find file(as root): ")))
+    (find-alternate-file (concat "/sudo::" buffer-file-name))))
 
 (defadvice ido-find-file (after find-file-sudo activate)
   "Find file as root if necessary."
   (unless (and buffer-file-name
                (file-writable-p buffer-file-name))
-    (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
+    (find-alternate-file (concat "/sudo::" buffer-file-name))))
 ;; }}
 
 ;; input open source license
@@ -516,9 +516,8 @@ buffer is not visiting a file."
     rlt))
 
 ;; {{ tramp setup
-;; @see http://www.quora.com/Whats-the-best-way-to-edit-remote-files-from-Emacs
-(setq tramp-default-method "ssh")
-(setq tramp-auto-save-directory "~/.backups/tramp/")
+(add-to-list 'backup-directory-alist
+             (cons tramp-file-name-regexp nil))
 (setq tramp-chunksize 8192)
 
 ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
