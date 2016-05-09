@@ -23,6 +23,7 @@
   ("dd" my-lookup-dict-org "Lookup dict.org")
   ("dw" define-word "Lookup word")
   ("dp" define-word-at-point "Lookup on spot")
+  ("sub" my-download-subtitles "Download subtitles")
   ("q" nil "cancel"))
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
