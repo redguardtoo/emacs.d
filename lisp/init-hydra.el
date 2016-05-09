@@ -4,7 +4,8 @@
 (defhydra hydra-launcher (:color blue)
   "Launch"
   ("mq" lookup-doc-in-man "man")
-  ("hm" counsel-bookmark-goto "Bookmark")
+  ("mm" counsel-bookmark-goto "Goto bookmark")
+  ("mk" bookmark-set "Set bookmark")
   ("rr" counsel-recentf-goto "Recent files")
   ("ss" wg-create-workgroup "New window layout")
   ("ll" my-wg-switch-workgroup "Load window layout")

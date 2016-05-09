@@ -346,9 +346,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "bb" 'back-to-previous-buffer
        "ef" 'end-of-defun
        "mf" 'mark-defun
-       "mmm" 'mpc-which-song
-       "mmn" 'mpc-next-prev-song
-       "mmp" '(lambda () (interactive) (mpc-next-prev-song t))
        "em" 'erase-message-buffer
        "eb" 'eval-buffer
        "sd" 'sudo-edit
@@ -392,7 +389,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cbu" 'cb-get-url-from-controller
        "ht" 'etags-select-find-tag-at-point ; better than find-tag C-]
        "hp" 'etags-select-find-tag
-       "hm" 'counsel-bookmark-goto
+       "mm" 'counsel-bookmark-goto
+       "mk" 'bookmark-set
        "yy" 'browse-kill-ring
        "gf" 'counsel-git-find-file
        "gc" 'counsel-git-find-file-committed-with-line-at-point
@@ -632,7 +630,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gj" 'w3m-search-js-api-mdn
        "ga" 'w3m-java-search
        "gh" 'w3mext-hacker-search ; code search in all engines with firefox
-       "gq" 'w3m-stackoverflow-search)
+       "gq" 'w3m-stackoverflow-search
+       "mm" 'mpc-which-song
+       "mn" 'mpc-next-prev-song
+       "mp" '(lambda () (interactive) (mpc-next-prev-song t)))
 ;; }}
 
 ;; change mode-line color by evil state
