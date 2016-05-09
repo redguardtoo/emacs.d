@@ -215,6 +215,7 @@
 
 ;; {{ which-key-mode
 (require 'which-key)
+(setq which-key-separator ":")
 (which-key-mode 1)
 ;; }}
 
