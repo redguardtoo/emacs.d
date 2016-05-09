@@ -482,13 +482,6 @@ See \"Reusing passwords for several connections\" from INFO.
 
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
-;; emacs key binding, copied from avy website
-;; evil, my favorite
-(eval-after-load "evil"
-  '(progn
-     ;; press "d " to delete to the word
-     (define-key evil-motion-state-map (kbd ";") #'avy-goto-subword-1)
-     (define-key evil-normal-state-map (kbd ";") 'avy-goto-subword-1)))
 ;; dired
 (eval-after-load "dired"
   '(progn

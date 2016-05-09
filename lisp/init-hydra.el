@@ -6,23 +6,24 @@
   ("mq" lookup-doc-in-man "man")
   ("hm" counsel-bookmark-goto "Bookmark")
   ("rr" counsel-recentf-goto "Recent files")
-  ("wgt" wg-create-workgroup "New window layout")
-  ("wgg" my-wg-switch-workgroup "Load window layout")
+  ("ss" wg-create-workgroup "New window layout")
+  ("ll" my-wg-switch-workgroup "Load window layout")
   ("tr" ansi-term "ansi-term")
-  ("sgg" 'w3m-google-search "Search")
-  ("sgf" 'w3m-google-by-filetype "Search by filetype")
-  ("sgd" 'w3m-search-financial-dictionary "Financial dictionary")
-  ("sgq" 'w3m-stackoverflow-search "StackOverflow")
-  ("sgj" 'w3m-search-js-api-mdn "Javascript API")
-  ("sga" 'w3m-java-search "Java")
-  ("sgh" 'w3mext-hacker-search "Code search")
-  ("ddb" sdcv-search-pointer "Stardict in buffer")
-  ("ddt" sdcv-search-input+  "Stardict in tooltip")
-  ("ddd" my-lookup-dict-org "Lookup dict.org")
-  ("ddw" define-word "Lookup word")
-  ("ddp" define-word-at-point "Lookup word at point")
+  ("gg" 'w3m-google-search "Search")
+  ("gf" 'w3m-google-by-filetype "Search by filetype")
+  ("gd" 'w3m-search-financial-dictionary "Financial dictionary")
+  ("gq" 'w3m-stackoverflow-search "StackOverflow")
+  ("gj" 'w3m-search-js-api-mdn "Javascript API")
+  ("ga" 'w3m-java-search "Java")
+  ("gh" 'w3mext-hacker-search "Code search")
+  ("db" sdcv-search-pointer "Stardict in buffer")
+  ("dt" sdcv-search-input+  "Stardict in tooltip")
+  ("dd" my-lookup-dict-org "Lookup dict.org")
+  ("dw" define-word "Lookup word")
+  ("dp" define-word-at-point "Lookup word at point")
   ("q" nil "cancel"))
-(global-set-key (kbd "C-c C-r") 'hydra-launcher/body)
+;; Because in message-mode/article-mode we've already use `y' as hotkey
+(global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
 
 ;; {{ mail
 ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
@@ -83,14 +84,18 @@
      ;; y is not used by default
      (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))
 
+;; message-mode
 (eval-after-load 'message
   '(progn
      (defhydra hydra-message (:color blue)
        "Do?"
        ("ca" mml-attach-file "Attach C-c C-a")
        ("cc" message-send-and-exit "Send C-c C-c")
-       ("q" nil "cancel"))
-     (global-set-key (kbd "C-c y") 'hydra-message/body)))
+       ("q" nil "cancel"))))
+(defun message-mode-hook-setup ()
+  (local-set-key (kbd "C-c C-y") 'hydra-message/body)
+  (local-set-key (kbd "M-;") 'comment-dwim))
+(add-hook 'message-mode-hook 'message-mode-hook-setup)
 ;; }}
 
 (provide 'init-hydra)

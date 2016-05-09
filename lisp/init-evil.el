@@ -57,7 +57,6 @@
 
 (require 'evil-mark-replace)
 
-
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
 (defmacro define-and-bind-text-object (key start-regex end-regex)
@@ -337,6 +336,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;   You can either press `,ef` or `M-x end-of-defun` to execute it
 (require 'general)
 (general-evil-setup t)
+
+;; {{ use `,` as leader key
 (nvmap :prefix ","
        "=" 'increase-default-font-height ; GUI emacs only
        "-" 'decrease-default-font-height ; GUI emacs only
@@ -433,14 +434,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cxi" 'org-clock-in ; `C-c C-x C-i'
        "cxo" 'org-clock-out ; `C-c C-x C-o'
        "cxr" 'org-clock-report ; `C-c C-x C-r'
-       "mq" 'lookup-doc-in-man
-       "sgg" 'w3m-google-search
-       "sgf" 'w3m-google-by-filetype
-       "sgd" 'w3m-search-financial-dictionary
-       "sgq" 'w3m-stackoverflow-search
-       "sgj" 'w3m-search-js-api-mdn
-       "sga" 'w3m-java-search
-       "sgh" 'w3mext-hacker-search ; code search in all engines with firefox
        "qq" 'my-grep
        "xc" 'save-buffers-kill-terminal
        "rr" 'counsel-recentf-goto
@@ -559,21 +552,19 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xnr" 'narrow-to-region
        "ycr" 'my-yas-reload-all
        "wf" 'popup-which-function)
+;; }}
 
+;; {{ Use `SPC` as leader key
 ;; all keywords arguments are still supported
 (nvmap :prefix "SPC"
        "ss" 'wg-create-workgroup ; save windows layout
        "ll" 'my-wg-switch-workgroup ; load windows layout
        "kk" 'scroll-other-window
        "jj" 'scroll-other-window-up
-       "ddb" 'sdcv-search-pointer ; in buffer
-       "ddt" 'sdcv-search-input+ ;; in tip
-       "ddd" 'my-lookup-dict-org
-       "ddw" 'define-word
-       "ddp" 'define-word-at-point
-       "gss" 'git-gutter:set-start-revision
-       "gsh" 'git-gutter-reset-to-head-parent
-       "gsr" 'git-gutter-reset-to-default
+       "yy" 'hydra-launcher/body
+       "gs" 'git-gutter:set-start-revision
+       "gh" 'git-gutter-reset-to-head-parent
+       "gr" 'git-gutter-reset-to-default
        "ud" 'my-gud-gdb
        "uk" 'gud-kill-yes
        "ur" 'gud-remove
@@ -624,6 +615,25 @@ If the character before and after CH is space or tab, CH is NOT slash"
                     "jsl" 'js2r-forward-slurp
                     "jba" 'js2r-forward-barf
                     "jk" 'js2r-kill)
+;; }}
+
+;; {{ Use `;` as leader key, for searching something
+(nvmap :prefix ";"
+       ";" 'avy-goto-subword-1
+       "db" 'sdcv-search-pointer ; in buffer
+       "dt" 'sdcv-search-input+ ;; in tip
+       "dd" 'my-lookup-dict-org
+       "dw" 'define-word
+       "dp" 'define-word-at-point
+       "mm" 'lookup-doc-in-man
+       "gg" 'w3m-google-search
+       "gf" 'w3m-google-by-filetype
+       "gd" 'w3m-search-financial-dictionary
+       "gj" 'w3m-search-js-api-mdn
+       "ga" 'w3m-java-search
+       "gh" 'w3mext-hacker-search ; code search in all engines with firefox
+       "gq" 'w3m-stackoverflow-search)
+;; }}
 
 ;; change mode-line color by evil state
 (lexical-let ((default-color (cons (face-background 'mode-line)
