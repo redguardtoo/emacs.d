@@ -224,16 +224,16 @@
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
     (setq flyspell-check-doublon nil)
-	;; enable for all programming modes
-	;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-	(subword-mode)
+    ;; enable for all programming modes
+    ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+    (subword-mode)
     (setq-default electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
     (electric-pair-mode 1)
 
     ;; eldoc, show API doc in minibuffer echo area
-	(turn-on-eldoc-mode)
-	;; show trailing spaces in a programming mod
-	(setq show-trailing-whitespace t)))
+    (turn-on-eldoc-mode)
+    ;; show trailing spaces in a programming mod
+    (setq show-trailing-whitespace t)))
 
 (add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
 ;; some major-modes NOT inherited from prog-mode
