@@ -422,6 +422,12 @@ See \"Reusing passwords for several connections\" from INFO.
       recentf-exclude '("/tmp/"
                         "/ssh:"
                         "/sudo:"
+                        ;; ctags
+                        "/TAGS$"
+                        ;; global
+                        "/GTAGS$"
+                        "/GRAGS$"
+                        "/GPATH$"
                         ;; ~/.emacs.d/**/*.el included
                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
                         ))
