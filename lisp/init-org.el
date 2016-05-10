@@ -151,6 +151,9 @@
   ;; please comment out `(flyspell-mode -1)` if you prefer auto spell check
   (flyspell-mode -1)
 
+  ;; for some reason, org8 disable odt export by default
+  (add-to-list 'org-export-backends 'odt)
+
   ;; don't spell check double words
   (setq flyspell-check-doublon nil)
 
