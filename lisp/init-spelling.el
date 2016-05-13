@@ -86,16 +86,15 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
   (setq ispell-program-name "aspell"))
  ((executable-find "hunspell")
   (setq ispell-program-name "hunspell")
-  ;; just reset dictionary to the safe one "en_US" for hunspell.
-  ;; if we need use different dictionary, we specify it in command line arguments
   (setq ispell-local-dictionary "en_US")
   (setq ispell-local-dictionary-alist
-        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8))))
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
  (t (setq ispell-program-name nil)
     (message "You need install either aspell or hunspell for ispell")))
 
-;; ispell-cmd-args is useless, it's the list of *extra* command line arguments we will append to the ispell process when ispell-send-string()
-;; ispell-extra-args is the command arguments which will *always* be used when start ispell process
+;; `ispell-cmd-args' contains *extra* arguments appending to CLI process
+;; when (ispell-send-string). Useless!
+;; `ispell-extra-args' is *always* used when start CLI aspell process
 (setq-default ispell-extra-args (flyspell-detect-ispell-args t))
 ;; (setq ispell-cmd-args (flyspell-detect-ispell-args))
 (defadvice ispell-word (around my-ispell-word activate)
