@@ -3,7 +3,7 @@
       w3m-file-name-coding-system 'utf-8
       w3m-input-coding-system 'utf-8
       w3m-output-coding-system 'utf-8
-      ;; emacs-w3m will test the imagick's support for png32
+      ;; emacs-w3m will test the ImageMagick support for png32
       ;; and create files named "png32:-" everywhere
       w3m-imagick-convert-program nil
       w3m-terminal-coding-system 'utf-8
@@ -45,7 +45,7 @@
         ("java" "https://www.google.com.au/search?q=java+%s" utf-8)
         ;; financial dictionary
         ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)
-        ;; javascript seawrch on mozilla.org
+        ;; javascript search on mozilla.org
         ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
 
 (defun w3m-set-url-from-search-engine-alist (k l url)
