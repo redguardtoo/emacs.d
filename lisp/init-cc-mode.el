@@ -65,11 +65,7 @@
   ;; make a #define be left-aligned
   (setq c-electric-pound-behavior (quote (alignleft)))
 
-  (autoload 'c-turn-on-eldoc-mode "c-eldoc" "" t)
-
   (when buffer-file-name
-    ;; c-eldoc (https://github.com/mooz/c-eldoc)
-    (c-turn-on-eldoc-mode)
 
     ;; @see https://github.com/redguardtoo/cpputils-cmake
     ;; Make sure your project use cmake!
@@ -85,18 +81,24 @@
     ))
 
 ;; donot use c-mode-common-hook or cc-mode-hook because many major-modes use this hook
-(add-hook 'c-mode-common-hook
-          (lambda ()
-            (unless (is-buffer-file-temp)
-              ;; gtags (GNU global) stuff
-              (setq gtags-suggested-key-mapping t)
-              (my-common-cc-mode-setup)
-              (unless (or (derived-mode-p 'java-mode) (derived-mode-p 'groovy-mode))
-                (my-c-mode-setup))
-              (ggtags-mode 1)
-              ;; emacs 24.4+ will set up eldoc automatically.
-              ;; so below code is NOT needed.
-              (setq-local eldoc-documentation-function #'ggtags-eldoc-function)
-              )))
+(defun c-mode-common-hook-setup ()
+  (unless (is-buffer-file-temp)
+    (my-common-cc-mode-setup)
+    (unless (or (derived-mode-p 'java-mode) (derived-mode-p 'groovy-mode))
+      (my-c-mode-setup))
+
+    ;; gtags (GNU global) stuff
+    (when (and (executable-find "global")
+               ;; `man global' to figure out why
+               (not (string-match-p "GTAGS not found"
+                                    (shell-command-to-string "global -p"))))
+      (setq gtags-suggested-key-mapping t)
+      (ggtags-mode 1)
+      ;; emacs 24.4+ will set up eldoc automatically.
+      ;; so below code is NOT needed.
+      (setq-local eldoc-documentation-function #'ggtags-eldoc-function)
+      (eldoc-mode 1))
+    ))
+(add-hook 'c-mode-common-hook 'c-mode-common-hook-setup)
 
 (provide 'init-cc-mode)
