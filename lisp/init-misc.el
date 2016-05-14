@@ -676,6 +676,12 @@ If step is -1, go backward."
 ;; cliphist.el
 (setq cliphist-use-ivy t)
 
+;; subtitles.el
+(autoload 'srt-renumber-subtitles "subtitles" "" t)
+(autoload 'srt-offset-subtitles "subtitles" "" t)
+(autoload 'srt-mult-subtitles "subtitles" "" t)
+(autoload 'srt-convert-sub-to-srt "subtitles" "" t)
+
 ;; {{ auto-save.el
 (require 'auto-save)
 (auto-save-enable)
