@@ -10,7 +10,6 @@
          (bf (gud-find-file true-file)))
     (with-current-buffer bf
       (move-overlay ov (line-beginning-position) (line-beginning-position 2)
-                    ;;(move-overlay ov (line-beginning-position) (line-end-position)
                     (current-buffer)))))
 
 (defun gud-kill-buffer ()
