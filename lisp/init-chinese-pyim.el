@@ -1,25 +1,33 @@
 ;; {{ make IME compatible with evil-mode
 (defun evil-toggle-input-method ()
-  "when toggle on input method, switch to evil-insert-state if possible.
-when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
+  "when toggle on input method, goto evil-insert-state. "
   (interactive)
-  ;; some guy donot use evil-mode at all
-  (if (fboundp 'evil-insert-state)
-      (if (not current-input-method)
-          (if (not (string= evil-state "insert"))
-              (evil-insert-state))
-        (if (string= evil-state "insert")
-            (evil-normal-state)
-          )))
-  ;; my way to toggle-input-method, the original implementation has some weird bug
-  (if current-input-method
-      (progn
-        (deactivate-input-method)
-        (setq current-input-method nil))
-    (unless (bound-and-true-p chinese-pyim)
-      (require 'chinese-pyim))
-    (activate-input-method default-input-method)
-    (setq current-input-method default-input-method)))
+
+  ;; load IME when needed, less memory footprint
+  (unless (featurep 'chinese-pyim)
+    (require 'chinese-pyim))
+
+  ;; some guy don't use evil-mode at all
+  (cond
+   ((and (boundp 'evil-mode) evil-mode)
+    ;; evil-mode
+    (cond
+     ((eq evil-state 'insert)
+      (toggle-input-method))
+     (t
+      (evil-insert-state)
+      (unless current-input-method
+        (toggle-input-method))
+      ))
+    (if current-input-method (message "IME on!")))
+   (t
+    ;; NOT evil-mode
+    (toggle-input-method)))
+  )
+
+(defadvice evil-insert-state (around evil-insert-state-hack activate)
+  ad-do-it
+  (if current-input-method (message "IME on!")))
 
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
