@@ -45,21 +45,22 @@
   (git-gutter:set-start-revision nil)
   (message "git-gutter reset"))
 
-                                        ; If you enable global minor mode
+
+;; If you enable global minor mode
 (global-git-gutter-mode t)
 
-  ;; nobody use bzr
-  ;; people are forced use subversion or hg, so they take priority
-  (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
+;; nobody use bzr
+;; people are forced use subversion or hg, so they take priority
+(custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
 
-  (git-gutter:linum-setup)
+(git-gutter:linum-setup)
 
-  (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
-  (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
-  ;; Stage current hunk
-  (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
-  ;; Revert current hunk
-  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
 ;; }}
 
 ;;----------------------------------------------------------------------------
