@@ -682,6 +682,10 @@ If step is -1, go backward."
 (autoload 'srt-mult-subtitles "subtitles" "" t)
 (autoload 'srt-convert-sub-to-srt "subtitles" "" t)
 
+;; fastdef.el
+(autoload 'fastdef-insert "fastdef" nil t)
+(autoload 'fastdef-insert-from-history "fastdef" nil t)
+
 ;; {{ auto-save.el
 (require 'auto-save)
 (auto-save-enable)

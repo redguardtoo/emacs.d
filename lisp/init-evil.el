@@ -374,6 +374,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "trm" 'get-term
        "tff" 'toggle-frame-fullscreen
        "tfm" 'toggle-frame-maximized
+       "ti" 'fastdef-insert
+       "th" 'fastdef-insert-from-history
        ;; "ci" 'evilnc-comment-or-uncomment-lines
        ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
        ;; "cc" 'evilnc-copy-and-comment-lines
