@@ -10,12 +10,15 @@
 (yas-reload-all)
 (defun yasnippet-generic-setup-for-mode-hook ()
   (unless (is-buffer-file-temp)
-    ;; highlight FIXME/BUG/TODO in comment
     (yas-minor-mode 1)))
 
 (add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'text-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+;; below modes does NOT inherit from prog-mode
 (add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'web-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'lua-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'emacs-lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)
