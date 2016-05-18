@@ -257,9 +257,9 @@ If WHERE-IS-HASH is 2, hash is from clipboard."
   (interactive "P")
   (let ((log-command "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'"))
     (cond
-     ((= where-is-hash 1)
+     ((and where-is-hash (= where-is-hash 1))
       (counsel-git-show-hash-diff-mode (car kill-ring)))
-     ((= where-is-hash 2)
+     ((and where-is-hash (= where-is-hash 2))
       (counsel-git-show-hash-diff-mode (simpleclip-get-contents)))
      ((region-active-p)
       (counsel-git-show-hash-diff-mode (buffer-substring-no-propertiesi
