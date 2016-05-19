@@ -166,6 +166,7 @@ For example, below line means pressing ",bf" equals to =M-x beginning-of-defun=,
  "bf" 'beginning-of-defun
 #+end_src
 ** Basic tutorial
+Everyone should finish this tutorial at first.
 *** Step 1, learn OS basics
 Read wikipedia in order to know,
 - What is environment variable
@@ -182,7 +183,11 @@ At minimum you need know:
 Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 *** Step 4, solve your first problem
 For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
-** Advanced tutorial
+** Evil-mode tutorial
+Required for vim user,
+- Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
+- Read ~/.emacs.d/site-lisp/evil/doc/evil.pdf
+** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
 ** To start a shell inside Emacs
