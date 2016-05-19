@@ -1,10 +1,26 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: var q=new $.AjaxQueue();q.add(req);
-# key: ajaxqueue
+# key: queue
 # group: jquery
 # contributor: chen bin <chenbin.sh@gmail.com>
 # --
-// @see https://gist.github.com/guybedford/2470554
+/*
+@see https://gist.github.com/guybedford/2470554
+Allows for ajax requests to be run synchronously in a queue
+Usage:
+var queue = new $.AjaxQueue();
+queue.add({
+  url: 'url',
+  complete: function() {
+    console.log('ajax completed');
+  },
+  _run: function(req) {
+    //special pre-processor to alter the request just before it is finally executed in the queue
+    req.url = 'changed_url'
+  }
+});
+*/
+
 $.AjaxQueue = function() {
   this.reqs = [];
   this.requesting = false;

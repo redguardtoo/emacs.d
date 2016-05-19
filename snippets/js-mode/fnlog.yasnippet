@@ -3,7 +3,7 @@
 # key: fn
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-function ${1:name} (${2:args}) {
+function ${1:name} ($0) {
   console.log('${1:$(yas/substr yas-text "[^ ]*")} called');
   $0
 }

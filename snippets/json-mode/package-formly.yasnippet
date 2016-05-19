@@ -1,0 +1,45 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: angular formly package.json
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+{
+  "name": "${1:angular-project}",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/${2:username}/${1:$(yas/substr yas-text "[^ ]*")}.git"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "npm": ">=2.5.1"
+  },
+  "author": "`user-full-name`",
+  "scripts": {
+    "test": "karma start karma.conf.js --auto-watch",
+    "quicktest": "karma start karma.conf.js --single-run --browsers PhantomJS"
+  },
+  "devDependencies": {
+    "bootstrap": "3.3.5",
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-load-plugins": "^1.0.0",
+    "gulp-ng-annotate": "^1.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.4.2",
+    "gulp-wrap": "^0.11.0"
+  },
+  "dependencies": {
+    "angular": "^1.4.7",
+    "angular-formly": "^7.2.3",
+    "angular-messages": "^1.4.7",
+    "angular-mocks": "^1.4.7",
+    "angular-touch": "^1.4.7",
+    "angular-ui-bootstrap": "^0.14.3",
+    "angular-ui-router": "^0.2.15",
+    "api-check": "^7.5.5",
+    "moment": "^2.10.6"
+  }
+}

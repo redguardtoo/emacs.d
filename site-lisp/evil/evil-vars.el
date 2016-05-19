@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.12
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -165,6 +165,13 @@ of `evil-shift-width'."
   :type 'boolean
   :group 'evil)
 (make-variable-buffer-local 'evil-shift-round)
+
+(defcustom evil-indent-convert-tabs t
+  "If non-nil `evil-indent' converts between leading tabs and spaces.
+  Whether tabs are converted to spaces or vice versa depends on the
+  value of `indent-tabs-mode'."
+  :type 'boolean
+  :group 'evil)
 
 (defcustom evil-default-cursor t
   "The default cursor.
@@ -954,14 +961,14 @@ available for completion."
 (defface evil-ex-commands '(( nil
                               :underline t
                               :slant italic))
-         "Face for the evil command in completion in ex mode."
-         :group 'evil)
+  "Face for the evil command in completion in ex mode."
+  :group 'evil)
 
 (defface evil-ex-info '(( ((supports :slant))
                           :slant italic
                           :foreground "red"))
-         "Face for the info message in ex mode."
-         :group 'evil)
+  "Face for the info message in ex mode."
+  :group 'evil)
 
 (defcustom evil-ex-visual-char-range nil
   "Type of default ex range in visual char state.
@@ -1005,11 +1012,6 @@ uses plain Emacs regular expressions."
   :type '(radio (const :tag "All windows." all-windows)
                 (const :tag "Selected window." selected-window)
                 (const :tag "Disable highlighting." nil))
-  :group 'evil)
-
-(defcustom evil-ex-search-persistent-highlight t
-  "If non-nil matches remained highlighted when the search ends."
-  :type 'boolean
   :group 'evil)
 
 (defcustom evil-ex-search-case 'smart
@@ -1068,22 +1070,22 @@ specified, then is works only on the first match."
   :group 'evil)
 
 (defface evil-ex-search '((t :inherit isearch))
-         "Face for interactive search."
-         :group 'evil)
+  "Face for interactive search."
+  :group 'evil)
 
 (defface evil-ex-lazy-highlight '((t :inherit lazy-highlight))
-         "Face for highlighting all matches in interactive search."
-         :group 'evil)
+  "Face for highlighting all matches in interactive search."
+  :group 'evil)
 
 (defface evil-ex-substitute-matches '((t :inherit lazy-highlight))
-         "Face for interactive substitute matches."
-         :group 'evil)
+  "Face for interactive substitute matches."
+  :group 'evil)
 
 (defface evil-ex-substitute-replacement '((((supports :underline))
                                            :underline t
                                            :foreground "red"))
-         "Face for interactive replacement text."
-         :group 'evil)
+  "Face for interactive replacement text."
+  :group 'evil)
 
 (defcustom evil-command-window-height 8
   "Height (in lines) of the command line window.
@@ -1322,7 +1324,7 @@ has been repeated.")
   "The information about the number of following lines the
 insertion should be repeated. This is list (LINE COLUMN COUNT)
 where LINE is the line-number where the original insertion
-started and COLUMN is either a number of function determining the
+started and COLUMN is either a number or function determining the
 column where the repeated insertions should take place. COUNT is
 number of repeats (including the original insertion).")
 
@@ -1497,8 +1499,7 @@ Elements have the form (NAME . FUNCTION).")
      :close      hide-ifdef-block)
     ((outline-mode
       outline-minor-mode
-      org-mode
-      markdown-mode)
+      org-mode)
      :open-all   show-all
      :close-all  ,(lambda ()
                     (with-no-warnings (hide-sublevels 1)))
@@ -1711,7 +1712,7 @@ Otherwise the previous command is assumed as substitute.")
           (goto-char (point-min))
           (buffer-substring (point-min) (line-end-position)))
          ;; no repo, use plain version
-         (t "1.2.3")))))
+         (t "1.2.12")))))
   "The current version of Evil")
 
 (defun evil-version ()

@@ -1,0 +1,134 @@
+# -*- mode: snippet -*-
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# name: LOCAL angularui-formly+angularui-router+bootstrap+mokcup+promise+resolve
+# expand-env: ((yas-indent-line 'fixed))
+# key: html5
+# --
+<!DOCTYPE html>
+<html ng-app="myApp">
+  <!-- npm install angular angular-ui-router angular-mocks angular angular-formly angular-ui-bootstrap bootstrap -->
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Angular Sandbox (with Bootstrap)</title>
+    <script src="/${1:node_modules}/angular/angular.min.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-mocks/angular-mocks.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/api-check/dist/api-check.min.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-formly/dist/formly.js"></script>
+    <script src="/${1:$(yas/substr yas-text "[^ ]*")}/angular-ui-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="/${1:$(yas/substr yas-text "[^ ]*")}/bootstrap/dist/css/bootstrap.min.css" />
+    <style type="text/css">.nav, .pagination, .carousel, .panel-title a { cursor: pointer; } /* angular ui bootstrap hack */</style>
+  </head>
+  <body>
+    <div class="container" ng-controller="MainCtrl">
+      <h1>{{message}}</h1>
+    </div>
+    <div ui-view></div>
+    <script type="text/javascript">
+     angular.module('myApp', ['ui.bootstrap', 'ui.router', 'ngMockE2E', 'formly']).config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
+       $urlRouterProvider.otherwise("/index");
+       $stateProvider.state('index', {
+         url: "/index",
+         template: '<div>This is main.html</div><div><button ng-click="good()">Good</button><button ng-click="bad()">Bad</button><button ng-click="helloWorld()">hello world</button></div><a ui-sref="state1.list">state1.list</a><formly-form model="vm.model" fields="vm.fields" form="vm.form"><button class="btn btn-default" type="submit" ng-disabled="vm.form.$invalid">Submit</button></formly-form>',
+         controller: 'IndexCtrl as vm'
+       }).state('state1', {
+         url: "/state1",
+         template: "<h1>State 1</h1><hr/><a ui-sref='state1.list'>Show List</a><div ui-view></div>"
+       }).state('state1.list', {
+         url: "/list",
+         template:"<h3>List of State 1 Items</h3><ul><li ng-repeat='item in items'>{{ item }}</li></ul>",
+         controller: function($scope) {
+           console.log('state1.list.controller called');
+           $scope.items = ["A", "List", "Of", "Items"];
+         }
+       });
+     }]).config(function(formlyConfigProvider) {
+       formlyConfigProvider.setType({
+         name: 'checkbox',
+         template:' <div class="checkbox"><label><input type="checkbox" class="formly-field-checkbox" ng-model="model[options.key]">{{to.label}} {{to.required ? "*" : ""}}</label></div>'
+       });
+
+       formlyConfigProvider.setType({
+         name: 'input',
+         template: '<input class="form-control" ng-model="model[options.key]">'
+       });
+
+     }).run(function($httpBackend) {
+       // HTTP status: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+       // hack $http
+       $httpBackend.whenPOST('MY_POST_URL1').respond(200, {hello:'hello'});
+       $httpBackend.whenPOST('MY_POST_URL2').respond(function(method, url, data, headers){
+         return [400, {bye: 'bye'}, {}];
+       });
+       $httpBackend.whenPOST('MY_POST_URL3').respond(function(method, url, data, headers){
+         return [200, {world: 'world'}, {}];
+       });
+       $httpBackend.whenGET(/^.*/).passThrough();
+     }).controller('MainCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+       console.log('MainCtrl called');
+
+       $scope.message = 'Hello World';
+
+     }]).controller('IndexCtrl', ['$scope', '$http', '$q', function ($scope, $http, $q) {
+       console.log('IndexCtrl called');
+       var vm = this;
+       var deferred = $q.defer();
+       vm.fields = [{
+         key: 'email',
+         type: 'input',
+         templateOptions: {
+           label: 'Email address',
+           placeholder: 'Enter email'
+         }
+       },{
+         key: 'likeit',
+         type: 'checkbox',
+         templateOptions: {
+           label: 'Do you like it?',
+           required: true
+         }
+       }
+       ];
+       $scope.bad = function() {
+         console.log('$scope.bad called!');
+         var p = $http.post('MY_POST_URL2');
+         p.then(function(resp) {
+           console.log('resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+
+       $scope.good = function() {
+         console.log('$scope.good called!');
+         var p = $http.post('MY_POST_URL1');
+         p.then(function(resp) {
+           console.log('resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+
+       $scope.helloWorld = function() {
+         console.log('helloWorld called');
+         var p = $http.post('MY_POST_URL1');
+         p.then(function(resp) {
+           console.log('resp=', resp);
+           if(resp.data.hello === 'hello') {
+             // often true
+             deferred.reject({hello:'reject'});
+             return deferred.promise;
+           }
+           return $http.post('MY_POST_URL2');
+         }).then(function(resp){
+           console.log('final resp=', resp);
+         }).catch(function(reason) {
+           console.log('reason=', reason);
+         });
+       };
+     }]);
+    </script>
+  </body>
+</html>

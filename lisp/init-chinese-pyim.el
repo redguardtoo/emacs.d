@@ -1,34 +1,48 @@
 ;; {{ make IME compatible with evil-mode
 (defun evil-toggle-input-method ()
-  "when toggle on input method, switch to evil-insert-state if possible.
-when toggle off input method, switch to evil-normal-state if current state is evil-insert-state"
+  "when toggle on input method, goto evil-insert-state. "
   (interactive)
-  ;; some guy donot use evil-mode at all
-  (if (fboundp 'evil-insert-state)
-      (if (not current-input-method)
-          (if (not (string= evil-state "insert"))
-              (evil-insert-state))
-        (if (string= evil-state "insert")
-            (evil-normal-state)
-          )))
-  ;; my way to toggle-input-method, the original implementation has some weird bug
-  (if current-input-method
-      (progn
-        (deactivate-input-method)
-        (setq current-input-method nil))
-    (unless (bound-and-true-p chinese-pyim)
-      (require 'chinese-pyim))
-    (activate-input-method default-input-method)
-    (setq current-input-method default-input-method)))
+
+  ;; load IME when needed, less memory footprint
+  (unless (featurep 'chinese-pyim)
+    (require 'chinese-pyim))
+
+  ;; some guy don't use evil-mode at all
+  (cond
+   ((and (boundp 'evil-mode) evil-mode)
+    ;; evil-mode
+    (cond
+     ((eq evil-state 'insert)
+      (toggle-input-method))
+     (t
+      (evil-insert-state)
+      (unless current-input-method
+        (toggle-input-method))
+      ))
+    (if current-input-method (message "IME on!")))
+   (t
+    ;; NOT evil-mode
+    (toggle-input-method)))
+  )
+
+(defadvice evil-insert-state (around evil-insert-state-hack activate)
+  ad-do-it
+  (if current-input-method (message "IME on!")))
 
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
 
+(setq pyim-punctuation-translate-p nil) ;; use western punctuation (ban jiao fu hao)
+
 (eval-after-load 'chinese-pyim
   '(progn
      (setq default-input-method "chinese-pyim")
-     (setq pyim-use-tooltip nil)              ; don't use tooltip
-     (setq pyim-dicts '((:name "pinyin1" :file "~/.eim/py.txt" :coding utf-8-unix)))
+     (setq pyim-use-tooltip 'popup) ; don't use tooltip
+     ;; personal dictionary should be out of ~/.emacs.d if possible
+     (if (file-exists-p (file-truename "~/.eim/pyim-personal.txt"))
+       (setq pyim-personal-file "~/.eim/pyim-personal.txt"))
+     ;; another official dictionary
+     (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix :dict-type pinyin-dict)))
 
      ;; {{ fuzzy pinyin setup
      (defun pyim-fuzzy-pinyin-adjust-shanghai ()

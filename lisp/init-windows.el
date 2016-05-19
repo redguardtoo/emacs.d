@@ -4,7 +4,7 @@
 (winner-mode 1)
 ;; copied from http://puntoblogspot.blogspot.com/2011/05/undo-layouts-in-emacs.html
 (global-set-key (kbd "C-x 4 u") 'winner-undo)
-(global-set-key (kbd "C-x 4 r") 'winner-redo)
+(global-set-key (kbd "C-x 4 U") 'winner-redo)
 
 
 ;;----------------------------------------------------------------------------

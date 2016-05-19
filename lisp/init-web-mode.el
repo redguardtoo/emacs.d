@@ -1,5 +1,9 @@
 (autoload 'web-mode "web-mode")
 (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.cmp\\'" . web-mode)) ; salesforce
+(add-to-list 'auto-mode-alist '("\\.app\\'" . web-mode)) ; salesforce
+(add-to-list 'auto-mode-alist '("\\.page\\'" . web-mode)) ; salesforce
+(add-to-list 'auto-mode-alist '("\\.component\\'" . web-mode)) ; salesforce
 (add-to-list 'auto-mode-alist '("\\.wp\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.tmpl\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
@@ -15,6 +19,8 @@
 (add-to-list 'auto-mode-alist '("\\.ftl\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.xul?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.eex?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.xml?\\'" . web-mode))
 
 (defun flymake-html-init ()
        (let* ((temp-file (flymake-init-create-temp-buffer-copy
@@ -32,18 +38,19 @@
          )
     (set (make-local-variable 'flymake-err-line-patterns)
          ;; only validate missing html tags
-         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\|discarding unexpected.*\\)" nil 1 2 4)))
+         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\)" nil 1 2 4)))
     (flymake-mode 1)))
 
 (defun web-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-	(flymake-html-load)
-	(unless *no-memory*
-	  (flyspell-mode 1))
-	(remove-hook 'yas-after-exit-snippet-hook
-				 'web-mode-yasnippet-exit-hook t)
-	(remove-hook 'yas/after-exit-snippet-hook
-				 'web-mode-yasnippet-exit-hook t)))
+    (flymake-html-load)
+    (enable-flyspell-mode-conditionally)
+    (setq flyspell-check-doublon nil)
+    (remove-hook 'yas-after-exit-snippet-hook
+                 'web-mode-yasnippet-exit-hook t)
+    (remove-hook 'yas/after-exit-snippet-hook
+                 'web-mode-yasnippet-exit-hook t)))
+
 (add-hook 'web-mode-hook 'web-mode-hook-setup)
 
 (eval-after-load 'web-mode

@@ -1,0 +1,74 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: gulp.js main
+# key: main
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// Install npm packages:
+//   npm install moment angular angular-mocks angular-ui-router api-check angular-formly angular-touch angular-messages angular-ui-bootstrap
+//   npm install --save-dev del gulp gulp-load-plugins gulp-concat gulp-ng-annotate gulp-rename gulp-uglify gulp-sourcemaps gulp-wrap --save-dev
+//
+// Directory layout:
+//    - scripts/
+//    - deployment/
+//    - node_modules/
+//    - package.json
+//    - gulpfile.js
+//    - karma.conf.js
+//
+// Hint:
+//   You can customize bootstrap and angular-ui-bootstrap
+var gulp = require('gulp');
+var $ = require('gulp-load-plugins')(); // lazy load gulp plugins
+var paths = {
+  dest: './deployment/',
+  modules: './node_modules'
+};
+
+gulp.task('clean', function() {
+  return require('del').sync(paths.dest);
+});
+
+gulp.task('styles', function() {
+});
+
+// lib.js we can trust
+gulp.task('scripts.lib', function() {
+  gulp.src([
+    paths.modules + '/moment/min/moment.min.js', // date
+    paths.modules + '/angular/angular.min.js',
+    paths.modules + '/angular-ui-router/release/angular-ui-router.min.js',
+    paths.modules + '/api-check/dist/api-check.min.js',
+    paths.modules + '/angular-formly/dist/formly.js',
+    paths.modules + '/angular-touch/angular-touch.min.js',
+    paths.modules + '/angular-messages/angular-messages.min.js',
+    paths.modules + '/angular-ui-bootstrap/ui-bootstrap-tpls.min.js'
+  ])
+    .pipe($.concat('lib.js'))
+    .pipe(gulp.dest(paths.dest));
+});
+
+// the app we need debug
+gulp.task('scripts.app', function() {
+
+  gulp.src([
+    './scripts/**/*.js',
+    '!./scripts/mocks/**/*', // ignore mock data for frontend
+    '!./scripts/**/*Test.js' // ignore jasmine test cases
+  ])
+    .pipe($.ngAnnotate()) // cool ng-annotate automatically
+    .pipe($.wrap('(function(){"use strict";\n\n<%= contents %>\n\n})();\n\n'))
+    .pipe($.concat('app.js')) // concatenated app.js
+    .pipe(gulp.dest(paths.dest))
+    .pipe($.rename({ // minimized app.js
+      suffix: '.min'
+    }))
+    .pipe($.uglify({
+      mangle: true
+    }))
+    .pipe($.sourcemaps.write('./'))
+    .pipe(gulp.dest(paths.dest));
+});
+
+gulp.task('build', ['clean', 'scripts.app', 'scripts.lib', 'styles']);
+gulp.task('default', ['build']);

@@ -1,11 +1,12 @@
 ;;; org-mime.el --- org html export for text/html MIME emails
 
-;; Copyright (C) 2010-2013 Eric Schulte
+;; Copyright (C) 2010-2015 Eric Schulte
 
 ;; Author: Eric Schulte
+;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
-;; Homepage: http://orgmode.org/worg/org-contrib/org-mime.php
-;; Version: 0.01
+;; Homepage: http://github.com/redguardtoo/org-mime
+;; Version: 0.0.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -39,6 +40,11 @@
 ;; package the results into an email handling with appropriate MIME
 ;; encoding.
 ;;
+;; Quick start:
+;; Write mail in message-mode, make sure the mail body follows org format.
+;; Before sending mail, `M-x org-mime-htmlize'
+;;
+;; Setup (OPTIONAL):
 ;; you might want to bind this to a key with something like the
 ;; following message-mode binding
 ;;
@@ -54,9 +60,7 @@
 
 ;;; Code:
 (require 'cl)
-
-(declare-function org-export-string-as "ox"
-		  (string backend &optional body-only ext-plist))
+(require 'org)
 
 (defcustom org-mime-use-property-inheritance nil
   "Non-nil means al MAIL_ properties apply also for sublevels."
@@ -107,6 +111,13 @@
 
 (defcustom org-mime-send-buffer-hook nil
   "Hook to run in the Org-mode file before export.")
+
+(defun org-mime--export-string (s fmt)
+  (if (fboundp 'org-export-string-as)
+      ;; emacs23
+      (org-export-string-as s (make-symbol fmt) t)
+    ;; emacs 24
+    (org-export-string s fmt)))
 
 ;; example hook, for setting a dark background in <pre style="background-color: #EEE;"> elements
 (defun org-mime-change-element-style (element style)
@@ -196,8 +207,6 @@ and images in a multipart/related part."
 html using `org-mode'.  If called with an active region only
 export that region, otherwise export the entire body."
   (interactive "P")
-  (require 'ox-org)
-  (require 'ox-html)
   (let* ((region-p (org-region-active-p))
          (html-start (or (and region-p (region-beginning))
                          (save-excursion
@@ -211,7 +220,7 @@ export that region, otherwise export the entire body."
 			   (buffer-substring html-start html-end)))
          (tmp-file (make-temp-name (expand-file-name
 				    "mail" temporary-file-directory)))
-         (body (org-export-string-as raw-body 'org t))
+         (body (org-mime--export-string raw-body "org"))
          ;; because we probably don't want to export a huge style file
          (org-export-htmlize-output-type 'inline-css)
          ;; makes the replies with ">"s look nicer
@@ -221,7 +230,7 @@ export that region, otherwise export the entire body."
          ;; to hold attachments for inline html images
          (html-and-images
           (org-mime-replace-images
-	   (org-export-string-as raw-body 'html t) tmp-file))
+	   (org-mime--export-string raw-body "html") tmp-file))
          (html-images (unless arg (cdr html-and-images)))
          (html (org-mime-apply-html-hook
                 (if arg
@@ -279,7 +288,8 @@ export that region, otherwise export the entire body."
     (org-mime-compose body (or fmt 'org) file nil subject)))
 
 (defun org-mime-compose (body fmt file &optional to subject headers)
-  (require 'message)
+  (unless (featurep 'message)
+    (require 'message))
   (message-mail to subject headers nil)
   (message-goto-body)
   (flet ((bhook (body fmt)
@@ -296,28 +306,24 @@ export that region, otherwise export the entire body."
     (let ((fmt (if (symbolp fmt) fmt (intern fmt))))
       (cond
        ((eq fmt 'org)
-	(require 'ox-org)
-	(insert (org-export-string-as
-		 (org-babel-trim (bhook body 'org)) 'org t)))
+	(insert (org-mime--export-string
+		 (org-babel-trim (bhook body 'org)) "org")))
        ((eq fmt 'ascii)
-	(require 'ox-ascii)
-	(insert (org-export-string-as
-		 (concat "#+Title:\n" (bhook body 'ascii)) 'ascii t)))
+	(insert (org-mime--export-string
+		 (concat "#+Title:\n" (bhook body 'ascii)) "ascii")))
        ((or (eq fmt 'html) (eq fmt 'html-ascii))
-	(require 'ox-ascii)
-	(require 'ox-org)
 	(let* ((org-link-file-path-type 'absolute)
 	       ;; we probably don't want to export a huge style file
 	       (org-export-htmlize-output-type 'inline-css)
 	       (html-and-images
 		(org-mime-replace-images
-		 (org-export-string-as (bhook body 'html) 'html t) file))
+		 (org-mime--export-string (bhook body 'html) "html") file))
 	       (images (cdr html-and-images))
 	       (html (org-mime-apply-html-hook (car html-and-images))))
 	  (insert (org-mime-multipart
-		   (org-export-string-as
+		   (org-mime--export-string
 		    (org-babel-trim
-		     (bhook body (if (eq fmt 'html) 'org 'ascii)))
+		     (bhook body (if (eq fmt 'html) "org" "ascii")))
 		    (if (eq fmt 'html) 'org 'ascii) t)
 		   html)
 		  (mapconcat 'identity images "\n"))))))))

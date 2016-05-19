@@ -10,17 +10,34 @@
 (yas-reload-all)
 (defun yasnippet-generic-setup-for-mode-hook ()
   (unless (is-buffer-file-temp)
-    ;; highlight FIXME/BUG/TODO in comment
     (yas-minor-mode 1)))
 
 (add-hook 'prog-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'text-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+;; below modes does NOT inherit from prog-mode
 (add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'web-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'lua-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'js2-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'emacs-lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)
   (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
   (yas-reload-all))
+
+(defun my-yas-field-to-statement(str sep)
+  "If STR=='a.b.c' and SEP=' && ',
+'a.b.c' => 'a && a.b && a.b.c'"
+  (let ((a (split-string str "\\.")) rlt)
+    (mapconcat 'identity
+               (mapcar (lambda (elem)
+                         (cond
+                          (rlt
+                           (setq rlt (concat rlt "." elem)))
+                          (t
+                           (setq rlt elem)))) a)
+               sep)))
 
 (defun my-yas-get-first-name-from-to-field ()
   (let ((rlt "AGENT_NAME") str)
@@ -28,7 +45,7 @@
       (goto-char (point-min))
       ;; first line in email could be some hidden line containing NO to field
       (setq str (buffer-substring-no-properties (point-min) (point-max))))
-    (message "str=%s" str)
+    ;; (message "str=%s" str)
     (if (string-match "^To: \"?\\([a-zA-Z]+\\)" str)
         (setq rlt (capitalize (match-string 1 str))))
     ;; (message "rlt=%s" rlt)

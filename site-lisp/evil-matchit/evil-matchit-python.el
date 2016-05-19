@@ -43,9 +43,7 @@
               (/ (length prefix) 4)
               )
             )
-        0
-        )
-      )
+        0))
     ))
 
 ;; jump from else to if, jump from finally to try
@@ -57,13 +55,11 @@
         regexp
         (cur-line (buffer-substring-no-properties
                    (line-beginning-position)
-                   (line-end-position)))
-        )
+                   (line-end-position))))
 
     ;; extract keyword from current line
     (if (string-match "^[ \t]*\\([a-z]+\\) *.*:\s*\\(#.*\\)?$" cur-line)
-        (setq keyword (match-string 1 cur-line))
-      )
+        (setq keyword (match-string 1 cur-line)))
 
     (cond
      ((string= keyword "else")
@@ -96,18 +92,16 @@
         )
       (when where-to-go
         (goto-char where-to-go)
-        (skip-chars-forward " \t")
-        )
+        (skip-chars-forward " \t"))
       )
-    )
-  )
+    ))
 
 (defun evilmi--python-move-to-next-open-tag (keyword cur-indent)
   (let (out-of-loop
         where-to-go
         regexp
-        cur-line
-        )
+        cur-line)
+
     (cond
      ((string= keyword "try")
       (setq regexp "^[ \t]*\\(except\\) *.*:\s*\\(#.*\\)?$")
@@ -115,10 +109,9 @@
      ((string= keyword "except")
       (setq regexp "^[ \t]*\\(except\\|finally\\) *.*:\s*\\(#.*\\)?$")
       )
-     ( (or (string= keyword "elif") (string= keyword "if"))
+     ((or (string= keyword "elif") (string= keyword "if"))
        (setq regexp "^[ \t]*\\(elif\\|else\\) *.*:\s*\\(#.*\\)?$")
-       )
-     )
+       ))
 
     (save-excursion
       (while (not out-of-loop)
@@ -143,8 +136,7 @@
       (goto-char where-to-go)
       (skip-chars-forward " \t")
       )
-    )
-  )
+    ))
 
 ;;;###autoload
 (defun evilmi-python-get-tag ()

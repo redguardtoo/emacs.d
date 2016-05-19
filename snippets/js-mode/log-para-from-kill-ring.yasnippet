@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: param from kill-ring
+# key: lo
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+`(mapconcat (lambda (i) (format "'%s=', %s" i i)) (split-string (car kill-ring) ",[ \s\n]*") ", ")`

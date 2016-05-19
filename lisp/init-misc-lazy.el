@@ -3,10 +3,6 @@
 
 (recentf-mode 1)
 
-;; use my own bmk if it exists
-(if (file-exists-p (file-truename "~/.emacs.bmk"))
-    (setq bookmark-default-file (file-truename "~/.emacs.bmk")))
-
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
@@ -33,18 +29,16 @@
 ;; Fix per-window memory of buffer point positions
 ;;----------------------------------------------------------------------------
 (global-pointback-mode)
+;; pointback-mode make it harder to insert latex macro
+;; @see https://github.com/redguardtoo/emacs.d/issues/307#issuecomment-212582241
+(add-hook 'LaTeX-mode-hook
+  (lambda ()
+    (pointback-mode -1)))
 
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
 (global-page-break-lines-mode)
-
-;; {{ shell and conf
-(add-to-list 'auto-mode-alist '("\\.[^b][^a][a-zA-Z]*rc$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.aspell\\.en\\.pws\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.meta\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ctags\\'" . conf-mode))
-;; }}
 
 (column-number-mode 1)
 
@@ -223,15 +217,6 @@ grab matched string, cssize them, and insert into kill ring"
                   "elpa"))
        (add-to-list 'grep-find-ignored-directories v))
      ))
-
-;; {{ support MY packages which are not included in melpa
-(autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
-(autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
-(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
-(autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
-(autoload 'org2nikola-export-subtree "org2nikola" "" t)
-(autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)
-;; }}
 
 ;; {{ unique lines
 (defun uniquify-all-lines-region (start end)
@@ -462,13 +447,6 @@ Current position is preserved."
 (put 'downcase-region 'disabled nil)
 (put 'upcase-region 'disabled nil)
 
-;; java
-(add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
-
-(add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
-;; makefile
-(add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
-
 ;; midnight mode purges buffers which haven't been displayed in 3 days
 (require 'midnight)
 (setq midnight-mode t)
@@ -516,7 +494,7 @@ Current position is preserved."
 Does not indent buffer, because it is used for a before-save-hook, and that
 might be bad."
   (interactive)
-  (untabify-buffer)
+  (untabify (point-min) (point-max))
   (delete-trailing-whitespace)
   (set-buffer-file-coding-system 'utf-8))
 

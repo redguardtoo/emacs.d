@@ -1,0 +1,92 @@
+# -*- mode: snippet -*-
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# name: bootstrap css timeline
+# expand-env: ((yas-indent-line 'fixed))
+# key: ui
+# --
+<!DOCTYPE html>
+<html ng-app="myApp">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <title>Bootstrap sample</title>
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" />
+    <style type="text/css">
+     .timeline {
+       list-style: none;
+       position: relative;
+       padding:0;
+     }
+
+     /* this is the vertical LINE of timeline */
+     .timeline:before {
+       /* top and bottom create a line */
+       top: 0;
+       bottom: 0;
+       position: absolute;
+       content: " ";
+       width: 1px;
+       background-color: black;
+     }
+
+     .timeline > li {
+       margin-bottom: 20px;
+       position: relative;
+     }
+
+     .timeline > li:before,
+     .timeline > li:after {
+       content: " ";
+       display: table;
+     }
+
+     .timeline > li:after {
+       clear: both;
+     }
+
+     /* circle attached to the timeline */
+     .timeline > li > .timeline-badge {
+       color: #fff;
+       width: 16px;
+       height: 16px;
+       margin-left: -8px;
+       position: absolute;
+       background-color: #999999;
+       z-index: 100;
+       border-top-right-radius: 50%;
+       border-top-left-radius: 50%;
+       border-bottom-right-radius: 50%;
+       border-bottom-left-radius: 50%;
+     }
+
+     /* align the panel to the circle */
+     .timeline > li > .timeline-panel {
+       margin-left: 32px;
+       float: left;
+       padding: 0;
+     }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h1 id="timeline">Timeline</h1>
+      </div>
+      <ul class="timeline">
+        <li>
+          <div class="timeline-badge"></div>
+          <div class="timeline-panel">
+              <p>Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis.</p>
+          </div>
+        </li>
+        <li>
+          <div class="timeline-badge"></div>
+          <div class="timeline-panel">
+              <p>Mussum ipsum cacilds, vidis litro abertis. Consetis adipiscings elitis. Pra lá</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

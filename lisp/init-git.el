@@ -5,6 +5,11 @@
 ;; ;; Solution 2: if NO network mounted drive involved
 (setq vc-handled-backends '(Git SVN Hg))
 
+;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
+;; open files faster but you can't check if file is version
+;; controlled. other vcs functionality still works.
+(remove-hook 'find-file-hooks 'vc-find-file-hook)
+
 ;; ;; Solution 3: setup vc-handled-backends per project
 ;; (setq vc-handled-backends ())
 ;; (defun my-setup-develop-environment ()
@@ -28,34 +33,34 @@
 
 (defun git-gutter-reset-to-head-parent()
   (interactive)
-  (let (parent)
+  (let (parent (filename (buffer-file-name)))
     (if (eq git-gutter:vcs-type 'svn)
         (setq parent "PREV")
-      (setq parent "HEAD^"))
+      (setq parent (if filename (concat (shell-command-to-string (concat "git --no-pager log --oneline -n1 --pretty='format:%H' " filename)) "^") "HEAD^")))
     (git-gutter:set-start-revision parent)
-    (message "git-gutter:set-start-revision parent of HEAD")
-    ))
+    (message "git-gutter:set-start-revision HEAD^")))
 
 (defun git-gutter-reset-to-default ()
   (interactive)
   (git-gutter:set-start-revision nil)
   (message "git-gutter reset"))
 
-                                        ; If you enable global minor mode
+
+;; If you enable global minor mode
 (global-git-gutter-mode t)
 
-  ;; nobody use bzr
-  ;; people are forced use subversion or hg, so they take priority
-  (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
+;; nobody use bzr
+;; people are forced use subversion or hg, so they take priority
+(custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
 
-  (git-gutter:linum-setup)
+(git-gutter:linum-setup)
 
-  (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
-  (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
-  ;; Stage current hunk
-  (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
-  ;; Revert current hunk
-  (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
 ;; }}
 
 ;;----------------------------------------------------------------------------
@@ -132,19 +137,24 @@
 ;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
   (interactive "p")
-  (forward-line)
-  (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
-      (goto-char (line-beginning-position))
-    (forward-line -1)
-    (git-gutter:next-hunk arg)))
+  (if (memq major-mode '(diff-mode))
+      (diff-hunk-next)
+    (forward-line)
+    (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
+        (goto-char (line-beginning-position))
+      (forward-line -1)
+      (git-gutter:next-hunk arg))
+    ))
 
 (defun my-goto-previous-hunk (arg)
   (interactive "p")
-  (forward-line -1)
-  (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
-      (goto-char (line-beginning-position))
+  (if (memq major-mode '(diff-mode))
+      (diff-hunk-prev)
     (forward-line -1)
-    (git-gutter:previous-hunk arg)))
+    (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
+        (goto-char (line-beginning-position))
+      (forward-line -1)
+      (git-gutter:previous-hunk arg))))
 
 ;; {{ git-messenger
 ;; show details to play `git blame' game
@@ -159,13 +169,6 @@
 (global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
 ;; }}
 
-;; ;; {{ cpputils-cmake.el ; debug only
-;; (setq cppcm-debug t)
-;; (setq cppcm-get-executable-full-path-callback
-;;           (lambda (path type tgt-name)
-;;             ;; extract commit id and put into the kill ring
-;;             (message "path=%s type=%s tgt-name=%s" path type tgt-name)))
-;; ;; }}
 
 (provide 'init-git)
 

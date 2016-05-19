@@ -5,12 +5,11 @@
                                            ("Function" "function +\\([^ (]+\\).*$" 1)
                                            ("Module" "^ *module +\\([^ ]+\\) *$" 1)
                                            ("Variable" "^ *local +\\([^ ]+\\).*$" 1)))
-    (setq safe-local-variable-values
-          '((lua-indent-level . 2)
-            (lua-indent-level . 3)
-            (lua-indent-level . 4)
-            (lua-indent-level . 8)))
     (flymake-lua-load)))
+
+;; @see http://lua-users.org/wiki/LuaStyleGuide
+;; indent 2 spaces by default
+(setq-default lua-indent-level 2)
 
 (add-hook 'lua-mode-hook 'my-lua-mode-setup)
 (provide 'init-lua-mode)

@@ -1,5 +1,7 @@
-(require 'dired-details)
-(dired-details-install)
+(autoload 'turn-on-stripe-buffer-mode "stripe-buffer" "" nil)
+(autoload 'turn-on-stripe-table-mode "stripe-buffer" "" nil)
+(add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
+
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)
@@ -26,36 +28,17 @@ if no files marked, always operate on current line in dired-mode
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
 (setq dired-dwim-target t)
 
-(defun my-guess-mplayer-path ()
-  (let ((rlt "mplayer"))
-    (cond
-     ((or *is-a-mac* *unix*) (setq rlt "mplayer -stop-xscreensaver"))
-     (*cygwin*
-      (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
-          (setq rlt "/cygdrive/c/mplayer/mplayer.exe")
-        (setq rlt "/cygdrive/d/mplayer/mplayer.exe")))
-     (t ; windows
-      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-          (setq rlt "c:\\\\mplayer\\\\mplayer.exe")
-        (setq rlt "c:\\\\\mplayer\\\\mplayer.exe"))
-      ))
-    rlt))
-
 (eval-after-load 'dired
   '(progn
-     (setq-default dired-details-hidden-string "")
-     (define-key dired-mode-map "(" 'dired-details-toggle)
-     (define-key dired-mode-map ")" 'dired-details-toggle)
-
+     ;; from 24.4, dired+ can show/hide dired details by press "("
      (define-key dired-mode-map "/" 'dired-isearch-filenames)
      (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
 
      (require 'dired+)
      (setq dired-recursive-deletes 'always)
-     (define-key dired-mode-map [mouse-2] 'dired-find-file)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
-                     ((my-guess-mplayer-path) "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
+                     ((if *unix* (my-guess-mplayer-path) "open")  "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                      ("7z x" "7z")

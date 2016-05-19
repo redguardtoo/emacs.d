@@ -1,0 +1,24 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: package.json
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+{
+  "name": "${1:angular-project}",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/${2:username}/${1:$(yas/substr yas-text "[^ ]*")}.git"
+  },
+  "engines": {
+    "node": ">=0.12.0",
+    "npm": ">=2.5.1"
+  },
+  "author": "`user-full-name`",
+  "scripts": {
+    "test": "karma start karma.conf.js --auto-watch",
+    "quicktest": "karma start karma.conf.js --single-run --browsers PhantomJS"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

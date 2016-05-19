@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # group: jasmine
 # name: jasmine expect
-# key: jexpect
+# key: jas
 # --
-expect($1).toBe(${2:true});
+expect(true).toBe(true);

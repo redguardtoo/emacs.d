@@ -1,0 +1,8 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: `kill-ring` => if(a && a.b ... )
+# key: if
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+if (`(my-yas-field-to-statement (car kill-ring) " && ")`) {
+  $0;
+}

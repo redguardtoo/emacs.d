@@ -48,18 +48,18 @@ between '\\(' and '\\)' in regular expression.
     (("begin_html") () ( "end_html") "MONOGAMY")
     ))
 
+(defun evilmi--element-property (property element)
+  "Extract the value from the PROPERTY of an ELEMENT."
+  (unless (stringp element)
+    ;; we don't use org-element-property because it's
+    ;; available only in 24.4+
+    (plist-get (nth 1 element) property)))
+
 (defun evilmi--get-embedded-language-major-mode ()
-  (let ((info (org-edit-src-find-region-and-lang))
-        lang
-        lang-f)
-    (if info
-        (progn
-          (setq lang (or (cdr (assoc (nth 2 info) org-src-lang-modes))
-                         (nth 2 info)))
-          (setq lang (if (symbolp lang) (symbol-name lang) lang))
-          (setq lang-f (intern (concat lang "-mode")))
-          ))
-    lang-f))
+  ;; org-element-at-point is available only at org7+
+  (let ((lang (evilmi--element-property :language (org-element-at-point))))
+    (when lang
+      (intern (concat lang "-mode")))))
 
 ;;;###autoload
 (defun evilmi-org-get-tag ()

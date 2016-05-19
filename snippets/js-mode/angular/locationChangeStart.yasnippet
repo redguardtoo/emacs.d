@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: $rootScope.$on('$locationChangeStart', ...)
+# key: aon
+# group: angular
+# --
+$rootScope.$on('$locationChangeStart', function (event, newUrl, oldUrl, newState /*optional*/, oldState /*optional*/) {
+  // @see https://docs.angularjs.org/api/ng/service/$location
+  event.preventDefault(); //prevent the transition from happening
+  $0
+});

@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.12
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -69,8 +69,16 @@ of the line or the buffer; just return nil."
         (save-excursion
           (evil-forward-char (1+ (or count 1)) t t)
           (point))
-      (evil-narrow-to-line
-        (evil-forward-char count t noerror))))
+      (condition-case err
+          (evil-narrow-to-line
+            (evil-forward-char count t noerror))
+        (error
+         ;; Restore the previous command (this one never happend).
+         ;; Actually, this preserves the current column if the
+         ;; previous command was `evil-next-line' or
+         ;; `evil-previous-line'.
+         (setq this-command last-command)
+         (signal (car err) (cdr err))))))
    (t
     (evil-motion-loop (nil (or count 1))
       (forward-char)
@@ -102,8 +110,16 @@ of the line or the buffer; just return nil."
           (evil-backward-char (1+ (or count 1)) t t)
           (point))
         (1+ (point))
-      (evil-narrow-to-line
-        (evil-backward-char count t noerror))))
+      (condition-case err
+          (evil-narrow-to-line
+            (evil-backward-char count t noerror))
+        (error
+         ;; Restore the previous command (this one never happend).
+         ;; Actually, this preserves the current column if the
+         ;; previous command was `evil-next-line' or
+         ;; `evil-previous-line'.
+         (setq this-command last-command)
+         (signal (car err) (cdr err))))))
    (t
     (evil-motion-loop (nil (or count 1))
       (backward-char)
@@ -863,16 +879,26 @@ The default is half the screen."
   (interactive "p")
   (evil-save-column
     (dotimes (i count)
-      (scroll-down nil))))
+      (condition-case err
+          (scroll-down nil)
+        (beginning-of-buffer
+         (if (and (bobp) (zerop i))
+             (signal (car err) (cdr err))
+           (goto-char (point-min))))))))
 
 (evil-define-command evil-scroll-page-down (count)
-  "Scrolls the window COUNT pages downwards."
+  "Scrolls the window COUNT pages upwards."
   :repeat nil
   :keep-visual t
   (interactive "p")
   (evil-save-column
     (dotimes (i count)
-      (scroll-up nil))))
+      (condition-case err
+          (scroll-up nil)
+        (end-of-buffer
+         (if (and (eobp) (zerop i))
+             (signal (car err) (cdr err))
+           (goto-char (point-max))))))))
 
 (evil-define-command evil-scroll-line-to-top (count)
   "Scrolls line number COUNT (or the cursor line) to the top of the window."
@@ -1065,7 +1091,7 @@ or line COUNT to the top of the window."
 (evil-define-text-object evil-a-paragraph (count &optional beg end type)
   "Select a paragraph."
   :type line
-  (evil-select-an-object 'evil-paragraph beg end type count))
+  (evil-select-an-object 'evil-paragraph beg end type count t))
 
 (evil-define-text-object evil-inner-paragraph (count &optional beg end type)
   "Select inner paragraph."
@@ -1506,19 +1532,20 @@ but doesn't insert or remove any spaces."
     (goto-char beg)
     (indent-region beg end))
   ;; We also need to tabify or untabify the leading white characters
-  (let* ((beg-line (line-number-at-pos beg))
-         (end-line (line-number-at-pos end))
-         (ln beg-line)
-         (convert-white (if indent-tabs-mode 'tabify 'untabify)))
-    (save-excursion
-      (while (<= ln end-line)
-        (goto-char (point-min))
-        (forward-line (- ln 1))
-        (back-to-indentation)
-        ;; Whether tab or space should be used is determined by indent-tabs-mode
-        (funcall convert-white (line-beginning-position) (point))
-        (setq ln (1+ ln)))))
-  (back-to-indentation))
+  (when evil-indent-convert-tabs
+    (let* ((beg-line (line-number-at-pos beg))
+           (end-line (line-number-at-pos end))
+           (ln beg-line)
+           (convert-white (if indent-tabs-mode 'tabify 'untabify)))
+      (save-excursion
+        (while (<= ln end-line)
+          (goto-char (point-min))
+          (forward-line (- ln 1))
+          (back-to-indentation)
+          ;; Whether tab or space should be used is determined by indent-tabs-mode
+          (funcall convert-white (line-beginning-position) (point))
+          (setq ln (1+ ln)))))
+    (back-to-indentation)))
 
 (evil-define-operator evil-indent-line (beg end)
   "Indent the line."
@@ -1594,9 +1621,9 @@ the current line."
   (evil-shift-right (line-beginning-position) (line-beginning-position 2) count t))
 
 (evil-define-command evil-shift-left-line (count)
-  "Shift the current line COUNT times to the leeft.
+  "Shift the current line COUNT times to the left.
 The text is shifted to the nearest multiple of
-`evil-shift-width'. Like `evil-shift-leeft' but always works on
+`evil-shift-width'. Like `evil-shift-left' but always works on
 the current line."
   (interactive "<c>")
   (evil-shift-left (line-beginning-position) (line-beginning-position 2) count t))
@@ -2150,6 +2177,7 @@ The insertion will be repeated COUNT times."
   "Insert a new line below point and switch to Insert state.
 The insertion will be repeated COUNT times."
   (interactive "p")
+  (push (point) buffer-undo-list)
   (evil-insert-newline-below)
   (setq evil-insert-count count
         evil-insert-lines t
@@ -2166,6 +2194,7 @@ line.  The insertion will be repeated COUNT times.  If VCOUNT is
 non nil it should be number > 0. The insertion will be repeated
 in the next VCOUNT - 1 lines below the current one."
   (interactive "p")
+  (push (point) buffer-undo-list)
   (back-to-indentation)
   (setq evil-insert-count count
         evil-insert-lines nil
@@ -2403,7 +2432,7 @@ for `isearch-forward',\nwhich lists available keys:\n\n%s"
   (dotimes (var (or count 1))
     (evil-search-word t nil symbol)))
 
-(evil-define-motion evil-search-unbounded-word-backward (count &optiona symbol)
+(evil-define-motion evil-search-unbounded-word-backward (count &optional symbol)
   "Search backward for symbol under point.
 The search is unbounded, i.e., the pattern is not wrapped in
 \\<...\\>."
@@ -2414,7 +2443,7 @@ The search is unbounded, i.e., the pattern is not wrapped in
   (dotimes (var (or count 1))
     (evil-search-word nil t symbol)))
 
-(evil-define-motion evil-search-unbounded-word-forward (count &optiona symbol)
+(evil-define-motion evil-search-unbounded-word-forward (count &optional symbol)
   "Search forward for symbol under point.
 The search is unbounded, i.e., the pattern is not wrapped in
 \\<...\\>."
@@ -3532,20 +3561,21 @@ of the parent of the splitted window are rebalanced."
 (evil-define-command evil-window-bottom-right ()
   "Move the cursor to bottom-right window."
   :repeat nil
-  (select-window
-   (let ((last-sibling (frame-root-window)))
-     (while (not (window-live-p last-sibling))
-       (setq last-sibling (window-last-child last-sibling)))
-     last-sibling)))
+  (let ((last-sibling (frame-root-window)))
+    (while (and last-sibling (not (window-live-p last-sibling)))
+      (setq last-sibling (window-last-child last-sibling)))
+    (when last-sibling
+      (select-window last-sibling))))
 
 (evil-define-command evil-window-top-left ()
   "Move the cursor to top-left window."
   :repeat nil
-  (select-window
-   (let ((first-child (window-child (frame-root-window))))
-     (while (not (window-live-p first-child))
-       (setq first-child (window-child first-child)))
-     first-child)))
+  (let ((first-child (window-child (frame-root-window))))
+    (while (and first-child (not (window-live-p first-child)))
+      (setq first-child (window-child first-child)))
+    (when first-child
+      (select-window
+       first-child))))
 
 (evil-define-command evil-window-mru ()
   "Move the cursor to the previous (last accessed) buffer in another window.

@@ -11,8 +11,7 @@
       (setq cmd (concat "if(" js-cond "){setTimeout(function(){content.document.location.reload(true);}, '500');}")))
      (t
       (setq cmd "setTimeout(function(){content.document.location.reload(true);}, '500');")))
-    (comint-send-string (inferior-moz-process) cmd)
-    ))
+    (comint-send-string (inferior-moz-process) cmd)))
 
 (defvar moz-reload-browser-when-save nil
   "Reload the browser when save")
@@ -27,7 +26,6 @@
 (defun moz-custom-setup ()
   ;; called when editing a REAL file
   (unless (is-buffer-file-temp)
-    (message "moz-custom-setup called (buffer-file-name)=%s" (buffer-file-name))
     (moz-minor-mode 1)
     (setq moz-quiet t)
     ;; @see  http://www.emacswiki.org/emacs/MozRepl
@@ -41,12 +39,15 @@
 (add-hook 'html-mode-hook 'moz-custom-setup)
 (add-hook 'nxml-mode-hook 'moz-custom-setup)
 (add-hook 'web-mode-hook 'moz-custom-setup)
+(add-hook 'js2-mode-hook 'moz-custom-setup)
+(add-hook 'js-mode-hook 'moz-custom-setup)
+(add-hook 'css-mode-hook 'moz-custom-setup)
 
 (defun moz-goto-content-and-run-cmd (cmd)
-  (comint-send-string (inferior-moz-process)
-                      (concat "repl.enter(content);"
-                              cmd
-                              "repl.back();")))
+  (message "moz-goto-content-and-run-cmd called => %s" cmd)
+  ;; repl.enter() is NOT needed any more
+  ;; just use content.document to acess firefox page directly
+  (comint-send-string (inferior-moz-process) cmd))
 
 (setq moz-repl-js-dir (expand-file-name "~/moz-repl-js-dir"))
 
@@ -56,12 +57,13 @@
     (buffer-string)))
 
 (defun moz--load-js-file (js-file)
-  (let (cmd )
+  (let (cmd)
+    (message "moz--load-js-file called => %s" js-file)
     (when (file-exists-p js-file)
+      (message "file does exist")
       ;; make moz API usable in any major-mode
       (moz-minor-mode 1)
       ;; flush mozrepl at first
-      (moz-goto-content-and-run-cmd "console.log('hello');")
       ;; read the content of js-file
       (setq cmd (moz--read-file js-file))
       (moz-goto-content-and-run-cmd cmd))))
@@ -70,62 +72,12 @@
   "load js file from specific directory and send it to mozrepl"
   (interactive)
   (let ((js-file (read-file-name "js file:" moz-repl-js-dir)))
-    (moz--load-js-file js-file)
-    ))
+    (moz--load-js-file js-file)))
 
 (defun moz-console-clear ()
   (interactive)
   (moz-minor-mode 1)
-  (moz-goto-content-and-run-cmd "console.log('clearing ...');")
-  (moz-goto-content-and-run-cmd "console.clear();"))
-
-(defun moz-console-log-var ()
-  "guess variable to console.log, support both html and javascript"
-  (interactive)
-  (let (attr-faces
-        var
-        cmd)
-    (cond
-     ((region-active-p)
-      (setq var (buffer-substring-no-properties (region-beginning) (region-end)))
-      )
-     ((memq major-mode '(js-mode js2-mode js3-mode javascript-mode))
-      (setq var (thing-at-point 'symbol)))
-     (t
-      (cond
-       ((memq major-mode '(web-mode))
-        (setq attr-faces '(web-mode-html-attr-value-face)))
-       ((memq major-mode '(nxml-mode))
-        (setq attr-faces '(nxml-attribute-value)))
-       ((memq major-mode '(html-mode))
-        (setq attr-faces '(font-lock-string-face)))
-       )
-
-      (let ((f (get-text-property (- (point) 1) 'face))
-            attr-name)
-        (when (memq f attr-faces)
-          (save-excursion
-            (search-backward-regexp "=['\"]" (line-beginning-position) t)
-            (backward-char)
-            (setq attr-name (thing-at-point 'word))
-            )
-          (setq var (thing-at-point 'symbol))
-
-          (when (or (string= attr-name "id") (string= attr-name "for"))
-            (setq var (concat "$('#" var "')"))
-            )
-
-          (when (string= attr-name "class")
-            (setq var (concat "$('." var "')"))
-            )
-
-          ))
-      ))
-
-    (when var
-      (setq cmd (concat "console.log(\"" var "=\"" "," var ");"))
-      (moz-goto-content-and-run-cmd cmd))
-
-    ))
+  (moz-goto-content-and-run-cmd "content.console.log('clearing ...');")
+  (moz-goto-content-and-run-cmd "content.console.clear();"))
 
 (provide 'init-moz)

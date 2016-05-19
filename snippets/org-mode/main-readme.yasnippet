@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name : project README template
+# contributor : Chen Bin <chenbin.sh AT gmail.com>
+# expand-env: ((yas-indent-line 'fixed))
+# key: main
+# --
+#+OPTIONS: ^:{} toc:nil H:3
+* ${1:myproject} (v0.0.1)
+
+[[http://melpa.org/#/${1:$(yas/substr yas-text "[^ ]*")}][file:http://melpa.org/packages/${1:$(yas/substr yas-text "[^ ]*")}-badge.svg]] [[http://stable.melpa.org/#/${1:$(yas/substr yas-text "[^ ]*")}][file:http://stable.melpa.org/packages/${1:$(yas/substr yas-text "[^ ]*")}-badge.svg]]
+
+One liner to discribe this program.
+
+* Why
+- feature1
+- feature2
+* Install
+Install it through [[http://melpa.org]].
+* Setup
+* Usage
+* Tips
+* Credits
+* Contact

@@ -3,7 +3,7 @@
       w3m-file-name-coding-system 'utf-8
       w3m-input-coding-system 'utf-8
       w3m-output-coding-system 'utf-8
-      ;; emacs-w3m will test the imagick's support for png32
+      ;; emacs-w3m will test the ImageMagick support for png32
       ;; and create files named "png32:-" everywhere
       w3m-imagick-convert-program nil
       w3m-terminal-coding-system 'utf-8
@@ -45,7 +45,7 @@
         ("java" "https://www.google.com.au/search?q=java+%s" utf-8)
         ;; financial dictionary
         ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)
-        ;; javascript seawrch on mozilla.org
+        ;; javascript search on mozilla.org
         ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
 
 (defun w3m-set-url-from-search-engine-alist (k l url)
@@ -54,17 +54,25 @@
           (setcdr (car l) (list url))
         (w3m-set-url-from-search-engine-alist k (cdr l) url))))
 
-(defun w3m-get-current-thing ()
-  (unless (featurep 'w3m) (require 'w3m))
-  (let ((keyword (w3m-url-encode-string
-                  (if (region-active-p)
-                      (buffer-substring-no-properties (region-beginning) (region-end))
-                    (thing-at-point 'symbol)))))
-    keyword))
+(defvar w3m-global-keyword nil
+  "`w3m-display-hook' must search current buffer with this keyword twice if not nil")
 
-(defun w3m-customized-search-api (search-engine)
+(defun w3m-guess-keyword (&optional encode-space-with-plus)
   (unless (featurep 'w3m) (require 'w3m))
-  (w3m-search search-engine (w3m-get-current-thing)))
+  (let (keyword encoded-keyword)
+    (setq keyword (if (region-active-p)
+             (buffer-substring-no-properties (region-beginning) (region-end))
+           (read-string "Enter keyword:")))
+    ;; some search requires plus sign to replace space
+    (setq encoded-keyword
+          (w3m-url-encode-string (setq w3m-global-keyword keyword)))
+    (if encode-space-with-plus
+        (replace-regexp-in-string "%20" " " encoded-keyword)
+      encoded-keyword)))
+
+(defun w3m-customized-search-api (search-engine &optional encode-space-with-plus)
+  (unless (featurep 'w3m) (require 'w3m))
+  (w3m-search search-engine (w3m-guess-keyword encode-space-with-plus)))
 
 (defun w3m-stackoverflow-search ()
   (interactive)
@@ -74,11 +82,15 @@
   (interactive)
   (w3m-customized-search-api "java"))
 
+(defun w3m-google-search ()
+  "Google search keyword"
+  (interactive)
+  (w3m-customized-search-api "g"))
+
 (defun w3m-google-by-filetype ()
   "Google search 'keyword filetype:file-extension'"
   (interactive)
-  (unless (featurep 'w3m)
-    (require 'w3m))
+  (unless (featurep 'w3m) (require 'w3m))
   (let ((old-url (w3m-get-url-from-search-engine-alist "s" w3m-search-engine-alist))
         new-url)
     ;; change the url to search current file type
@@ -95,7 +107,7 @@
 (defun w3m-search-financial-dictionary ()
   "Search financial dictionary"
   (interactive)
-  (w3m-customized-search-api "f"))
+  (w3m-customized-search-api "f" t))
 
 (defun w3m-search-js-api-mdn ()
   "Search at Mozilla Developer Network (MDN)"
@@ -116,17 +128,18 @@
 (setq browse-url-browser-function 'browse-url-generic)
 
 ;; use external browser to search programming stuff
-(defun w3-hacker-search ()
+(defun w3mext-hacker-search ()
   "Search on all programming related sites in external browser"
   (interactive)
-  (let ((keyword (w3m-get-current-thing)))
+  (let ((keyword (w3m-guess-keyword)))
     ;; google
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q=%22"
                                 keyword
                                 "%22"
                                 (if buffer-file-name
 									(concat "+filetype%3A" (file-name-extension buffer-file-name))
-									"")  ))
+									"")))
+    ;; stackoverflow.com
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q="
                                 keyword
                                 "+site:stackoverflow.com" ))
@@ -141,13 +154,79 @@
   "Opens the current link or image or current page's uri or any url-like text under cursor in firefox."
   (interactive)
   (let (url)
-    (if (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
-        (setq url (or (w3m-anchor) (w3m-image) w3m-current-url)))
+    (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
+      (setq url (w3m-anchor))
+      (if (or (not url) (string= url "buffer://"))
+          (setq url (or (w3m-image) w3m-current-url))))
     (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))
+    ))
+
+(defun w3mext-open-with-mplayer ()
+  (interactive)
+  (let (url cmd str)
+    (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
+      (setq url (w3m-anchor))
+      (unless url
+        (save-excursion
+          (goto-char (point-min))
+          (when (string-match "^Archived-at: <?\\([^ <>]*\\)>?" (setq str (buffer-substring-no-properties (point-min) (point-max))))
+            (setq url (match-string 1 str)))))
+
+      (setq cmd (format "%s -cache 2000 %s &" (my-guess-mplayer-path) url))
+      (when (or (not url) (string= url "buffer://"))
+        (setq url (w3m-image))
+        ;; cache 2M data and don't block UI
+        (setq cmd (my-guess-image-viewer-path url t))))
+    (if url (shell-command cmd))))
+
+(defun w3mext-subject-to-target-filename ()
+  (let (rlt str)
+    (save-excursion
+      (goto-char (point-min))
+      ;; first line in email could be some hidden line containing NO to field
+      (setq str (buffer-substring-no-properties (point-min) (point-max))))
+    ;; (message "str=%s" str)
+    (if (string-match "^Subject: \\(.+\\)" str)
+        (setq rlt (match-string 1 str)))
+    ;; clean the timestamp at the end of subject
+    (setq rlt (replace-regexp-in-string "[ 0-9_.'/-]+$" "" rlt))
+    (setq rlt (replace-regexp-in-string "'s " " " rlt))
+    (setq rlt (replace-regexp-in-string "[ ,_'/-]+" "-" rlt))
+    rlt))
+
+(defun w3mext-download-rss-stream ()
+  (interactive)
+  (let (url cmd)
+    (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
+      (setq url (w3m-anchor))
+      (cond
+       ((or (not url) (string= url "buffer://"))
+        (message "This link is not video/audio stream."))
+       (t
+        (setq cmd (format "curl -L %s > %s.%s"  url (w3mext-subject-to-target-filename) (file-name-extension url)))
+        (kill-new cmd)
+        (if (fboundp 'simpleclip-set-contents)
+            (simpleclip-set-contents cmd))
+        (message "%s => clipd/kill-ring" cmd))))
     ))
 
 (eval-after-load 'w3m
   '(progn
      (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
-     ))
+     (add-hook 'w3m-display-hook
+               (lambda (url)
+                 (let ((title (or w3m-current-title url)))
+                   (when w3m-global-keyword
+                     ;; search keyword twice, first is url, second is your input,
+                     ;; third is actual result
+                     (goto-char (point-min))
+                     (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
+                     ;; move the cursor to the beginning of word
+                     (backward-char (length w3m-global-keyword))
+                     ;; cleanup for next search
+                     (setq w3m-global-keyword nil))
+                   ;; rename w3m buffer
+                   (rename-buffer
+                    (format "*w3m: %s*"
+                            (substring title 0 (min 50 (length title)))) t))))))
 (provide 'init-emacs-w3m)

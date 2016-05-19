@@ -1,11 +1,6 @@
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
-;; json
-(setq auto-mode-alist (cons '("\\.json$" . json-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jason$" . json-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jshintrc$" . json-mode) auto-mode-alist))
-
 ;; {{ js2-mode or javascript-mode
 (setq-default js2-use-font-lock-faces t
               js2-mode-must-byte-compile nil
@@ -24,7 +19,7 @@
         ("State" "[. \t]state([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Factory" "[. \t]factory([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Service" "[. \t]service([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Module" "[. \t]module([ \t]*['\"]\\([a-zA-Z0-9_\.]+\\)" 1)
+        ("Module" "[. \t]module( *['\"]\\([a-zA-Z0-9_.]+\\)['\"], *\\[" 1)
         ("ngRoute" "[. \t]when(\\(['\"][a-zA-Z0-9_\/]+['\"]\\)" 1)
         ("Directive" "[. \t]directive([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Event" "[. \t]\$on([ \t]*['\"]\\([^'\"]+\\)" 1)
@@ -178,6 +173,67 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
+;; {{ print json path, will be removed when latest STABLE js2-mode released
+(defun js2-get-element-index-from-array-node (elem array-node &optional hardcoded-array-index)
+  "Get index of ELEM from ARRAY-NODE or 0 and return it as string."
+  (let ((idx 0) elems (rlt hardcoded-array-index))
+    (setq elems (js2-array-node-elems array-node))
+    (if (and elem (not hardcoded-array-index))
+        (setq rlt (catch 'nth-elt
+                    (dolist (x elems)
+                      ;; We know the ELEM does belong to ARRAY-NODE,
+                      (if (eq elem x) (throw 'nth-elt idx))
+                      (setq idx (1+ idx)))
+                    0)))
+    (format "[%s]" rlt)))
+
+(defun js2-print-json-path (&optional hardcoded-array-index)
+  "Print the path to the JSON value under point, and save it in the kill ring.
+If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it."
+  (interactive "P")
+  (let (previous-node current-node
+        key-name
+        rlt)
+
+    ;; The `js2-node-at-point' starts scanning from AST root node.
+    ;; So there is no way to optimize it.
+    (setq current-node (js2-node-at-point))
+
+    (while (not (js2-ast-root-p current-node))
+      (cond
+       ;; JSON property node
+       ((js2-object-prop-node-p current-node)
+        (setq key-name (js2-prop-node-name (js2-object-prop-node-left current-node)))
+        (if rlt (setq rlt (concat "." key-name rlt))
+          (setq rlt (concat "." key-name))))
+
+       ;; Array node
+       ((or (js2-array-node-p current-node))
+        (setq rlt (concat (js2-get-element-index-from-array-node previous-node
+                                                                 current-node
+                                                                 hardcoded-array-index)
+                          rlt)))
+
+       ;; Other nodes are ignored
+       (t))
+
+      ;; current node is archived
+      (setq previous-node current-node)
+      ;; Get parent node and continue the loop
+      (setq current-node (js2-node-parent current-node)))
+
+    (cond
+     (rlt
+      ;; Clean the final result
+      (setq rlt (replace-regexp-in-string "^\\." "" rlt))
+      (kill-new rlt)
+      (message "%s => kill-ring" rlt))
+     (t
+      (message "No JSON path found!")))
+
+    rlt))
+;; }}
+
 (eval-after-load 'js2-mode
   '(progn
      (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
@@ -193,10 +249,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 (defun my-js2-mode-setup()
   (unless (is-buffer-file-temp)
     ;; looks nodejs is more popular
-    (setq inferior-js-program-command "node --interactive")
     (require 'js-comint)
     ;; if use node.js we need nice output
-    (setenv "NODE_NO_READLINE" "1")
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
     (require 'js2-refactor)
@@ -208,6 +262,10 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
+
+(setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jason$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.jshintrc$" . js-mode) auto-mode-alist))
 
 (cond
  ((not *no-memory*)
@@ -221,9 +279,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; }}
 
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
-
-;; @see https://github.com/Sterlingg/json-snatcher
-(autoload 'jsons-print-path "json-snatcher" nil t)
 
 ;; {{ js-beautify
 (defun js-beautify ()
@@ -243,30 +298,49 @@ sudo pip install jsbeautifier"
     (goto-char orig-point)))
 ;; }}
 
-(setq-default js2-global-externs
+(setq-default js2-additional-externs
               '("$"
+                "$A" ; salesforce lightning component
+                "$LightningApp" ; salesforce
                 "AccessifyHTML5"
                 "KeyEvent"
                 "Raphael"
                 "React"
+                "_content" ; Keysnail
                 "angular"
                 "app"
                 "beforeEach"
+                "browser"
+                "by"
                 "clearInterval"
                 "clearTimeout"
+                "command" ; Keysnail
+                "content" ; Keysnail
                 "define"
                 "describe"
+                "display" ; Keysnail
+                "element"
                 "expect"
+                "ext" ; Keysnail
+                "gBrowser" ; Keysnail
+                "goDoCommand" ; Keysnail
+                "hook" ; Keysnail
                 "inject"
                 "it"
                 "jQuery"
                 "jasmine"
+                "key" ; Keysnail
                 "ko"
                 "log"
                 "module"
+                "plugins" ; Keysnail
+                "process"
                 "require"
                 "setInterval"
                 "setTimeout"
+                "shell" ; Keysnail
+                "tileTabs" ; Firefox addon
+                "util" ; Keysnail
                 "utag"))
 
 (provide 'init-javascript)

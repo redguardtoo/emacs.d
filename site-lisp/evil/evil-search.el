@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.3
+;; Version: 1.2.12
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -770,7 +770,7 @@ the direcion is determined by `evil-ex-search-direction'."
         ;; maybe skip end-of-line
         (when (and evil-move-cursor-back (eolp) (not (eobp)))
           (forward-char)))
-      (let ((res (evil-ex-find-next)))
+      (let ((res (evil-ex-find-next nil nil (not evil-search-wrap))))
         (cond
          ((not res)
           (goto-char orig)
@@ -940,7 +940,8 @@ any error conditions."
           (throw 'done (list 'empty-pattern pat offset)))
         (let (search-result)
           (while (> count 0)
-            (let ((result (evil-ex-find-next pat direction)))
+            (let ((result (evil-ex-find-next pat direction
+                                             (not evil-search-wrap))))
               (if (not result) (setq search-result nil count 0)
                 (setq search-result
                       (if (or (eq result 'wrap)
@@ -1085,9 +1086,7 @@ current search result."
             (setq evil-ex-search-match-beg (match-beginning 0)
                   evil-ex-search-match-end (match-end 0))
             (evil-ex-search-goto-offset offset)
-            (evil-push-search-history search-string (eq direction 'forward))
-            (unless evil-ex-search-persistent-highlight
-              (evil-ex-delete-hl 'evil-ex-search)))
+            (evil-push-search-history search-string (eq direction 'forward)))
            (t
             (goto-char evil-ex-search-start-point)
             (evil-ex-delete-hl 'evil-ex-search)

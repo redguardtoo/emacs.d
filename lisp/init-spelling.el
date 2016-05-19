@@ -47,15 +47,16 @@
 ;; 1. aspell is older
 ;; 2. looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
-(defun flyspell-detect-ispell-args (&optional RUN-TOGETHER)
-  "if RUN-TOGETHER is true, spell check the CamelCase words"
+(defun flyspell-detect-ispell-args (&optional run-together)
+  "If RUN-TOGETHER is true, spell check the CamelCase words.
+Please note RUN-TOGETHER will make aspell less capable. So it should only be used in prog-mode-hook."
   (let (args)
     (when ispell-program-name
       (cond
         ((string-match "aspell$" ispell-program-name)
          ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
          (setq args (list "--sug-mode=ultra" "--lang=en_US"))
-         (if RUN-TOGETHER
+         (if run-together
            (setq args (append args '("--run-together" "--run-together-limit=16" "--run-together-min=2")))))
         ((string-match "hunspell$" ispell-program-name)
          (setq args nil))))
@@ -85,17 +86,16 @@
   (setq ispell-program-name "aspell"))
  ((executable-find "hunspell")
   (setq ispell-program-name "hunspell")
-  ;; just reset dictionary to the safe one "en_US" for hunspell.
-  ;; if we need use different dictionary, we specify it in command line arguments
   (setq ispell-local-dictionary "en_US")
   (setq ispell-local-dictionary-alist
-        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8))))
+        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US") nil utf-8))))
  (t (setq ispell-program-name nil)
     (message "You need install either aspell or hunspell for ispell")))
 
-;; ispell-cmd-args is useless, it's the list of *extra* command line arguments we will append to the ispell process when ispell-send-string()
-;; ispell-extra-args is the command arguments which will *always* be used when start ispell process
-(setq ispell-extra-args (flyspell-detect-ispell-args t))
+;; `ispell-cmd-args' contains *extra* arguments appending to CLI process
+;; when (ispell-send-string). Useless!
+;; `ispell-extra-args' is *always* used when start CLI aspell process
+(setq-default ispell-extra-args (flyspell-detect-ispell-args t))
 ;; (setq ispell-cmd-args (flyspell-detect-ispell-args))
 (defadvice ispell-word (around my-ispell-word activate)
   (let ((old-ispell-extra-args ispell-extra-args))
@@ -119,34 +119,41 @@
     (ispell-kill-ispell t)
     ))
 
+(defun text-mode-hook-setup ()
+  ;; Turn off RUN-TOGETHER option when spell check text-mode
+  (setq-local ispell-extra-args (flyspell-detect-ispell-args)))
+(add-hook 'text-mode-hook 'text-mode-hook-setup)
+
 ;; Add auto spell-checking in comments for all programming language modes
 ;; if and only if there is enough memory
 ;; You can use prog-mode-hook instead.
-(if (and (not *no-memory*) ispell-program-name)
-  (dolist (hook '(lisp-mode-hook
-                  emacs-lisp-mode-hook
-                  scheme-mode-hook
-                  clojure-mode-hook
-                  ruby-mode-hook
-                  yaml-mode
-                  python-mode-hook
-                  shell-mode-hook
-                  php-mode-hook
-                  css-mode-hook
-                  haskell-mode-hook
-                  caml-mode-hook
-                  c++-mode-hook
-                  c-mode-hook
-                  lua-mode-hook
-                  crontab-mode-hook
-                  perl-mode-hook
-                  tcl-mode-hook
-                  js2-mode-hook))
-    (add-hook hook 'flyspell-prog-mode)))
+(defun can-enable-flyspell-mode ()
+  (and (not *no-memory*)
+           ispell-program-name
+           (executable-find ispell-program-name)))
+
+(defun enable-flyspell-mode-conditionally ()
+  (if (and (not *no-memory*)
+           ispell-program-name
+           (executable-find ispell-program-name))
+      (flyspell-mode 1)))
+
+(if (can-enable-flyspell-mode)
+    (add-hook 'prog-mode-hook 'flyspell-prog-mode))
 
 
 ;; you can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
 (global-set-key (kbd "C-c s") 'flyspell-auto-correct-word)
+
+;; {{ avoid spell-checking doublon (double word) in certain major modes
+(defvar flyspell-check-doublon t
+  "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
+ (make-variable-buffer-local 'flyspell-check-doublon)
+
+(defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
+  (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
+      ad-do-it))
+;; }}
 
 (provide 'init-spelling)
