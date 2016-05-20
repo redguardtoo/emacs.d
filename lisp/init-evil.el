@@ -464,7 +464,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ulr" 'uniquify-all-lines-region
        "ulb" 'uniquify-all-lines-buffer
        "lj" 'moz-load-js-file-and-send-it
-       "lk" 'latest-kill-to-clipboard
        "mr" 'moz-console-clear
        "rnr" 'rinari-web-server-restart
        "rnc" 'rinari-find-controller

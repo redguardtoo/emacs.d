@@ -48,7 +48,8 @@
 (defun copy-to-x-clipboard (&optional num)
   "If NUM equals 1, copy the downcased string.
 If NUM equals 2, copy the captalized string.
-If NUM equals 3, copy the upcased string."
+If NUM equals 3, copy the upcased string.
+If NUM equals 4, kill-ring => clipboard."
   (interactive "P")
   (let ((thing (if (region-active-p)
                    (buffer-substring-no-properties (region-beginning) (region-end))
@@ -61,34 +62,36 @@ If NUM equals 3, copy the upcased string."
       (setq thing (capitalize thing)))
      ((= num 3)
       (setq thing (upcase thing)))
+     ((= num 4)
+      (simpleclip-set-contents (car kill-ring)))
      (t
       (message "C-h f copy-to-x-clipboard to find right usage")))
 
     (simpleclip-set-contents thing)
-    (message "thing => clipboard!")))
+    (if (not (and num (= 4 num))) (message "kill-ring => clipboard")
+      (message "thing => clipboard!"))))
 
-(defun paste-from-x-clipboard()
-  "Paste string clipboard"
-  (interactive)
+(defun paste-from-x-clipboard(&optional n)
+  "Paste string clipboard.
+If N is 1, we paste diff hunk whose leading char should be removed.
+If N is 2, paste into kill-ring too"
+  (interactive "P")
   ;; paste after the cursor in evil normal state
   (when (and (functionp 'evil-normal-state-p)
              (functionp 'evil-move-cursor-back)
              (evil-normal-state-p)
              (not (eolp))
              (not (eobp)))
-      (forward-char))
-  (insert (simpleclip-get-contents)))
-
-(defun paste-from-clipboard-and-cc-kill-ring ()
-  "Paste from clipboard and cc the content into kill ring"
-  (interactive)
+    (forward-char))
   (let ((str (simpleclip-get-contents)))
-    (insert str)
-    ;; cc the content into kill ring at the same time
-    (kill-new str)))
-
-(defun latest-kill-to-clipboard ()
-  (interactive)
-  (copy-yank-str (current-kill 1) t))
+    (cond
+     ((not n)
+      ;; do nothing
+      )
+     ((= 1 n)
+      (setq str (replace-regexp-in-string "^\\(+\\|-\\)" "" str)))
+     ((= 2 n)
+      (kill-new str)))
+    (insert str)))
 
 (provide 'init-clipboard)
