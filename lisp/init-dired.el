@@ -5,6 +5,10 @@
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)
+; Listing directory failed but access-file worked
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
