@@ -78,10 +78,40 @@ SLOW when more than 20 git blame process start."
   (interactive "P")
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
                                 "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
-                                "grep"
+                                "grep by author"
                                 open-another-window
                                 nil
                                 'counsel--filter-grepped-by-author))
+
+(defun counsel-git-show-file (&optional open-another-window)
+  "Find file in HEAD commit or whose commit hash is selected region.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+  (interactive "P")
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (funcall (if open-another-window 'find-file-other-window 'find-file) val)))
+    (counsel-git-grep-or-find-api fn
+                                  (format "git --no-pager diff-tree --no-commit-id --name-only -r %s"
+                                          (if (region-active-p)
+                                              (buffer-substring-no-properties (region-beginning) (region-end))
+                                            "HEAD"))
+                                  "files from `git-show' "
+                                  open-another-window
+                                  t)))
+
+
+(defun counsel-git-diff-file (&optional open-another-window)
+  "Find file in `git diff'.
+If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
+  (interactive "P")
+  (let (fn)
+    (setq fn (lambda (open-another-window val)
+               (funcall (if open-another-window 'find-file-other-window 'find-file) val)))
+    (counsel-git-grep-or-find-api fn
+                                  "git --no-pager diff --name-only"
+                                  "files from `git-diff' "
+                                  open-another-window
+                                  t)))
 
 (defun counsel-git-find-file (&optional open-another-window)
   "Find file in the current git repository.

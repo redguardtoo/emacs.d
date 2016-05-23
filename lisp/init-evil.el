@@ -401,6 +401,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ga" 'counsel-git-grep-by-author
        "gm" 'counsel-git-find-my-file
        "gs" 'counsel-git-show-commit
+       "sf" 'counsel-git-show-file
+       "df" 'counsel-git-diff-file
        "rjs" 'run-js
        "jsr" 'js-send-region
        "rmz" 'run-mozilla
@@ -439,8 +441,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rr" 'counsel-recentf-goto
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
        "rf" 'counsel-goto-recent-directory
-       "dfa" 'diff-region-tag-selected-as-a
-       "dfb" 'diff-region-compare-with-b
+       "da" 'diff-region-tag-selected-as-a
+       "db" 'diff-region-compare-with-b
        "di" 'evilmi-delete-items
        "si" 'evilmi-select-items
        "jb" 'js-beautify
