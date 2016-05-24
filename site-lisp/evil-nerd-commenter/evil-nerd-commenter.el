@@ -80,6 +80,14 @@
 ;;   "\\" 'evilnc-comment-operator
 ;;   )
 ;;
+;; Use case 3,
+;; For certain major modes, you need manual setup to override its original
+;; keybindings,
+;;
+;; (defun matlab-mode-hook-config ()
+;;   (local-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines))
+;; (add-hook 'matlab-mode-hook 'matlab-mode-hook-config)
+;;
 ;; See https://github.com/redguardtoo/evil-nerd-commenter for more use cases.
 
 ;;; Code:
@@ -124,7 +132,8 @@ Please note it has NOT effect on evil text object!")
 (defun evilnc--fix-buggy-major-modes ()
   "Fix major modes whose comment regex is buggy.
 See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
-  (if (eq major-mode 'autoconf-mode)
+  (cond
+   ((eq major-mode 'autoconf-mode)
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
@@ -136,7 +145,13 @@ See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
     ;; My regex makes sure (match-end 1) return the position of comment starter
     (if (and (boundp 'comment-use-syntax) (not comment-use-syntax))
         ;; Maybe autoconf.el will (setq comment-use-syntax t) in the future?
-        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))))
+        (setq comment-start-skip "^\\(\\s*\\)\\(dnl\\|#\\) +"))
+    )
+   ((eq major-mode 'haml-mode)
+    (setq comment-use-syntax nil)
+    (setq comment-start "-# ")
+    (setq comment-start-skip "-##*[ \t]*"))
+    ))
 
 (defun evilnc--operation-on-lines-or-region (fn &optional num)
   "Apply FN on NUM lines or selected region."
