@@ -70,6 +70,13 @@
   (cond ((buffer-narrowed-p) (widen))
         ((region-active-p) (narrow-to-region (region-beginning) (region-end)))
         ((equal major-mode 'org-mode) (org-narrow-to-subtree))
+        ((equal major-mode 'diff-mode)
+         (let (b e)
+           (save-excursion
+             (setq b (diff-beginning-of-file))
+             (setq e (progn (diff-end-of-file) (point))))
+           (when (and b e (< b e))
+             (narrow-to-region b e))))
         (t (error "Please select a region to narrow to"))))
 
 ;; Various preferences
