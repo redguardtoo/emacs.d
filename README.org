@@ -1,143 +1,141 @@
-
 * Checklist
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
-- I recommend Emacs *24.3.1* or *24.4*
-- Tested with Emacs 24.3.1, 24.4, 24.5 on *ALL* platforms (Linux/Windows/Cygwin/Mac)
-- Check section "About Emacs 23" if you uses Emacs 23.4
-- Please read FAQ to disable default [[http://www.vim.org][Vim]] key bindings
-- It's *my intentional design that you can NOT install packages from [[http://melpa.org][melpa-unstable]]* by default. *Experienced users* can modify variable *melpa-include-packages* in "~/.emacs.d/lisp/init-elpa.el" to install packages from melpa-unstable
+- Emacs *24.3.1* or *24.4* recommended
+- Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
+- Please check section "About Emacs 23" if you uses Emacs 23.4
+- Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
+- I intentionally *make packages from [[http://melpa.org][melpa-unstable]] uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
 - Other issues are covered in FAQ
 * Features
 - Stable is the first priority
-- I do *NOT* re-define key bindings, so original key bindings are still there
-- 100% usable in terminal
-- Popular languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
-- Minimum dependency (For example, network connection is OPTIONAL to install packages)
+- I do *NOT* re-define key bindings usually, so original key bindings are still there
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] 
+- Many programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
+- Robust (For example, you can install packages behind corp firewall)
 - Optimized for cross-platform C++ development
 * Installation
-** Minimum installation
 Most users should follow the section "Install in normal way".
 
 You need read the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
-*** Install in normal way
-Please remove the file "~/.emacs.d/init.el" and "~/.emacs". "~" means the parent directory of your ".emacs.d" directory.
+** Install in normal way
+Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= is [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
-Uninstall any package not installed at "~/.emacs.d". For example, run "apt-get autoremove emacs-w3m" on Debian/Ubuntu. If don't know what I mean, then *do nothing*.
+Please uninstall any package which is not installed at =~/.emacs.d=. For example, run =apt-get autoremove emacs-w3m= on Debian/Ubuntu.
 
-All packages should be placed at "~/.emacs.d" from now on.
+If you don't know what I mean, then *do nothing*.
+
+All packages should be placed at =~/.emacs.d= from now on.
 
 There are TWO ways to install this setup:
 
-*Way 1*, download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into "~/.emacs.d", OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
+- *Way 1*, download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into =~/.emacs.d=, OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
 
-*Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
+- *Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
-By default, all packages will be installed automatically during startup. Edit ~/.emacs.d/init-elpa.el to avoid certain package be installed automatically.
+By default, all packages will be installed automatically during Emacs startup. Edit =~/.emacs.d/init-elpa.el= to avoid certain package be installed automatically.
 
-*** Install stable version in easiest way (OPTIONAL)
-You don't need git or network any more. All you need are only two zip files.
+** Install stable version in easiest way (OPTIONAL)
+You only need two zip files instead of git or network.
 
-Here are the *exact steps* to follow:
-- Remove the file "~/.emacs".
+Here are the *exact steps*,
+- Remove =~/.emacs=.
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
-- Extract its content into empty directory "~/.emacs.d" ("~" means home directory, the environment variable HOME contains the path of home directory). After extraction, there will be a file named "init.el" in "~/.emacs.d"
+- Extract its content into empty directory =~/.emacs.d=
 - Download [[https://github.com/redguardtoo/myelpa/archive/stable.zip]]
-- Extract the zip somewhere, say "~/projs/myelpa".
-- Double check that there is a file named "archive-contents" in the directory "~/projs/myelpa"
-- Uncomment below code in "~/.emacs.d/lisp/init-elpa.el" and start Emacs now!
-#+BEGIN_SRC bash
-(setq package-archives '(("myelpa" . "~/projs/myelpa/")))
-#+END_SRC
+- Extract the zip somewhere, say =~/projs/myelpa=
+- Make sure a file named =archive-contents= exists in =~/projs/myelpa=
+- Add =(setq package-archives '(("myelpa" . "~/projs/myelpa/")))= into =~/.emacs.d/lisp/init-elpa.el= 
+- Start Emacs now!
 
-That's it. You never need internet in the future because you are using local package repository "~/projs/melpa" now.
+Now you are using local package repository =~/projs/melpa=.
 
-You can switch to the online repository like "http://elpa.gnu.org" or "http://melpa.org" by modifying "~/.emacs.d/lisp/init-elpa.el".
+You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =~/.emacs.d/lisp/init-elpa.el=.
 ** Third party tools (OPTIONAL)
 *** Install
-You can install them in any way you like. But "OS package manager" is easier.
+You can install them in any way you like. But =OS package manager= is easier.
 
-"OS package manager" means:
+=OS package manager= means:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
 - any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
-*** Tools List
+*** List of tools
 These tools are *OPTIONAL*.
 
 Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
 **** w3m (web browser in console)
-- needed by =w3m= (w3m is emacs package name written in elisp)
-- install through OS package manager
-- please note only emacs with GUI can display image
+- Needed by =w3m= (w3m is emacs package name written in elisp)
+- Install through OS package manager
+- Please note only emacs with GUI can display image
 **** lua
-- required by =flymake-lua=
-- install through OS package manager
+- Required by =flymake-lua=
+- Install through OS package manager
 **** aspell or hunspell
-- needed by =flyspell=
+- Needed by =flyspell=
 - hunspell is the alternative of =aspell=. So you need only one of them.
-- install through OS package manager
-- for aspell, you may need its dictionary like aspell-en
-- I force the dictionary to "en_US" in "~/.emacs./lisp/init-spelling.el". You can modify it.
+- Install through OS package manager
+- For aspell, you may need its dictionary =aspell-en=
+- I force the dictionary to "en_US" in =~/.emacs./lisp/init-spelling.el=. You can modify it.
 - I recommend aspell for programmers
 
 **** sbcl (lisp environment)
-- needed by lisp =slime=
-- install through OS package manager
+- Needed by lisp =slime=
+- Install through OS package manager
 
 **** tidy
-- needed by =web-mode= for syntax check and =tidy.el= html formatting
-- install through OS package manager
+- Needed by =web-mode= for syntax check and =tidy.el= html formatting
+- Install through OS package manager
 
 **** csslint
-- install =node.js= through OS package manager, then =sudo npm install -g csslint=
+- Install =node.js= through OS package manager, then =sudo npm install -g csslint=
 
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
-- needed by =org-mode= to export org file to odt file when image embedded
-- install through OS package manager
+- Needed by =org-mode= to export org file to odt file when image embedded
+- Install through OS package manager
 **** zip and unzip
-- needed by =org-mode= to export org file to odt file
-- install through OS package manager
+- Needed by =org-mode= to export org file to odt file
+- Install through OS package manager
 **** jshint
-- install =node.js= through OS package manager, then =sudo npm install -g jshint=
+- Install =node.js= through OS package manager, then =sudo npm install -g jshint=
 - required by js-mode
 - by default I use js2-mode which does NOT need jshint
 **** xsel
-- needed by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
-- install through OS package manager
+- Needed by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
+- Install through OS package manager
 
 **** [[http://www.cmake.org][CMake]]
-- needed by =cpputils-cmake=
-- install through OS package manager
+- Needed by =cpputils-cmake=
+- Install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
 
 **** [[http://clang.llvm.org][Clang]]
-- needed by =cpputils-cmake=, =company-clang=
-- install through OS package manager
+- Needed by =cpputils-cmake=, =company-clang=
+- Install through OS package manager
 - If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
 
 **** GCC/Make
-- needed by =flymake=
-- install through OS package manager
+- Needed by =flymake=
+- Install through OS package manager
 
 **** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
-- needed by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
-- used by Firefox
+- Needed by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
+- Used by Firefox
 
 **** [[http://ctags.sourceforge.net][CTags]]
-- it creates tags file for code navigation
-- needed by many tags related packages
-- install through OS package manager
+- It creates tags file for code navigation and code completion
+- Needed by many tags related packages
+- Install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
-- needed by =ggtags.el=
-- it creates index files for code navigation
-- more advanced than ctags, supports references and has better performance
-- install through OS package manager
+- Needed by =ggtags.el=
+- It creates index files for code navigation
+- More advanced than ctags, supports references and has better performance
+- Install through OS package manager
 
 **** LibreOffice
 - Only one executable =soffice= needed when converting odt file into doc/pdf
@@ -155,30 +153,25 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - At least =pip install jedi flake8=. Check elpy website for more tips.
 **** sdcv (console version of StarDict)
 - Required by sdcv.el
-- install through OS package manager
-- =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
+- Install through OS package manager
+- Run =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
 
 * Tutorial (OPTIONAL)
-"~/.emacs.d/lisp/init-evil.el" lists the most frequently used key bindings I use.
-
-For example, below line means pressing ",bf" equals to =M-x beginning-of-defun=,
-#+begin_src elisp
- "bf" 'beginning-of-defun
-#+end_src
+=~/.emacs.d/lisp/init-evil.el= contains my most frequently used key bindings.
 ** Basic tutorial
 Everyone should finish this tutorial at first.
 *** Step 1, learn OS basics
-Read wikipedia in order to know,
-- What is environment variable
-- What is pipe, stdout, stdin
+At minimum you need know,
+- What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment variable]] 
+- What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard streams]]
 *** Step 2, read official tutorial at least once
-Press =C-h t= ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
+Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
 - How to move cursor
 - How to read help by pressing =C-h v= and =C-h f=.
 *** Step 3, know org-mode basics
-[[http://orgmode.org/][Org-mode]] is a for notes-keeping and planning.
+[[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 *** Step 4, solve your first problem
@@ -190,7 +183,7 @@ Required for vim user,
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
-** To start a shell inside Emacs
+** Start a shell inside Emacs
 Please =M-x multi-term=.
 
 If you want to use Zsh instead of Bash, please modify init-term-mode.el
@@ -227,8 +220,6 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other software may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
-** My frequently used commands
-They are listed at "lisp/init-evil". I use [[https://github.com/cofi/evil-leader][evil-leader]] to assign hot keys.
 ** Plugins doesn't work?
 If two plugins conflicts, the more frequently used plugin takes priority.
 
@@ -240,38 +231,26 @@ For example, if =which-func-mode= cannot display function name at mode-line, you
 ** How to use org-mode
 Press =M-x org-version=, then read corresponding online manual.
 
-I keep the original status of org-mode. If you find anything doesn't work out of the box, it's because you haven't do the required setup yet.
+If you find anything doesn't work out of the box, it's because you haven't do the required setup required by official setup yet.
 
 For example, =org-capture= need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 ** OS X user?
-You need remove emacs 22 bundled with freshly installed OSX:
-#+begin_src bash
-sudo rm -rf /usr/bin/emacs /usr/share/emacs
-#+end_src
+You need replace legacy Emacs 22 and ctags with the new versions.
 
-You need remove the obsolete ctags/etags too:
-#+begin_src bash
-sudo rm /usr/bin/ctags /usr/bin/etags
-#+end_src
-
-To find out the version of your Emacs/Ctags, run below command in shell:
-#+begin_src bash
-emacs --version
-ctags --version
-#+end_src
-** Important packages are locked
+The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
+** Locked packages
 Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I locked their versions.
 
-Those packages are placed at "~/.emacs.d/site-lisp".
+Those packages are placed at =~/.emacs.d/site-lisp=.
 
-They will not be upgraded through ELPA automatically unless you delete corresponding folders at "~/.emacs.d/site-lisp".
+They will not be upgraded through ELPA automatically unless you delete corresponding folders.
 ** Customize global variables
 Some variables are hard coded so you cannot "M-x customize" to modify them.
 
 Here are the steps to change their values:
-- Find the variable description by "M-x customize"
-- For text "Company Clang Insert Arguments", search "company-clang-insert-argument" in "~/.emacs.d/lisp/"
-- You will find "~/.emacs.d/lisp/init-company.el" and modify company-clang-insert-argument's value
+- Find the variable description by =M-x customize=
+- For text "Company Clang Insert Arguments", search =company-clang-insert-argument= in =~/.emacs.d/lisp/=
+- You will find =~/.emacs.d/lisp/init-company.el= and modify =company-clang-insert-argument=
 
 BTW, please *read my comments* above the code at first.
 ** Open file with Ido
@@ -279,21 +258,11 @@ If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/Interactivel
 
 You can keep pressing =C-f= to ignore the completions.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *environment variable* HOME which points to a user directory =C:\Users\<username>=. You need extract .emacs.d into the directory HOME points to.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *Environment variable* HOME which points to a user directory =C:\Users\<username>= on Windows 7+. You need extract =.emacs.d= into the directory HOME points to.
 ** Yasnippet key bindings
-Instead of =M-x yas-expand= or press TAB key, you may press "M-j" instead.
-
-** Install packages from source
-Please place the source at "~/.emacs.d/site-lisp" where some samples already exist.
-
-Insert below lines into "~/.emacs.d/init.el":
-#+begin_src elisp
-;; check the package's README to figure out what's the =require= line!
-(require 'cool-package-name)
-;; put whatever setup here
-#+end_src
+Instead of =M-x yas-expand= or press TAB key, you may press =M-j= instead.
 ** Non-English users
-Your locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
+Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
 ** Behind corporate firewall
 Type below command in shell:
 #+begin_src bash
@@ -361,9 +330,9 @@ TERM=xterm-256color emacs -nw
 ** Chinese Input Method Editor
 Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
 
-If your *personal* word file "~/.eim/pyim-personal.txt" exists, it will be used.
+If your *personal* word file =~/.eim/pyim-personal.txt= exists, it will be used.
 
-Or else "~/.emacs.d/pyim/pyim-personal.txt" will be created.
+Or else =~/.emacs.d/pyim/pyim-personal.txt= will be created.
 
 ** Install Emacs elsewhere
 Run below commands:
@@ -378,15 +347,15 @@ rm -rf ~/myemacs/24.3/*;
 
 Feel free to replace 24.3 with other version number.
 ** Directory structure
-"~/.emacs.d/init.el" is the main file. It includes all the other *.el files.
+=~/.emacs.d/init.el= is the main file. It includes all the other *.el files.
 
-"~/.emacs.d/lisp/init-elpa.el" defines how and what packages will be installed from [[http://melpa.org][MELPA]].
+=~/.emacs.d/lisp/init-elpa.el= defines how and what packages will be installed from [[http://melpa.org][MELPA]].
 
-The package manager will extract packages into "~/.emacs.d/elpa/".
+The package manager will extract packages into =~/.emacs.d/elpa/=.
 
-I also manually download and extract some packages into "~/.emacs.d/site-lisp/". Packages in "~/.emacs.d/site-lisp/" is not visible to the package manager.
+I also manually download and extract some packages into =~/.emacs.d/site-lisp/=. Packages in =~/.emacs.d/site-lisp/= is not visible to the package manager.
 
-My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at "~/.emacs.d/snippets".
+My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at =~/.emacs.d/snippets=.
 
 Other directories don't matter.
 
@@ -402,12 +371,12 @@ Here are the steps to use that setup:
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
-Emacs is *portable* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read previous "Install Emacs at home directory" for HOW.
+Emacs is *portable* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read "Install Emacs at home directory" for HOW
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
-- Git skills are *extremely useful* for maintaining your emacs.d. The book [[https://git-scm.com/book/en/][Pro Git]] has everything. Please read the chapters "Git Basics", "Git Branching", "Git Tools" at minimum.
+- Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 * Report bug
-Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first.
+Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first, please.
 
 File bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
 
