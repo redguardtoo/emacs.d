@@ -23,8 +23,7 @@
   ("dd" my-lookup-dict-org "Lookup dict.org")
   ("dw" define-word "Lookup word")
   ("dp" define-word-at-point "Lookup on spot")
-  ("sub" my-download-subtitles "Download subtitles")
-  ("q" nil "cancel"))
+  ("q" nil "Bye"))
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
 
@@ -43,7 +42,7 @@
        ("s" gnus-group-enter-server-mode "Servers")
        ("m" gnus-group-new-mail "Compose m OR C-x m")
        ("#" gnus-topic-mark-topic "mark #")
-       ("q" nil "cancel"))
+       ("q" nil "Bye"))
      ;; y is not used by default
      (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
 
@@ -101,6 +100,24 @@
 (add-hook 'message-mode-hook 'message-mode-hook-setup)
 ;; }}
 
+;; dired
+(eval-after-load 'dired
+  '(progn
+     (defhydra hydra-dired (:color blue)
+       "?"
+       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
+       ("s1" (shell-command (format "periscope.py -l en %s &"
+                                    (dired-file-name-at-point))) "1 subtitle")
+       ("cf" (let ((f (dired-file-name-at-point)))
+                (copy-yank-str f)
+                (message "filename %s => clipboard & yank ring" f)) "Copy filename")
+       ("C" dired-do-copy "cp")
+       ("mv" diredp-do-move-recursive "mv")
+       ("mk" dired-create-directory "mkdir")
+       ("q" nil "Bye"))))
+(defun dired-mode-hook-setup ()
+  (local-set-key (kbd "y") 'hydra-dired/body))
+(add-hook 'dired-mode-hook 'dired-mode-hook-setup)
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
 
