@@ -44,6 +44,17 @@
 (global-evil-visualstar-mode t)
 ;; }}
 
+
+;; ffip-diff-mode evil setup
+(defun ffip-diff-mode-hook-setup ()
+    (evil-local-set-key 'normal "p" 'diff-hunk-prev)
+    (evil-local-set-key 'normal "n" 'diff-hunk-next)
+    (evil-local-set-key 'normal "P" 'diff-file-prev)
+    (evil-local-set-key 'normal "N" 'diff-file-next)
+    (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
+    (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
+(add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
+
 ;; {{ https://github.com/gabesoft/evil-mc
 ;; `grm' create cursor for all matching selected
 ;; `gru' undo all cursors
@@ -400,7 +411,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gg" 'counsel-git-grep ; quickest grep should be easy to press
        "ga" 'counsel-git-grep-by-author
        "gm" 'counsel-git-find-my-file
-       "gs" 'counsel-git-show-commit
+       "gs" 'ffip-show-diff ; find-file-in-project 5.0+
        "sf" 'counsel-git-show-file
        "df" 'counsel-git-diff-file
        "rjs" 'run-js

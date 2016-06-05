@@ -317,30 +317,6 @@ Or else, find files since 24 weeks (6 months) ago."
     (diff-region-open-diff-output (shell-command-to-string show-cmd)
                                   "*Git-show")))
 
-(defun counsel-git-show-commit (&optional where-is-hash)
-  "Show commit.  If region is selected. Assume it's commit hash.
-If WHERE-IS-HASH is 1, hash is from kill-ring.
-If WHERE-IS-HASH is 2, hash is from clipboard."
-  (interactive "P")
-  (let ((log-command "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'"))
-    (cond
-     ((and where-is-hash (= where-is-hash 1))
-      (counsel-git-show-hash-diff-mode (car kill-ring)))
-     ((and where-is-hash (= where-is-hash 2))
-      (counsel-git-show-hash-diff-mode (simpleclip-get-contents)))
-     ((region-active-p)
-      (counsel-git-show-hash-diff-mode (buffer-substring-no-propertiesi
-                                        (region-beginning)
-                                        (region-end))))
-     (t
-      (ivy-read "git log:"
-                (split-string (shell-command-to-string log-command) "\n" t)
-                :action (lambda (line)
-                          (let ((hash (car (split-string line "|" t))))
-                            (counsel-git-show-hash-diff-mode hash)))
-                )))
-    ))
-
 (defun counsel-recentf-goto ()
   "Recent files"
   (interactive)
