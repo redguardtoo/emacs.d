@@ -17,7 +17,7 @@
 ;;   (cond
 ;;    ((string-match-p (file-truename "~/.emacs.d") (file-name-directory (buffer-file-name))
 ;;     (setq vc-handled-backends '(Git)))
-;;    (t (setq vc-handled-backends nil))))
+;;    (t (setq vc-handled-backends nil)))))
 ;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
 ;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
 ;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
