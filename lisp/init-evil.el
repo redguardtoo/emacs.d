@@ -36,6 +36,9 @@
 (defun evil-surround-emacs-lisp-mode-hook-setup ()
   (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 (add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
+(defun evil-surround-org-mode-hook-setup ()
+  (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
+(add-hook 'org-mode-hook 'evil-surround-org-mode-hook-setup)
 ;; }}
 
 ;; {{ For example, press `viW*`
@@ -83,6 +86,8 @@
 
 ;; between dollar signs:
 (define-and-bind-text-object "$" "\\$" "\\$")
+;; between equal signs
+(define-and-bind-text-object "=" "=" "=")
 ;; between pipe characters:
 (define-and-bind-text-object "|" "|" "|")
 ;; trimmed line
