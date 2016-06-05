@@ -400,7 +400,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "epl" 'emmet-expand-line
        "rd" 'evilmr-replace-in-defun
        "rb" 'evilmr-replace-in-buffer
-       "tt" 'evilmr-tag-selected-region ;; recommended
+       "ts" 'evilmr-tag-selected-region ;; recommended
        "rt" 'evilmr-replace-in-tagged-region ;; recommended
        "tua" 'artbollocks-mode
        "cby" 'cb-switch-between-controller-and-view
@@ -437,7 +437,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "." 'evil-ex
        ;; @see https://github.com/pidu/git-timemachine
        ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
-       "tmt" 'git-timemachine-toggle
+       "tt" 'my-git-timemachine
        "tdb" 'tidy-buffer
        "tdl" 'tidy-current-line
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
