@@ -156,7 +156,6 @@
     (message "DONE! git add -u %s" default-directory)
     ))
 
-
 ;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
   (interactive "p")
@@ -178,6 +177,7 @@
         (goto-char (line-beginning-position))
       (forward-line -1)
       (git-gutter:previous-hunk arg))))
+;; }}
 
 ;; {{ git-messenger
 ;; show details to play `git blame' game
