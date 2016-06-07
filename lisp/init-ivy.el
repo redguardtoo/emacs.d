@@ -126,8 +126,14 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
                                   open-another-window)))
 
 (defun counsel-escape (keyword)
+  (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
+  (setq keyword (replace-regexp-in-string "\\?" "\\\\\?" keyword))
   (setq keyword (replace-regexp-in-string "\\$" "\\\\\$" keyword))
-  (replace-regexp-in-string "\"" "\\\\\"" keyword))
+  (setq keyword (replace-regexp-in-string "\\*" "\\\\\*" keyword))
+  (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
+  (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
+  (setq keyword (replace-regexp-in-string "\\]" "\\\\\]" keyword))
+  keyword)
 
 (defun counsel-replace-current-line (leading-spaces content)
   (beginning-of-line)
