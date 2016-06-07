@@ -30,6 +30,7 @@
 (require 'evil-surround)
 (global-evil-surround-mode 1)
 (defun evil-surround-prog-mode-hook-setup ()
+  (push '(47 . ("/" . "/")) evil-surround-pairs-alist)
   (push '(40 . ("(" . ")")) evil-surround-pairs-alist)
   (push '(41 . ("(" . ")")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
@@ -90,6 +91,8 @@
 (define-and-bind-text-object "=" "=" "=")
 ;; between pipe characters:
 (define-and-bind-text-object "|" "|" "|")
+;; regular expression
+(define-and-bind-text-object "/" "/" "/")
 ;; trimmed line
 (define-and-bind-text-object "l" "^ *" " *$")
 ;; angular template
