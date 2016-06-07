@@ -21,6 +21,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                         (buffer-substring-no-properties (region-beginning) (region-end))
                       (read-string (concat "Enter " hint " pattern:" ))))))
 
+    ;; (message "git-cmd=%s keyword=%s" (if no-keyword git-cmd (format git-cmd keyword)) keyword)
     (setq collection (split-string (shell-command-to-string (if no-keyword
                                                                 git-cmd
                                                               (format git-cmd keyword)))
