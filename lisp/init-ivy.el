@@ -17,9 +17,10 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                 str))
 
     (unless no-keyword
-      (setq keyword (counsel-escape (if (region-active-p)
-                        (buffer-substring-no-properties (region-beginning) (region-end))
-                      (read-string (concat "Enter " hint " pattern:" ))))))
+      ;; selected region contains no regular expression
+      (setq keyword (if (region-active-p)
+                        (counsel-escape (buffer-substring-no-properties (region-beginning) (region-end)))
+                      (read-string (concat "Enter " hint " pattern:" )))))
 
     ;; (message "git-cmd=%s keyword=%s" (if no-keyword git-cmd (format git-cmd keyword)) keyword)
     (setq collection (split-string (shell-command-to-string (if no-keyword
