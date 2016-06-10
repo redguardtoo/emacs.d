@@ -98,32 +98,6 @@
           (neotree-find file-name))
       (message "Could not find git project root."))))
 
-(defvar my-grep-extra-opts
-  "--exclude-dir=.git --exclude-dir=.bzr --exclude-dir=.svn"
-  "Extra grep options passed to `my-grep'")
-
-(defun my-grep ()
-  "Grep file at project root directory or current directory"
-  (interactive)
-  (let ((keyword (if (region-active-p)
-                     (buffer-substring-no-properties (region-beginning) (region-end))
-                   (read-string "Enter grep pattern: ")))
-        cmd collection val 1st root)
-
-    (let ((default-directory (setq root (or (and (fboundp 'ffip-get-project-root-directory)
-                                                 (ffip-get-project-root-directory))
-                                            default-directory))))
-      (setq cmd (format "%s -rsn %s \"%s\" *"
-                        grep-program my-grep-extra-opts keyword))
-      (when (and (setq collection (split-string
-                                   (shell-command-to-string cmd)
-                                   "\n"
-                                   t))
-                 (setq val (ivy-read (format "matching \"%s\" at %s:" keyword root) collection))))
-      (setq lst (split-string val ":"))
-      (find-file (car lst))
-      (goto-char (point-min))
-      (forward-line (1- (string-to-number (cadr lst)))))))
 ;; }}
 
 ;; {{ groovy-mode
