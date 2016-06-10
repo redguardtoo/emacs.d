@@ -23,10 +23,9 @@
                    (t nil)))
 
 ;; *Message* buffer should be writable in 24.4+
-(when (boundp 'messages-buffer-mode-hook)
-  (defun messages-buffer-mode-hook-setup ()
-    (read-only-mode -1))
-  (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
+(defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)
+  (if (string= "*Messages*" (buffer-name))
+      (read-only-mode -1)))
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
 ;; Normally file-name-handler-alist is set to

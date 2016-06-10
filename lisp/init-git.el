@@ -17,7 +17,7 @@
 ;;   (cond
 ;;    ((string-match-p (file-truename "~/.emacs.d") (file-name-directory (buffer-file-name))
 ;;     (setq vc-handled-backends '(Git)))
-;;    (t (setq vc-handled-backends nil))))
+;;    (t (setq vc-handled-backends nil)))))
 ;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
 ;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
 ;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
@@ -61,6 +61,29 @@
 (global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
 ;; Revert current hunk
 (global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+;; }}
+
+;; {{ git-timemachine
+(defun my-git-timemachine-show-selected-revision ()
+  "Show last (current) revision of file."
+  (interactive)
+  (let (collection)
+    (setq collection
+          (mapcar (lambda (rev)
+                    ;; re-shape list for the ivy-read
+                    (cons (concat (substring (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
+                  (git-timemachine--revisions)))
+    (ivy-read "commits:"
+              collection
+              :action (lambda (rev)
+                        (git-timemachine-show-revision rev)))))
+
+(defun my-git-timemachine ()
+  "Open git snapshot with the selected version.  Based on ivy-mode."
+  (interactive)
+  (unless (featurep 'git-timemachine)
+    (require 'git-timemachine))
+  (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 ;; }}
 
 ;;----------------------------------------------------------------------------
@@ -133,7 +156,6 @@
     (message "DONE! git add -u %s" default-directory)
     ))
 
-
 ;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
   (interactive "p")
@@ -155,6 +177,7 @@
         (goto-char (line-beginning-position))
       (forward-line -1)
       (git-gutter:previous-hunk arg))))
+;; }}
 
 ;; {{ git-messenger
 ;; show details to play `git blame' game
@@ -163,9 +186,11 @@
           (lambda (msg)
             ;; extract commit id and put into the kill ring
             (when (string-match "\\(commit *: *\\)\\([0-9a-z]+\\)" msg)
-              (copy-yank-str (match-string 2 msg))
-              (message "commit hash %s => clipboard & kill-ring" (match-string 2 msg))
-              )))
+              ;; get the first 7 characters as hash because that's `git log' use
+              (let ((hash (substring-no-properties (match-string 2 msg) 0 7)))
+                (copy-yank-str hash)
+                (message "commit hash %s => clipboard & kill-ring" hash)
+                ))))
 (global-set-key (kbd "C-x v p") 'git-messenger:popup-message)
 ;; }}
 

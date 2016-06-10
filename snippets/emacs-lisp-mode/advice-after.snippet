@@ -1,0 +1,7 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: (defadvice ... after)
+# key: advice
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(defadvice ${1:find-file} (after ${1:$(yas/substr yas-text "[^ ]*")}-after-hack activate)
+  $0)

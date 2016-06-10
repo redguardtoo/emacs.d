@@ -256,17 +256,7 @@ grab matched string, cssize them, and insert into kill ring"
   "Make sure the full path of file exist in clipboard. This command will convert
 The full path into relative path insert it as a local file link in org-mode"
   (interactive)
-  (let (str)
-    (with-temp-buffer
-      (paste-from-x-clipboard)
-      (setq str (buffer-string)))
-
-    ;; convert to relative path (relative to current buffer) if possible
-    (let ((m (string-match (file-name-directory (buffer-file-name)) str) ))
-        (if (and m (= 0 m ))
-            (setq str (substring str (length (file-name-directory (buffer-file-name))))))
-      (insert (format "[[file:%s]]" str))
-      )))
+  (insert (format "[[file:%s]]" (file-relative-name (simpleclip-get-contents)))))
 
 (defun font-file-to-base64 (file)
   (let ((str "")

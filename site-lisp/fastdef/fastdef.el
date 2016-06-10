@@ -6,7 +6,7 @@
 ;; Keywords: terminology org-mode markdown
 ;; Author: Chen Bin <chenin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/fastdef
-;; Package-Requires: ((swiper "0.7.0") (w3m "0.0"))
+;; Package-Requires: ((ivy "0.7.0") (w3m "0.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -30,6 +30,9 @@
 
 ;; This program insert terminology from top Google search results.
 ;; It requires w3m (http://w3m.sourceforge.net/).
+;; It also requires two emacs packages from https://melpa.org/,
+;;  - w3m (http://melpa.org/#/w3m)
+;;  - ivy (http://melpa.org/#/ivy)
 ;;
 ;; Usage,
 ;; `M-x fastdef-insert' to insert terminology from Google.
@@ -54,6 +57,9 @@
 (defvar fastdef-regexp-extract-url "\?q=\\(http[^&]*\\)"
   "The regex to extract actual URL.
 Search engine place it in URL parameter.")
+
+(defvar fastdef-regexp-skip-header-links "About .* results"
+  "Regex to skip header links on search result page.")
 
 (defvar fastdef-urls-limit 10
   "Limit of URLs for one terminology.")
@@ -99,16 +105,23 @@ Search engine place it in URL parameter.")
           url-text
           faces)
       (goto-char (point-min))
-      (search-forward-regexp "About .* results")
+
+      ;; skip the header links
+      (search-forward-regexp fastdef-regexp-skip-header-links)
+      ;; start searching ...
       (while (and (w3m-next-anchor)
                   (> cnt 0))
         (when (and (setq faces (get-text-property (point) 'face))
                    (listp faces)
                    (memq 'w3m-anchor faces)
                    (memq 'w3m-bold faces)
-                   (setq url-text (fastdef-get-text-with-same-font))
-                   (string-match fastdef-regexp-extract-url (w3m-anchor))
-                   (setq url (match-string 1 (w3m-anchor))))
+                   (setq url-text (fastdef-get-text-with-same-font)))
+          (cond
+           ((string-match fastdef-regexp-extract-url (w3m-anchor))
+            (setq url (match-string 1 (w3m-anchor))))
+           (t
+            ;; If google does NOT escape original URL ....
+            (setq url (w3m-anchor))))
           (setq cnt (1- cnt))
           (add-to-list 'collection (format "%s => %s" url-text url) t)))
 

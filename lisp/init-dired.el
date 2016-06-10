@@ -5,6 +5,10 @@
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)
+; Listing directory failed but access-file worked
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
@@ -38,7 +42,7 @@ if no files marked, always operate on current line in dired-mode
      (setq dired-recursive-deletes 'always)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("unrar x" "rar")
-                     ((if *unix* (my-guess-mplayer-path) "open")  "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
+                     ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                      ("7z x" "7z")
