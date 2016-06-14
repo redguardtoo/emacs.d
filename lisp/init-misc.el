@@ -1,8 +1,4 @@
 ;; {{ swiper&ivy-mode
-(autoload 'ivy-recentf "ivy" "" t)
-(autoload 'ivy-read "ivy")
-(autoload 'swiper "swiper" "" t)
-
 (defun swiper-the-thing ()
   (interactive)
   (swiper (if (region-active-p)
@@ -82,11 +78,34 @@
 
 
 ;; {{ find-file-in-project (ffip)
+(defun my-git-show-selected-commit ()
+  "Run 'git show selected-commit' in shell"
+  (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+         (git-cmd-rlts (split-string (shell-command-to-string git-cmd) "\n" t))
+         (line (ivy-read "git log:" git-cmd-rlts)))
+    (shell-command-to-string (format "git show %s"
+                                     (car (split-string line "|" t))))))
+
+(defun my-git-log-patch-current-file ()
+  "Run 'git log -p --author=whoever' in shell"
+  (let* ((git-cmd-shortlog "git --no-pager log --format='%aN' | sort -u")
+         (git-cmd-shortlog-rlts (split-string (shell-command-to-string git-cmd-shortlog) "\n" t))
+         (original-author-name (ivy-read "git authors:" git-cmd-shortlog-rlts))
+         (git-cmd-log-dash-p (concat "git --no-pager log --no-color --date=short --pretty=format:'%h%d %ad %s (%an)'"
+                                      (format " --author='%s'" original-author-name)
+                                      (format " -p %s" (buffer-file-name)))))
+    (shell-command-to-string git-cmd-log-dash-p)))
+
 (autoload 'find-file-in-project "find-file-in-project" "" t)
 (autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
 (autoload 'ffip-get-project-root-directory "find-file-in-project" "" t)
 (setq ffip-match-path-instead-of-filename t)
-
+;; I only use git
+(setq ffip-diff-backends '(my-git-show-selected-commit
+                           my-git-log-patch-current-file
+                           "cd $(git rev-parse --show-toplevel) && git diff"
+                           "cd $(git rev-parse --show-toplevel) && git diff --cached"
+                           (car kill-ring)))
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
   (interactive)
@@ -97,7 +116,6 @@
           (neotree-dir project-dir)
           (neotree-find file-name))
       (message "Could not find git project root."))))
-
 ;; }}
 
 ;; {{ groovy-mode
