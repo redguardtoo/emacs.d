@@ -55,6 +55,7 @@
     (evil-local-set-key 'normal "n" 'diff-hunk-next)
     (evil-local-set-key 'normal "P" 'diff-file-prev)
     (evil-local-set-key 'normal "N" 'diff-file-next)
+    (evil-local-set-key 'normal "q" 'ffip-diff-quit)
     (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
     (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)

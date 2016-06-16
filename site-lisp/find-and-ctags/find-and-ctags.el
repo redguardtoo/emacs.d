@@ -5,7 +5,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/find-and-ctags
 ;; Keywords: find ctags
-;; Version: 0.0.5
+;; Version: 0.0.6
 
 ;; This file is not part of GNU Emacs.
 
@@ -125,39 +125,36 @@ The first item is the command line options pass to `find'.
 The second is the command line options pass `ctags'.
 If FORCE is t, the commmand is executed without consulting the timer."
   ;; TODO save the ctags-opts into hash
-  (let (find-opts
-        ctags-opts
-        (dir (file-name-as-directory (file-truename src-dir)) )
-        (find-exe (or find-and-ctags-gnu-find-executable
-                      (find-and-ctags--guess-executable "find")))
-        (ctags-exe (or find-and-ctags-ctags-executable
-                       (find-and-ctags--guess-executable "ctags")))
-        file
-        cmd
-        doit)
+  (let* ((dir (file-name-as-directory (file-truename src-dir)) )
+         (find-exe (or find-and-ctags-gnu-find-executable
+                       (find-and-ctags--guess-executable "find")))
+         (ctags-exe (or find-and-ctags-ctags-executable
+                        (find-and-ctags--guess-executable "ctags")))
+
+         (file (concat dir "TAGS"))
+         cmd
+         (doit (or force (not (file-exists-p file)))))
     ;; default options for `find' and `ctags'
     (unless opts-matrix
       (setq opts-matrix '(("" ""))))
-    (setq file (concat dir "TAGS"))
-    (setq doit (or force (not (file-exists-p file))))
 
     ;; "cd dir && find . -name blah | ctags" will NOT work on windows cmd window
     ;; use relative directory because TAGS is shared between Cygwin and Window
-    (let ((default-directory dir))
       (dolist (row opts-matrix)
-        (setq find-opts (car row))
-        (setq ctags-opts (cadr row))
-        ;; (message "find-opts=%s ctags-opts=%s" find-opts ctags-opts)
-        ;; always update cli options
-        (find-and-ctags--save-cli-options file opts-matrix)
-        (when doit
-          (setq cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
+        (let* ((default-directory dir)
+               (find-opts (car row))
+               (ctags-opts (cadr row))
+               (cmd (format "%s . -type f -not -name 'TAGS' %s | %s -e %s -L -"
                             find-exe
                             (find-and-ctags--escape-options find-opts)
                             ctags-exe
-                            (find-and-ctags--escape-options ctags-opts)))
-          (message "find-and-ctags runs: %s" cmd)
-          (shell-command cmd))))
+                            (find-and-ctags--escape-options ctags-opts))))
+          ;; (message "find-opts=%s ctags-opts=%s" find-opts ctags-opts)
+          ;; always update cli options
+          (find-and-ctags--save-cli-options file opts-matrix)
+          (when doit
+            (message "find&ctags runs %s at %s" cmd default-directory)
+            (shell-command cmd))))
     file))
 
 ;;;###autoload
