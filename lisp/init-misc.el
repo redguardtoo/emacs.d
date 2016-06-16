@@ -421,6 +421,10 @@ See \"Reusing passwords for several connections\" from INFO.
                         "/GTAGS$"
                         "/GRAGS$"
                         "/GPATH$"
+                        "\\.mkv$"
+                        "\\.mp[34]$"
+                        "\\.avi$"
+                        "\\.pdf$"
                         ;; ~/.emacs.d/**/*.el included
                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
                         ))
