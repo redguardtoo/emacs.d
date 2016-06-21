@@ -50,6 +50,7 @@ But you may use safer HTTPS instead.")
     textile-mode
     w3m
     erlang
+    workgroups2
     company-c-headers)
   "Don't install any Melpa packages except these packages")
 
