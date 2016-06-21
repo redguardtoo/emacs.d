@@ -1,3 +1,6 @@
+(autoload 'ivy-recentf "ivy" "" t)
+(autoload 'ivy-read "ivy")
+
 (defvar counsel-process-filename-string nil
   "Give you a chance to change file name string for other counsel-* functions")
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
