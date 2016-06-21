@@ -7,10 +7,10 @@
 - I intentionally *make packages from [[http://melpa.org][melpa-unstable]] uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
 - Other issues are covered in FAQ
 * Features
-- Stable is the first priority
-- I do *NOT* re-define key bindings usually, so original key bindings are still there
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] 
-- Many programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
+- Stability is the first priority
+- I do *NOT* re-define key bindings to override original ones usually
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] (Emacs in Shell)
+- Popular programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 - Robust (For example, you can install packages behind corp firewall)
 - Optimized for cross-platform C++ development
 * Installation
