@@ -105,6 +105,8 @@
                            my-git-log-patch-current-file
                            "cd $(git rev-parse --show-toplevel) && git diff"
                            "cd $(git rev-parse --show-toplevel) && git diff --cached"
+                           (shell-command-to-string (format "cd $(git rev-parse --show-toplevel) && git --no-pager log --date=short -S'%s' -p"
+                                                            (read-string "Git search string:")))
                            (car kill-ring)))
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
