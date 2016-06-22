@@ -659,6 +659,23 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "mp" '(lambda () (interactive) (mpc-next-prev-song t)))
 ;; }}
 
+;; {{ copy evil search text to clipboard/kill-ring, inspired from:
+;; http://emacs.stackexchange.com/questions/24099/how-to-yank-text-to-search-command-after-in-evil-mode/
+(defun my-cc-isearch-string ()
+  (interactive)
+  (if (and isearch-string (> (length isearch-string) 0))
+      (copy-yank-str isearch-string)))
+
+(defadvice evil-search-incrementally (after evil-search-incrementally-after-hack activate)
+  (my-cc-isearch-string))
+
+(defadvice evil-search-word (after evil-search-word-after-hack activate)
+  (my-cc-isearch-string))
+
+(defadvice evil-visualstar/begin-search (after evil-visualstar/begin-search-after-hack activate)
+  (my-cc-isearch-string))
+;; }}
+
 ;; change mode-line color by evil state
 (lexical-let ((default-color (cons (face-background 'mode-line)
                                    (face-foreground 'mode-line))))
