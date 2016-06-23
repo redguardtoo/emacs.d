@@ -682,6 +682,12 @@ If step is -1, go backward."
 (autoload 'fastdef-insert "fastdef" nil t)
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
 
+;; indention management
+(defun my-toggle-indentation ()
+  (interactive)
+  (setq indent-tabs-mode (not indent-tabs-mode))
+  (message "indent-tabs-mode=%s" indent-tabs-mode))
+
 ;; {{ auto-save.el
 (require 'auto-save)
 (auto-save-enable)

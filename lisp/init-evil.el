@@ -583,6 +583,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "kk" 'scroll-other-window
        "jj" 'scroll-other-window-up
        "yy" 'hydra-launcher/body
+       "tt" 'my-toggle-indentation
        "gs" 'git-gutter:set-start-revision
        "gh" 'git-gutter-reset-to-head-parent
        "gr" 'git-gutter-reset-to-default
