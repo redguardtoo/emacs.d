@@ -417,7 +417,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gf" 'counsel-git-find-file
        "gc" 'counsel-git-find-file-committed-with-line-at-point
        "gl" 'counsel-git-grep-yank-line
-       "gg" 'counsel-git-grep ; quickest grep should be easy to press
+       "gg" 'counsel-git-grep-in-project ; quickest grep should be easy to press
        "ga" 'counsel-git-grep-by-author
        "gm" 'counsel-git-find-my-file
        "gs" 'ffip-show-diff ; find-file-in-project 5.0+
