@@ -47,7 +47,11 @@
   (c-toggle-hungry-state 1)
 
   ;; indent
+  ;; google "C/C++/Java code indentation in Emacs" for more advanced skills
+  ;; C code:
+  ;;   if(1) // press ENTER here, zero means no indentation
   (fix-c-indent-offset-according-to-syntax-context 'substatement 0)
+  ;;   void fn() // press ENTER here, zero means no indentation
   (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0))
 
 (defun my-c-mode-setup ()
