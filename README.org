@@ -183,6 +183,12 @@ Required for vim user,
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * FAQ
+** Toggle color theme
+By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-theme.el][color-theme-molokai]] is used.
+
+But you can run the =M-x my-toggle-color-theme= to switch to the fallback theme =color-theme-deep-blue=.
+
+You can change the definition of =my-toggle-color-theme= in =init-color-theme.el=.
 ** Start a shell inside Emacs
 Please =M-x multi-term=.
 
