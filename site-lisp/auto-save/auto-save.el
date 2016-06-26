@@ -98,8 +98,49 @@
   :type 'boolean
   :group 'auto-save)
 
+(defcustom auto-save-exclude '("\\.avi"
+                               "\\.mpeg"
+                               "\\.3gp"
+                               "\\.mp4"
+                               "\\.mp3"
+                               "\\.mkv"
+                               "\\.rm"
+                               "\\.rmvb"
+                               "\\.pdf"
+                               "\\.jpg"
+                               "\\.jpeg"
+                               "\\.png"
+                               "\\.gif"
+                               "\\.svg"
+                               "\\.ico")
+  "List of regexps and predicates for filenames excluded from the auto save list.
+When a filename matches any of the regexps or satisfies any of the
+predicates it is excluded from the auto save list.
+A predicate is a function that is passed a filename to check and that
+must return non-nil to exclude it."
+  :type 'boolean
+  :group 'auto-save)
+
 ;; Emacs' default auto-save is stupid to generate #foo# files!
 (setq auto-save-default nil)
+
+(defun auto-save-include-p (filename)
+  "Return non-nil if FILENAME should be included.
+That is, if it doesn't match any of the `auto-save-exclude' checks."
+  (let ((case-fold-search nil)
+        (checks auto-save-exclude)
+        (keepit t))
+    (while (and checks keepit)
+      ;; If there was an error in a predicate, err on the side of
+      ;; keeping the file.
+      (setq keepit (not (ignore-errors
+                          (if (stringp (car checks))
+                              ;; A regexp
+                              (string-match (car checks) filename)
+                            ;; A predicate
+                            (funcall (car checks) filename))))
+            checks (cdr checks)))
+    keepit))
 
 (defun auto-save-buffers ()
   (interactive)
@@ -109,7 +150,8 @@
         (set-buffer buf)
         (if (and (buffer-file-name)
                  (buffer-modified-p)
-                 (file-writable-p (buffer-file-name)))
+                 (file-writable-p (buffer-file-name))
+                 (auto-save-include-p (buffer-file-name)))
             (progn
               (push (buffer-name) autosave-buffer-list)
               (if auto-save-slient
