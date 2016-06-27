@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: console.log which function with var list from `kill-ring'
+# key: lwf
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+console.log('${1:`(my-which-function)`} called => ', `(my-yas-get-var-list-from-kill-ring)`);

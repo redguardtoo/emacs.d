@@ -20,6 +20,7 @@
 (add-hook 'lua-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'js2-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'lisp-interaction-mode 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)
@@ -74,6 +75,26 @@
                         ) l))
     (setq case-fold-search old-case)
     (mapconcat 'identity rlt " ")))
+
+(defun my-yas-get-var-list-from-kill-ring ()
+  "Variable name is among the `kill-ring'.  Multiple major modes supported."
+  (let* ((top-kill-ring (subseq kill-ring 0 (min (read-number "fetch N `kill-ring'?" 1) (length kill-ring))) )
+         rlt)
+    (cond
+     ((memq major-mode '(js-mode javascript-mode js2-mode js3-mode))
+      (setq rlt (mapconcat (lambda (i) (format "'%s=', %s" i i)) top-kill-ring ", ")))
+     ((memq major-mode '(emacs-lisp-mode lisp-interaction-mode))
+      (setq rlt (concat (mapconcat (lambda (i) (format "%s=%%s" i)) top-kill-ring ", ")
+                        "\" "
+                        (mapconcat (lambda (i) (format "%s" i)) top-kill-ring " ")
+                        )))
+     ((memq major-mode '(c-mode c++-mode))
+      (setq rlt (concat (mapconcat (lambda (i) (format "%s=%%s" i)) top-kill-ring ", ")
+                        "\\n\", "
+                        (mapconcat (lambda (i) (format "%s" i)) top-kill-ring ", ")
+                        )))
+     (t (seq rlt "")))
+    rlt))
 
 (autoload 'snippet-mode "yasnippet" "")
 (add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
