@@ -2,8 +2,9 @@
 ;; save the desktop file automatically if it already exists
 (setq desktop-path '("~/.emacs.d"))
 (setq desktop-save 'if-exists)
+;; @see https://github.com/purcell/emacs.d/issues/352
+(setq desktop-restore-frames nil)
 (desktop-save-mode 1)
-
 
 ;;----------------------------------------------------------------------------
 ;; Restore histories and registers after saving
