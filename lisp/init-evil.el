@@ -60,17 +60,6 @@
     (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
 
-;; {{ https://github.com/gabesoft/evil-mc
-;; `grm' create cursor for all matching selected
-;; `gru' undo all cursors
-;; `grs' pause cursor
-;; `grr' resume cursor
-;; `grh' make cursor here
-;; `C-p', `C-n' previous cursor, next cursor
-(require 'evil-mc)
-(global-evil-mc-mode 1)
-;; }}
-
 (require 'evil-mark-replace)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
