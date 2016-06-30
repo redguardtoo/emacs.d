@@ -249,9 +249,8 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
 当 `sort-by-freq' 为 t 时，首先按照当前行词条出现频率对词条排序，
 然后再删除重复词条，用于：从中文文章构建词库。"
   (interactive)
-  (let* ((line-content (pyim-line-content " "))
-         (code (car line-content)) ;; 编码和词条分开操作，因为在guessdict词库中，编码是中文。
-         (words-list (cdr line-content))
+  (let* ((code (pyim-code-at-point))
+         (words-list (pyim-line-content " "))
          (length (length words-list)))
     ;; 从文章中构建词库时，首先会将词条按照出现频率
     ;; 排序，这样频率高的词条就会排在前面。
@@ -298,10 +297,11 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
 
         (goto-char (point-min))
         (while (not (eobp))
-          (let* ((line-content (pyim-line-content))
-                 (length (length line-content)))
-            (if (or (> length 1) ;; 删除只包含 code，但没有词条的行
-                    (pyim-string-match-p " *^;+" (car line-content)))
+          (let* ((words-list (pyim-line-content))
+                 (code (pyim-code-at-point))
+                 (length (length words-list)))
+            (if (or (> length 0) ;; 删除只包含 code，但没有词条的行
+                    (pyim-string-match-p " *^;+" code))
                 (forward-line 1)
               (pyim-delete-line))))
 
@@ -361,36 +361,6 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
     (when (> (length insert-string) 1)
       (insert insert-string))))
 
-;;                          (("a" "b")
-;;                           ("b" "c")
-;; ("a" "b" "c" "d" "e") ->  ("c" "d")
-;;                           ("d" "e")
-;;                           ("e" nil))
-(defun pyim-guessdict-list-convert (my-list)
-  (cond
-   ((null my-list) nil)
-   ((atom my-list) (list my-list))
-   (t (append (list (list (car my-list) (car (cdr my-list))))
-              (pyim-guessdict-list-convert (cdr my-list))))))
-
-;;                      你好 天空
-;; "你好 天空 大地" ->  天空 大地
-;;                      大地
-(defun pyim-convert-current-line-to-guessdict-format ()
-  (interactive)
-  (let* ((string (mapconcat
-                  #'(lambda (x)
-                      (let ((pinyin-list (pyim-hanzi2pinyin
-                                          (car x) nil "-" t)))
-                        (mapconcat
-                         #'(lambda (pinyin)
-                             (concat pinyin "  " (mapconcat #'identity x " ")))
-                         pinyin-list "\n")))
-                  (pyim-guessdict-list-convert (pyim-line-content nil t))
-                  "\n")))
-    (delete-region (line-beginning-position) (line-end-position))
-    (insert string)))
-
 ;;;###autoload
 (defun pyim-article2dict-chars ()
   "将一篇中文文章转换为 Chinese-pyim 可以识别的拼音词库。
@@ -431,22 +401,6 @@ BUG: 当 `string' 中包含其它标点符号，并且设置 `separator' 时，�
   (interactive)
   (pyim-article2dict 'misspell-words))
 
-;;;###autoload
-(defun pyim-article2dict-guessdict ()
-  "将一篇中文文章转换为 Chinese-pyim 可以识别的 guessdict。
-
-Guessdict 词库是 Chinese-pyim 用于词语联想的一种词库，其结构与普通词库
-类似，唯一不同的是，guessdict 词库的 code 是中文，而不是拼音，例如：
-
-   我爱 北京 美女 旅游
-   我们 去哪 去看海
-
-Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的词条。当用户输入
-前一次输入：我爱，再输入拼音 lv 时，Chinese-pyim 会匹配词条： 旅游。这样就
-可以降低用户翻页的频率不同。"
-  (interactive)
-  (pyim-article2dict 'guessdict))
-
 (defun pyim-article2dict (object)
   "将一篇中文文章转换为 Chinese-pyim 可以识别的拼音词库。
 其步骤为：
@@ -467,7 +421,6 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
    1. `pyim-article2dict-chars'
    2. `pyim-article2dict-words'
    3. `pyim-article2dict-misspell-words'
-   3. `pyim-article2dict-guessdict'
 4. 保存文件
 
 另外，使用分词工具的目的是确保中文词语与词语之间用 *空格* 强制隔开。比如：
@@ -525,8 +478,7 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
                (goto-char (point-min))
                ;; 删除大于4个字符的中文字符串，没什么用处。
                (while (re-search-forward "\\cc\\{5,\\}" nil t)
-                 (replace-match "\n")))
-              ((eq object 'guessdict) t))
+                 (replace-match "\n"))))
         ;; 删除多余空白行。
         (goto-char (point-min))
         (while (re-search-forward "\n+" nil t)
@@ -537,9 +489,7 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
         ;; 为每一行的词条添加拼音code
         (goto-char (point-min))
         (while (not (eobp))
-          (if (eq object 'guessdict)
-              (pyim-convert-current-line-to-guessdict-format)
-            (pyim-convert-current-line-to-dict-format))
+          (pyim-convert-current-line-to-dict-format)
           (forward-line 1))
         (pyim-article2dict-write-stage-file file "ConvertStage-" t)
         ;; 将文件按行排序，并删除重复的词条，运行两次。
@@ -597,10 +547,15 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
           (insert "拼音词库是 Chinese-pyim 使用顺手与否的关键。根据经验估计：
 
 1. 当词库词条超过100万时 (词库文件>20M)，Chinese-pyim 选词频率大大降低。
-2. 当词库词条超过100万时，Chinese-pyim 中文输入体验可以达到搜狗输入法的80%。
+2. 当词库词条超过100万时，Chinese-pyim 中文输入体验可以达到搜狗输入法的 80%。
 
-想快速体验 Chinese-pyim 输入法的用户可以使用词库导入命令下载安装样例词库
-或者导入搜狗输入法词库。
+想快速体验 Chinese-pyim 输入法的用户, 可以使用 chinese-pyim-basedict：
+
+     (require 'chinese-pyim-basedict)
+     (chinese-pyim-basedict-enable)
+
+如果用户的计算机性能比较好，建议从 Melpa 安装 chinese-pyim-greatdict 包,
+这个词库包有 300 多万词条，是一个 *大而全* 的词库。
 
 喜欢折腾的用户可以从下面几个途径获得 Chinese-pyim 更详细的信息。
 1. 使用 `C-h v pyim-dicts' 了解 `Chinese-pyim' 词库文件格式。
@@ -752,14 +707,11 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
       (setq coding (completing-read "词库文件编码: "
                                     '("utf-8-unix" "cjk-dos" "gb18030-dos")
                                     nil t nil nil "utf-8-unix"))
-      (setq dict-type (completing-read "词库类型: "
-                                       '("pinyin-dict" "guess-dict")
-                                       nil t nil nil "pinyin-dict"))
       (setq first-used  (yes-or-no-p "是否让 Chinese-pyim 优先使用词库？ "))
       (setq dict `(:name ,name
                          :file ,file
                          :coding ,(intern coding)
-                         :dict-type ,(intern dict-type)))
+                         :dict-type pinyin-dict))
       (if first-used
           (add-to-list 'pyim-dicts dict)
         (add-to-list 'pyim-dicts dict t))
@@ -772,11 +724,11 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
   (interactive)
   (when (equal (buffer-name) pyim-dicts-manager-buffer-name)
     (let ((dict-name "BigDict-01")
-          (dict-url "http://tumashu.github.io/chinese-pyim-bigdict/pyim-bigdict.pyim")
+          (dict-url "http://tumashu.github.io/chinese-pyim-bigdict/pyim-bigdict.pyim.gz")
           (dict-file (expand-file-name
                       (concat (file-name-as-directory
                                pyim-dicts-directory)
-                              "pyim-bigdict.pyim"))))
+                              "pyim-bigdict.pyim.gz"))))
       (when (yes-or-no-p (format "从网址 (%s) 下载安装样例词库？ " dict-url))
         (unless (file-exists-p dict-file)
           (url-copy-file dict-url dict-file))
@@ -865,6 +817,81 @@ Guessdict 用来保存，一个中文词条（code）后面经常跟随出现的
     (switch-to-buffer buffer)
     (pyim-dicts-manager-mode)
     (setq truncate-lines t)))
+
+(defun pyim-extra-dicts-add-dict (new-dict)
+  "添加 `new-dict' 到 `pyim-dicts', 其中 `new-dict' 的格式为：
+
+   (:name \"XXX\" :file \"/path/to/XXX.pyim\"
+    :coding utf-8-unix :dict-type pinyin-dict)
+
+这个函数用于制作 elpa 格式的词库 ，不建议普通用户使用。"
+  (let (replace result)
+    (dolist (dict pyim-extra-dicts)
+      (if (equal (plist-get dict :name)
+                 (plist-get new-dict :name))
+          (progn (push new-dict result)
+                 (setq replace t))
+        (push dict result)))
+    (setq result (reverse result))
+    (setq pyim-extra-dicts
+          (if replace result `(,@result ,new-dict)))
+    (message "Add Chinese-pyim dict %S to `pyim-extra-dicts'。" (plist-get new-dict :name))
+    t))
+
+(defun pyim-contribute-words ()
+  (interactive)
+  (if (not (pyim-get-buffer 'property-file))
+      (message "请启动 Chinese-pyim 后再运行 `pyim-contribute-words' 命令。")
+    (when (yes-or-no-p "您你打算为 Chinese-pyim 贡献词条吗？ ")
+      (let* ((cache (buffer-local-value
+                     'pyim-dict-cache
+                     (get-buffer (pyim-get-buffer 'property-file))))
+             (author (read-from-minibuffer "请输入您的名字： " user-full-name))
+             (email (read-from-minibuffer "请输入您的电子邮件： " user-mail-address))
+             (license (read-from-minibuffer "请输入提交词库使用的 license ：" "GPLv2"))
+             (buffer (get-buffer-create "*pyim-contribute-words*"))
+             (dicts-string (with-temp-buffer
+                             (goto-char (point-min))
+                             (maphash
+                              #'(lambda (key value)
+                                  (insert key "\n"))
+                              cache)
+                             (goto-char (point-min))
+                             (while (not (eobp))
+                               (pyim-convert-current-line-to-dict-format)
+                               (forward-line 1))
+                             (pyim-update-dict-file t t)
+                             (pyim-update-dict-file t t)
+                             (buffer-string))))
+        (with-current-buffer buffer
+          (when (featurep 'org)
+            (org-mode))
+          (setq truncate-lines t)
+          (erase-buffer)
+          (goto-char (point-min))
+          (insert
+           "
+# ---------------------------------------------------------------------------
+# 请将 buffer 的内容通过下面 *任意一个* 方式：
+#
+# 1. QQ (329985753)
+# 2. QQ群 (59134186)
+# 3. Email (tumashu@163.com)
+# 4. Github Issue (https://github.com/tumashu/chinese-pyim-basedict/issues)
+#
+# 发送给 Chinese-pyim 的维护者：Feng Shu
+# ---------------------------------------------------------------------------
+
+")
+          (insert (format "#+Author: %s\n" author))
+          (insert (format "#+Email: %s\n" email))
+          (insert (format "#+License: %s\n" license))
+          (insert "\n")
+          (insert "#+BEGIN_COMMENT\n")
+          (insert dicts-string)
+          (insert "\n#+END_COMMENT")
+          (goto-char (point-min)))
+        (pop-to-buffer buffer)))))
 ;; #+END_SRC
 
 ;; ** TODO 词库 package 制作工具

@@ -6,7 +6,7 @@
 ;; Author: Feng Shu <tumashu@163.com>
 ;; URL: https://github.com/tumashu/chinese-pyim
 ;; Version: 0.0.1
-;; Package-Requires: ((cl-lib "0.5") (pos-tip "0.4") (popup "0.1"))
+;; Package-Requires: ((cl-lib "0.5") (pos-tip "0.4") (popup "0.1") (async "1.6") (chinese-pyim-basedict "0.1"))
 ;; Keywords: convenience, Chinese, pinyin, input-method
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -69,10 +69,11 @@
 ;; 1. 配置melpa源，参考：http://melpa.org/#/getting-started
 ;; 2. M-x package-install RET chinese-pyim RET
 ;; 3. 在emacs配置文件中（比如: ~/.emacs）添加如下代码：
-
-;; #+BEGIN_EXAMPLE
-;; (require 'chinese-pyim)
-;; #+END_EXAMPLE
+;;    #+BEGIN_EXAMPLE
+;;    (require 'chinese-pyim)
+;;    (require 'chinese-pyim-basedict)
+;;    (chinese-pyim-basedict-enable)
+;;    #+END_EXAMPLE
 
 ;; ** 配置
 
@@ -81,13 +82,40 @@
 ;; 大体了解一下 Chinese-pyim 的用法：[[https://github.com/tumashu/emacs-helper/blob/master/eh-basic.el][Tumashu's emacs configure]] 。
 
 ;; *** 添加词库文件
-;; 用户可以使用三种方法为 Chinese-pyim 添加拼音词库，具体方式请参考 [[如何添加自定义拼音词库]] 小结。
+;; Chinese-pyim 当前的默认词库是 chinese-pyim-basedict, 这个词库的词条量
+;; 8 万左右，是一个 *非常小* 得词库，词条的来源有两个：
 
-;; 注意：每一个词库文件必须按行排序（准确的说，是按每一行的拼音code排序），
-;; 因为`Chinese-pyim' 寻找词条时，使用二分法来优化速度，而二分法工作的前提
-;; 就是对文件按行排序。具体细节请参考：`pyim-bisearch-word' 。
-;; 当发现词库排序不正确时（比如：用户手动调整词库文件后），记得运行函数
-;; `pyim-update-dict-file' 重新对文件排序。
+;; 1. libpinyin 项目的内置词库
+;; 2. chinese-pyim 用户贡献的个人词库
+
+;; 注意： 这个词库只能确保 Chinese-pyim 可以正常工作，如果用户想让
+;; chinese-pyim 更加顺手，需要添加附加的词库，一个比较好的选择是安装
+;; chinese-pyim-greatdict:
+
+;;   https://github.com/tumashu/chinese-pyim-greatdict
+
+;; Chinese-pyim-greatdict 包对应的词库由 [[https://github.com/xiaowl][WenLiang Xiao]] 同学开发制作，
+;; 词条有 300 万条，词库文件大约 80M, 是一个 *大而全* 的词库，
+;; 用户可以通过 Melpa 来安装它：
+
+;; 1. 配置melpa源，参考：http://melpa.org/#/getting-started
+;; 2. M-x package-install RET chinese-pyim-greatdict RET
+;; 3. 在emacs配置文件中（比如: ~/.emacs）添加如下代码：
+
+;;    #+BEGIN_EXAMPLE
+;;    (require 'chinese-pyim-greatdict)
+;;    (chinese-pyim-greatdict-enable)
+;;    #+END_EXAMPLE
+
+;; 但值得注意的是：
+
+;; 1. 如果机器性能不好，安装 chinese-pyim-greatdict 会导致 chinese-pyim 启动
+;;    非常缓慢，请仔细考虑。
+;; 2. 这个词库使用 gzip 压缩，非 Linux 用户需要安装 [[http://www.gzip.org/][gzip]] 程序，
+;;    并配置好系统 PATH 。
+
+;; 如果 chinese-pyim-greatdict 不能满足需求，用户可以使用其他方式为 Chinese-pyim 添加拼音词库，
+;; 具体方式请参考 [[如何添加自定义拼音词库]] 小结。
 
 ;; *** 激活 Chinese-pyim
 
@@ -98,17 +126,20 @@
 
 ;; ** 使用
 ;; *** 常用快捷键
-;; | 输入法快捷键    | 功能                       |
-;; |-----------------+----------------------------|
-;; | C-n 或 M-n 或 + | 向下翻页                   |
-;; | C-p 或 M-p 或 - | 向上翻页                   |
-;; | C-f             | 选择下一个备选词           |
-;; | C-b             | 选择上一个备选词           |
-;; | SPC             | 确定输入                   |
-;; | RET 或 C-m      | 字母上屏                   |
-;; | C-c             | 取消输入                   |
-;; | C-g             | 取消输入并保留已输入的中文 |
-;; | TAB             | 模糊音调整                 |
+;; | 输入法快捷键          | 功能                       |
+;; |-----------------------+----------------------------|
+;; | C-n 或 M-n 或 +       | 向下翻页                   |
+;; | C-p 或 M-p 或 -       | 向上翻页                   |
+;; | C-f                   | 选择下一个备选词           |
+;; | C-b                   | 选择上一个备选词           |
+;; | SPC                   | 确定输入                   |
+;; | RET 或 C-m            | 字母上屏                   |
+;; | C-c                   | 取消输入                   |
+;; | C-g                   | 取消输入并保留已输入的中文 |
+;; | TAB                   | 模糊音调整                 |
+;; | DEL 或 BACKSPACE      | 删除最后一个字符           |
+;; | C-DEL 或  C-BACKSPACE | 删除最后一个拼音           |
+;; | M-DEL 或  M-BACKSPACE | 删除最后一个拼音           |
 
 ;; *** 使用双拼模式
 ;; Chinese-pyim 支持双拼模式，用户可以通过变量 `pyim-default-pinyin-scheme' 来设定当前使用的
@@ -158,32 +189,16 @@
 ;; 可以通过设置 `pyim-fuzzy-pinyin-alist' 变量来自定义模糊音。
 
 ;; *** 词语联想
-;; Chinese-pyim *内置* 了5种词语联想方式：
+;; Chinese-pyim *内置* 了几种词语联想方式：
 
-;; 1. `pinyin-similar' 搜索拼音类似的词条做为联想词，
-;;     如果输入 "ni-hao" ，那么搜索拼音与 "ni-hao" 类似的词条
-;;     （比如："ni-hao-a"）作为联想词。
-;; 2. `pinyin-shouzimu' 搜索拼音首字母对应的词条做为联想词，
+;; 1. `pinyin-shouzimu' 搜索拼音首字母对应的词条做为联想词，
 ;;     如果输入 "ni-hao" ，那么同时搜索 code 为 "n-h" 的词条做为联想词。
-;; 3. `pinyin-znabc' 类似智能ABC的词语联想(源于 emacs-eim)。
-;; 4. `guess-words' 以上次输入的词条为 code，然后在 guessdict 中搜索，
-;;     用搜索得到的词条来提高输入法识别精度。
-
-;;     注意：这个方法需要用户安装 guessdict 词库，guessdict 词库文件可以
-;;     用 `pyim-article2dict-guessdict' 命令生成，不想折腾的用户也可以从
-;;     下面的地址下载样例词库：(注意：请使用另存为，不要直接点击链接)。
-
-;;     http://tumashu.github.io/chinese-pyim-guessdict/pyim-guessdict.gpyim
-
-;; 5. `dabbrev'  搜索当前 buffer, 或者其他 buffer 中已经存在的中文文本，得到匹配的
-;;    候选词，通过这些候选词来提高输入法的识别精度。
-
-;;    注意: 如果 emacs 打开的 buffer 太多或者太大, 输入法 *可能* 出现卡顿。
+;; 2. `pinyin-znabc' 类似智能ABC的词语联想(源于 emacs-eim)。
 
 ;; Chinese-pyim 默认开启了词语联想功能，但用户可以通过下面的代码来调整设置，比如：
 
 ;; #+BEGIN_EXAMPLE
-;; (setq pyim-enable-words-predict '(dabbrev pinyin-similar pinyin-shouzimu guess-words))
+;; (setq pyim-enable-words-predict '(pinyin-shouzimu pinyin-znabc))
 ;; #+END_EXAMPLE
 
 ;; 开启词语联想功能有时候会导致输入法卡顿，用户可以通过下面的方式关闭：
@@ -208,7 +223,9 @@
 ;;    字字符组成字符串，并将其加入个人词库。
 ;; 3. `pyim-translate-trigger-char' 以默认设置为例：在“我爱吃红烧肉”后输
 ;;    入“5v” 可以将“爱吃红烧肉”这个词条保存到用户个人词频文件。
-;; 4. `pyim-delete-word-from-personal-buffer' 从个人词频文件对应的 buffer
+;; 4. `pyim-create-word-from-selection', 选择一个词条，运行这个命令后，就
+;;    可以将这个词条添加到个人文件。
+;; 5. `pyim-delete-word-from-personal-buffer' 从个人词频文件对应的 buffer
 ;;    中删除当前高亮选择的词条。
 
 ;; *** Chinese-pyim 高级功能
@@ -272,6 +289,12 @@
 
 ;; ** Tips
 
+;; *** 如何为 Chinese-pyim 贡献词条
+
+;; #+BEGIN_EXAMPLE
+;; M-x: pyim-contribute-words
+;; #+END_EXAMPLE
+
 ;; *** Chinese-pyim 出现错误时，如何开启 debug 模式
 
 ;; #+BEGIN_EXAMPLE
@@ -296,16 +319,15 @@
 ;; #+END_EXAMPLE
 
 ;; *** 如何添加自定义拼音词库
-;; Chinese-pyim 默认没有携带任何拼音词库，用户可以使用下面四种方式，获取
+;; Chinese-pyim 默认没有携带任何拼音词库，用户可以使用下面五种方式，获取
 ;; 质量较好的拼音词库：
 
 ;; **** 第一种方式 (懒人推荐使用)
 
 ;; 获取其他 Chinese-pyim 用户的拼音词库，比如，某个同学测试 Chinese-pyim
-;; 时创建了一个中文拼音词库，词条数量大约60万，文件大约20M，(注意：请使用
-;; 另存为，不要直接点击链接)。
+;; 时创建了一个中文拼音词库，词条数量大约60万。
 
-;;    http://tumashu.github.io/chinese-pyim-bigdict/pyim-bigdict.pyim
+;;    http://tumashu.github.io/chinese-pyim-bigdict/pyim-bigdict.pyim.gz
 
 ;; 下载上述词库后，运行 `pyim-dicts-manager' ，按照命令提示，将下载得到的词库
 ;; 文件信息添加到 `pyim-dicts' 中，最后运行命令 `pyim-restart' 或者重启
@@ -362,7 +384,6 @@
 ;; 2. `pyim-article2dict-words' 将文章中中文词语转换为拼音词库。
 ;; 3. `pyim-article2dict-misspell-words' 将文章中连续的游离词组成字符串后，
 ;;    转换为拼音词库。
-;; 4. `pyim-article2dict-guessdict' 将文章中词条转换为 guessdict词库。
 
 ;; 注意：在运行上述两个命令之前，必须确保待转换的文章中，中文词汇已经使用
 ;; *空格* 强制隔开。
@@ -379,8 +400,8 @@
 
 ;; #+BEGIN_EXAMPLE
 ;; (setq pyim-dicts
-;;       '((:name "dict1" :file "/path/to/pyim-dict1.pyim" :coding gbk-dos :dict-type pinyin-dict)
-;;         (:name "dict2" :file "/path/to/pyim-dict2.pyim" :coding gbk-dos :dict-type pinyin-dict)))
+;;       '((:name "dict1" :file "/path/to/pyim-dict1.pyim" :coding utf-8-unix :dict-type pinyin-dict)
+;;         (:name "dict2" :file "/path/to/pyim-dict2.pyim" :coding utf-8-unix :dict-type pinyin-dict)))
 ;; #+END_EXAMPLE
 
 ;; 注意事项:
@@ -411,7 +432,7 @@
 ;;   (interactive)
 ;;   (setq pyim-dicts
 ;;         '((:name "BigDict"
-;;                  :file "/path/to/pyim-bigdict.pyim"
+;;                  :file "/path/to/pyim-bigdict.pyim.gz"
 ;;                  :coding utf-8-unix
 ;;                  :dict-type pinyin-dict)))
 ;;   (pyim-restart-1 t))

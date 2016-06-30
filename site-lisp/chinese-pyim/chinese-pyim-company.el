@@ -95,6 +95,42 @@
         (or (pyim-grab-chinese-word)
             (pyim-char-before-to-string 0)))
     (funcall orig-fun)))
+
+(defun pyim-grab-chinese-word (&optional backward-char-number return-possible-words)
+  "获取光标处一个 *有效的* 中文词语，较长的词语优先。"
+  (unless (featurep 'chinese-pyim-utils)
+    (require 'chinese-pyim-utils))
+  (let* ((backward-char-number (or backward-char-number 0))
+         (string (replace-regexp-in-string
+                  ".*\\CC" ""
+                  (buffer-substring
+                   (save-excursion
+                     ;; 在输入中文的时候，`pyim-current-str' 也会
+                     ;; 插入到光标处，跳过。。。
+                     (backward-char backward-char-number)
+                     (point))
+                   (save-excursion
+                     (backward-char backward-char-number)
+                     (skip-syntax-backward "w")
+                     (point)))))
+         (string
+          ;; 我们先提取一个中文字符串，然后将这个字符串分词，得到所需词语。
+          ;; 因为长字符串分词消耗的时间较长，影响输入法响应速度，所以这里限制
+          ;; 字符串长度为6，经验数值。
+          (if (> (length string) 6)
+              (substring string -6)
+            string))
+         (length (length string)))
+    (if return-possible-words
+        (when (stringp string)
+          (let (results)
+            (dotimes (i length)
+              (push (substring string i) results))
+            results))
+      (cl-some #'(lambda (x)
+                   (if (= (nth 2 x) (+ 1 length))
+                       (car x)))
+               (nreverse (pyim-split-chinese-string string))))))
 ;; #+END_SRC
 
 ;; ** 让 pyim-company-dabbrev--make-regexp 生成合适中文搜索的 regexp

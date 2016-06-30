@@ -451,54 +451,47 @@
     ("zun" "尊遵樽鳟撙")
     ("zuo" "作做坐座左昨琢佐凿撮柞嘬怍胙唑笮阼祚酢")))
 
-(defvar pyim-pinyin2cchar-cache nil)
+(defvar pyim-pinyin2cchar-cache1 nil)
+(defvar pyim-pinyin2cchar-cache2 nil)
+(defvar pyim-pinyin2cchar-cache3 nil)
 (defvar pyim-cchar2pinyin-cache nil)
 
-(defun pyim-pinyin2cchar-create-cache (&optional force)
+(defun pyim-pinyin2cchar-cache-create (&optional force)
   "构建 pinyin 到 chinese char 的缓存，用于加快搜索速度，这个函数
 将缓存保存到 `pyim-pinyin2cchar-cache' 变量中，
 如果 force 设置为 t, 强制更新索引。"
-  (when (or force (not pyim-pinyin2cchar-cache))
-    (let ((index '("a" "ba" "ca" "da" "e" "fa" "ga"
-                   "ha" "ji" "ka" "la" "m" "n"
-                   "o" "pa" "qi" "ran" "sa" "ta"
-                   "wa" "xi" "ya" "za"))
-          (n 0) results)
-      (dolist (py pyim-pinyin-pymap)
-        (when (member (car py) index)
-          (push (cons (substring (car py) 0 1) n) results))
-        (setq n (+ n 1)))
-      (setq pyim-pinyin2cchar-cache
-            (reverse results)))))
+  (when (or force (or (not pyim-pinyin2cchar-cache1)
+                      (not pyim-pinyin2cchar-cache2)))
+    (setq pyim-pinyin2cchar-cache1
+          (make-hash-table :size 50000 :test #'equal))
+    (setq pyim-pinyin2cchar-cache2
+          (make-hash-table :size 50000 :test #'equal))
+    (setq pyim-pinyin2cchar-cache3
+          (make-hash-table :size 50000 :test #'equal))
+    (dolist (x pyim-pinyin-pymap)
+      (let* ((py (car x))
+             (cchars (cdr x))
+             (n (min (length py) 7)))
+        (puthash py cchars pyim-pinyin2cchar-cache1)
+        (puthash py (cdr (split-string (car cchars) ""))
+                 pyim-pinyin2cchar-cache2)
+        (dotimes (i n)
+          (let* ((key (substring py 0 (+ i 1)))
+                 (orig-value (gethash key pyim-pinyin2cchar-cache3)))
+            (puthash key (delete-dups `(,@orig-value ,@cchars))
+                     pyim-pinyin2cchar-cache3)))))))
 
-(defun pyim-pinyin2cchar-get (pinyin &optional equal-match sort)
+(defun pyim-pinyin2cchar-get (pinyin &optional equal-match return-list)
   "获取拼音与 `pinyin' 想匹配的所有汉字，比如：
 
-“man” -> (\"忙茫盲芒氓莽蟒邙漭硭\" \"满慢漫曼蛮馒瞒蔓颟谩墁幔螨鞔鳗缦熳镘\")
-
-如果 `sort' 设置为 t, 则对结果按照字母顺序排序。"
-  (pyim-pinyin2cchar-create-cache)
-  (let* ((pymap pyim-pinyin-pymap)
-         (length (length pymap))
-         (beg (substring pinyin 0 1))
-         (end (char-to-string (+ 1 (string-to-char beg))))
-         (beg-index (cdr (assoc beg pyim-pinyin2cchar-cache)))
-         (end-index (cdr (assoc end pyim-pinyin2cchar-cache)))
-         (n (or beg-index 0))
-         results)
-    (while n
-      (let ((element (nth n pymap)))
-        (when (if equal-match
-                  (equal pinyin (car element))
-                (pyim-string-match-p
-                 (concat "^" pinyin) (car element)))
-          (push (car (cdr element)) results)))
-      (setq n (+ 1 n))
-      (when (> n (or end-index (- length 1)))
-        (setq n nil)))
-    (if sort
-        (nreverse results)
-      results)))
+“man” -> (\"忙茫盲芒氓莽蟒邙漭硭\" \"满慢漫曼蛮馒瞒蔓颟谩墁幔螨鞔鳗缦熳镘\")"
+  (pyim-pinyin2cchar-cache-create)
+  (when (and pinyin (stringp pinyin))
+    (if equal-match
+        (if return-list
+            (gethash pinyin pyim-pinyin2cchar-cache2)
+          (gethash pinyin pyim-pinyin2cchar-cache1))
+      (gethash pinyin pyim-pinyin2cchar-cache3))))
 
 ;; #+END_SRC
 
@@ -530,14 +523,14 @@
 ;; #+BEGIN_SRC emacs-lisp
 (defun pyim-cchar2pinyin-get (char-or-str)
   "Get the code of the character CHAR"
-  (pyim-cchar2pinyin-create-cache)
+  (pyim-cchar2pinyin-cache-create)
   (let ((key (if (characterp char-or-str)
                  (char-to-string char-or-str)
                char-or-str)))
     (when (= (length key) 1)
       (gethash key pyim-cchar2pinyin-cache))))
 
-(defun pyim-cchar2pinyin-create-cache (&optional force)
+(defun pyim-cchar2pinyin-cache-create (&optional force)
   "Build pinyin cchar to pinyin hashtable from `pyim-pinyin-pymap'
 in package `chinese-pyim-pymap'"
   (when (or force (not pyim-cchar2pinyin-cache))
