@@ -1,10 +1,11 @@
 (defun gtags-ext-produce-tags-if-needed (dir)
    (if (not (= 0 (call-process "global" nil nil nil " -p"))) ; tagfile doesn't exist?
       (let ((default-directory dir))
-        (shell-command "gtags && echo 'created tagfile'"))
+        (shell-command "gtags")
+        (message "tagfile created by GNU Global"))
     ;;  tagfile already exists; update it
-    (shell-command "global -u && echo 'updated tagfile'"))
-  )
+    (shell-command "global -u")
+    (message "tagfile updated by GNU Global")))
 
 ;; @see http://emacs-fu.blogspot.com.au/2008/01/navigating-through-source-code-using.html
 (defun gtags-ext-create-or-update ()
@@ -20,7 +21,8 @@
   (if (not (file-exists-p (concat (file-name-as-directory libdir) "GTAGS")))
       ;; create tags
       (let ((default-directory libdir))
-        (shell-command "gtags && echo 'created tagfile'")))
+        (shell-command "gtags")
+        (message "tagfile created by GNU Global")))
 
   (setq libdir (directory-file-name libdir)) ;remove final slash
   (setq sl (split-string (if (getenv "GTAGSLIBPATH") (getenv "GTAGSLIBPATH") "")  ":" t))
