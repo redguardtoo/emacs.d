@@ -423,10 +423,15 @@ See \"Reusing passwords for several connections\" from INFO.
                         "/GTAGS$"
                         "/GRAGS$"
                         "/GPATH$"
+                        ;; binary
                         "\\.mkv$"
                         "\\.mp[34]$"
                         "\\.avi$"
                         "\\.pdf$"
+                        ;; sub-titles
+                        "\\.sub$"
+                        "\\.srt$"
+                        "\\.ass$"
                         ;; ~/.emacs.d/**/*.el included
                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
                         ))
