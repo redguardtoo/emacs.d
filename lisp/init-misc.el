@@ -170,7 +170,7 @@
   (interactive)
   (dictionary-new-search (cons (if (region-active-p)
                                    (buffer-substring-no-properties (region-beginning) (region-end))
-                                 (thing-at-point 'symbol)) dictionary-default-dictionary)))
+                                 (read-string "Input word for dict.org:")) dictionary-default-dictionary)))
 
 ;; }}
 

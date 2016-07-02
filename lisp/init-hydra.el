@@ -26,6 +26,9 @@
   ("q" nil "Bye"))
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+(defun org-mode-hook-hydra-setup ()
+  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
+(add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
 ;; {{ mail
 ;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
@@ -95,9 +98,9 @@
        ("cc" message-send-and-exit "Send C-c C-c")
        ("q" nil "Bye"))))
 
-(defun message-mode-hook-setup ()
+(defun message-mode-hook-hydra-setup ()
   (local-set-key (kbd "C-c C-y") 'hydra-message/body))
-(add-hook 'message-mode-hook 'message-mode-hook-setup)
+(add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
 ;; }}
 
 ;; dired
@@ -115,9 +118,9 @@
        ("mv" diredp-do-move-recursive "mv")
        ("mk" dired-create-directory "mkdir")
        ("q" nil "Bye"))))
-(defun dired-mode-hook-setup ()
+(defun dired-mode-hook-hydra-setup ()
   (local-set-key (kbd "y") 'hydra-dired/body))
-(add-hook 'dired-mode-hook 'dired-mode-hook-setup)
+(add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
 

@@ -8,7 +8,8 @@ But you may use safer HTTPS instead.")
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
-  '(bbdb
+  '(ace-mc
+    bbdb
     color-theme
     wgrep
     robe

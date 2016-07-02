@@ -23,6 +23,19 @@
 ;; here is the workaround
 (setq evil-default-cursor t)
 
+;; {{ multiple-cursors
+;; step 1, select thing in visual-mode
+;; step 2, `mc/mark-all-like-this' or `mc/mark-all-like-this-in-defun'
+;; step 3, `ace-mc-add-multiple-cursors' to remove cursor, press RET to confirm
+;; step 4, press s or S to start replace
+;; step 5, press C-g to quit multiple-cursors
+(define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
+(define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
+(define-key evil-visual-state-map (kbd "md") 'mc/mark-all-like-this-in-defun)
+(define-key evil-visual-state-map (kbd "mm") 'ace-mc-add-multiple-cursors)
+(define-key evil-visual-state-map (kbd "ms") 'ace-mc-add-single-cursor)
+;; }}
+
 ;; enable evil-mode
 (evil-mode 1)
 
