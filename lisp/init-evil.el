@@ -667,7 +667,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun my-cc-isearch-string ()
   (interactive)
   (if (and isearch-string (> (length isearch-string) 0))
-      (copy-yank-str isearch-string)))
+      ;; NOT pollute clipboard who has things to paste into Emacs
+      (kill-new isearch-string)))
 
 (defadvice evil-search-incrementally (after evil-search-incrementally-after-hack activate)
   (my-cc-isearch-string))
