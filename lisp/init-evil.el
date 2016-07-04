@@ -424,6 +424,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gm" 'counsel-git-find-my-file
        "gs" 'ffip-show-diff ; find-file-in-project 5.0+
        "sf" 'counsel-git-show-file
+       "sh" 'my-select-from-search-text-history
        "df" 'counsel-git-diff-file
        "rjs" 'run-js
        "jsr" 'js-send-region
@@ -662,13 +663,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "mp" '(lambda () (interactive) (mpc-next-prev-song t)))
 ;; }}
 
-;; {{ copy evil search text to clipboard/kill-ring, inspired from:
+;; {{ remember what we searched
 ;; http://emacs.stackexchange.com/questions/24099/how-to-yank-text-to-search-command-after-in-evil-mode/
+(defvar my-search-text-history nil "List of text I searched.")
+(defun my-select-from-search-text-history ()
+  (interactive)
+  (ivy-read "Search text history:" my-search-text-history
+            :action (lambda (item)
+                      (copy-yank-str item)
+                      (message "%s => clipboard & yank ring" item))))
 (defun my-cc-isearch-string ()
   (interactive)
   (if (and isearch-string (> (length isearch-string) 0))
       ;; NOT pollute clipboard who has things to paste into Emacs
-      (kill-new isearch-string)))
+      (add-to-list 'my-search-text-history isearch-string)))
 
 (defadvice evil-search-incrementally (after evil-search-incrementally-after-hack activate)
   (my-cc-isearch-string))
