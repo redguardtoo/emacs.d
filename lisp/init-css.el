@@ -13,15 +13,18 @@
   (save-excursion
     (imenu--generic-function '((nil "^ *\\([^ ]+\\) *{ *$" 1)
                                ))))
-(add-hook 'css-mode-hook
-          (lambda ()
-            (unless (is-buffer-file-temp)
-              (setq imenu-create-index-function 'my-css-imenu-make-index)
-              (maybe-flymake-css-load))))
 
-(add-hook 'scss-mode-hook
-          (lambda ()
-            (unless (is-buffer-file-temp)
-              (setq imenu-create-index-function 'my-css-imenu-make-index))))
+(defun css-mode-hook-setup ()
+  (unless (is-buffer-file-temp)
+    (setq imenu-create-index-function 'my-css-imenu-make-index)
+    (maybe-flymake-css-load)))
+(add-hook 'css-mode-hook 'css-mode-hook-setup)
+
+;; compile *.scss to *.css on the pot could break the project build
+(setq scss-compile-at-save nil)
+(defun scss-mode-hook-setup ()
+  (unless (is-buffer-file-temp)
+    (setq imenu-create-index-function 'my-css-imenu-make-index)))
+(add-hook 'scss-mode-hook 'scss-mode-hook-setup)
 
 (provide 'init-css)
