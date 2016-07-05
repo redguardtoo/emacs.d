@@ -49,6 +49,8 @@
     ;; (add-to-list 'flymake-allowed-file-name-masks
     ;;              '("\\.json\\'" flymake-javascript-init))
     (message "mo-js-mode-hook called")
+    (require 'js-comint)
+    (require 'js-doc)
     (flymake-mode 1)))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
@@ -254,9 +256,9 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
     (require 'js2-refactor)
+    (require 'js-doc)
     (js2-refactor-mode 1)
     (flymake-mode -1)
-    (require 'js-doc)
     (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
     (define-key js2-mode-map "@" 'js-doc-insert-tag)))
 
