@@ -704,4 +704,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
 
+;; {{ evil-exchange
+;; press gx twice to exchange, gX to cancel
+(require 'evil-exchange)
+;; change default key bindings (if you want) HERE
+;; (setq evil-exchange-key (kbd "zx"))
+(evil-exchange-install)
+;; }}
 (provide 'init-evil)
