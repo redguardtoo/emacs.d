@@ -17,6 +17,7 @@
 ;; below modes does NOT inherit from prog-mode
 (add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'web-mode-hook 'yasnippet-generic-setup-for-mode-hook)
+(add-hook 'scss-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'lua-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'js2-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'emacs-lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
