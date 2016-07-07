@@ -168,6 +168,32 @@
       (git-gutter:next-hunk arg))
     ))
 
+(defun my-reshape-git-gutter (gutter)
+  "Re-shape gutter for `ivy-read'."
+  (let* ((lineno (aref gutter 3))
+         line)
+    (save-excursion
+      (goto-line lineno)
+      (setq line (buffer-substring (line-beginning-position)
+                                   (line-end-position))))
+    ;; build (key . lineno)
+    (cons (format "%s %d: %s"
+                  (if (eq 'deleted (aref gutter 1)) "-" "+")
+                  lineno
+                  (replace-regexp-in-string "^[ \t]*" "" line))
+          lineno)))
+
+(defun my-goto-git-gutter ()
+  (interactive)
+  (if git-gutter:diffinfos
+      (let* ((collection (mapcar 'my-reshape-git-gutter
+                                 git-gutter:diffinfos)))
+        (ivy-read "git-gutters:"
+                  collection
+                  :action (lambda (lineno)
+                            (goto-line lineno))))
+    (message "NO git-gutters!")))
+
 (defun my-goto-previous-hunk (arg)
   (interactive "p")
   (if (memq major-mode '(diff-mode))
