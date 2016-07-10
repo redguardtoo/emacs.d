@@ -275,7 +275,7 @@ Type below command in shell:
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
 ** Government blocks the internet?
-People in China, North Korea, Cuba, Iran need [[http://code.google.com/p/goagent/][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
+You may need [[https://github.com/goagent/goagent][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
 ** Email
 If you use Gnus for email, check init-gnus.el and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** Cannot download ELPA packages?
@@ -308,7 +308,7 @@ In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/U
 
 ** Color theme
 *** Preview color theme
-Check [[http://emacsthemes.caisah.info/]].
+Check [[https://emacsthemes.com/]].
 
 Write down the name of color theme (for example, molokai).
 
