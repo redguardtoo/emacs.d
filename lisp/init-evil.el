@@ -569,6 +569,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "hh" 'cliphist-paste-item
        "yu" 'cliphist-select-item
        "ih" 'my-goto-git-gutter ; use ivy-mode
+       "ir" 'ivy-resume
        "nn" 'my-goto-next-hunk
        "pp" 'my-goto-previous-hunk
        "ww" 'narrow-or-widen-dwim

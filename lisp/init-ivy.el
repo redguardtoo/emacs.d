@@ -49,10 +49,10 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                                    t))
     (if filter (setq collection (funcall filter collection)))
 
-    (when (and collection (> (length collection) 0))
-      (setq val (if (= 1 (length collection)) (car collection)
-                    (ivy-read (if no-keyword hint (format "matching \"%s\":" keyword)) collection)))
-      (funcall fn open-another-window val))))
+    (ivy-read (if no-keyword hint (format "matching \"%s\":" keyword))
+              collection
+              :action (lambda (val)
+                        (funcall fn open-another-window val)))))
 
 (defun counsel--open-grepped-file (open-another-window val)
   (let* ((lst (split-string val ":"))
@@ -231,7 +231,7 @@ Or else, find files since 24 weeks (6 months) ago."
                           )))))
 
 (defun counsel-imenu-goto ()
-  "Go to buffer position"
+  "Imenu based on ivy-mode."
   (interactive)
   (unless (featurep 'imenu)
     (require 'imenu nil t))
