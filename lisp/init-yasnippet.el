@@ -18,11 +18,6 @@
 (add-hook 'cmake-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'web-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 (add-hook 'scss-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'lua-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'js2-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'emacs-lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'lisp-mode-hook 'yasnippet-generic-setup-for-mode-hook)
-(add-hook 'lisp-interaction-mode 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
   (interactive)
