@@ -3,4 +3,4 @@
 # key: lwf
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-console.log('${1:`(my-which-function)`} called => ', `(mapconcat (lambda (i) (format "'%s=', %s" i i)) (split-string (car kill-ring) ",[ \s\n]*") ", ")`);
+console.log('`(my-which-file)` ${1:`(my-which-function)`} called => ', `(mapconcat (lambda (i) (format "'%s=', %s" i i)) (split-string (car kill-ring) ",[ \s\n]*") ", ")`);
