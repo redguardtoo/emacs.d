@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2016 Chen Bin
 ;;
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Keywords: terminology org-mode markdown
 ;; Author: Chen Bin <chenin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/fastdef
@@ -48,17 +48,23 @@
 (require 'w3m)
 (require 'ivy)
 
+(defgroup fastdef nil
+  "Insert links from a search engine.")
+
 (defvar fastdef-text-template "[[%%url][%%term]]"
   "The text template to insert term.")
 
-(defvar fastdef-search-engine "http://www.google.com/search?q=%s"
-  "The search engine.  %s will be replaced with keyword.")
+(defcustom fastdef-search-engine "http://www.google.com/search?q=%s"
+  "The search engine.  %s will be replaced with keyword."
+  :type '(choice
+          (const :tag "Google" "http://www.google.com/search?q=%s")
+          (const :tag "DuckDuckGo HTML" "http://duckduckgo.com/html/?q=%s")))
 
 (defvar fastdef-regexp-extract-url "\?q=\\(http[^&]*\\)"
   "The regex to extract actual URL.
 Search engine place it in URL parameter.")
 
-(defvar fastdef-regexp-skip-header-links "About .* results"
+(defvar fastdef-regexp-skip-header-links "\\(About\\|Ongeveer\\) .* \\(results\\|resultaten\\)"
   "Regex to skip header links on search result page.")
 
 (defvar fastdef-urls-limit 10
@@ -80,8 +86,8 @@ Search engine place it in URL parameter.")
 (defun fastdef-get-text-with-same-font ()
   "Get text with the same font."
   (let ((pt (point))
-         (cff (get-text-property (point) 'face))
-         b e rlt)
+        (cff (get-text-property (point) 'face))
+        b e rlt)
     (setq b (1- pt))
     (setq e (1+ pt))
     (save-excursion
@@ -95,6 +101,16 @@ Search engine place it in URL parameter.")
       (setq rlt (buffer-substring b e)))
     rlt))
 
+(defun fastdef--insert-string (str)
+  ;; work around evil issue
+  (if (and (functionp 'evil-normal-state-p)
+           (functionp 'evil-move-cursor-back)
+           (evil-normal-state-p)
+           (not (eolp))
+           (not (eobp)))
+      (forward-char))
+  (insert str))
+
 (defun fastdef-w3m-fontify-after-hook-setup ()
   "Hookup after w3m buffer is fully rendered."
   (when fastdef-keyword
@@ -105,45 +121,45 @@ Search engine place it in URL parameter.")
           url-text
           faces)
       (goto-char (point-min))
-
       ;; skip the header links
-      (search-forward-regexp fastdef-regexp-skip-header-links)
-      ;; start searching ...
-      (while (and (w3m-next-anchor)
-                  (> cnt 0))
-        (when (and (setq faces (get-text-property (point) 'face))
-                   (listp faces)
-                   (memq 'w3m-anchor faces)
-                   (memq 'w3m-bold faces)
-                   (setq url-text (fastdef-get-text-with-same-font)))
-          (cond
-           ((string-match fastdef-regexp-extract-url (w3m-anchor))
-            (setq url (match-string 1 (w3m-anchor))))
-           (t
-            ;; If google does NOT escape original URL ....
-            (setq url (w3m-anchor))))
-          (setq cnt (1- cnt))
-          (add-to-list 'collection (format "%s => %s" url-text url) t)))
+      (when (or (re-search-forward fastdef-regexp-skip-header-links nil t)
+                ;; skip past the "Search" button
+                (re-search-forward "Search"))
+        ;; start searching ...
+        (while (and (w3m-next-anchor)
+                    (> cnt 0))
+          (when (and (setq faces (get-text-property (point) 'face))
+                     (listp faces)
+                     (memq 'w3m-anchor faces)
+                     (memq 'w3m-bold faces)
+                     (setq url-text (fastdef-get-text-with-same-font)))
+            (cond
+             ((string-match fastdef-regexp-extract-url (w3m-anchor))
+              (setq url (match-string 1 (w3m-anchor))))
+             (t
+              ;; If google does NOT escape original URL ....
+              (setq url (w3m-anchor))))
+            (setq cnt (1- cnt))
+            (add-to-list 'collection (format "%s => %s" url-text url) t)))
 
-      (ivy-read "URL(s):"
-                collection
-                :action (lambda (line)
-                          (let* ((url (nth 1 (split-string line " => ")))
-                                 rlt)
-                            ;; create content from text template
-                            (setq rlt (replace-regexp-in-string "%%url" url fastdef-text-template))
-                            (setq rlt (replace-regexp-in-string "%%term" fastdef-keyword rlt))
-                            ;; remember in history
-                            (add-to-list 'fastdef-history
-                                         (cons fastdef-keyword (list fastdef-keyword url))
-                                         t)
-                            ;; actually insert content
-                            (when fastdef-original-buffer
-                              (with-current-buffer fastdef-original-buffer
-                                (insert rlt)))
-                            )))
-      ;; done
-      (setq fastdef-keyword nil))))
+        (ivy-read "URL(s):"
+                  collection
+                  :action (lambda (line)
+                            (let* ((url (nth 1 (split-string line " => ")))
+                                   rlt)
+                              ;; create content from text template
+                              (setq rlt (replace-regexp-in-string "%%url" url fastdef-text-template))
+                              (setq rlt (replace-regexp-in-string "%%term" fastdef-keyword rlt))
+                              ;; remember in history
+                              (add-to-list 'fastdef-history
+                                           (cons fastdef-keyword (list fastdef-keyword url))
+                                           t)
+                              ;; actually insert content
+                              (when fastdef-original-buffer
+                                (with-current-buffer fastdef-original-buffer
+                                  (fastdef--insert-string rlt))))))
+        ;; done
+        (setq fastdef-keyword nil)))))
 
 (add-hook 'w3m-fontify-after-hook 'fastdef-w3m-fontify-after-hook-setup)
 
@@ -151,29 +167,30 @@ Search engine place it in URL parameter.")
 (defun fastdef-insert ()
   "Insert terminology with URL."
   (interactive)
-  (setq fastdef-original-buffer (current-buffer))
-  (save-window-excursion
-    (setq fastdef-keyword (read-string "Enter terminology:"))
-    (if fastdef-w3m-buffer
+  (let ((w3m-confirm-leaving-secure-page nil))
+    (setq fastdef-original-buffer (current-buffer))
+    (save-window-excursion
+      (setq fastdef-keyword (read-string "Enter terminology:"))
+      (when (buffer-live-p fastdef-w3m-buffer)
         (w3m-process-stop fastdef-w3m-buffer))
-    (w3m-goto-url (format fastdef-search-engine
-                          (w3m-url-encode-string fastdef-keyword)))
-    (setq fastdef-w3m-buffer (current-buffer))))
+      (w3m-goto-url (format fastdef-search-engine
+                            (w3m-url-encode-string fastdef-keyword)))
+      (setq fastdef-w3m-buffer (current-buffer)))))
 
 ;;;###autoload
-(defun fastdef-insert-from-history()
+(defun fastdef-insert-from-history ()
   "Insert terminology from history."
   (interactive)
   (if fastdef-history
       (ivy-read (format "Previous terminology:")
-              fastdef-history
-              :action (lambda (item)
-                        (let (rlt)
-                          (setq rlt (replace-regexp-in-string "%%url" (cadr item) fastdef-text-template))
-                          (setq rlt (replace-regexp-in-string "%%term" (car item) rlt))
-                          (insert rlt))))
+                fastdef-history
+                :action (lambda (item)
+                          (let (rlt)
+                            (setq rlt (replace-regexp-in-string "%%url" (cadr item) fastdef-text-template))
+                            (setq rlt (replace-regexp-in-string "%%term" (car item) rlt))
+                            ;; work around evil-mode issue
+                            (fastdef--insert-string rlt))))
     (message "terminology history is empty!")))
 
 (provide 'fastdef)
 ;;; fastdef.el ends here
-
