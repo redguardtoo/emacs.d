@@ -73,13 +73,18 @@
     (setq case-fold-search old-case)
     (mapconcat 'identity rlt " ")))
 
+(defun my-yas-escape-string (s)
+  (let* ((rlt (replace-regexp-in-string "'" "\\\\'" s)))
+    (setq rlt (replace-regexp-in-string "\"" "\\\\\"" rlt))
+    rlt))
+
 (defun my-yas-get-var-list-from-kill-ring ()
   "Variable name is among the `kill-ring'.  Multiple major modes supported."
   (let* ((top-kill-ring (subseq kill-ring 0 (min (read-number "fetch N `kill-ring'?" 1) (length kill-ring))) )
          rlt)
     (cond
      ((memq major-mode '(js-mode javascript-mode js2-mode js3-mode))
-      (setq rlt (mapconcat (lambda (i) (format "'%s=', %s" i i)) top-kill-ring ", ")))
+      (setq rlt (mapconcat (lambda (i) (format "'%s=', %s" (my-yas-escape-string i) i)) top-kill-ring ", ")))
      ((memq major-mode '(emacs-lisp-mode lisp-interaction-mode))
       (setq rlt (concat (mapconcat (lambda (i) (format "%s=%%s" i)) top-kill-ring ", ")
                         "\" "
