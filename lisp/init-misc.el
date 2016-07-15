@@ -219,9 +219,10 @@
     ;; turn of `linum-mode' when there are more than 5000 lines
     ;; use `wc -c file' for performance reason
     (if (and (executable-find "wc")
+             (buffer-file-name)
              (> (string-to-number (shell-command-to-string (format "wc -c %s" (buffer-file-name))))
-                (* 5000 80))
-             (linum-mode -1)))
+                (* 5000 80)))
+             (linum-mode -1))
 
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words

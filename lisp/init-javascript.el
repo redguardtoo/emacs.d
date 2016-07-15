@@ -40,7 +40,7 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun mo-js-mode-hook ()
-  (when (and  (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
+  (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
     ;; js-mode only setup, js2-mode inherit from js-mode since v20150909
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
     ;; https://github.com/illusori/emacs-flymake
