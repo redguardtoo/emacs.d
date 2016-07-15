@@ -558,11 +558,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xz" 'suspend-frame
        "vm" 'vc-rename-file-and-buffer
        "vc" 'vc-copy-file-and-rename-buffer
-       "xvv" 'vc-next-action
+       "xvv" 'vc-next-action ; 'C-x v v' in original
        "va" 'git-add-current-file
-       "xvp" 'git-push-remote-origin
-       "xvu" 'git-add-option-update
-       "xvg" 'vc-annotate
+       "vk" 'git-checkout-current-file
+       "vg" 'vc-annotate ; 'C-x v g' in original
        "vs" 'git-gutter:stage-hunk
        "vr" 'git-gutter:revert-hunk
        "vl" 'vc-print-log
