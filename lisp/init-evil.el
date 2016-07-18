@@ -274,8 +274,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "gl" 'outline-next-visible-heading
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
-  "<" 'org-metaleft ; out-dent
-  ">" 'org-metaright ; indent
+  "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
+  ">" 'org-demote-or-promote ; indent
   (kbd "TAB") 'org-cycle)
 
 (loop for (mode . state) in

@@ -195,4 +195,11 @@
               emacs-lisp "lisp"))
 ;; }}
 
+(defun org-demote-or-promote (&optional is-promote)
+  (interactive "P")
+  (unless (region-active-p)
+    (org-mark-subtree))
+  (if is-promote (org-do-promote)
+    (org-do-demote)))
+
 (provide 'init-org)
