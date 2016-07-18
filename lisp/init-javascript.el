@@ -260,7 +260,9 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     (js2-refactor-mode 1)
     (flymake-mode -1)
     (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
-    (define-key js2-mode-map "@" 'js-doc-insert-tag)))
+    (define-key js2-mode-map "@" 'js-doc-insert-tag)
+    ;; @see https://github.com/mooz/js2-mode/issues/350
+    (setq forward-sexp-function nil)))
 
 (autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
