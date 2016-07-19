@@ -242,7 +242,11 @@ Or else, find files since 24 weeks (6 months) ago."
     (ivy-read "imenu items:"
               (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
               :action (lambda (k)
+                        ;; minor error handling
+                        (if (listp (cdr k)) (setq k (cdr k)))
+                        ;; copied from ido-imenu, don't know the purpose
                         (push-mark (point))
+                        ;; better way to imenu
                         (imenu k)))))
 
 (defun counsel-bookmark-goto ()
