@@ -22,11 +22,11 @@
         default-when-no-active-region
       (read-string hint))))
 
-(defun counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional no-keyword filter)
+(defmacro counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional no-keyword filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 IF OPEN-ANOTHER-WINDOW is true, open the file in another window.
 Yank the file name at the same time.  FILTER is function to filter the collection"
-  (let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
+  `(let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
         (default-directory (locate-dominating-file
                             default-directory ".git"))
         keyword
@@ -37,25 +37,24 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                   (funcall counsel-process-filename-string str)
                 str))
 
-    (unless no-keyword
+    (unless ,no-keyword
       ;; selected region contains no regular expression
-      (setq keyword (counsel-read-keyword (concat "Enter " hint " pattern:" ))))
+      (setq keyword (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
 
-    ;; (message "git-cmd=%s keyword=%s" (if no-keyword git-cmd (format git-cmd keyword)) keyword)
-    (setq collection (split-string (shell-command-to-string (if no-keyword
-                                                                git-cmd
-                                                              (format git-cmd keyword)))
+    (setq collection (split-string (shell-command-to-string (if ,no-keyword
+                                                                ,git-cmd
+                                                              (format ,git-cmd keyword)))
                                    "\n"
                                    t))
-    (if filter (setq collection (funcall filter collection)))
+    (if ,filter (setq collection (funcall ,filter collection)))
     (cond
      ((and collection (= (length collection) 1))
-      (funcall fn open-another-window (car collection)))
+      (funcall ,fn ,open-another-window (car collection)))
      (t
-      (ivy-read (if no-keyword hint (format "matching \"%s\":" keyword))
+      (ivy-read (if ,no-keyword ,hint (format "matching \"%s\":" keyword))
                 collection
                 :action (lambda (val)
-                          (funcall fn open-another-window val)))))))
+                          (funcall ,fn ,open-another-window val)))))))
 
 (defun counsel--open-grepped-file (open-another-window val)
   (let* ((lst (split-string val ":"))
@@ -242,7 +241,9 @@ Or else, find files since 24 weeks (6 months) ago."
          (items (imenu--make-index-alist t)))
     (ivy-read "imenu items:"
               (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
-              :action (lambda (k) (imenu k)))))
+              :action (lambda (k)
+                        (push-mark (point))
+                        (imenu k)))))
 
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark.  Requires bookmark+"
