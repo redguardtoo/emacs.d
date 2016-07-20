@@ -247,7 +247,9 @@ Or else, find files since 24 weeks (6 months) ago."
                         ;; copied from ido-imenu, don't know the purpose
                         (push-mark (point))
                         ;; better way to imenu
-                        (imenu k)))))
+                        (imenu k)
+                        (if (memq major-mode '(org-mode))
+                            (org-show-subtree))))))
 
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark.  Requires bookmark+"
