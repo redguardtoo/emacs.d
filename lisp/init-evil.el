@@ -250,11 +250,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-escape-mode 1)
 ;; }}
 
-;; {{ evil-space
-(require 'evil-space)
-(evil-space-mode)
-;; }}
-
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
