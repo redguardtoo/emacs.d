@@ -214,14 +214,11 @@
 ;; }}
 
 (defun generic-prog-mode-hook-setup ()
+  ;; turn of `linum-mode' when there are more than 5000 lines
+  (if (> (buffer-size) (* 5000 80))
+      (linum-mode -1))
+
   (unless (is-buffer-file-temp)
-
-    ;; turn of `linum-mode' when there are more than 5000 lines
-    (if (and (buffer-file-name)
-             (> (buffer-size)
-                (* 5000 80)))
-        (linum-mode -1))
-
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
     (setq flyspell-check-doublon nil)
