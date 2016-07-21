@@ -299,6 +299,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (weibo-timeline-mode . emacs)
         (weibo-post-mode . emacs)
         (sr-mode . emacs)
+        (profiler-report-mode . emacs)
         (dired-mode . emacs)
         (compilation-mode . emacs)
         (speedbar-mode . emacs)
