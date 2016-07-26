@@ -688,6 +688,29 @@ If step is -1, go backward."
 (autoload 'fastdef-insert "fastdef" nil t)
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
 
+(defun my-use-selected-string-or-ask (hint)
+  ;; (if (region-active-p)
+  ;;     (buffer-substring-no-properties (region-beginning) (region-end))
+  ;;   (read-string hint))
+  (buffer-substring-no-properties (region-beginning) (region-end))
+  )
+
+(defun pabs()
+  "Relative path to full path."
+  (interactive)
+  (let* ((str (my-use-selected-string-or-ask "Input relative path:"))
+         (path (file-truename str)))
+    (copy-yank-str path)
+    (message "%s => clipboard & yank ring" path)))
+
+(defun prel()
+  "Full path to relative path."
+  (interactive)
+  (let* ((str (my-use-selected-string-or-ask "Input absolute path:"))
+         (path (file-relative-name str)))
+    (copy-yank-str path)
+    (message "%s => clipboard & yank ring" path)))
+
 ;; indention management
 (defun my-toggle-indentation ()
   (interactive)
