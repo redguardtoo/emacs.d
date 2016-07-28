@@ -89,7 +89,7 @@ If N is 2, paste into kill-ring too"
       ;; do nothing
       )
      ((= 1 n)
-      (setq str (replace-regexp-in-string "^\\(+\\|-\\)" "" str)))
+      (setq str (replace-regexp-in-string "^\\(+\\|-.*\\|@@ .*$\\)" "" str)))
      ((= 2 n)
       (kill-new str)))
     (insert str)))
