@@ -10,6 +10,11 @@ Only applies to text-mode."
                  (looking-back (format f rg space))))
         (replace-match rp nil nil nil 1))))
 
+(defun endless/call-subword-cmd (fn)
+  (unless (featurep 'subword)
+    (require 'subword))
+  (call-interactively fn))
+
 (defun endless/capitalize ()
   "Capitalize region or word.
 Also converts commas to full stops, and kills
@@ -22,7 +27,7 @@ extraneous space at beginning of line."
     (when (looking-at "^\\s-\\b")
       ;; get rid of it!
       (delete-char 1))
-    (call-interactively 'subword-capitalize)))
+    (endless/call-subword-cmd 'subword-capitalize)))
 
 (defun endless/downcase ()
   "Downcase region or word.
@@ -31,18 +36,18 @@ Also converts full stops to commas."
   (endless/convert-punctuation "\\." ",")
   (if (use-region-p)
       (call-interactively 'downcase-region)
-    (call-interactively 'subword-downcase)))
+    (endless/call-subword-cmd 'subword-downcase)))
 
 (defun endless/upcase ()
   "Upcase region or word."
   (interactive)
   (if (use-region-p)
       (call-interactively 'upcase-region)
-    (call-interactively 'subword-upcase)))
+    (endless/call-subword-cmd 'subword-upcase)))
 
 ;; these bindings are fine
-(global-set-key "\M-c" 'endless/capitalize)
-(global-set-key "\M-l" 'endless/downcase)
-(global-set-key "\M-u" 'endless/upcase)
+(global-set-key (kbd "M-c") 'endless/capitalize)
+(global-set-key (kbd "M-l") 'endless/downcase)
+(global-set-key (kbd "M-u") 'endless/upcase)
 
 (provide 'init-writting)
