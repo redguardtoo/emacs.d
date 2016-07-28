@@ -1,6 +1,6 @@
 ;;; evil-matchit-javascript.el --- simple match plugin of evil-matchit
 
-;; Copyright (C) 2014  Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 
@@ -26,9 +26,9 @@
 
 ;;; Code:
 
+(require 'evil-matchit-sdk)
 (require 'evil-matchit)
 
-;; TODO, fn.then().({}, find the second (
 (defun evilmi--javascript-find-open-brace (cur-line)
   (let (rlt)
     ;; javascript code line "(function(...) { ..."
@@ -38,13 +38,9 @@
         (setq rlt 1)
       (save-excursion
         (forward-line)
-        (setq cur-line (buffer-substring-no-properties
-                        (line-beginning-position) (line-end-position)))
+        (setq cur-line (evilmi-sdk-curline))
         (if (string-match "^[ \t]*{ *$" cur-line)
-            (setq rlt 2)
-          )
-        )
-      )
+            (setq rlt 2))))
     rlt))
 
 ;;;###autoload
@@ -52,8 +48,7 @@
   (let (p
         forward-line-num
         rlt
-        (cur-line (buffer-substring-no-properties
-                   (line-beginning-position) (line-end-position)))
+        (cur-line (evilmi-sdk-curline))
         )
     ;; only handle open tag
     (if (not (memq (following-char) (string-to-list "{[(}}])")))
@@ -76,17 +71,13 @@
     (when rlt
       (evilmi--simple-jump)
 
-      (setq cur-line (buffer-substring-no-properties
-                      (line-beginning-position)
-                      (line-end-position)))
+      (setq cur-line (evilmi-sdk-curline))
       ;; hack for javascript
       (if (or (string-match "^[ \t]*}\)\(.*\)\; *$" cur-line)
               (string-match "^[ \t]*}\(.*\))\; *$" cur-line)
               (string-match "^[ \t]*}\])\; *$" cur-line))
           (line-end-position)
-        (1+ (point))
-        )
-      )
+        (1+ (point))))
     ))
 
 (provide 'evil-matchit-javascript)

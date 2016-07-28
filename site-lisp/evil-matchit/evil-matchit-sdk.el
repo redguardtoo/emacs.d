@@ -6,8 +6,7 @@
 Each howto is actually a pair. The first element of pair is the regular
 expression to match the current line. The second is the index of sub-matches
 to extract the keyword which starts from one. The sub-match is the match defined
-between '\\(' and '\\)' in regular expression.
-")
+between '\\(' and '\\)' in regular expression.")
 
 ;; slower but I don't care
 ;; @see http://ergoemacs.org/emacs/modernization_elisp_lib_problem.html
@@ -41,6 +40,12 @@ between '\\(' and '\\)' in regular expression.
            (t (setq rlt (= (nth 0 orig-tag-info) (nth 0 cur-tag-info))))
            )))
     rlt))
+
+;;;###autoload
+(defun evilmi-sdk-curline ()
+  (buffer-substring-no-properties
+   (line-beginning-position)
+   (line-end-position)))
 
 ;;;###autoload
 (defun evilmi-sdk-member (KEYWORD LIST)
@@ -85,8 +90,8 @@ is-function-exit-point could be 'FN_EXIT' or other status"
         (setq elem (nth j elems))
         (setq found (and (or (stringp elem) (listp elem))
                          (evilmi-sdk-member KEYWORD elem)))
-        (if (not found) (setq j (1+ j)))
-        )
+        (if (not found)
+            (setq j (1+ j))))
       (if (not found) (setq i (1+ i))))
     (when found
       ;; function exit point maybe?
@@ -98,8 +103,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
                      KEYWORD))
         (setq rlt (list i j nil KEYWORD))
         ))
-    rlt
-    ))
+    rlt))
 
 (defun evilmi--sdk-extract-keyword (cur-line match-tags howtos)
   "extract keyword from cur-line. keyword should be defined in match-tags"
@@ -117,8 +121,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
         ;; keep search keyword by using next howto (regex and match-string index)
         (if (not (evilmi-sdk-member keyword match-tags)) (setq keyword nil))
         )
-      (setq i (1+ i))
-      )
+      (setq i (1+ i)))
     keyword))
 
 (defun evilmi--is-monogamy (tag-info)
@@ -130,8 +133,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
         ;; i1 and i2 should be at same row if either of them is monogamy
       (if (or (evilmi--is-monogamy i1) (evilmi--is-monogamy i2))
           (setq rlt (= (nth 0 i1) (nth 0 i2)))
-        (setq rlt t))
-      )
+        (setq rlt t)))
     rlt))
 
 ;;;###autoload
@@ -139,9 +141,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
   "return '(start-point tag-info)"
   (let (rlt
         keyword
-        (cur-line (buffer-substring-no-properties
-                   (line-beginning-position)
-                   (line-end-position)))
+        (cur-line (evilmi-sdk-curline))
         tag-info)
 
     (when (setq keyword (evilmi--sdk-extract-keyword cur-line match-tags howtos))
@@ -155,8 +155,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
                          (line-end-position)
                        (line-beginning-position))
                      tag-info))
-        )
-      )
+        ))
     rlt))
 
 ;;;###autoload
@@ -166,18 +165,14 @@ is-function-exit-point could be 'FN_EXIT' or other status"
         cur-tag-type
         cur-tag-info
         (level 1)
-        (cur-line (buffer-substring-no-properties
-                   (line-beginning-position)
-                   (line-end-position)))
+        (cur-line (evilmi-sdk-curline))
         keyword
         found
         where-to-jump-in-theory)
 
     (while (not found)
       (forward-line (if (= orig-tag-type 2) -1 1))
-      (setq cur-line (buffer-substring-no-properties
-                      (line-beginning-position)
-                      (line-end-position)))
+      (setq cur-line (evilmi-sdk-curline))
 
       (setq keyword (evilmi--sdk-extract-keyword cur-line match-tags howtos))
 
@@ -269,10 +264,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
               (= (line-beginning-position) (point-min))
               )
           (setq found t)
-        )
-      )
-    where-to-jump-in-theory
-    )
-  )
+        ))
+    where-to-jump-in-theory))
 
 (provide 'evil-matchit-sdk)

@@ -1,6 +1,6 @@
 ;;; evil-matchit-simple.el --- simple match plugin of evil-matchit
 
-;; Copyright (C) 2014  Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
 
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
@@ -27,6 +27,7 @@
 
 ;;; Code:
 
+(require 'evil-matchit-sdk)
 (require 'evil-matchit)
 
 (defun evilmi--simple-find-open-brace (cur-line)
@@ -38,8 +39,7 @@
         (setq rlt 1)
       (save-excursion
         (forward-line)
-        (setq cur-line (buffer-substring-no-properties
-                        (line-beginning-position) (line-end-position)))
+        (setq cur-line (evilmi-sdk-curline))
         (if (string-match "^[ \t]*{ *$" cur-line)
             (setq rlt 2))
         ))
@@ -47,13 +47,12 @@
 
 ;;;###autoload
 (defun evilmi-simple-get-tag ()
-  (let (p
-        tmp
-        ch
-        forward-line-num
-        rlt
-        (cur-line (buffer-substring-no-properties
-                   (line-beginning-position) (line-end-position))))
+  (let* (p
+         tmp
+         ch
+         forward-line-num
+         rlt
+         (cur-line (evilmi-sdk-curline)))
 
     ;; Only handle open tag
     (setq tmp (evilmi--get-char-under-cursor))
@@ -85,9 +84,7 @@
       (if evilmi-debug (message "evilmi-simple-jump called"))
 
       (evilmi--simple-jump)
-      (setq cur-line (buffer-substring-no-properties
-                      (line-beginning-position)
-                      (line-end-position)))
+      (setq cur-line (evilmi-sdk-curline))
       ;; hack for javascript
       (if (string-match "^[ \t]*})(.*)\; *$" cur-line)
           (line-end-position)

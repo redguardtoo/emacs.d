@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.2
+;; Version: 2.1.3
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -220,17 +220,19 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (if plugin
         (mapc
          (lambda (elem)
+           ;; excute evilmi-xxxx-get-tag
            (setq rlt (funcall (nth 0 elem)))
            (when (and rlt (not jumped))
              ;; before jump, we may need some operation
              (if FUNC (funcall FUNC rlt))
-             ;; jump now
+             ;; jump now, execute evilmi-xxxx-jump
              (setq where-to-jump-in-theory (funcall (nth 1 elem) rlt NUM))
              ;; jump only once if the jump is successful
              (setq jumped t)
              ))
          plugin))
 
+    ;; give `evilmi--simple-jump' a chance
     (when (not jumped)
       (if FUNC (funcall FUNC (list (point))))
       (evilmi--simple-jump)
@@ -280,7 +282,8 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   ;; Latex
   (autoload 'evilmi-latex-get-tag "evil-matchit-latex" nil)
   (autoload 'evilmi-latex-jump "evil-matchit-latex" nil t)
-  (plist-put evilmi-plugins 'latex-mode '((evilmi-latex-get-tag evilmi-latex-jump)))
+  (plist-put evilmi-plugins 'latex-mode '((evilmi-latex-get-tag evilmi-latex-jump)
+                                          (evilmi-simple-get-tag evilmi-simple-jump)))
 
   ;; Python
   (autoload 'evilmi-python-get-tag "evil-matchit-python" nil)
@@ -299,10 +302,16 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   (autoload 'evilmi-c-jump "evil-matchit-c" nil)
   (mapc (lambda (mode)
           (plist-put evilmi-plugins mode '((evilmi-c-get-tag evilmi-c-jump)
-                                           (evilmi-simple-get-tag evilmi-simple-jump)))
-          )
+                                           (evilmi-simple-get-tag evilmi-simple-jump))))
         '(c-mode c++-mode))
 
+  ;; diff/patch
+  (autoload 'evilmi-diff-get-tag "evil-matchit-diff" nil)
+  (autoload 'evilmi-diff-jump "evil-matchit-diff" nil)
+  (mapc (lambda (mode)
+          (plist-put evilmi-plugins mode '((evilmi-simple-get-tag evilmi-simple-jump)
+                                           (evilmi-diff-get-tag evilmi-diff-jump))))
+        '(diff-mode ffip-diff-mode magit-diff-mode))
   ;; Fortran
   (autoload 'evilmi-fortran-get-tag "evil-matchit-fortran" nil)
   (autoload 'evilmi-fortran-jump "evil-matchit-fortran" nil)
@@ -320,7 +329,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   (autoload 'evilmi-sh-jump "evil-matchit-sh" nil)
   (plist-put evilmi-plugins 'sh-mode '((evilmi-sh-get-tag evilmi-sh-jump)))
 
-  ;; Lua or any fine script languages
+  ;; Lua or any fine script
   (autoload 'evilmi-script-get-tag "evil-matchit-script" nil)
   (autoload 'evilmi-script-jump "evil-matchit-script" nil)
   (mapc (lambda (mode)
@@ -437,7 +446,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
    ))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.2"))
+(defun evilmi-version() (interactive) (message "2.1.3"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode

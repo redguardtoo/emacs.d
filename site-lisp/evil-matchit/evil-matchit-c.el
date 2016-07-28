@@ -1,6 +1,6 @@
 ;;; evil-matchit-c.el --c like language (c/c++/perl/java/javascript) plugin of evil-matchit
 
-;; Copyright (C) 2014  Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 
