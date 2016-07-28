@@ -83,7 +83,12 @@
     (when rlt
       (if evilmi-debug (message "evilmi-simple-jump called"))
 
-      (evilmi--simple-jump)
+      ;; In latex-mode `scan-sexps' does NOT work properly between "[]"
+      ;; so we have to fallback to evil's API.
+      (if (memq major-mode '(latex-mode))
+          (evil-jump-item)
+        (evilmi--simple-jump))
+
       (setq cur-line (evilmi-sdk-curline))
       ;; hack for javascript
       (if (string-match "^[ \t]*})(.*)\; *$" cur-line)
