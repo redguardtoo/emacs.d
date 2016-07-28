@@ -171,13 +171,11 @@
 
 (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
   (let ((browse-url-browser-function
-         (cond ((equal (ad-get-arg 0) '(4))
-                'browse-url-generic)
-               ((equal (ad-get-arg 0) '(16))
-                'choose-browser)
-               (t
-                (lambda (url &optional new)
-                  (w3m-browse-url url t))))))
+         (cond
+          ;; open with external browser
+          ((equal (ad-get-arg 0) '(4)) 'browse-url-generic)
+          ;; open with w3m
+          (t 'w3m-browse-url))))
     ad-do-it))
 
 (defadvice org-publish (around org-publish-advice activate)

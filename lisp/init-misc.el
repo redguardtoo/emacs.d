@@ -689,11 +689,9 @@ If step is -1, go backward."
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
 
 (defun my-use-selected-string-or-ask (hint)
-  ;; (if (region-active-p)
-  ;;     (buffer-substring-no-properties (region-beginning) (region-end))
-  ;;   (read-string hint))
-  (buffer-substring-no-properties (region-beginning) (region-end))
-  )
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (read-string hint)))
 
 (defun pabs()
   "Relative path to full path."
