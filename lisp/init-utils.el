@@ -101,6 +101,11 @@
 
 (defvar load-user-customized-major-mode-hook t)
 (defvar cached-normal-file-full-path nil)
+
+(defun buffer-too-big-p ()
+  (or (> (buffer-size) (* 5000 64))
+      (> (line-number-at-pos (point-max)) 5000)))
+
 (defun is-buffer-file-temp ()
   (interactive)
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file"

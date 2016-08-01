@@ -6,7 +6,8 @@
 
 (defun maybe-flymake-css-load ()
   "Activate flymake-css as necessary, but not in derived modes."
-  (when (eq major-mode 'css-mode)
+  (if (and (eq major-mode 'css-mode)
+           (not (buffer-too-big-p)))
     (flymake-css-load)))
 
 (defun my-css-imenu-make-index ()
