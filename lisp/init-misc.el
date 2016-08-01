@@ -214,8 +214,9 @@
 ;; }}
 
 (defun generic-prog-mode-hook-setup ()
-  ;; turn of `linum-mode' when there are more than 5000 lines
-  (if (> (buffer-size) (* 5000 80))
+  ;; turn off `linum-mode' when there are more than 5000 lines
+  (if (or (> (buffer-size) (* 5000 64))
+          (> (line-number-at-pos (point-max)) 5000))
       (linum-mode -1))
 
   (unless (is-buffer-file-temp)
