@@ -1,9 +1,7 @@
-(autoload 'ivy-recentf "ivy" "" t)
-(autoload 'ivy-read "ivy")
+;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
 
 (defvar counsel-process-filename-string nil
   "Give you a chance to change file name string for other counsel-* functions")
-;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
 
 (defun counsel-escape (keyword)
   (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
@@ -22,9 +20,8 @@
         default-when-no-active-region
       (read-string hint))))
 
-(defmacro counsel-git-grep-or-find-api (fn git-cmd hint open-another-window &optional no-keyword filter)
+(defmacro counsel-git-grep-or-find-api (fn git-cmd hint &optional no-keyword filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
-IF OPEN-ANOTHER-WINDOW is true, open the file in another window.
 Yank the file name at the same time.  FILTER is function to filter the collection"
   `(let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
         (default-directory (locate-dominating-file
@@ -41,40 +38,36 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
       ;; selected region contains no regular expression
       (setq keyword (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
 
-    (setq collection (split-string (shell-command-to-string (if ,no-keyword
-                                                                ,git-cmd
-                                                              (format ,git-cmd keyword)))
-                                   "\n"
-                                   t))
+    (setq collection
+          (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
+                                                   (format ,git-cmd keyword)))
+                        "\n"
+                        t))
     (if ,filter (setq collection (funcall ,filter collection)))
     (cond
      ((and collection (= (length collection) 1))
-      (funcall ,fn ,open-another-window (car collection)))
+      (funcall ,fn (car collection)))
      (t
       (ivy-read (if ,no-keyword ,hint (format "matching \"%s\":" keyword))
                 collection
-                :action (lambda (val)
-                          (funcall ,fn ,open-another-window val)))))))
+                :action ,fn)))))
 
-(defun counsel--open-grepped-file (open-another-window val)
+(defun counsel--open-grepped-file (val)
   (let* ((lst (split-string val ":"))
          (linenum (string-to-number (cadr lst))))
     ;; open file
-    (funcall (if open-another-window 'find-file-other-window 'find-file)
-             (car lst))
+    (find-file (car lst))
     ;; goto line if line number exists
     (when (and linenum (> linenum 0))
       (goto-char (point-min))
       (forward-line (1- linenum)))))
 
-(defun counsel-git-grep-in-project (&optional open-another-window)
-  "Grep in the current git repository.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
-  (interactive "P")
+(defun counsel-git-grep-in-project ()
+  "Grep in the current git repository."
+  (interactive)
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
                                 "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
-                                "grep"
-                                open-another-window))
+                                "grep"))
 
 (defvar counsel-git-grep-author-regex nil)
 
@@ -96,54 +89,40 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
              collection))
     collection))
 
-(defun counsel-git-grep-by-author (&optional open-another-window)
+(defun counsel-git-grep-by-author ()
   "Grep in the current git repository.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window.
-SLOW when more than 20 git blame process start."
-  (interactive "P")
+It's SLOW when more than 20 git blame process start."
+  (interactive)
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
                                 "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
                                 "grep by author"
-                                open-another-window
                                 nil
                                 'counsel--filter-grepped-by-author))
 
-(defun counsel-git-show-file (&optional open-another-window)
-  "Find file in HEAD commit or whose commit hash is selected region.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
-  (interactive "P")
-  (let* ((fn (lambda (open-another-window val)
-               (funcall (if open-another-window 'find-file-other-window 'find-file) val))))
-    (counsel-git-grep-or-find-api fn
-                                  (format "git --no-pager diff-tree --no-commit-id --name-only -r %s"
-                                          (counsel-read-keyword nil "HEAD"))
-                                  "files from `git-show' "
-                                  open-another-window
-                                  t)))
+(defun counsel-git-show-file ()
+  "Find file in HEAD commit or whose commit hash is selected region."
+  (interactive)
+  (counsel-git-grep-or-find-api 'find-file
+                                (format "git --no-pager diff-tree --no-commit-id --name-only -r %s"
+                                        (counsel-read-keyword nil "HEAD"))
+                                "files from `git-show' "
+                                t))
 
 
-(defun counsel-git-diff-file (&optional open-another-window)
-  "Find file in `git diff'.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
-  (interactive "P")
-  (let* ((fn (lambda (open-another-window val)
-               (funcall (if open-another-window 'find-file-other-window 'find-file) val))))
-    (counsel-git-grep-or-find-api fn
-                                  "git --no-pager diff --name-only"
-                                  "files from `git-diff' "
-                                  open-another-window
-                                  t)))
+(defun counsel-git-diff-file ()
+  "Find file in `git diff'."
+  (interactive)
+  (counsel-git-grep-or-find-api 'find-file
+                                "git --no-pager diff --name-only"
+                                "files from `git-diff' "
+                                t))
 
-(defun counsel-git-find-file (&optional open-another-window)
-  "Find file in the current git repository.
-If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
-  (interactive "P")
-  (let* ((fn (lambda (open-another-window val)
-               (funcall (if open-another-window 'find-file-other-window 'find-file) val))))
-    (counsel-git-grep-or-find-api fn
-                                  "git ls-tree -r HEAD --name-status | grep \"%s\""
-                                  "file"
-                                  open-another-window)))
+(defun counsel-git-find-file ()
+  "Find file in the current git repository."
+  (interactive)
+  (counsel-git-grep-or-find-api 'find-file
+                                "git ls-tree -r HEAD --name-status | grep \"%s\""
+                                "file"))
 
 (defun counsel-replace-current-line (leading-spaces content)
   (beginning-of-line)
@@ -182,7 +161,7 @@ If OPEN-ANOTHER-WINDOW is not nil, results are displayed in new window."
   "Grep in the current git repository and yank the line.
 If INSERT-LINE is not nil, insert the line grepped"
   (interactive "P")
-  (let* ((fn (lambda (unused-param val)
+  (let* ((fn (lambda (val)
                (let ((lst (split-string val ":")) text-line)
                  ;; the actual text line could contain ":"
                  (setq text-line (replace-regexp-in-string (format "^%s:%s:" (car lst) (nth 1 lst)) "" val))
@@ -204,18 +183,16 @@ If INSERT-LINE is not nil, insert the line grepped"
   "Find my files in the current git repository.
 If NUM is not nil, find files since NUM weeks ago.
 Or else, find files since 24 weeks (6 months) ago."
-  (interactive "P")
+  (interactive"P")
   (unless (and num (> num 0))
     (setq num 24))
-  (let* ((fn (lambda (open-another-window val)
-               (find-file val)))
-         (cmd (concat "git log --pretty=format: --name-only --since=\""
+  (let* ((cmd (concat "git log --pretty=format: --name-only --since=\""
                       (number-to-string num)
                       " weeks ago\" --author=\""
                       counsel-my-name-regex
                       "\" | grep \"%s\" | sort | uniq")))
     ;; (message "cmd=%s" cmd)
-    (counsel-git-grep-or-find-api fn cmd "file" nil)))
+    (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
 ;; }}
 
 (defun ivy-imenu-get-candidates-from (alist &optional prefix)
@@ -357,10 +334,10 @@ Or else, find files since 24 weeks (6 months) ago."
 (defvar my-grep-extra-opts "--exclude-dir=.git --exclude-dir=.bzr --exclude-dir=.svn"
   "Extra grep options passed to `my-grep'")
 
-(defun my-grep (&optional open-another-window)
+(defun my-grep ()
   "Grep at project root directory or current directory.
 If ag (the_silver_searcher) exists, use ag."
-  (interactive "P")
+  (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
          (default-directory (or (and (fboundp 'ffip-get-project-root-directory)
                                      (ffip-get-project-root-directory))
@@ -377,8 +354,7 @@ If ag (the_silver_searcher) exists, use ag."
 
     (ivy-read (format "matching \"%s\" at %s:" keyword default-directory)
               collection
-              :action (lambda (val)
-                        (funcall 'counsel--open-grepped-file open-another-window val)))))
+              :action 'counsel--open-grepped-file)))
 ;; }}
 
 (provide 'init-ivy)
