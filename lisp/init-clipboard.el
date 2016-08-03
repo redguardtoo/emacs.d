@@ -5,9 +5,6 @@
 ;; kill-ring and clipboard are same? No, it's annoying!
 ;; (setq save-interprogram-paste-before-kill t)
 
-(autoload 'simpleclip-get-contents "simpleclip" "" t)
-(autoload 'simpleclip-set-contents "simpleclip" "" t)
-
 ;; you need install xsel under Linux
 ;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)

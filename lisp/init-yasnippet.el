@@ -98,7 +98,6 @@
      (t (seq rlt "")))
     rlt))
 
-(autoload 'snippet-mode "yasnippet" "")
 (add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
 
 (eval-after-load 'yasnippet

@@ -1,7 +1,4 @@
-(autoload 'turn-on-stripe-buffer-mode "stripe-buffer" "" nil)
-(autoload 'turn-on-stripe-table-mode "stripe-buffer" "" nil)
 (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
-
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)

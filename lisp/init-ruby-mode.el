@@ -1,6 +1,5 @@
 (add-auto-mode 'ruby-mode "\\.rb\\'" "Rakefile\\'" "\.rake\\'" "\.rxml\\'" "\.rjs\\'" ".irbrc\\'" "\.builder\\'" "\.ru\\'" "\.gemspec\\'" "Gemfile\\'")
 
-(autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
 (setq ruby-use-encoding-map nil)
 
 (defun ruby-mode-hook-setup ()
@@ -11,12 +10,6 @@
     (setq compile-command "rake ")
     (flymake-ruby-load)))
 (add-hook 'ruby-mode-hook 'ruby-mode-hook-setup)
-
-;; doc look up
-(autoload 'yari "yari" "" t nil)
-
-(add-to-list 'auto-mode-alist '("\\.rhtml\\(\\.erb\\)?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.jst\\.ejs\\'"  . web-mode))
 
 (defun update-rails-ctags ()
   (interactive)

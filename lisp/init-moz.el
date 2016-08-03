@@ -1,5 +1,3 @@
-(autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
-
 ;; {{ mozrepl auto-refresh browser
 (defun moz-reload-browser ()
   (interactive)

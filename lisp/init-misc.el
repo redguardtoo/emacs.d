@@ -19,7 +19,6 @@
 (global-set-key (kbd "C-x C-o") 'ffap)
 
 ;; salesforce
-(autoload 'apex-mode "apex-mode" nil t)
 (add-to-list 'auto-mode-alist '("\\.cls\\'" . apex-mode))
 (add-to-list 'auto-mode-alist '("\\.trigger\\'" . apex-mode))
 ;; java
@@ -28,12 +27,6 @@
 (add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
 
 ;; {{ support MY packages which are not included in melpa
-(autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
-(autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
-(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
-(autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
-(autoload 'org2nikola-export-subtree "org2nikola" "" t)
-(autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)
 (setq org2nikola-use-verbose-metadata t) ; for nikola 7.7+
 ;; }}
 
@@ -96,9 +89,6 @@
                                       (format " -p %s" (buffer-file-name)))))
     (shell-command-to-string git-cmd-log-dash-p)))
 
-(autoload 'find-file-in-project "find-file-in-project" "" t)
-(autoload 'find-file-in-project-by-selected "find-file-in-project" "" t)
-(autoload 'ffip-get-project-root-directory "find-file-in-project" "" t)
 (setq ffip-match-path-instead-of-filename t)
 ;; I only use git
 (setq ffip-diff-backends '(my-git-show-selected-commit
@@ -165,13 +155,11 @@
   (switch-to-buffer nil))
 
 ;; {{ dictionary setup
-(autoload 'dictionary-new-search "dictionary" "" t nil)
 (defun my-lookup-dict-org ()
   (interactive)
   (dictionary-new-search (cons (if (region-active-p)
                                    (buffer-substring-no-properties (region-beginning) (region-end))
                                  (read-string "Input word for dict.org:")) dictionary-default-dictionary)))
-
 ;; }}
 
 ;; {{ bookmark
@@ -310,18 +298,7 @@ See \"Reusing passwords for several connections\" from INFO.
                                  buffer-file-name))))
 ;; }}
 
-;; input open source license
-(autoload 'legalese "legalese" "" t)
-
-;; {{ buf-move
-(autoload 'buf-move-left "buffer-move" "move buffer" t)
-(autoload 'buf-move-right "buffer-move" "move buffer" t)
-(autoload 'buf-move-up "buffer-move" "move buffer" t)
-(autoload 'buf-move-down "buffer-move" "move buffer" t)
-;; }}
-
 ;; edit confluence wiki
-(autoload 'confluence-edit-mode "confluence-edit" "enable confluence-edit-mode" t)
 (add-to-list 'auto-mode-alist '("\\.wiki\\'" . confluence-edit-mode))
 
 (defun erase-specific-buffer (num buf-name)
@@ -370,16 +347,7 @@ See \"Reusing passwords for several connections\" from INFO.
   (global-set-key (kbd "C--") 'text-scale-decrease))
 
 ;; vimrc
-(autoload 'vimrc-mode "vimrc-mode")
 (add-to-list 'auto-mode-alist '("\\.?vim\\(rc\\)?$" . vimrc-mode))
-
-;; {{ https://github.com/nschum/highlight-symbol.el
-(autoload 'highlight-symbol "highlight-symbol" "" t)
-(autoload 'highlight-symbol-next "highlight-symbol" "" t)
-(autoload 'highlight-symbol-prev "highlight-symbol" "" t)
-(autoload 'highlight-symbol-nav-mode "highlight-symbol" "" t)
-(autoload 'highlight-symbol-query-replace "highlight-symbol" "" t)
-;; }}
 
 ;; {{ show email sent by `git send-email' in gnus
 (eval-after-load 'gnus
@@ -441,9 +409,6 @@ See \"Reusing passwords for several connections\" from INFO.
 ;; }}
 
 ;; {{ popup functions
-(autoload 'which-function "which-func")
-(autoload 'popup-tip "popup")
-
 (defun my-which-file ()
   "Return current file name for Yasnippets."
   (if (buffer-file-name) (format "%s:" (file-name-nondirectory (buffer-file-name)))
@@ -576,7 +541,6 @@ If step is -1, go backward."
 
 
 ;; {{ string-edit-mode
-(autoload 'string-edit-at-point "string-edit" "" t nil)
 (defun string-edit-at-point-hook-setup ()
   (let ((major-mode-list (remove major-mode '(web-mode js2-mode js-mode css-mode emacs-lisp-mode)))
         (str (buffer-substring-no-properties (point-min) (point-max))))
@@ -677,16 +641,6 @@ If step is -1, go backward."
 ;; cliphist.el
 (setq cliphist-use-ivy t)
 
-;; subtitles.el
-(autoload 'srt-renumber-subtitles "subtitles" "" t)
-(autoload 'srt-offset-subtitles "subtitles" "" t)
-(autoload 'srt-mult-subtitles "subtitles" "" t)
-(autoload 'srt-convert-sub-to-srt "subtitles" "" t)
-
-;; fastdef.el
-(autoload 'fastdef-insert "fastdef" nil t)
-(autoload 'fastdef-insert-from-history "fastdef" nil t)
-
 (defun my-use-selected-string-or-ask (hint)
   (if (region-active-p)
       (buffer-substring-no-properties (region-beginning) (region-end))
@@ -718,6 +672,11 @@ If step is -1, go backward."
 (require 'auto-save)
 (auto-save-enable)
 (setq auto-save-slient t)
+;; }}
+
+;; {{ csv
+(add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
+(setq csv-separators '("," ";" "|" " "))
 ;; }}
 
 (provide 'init-misc)

@@ -7,7 +7,6 @@
 
 ;; import Gmail contacts in vcard format into bbdb
 (setq gmail2bbdb-bbdb-file "~/.bbdb")
-(autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 
 (add-hook 'bbdb-initialize-hook
           '(lambda ()

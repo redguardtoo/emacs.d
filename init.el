@@ -34,6 +34,7 @@
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let ((file-name-handler-alist nil))
+  (require 'init-autoload)
   (require 'init-modeline)
   (require 'cl-lib)
   (require 'init-compat)
@@ -131,7 +132,6 @@
                                init-fonts
                                init-hs-minor-mode
                                init-textile
-                               init-csv
                                init-writting
                                init-doxygen
                                init-pomodoro

@@ -11,9 +11,4 @@
   ;; the best option is to install latest ctags from sf.net
   (setq ctags-command "/usr/local/bin/ctags -e -R "))
 
-;; {{ etags-select
-(autoload 'etags-select-find-tag-at-point "etags-select" "" t nil)
-(autoload 'etags-select-find-tag "etags-select" "" t nil)
-;; }}
-
 (provide 'init-ctags)

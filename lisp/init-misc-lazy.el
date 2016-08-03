@@ -1,4 +1,19 @@
 ;;; init-misc-lazy.el --- misc setup loaded later
+
+;; {{ smex
+;; (smex-initialize) ; Can be omitted. This might cause a (minimal) delay
+                  ; when Smex is auto-initialized on its first run.
+
+;; Please note "M-x" doesnot work in GUI Emacs 24.4!
+;; This is evil's bug
+;; https://bitbucket.org/lyro/evil/issue/437/m-x-is-undefined-in-emacs-244
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; }}
+
+(setq auto-mode-alist
+      (cons '("\\.textile\\'" . textile-mode) auto-mode-alist))
+
 (transient-mark-mode t)
 
 (recentf-mode 1)
@@ -8,9 +23,6 @@
       auto-revert-verbose nil)
 
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
-(autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
-
-(autoload 'find-by-pinyin-dired "find-by-pinyin-dired" "" t)
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -23,7 +35,6 @@
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
 
-(autoload 'sos "sos" "search stackoverflow" t)
 
 ;;----------------------------------------------------------------------------
 ;; Fix per-window memory of buffer point positions
@@ -177,7 +188,6 @@ grab matched string, cssize them, and insert into kill ring"
 ;; }}
 
 ;; {{ direx
-(autoload 'direx:jump-to-directory "direx" "" t)
 (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
 ;; }}
 
@@ -233,8 +243,6 @@ grab matched string, cssize them, and insert into kill ring"
 ;;
 (setq sdcv-dictionary-simple-list '("朗道英汉字典5.0"))
 (setq sdcv-dictionary-complete-list '("WordNet"))
-(autoload 'sdcv-search-pointer "sdcv" "show word explanation in buffer" t)
-(autoload 'sdcv-search-input+ "sdcv" "show word explanation in tooltip" t)
 (global-set-key (kbd "C-c ; b") 'sdcv-search-pointer)
 (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 ;; }}
@@ -429,15 +437,9 @@ Current position is preserved."
 (setq midnight-mode t)
 
 (add-auto-mode 'tcl-mode "Portfile\\'")
-;;----------------------------------------------------------------------------
-;; Shift lines up and down with M-up and M-down
-;;----------------------------------------------------------------------------
-(move-text-default-bindings)
 
-(autoload 'vr/replace "visual-regexp")
-(autoload 'vr/query-replace "visual-regexp")
-;; if you use multiple-cursors, this is for you:
-(autoload 'vr/mc-mark "visual-regexp")
+;; Shift lines up and down with M-up and M-down
+(move-text-default-bindings)
 
 ;; {{go-mode
 (require 'go-mode-load)

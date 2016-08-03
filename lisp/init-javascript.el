@@ -317,7 +317,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     ;; @see https://github.com/mooz/js2-mode/issues/350
     (setq forward-sexp-function nil)))
 
-(autoload 'js2-mode "js2-mode" nil t)
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
 (setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))

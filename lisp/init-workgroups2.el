@@ -6,8 +6,6 @@
 
 ;(workgroups-mode 1) ; put this one at the bottom of .emacs
 ;; by default, the sessions are saved in "~/.emacs_workgroups"
-(autoload 'wg-create-workgroup "workgroups2" nil t)
-
 (defun my-wg-switch-workgroup ()
   (interactive)
   (let (group-names selected-group)

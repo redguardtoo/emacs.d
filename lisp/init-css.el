@@ -1,6 +1,5 @@
 ;; Colourise CSS colour literals
 ;; web-mode does not like rainbow-mode
-(autoload 'rainbow-mode "rainbow-mode" nil t)
 (dolist (hook '(css-mode-hook))
   (add-hook hook 'rainbow-mode))
 
