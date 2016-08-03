@@ -59,13 +59,9 @@
 
 (defun w3m-guess-keyword (&optional encode-space-with-plus)
   (unless (featurep 'w3m) (require 'w3m))
-  (let (keyword encoded-keyword)
-    (setq keyword (if (region-active-p)
-             (buffer-substring-no-properties (region-beginning) (region-end))
-           (read-string "Enter keyword:")))
+  (let* ((keyword (my-use-selected-string-or-ask "Enter keyword:"))
+         (encoded-keyword (w3m-url-encode-string (setq w3m-global-keyword keyword))))
     ;; some search requires plus sign to replace space
-    (setq encoded-keyword
-          (w3m-url-encode-string (setq w3m-global-keyword keyword)))
     (if encode-space-with-plus
         (replace-regexp-in-string "%20" " " encoded-keyword)
       encoded-keyword)))

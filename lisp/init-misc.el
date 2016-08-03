@@ -1,9 +1,7 @@
 ;; {{ swiper&ivy-mode
 (defun swiper-the-thing ()
   (interactive)
-  (swiper (if (region-active-p)
-              (buffer-substring-no-properties (region-beginning) (region-end))
-            (thing-at-point 'symbol))))
+  (swiper (my-use-selected-string-or-ask "")))
 ;; }}
 
 ;; {{ shell and conf
@@ -157,9 +155,8 @@
 ;; {{ dictionary setup
 (defun my-lookup-dict-org ()
   (interactive)
-  (dictionary-new-search (cons (if (region-active-p)
-                                   (buffer-substring-no-properties (region-beginning) (region-end))
-                                 (read-string "Input word for dict.org:")) dictionary-default-dictionary)))
+  (dictionary-new-search (cons (my-use-selected-string-or-ask "Input word for dict.org:")
+                               dictionary-default-dictionary)))
 ;; }}
 
 ;; {{ bookmark
@@ -182,9 +179,7 @@
 
 (defun lookup-doc-in-man ()
   (interactive)
-  (man (concat "-k " (if (region-active-p)
-       (buffer-substring-no-properties (region-beginning) (region-end))
-      (thing-at-point 'symbol)))))
+  (man (concat "-k " (my-use-selected-string-or-ask ""))))
 
 ;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
@@ -640,11 +635,6 @@ If step is -1, go backward."
 
 ;; cliphist.el
 (setq cliphist-use-ivy t)
-
-(defun my-use-selected-string-or-ask (hint)
-  (if (region-active-p)
-      (buffer-substring-no-properties (region-beginning) (region-end))
-    (read-string hint)))
 
 (defun pabs()
   "Relative path to full path."

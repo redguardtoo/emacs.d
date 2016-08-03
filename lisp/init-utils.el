@@ -10,9 +10,7 @@
          retval)
      ,@clean-up))
 
-;;----------------------------------------------------------------------------
 ;; Handier way to add modes to auto-mode-alist
-;;----------------------------------------------------------------------------
 (defun add-auto-mode (mode &rest patterns)
   "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."
   (dolist (pattern patterns)
@@ -36,18 +34,19 @@
   "Remove trailing whitespace from `STR'."
   (replace-regexp-in-string "[ \t\n]*$" "" str))
 
-
-;;----------------------------------------------------------------------------
 ;; Find the directory containing a given library
-;;----------------------------------------------------------------------------
 (defun directory-of-library (library-name)
   "Return the directory in which the `LIBRARY-NAME' load file is found."
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
+(defun my-use-selected-string-or-ask (hint)
+  "Use selected region or ask user input for string."
+  (if (region-active-p)
+      (buffer-substring-no-properties (region-beginning) (region-end))
+    (if (string= "" hint) (thing-at-point 'symbol)
+      (read-string hint))))
 
-;;----------------------------------------------------------------------------
 ;; Delete the current file
-;;----------------------------------------------------------------------------
 (defun delete-this-file ()
   "Delete the current file, and kill the buffer."
   (interactive)

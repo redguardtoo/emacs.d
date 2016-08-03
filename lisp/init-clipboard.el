@@ -48,9 +48,7 @@ If NUM equals 2, copy the captalized string.
 If NUM equals 3, copy the upcased string.
 If NUM equals 4, kill-ring => clipboard."
   (interactive "P")
-  (let ((thing (if (region-active-p)
-                   (buffer-substring-no-properties (region-beginning) (region-end))
-                 (thing-at-point 'symbol))))
+  (let* ((thing (my-use-selected-string-or-ask "")))
     (cond
      ((not num))
      ((= num 1)

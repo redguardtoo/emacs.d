@@ -68,7 +68,6 @@
   (require 'init-uniquify)
   (require 'init-ibuffer)
   (require 'init-flymake)
-  (require 'init-smex)
   (require 'init-ivy)
   (require 'init-hippie-expand)
   (require 'init-windows)
