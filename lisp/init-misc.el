@@ -196,11 +196,30 @@
 (which-key-mode 1)
 ;; }}
 
+
+(defun compilation-finish-hide-buffer-on-success (buf str)
+  "Could be reused by other major-mode after compilation."
+  (if (string-match "exited abnormally" str)
+      ;;there were errors
+      (message "compilation errors, press C-x ` to visit")
+    ;;no errors, make the compilation window go away in 0.5 seconds
+    (when (string-match "*compilation*" (buffer-name buf))
+      ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
+      (bury-buffer "*compilation*")
+      (winner-undo)
+      (message "NO COMPILATION ERRORS!"))))
+
 (defun generic-prog-mode-hook-setup ()
   ;; turn off `linum-mode' when there are more than 5000 lines
   (if (buffer-too-big-p) (linum-mode -1))
 
   (unless (is-buffer-file-temp)
+
+    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
+    (setq compilation-window-height 8)
+    (setq compilation-finish-functions
+          '(compilation-finish-hide-buffer-on-success))
+
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
     (setq flyspell-check-doublon nil)
