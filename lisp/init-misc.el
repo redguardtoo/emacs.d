@@ -70,26 +70,30 @@
 
 ;; {{ find-file-in-project (ffip)
 (defun my-git-show-selected-commit ()
-  "Run 'git show selected-commit' in shell"
+  "Run 'git show selected-commit' in shell."
   (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
          (git-cmd-rlts (split-string (shell-command-to-string git-cmd) "\n" t))
          (line (ivy-read "git log:" git-cmd-rlts)))
     (shell-command-to-string (format "git show %s"
                                      (car (split-string line "|" t))))))
 
-(defun my-git-log-patch-current-file ()
-  "Run 'git log -p --author=whoever' in shell"
-  (let* ((git-cmd-shortlog "git --no-pager log --format='%aN' | sort -u")
-         (git-cmd-shortlog-rlts (split-string (shell-command-to-string git-cmd-shortlog) "\n" t))
-         (original-author-name (ivy-read "git authors:" git-cmd-shortlog-rlts))
-         (git-cmd-log-dash-p (concat "git --no-pager log --no-color --date=short --pretty=format:'%h%d %ad %s (%an)'"
-                                      (format " --author='%s'" original-author-name)
-                                      (format " -p %s" (buffer-file-name)))))
-    (shell-command-to-string git-cmd-log-dash-p)))
+(defun my-git-diff-current-file ()
+  "Run 'git diff version:current-file current-file'."
+  (let* ((git-cmd (concat "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an' "
+                          buffer-file-name))
+         (git-root (locate-dominating-file default-directory ".git"))
+         (git-cmd-rlts (nconc (split-string (shell-command-to-string "git branch --no-color --all") "\n" t)
+                              (split-string (shell-command-to-string git-cmd) "\n" t)))
+         (line (ivy-read "git diff same file with version" git-cmd-rlts)))
+    (shell-command-to-string (format "git --no-pager diff %s:%s %s"
+                                     (replace-regexp-in-string "^ *\\*? *" "" (car (split-string line "|" t)))
+                                     (file-relative-name buffer-file-name git-root)
+                                     buffer-file-name))))
 
 (setq ffip-match-path-instead-of-filename t)
 ;; I only use git
 (setq ffip-diff-backends '(my-git-show-selected-commit
+                           my-git-diff-current-file
                            my-git-log-patch-current-file
                            "cd $(git rev-parse --show-toplevel) && git diff"
                            "cd $(git rev-parse --show-toplevel) && git diff --cached"
