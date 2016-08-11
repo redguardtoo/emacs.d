@@ -22,6 +22,11 @@
 (global-set-key (kbd "C-q") #'aya-open-line)
 ;; }}
 
+;; {{ ace-link
+(ace-link-setup-default)
+(global-set-key (kbd "M-o") 'ace-link-addr)
+;; }}
+
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
 
