@@ -327,12 +327,71 @@ Or else, find files since 24 weeks (6 months) ago."
     (ivy-read "directories:" collection :action 'dired)))
 
 
-;; {{ grep/ag
-(defvar my-ag-extra-opts ""
-  "Extra ag (silver-search) options passed to `my-grep'")
-
-(defvar my-grep-extra-opts "--exclude-dir=.git --exclude-dir=.bzr --exclude-dir=.svn"
-  "Extra grep options passed to `my-grep'")
+;; {{ sift/ag/grep
+(defvar my-grep-ingore-dirs
+  '(".git"
+    ".bzr"
+    ".svn"
+    "bower_components"
+    "node_modules"
+    ".sass-cache"
+    ".cache"
+    "test"
+    "tests"
+    ".metadata"
+    "logs")
+  "Directories to ignore when grepping.")
+(defvar my-grep-ingore-file-exts
+  '("log"
+    "properties"
+    "session"
+    "swp")
+  "File extensions to ignore when grepping.")
+(defvar my-grep-ingore-file-names
+  '("TAGS"
+    "tags"
+    "GTAGS"
+    "GPATH"
+    ".bookmarks.el"
+    "history"
+    "#*#"
+    "*.min.js"
+    "*.min.css"
+    "*~")
+  "File names to ignore when grepping.")
+(defun my-grep-cli (keyword)
+  (let* (opts)
+    (cond
+     ((executable-find "sift")
+      (setq opts (concat "--exclude-ext="
+                         (mapconcat 'identity my-grep-ingore-file-exts ",")
+                         " "
+                         (mapconcat (lambda (e) (format "--exclude-dirs='%s'" e))
+                                    my-grep-ingore-dirs " ")
+                         " "
+                         (mapconcat (lambda (e) (format "--exclude-files='%s'" e))
+                                    my-grep-ingore-file-names " ")))
+      (format "sift --err-skip-line-length --binary-skip -r -n --no-color %s \"%s\" ." opts keyword))
+     ((executable-find "ag")
+      (setq opts (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
+                                    my-grep-ingore-dirs " ")
+                         " "
+                         (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
+                                    my-grep-ingore-file-exts " ")
+                         " "
+                         (mapconcat (lambda (e) (format "--ignore='%s'" e))
+                                    my-grep-ingore-file-names " ")))
+      (format "ag -s --nocolor --nogroup --silent %s \"%s\" -- ." opts keyword))
+     (t
+      (setq opts (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
+                                    my-grep-ingore-dirs " ")
+                         " "
+                         (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
+                                    my-grep-ingore-file-exts " ")
+                         " "
+                         (mapconcat (lambda (e) (format "--exclude='%s'" e))
+                                    my-grep-ingore-file-names " ")))
+      (format "grep -rsn %s \"%s\" * ." opts keyword)))))
 
 (defun my-grep ()
   "Grep at project root directory or current directory.
@@ -342,16 +401,7 @@ If ag (the_silver_searcher) exists, use ag."
          (default-directory (or (and (fboundp 'ffip-get-project-root-directory)
                                      (ffip-get-project-root-directory))
                                 default-directory))
-         (cmd (cond
-               ((executable-find "ag")
-                (format "ag --nocolor --nogroup %s %s -- ." my-ag-extra-opts keyword))
-               (t
-                (format "%s -rsn %s \"%s\" *" grep-program y-grep-extra-opts keyword))))
-         (collection (split-string
-                      (shell-command-to-string cmd)
-                      "\n"
-                      t)))
-
+         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "\n" t)))
     (ivy-read (format "matching \"%s\" at %s:" keyword default-directory)
               collection
               :action 'counsel--open-grepped-file)))
