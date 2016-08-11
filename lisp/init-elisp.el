@@ -69,8 +69,7 @@
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol t)
   (add-to-list 'hippie-expand-try-functions-list 'try-complete-lisp-symbol-partially t))
 
-(defun elisp-mode-hooks ()
-  "lisp-mode-hooks"
+(defun elisp-mode-hook-setup ()
   (unless (is-buffer-file-temp)
     (when (require 'eldoc nil t)
       (setq eldoc-idle-delay 0.2)
@@ -82,6 +81,6 @@
     (flymake-mode)
     (checkdoc-minor-mode)))
 
-(add-hook 'emacs-lisp-mode-hook 'elisp-mode-hooks)
+(add-hook 'emacs-lisp-mode-hook 'elisp-mode-hook-setup)
 
 (provide 'init-elisp)
