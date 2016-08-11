@@ -13,6 +13,15 @@
 (add-to-list 'auto-mode-alist '("\\.mailcap\\'" . conf-mode))
 ;; }}
 
+
+;; {{ auto-yasnippet
+;; Use C-q instead tab to complete snippet
+;; - `aya-create' at first, input ~ to mark the thing next
+;; - `aya-expand' to expand snippet
+;; - `aya-open-line' to finish
+(global-set-key (kbd "C-q") #'aya-open-line)
+;; }}
+
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
 

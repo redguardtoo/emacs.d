@@ -370,6 +370,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "aa" 'copy-to-x-clipboard ; used frequently
        "aw" 'ace-swap-window
        "af" 'ace-maximize-window
+       "ac" 'aya-create
+       "ae" 'aya-expand
        "zz" 'paste-from-x-clipboard ; used frequently
        "cy" 'strip-convert-lines-into-one-big-string
        "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
