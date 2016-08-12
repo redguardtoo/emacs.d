@@ -210,6 +210,7 @@
 
 ;; {{ which-key-mode
 (require 'which-key)
+(setq which-key-allow-imprecise-window-fit t) ; performance
 (setq which-key-separator ":")
 (which-key-mode 1)
 ;; }}
