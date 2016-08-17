@@ -137,7 +137,7 @@ It's SLOW when more than 20 git blame process start."
                                                    (point)))
          (default-directory (locate-dominating-file
                              default-directory ".git"))
-         (keyword (counsel-read-keyword nil (replace-regexp-in-string "^[ \t]*" "" cur-line)))
+         (keyword (counsel-escape (replace-regexp-in-string "^[ \t]*" "" cur-line)))
          (cmd (format "git --no-pager grep -I -h --no-color -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
                       keyword))
          (leading-spaces "")
