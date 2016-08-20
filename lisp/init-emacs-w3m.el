@@ -13,7 +13,9 @@
       w3m-command-arguments       '("-F" "-cookie")
       w3m-mailto-url-function     'compose-mail
       browse-url-browser-function 'w3m
-      mm-text-html-renderer       'w3m
+      ;; use shr to view html mail, but if libxml NOT available
+      ;; use w3m isntead. That's Emacs 24.3+ default logic
+      ;; mm-text-html-renderer 'shr
       w3m-use-toolbar t
       ;; show images in the browser
       ;; setq w3m-default-display-inline-images t
