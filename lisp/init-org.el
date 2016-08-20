@@ -160,6 +160,10 @@
 
   ;; for some reason, org8 disable odt export by default
   (add-to-list 'org-export-backends 'odt)
+  (add-to-list 'org-export-backends 'org) ; for org-mime
+
+  ;; org-mime setup, run this command in org-file, than yank in `message-mode'
+  (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
 
   ;; don't spell check double words
   (setq flyspell-check-doublon nil)
@@ -200,4 +204,20 @@
   (if is-promote (org-do-promote)
     (org-do-demote)))
 
+(defun org-mime-html-hook-setup ()
+  (org-mime-change-element-style "pre"
+                                 "color:#E6E1DC; background-color:#232323; padding:0.5em;")
+  (org-mime-change-element-style "blockquote"
+                                 "border-left: 2px solid gray; padding-left: 4px;"))
+;; org-mime setup
+(eval-after-load 'org-mime
+  '(progn
+     (add-hook 'org-mime-html-hook 'org-mime-html-hook-setup)))
+
+;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
+;; demo video: http://vimeo.com/album/1970594/video/13158054
+(add-hook 'message-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
+;; }}
 (provide 'init-org)
