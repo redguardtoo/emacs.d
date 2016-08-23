@@ -30,9 +30,6 @@
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
 
-;; salesforce
-(add-to-list 'auto-mode-alist '("\\.cls\\'" . apex-mode))
-(add-to-list 'auto-mode-alist '("\\.trigger\\'" . apex-mode))
 ;; java
 (add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
 ;; makefile

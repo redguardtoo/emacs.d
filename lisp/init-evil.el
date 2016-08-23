@@ -534,7 +534,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "bj" 'buf-move-down
        "bh" 'buf-move-left
        "bl" 'buf-move-right
-       "so" 'sos
        "0" 'select-window-0
        "1" 'select-window-1
        "2" 'select-window-2
