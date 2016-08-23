@@ -24,17 +24,6 @@
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
 
-
-;;----------------------------------------------------------------------------
-;; Fix per-window memory of buffer point positions
-;;----------------------------------------------------------------------------
-(global-pointback-mode)
-;; pointback-mode make it harder to insert latex macro
-;; @see https://github.com/redguardtoo/emacs.d/issues/307#issuecomment-212582241
-(add-hook 'LaTeX-mode-hook
-  (lambda ()
-    (pointback-mode -1)))
-
 ;;----------------------------------------------------------------------------
 ;; Page break lines
 ;;----------------------------------------------------------------------------
