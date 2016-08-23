@@ -206,7 +206,6 @@
         select-window-9
         self-insert-command
         smarter-move-beginning-of-line
-        smex
         suspend-frame
         term-send-raw
         turnon-keyfreq-mode
