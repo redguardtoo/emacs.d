@@ -15,6 +15,7 @@ But you may use safer HTTPS instead.")
     robe
     groovy-mode
     inf-ruby
+    company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
     move-text
