@@ -63,20 +63,40 @@
 
 (my-setup-odt-org-convert-process)
 
+(defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
+  "Indirect buffer could multiple widen on same file."
+  (if (region-active-p) (deactivate-mark))
+  (if use-indirect-buffer
+      (with-current-buffer (clone-indirect-buffer
+                            (generate-new-buffer-name
+                             (concat (buffer-name) "-indirect-"
+                                     (number-to-string start) "-"
+                                     (number-to-string end)))
+                            'display)
+        (narrow-to-region start end)
+        (goto-char (point-min)))
+      (narrow-to-region start end)))
+
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
-(defun narrow-or-widen-dwim ()
-  "If the buffer is narrowed, it widens. Otherwise, it narrows to region, or Org subtree."
-  (interactive)
+(defun narrow-or-widen-dwim (&optional use-indirect-buffer)
+  "If the buffer is narrowed, it widens.
+ Otherwise, it narrows to region, or Org subtree.
+If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen content."
+  (interactive "P")
   (cond ((buffer-narrowed-p) (widen))
-        ((region-active-p) (narrow-to-region (region-beginning) (region-end)))
-        ((equal major-mode 'org-mode) (org-narrow-to-subtree))
+        ((region-active-p)
+         (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                                 (region-end)
+                                                 use-indirect-buffer))
+        ((equal major-mode 'org-mode)
+         (org-narrow-to-subtree))
         ((equal major-mode 'diff-mode)
-         (let (b e)
+         (let* (b e)
            (save-excursion
              (setq b (diff-beginning-of-file))
              (setq e (progn (diff-end-of-file) (point))))
            (when (and b e (< b e))
-             (narrow-to-region b e))))
+             (narrow-to-region-indirect-buffer-maybe b e use-indirect-buffer))))
         (t (error "Please select a region to narrow to"))))
 
 ;; Various preferences
@@ -185,9 +205,9 @@
 (defadvice org-publish (around org-publish-advice activate)
   "Stop running major-mode hook when org-publish"
   (let ((old load-user-customized-major-mode-hook))
-	(setq load-user-customized-major-mode-hook nil)
+    (setq load-user-customized-major-mode-hook nil)
     ad-do-it
-	(setq load-user-customized-major-mode-hook old)))
+    (setq load-user-customized-major-mode-hook old)))
 
 ;; {{ org2nikola set up
 (setq org2nikola-output-root-directory "~/.config/nikola")
