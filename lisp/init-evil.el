@@ -544,7 +544,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "7" 'select-window-7
        "8" 'select-window-8
        "9" 'select-window-9
-       "xm" 'counsel-M-x
+       "xm" 'my-M-x
        "xx" 'er/expand-region
        "xf" 'ido-find-file
        "xb" 'ido-switch-buffer

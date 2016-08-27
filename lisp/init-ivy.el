@@ -407,6 +407,4 @@ If ag (the_silver_searcher) exists, use ag."
               :action 'counsel--open-grepped-file)))
 ;; }}
 
-(global-set-key (kbd "M-x") 'counsel-M-x)
-
 (provide 'init-ivy)

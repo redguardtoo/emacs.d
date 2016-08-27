@@ -148,6 +148,7 @@ ARCHIVE is the string name of the package archive.")
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'color-theme)
 (require-package 'auto-compile)
+(require-package 'smex)
 (require-package 'avy)
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)

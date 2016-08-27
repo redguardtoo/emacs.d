@@ -213,6 +213,16 @@
 ;; }}
 
 
+;; smex or counsel-M-x?
+(defvar my-use-smex nil
+  "Use `smex' instead of `counsel-M-x' when press M-x.")
+(defun my-M-x ()
+  (interactive)
+  (if my-use-smex (smex)
+    ;; `counsel-M-x' will use `smex' to remember history
+    (counsel-M-x)))
+(global-set-key (kbd "M-x") 'my-M-x)
+
 (defun compilation-finish-hide-buffer-on-success (buf str)
   "Could be reused by other major-mode after compilation."
   (if (string-match "exited abnormally" str)
