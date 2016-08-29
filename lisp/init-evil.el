@@ -498,6 +498,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rnt" 'rinari-find-test
        "fs" 'ffip-save-ivy-last
        "fr" 'ffip-ivy-resume
+       "fc" 'cp-ffip-ivy-last
        "ss" 'swiper-the-thing ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
        "hst" 'hs-toggle-fold
        "hsa" 'hs-toggle-fold-all
