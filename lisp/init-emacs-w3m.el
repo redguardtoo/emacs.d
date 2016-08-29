@@ -167,7 +167,7 @@
       (unless url
         (save-excursion
           (goto-char (point-min))
-          (when (string-match "^Archived-at: <?\\([^ <>]*\\)>?" (setq str (buffer-substring-no-properties (point-min) (point-max))))
+          (when (string-match "^Archived-at: <?\\([^ <>]*\\)>?" (setq str (my-buffer-str)))
             (setq url (match-string 1 str)))))
 
       (setq cmd (format "%s -cache 2000 %s &" (my-guess-mplayer-path) url))
@@ -182,7 +182,7 @@
     (save-excursion
       (goto-char (point-min))
       ;; first line in email could be some hidden line containing NO to field
-      (setq str (buffer-substring-no-properties (point-min) (point-max))))
+      (setq str (my-buffer-str)))
     ;; (message "str=%s" str)
     (if (string-match "^Subject: \\(.+\\)" str)
         (setq rlt (match-string 1 str)))

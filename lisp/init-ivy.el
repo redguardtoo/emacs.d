@@ -15,7 +15,7 @@
 
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
   (if (region-active-p)
-      (counsel-escape (buffer-substring-no-properties (region-beginning) (region-end)))
+      (counsel-escape (my-selected-str))
     (if default-when-no-active-region
         default-when-no-active-region
       (read-string hint))))
@@ -133,8 +133,7 @@ It's SLOW when more than 20 git blame process start."
 (defun counsel-git-grep-complete-line ()
   "Complete line by use text from (line-beginning-position) to (point)."
   (interactive)
-  (let* ((cur-line (buffer-substring-no-properties (line-beginning-position)
-                                                   (point)))
+  (let* ((cur-line (my-line-str (point)))
          (default-directory (locate-dominating-file
                              default-directory ".git"))
          (keyword (counsel-escape (replace-regexp-in-string "^[ \t]*" "" cur-line)))

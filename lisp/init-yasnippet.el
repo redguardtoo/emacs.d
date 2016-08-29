@@ -42,7 +42,7 @@
     (save-excursion
       (goto-char (point-min))
       ;; first line in email could be some hidden line containing NO to field
-      (setq str (buffer-substring-no-properties (point-min) (point-max))))
+      (setq str (my-buffer-str)))
     ;; (message "str=%s" str)
     (if (string-match "^To: \"?\\([a-zA-Z]+\\)" str)
         (setq rlt (capitalize (match-string 1 str))))

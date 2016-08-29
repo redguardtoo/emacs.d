@@ -18,11 +18,7 @@
 
 ;; no spell check for property
 (defun org-mode-current-line-is-property ()
-  (let (cur-line)
-    (setq cur-line (buffer-substring-no-properties
-                    (line-beginning-position) (line-end-position)))
-    ;; (message "cur-line=%s" cur-line)
-    (string-match "^[ \t]+:[A-Z]+:[ \t]+" cur-line)))
+  (string-match "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str)))
 
 ;; Please note flyspell only use ispell-word
 (defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)

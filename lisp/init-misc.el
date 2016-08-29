@@ -583,7 +583,7 @@ If step is -1, go backward."
 ;; {{ string-edit-mode
 (defun string-edit-at-point-hook-setup ()
   (let ((major-mode-list (remove major-mode '(web-mode js2-mode js-mode css-mode emacs-lisp-mode)))
-        (str (buffer-substring-no-properties (point-min) (point-max))))
+        (str (my-buffer-str)))
     ;; (ivy-read "directories:" collection :action 'dired)
     ;; (message "original=%s" (se/find-original))
     ;; (message "major-mode-list=%s major-mode=%s" major-mode-list major-mode)

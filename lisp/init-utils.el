@@ -39,10 +39,19 @@
   "Return the directory in which the `LIBRARY-NAME' load file is found."
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
+(defun my-line-str (&optional line-end)
+  (buffer-substring-no-properties (line-beginning-position)
+                                  (if line-end line-end (line-end-position))))
+
+(defun my-buffer-str ()
+  (buffer-substring-no-properties (point-min) (point-max)))
+
+(defun my-selected-str ()
+  (buffer-substring-no-properties (region-beginning) (region-end)))
+
 (defun my-use-selected-string-or-ask (hint)
   "Use selected region or ask user input for string."
-  (if (region-active-p)
-      (buffer-substring-no-properties (region-beginning) (region-end))
+  (if (region-active-p) (my-selected-str)
     (if (string= "" hint) (thing-at-point 'symbol)
       (read-string hint))))
 

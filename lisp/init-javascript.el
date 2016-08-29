@@ -157,8 +157,8 @@ The line numbers of items will be extracted."
   "Validate buffer or select region as JSON.
 If NOT-JSON-P is not nil, validate as Javascript expression instead of JSON."
   (interactive "P")
-  (let* ((json-exp (if (region-active-p) (buffer-substring-no-properties (region-beginning) (region-end))
-                     (buffer-substring-no-properties (point-min) (point-max))))
+  (let* ((json-exp (if (region-active-p) (my-selected-str)
+                     (my-buffer-str)))
          (jsbuf-offet (if not-json-p 0 (length "var a=")))
          errs
          first-err
@@ -193,7 +193,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     (js2-print-json-path hardcoded-array-index))
    (t
     (let* ((cur-pos (point))
-           (str (buffer-substring-no-properties (point-min) (point-max))))
+           (str (my-buffer-str)))
       (when (string= "json" (file-name-extension buffer-file-name))
         (setq str (format "var a=%s;" str))
         (setq cur-pos (+ cur-pos (length "var a="))))
