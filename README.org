@@ -155,13 +155,9 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Required by sdcv.el
 - Install through OS package manager
 - Run =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
-**** [[https://github.com/svent/sift][sift]]
-- Quickest to search text in files
-- Required by `M-x my-grep`
-- Install through OS package manager
 **** [[https://github.com/ggreer/the_silver_searcher][the_silver_search (ag)]]
 - Search text in files
-- Required by `M-x my-grep` if [[https://github.com/svent/sift][sift]] not available
+- Required by `M-x my-grep`
 - Install through OS package manager
 * Tutorial (OPTIONAL)
 =~/.emacs.d/lisp/init-evil.el= contains my most frequently used key bindings.

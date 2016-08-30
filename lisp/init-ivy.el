@@ -22,34 +22,34 @@
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint &optional no-keyword filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 Yank the file name at the same time.  FILTER is function to filter the collection"
-  `(let ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
-        (default-directory (locate-dominating-file
-                            default-directory ".git"))
-        keyword
-        collection)
+  `(let* ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
+          (default-directory (locate-dominating-file
+                              default-directory ".git"))
+          keyword
+          collection)
 
-    ;; insert base file name into kill ring is possible
-    (kill-new (if counsel-process-filename-string
-                  (funcall counsel-process-filename-string str)
-                str))
+     ;; insert base file name into kill ring is possible
+     (kill-new (if counsel-process-filename-string
+                   (funcall counsel-process-filename-string str)
+                 str))
 
-    (unless ,no-keyword
-      ;; selected region contains no regular expression
-      (setq keyword (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
+     (unless ,no-keyword
+       ;; selected region contains no regular expression
+       (setq keyword (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
 
-    (setq collection
-          (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
-                                                   (format ,git-cmd keyword)))
-                        "\n"
-                        t))
-    (if ,filter (setq collection (funcall ,filter collection)))
-    (cond
-     ((and collection (= (length collection) 1))
-      (funcall ,fn (car collection)))
-     (t
-      (ivy-read (if ,no-keyword ,hint (format "matching \"%s\":" keyword))
-                collection
-                :action ,fn)))))
+     (setq collection
+           (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
+                                                    (format ,git-cmd keyword)))
+                         "\n"
+                         t))
+     (if ,filter (setq collection (funcall ,filter collection)))
+     (cond
+      ((and collection (= (length collection) 1))
+       (funcall ,fn (car collection)))
+      (t
+       (ivy-read (if ,no-keyword ,hint (format "matching \"%s\":" keyword))
+                 collection
+                 :action ,fn)))))
 
 (defun counsel--open-grepped-file (val)
   (let* ((lst (split-string val ":"))
@@ -106,7 +106,6 @@ It's SLOW when more than 20 git blame process start."
                                         (counsel-read-keyword nil "HEAD"))
                                 "files from `git-show' "
                                 t))
-
 
 (defun counsel-git-diff-file ()
   "Find file in `git diff'."
@@ -270,7 +269,6 @@ Or else, find files since 24 weeks (6 months) ago."
         (git-cmd (format "git --no-pager blame -w -L %d,+1 --porcelain %s"
                          linenum
                          filename))
-
         (str (shell-command-to-string git-cmd))
         hash)
 
@@ -287,7 +285,7 @@ Or else, find files since 24 weeks (6 months) ago."
       (message "Current line is NOT committed yet!")))))
 
 (defun counsel-yank-bash-history ()
-  "Yank the bash history"
+  "Yank the bash history."
   (interactive)
   (shell-command "history -r") ; reload history
   (let* ((collection
@@ -308,7 +306,7 @@ Or else, find files since 24 weeks (6 months) ago."
                                   "*Git-show")))
 
 (defun counsel-recentf-goto ()
-  "Recent files"
+  "Recent files."
   (interactive)
   (unless recentf-mode (recentf-mode 1))
   (ivy-recentf))
@@ -325,7 +323,7 @@ Or else, find files since 24 weeks (6 months) ago."
     (ivy-read "directories:" collection :action 'dired)))
 
 
-;; {{ sift/ag/grep
+;; {{ ag/grep
 (defvar my-grep-ingore-dirs
   '(".git"
     ".bzr"
@@ -361,16 +359,6 @@ Or else, find files since 24 weeks (6 months) ago."
 (defun my-grep-cli (keyword)
   (let* (opts)
     (cond
-     ((executable-find "sift")
-      (setq opts (concat "--exclude-ext="
-                         (mapconcat 'identity my-grep-ingore-file-exts ",")
-                         " "
-                         (mapconcat (lambda (e) (format "--exclude-dirs='%s'" e))
-                                    my-grep-ingore-dirs " ")
-                         " "
-                         (mapconcat (lambda (e) (format "--exclude-files='%s'" e))
-                                    my-grep-ingore-file-names " ")))
-      (format "sift --err-skip-line-length --binary-skip -r -n --no-color %s \"%s\" ." opts keyword))
      ((executable-find "ag")
       (setq opts (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
                                     my-grep-ingore-dirs " ")
