@@ -714,4 +714,17 @@ If step is -1, go backward."
 (setq csv-separators '("," ";" "|" " "))
 ;; }}
 
+;; {{ regular expression tools
+(defun my-create-regex-from-kill-ring (&optional n)
+  "Create extended regex from first N items of `kill-ring'."
+  (interactive "p")
+  (when (and kill-ring (> (length kill-ring) 0))
+    (if (> n (length kill-ring))
+        (setq n (length kill-ring)))
+    (let* ((rlt (mapconcat 'identity (subseq kill-ring 0 n) "|")))
+      (setq rlt (replace-regexp-in-string "(" "\\\\(" rlt))
+      (copy-yank-str rlt)
+      (message (format "%s => kill-ring&clipboard" rlt)))))
+;; }}
+
 (provide 'init-misc)

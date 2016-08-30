@@ -1,7 +1,4 @@
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defvar counsel-process-filename-string nil
-  "Give you a chance to change file name string for other counsel-* functions")
-
 (defun counsel-escape (keyword)
   (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
   (setq keyword (replace-regexp-in-string "\\?" "\\\\\?" keyword))
@@ -10,6 +7,8 @@
   (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
   (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
   (setq keyword (replace-regexp-in-string "\\]" "\\\\\]" keyword))
+  (setq keyword (replace-regexp-in-string "(" "\\\\\(" keyword))
+  (setq keyword (replace-regexp-in-string ")" "\\\\\)" keyword))
   keyword)
 
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
@@ -27,11 +26,6 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                               default-directory ".git"))
           keyword
           collection)
-
-     ;; insert base file name into kill ring is possible
-     (kill-new (if counsel-process-filename-string
-                   (funcall counsel-process-filename-string str)
-                 str))
 
      (unless ,no-keyword
        ;; selected region contains no regular expression
@@ -62,10 +56,11 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
       (forward-line (1- linenum)))))
 
 (defun counsel-git-grep-in-project ()
-  "Grep in the current git repository."
+  "Grep in the current git repository.
+Extended regex is used, like (pattern1|pattern2)."
   (interactive)
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                "git --no-pager grep -I --full-name -n --no-color -e \"%s\""
+                                "git --no-pager grep -I --full-name -n --no-color -E -e \"%s\""
                                 "grep"))
 
 (defvar counsel-git-grep-author-regex nil)
@@ -357,6 +352,7 @@ Or else, find files since 24 weeks (6 months) ago."
     "*~")
   "File names to ignore when grepping.")
 (defun my-grep-cli (keyword)
+  "Extended regex is used, like (pattern1|pattern2)."
   (let* (opts)
     (cond
      ((executable-find "ag")
@@ -378,11 +374,13 @@ Or else, find files since 24 weeks (6 months) ago."
                          " "
                          (mapconcat (lambda (e) (format "--exclude='%s'" e))
                                     my-grep-ingore-file-names " ")))
-      (format "grep -rsn %s \"%s\" * ." opts keyword)))))
+      ;; use extended regex always
+      (format "grep -rsnE %s \"%s\" * ." opts keyword)))))
 
 (defun my-grep ()
   "Grep at project root directory or current directory.
-If ag (the_silver_searcher) exists, use ag."
+If ag (the_silver_searcher) exists, use ag.
+Extended regex is used, like (pattern1|pattern2)."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
          (default-directory (or (and (fboundp 'ffip-get-project-root-directory)
