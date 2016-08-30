@@ -65,7 +65,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
   "Grep in the current git repository."
   (interactive)
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
+                                "git --no-pager grep -I --full-name -n --no-color -e \"%s\""
                                 "grep"))
 
 (defvar counsel-git-grep-author-regex nil)
