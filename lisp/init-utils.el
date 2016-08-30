@@ -39,6 +39,17 @@
   "Return the directory in which the `LIBRARY-NAME' load file is found."
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
+(defun my-insert-str (str)
+  ;; evil-mode?
+  (if (and (functionp 'evil-normal-state-p)
+           (boundp 'evil-move-cursor-back)
+           (evil-normal-state-p)
+           (not (eolp))
+           (not (eobp)))
+      (forward-char))
+  ;; insert now
+  (insert str))
+
 (defun my-line-str (&optional line-end)
   (buffer-substring-no-properties (line-beginning-position)
                                   (if line-end line-end (line-end-position))))
