@@ -131,9 +131,10 @@
 ;; {{ https://github.com/browse-kill-ring/browse-kill-ring
 (require 'browse-kill-ring)
 ;; no duplicates
-(setq browse-kill-ring-display-duplicates nil)
-;; preview is annoying
-(setq browse-kill-ring-show-preview nil)
+(setq browse-kill-ring-display-style 'one-line
+      browse-kill-ring-display-duplicates nil
+      ;; preview is annoying
+      browse-kill-ring-show-preview nil)
 (browse-kill-ring-default-keybindings)
 ;; hotkeys:
 ;; n/p => next/previous
@@ -578,7 +579,6 @@ If step is -1, go backward."
 ;; @see http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
-
 
 ;; {{ string-edit-mode
 (defun string-edit-at-point-hook-setup ()
