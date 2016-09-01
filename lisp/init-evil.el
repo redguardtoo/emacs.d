@@ -24,13 +24,13 @@
 (setq evil-default-cursor t)
 
 ;; {{ multiple-cursors
-;; step 1, select thing in visual-mode
-;; step 2, `mc/mark-all-like-this' or `mc/mark-all-like-this-in-defun'
+;; step 1, select thing in visual-mode (OPTIONAL)
+;; step 2, `mc/mark-all-like-dwim' or `mc/mark-all-like-this-in-defun'
 ;; step 3, `ace-mc-add-multiple-cursors' to remove cursor, press RET to confirm
 ;; step 4, press s or S to start replace
 ;; step 5, press C-g to quit multiple-cursors
 (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
-(define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this)
+(define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this-dwim)
 (define-key evil-visual-state-map (kbd "md") 'mc/mark-all-like-this-in-defun)
 (define-key evil-visual-state-map (kbd "mm") 'ace-mc-add-multiple-cursors)
 (define-key evil-visual-state-map (kbd "ms") 'ace-mc-add-single-cursor)
@@ -518,13 +518,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ne" 'flymake-goto-next-error
        "fw" 'ispell-word
        "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
-       "ma" 'mc/mark-all-like-this-in-defun
-       "mw" 'mc/mark-all-words-like-this-in-defun
-       "ms" 'mc/mark-all-symbols-like-this-in-defun
-       ;; "opt" is occupied by my-open-project-todo
-       ;; recommended in html
-       "md" 'mc/mark-all-like-this-dwim
-       "me" 'mc/edit-lines
        "oag" 'org-agenda
        "otl" 'org-toggle-link-display
        "om" 'toggle-org-or-message-mode
@@ -587,6 +580,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "kk" 'scroll-other-window
        "jj" 'scroll-other-window-up
        "yy" 'hydra-launcher/body
+       "hh" 'multiple-cursors-hydra/body
        "tt" 'my-toggle-indentation
        "gs" 'git-gutter:set-start-revision
        "gh" 'git-gutter-reset-to-head-parent
@@ -604,7 +598,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "us" 'gud-step
        "ui" 'gud-stepi
        "uc" 'gud-cont
-       "uf" 'gud-finish)
+       "uf" 'gud-finish
+       "ma" 'mc/mark-all-like-this-dwim
+       "md" 'mc/mark-all-like-this-in-defun
+       "mm" 'ace-mc-add-multiple-cursors
+       "mn" 'mc/mark-next-like-this
+       "ms" 'mc/skip-to-next-like-this
+       "me" 'mc/edit-lines)
 
 ;; per-major-mode leader setup
 (general-define-key :states '(normal motion insert emacs)
@@ -714,4 +714,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; (setq evil-exchange-key (kbd "zx"))
 (evil-exchange-install)
 ;; }}
+
+;; }}
+
 (provide 'init-evil)

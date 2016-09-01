@@ -7,6 +7,8 @@
   (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
   (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
   (setq keyword (replace-regexp-in-string "\\]" "\\\\\]" keyword))
+  (setq keyword (replace-regexp-in-string "{" "\\\\\{" keyword))
+  (setq keyword (replace-regexp-in-string "}" "\\\\\}" keyword))
   (setq keyword (replace-regexp-in-string "(" "\\\\\(" keyword))
   (setq keyword (replace-regexp-in-string ")" "\\\\\)" keyword))
   keyword)
