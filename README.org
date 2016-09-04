@@ -1,22 +1,21 @@
 * Checklist
 - [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
-- Emacs *24.3.1* or *24.4* recommended
 - Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
 - Please check section "About Emacs 23" if you uses Emacs 23.4
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - I intentionally *make packages from [[http://melpa.org][melpa-unstable]] uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
 - Other issues are covered in FAQ
 * Features
-- Stability is the first priority
-- I do *NOT* re-define key bindings to override original ones usually
+- Stable
+- All operations are efficient
+- Native key bindings are preserved
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] (Emacs in Shell)
-- Popular programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 - Robust (For example, you can install packages behind corp firewall)
-- Optimized for cross-platform C++ development
+- Popular programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 * Installation
 Most users should follow the section "Install in normal way".
 
-You need read the section "Install stable version in easiest way" *if and only if*:
+You need the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
 ** Install in normal way
@@ -185,6 +184,20 @@ Required for vim user,
 - Read ~/.emacs.d/site-lisp/evil/doc/evil.pdf
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
+** Key bindings
+I only use key bindings defined in =~/.emacs.d/lisp/init-evil.el=.
+
+For example, there is below code in that file,
+#+begin_src elisp
+(nvmap :prefix ","
+       "bu" 'backward-up-list)
+#+end_src
+
+It means I press ",bu" to execute command =backward-up-list=.
+
+So pressing ",bu" equals =M-x backward-up-list=. The official tutorials I recommended provide enough information about usage of the commands.
+
+Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 * FAQ
 ** Toggle color theme
 By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-theme.el][color-theme-molokai]] is used.
@@ -287,8 +300,8 @@ Some package cannot be downloaded automatically because of network problem.
 You could
 - =M-x list-packages= to manually install it
 - Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically
-** Disable vim keybinding
-By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing "(require 'init-evil)" in init.el to unload it.
+** Disable vim key binding
+By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
 It's defined in "~/.emacs.d/lisp/init-evil.el". Press =C-z= to switch between Emacs and Vim key bindings.
 
