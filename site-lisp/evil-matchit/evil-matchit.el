@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.4
+;; Version: 2.1.5
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -449,7 +449,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (evilmi--operate-on-item NUM))))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.4"))
+(defun evilmi-version() (interactive) (message "2.1.5"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
@@ -465,8 +465,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (evil-define-key 'normal evil-matchit-mode-map "%" 'evilmi-jump-items)
     (evil-define-key 'visual evil-matchit-mode-map "%" 'evilmi-jump-items))
 
-  (evil-normalize-keymaps)
-  (evilmi-init-plugins))
+  (evil-normalize-keymaps))
 
 ;;;###autoload
 (defun turn-on-evil-matchit-mode ()
@@ -483,6 +482,8 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   evil-matchit-mode turn-on-evil-matchit-mode
   "Global minor mode to emulate matchit.vim")
 
-(provide 'evil-matchit)
+;; initialize evilmi-plugins only once
+(evilmi-init-plugins)
 
+(provide 'evil-matchit)
 ;;; evil-matchit.el ends here
