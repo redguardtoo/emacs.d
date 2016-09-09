@@ -112,13 +112,13 @@
                                "\\.png"
                                "\\.gif"
                                "\\.svg"
-                               "\\.ico")
+                               "\\.ico"
+                               "archive-contents")
   "List of regexps and predicates for filenames excluded from the auto save list.
 When a filename matches any of the regexps or satisfies any of the
 predicates it is excluded from the auto save list.
 A predicate is a function that is passed a filename to check and that
 must return non-nil to exclude it."
-  :type 'boolean
   :group 'auto-save)
 
 ;; Emacs' default auto-save is stupid to generate #foo# files!
@@ -173,8 +173,7 @@ That is, if it doesn't match any of the `auto-save-exclude' checks."
 
 (defun auto-save-enable ()
   (interactive)
-  (run-with-idle-timer auto-save-idle t #'auto-save-buffers)
-  )
+  (run-with-idle-timer auto-save-idle t #'auto-save-buffers))
 
 (provide 'auto-save)
 
