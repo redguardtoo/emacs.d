@@ -1,16 +1,16 @@
 * Checklist
-- [[https://github.com/redguardtoo/emacs.d/issues/169][You can make this setup more stable]]
 - Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
-- Please check section "About Emacs 23" if you uses Emacs 23.4
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
-- I intentionally *make packages from [[http://melpa.org][melpa-unstable]] uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
+- Please read section "Key bindings" to learn key bindings
+- I intentionally make packages from [[http://melpa.org][melpa-unstable]] *uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
 - Other issues are covered in FAQ
+- Please read section "About Emacs 23" if you uses Emacs 23.4
 * Features
 - Stable
-- All operations are efficient
+- Efficient
 - Native key bindings are preserved
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] (Emacs in Shell)
-- Robust (For example, you can install packages behind corp firewall)
+- Robust (For example, you can install packages behind Corp firewall)
 - Popular programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 * Installation
 Most users should follow the section "Install in normal way".
@@ -158,31 +158,32 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Search text in files
 - Required by `M-x my-grep`
 - Install through OS package manager
-* Tutorial (OPTIONAL)
+* Usage
+** Tutorial (OPTIONAL)
 =~/.emacs.d/lisp/init-evil.el= contains my most frequently used key bindings.
-** Basic tutorial
+*** Basic tutorial
 Everyone should finish this tutorial at first.
-*** Step 1, learn OS basics
+**** Step 1, learn OS basics
 At minimum you need know,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment variable]] 
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard streams]]
-*** Step 2, read official tutorial at least once
+**** Step 2, read official tutorial at least once
 Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
 - How to move cursor
 - How to read help by pressing =C-h v= and =C-h f=.
-*** Step 3, know org-mode basics
+**** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-*** Step 4, solve your first problem
+**** Step 4, solve your first problem
 For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
-** Evil-mode tutorial
+*** Evil-mode tutorial
 Required for vim user,
 - Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
 - Read ~/.emacs.d/site-lisp/evil/doc/evil.pdf
-** Methodology
+*** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 ** Key bindings
 I only use key bindings defined in =~/.emacs.d/lisp/init-evil.el=.
