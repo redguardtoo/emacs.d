@@ -127,16 +127,16 @@ must return non-nil to exclude it."
 (defun auto-save-include-p (filename)
   "Return non-nil if FILENAME should be included.
 That is, if it doesn't match any of the `auto-save-exclude' checks."
-  (let ((case-fold-search nil)
-        (checks auto-save-exclude)
-        (keepit t))
+  (let* ((case-fold-search nil)
+         (checks auto-save-exclude)
+         (keepit t))
     (while (and checks keepit)
       ;; If there was an error in a predicate, err on the side of
       ;; keeping the file.
       (setq keepit (not (ignore-errors
                           (if (stringp (car checks))
                               ;; A regexp
-                              (string-match (car checks) filename)
+                              (string-match-p (car checks) filename)
                             ;; A predicate
                             (funcall (car checks) filename))))
             checks (cdr checks)))
