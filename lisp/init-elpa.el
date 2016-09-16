@@ -11,6 +11,9 @@ But you may use safer HTTPS instead.")
   '(ace-mc
     bbdb
     color-theme
+    ivy
+    counsel
+    swiper
     wgrep
     robe
     groovy-mode

@@ -306,7 +306,9 @@ Or else, find files since 24 weeks (6 months) ago."
   "Recent files."
   (interactive)
   (unless recentf-mode (recentf-mode 1))
-  (ivy-recentf))
+  (if (fboundp 'counsel-recentf)
+      (counsel-recentf)
+    (ivy-recentf)))
 
 (defun counsel-goto-recent-directory ()
   "Goto recent directories."
