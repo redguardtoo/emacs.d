@@ -67,15 +67,16 @@
 (defun my-git-timemachine-show-selected-revision ()
   "Show last (current) revision of file."
   (interactive)
-  (let (collection)
-    (setq collection
-          (mapcar (lambda (rev)
+  (let* ((collection (mapcar (lambda (rev)
                     ;; re-shape list for the ivy-read
-                    (cons (concat (substring (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
-                  (git-timemachine--revisions)))
+                    (cons (concat (substring-no-properties (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
+                  (git-timemachine--revisions))))
     (ivy-read "commits:"
               collection
               :action (lambda (rev)
+                        ;; compatible with ivy 8+ and later ivy version
+                        (unless (string-match-p "^[a-z0-9]*$" (car rev))
+                          (setq rev (cdr rev)))
                         (git-timemachine-show-revision rev)))))
 
 (defun my-git-timemachine ()
