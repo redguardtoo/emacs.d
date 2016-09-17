@@ -400,6 +400,7 @@ INDENT-SIZE decide the indentation level.
                 "key" ; Keysnail
                 "ko"
                 "log"
+                "assert"
                 "module"
                 "plugins" ; Keysnail
                 "process"
