@@ -24,4 +24,11 @@
 (setq artbollocks-jargon nil)
 (add-hook 'text-mode-hook 'artbollocks-mode)
 
+
+;; FIXME: disable only inside org-mode
+(defun artbollocks-reading-ease-disable ()
+  "Disable key-binding C-c / due to it's conflict with org-sparse-tree."
+  (define-key artbollocks-mode-keymap (kbd "C-c /") nil))
+(add-hook 'artbollocks-mode-hook 'artbollocks-reading-ease-disable)
+
 (provide 'init-artbollocks-mode)
