@@ -31,6 +31,13 @@
         comint-send-input
         comint-previous-input
         delete-backward-char
+        ;; {{ nothing to optimize in dired
+        dired
+        dired-do-async-shell-command
+        dired-find-file
+        diredp-next-line
+        diredp-previous-line
+        ;; }}
         describe-variable
         erase-message-buffer
         eval-buffer
