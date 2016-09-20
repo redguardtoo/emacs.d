@@ -78,6 +78,7 @@
   (require 'init-erlang)
   (require 'init-javascript)
   (require 'init-org)
+  (require 'init-org-download)
   (require 'init-css)
   (require 'init-python-mode)
   (require 'init-haskell)
