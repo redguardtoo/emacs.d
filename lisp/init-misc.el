@@ -62,7 +62,7 @@
               grep-highlight-matches t
               grep-scroll-output t
               indent-tabs-mode nil
-              line-spacing 0.2
+              line-spacing 0
               mouse-yank-at-point t
               set-mark-command-repeat-pop t
               tooltip-delay 1.5
