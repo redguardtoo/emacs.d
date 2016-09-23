@@ -14,11 +14,14 @@
                                 ;; re-shape list for the ivy-read
                                 (cons (wg-workgroup-name group) group))
                               (wg-session-workgroup-list (read (f-read-text (file-truename wg-session-file)))))))
+
     (ivy-read "work groups"
               group-names
-              :action (lambda (group)
+              :action (lambda (e)
                         (wg-find-session-file wg-default-session-file)
-                        (wg-switch-to-workgroup group)))))
+                        ;; ivy8 & ivy9
+                        (if (stringp (car e)) (setq e (cdr e)))
+                        (wg-switch-to-workgroup e)))))
 
 (eval-after-load 'workgroups2
   '(progn

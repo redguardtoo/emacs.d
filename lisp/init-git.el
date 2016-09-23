@@ -175,12 +175,11 @@
 (defun my-goto-git-gutter ()
   (interactive)
   (if git-gutter:diffinfos
-      (let* ((collection (mapcar 'my-reshape-git-gutter
-                                 git-gutter:diffinfos)))
-        (ivy-read "git-gutters:"
-                  collection
-                  :action (lambda (linenum)
-                            (goto-line linenum))))
+      (ivy-read "git-gutters:"
+                (mapcar 'my-reshape-git-gutter git-gutter:diffinfos)
+                :action (lambda (e)
+                          (unless (numberp e) (setq e (cdr e)))
+                          (goto-line e)))
     (message "NO git-gutters!")))
 
 (defun my-goto-previous-hunk (arg)
