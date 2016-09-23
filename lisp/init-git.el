@@ -146,6 +146,18 @@
       (forward-line -1)
       (git-gutter:next-hunk arg))))
 
+(defun my-goto-previous-hunk (arg)
+  (interactive "p")
+  (if (memq major-mode '(diff-mode))
+      (diff-hunk-prev)
+    (forward-line -1)
+    (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
+        (goto-char (line-beginning-position))
+      (forward-line -1)
+      (git-gutter:previous-hunk arg))))
+;; }}
+
+;; {{ git-gutter use ivy
 (defun my-reshape-git-gutter (gutter)
   "Re-shape gutter for `ivy-read'."
   (let* ((linenum-start (aref gutter 3))
@@ -182,15 +194,6 @@
                           (goto-line e)))
     (message "NO git-gutters!")))
 
-(defun my-goto-previous-hunk (arg)
-  (interactive "p")
-  (if (memq major-mode '(diff-mode))
-      (diff-hunk-prev)
-    (forward-line -1)
-    (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
-        (goto-char (line-beginning-position))
-      (forward-line -1)
-      (git-gutter:previous-hunk arg))))
 ;; }}
 
 ;; {{ git-messenger
