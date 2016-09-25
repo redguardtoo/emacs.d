@@ -1,9 +1,9 @@
-;;; window-numbering --- Numbered window shortcuts
+;;; window-numbering.el --- Numbered window shortcuts
 ;;
-;; Copyright (C) 2006-2007, 2013 Nikolaj Schumacher <bugs * nschum , de>
+;; Copyright (C) 2006-2007, 2013, 2015 Nikolaj Schumacher <bugs * nschum , de>
 ;;
 ;; Author: Nikolaj Schumacher <bugs * nschum de>
-;; Version: 1.1.1
+;; Version: 1.1.2
 ;; Keywords: faces, matching
 ;; URL: http://nschum.de/src/emacs/window-numbering-mode/
 ;; Compatibility: GNU Emacs 22.x, GNU Emacs 23.x, GNU Emacs 24.x
@@ -37,6 +37,9 @@
 ;;
 ;;; Changes Log:
 ;;
+;;    Fix numbering of minibuffer for recent Emacs versions.
+;;
+;; 2013-03-23 (1.1.2)
 ;;    Fix numbering in terminal mode with menu bar visible.
 ;;    Add face for window number.  (thanks to Chen Bin)
 ;;
@@ -82,9 +85,13 @@ return a number to have it assigned to the current-window, nil otherwise."
 (defconst window-numbering-mode-line-position 1
   "The position in the mode-line `window-numbering-mode' displays the number.")
 
-(defface window-numbering-face '()
+(defface window-numbering-face
+  '()
   "Face used for the number in the mode-line."
   :group 'window-numbering)
+
+(defvar window-numbering-table nil
+  "table -> (window vector . number table)")
 
 (defun select-window-by-number (i &optional arg)
   "Select window given number I by `window-numbering-mode'.
@@ -105,9 +112,6 @@ If prefix ARG is given, delete the window instead of selecting it."
            ,(format "Select the window with number %i." i)
            (interactive "P")
            (select-window-by-number ,i arg))))
-
-(defvar window-numbering-table nil
-  "table -> (window vector . number table)")
 
 (defun window-numbering-calculate-left (windows)
   (let ((i 9) left)
@@ -159,12 +163,12 @@ windows to numbers."
   (let ((windows (window-list nil 0 (frame-first-window))))
     (run-hook-with-args 'window-numbering-before-hook windows)
     (when window-numbering-assign-func
-      (mapc `(lambda (window)
-               (with-selected-window window
-                 (with-current-buffer (window-buffer window)
-                   (let ((num (funcall ,window-numbering-assign-func)))
-                     (when num
-                       (window-numbering-assign window num))))))
+      (mapc (lambda (window)
+              (with-selected-window window
+                (with-current-buffer (window-buffer window)
+                  (let ((num (funcall window-numbering-assign-func)))
+                    (when num
+                      (window-numbering-assign window num))))))
             windows))
     (dolist (window windows)
       (window-numbering-assign window))))
@@ -201,12 +205,14 @@ windows to numbers."
         (save-excursion
           (setq window-numbering-table (make-hash-table :size 16))
           (window-numbering-install-mode-line)
+          (add-hook 'minibuffer-setup-hook 'window-numbering-update)
           (add-hook 'window-configuration-change-hook
                     'window-numbering-update)
           (dolist (frame (frame-list))
             (select-frame frame)
             (window-numbering-update))))
     (window-numbering-clear-mode-line)
+    (remove-hook 'minibuffer-setup-hook 'window-numbering-update)
     (remove-hook 'window-configuration-change-hook
                  'window-numbering-update)
     (setq window-numbering-table nil)))
