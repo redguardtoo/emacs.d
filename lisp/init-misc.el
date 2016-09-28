@@ -41,9 +41,6 @@
 
 (define-key global-map (kbd "RET") 'newline-and-indent)
 
-;; M-x without meta
-(global-set-key (kbd "C-x C-m") 'execute-extended-command)
-
 ;; {{ isearch
 ;; Use regex to search by default
 (global-set-key (kbd "C-s") 'isearch-forward-regexp)
@@ -223,6 +220,7 @@
     ;; `counsel-M-x' will use `smex' to remember history
     (counsel-M-x)))
 (global-set-key (kbd "M-x") 'my-M-x)
+(global-set-key (kbd "C-x C-m") 'my-M-x)
 
 (defun compilation-finish-hide-buffer-on-success (buf str)
   "Could be reused by other major-mode after compilation."

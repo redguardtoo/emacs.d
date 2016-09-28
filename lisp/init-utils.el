@@ -40,6 +40,8 @@
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
 (defun my-insert-str (str)
+  ;; ivy8 or ivy9
+  (if (consp str) (setq str (cdr str)))
   ;; evil-mode?
   (if (and (functionp 'evil-normal-state-p)
            (boundp 'evil-move-cursor-back)
