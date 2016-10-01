@@ -22,8 +22,10 @@
 ;; Yes, when I search email in IMAP folder, emails are not threaded
 (setq gnus-article-sort-functions
       '((not gnus-article-sort-by-date)
-        (not gnus-article-sort-by-number)
-        ))
+        (not gnus-article-sort-by-number)))
+
+;; Ignore certificate hostname.
+(setq starttls-extra-arguments '("--insecure"))
 
 (defun message-select-forwarded-email-tags ()
   "Select the <#mml-or-what-ever> tags in message-mode"
