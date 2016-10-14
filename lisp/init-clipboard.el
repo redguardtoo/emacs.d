@@ -14,9 +14,8 @@
 (defun cp-filename-of-current-buffer ()
   "Copy file name (NOT full path) into the yank ring and OS clipboard"
   (interactive)
-  (let (filename)
-    (when buffer-file-name
-      (setq filename (file-name-nondirectory buffer-file-name))
+  (when buffer-file-name
+    (let* (filename (file-name-nondirectory buffer-file-name))
       (copy-yank-str filename)
       (message "filename %s => clipboard & yank ring" filename))))
 
@@ -91,7 +90,7 @@ If N is 2, paste into kill-ring too"
              (not (eolp))
              (not (eobp)))
     (forward-char))
-  (let ((str (simpleclip-get-contents)))
+  (let* ((str (simpleclip-get-contents)))
     (cond
      ((not n)
       ;; do nothing

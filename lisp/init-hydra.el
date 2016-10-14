@@ -134,9 +134,9 @@
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
        ("s1" (shell-command (format "periscope.py -l en %s &"
                                     (dired-file-name-at-point))) "1 subtitle")
-       ("cf" (let ((f (dired-file-name-at-point)))
-                (copy-yank-str f)
-                (message "filename %s => clipboard & yank ring" f)) "Copy filename")
+       ("cf" (let* ((f (file-truename (dired-file-name-at-point))))
+               (copy-yank-str f)
+               (message "filename %s => clipboard & yank ring" f)) "Copy filename")
        ("C" dired-do-copy "cp")
        ("mv" diredp-do-move-recursive "mv")
        ("mk" dired-create-directory "mkdir")
