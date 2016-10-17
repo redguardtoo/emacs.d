@@ -236,16 +236,4 @@
 ;; And use keyfreq-show to see how many times you used a command.
 ;; comment out below line if there is performance impact
 (turnon-keyfreq-mode)
-
-;; Disable noisy echo message and keep silent.
-(defun keyfreq-autosave--do-silent ()
-  "Function executed periodically to save the `keyfreq-table' in `keyfreq-file'."
-  ;; I want to exit emacs as usually even there is exception here
-  (condition-case nil
-      (progn
-        (keyfreq-table-save keyfreq-table))
-    (error
-     (message "%s is corrupt" keyfreq-file))))
-(advice-add 'keyfreq-autosave--do :override #'keyfreq-autosave--do-silent)
-
 (provide 'init-keyfreq)
