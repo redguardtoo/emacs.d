@@ -344,7 +344,7 @@ Please note there is *NO unified way* to enable color theme. You need read color
 My sample code works for most color themes.
 
 If you *insist on configuring the color theme in a different way*, please,
-- Comment out the line containing =(require 'init-color-theme)= in "~/.emacs.d/init.el" at first
+- Comment out the line containing =(require 'init-color-theme)= in =~/.emacs.d/init.el= at first
 - Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
 *** Use color theme in terminal
 #+BEGIN_SRC sh

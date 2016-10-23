@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/elpa-mirror
-;; Version: 2.0.0
+;; Version: 2.1.0
 ;; Keywords: cloud mirror elpa
 ;;
 ;; This file is not part of GNU Emacs.
@@ -70,12 +70,12 @@ If nil, you need provide one when `elpamr-create-mirror-for-installed'.")
 (defun elpamr--create-one-item-for-archive-contents (pkg)
   "We can use package-alist directly.
 This API will append some meta info into package-alist."
-  (let ((name (car pkg))
-        item
-        package-content
-        repo
-        found
-        (i 0))
+  (let* ((name (car pkg))
+         item
+         package-content
+         repo
+         found
+         (i 0))
 
     ;; package-archive-contents is the list of ALL packages
     (while (and (not found)
@@ -101,8 +101,8 @@ This API will append some meta info into package-alist."
 
     (setq repo (elt (cdr package-content) 4))
     (if (listp repo)  (setq repo (elt (cdr package-content) 5)))
-     (if (member repo elpamr-exclude-package-from-repositories)
-      (setq item nil))
+    (if (member repo elpamr-exclude-package-from-repositories)
+        (setq item nil))
 
     item))
 
@@ -110,12 +110,10 @@ This API will append some meta info into package-alist."
 (defun elpamr--extract-info-from-dir (dirname)
   "Return `(list package-name integer-version-number)' or nil."
   (interactive)
-  (let (rlt name version)
-    (when (string-match "\\(.*\\)-\\([0-9.]+\\)$" dirname)
-      (setq name (match-string 1 dirname))
-      (setq version (split-string (match-string 2 dirname) "\\."))
-      (setq rlt (list name version)))
-    rlt))
+  (if (string-match "\\(.*\\)-\\([0-9.]+\\)$" dirname)
+      ;; (list name version)
+      (list (match-string 1 dirname)
+            (split-string (match-string 2 dirname) "\\."))))
 
 (defun elpamr--is-new-package ()
   "Emacs 24+ has different structure from 23."
@@ -124,34 +122,30 @@ This API will append some meta info into package-alist."
       (>= emacs-major-version 25)))
 
 (defun elpamr--win-executable-find (driver path exe)
-  (let* (rlt)
-    (if (executable-find (concat driver path exe))
-        (setq rlt (concat driver path exe)))
-    rlt))
+  (if (executable-find (concat driver path exe))
+      (concat driver path exe)))
 
 (defun elpamr--executable-find (exe)
-  (let* ((rlt (if (eq system-type 'windows-nt)
-                 (or
-                  ;; cygwin
-                  (elpamr--win-executable-find "c" ":\\\\cygwin64\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "d" ":\\\\cygwin64\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "e" ":\\\\cygwin64\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "c" ":\\\\cygwin\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "d" ":\\\\cygwin\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "e" ":\\\\cygwin\\\\bin\\\\" exe)
-                  ;; msys2
-                  (elpamr--win-executable-find "c" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "d" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "e" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "c" ":\\\\msys32\\\\usr\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "d" ":\\\\msys32\\\\usr\\\\bin\\\\" exe)
-                  (elpamr--win-executable-find "e" ":\\\\msys32\\\\usr\\\\bin\\\\" exe))
-               ;; *nix
-               (executable-find exe))))
-    (unless rlt
+  (or (and (eq system-type 'windows-nt)
+           (or
+            ;; cygwin
+            (elpamr--win-executable-find "c" ":\\\\cygwin64\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "d" ":\\\\cygwin64\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "e" ":\\\\cygwin64\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "c" ":\\\\cygwin\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "d" ":\\\\cygwin\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "e" ":\\\\cygwin\\\\bin\\\\" exe)
+            ;; msys2
+            (elpamr--win-executable-find "c" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "d" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "e" ":\\\\msys64\\\\usr\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "c" ":\\\\msys32\\\\usr\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "d" ":\\\\msys32\\\\usr\\\\bin\\\\" exe)
+            (elpamr--win-executable-find "e" ":\\\\msys32\\\\usr\\\\bin\\\\" exe)))
+      ;; *nix
+      (executable-find exe)
       ;; well, `executable-find' failed
-      (setq rlt exe))
-    rlt))
+      exe))
 
 (defun elpamr--fullpath (parent file &optional no-convertion)
   "Full path of 'parent/file'."
@@ -206,13 +200,11 @@ This API will append some meta info into package-alist."
 
 (defun elpamr--get-type (item)
   (let* ((a (elpamr--get-info-array item))
-         rlt)
-    (setq rlt
-          (if (elpamr--is-new-package)
-              (if (> (length a) 5)
-                  (elt a 5) 'tar)
-            (if (> (length a) 3)
-                (elt a 3) 'tar)))
+         (rlt (if (elpamr--is-new-package)
+                  (if (> (length a) 5)
+                      (elt a 5) 'tar)
+                (if (> (length a) 3)
+                    (elt a 3) 'tar))))
     (if (not rlt) (setq rlt 'tar))
     rlt))
 
@@ -252,7 +244,7 @@ This API will append some meta info into package-alist."
 (defun elpamr-version ()
   "Current version."
   (interactive)
-  (message "2.0.0"))
+  (message "2.1.0"))
 
 ;;;###autoload
 (defun elpamr-create-mirror-for-installed ()
@@ -304,7 +296,10 @@ Or else, user will be asked to provide the output directory."
                                   (elpamr--executable-find "tar")
                                   " cf "
                                   (elpamr--output-fullpath dir) ".tar --exclude=\"*.elc\" --exclude=\"*~\" "
-                                  (elpamr--input-fullpath dir)))))
+                                  " -C "
+                                  package-user-dir
+                                  " "
+                                  dir))))
 
           ;; for windows
           (if elpamr-debug (message "tar-cmd=%s" tar-cmd))
@@ -314,7 +309,8 @@ Or else, user will be asked to provide the output directory."
 
       ;; output archive-contents
       (with-temp-buffer
-        (let ((print-level nil)  (print-length nil))
+        (let* ((print-level nil)
+               (print-length nil))
           (insert "(1\n")
           (dolist (final-pkg final-pkg-list)
             ;; each package occupies one line

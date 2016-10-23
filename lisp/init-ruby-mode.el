@@ -4,16 +4,15 @@
 
 (defun ruby-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-    (require 'rinari)
     (robe-mode)
     (push 'company-robe company-backends)
-    (setq compile-command "rake ")
+    (setq-local compile-command "rake ")
     (flymake-ruby-load)))
 (add-hook 'ruby-mode-hook 'ruby-mode-hook-setup)
 
-(defun update-rails-ctags ()
-  (interactive)
-  (let ((default-directory (or (rinari-root) default-directory)))
-    (shell-command (concat "ctags -a -e -f " rinari-tags-file-name " --tag-relative -R app lib vendor test"))))
+;; Following generic project tools are more useful:
+;; - find-file-in-project
+;; - counsel-git-grep
+;; - compile
 
 (provide 'init-ruby-mode)

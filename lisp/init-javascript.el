@@ -39,21 +39,22 @@
   (save-excursion
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
+(defun my-common-js-setup ()
+  (unless (featurep 'js-comint) (require 'js-comint))
+  (unless (featurep 'js-doc) (require 'js-doc)))
+
 (defun mo-js-mode-hook ()
   (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
-    ;; js-mode only setup, js2-mode inherit from js-mode since v20150909
+    (my-common-js-setup)
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
-    ;; https://github.com/illusori/emacs-flymake
-    ;; javascript support is out of the box
-    ;; DONOT jslint json
-    ;; (add-to-list 'flymake-allowed-file-name-masks
-    ;;              '("\\.json\\'" flymake-javascript-init))
     (message "mo-js-mode-hook called")
-    (require 'js-comint)
-    (require 'js-doc)
     (flymake-mode 1)))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
+(eval-after-load 'js-mode
+  '(progn
+     ;; '$' is part of variable name like '$item'
+     (modify-syntax-entry ?$ "w" js-mode-syntax-table)))
 
 ;; {{ patching imenu in js2-mode
 (setq js2-imenu-extra-generic-expression javascript-common-imenu-regex-list)
@@ -303,14 +304,13 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 
 (defun my-js2-mode-setup()
   (unless (is-buffer-file-temp)
-    ;; looks nodejs is more popular
-    (require 'js-comint)
+    (my-common-js-setup)
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
-    (require 'js2-refactor)
-    (require 'js-doc)
+    (unless (featurep 'js2-refactor) (require 'js2-refactor))
     (js2-refactor-mode 1)
+    ;; js2-mode has its own syntax linter
     (flymake-mode -1)
     (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
     (define-key js2-mode-map "@" 'js-doc-insert-tag)
@@ -400,6 +400,7 @@ INDENT-SIZE decide the indentation level.
                 "key" ; Keysnail
                 "ko"
                 "log"
+                "assert"
                 "module"
                 "plugins" ; Keysnail
                 "process"

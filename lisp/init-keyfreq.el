@@ -31,6 +31,13 @@
         comint-send-input
         comint-previous-input
         delete-backward-char
+        ;; {{ nothing to optimize in dired
+        dired
+        dired-do-async-shell-command
+        dired-find-file
+        diredp-next-line
+        diredp-previous-line
+        ;; }}
         describe-variable
         erase-message-buffer
         eval-buffer
@@ -229,5 +236,4 @@
 ;; And use keyfreq-show to see how many times you used a command.
 ;; comment out below line if there is performance impact
 (turnon-keyfreq-mode)
-
 (provide 'init-keyfreq)
