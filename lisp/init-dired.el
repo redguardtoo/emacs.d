@@ -34,6 +34,19 @@ if no files marked, always operate on current line in dired-mode
           ad-do-it)
     ad-do-it))
 
+(defadvice dired-guess-default (after dired-guess-default-after-hack activate)
+  (if (string-match-p "^mplayer -quiet" ad-return-value)
+      (let* ((dir (file-name-as-directory (concat default-directory
+                                                  "Subs"))))
+        (cond
+         ((file-exists-p (concat dir "English.sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -vobsub Subs/English")))
+         ((file-exists-p (concat dir "Chinese.sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -vobsub Subs/Chinese"))))))
+  ad-return-value)
+
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
 ;; op open two new dired buffers side-by-side and give your new-found automagic power a whirl.
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
