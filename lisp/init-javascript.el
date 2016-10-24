@@ -30,6 +30,10 @@
         ("Watch" "[. \t]\$watch( *['\"]\\([^'\"]+\\)" 1)
         ("Function" "function[ \t]+\\([a-zA-Z0-9_$.]+\\)[ \t]*(" 1)
         ("Function" "^[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*=[ \t]*function[ \t]*(" 1)
+        ;; {{ es6 beginning
+        ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*([a-zA-Z0-9, ]*) *\{ *$" 1) ;; es6 fn1 () { }
+        ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*=[ \t]*(?[a-zA-Z0-9, ]*)?[ \t]*=>[ \t]*\{ *$" 1) ;; es6 fn1 = (e) => (var, var2) {
+        ;; }}
         ("Task" "[. \t]task([ \t]*['\"]\\([^'\"]+\\)" 1)
         ))
 
