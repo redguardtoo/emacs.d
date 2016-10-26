@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.5
+;; Version: 2.1.6
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -269,21 +269,21 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   ;; Javascript
   (autoload 'evilmi-javascript-get-tag "evil-matchit-javascript" nil)
   (autoload 'evilmi-javascript-jump "evil-matchit-javascript" nil)
+  (autoload 'evilmi-html-get-tag "evil-matchit-html" nil)
+  (autoload 'evilmi-html-jump "evil-matchit-html" nil)
   (mapc (lambda (mode)
           (plist-put evilmi-plugins mode '((evilmi-simple-get-tag evilmi-simple-jump)
-                                           (evilmi-javascript-get-tag evilmi-javascript-jump))))
+                                           (evilmi-javascript-get-tag evilmi-javascript-jump)
+                                           (evilmi-html-get-tag evilmi-html-jump))))
         '(js-mode json-mode js2-mode js3-mode javascript-mode))
 
   ;; Html
   (autoload 'evilmi-template-get-tag "evil-matchit-template" nil)
   (autoload 'evilmi-template-jump "evil-matchit-template" nil)
-  (autoload 'evilmi-html-get-tag "evil-matchit-html" nil)
-  (autoload 'evilmi-html-jump "evil-matchit-html" nil)
   (mapc (lambda (mode)
           (plist-put evilmi-plugins mode '((evilmi-template-get-tag evilmi-template-jump)
                                            (evilmi-simple-get-tag evilmi-simple-jump)
-                                           (evilmi-html-get-tag evilmi-html-jump)))
-          )
+                                           (evilmi-html-get-tag evilmi-html-jump))))
         '(web-mode html-mode nxml-mode nxhtml-mode sgml-mode message-mode))
 
   ;; Emacs Org-mode
@@ -449,7 +449,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (evilmi--operate-on-item NUM))))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.5"))
+(defun evilmi-version() (interactive) (message "2.1.6"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
