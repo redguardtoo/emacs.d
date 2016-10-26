@@ -62,10 +62,10 @@
 ;; }}
 
 
-;; ffip-diff-mode evil setup
+;; ffip-diff-mode (read only) evil setup
 (defun ffip-diff-mode-hook-setup ()
-    (evil-local-set-key 'normal "p" 'diff-hunk-prev)
-    (evil-local-set-key 'normal "n" 'diff-hunk-next)
+    (evil-local-set-key 'normal "K" 'diff-hunk-prev)
+    (evil-local-set-key 'normal "J" 'diff-hunk-next)
     (evil-local-set-key 'normal "P" 'diff-file-prev)
     (evil-local-set-key 'normal "N" 'diff-file-next)
     (evil-local-set-key 'normal "q" 'ffip-diff-quit)
