@@ -13,7 +13,6 @@ But you may use safer HTTPS instead.")
     color-theme
     ivy
     counsel
-    swiper
     wgrep
     robe
     groovy-mode
