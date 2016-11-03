@@ -65,11 +65,13 @@ But you may use safer HTTPS instead.")
     (setq package-archives
           '(;; uncomment below line if you need use GNU ELPA
             ;; ("gnu" . "https://elpa.gnu.org/packages/")
+            ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
             ("melpa" . "https://melpa.org/packages/")
             ("melpa-stable" . "https://stable.melpa.org/packages/")))
   (setq package-archives
         '(;; uncomment below line if you need use GNU ELPA
           ;; ("gnu" . "http://elpa.gnu.org/packages/")
+          ("my-js2-mode" . "http://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
           ("melpa" . "http://melpa.org/packages/")
           ("melpa-stable" . "http://stable.melpa.org/packages/")))
   )
