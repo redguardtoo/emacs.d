@@ -381,6 +381,8 @@ INDENT-SIZE decide the indentation level.
                 "_content" ; Keysnail
                 "angular"
                 "app"
+                "assert"
+                "assign"
                 "beforeEach"
                 "browser"
                 "by"
@@ -404,7 +406,6 @@ INDENT-SIZE decide the indentation level.
                 "key" ; Keysnail
                 "ko"
                 "log"
-                "assert"
                 "module"
                 "plugins" ; Keysnail
                 "process"
