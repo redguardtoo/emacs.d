@@ -47,4 +47,8 @@
              (setq compose-mail-user-agent-warnings nil)
              ))
 
+(eval-after-load 'gmail2bbdb
+  '(progn
+     (setq gmail2bbdb-exclude-people-without-name t)))
+
 (provide 'init-bbdb)
