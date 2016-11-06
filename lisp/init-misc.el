@@ -216,9 +216,16 @@
   "Use `smex' instead of `counsel-M-x' when press M-x.")
 (defun my-M-x ()
   (interactive)
-  (if my-use-smex (smex)
-    ;; `counsel-M-x' will use `smex' to remember history
-    (counsel-M-x)))
+  (cond
+    (my-use-smex
+      (smex))
+    ((fboundp 'counsel-M-x)
+     ;; `counsel-M-x' will use `smex' to remember history
+     (counsel-M-x))
+    ((fboundp 'smex)
+     (smex))
+    (t
+      (execute-extended-command))))
 (global-set-key (kbd "M-x") 'my-M-x)
 (global-set-key (kbd "C-x C-m") 'my-M-x)
 
