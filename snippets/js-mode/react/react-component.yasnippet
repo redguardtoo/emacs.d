@@ -1,0 +1,35 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: react component
+# key: main
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+import React from 'react';
+import { connect } from 'react-redux';
+// Optional
+import st from './`(file-name-base buffer-file-name)`.css';
+
+export class `(file-name-base buffer-file-name)` extends React.Component {
+  componentDidMount() {
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    return (
+      <h1>Hello, this is `(file-name-base buffer-file-name)`</h1>
+    );
+  }
+}
+
+export default connect(
+  function (storeState) {
+    // store state to props
+    return {
+    };
+  }
+)(`(file-name-base buffer-file-name)`);

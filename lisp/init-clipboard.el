@@ -11,8 +11,7 @@
   (unless clipboard-only (kill-new msg))
   (simpleclip-set-contents msg))
 
-(defun cp-filename-of-current-buffer ()
-  "Copy file name (NOT full path) into the yank ring and OS clipboard."
+(defun cp-filename-of-current-buffer () "Copy file name (NOT full path) into the yank ring and OS clipboard."
   (interactive)
   (when buffer-file-name
     (let* ((filename (file-name-nondirectory buffer-file-name)))

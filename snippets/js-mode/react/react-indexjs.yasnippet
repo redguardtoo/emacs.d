@@ -1,0 +1,63 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: react main app
+# key: main
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// Directory layout:
+//    - frontend/index.j
+//    - frontend/components/Home/Home.js
+//    - frontend/components/Dashboard/Dashboard.js
+//    - deployment/
+//    - node_modules/
+//    - package.json
+//    - webpack.config.js
+
+// Client entry point
+import React from 'react';
+import { Provider } from 'react-redux';
+import { Router, Route, browserHistory, IndexRoute } from 'react-router';
+import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
+
+// Initialize store
+var rootReducer = function(state, action) {
+  // return original state
+  return state;
+};
+const store = createStore(rootReducer, {} /* initial state */);
+
+// master page stylesheet
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    // "a full width container, spanning the entire width of your viewport', quoted from bootstrap docuemntation
+    return(<div>{this.props.children}</div>);
+  }
+}
+
+ReactDOM.render(
+  <Provider store={store}>
+    <Router history={browserHistory}>
+      <Route path="/" component={App}>
+
+        <IndexRoute getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./components/Home/Home.js').default);
+          });
+        }}/>
+
+        <Route path="cash-forecast" getComponent={(nextState, cb) => {
+          require.ensure([], require => {
+            cb(null, require('./components/Dashboard/Dashboard.js').default);
+          });
+        }} />
+
+      </Route>
+    </Router>
+  </Provider>,
+  document.getElementById('app')
+);
