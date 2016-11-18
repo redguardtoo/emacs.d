@@ -4,11 +4,11 @@
 ;;; Copyright (C) 2015 Stefano Mazzucco
 
 ;;; Author: Paul Huff <paul.huff@gmail.com>, Stefano Mazzucco <MY FIRST NAME - AT - CURSO - DOT - RE>
-;;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
+;;; Maintainer: Chen Bin <chenbin.sh AT gmail DOT com>
 ;;; Created: 15 Feb 2014
-;;; Version: 0.0.3
+;;; Version: 0.0.5
 ;;; URL: https://github.com/redguardtoo/js-comint
-;;; Package-Requires: ((nvm "0.2.0"))
+;;; Package-Requires: ()
 ;;; Keywords: javascript, node, inferior-mode, convenience
 
 ;; This file is NOT part of GNU Emacs.
@@ -61,26 +61,27 @@
 ;;  Away you go.
 
 ;;  If you have nvm, you can select the versions of node.js installed and run
-;;  them.  This is done thanks to nvm.el
-;;  To enable nvm support, run (js-do-use-nvm)
+;;  them.  This is done thanks to nvm.el.
+;;  Please note nvm.el is optional. So you need *manually* install it.
+;;  To enable nvm support, run `js-do-use-nvm'.
 ;;  The first time you start the JS interpreter with run-js, you will be asked
 ;;  to select a version of node.js
-;;  If you want to change version of node js, run (js-select-node-version)
+;;  If you want to change version of node js, run `js-select-node-version'
 
 ;;  You can add  the following couple of lines to your .emacs to take advantage of
 ;;  cool keybindings for sending things to the javascript interpreter inside
 ;;  of Steve Yegge's most excellent js2-mode.
-
-;; (add-hook 'js2-mode-hook '(lambda ()
-;;                             (local-set-key "\C-x\C-e" 'js-send-last-sexp)
-;;                             (local-set-key "\C-\M-x" 'js-send-last-sexp-and-go)
-;;                             (local-set-key "\C-cb" 'js-send-buffer)
-;;                             (local-set-key "\C-c\C-b" 'js-send-buffer-and-go)
-;;                             (local-set-key "\C-cl" 'js-load-file-and-go)))
+;;
+;;   (add-hook 'js2-mode-hook
+;;             (lambda ()
+;;               (local-set-key (kbd "C-x C-e") 'js-send-last-sexp)
+;;               (local-set-key (kbd "C-M-x") 'js-send-last-sexp-and-go)
+;;               (local-set-key (kbd "C-c b") 'js-send-buffer)
+;;               (local-set-key (kbd "C-c C-b") 'js-send-buffer-and-go)
+;;               (local-set-key (kbd "C-c l") 'js-load-file-and-go)))
 
 ;;; Code:
 
-(require 'nvm)
 (require 'comint)
 
 (defgroup inferior-js nil
@@ -88,7 +89,7 @@
   :group 'inferior-js)
 
 (defcustom inferior-js-program-command "node"
-  "JavScript interpreter."
+  "JavaScript interpreter."
   :group 'inferior-js)
 
 (defcustom inferior-js-program-arguments '("--interactive")
@@ -178,6 +179,8 @@ is run).
                            inferior-js-program-arguments)
                           " ")))
       (when js-use-nvm
+        (unless (featurep 'nvm)
+          (require 'nvm))
         (unless js-nvm-current-version
           (js-select-node-version)))
       (setq inferior-js-program-arguments (split-string cmd))
@@ -190,8 +193,9 @@ is run).
                  nil inferior-js-program-arguments)
         (inferior-js-mode)))
   (setq inferior-js-buffer "*js*")
-  (if (not dont-switch-p)
-      (pop-to-buffer "*js*")))
+  (if dont-switch-p
+      (display-buffer "*js*")
+    (pop-to-buffer "*js*")))
 
 ;;;###autoload
 (defun js-send-region (start end)
@@ -292,7 +296,7 @@ A javascript process can be fired up with M-x run-js.
 Customization: Entry to this mode runs the hooks on comint-mode-hook and
 inferior-js-mode-hook (in that order).
 
-You can send text to the inferior Javascript process from othber buffers containing
+You can send text to the inferior Javascript process from other buffers containing
 Javascript source.
     switch-to-js switches the current buffer to the Javascript process buffer.
     js-send-region sends the current region to the Javascript process.
