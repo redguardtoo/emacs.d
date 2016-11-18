@@ -62,6 +62,7 @@
 (autoload 'web-mode "web-mode")
 (autoload 'wg-create-workgroup "workgroups2" nil t)
 (autoload 'snippet-mode "yasnippet" "")
+(autoload 'run-js "js-comint" "")
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

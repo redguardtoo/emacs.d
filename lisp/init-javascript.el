@@ -1,7 +1,6 @@
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
-;; {{ js2-mode or javascript-mode
 (setq-default js2-use-font-lock-faces t
               js2-mode-must-byte-compile nil
               js2-idle-timer-delay 0.5 ; NOT too big for real time syntax check
@@ -329,14 +328,14 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 
 (cond
  ((not *no-memory*)
-  (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
+  (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
+  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
-  (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))
-  ))
-;; }}
+  (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))))
 
 (add-hook 'coffee-mode-hook 'flymake-coffee-load)
 
