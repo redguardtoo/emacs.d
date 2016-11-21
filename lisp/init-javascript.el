@@ -377,6 +377,7 @@ INDENT-SIZE decide the indentation level.
                 "KeyEvent"
                 "Raphael"
                 "React"
+                "__dirname" ; Node
                 "_content" ; Keysnail
                 "angular"
                 "app"
