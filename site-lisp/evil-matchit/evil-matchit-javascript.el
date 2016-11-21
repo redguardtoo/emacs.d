@@ -29,55 +29,55 @@
 (require 'evil-matchit-sdk)
 (require 'evil-matchit)
 
+(defvar evilmi-javascript-matching-chars
+  (string-to-list "{[(}}])"))
+
+;; javascript code: "(function(...) { ..."
+;; C code: "} else {"
+;; React JS code: " return ("
+;; line could ends with C++ or C comment
+(defvar evilmi-javascript-open-brace-pattern
+  "^[ \t]*[(}]?[$_a-zA-Z0-9]+.*\\([{(]\\)[ \t]*\\(\/\/.*\\|\/\*[^/]*\*\/\\)?$")
+
 (defun evilmi--javascript-find-open-brace (cur-line)
-  (let (rlt)
-    ;; javascript code line "(function(...) { ..."
-    ;; C code line "} else {"
-    (if (or (string-match "^[ \t]*[\(\}]?[$_a-zA-Z0-9]+.*{ *\\(\/\/.*\\)?$" cur-line)
-            (string-match "^[ \t]*[\(\}]?[$_a-zA-Z0-9]+.*{ *\\(\/\*[^/]*\*\/\\)?$" cur-line))
-        (setq rlt 1)
+  (let* (rlt)
+    (cond
+     ((string-match evilmi-javascript-open-brace-pattern
+                    cur-line)
+      (setq rlt (list 1 (match-string 1 cur-line))))
+     (t
       (save-excursion
         (forward-line)
-        (setq cur-line (evilmi-sdk-curline))
-        (if (string-match "^[ \t]*{ *$" cur-line)
-            (setq rlt 2))))
+        (if (string-match "^[ \t]*{[ \t]*$" (evilmi-sdk-curline))
+            (setq rlt (list 2 "{"))))))
     rlt))
 
 ;;;###autoload
 (defun evilmi-javascript-get-tag ()
-  (let (p
-        forward-line-num
-        rlt
-        (cur-line (evilmi-sdk-curline))
-        )
-    ;; only handle open tag
-    (if (not (memq (following-char) (string-to-list "{[(}}])")))
-        (if (setq forward-line-num (evilmi--javascript-find-open-brace cur-line))
-            (when forward-line-num
-              (setq p (line-beginning-position))
-              (forward-line (1- forward-line-num))
-              (search-forward "{" nil nil)
-              (backward-char)
-              (setq rlt (list p))
-              )
-          )
-      (setq rlt (list (point)))
-      )
-    rlt))
+  ;; only handle open tag
+  (cond
+   ((memq (following-char)
+          evilmi-javascript-matching-chars)
+    (list (point)))
+   (t
+    (let* ((r (evilmi--javascript-find-open-brace (evilmi-sdk-curline)))
+           (p (line-beginning-position)))
+      (when r
+        (forward-line (1- (car r)))
+        (search-forward (cadr r) nil nil)
+        (backward-char)
+        (list p))))))
 
 ;;;###autoload
 (defun evilmi-javascript-jump (rlt NUM)
-  (let (cur-line)
-    (when rlt
-      (evilmi--simple-jump)
-
-      (setq cur-line (evilmi-sdk-curline))
+  (when rlt
+    (evilmi--simple-jump)
+    (let* ((cur-line (evilmi-sdk-curline)))
       ;; hack for javascript
       (if (or (string-match "^[ \t]*}\)\(.*\)\; *$" cur-line)
               (string-match "^[ \t]*}\(.*\))\; *$" cur-line)
               (string-match "^[ \t]*}\])\; *$" cur-line))
           (line-end-position)
-        (1+ (point))))
-    ))
+        (1+ (point))))))
 
 (provide 'evil-matchit-javascript)
