@@ -396,10 +396,12 @@ INDENT-SIZE decide the indentation level.
                 "element"
                 "expect"
                 "ext" ; Keysnail
+                "fetch"
                 "gBrowser" ; Keysnail
                 "goDoCommand" ; Keysnail
                 "hook" ; Keysnail
                 "inject"
+                "isDev"
                 "it"
                 "jQuery"
                 "jasmine"
