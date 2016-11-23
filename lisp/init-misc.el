@@ -735,4 +735,42 @@ If step is -1, go backward."
       (message (format "%s => kill-ring&clipboard" rlt)))))
 ;; }}
 
+;; {{ perforce utilities
+(defvar p4-file-to-url '("" "")
+  "(car p4-file-to-url) is the original file prefix
+(cadr p4-file-to-url) is the url prefix")
+
+(defun p4-generate-cmd (opts)
+  (format "p4 %s %s"
+          opts
+          (replace-regexp-in-string (car p4-file-to-url)
+                                    (cadr p4-file-to-url)
+                                    buffer-file-name)))
+(defun p4edit ()
+  "p4 edit current file."
+  (interactive)
+  (shell-command (p4-generate-cmd "edit"))
+  (read-only-mode -1))
+
+(defun p4submit (&optional file-opened)
+  "p4 submit current file.
+If FILE-OPENED, current file is still opened."
+  (interactive "P")
+  (let* ((msg (read-string "Say (ENTER to abort):"))
+         (open-opts (if file-opened "-f leaveunchanged+reopen -r" ""))
+         (full-opts (format "submit -d '%s' %s" msg open-opts)))
+    (message "(p4-generate-cmd full-opts)=%s" (p4-generate-cmd full-opts))
+    (if (string= "" msg)
+        (message "Abort submit.")
+      (shell-command (p4-generate-cmd full-opts))
+      (unless file-opened (read-only-mode 1))
+      (message (format "%s submitted."
+                       (file-name-nondirectory buffer-file-name))))))
+
+(defun p4revert ()
+  "p4 revert current file."
+  (interactive)
+  (shell-command (p4-generate-cmd "revert"))
+  (read-only-mode 1))
+;; }}
 (provide 'init-misc)
