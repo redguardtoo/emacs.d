@@ -640,7 +640,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ Use `;` as leader key, for searching something
 (nvmap :prefix ";"
-       ";" 'avy-goto-subword-1
+       ";" 'avy-goto-char-timer ; input one or more characters
        "db" 'sdcv-search-pointer ; in buffer
        "dt" 'sdcv-search-input+ ;; in tip
        "dd" 'my-lookup-dict-org
