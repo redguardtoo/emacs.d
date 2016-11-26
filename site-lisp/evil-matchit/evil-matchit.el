@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.7
+;; Version: 2.1.9
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -341,6 +341,11 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
   (autoload 'evilmi-sh-jump "evil-matchit-sh" nil)
   (plist-put evilmi-plugins 'sh-mode '((evilmi-sh-get-tag evilmi-sh-jump)))
 
+  ;; verilog-mode
+  (autoload 'evilmi-verilog-get-tag "evil-matchit-verilog" nil)
+  (autoload 'evilmi-verilog-jump "evil-matchit-verilog" nil)
+  (plist-put evilmi-plugins 'verilog-mode '((evilmi-verilog-get-tag evilmi-verilog-jump)))
+
   ;; Lua or any fine script
   (autoload 'evilmi-script-get-tag "evil-matchit-script" nil)
   (autoload 'evilmi-script-jump "evil-matchit-script" nil)
@@ -449,7 +454,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (evilmi--operate-on-item NUM))))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.7"))
+(defun evilmi-version() (interactive) (message "2.1.9"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode

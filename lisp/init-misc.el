@@ -796,4 +796,7 @@ If FILE-OPENED, current file is still opened."
 (add-hook 'rjsx-mode-hook  'emmet-mode)
 ;; }}
 
+(autoload 'verilog-mode "verilog-mode" "Verilog mode" t )
+(add-to-list 'auto-mode-alist '("\\.[ds]?vh?\\'" . verilog-mode))
+
 (provide 'init-misc)

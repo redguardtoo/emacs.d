@@ -13,32 +13,33 @@ between '\\(' and '\\)' in regular expression.")
 (defun evilmi-sdk-trim-string (string)
   (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
 
+(defun evilmi-sdk-keyword (info)
+  (nth 3 info))
+
 (defun evilmi-sdk-tags-is-matched (level orig-tag-info cur-tag-info match-tags)
-  (let (rlt
-        (tag-pair-status (nth 2 cur-tag-info)))
+  (let* (rlt
+         (orig-keyword (evilmi-sdk-keyword orig-tag-info))
+         (cur-keyword (evilmi-sdk-keyword cur-tag-info))
+         (orig-row-idx (nth 0 orig-tag-info))
+         (cur-row-idx (nth 0 cur-tag-info))
+         (orig-type (nth 1 orig-tag-info))
+         (cur-type (nth 1 cur-tag-info)))
     ;; handle function exit point
-    (if (string= tag-pair-status "FN_EXIT")
-        (setq level 1))
+    (when (= 1 level)
+      ;; end tag could be the same
+      (if (and (evilmi--is-strictly-type cur-tag-info orig-tag-info)
+               (not (evilmi--exactly-same-type cur-tag-info orig-tag-info)))
+          ;; just pass
+          (setq rlt nil)
+        (cond
+         ((and (< orig-type 2) (= cur-type 2))
+          (setq rlt (evilmi-sdk-member cur-keyword (nth 2 (nth orig-row-idx match-tags)))))
 
-    (if (= 1 level)
-        (let ((orig-keyword (nth 3 orig-tag-info))
-              (cur-keyword (nth 3 cur-tag-info))
-              (orig-row-idx (nth 0 orig-tag-info))
-              (cur-row-idx (nth 0 cur-tag-info))
-              (orig-type (nth 1 orig-tag-info))
-              (cur-type (nth 1 cur-tag-info)))
-          ;; end tag could be the same
-          (if (and (string= tag-pair-status "MONOGAMY")
-                   (not (= orig-row-idx cur-row-idx)))
-              nil)
+         ((and (< cur-type 2) (= orig-type 2))
+          (setq rlt (evilmi-sdk-member orig-keyword (nth 2 (nth cur-row-idx match-tags)))))
 
-          (cond
-           ((and (< orig-type 2) (= cur-type 2))
-            (setq rlt (evilmi-sdk-member cur-keyword (nth 2 (nth orig-row-idx match-tags)))))
-           ((and (< cur-type 2) (= orig-type 2))
-            (setq rlt (evilmi-sdk-member orig-keyword (nth 2 (nth cur-row-idx match-tags)))))
-           (t (setq rlt (= (nth 0 orig-tag-info) (nth 0 cur-tag-info))))
-           )))
+         (t
+          (setq rlt (= (nth 0 orig-tag-info) (nth 0 cur-tag-info)))))))
     rlt))
 
 ;;;###autoload
@@ -48,127 +49,131 @@ between '\\(' and '\\)' in regular expression.")
    (line-end-position)))
 
 ;;;###autoload
-(defun evilmi-sdk-member (KEYWORD LIST)
-  "check if KEYWORD exist in LIST"
-  (let (rlt)
+(defun evilmi-sdk-member (keyword keyword-list)
+  "Check if KEYWORD exist in KEYWORD-LIST."
+  (let* (rlt)
     (cond
+     ((not keyword)
+      (setq rlt nil))
 
-     ((not KEYWORD) nil)
+     ((not keyword-list)
+      (setq rlt nil))
 
-     ((not LIST) nil)
+     ((stringp keyword-list)
+      (setq rlt (string-match (concat "^" keyword-list "$") keyword)))
 
-     ((stringp LIST)
-      (string-match (concat "^" LIST "$") KEYWORD))
+     ((stringp (car keyword-list))
+      (unless (setq rlt (string-match (concat "^" (car keyword-list) "$") keyword))
+        (setq rlt (evilmi-sdk-member keyword (cdr keyword-list)))))
 
-     ((stringp (car LIST))
-      (if (string-match (concat "^" (car LIST) "$") KEYWORD) t
-        (evilmi-sdk-member KEYWORD (cdr LIST)))
-      )
-
-     ((listp (car LIST))
-      (setq rlt (evilmi-sdk-member KEYWORD (car LIST)))
-      (if rlt rlt (evilmi-sdk-member KEYWORD (cdr LIST))))
+     ((listp (car keyword-list))
+      (unless (setq rlt (evilmi-sdk-member keyword (car keyword-list)))
+        (setq rlt (evilmi-sdk-member keyword (cdr keyword-list)))))
 
      (t
       ;; just ignore first element
-      (evilmi-sdk-member KEYWORD (cdr LIST)))
-     )))
+      (setq rlt (evilmi-sdk-member keyword (cdr keyword-list)))))
+
+     (if (and evilmi-debug rlt) (message "evilmi-sdk-member called => %s %s. rlt=%s" keyword keyword-list rlt))
+    rlt))
 
 
 ;;;###autoload
-(defun evilmi-sdk-get-tag-info (KEYWORD match-tags)
-  "return (row column is-function-exit-point keyword),
-the row and column marked position in evilmi-mylang-match-tags
-is-function-exit-point could be 'FN_EXIT' or other status"
-  (let (rlt elems elem found i j)
+(defun evilmi-sdk-get-tag-info (keyword match-tags)
+  "Return (row column is-function-exit-point keyword).
+The row and column marked position in evilmi-mylang-match-tags
+is-function-exit-point could be unknown status"
+  (let* (rlt
+         elems
+         elem
+         found
+         (i 0)
+         j)
 
-    (setq i 0)
     (while (and (< i (length match-tags)) (not found))
       (setq elems (nth i match-tags))
       (setq j 0)
       (while (and (not found) (< j (length elems)))
         (setq elem (nth j elems))
         (setq found (and (or (stringp elem) (listp elem))
-                         (evilmi-sdk-member KEYWORD elem)))
+                         (evilmi-sdk-member keyword elem)))
         (if (not found)
             (setq j (1+ j))))
       (if (not found) (setq i (1+ i))))
     (when found
       ;; function exit point maybe?
       (if (nth 3 (nth i match-tags))
-          (setq rlt (list
-                     i
-                     j
-                     (nth 3 (nth i match-tags))
-                     KEYWORD))
-        (setq rlt (list i j nil KEYWORD))
-        ))
+          (setq rlt (list i
+                          j
+                          (nth 3 (nth i match-tags))
+                          keyword))
+        (setq rlt (list i j nil keyword))))
+  (if evilmi-debug (message "evilmi-sdk-get-tag-info called => %s %s. rlt=%s" keyword match-tags rlt))
     rlt))
 
 (defun evilmi--sdk-extract-keyword (cur-line match-tags howtos)
-  "extract keyword from cur-line. keyword should be defined in match-tags"
-  (let (keyword howto i)
-
-    (setq i 0)
+  "Extract keyword from CUR-LINE.  Keyword is defined in MATCH-TAGS."
+  (let* (keyword howto (i 0))
     (while (and (not keyword) (< i (length howtos)))
       (setq howto (nth i howtos))
-
       (when (string-match (nth 0 howto) cur-line)
         ;; keyword should be trimmed because FORTRAN use "else if"
         (setq keyword (evilmi-sdk-trim-string (match-string (nth 1 howto) cur-line) ))
         ;; (message "keyword=%s" keyword)
 
         ;; keep search keyword by using next howto (regex and match-string index)
-        (if (not (evilmi-sdk-member keyword match-tags)) (setq keyword nil))
-        )
+        (if (not (evilmi-sdk-member keyword match-tags)) (setq keyword nil)))
       (setq i (1+ i)))
     keyword))
 
 (defun evilmi--is-monogamy (tag-info)
   (and (nth 2 tag-info) (string= (nth 2 tag-info) "MONOGAMY")))
 
-(defun evilmi--double-check-tags (i1 i2)
-  (let (rlt)
-    (if (and i1 i2)
-        ;; i1 and i2 should be at same row if either of them is monogamy
-      (if (or (evilmi--is-monogamy i1) (evilmi--is-monogamy i2))
-          (setq rlt (= (nth 0 i1) (nth 0 i2)))
-        (setq rlt t)))
+(defun evilmi--exactly-same-type (crt orig)
+  (= (nth 0 crt) (nth 0 orig)))
+
+(defun evilmi--is-strictly-type (crt orig)
+  (or (evilmi--is-monogamy crt) (evilmi--is-monogamy orig)))
+
+(defun evilmi--same-type (crt orig)
+  (let* (rlt)
+    (if (and crt orig)
+        ;; crt and orig should be at same row if either of them is monogamy
+        (if (evilmi--is-strictly-type crt orig)
+            (setq rlt (evilmi--exactly-same-type crt orig))
+          (setq rlt t)))
     rlt))
 
 ;;;###autoload
 (defun evilmi-sdk-get-tag (match-tags howtos)
-  "return '(start-point tag-info)"
-  (let (rlt
-        keyword
-        (cur-line (evilmi-sdk-curline))
-        tag-info)
+  "Return '(start-point ((row column is-function-exit-point keyword))."
+  (let* (rlt
+         (cur-line (evilmi-sdk-curline))
+         (keyword (evilmi--sdk-extract-keyword cur-line match-tags howtos))
+         (tag-info (if keyword (evilmi-sdk-get-tag-info keyword match-tags))))
 
-    (when (setq keyword (evilmi--sdk-extract-keyword cur-line match-tags howtos))
-
-      ;; since we mixed ruby and lua mode here
-      ;; maybe we should be strict at the keyword
-      (if (setq tag-info (evilmi-sdk-get-tag-info keyword match-tags))
-          ;; 0 - open tag; 1 - middle tag; 2 - close tag;
-          (setq rlt (list
-                     (if (= 2 (nth 1 tag-info))
-                         (line-end-position)
-                       (line-beginning-position))
-                     tag-info))
-        ))
+    ;; since we mixed ruby and lua mode here
+    ;; maybe we should be strict at the keyword
+    (if tag-info
+        ;; 0 - open tag; 1 - middle tag; 2 - close tag;
+        (setq rlt (list (if (= 2 (nth 1 tag-info))
+                            (line-end-position)
+                          (line-beginning-position))
+                        tag-info)))
     rlt))
 
 ;;;###autoload
-(defun evilmi-sdk-jump (rlt NUM match-tags howtos)
-  (let ((orig-tag-type (nth 1 (nth 1 rlt)))
-        (orig-tag-info (nth 1 rlt))
-        cur-tag-type
-        cur-tag-info
-        (level 1)
-        (cur-line (evilmi-sdk-curline))
-        keyword
-        found
-        where-to-jump-in-theory)
+(defun evilmi-sdk-jump (rlt num match-tags howtos)
+  (let* ((orig-tag-type (nth 1 (nth 1 rlt)))
+         (orig-tag-info (nth 1 rlt))
+         cur-tag-type
+         cur-tag-info
+         (level 1)
+         (cur-line (evilmi-sdk-curline))
+         keyword
+         found
+         where-to-jump-in-theory)
+    (if evilmi-debug (message "evilmi-sdk-jump called => %s" rlt))
 
     (while (not found)
       (forward-line (if (= orig-tag-type 2) -1 1))
@@ -178,7 +183,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
 
       (when keyword
         (setq cur-tag-info (evilmi-sdk-get-tag-info keyword match-tags))
-        (when (evilmi--double-check-tags cur-tag-info orig-tag-info)
+        (when (evilmi--same-type cur-tag-info orig-tag-info)
 
           (setq cur-tag-type (nth 1 cur-tag-info))
 
@@ -190,9 +195,7 @@ is-function-exit-point could be 'FN_EXIT' or other status"
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (back-to-indentation)
               (setq where-to-jump-in-theory (1- (line-beginning-position)))
-              (setq found t)
-              )
-            )
+              (setq found t)))
 
            ;; open (0) -> closed (2) found when level is zero, level--
            ((and (= orig-tag-type 0) (= cur-tag-type 2))
@@ -200,14 +203,12 @@ is-function-exit-point could be 'FN_EXIT' or other status"
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (goto-char (line-end-position))
               (setq where-to-jump-in-theory (line-end-position))
-              (setq found t)
-              )
-            (setq level (1- level))
-            )
+              (setq found t))
+            (setq level (1- level)))
+
            ;; open (0) -> open (0) level++
            ((and (= orig-tag-type 0) (= cur-tag-type 0))
-            (setq level (1+ level))
-            )
+            (setq level (1+ level)))
 
            ;; now handle mid tag
            ;; mid (1) -> mid (1) found if:
