@@ -773,4 +773,16 @@ If FILE-OPENED, current file is still opened."
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
 ;; }}
+
+(defun my-get-total-hours ()
+  (interactive)
+  (let* ((str (if (region-active-p) (my-selected-str)
+                (my-buffer-str)))
+         (total-hours 0)
+         (lines (split-string str "\n")))
+    (dolist (l lines)
+      (if (string-match " \\([0-9][0-9.]*\\)h[ \t]*$" l)
+          (setq total-hours (+ total-hours (string-to-number (match-string 1 l))))))
+    (message "total-hours=%s" total-hours)))
+
 (provide 'init-misc)
