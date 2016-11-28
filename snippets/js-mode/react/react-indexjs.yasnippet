@@ -5,27 +5,49 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 // Directory layout:
-//    - frontend/index.j
-//    - frontend/components/Home/Home.js
-//    - frontend/components/Dashboard/Dashboard.js
-//    - deployment/
-//    - node_modules/
-//    - package.json
-//    - webpack.config.js
+//   - frontend/index.js
+//   - frontend/index.template.ejs (used by HtmlWebpackPlugin, @see html5-webpack.yasnippet)
+//   - frontend/components/Home/Home.js
+//   - frontend/components/Dashboard/Dashboard.js
+//   - frontend-dist/
+//   - node_modules/
+//   - package.json (@see package-reactjs.yasnippet)
+//   - webpack.config.js (@see main-webpack.yasnippet)
+//   - .babelrc (file contents: {"presets": ["react", "es2015"], "plugins": ["transform-object-rest-spread"]})
+
+import "babel-polyfill"; // ie11
+require('es5-shim'); //ie 9
 
 // Client entry point
 import React from 'react';
-import { Provider } from 'react-redux';
 import { Router, Route, browserHistory, IndexRoute } from 'react-router';
 import ReactDOM from 'react-dom';
-import { createStore } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk'; // reducer could resolve the promise
+import { Provider } from 'react-redux';
+import { syncHistoryWithStore, routerReducer } from 'react-router-redux'; // route saved into store
 
 // Initialize store
-var rootReducer = function(state, action) {
-  // return original state
-  return state;
+function rootReducer(storeState={}, action) {
+  var finalStoreState;
+  switch (action.type) {
+  case 'EVT_DO_STH':
+    finalStoreState = { ...storeState, foo: 'foo' };
+    break;
+  default:
+    // return original state
+    finalStoreState = storeState;
+  }
+  return finalStoreState;
 };
-const store = createStore(rootReducer, {} /* initial state */);
+const store = createStore(
+  combineReducers({
+    app:rootReducer,
+    routing: routerReducer
+  }),
+  {}, /* initial state */
+  applyMiddleware(thunk)
+);
 
 // master page stylesheet
 class App extends React.Component {
@@ -39,24 +61,55 @@ class App extends React.Component {
   }
 }
 
+function getRoutePath(p) {
+  // isDev is set through webpack.DefinePlugin
+  return (isDev? '/':'/') + (p? p:'');
+}
+
+// the path is relative to the root directory which defined in webpack.config.js
+//
+// resolve: {
+//   extensions: ['', '.js', '.jsx'],
+//   modules: [
+//     'frontend',
+//     'node_modules'
+//   ],
+//   // root for es2015 import
+//   // @see http://moduscreate.com/es6-es2015-import-no-relative-path-webpack/
+//   root: [
+//     path.resolve('./frontend/components')
+//   ]
+// }
+const rootRoute = {
+  // We use dynamic routes which can be changed programmically
+  // @see https://github.com/ReactTraining/react-router/blob/master/docs/API.md
+  path: getRoutePath(), // the reason we use dynamic route
+  component: App,
+  indexRoute: {
+    getComponent: (nextState, cb) => {
+      require.ensure([], require => {
+        // use `./Home/Home.js` if you prefer relative index.js
+        cb(null, require('Home/Home.js').default);
+      });
+    }
+  },
+  childRoutes: [
+    {
+      path: 'dashboard',
+      getComponent:(nextState, cb) => {
+        require.ensure([], require => {
+          cb(null, require('Dashboard/Dashboard.js').default);
+        });
+      }
+    }
+  ]
+};
+const history = syncHistoryWithStore(browserHistory, store);
+
 ReactDOM.render(
   <Provider store={store}>
-    <Router history={browserHistory}>
-      <Route path="/" component={App}>
-
-        <IndexRoute getComponent={(nextState, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./components/Home/Home.js').default);
-          });
-        }}/>
-
-        <Route path="cash-forecast" getComponent={(nextState, cb) => {
-          require.ensure([], require => {
-            cb(null, require('./components/Dashboard/Dashboard.js').default);
-          });
-        }} />
-
-      </Route>
+    <Router history={history}>
+      {rootRoute}
     </Router>
   </Provider>,
   document.getElementById('app')

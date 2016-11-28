@@ -1,0 +1,96 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: ReactJS package.json (IE9 friendly)
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+{
+  "name": "${1:react-project}",
+  "version": "1.0.0",
+  "description": "$0",
+  "scripts": {
+    "http": "node_modules/.bin/webpack-dev-server --content-base frontend-dist/ --port 3333",
+    "build": "node_modules/.bin/cross-env NODE_ENV=production node_modules/.bin/webpack",
+    "devbuild": "node_modules/.bin/cross-env NODE_ENV=development node_modules/.bin/webpack",
+    "clean": "node_modules/.bin/rimraf src/main/resources/static/js/* src/main/resources/static/fonts/* src/main/resources/static/css/* src/main/resources/static/index.html",
+    "lint": "node_modules/.bin/eslint frontend",
+    "postinstall": "npm run clean && npm run build"
+  },
+  "author": "Chen Bin <chenbin.sh AT gmail DOT com>",
+  "license": "GPL",
+  "dependencies": {
+    "body-parser": "1.15.1",
+    "bootstrap": "3.3.7",
+    "font-awesome": "4.7.0",
+    "moment": "2.16.0",
+    "react": "15.1.0",
+    "react-bootstrap": "0.30.6",
+    "react-datetime": "2.7.5",
+    "react-dom": "15.1.0",
+    "react-redux": "4.4.5",
+    "react-router": "2.4.1",
+    "react-router-bootstrap": "0.23.1",
+    "react-router-redux": "4.0.7",
+    "reactabular": "7.0.0",
+    "redux": "3.5.2",
+    "redux-thunk": "2.1.0",
+    "sanitize-html": "1.11.4",
+    "whatwg-fetch": "0.11.1"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2",
+    "babel-core": "^6.18.0",
+    "babel-eslint": "^6.0.4",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-transform-object-rest-spread": "^6.19.0",
+    "babel-polyfill": "^6.16.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2015-native-modules": "^6.6.0",
+    "babel-preset-react": "^6.5.0",
+    "babel-preset-react-optimize": "^1.0.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "babel-register": "^6.9.0",
+    "chai": "^3.5.0",
+    "copy-webpack-plugin": "^4.0.1",
+    "cross-env": "^3.1.3",
+    "css-loader": "^0.23.1",
+    "enzyme": "^2.3.0",
+    "es5-shim": "^4.5.9",
+    "es6-promise": "^4.0.5",
+    "eslint": "^2.11.1",
+    "eslint-config-airbnb": "^9.0.1",
+    "eslint-plugin-ava": "^2.4.0",
+    "eslint-plugin-import": "^1.8.1",
+    "eslint-plugin-jsx-a11y": "^1.3.0",
+    "eslint-plugin-react": "^5.1.1",
+    "eventsource-polyfill": "^0.9.6",
+    "file-loader": "^0.8.5",
+    "fontgen-loader": "^0.2.1",
+    "html-webpack-plugin": "^2.24.1",
+    "jsdom": "^9.2.1",
+    "json-loader": "^0.5.4",
+    "postcss": "^5.2.5",
+    "postcss-import": "^8.2.0",
+    "postcss-loader": "^1.1.1",
+    "postcss-nested": "^1.0.0",
+    "postcss-simple-vars": "^3.0.0",
+    "redux-ava": "^2.0.0",
+    "rimraf": "^2.5.2",
+    "sinon": "^1.17.4",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "ava": {
+    "files": [
+      "frontend/**/*.spec.js"
+    ],
+    "source": [
+      "frontend/**/*.js"
+    ],
+    "failFast": true,
+    "babel": "inherit"
+  }
+}

@@ -26,6 +26,12 @@ export class `(file-name-base buffer-file-name)` extends React.Component {
   }
 }
 
+// latest way to dispatch
+`(file-name-base buffer-file-name)`.contextTypes = {
+    // @see https://github.com/grommet/grommet/issues/441
+    router: React.PropTypes.object.isRequired
+};
+
 export default connect(
   function (storeState) {
     // store state to props
