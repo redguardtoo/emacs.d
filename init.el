@@ -93,7 +93,6 @@
   (require 'init-elisp)
   (require 'init-yasnippet)
   ;; Use bookmark instead
-  (require 'init-zencoding-mode)
   (require 'init-cc-mode)
   (require 'init-gud)
   (require 'init-linum-mode)
