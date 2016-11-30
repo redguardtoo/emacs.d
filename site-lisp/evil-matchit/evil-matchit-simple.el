@@ -84,7 +84,7 @@
       (evilmi--simple-jump))
 
     ;; hack for javascript
-    (if (string-match "^[ \t]*})(.*)\; *$"
+    (if (string-match "^[ \t]*})\\((.*)\\)?\; *$"
                       (evilmi-sdk-curline))
         (line-end-position)
       (1+ (point)))))

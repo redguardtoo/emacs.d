@@ -178,8 +178,8 @@ is-function-exit-point could be unknown status"
     (while (not found)
       (forward-line (if (= orig-tag-type 2) -1 1))
       (setq cur-line (evilmi-sdk-curline))
-
       (setq keyword (evilmi--sdk-extract-keyword cur-line match-tags howtos))
+      (if evilmi-debug (message "keyword=%s cur-line=%s" keyword cur-line))
 
       (when keyword
         (setq cur-tag-info (evilmi-sdk-get-tag-info keyword match-tags))

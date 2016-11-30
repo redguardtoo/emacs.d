@@ -63,8 +63,9 @@
 
 ;; should try next howto, the purpose is avoid missing any howto
 (defvar evilmi-verilog-extract-keyword-howtos
-  '(("^[ \t]*\\(while\\|module\\|primitive\\|case\\|function\\|specify\\|table\\)" 1)
-    ("^[ \t]*\\(endmodule\\|endprimitive\\|endcase\\|endfunction\\|endspecify\\|endtable\\)" 1)
+  '(("^[ \t]*\\(while\\|module\\|primitive\\|case\\|function\\|specify\\|table\\|class\\|program\\|clocking\\|property\\|sequence\\|package\\covergroup\\|generate\\|interface\\|task\\|fork\\|join[a-z]*\\)" 1)
+    ("^[ \t]*\\(end[a-z]+\\)" 1)
+    ("^[ \t]*\\(`[a-z]+\\)" 1) ; macro
     ("\\([^a-z]\\|^\\)\\(begin\\|end\\)\\([^a-z]\\|$\\)" 2)))
 
 (defvar evilmi-verilog-match-tags
@@ -72,9 +73,23 @@
     ("primitive" () "endprimitive" "MONOGAMY")
     ("case" () "endcase" "MONOGAMY")
     ("function" () "endfunction" "MONOGAMY")
-    ("table" () "endtable" "MONOGAMY")
     ("specify" () "endspecify" "MONOGAMY")
-    ("begin" () "end")))
+    ("table" () "endtable" "MONOGAMY")
+    ("class" () "endclass" "MONOGAMY")
+    ("program" () "endprogram" "MONOGAMY")
+    ("clocking" () "endclocking" "MONOGAMY")
+    ("property" () "endproperty" "MONOGAMY")
+    ("sequence" () "endsequence" "MONOGAMY")
+    ("package" () "endpackage" "MONOGAMY")
+    ("covergroup" () "endgroup" "MONOGAMY")
+    ("generate" () "endgenerate" "MONOGAMY")
+    ("interface" () "endinterface" "MONOGAMY")
+    ("task" () "endtask" "MONOGAMY")
+    ("fork" () ("join" "join_any" "join_none") "MONOGAMY")
+    ("begin" () "end")
+    ("`ifn?def" "`else" "`endif" "MONOGAMY")
+    ("`celldefine" () "`endcelldefine" "MONOGAMY")
+    ))
 
 ;;;###autoload
 (defun evilmi-verilog-get-tag ()
@@ -86,8 +101,8 @@
       (let* ((cur-line (evilmi-sdk-curline))
              next-line
              (pos (line-beginning-position)))
-        (when (string-match "^[ \t]*\\(if\\|else\\( if\\)?\\).*" cur-line)
-          ;; second change for if else statement
+        (when (string-match "^[ \t]*\\(if\\(n?def\\)?\\|else\\( if\\)?\\).*" cur-line)
+          ;; second chance for if else statement
           (save-excursion
             (forward-line 1)
             (setq orig-info (evilmi-sdk-get-tag evilmi-verilog-match-tags

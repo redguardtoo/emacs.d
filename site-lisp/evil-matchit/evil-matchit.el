@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.1.9
+;; Version: 2.2.1
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -30,8 +30,12 @@
 ;;; Commentary:
 ;;
 ;; This program emulates matchit.vim by Benji Fisher.
-;; It allows you use % to match items.
-;; See https://github.com/redguardtoo/evil-matchit/ for help
+;; It allows you press % to match items.
+;; See https://github.com/redguardtoo/evil-matchit/ for help.
+;;
+;; You can turn on `evilmi-always-simple-jump' to match brackets at first.
+;; Thus you disable our *advanced algorithm* which I highly recommend.
+;; Some people may prefer simpler algorithm in `python-mode'.
 ;;
 ;; This program requires EVIL (http://gitorious.org/evil)
 ;;
@@ -42,12 +46,16 @@
 
 (defvar evilmi-plugins '(emacs-lisp-mode
                          ((evilmi-simple-get-tag evilmi-simple-jump)))
-  "The table to define which algorithm to use and when to jump items")
+  "The Matrix to of algorithms.")
 
 (defvar evilmi-may-jump-by-percentage t
-  "Simulate evil-jump-item behaviour.
-For example,press 50% to jump to 50 percentage in buffer.
-If nil, presing '50 %' means jump 50 times.")
+  "Simulate `evil-jump-item' behaviour.
+For example, `50%' jumps to 50 percentage of buffer.
+If nil, `50%' jumps 50 times.")
+
+(defvar evilmi-always-simple-jump nil
+  "`major-mode' like `python-mode' use optimized algorithm by default.
+Set this flag into `t' to always use simple jump.")
 
 (defvar evilmi-forward-chars (string-to-list "[{("))
 (defvar evilmi-backward-chars (string-to-list "]})"))
@@ -55,14 +63,12 @@ If nil, presing '50 %' means jump 50 times.")
 (defvar evilmi-debug nil)
 
 (defun evilmi--char-is-simple (ch)
-  (let* ((rlt (or (memq ch evilmi-forward-chars)
-                  (memq ch evilmi-backward-chars)
-                  ;; sorry we could not jump between ends of string in python-mode
-                  (memq ch evilmi-quote-chars))))
-
-    (if (and (memq major-mode '(python-mode))
-               ;; in evil-visual-state, (point) could equal to (line-end-position)
-               (>= (point) (1- (line-end-position))))
+  (let* (rlt)
+    (cond
+     ((and (not evilmi-always-simple-jump)
+           (memq major-mode '(python-mode))
+           ;; in evil-visual-state, (point) could equal to (line-end-position)
+           (>= (point) (1- (line-end-position))))
       ;; handle follow python code,
       ;;
       ;; if true:
@@ -71,6 +77,11 @@ If nil, presing '50 %' means jump 50 times.")
       ;; If current cursor is at end of line , rlt should be nil!
       ;; or else, matching algorithm can't work in above python sample
       (setq rlt nil))
+     (t
+      (setq rlt (or (memq ch evilmi-forward-chars)
+                    (memq ch evilmi-backward-chars)
+                    ;; sorry we could not jump between ends of string in python-mode
+                    (memq ch evilmi-quote-chars)))))
     rlt))
 
 (defun evilmi--get-char-at-position (pos)
@@ -86,8 +97,8 @@ If nil, presing '50 %' means jump 50 times.")
     (list ch p)))
 
 (defun evilmi--is-jump-forward ()
-  "Return: (forward-direction font-face-under-cursor character-under-cursor)
-If font-face-under-cursor is NOT nil, the quoted string is being processed"
+  "Return: (forward-direction font-face-under-cursor character-under-cursor).
+If font-face-under-cursor is NOT nil, the quoted string is being processed."
   (let* ((tmp (evilmi--get-char-under-cursor))
          (ch (car tmp))
          (p (cadr tmp))
@@ -223,13 +234,13 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (goto-char (evilmi--find-position-to-jump ff jump-forward ch))
     (evilmi--tweak-selected-region ff jump-forward)))
 
-(defun evilmi--operate-on-item (NUM &optional FUNC)
-  (let ((plugin (plist-get evilmi-plugins major-mode))
-        rlt
-        jumped
-        where-to-jump-in-theory)
+(defun evilmi--operate-on-item (num &optional FUNC)
+  (let* ((plugin (plist-get evilmi-plugins major-mode))
+         rlt
+         jumped
+         where-to-jump-in-theory)
 
-    (if (not NUM) (setq NUM 1))
+    (unless num (setq num 1))
 
     (if plugin
         (mapc
@@ -240,7 +251,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
              ;; before jump, we may need some operation
              (if FUNC (funcall FUNC rlt))
              ;; jump now, execute evilmi-xxxx-jump
-             (setq where-to-jump-in-theory (funcall (nth 1 elem) rlt NUM))
+             (setq where-to-jump-in-theory (funcall (nth 1 elem) rlt num))
              ;; jump only once if the jump is successful
              (setq jumped t)))
          plugin))
@@ -258,6 +269,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (push-mark (nth 0 rlt) t t))
 
 (defun evilmi-init-plugins ()
+  "Load Matrix."
   (interactive)
   ;; simple matching for languages containing "{(["
   (autoload 'evilmi-simple-get-tag "evil-matchit-simple" nil)
@@ -364,10 +376,10 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
                                            (evilmi-ruby-get-tag evilmi-ruby-jump))))
         '(ruby-mode enh-ruby-mode)))
 
-(defun evilmi--region-to-select-or-delete (NUM &optional is-inner)
-  (let (where-to-jump-in-theory b e)
+(defun evilmi--region-to-select-or-delete (num &optional is-inner)
+  (let* (where-to-jump-in-theory b e)
     (save-excursion
-      (setq where-to-jump-in-theory (evilmi--operate-on-item NUM 'evilmi--push-mark))
+      (setq where-to-jump-in-theory (evilmi--operate-on-item num 'evilmi--push-mark))
       (if where-to-jump-in-theory (goto-char where-to-jump-in-theory))
       (setq b (region-beginning))
       (setq e (region-end))
@@ -392,49 +404,49 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
     (if evilmi-debug (message "evilmi--region-to-select-or-delete called. Return: %s" (list b e)))
     (list b e)))
 
-(evil-define-text-object evilmi-inner-text-object (&optional NUM begin end type)
+(evil-define-text-object evilmi-inner-text-object (&optional num begin end type)
   "Inner text object describing the region selected when you press % from evil-matchit"
   :type line
-  (let* ((selected-region (evilmi--region-to-select-or-delete NUM t)))
+  (let* ((selected-region (evilmi--region-to-select-or-delete num t)))
     (evil-range (car selected-region) (cadr selected-region) 'line)))
 
-(evil-define-text-object evilmi-outer-text-object (&optional NUM begin end type)
+(evil-define-text-object evilmi-outer-text-object (&optional num begin end type)
   "Outer text object describing the region selected when you press % from evil-matchit"
   :type line
-  (let ((selected-region (evilmi--region-to-select-or-delete NUM)))
+  (let ((selected-region (evilmi--region-to-select-or-delete num)))
     (evil-range (car selected-region) (cadr selected-region) 'line)))
 
 (define-key evil-inner-text-objects-map "%" 'evilmi-inner-text-object)
 (define-key evil-outer-text-objects-map "%" 'evilmi-outer-text-object)
 
 ;;;###autoload
-(defun evilmi-select-items (&optional NUM)
-  "Select items/tags and the region between them"
+(defun evilmi-select-items (&optional num)
+  "Select items/tags and the region between them."
   (interactive "p")
-  (let* ((selected-region (evilmi--region-to-select-or-delete NUM)))
+  (let* ((selected-region (evilmi--region-to-select-or-delete num)))
     (when selected-region
       (evilmi--push-mark selected-region)
       (goto-char (cadr selected-region)))))
 
 ;;;###autoload
-(defun evilmi-delete-items (&optional NUM)
-  "Delete items/tags and the region between them"
+(defun evilmi-delete-items (&optional num)
+  "Delete items/tags and the region between them."
   (interactive "p")
-  (let* ((selected-region (evilmi--region-to-select-or-delete NUM)))
+  (let* ((selected-region (evilmi--region-to-select-or-delete num)))
     ;; 1+ because the line feed
     (kill-region (car selected-region) (1+ (cadr selected-region)))))
 
 ;;;###autoload
-(defun evilmi-jump-to-percentage (NUM)
-  "Re-implementation of evil's similar functionality"
+(defun evilmi-jump-to-percentage (num)
+  "Like Vim %."
   (interactive "P")
-  (let (dst)
-    (when (and NUM (> NUM 0))
+  (let* (dst)
+    (when (and num (> num 0))
       (setq dst (let ((size (- (point-max) (point-min))))
                   (+ (point-min)
                      (if (> size 80000)
-                         (* NUM (/ size 100))
-                       (/ (* NUM size) 100)))))
+                         (* num (/ size 100))
+                       (/ (* num size) 100)))))
       (cond
        ((< dst (point-min))
         (setq dst (point-min)))
@@ -444,21 +456,23 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
       (back-to-indentation))))
 
 ;;;###autoload
-(defun evilmi-jump-items (&optional NUM)
-  "Jump between item/tag(s)"
+(defun evilmi-jump-items (&optional num)
+  "Jump between items."
   (interactive "P")
   (cond
-   ((and evilmi-may-jump-by-percentage NUM)
-    (evilmi-jump-to-percentage NUM))
+   ((and evilmi-may-jump-by-percentage num)
+    (evilmi-jump-to-percentage num))
    (t
-    (evilmi--operate-on-item NUM))))
+    (evilmi--operate-on-item num))))
 
 ;;;###autoload
-(defun evilmi-version() (interactive) (message "2.1.9"))
+(defun evilmi-version()
+  (interactive)
+  (message "2.2.1"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
-  "Buffer-local minor mode to emulate matchit.vim"
+  "Buffer-local minor mode to emulate matchit.vim."
   :keymap (make-sparse-keymap)
   ;; get correct value of `(point)` in visual-line mode
   ;; @see https://bitbucket.org/lyro/evil/issues/540/get-the-char-under-cusor-in-visual-line
@@ -485,7 +499,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed"
 ;;;###autoload
 (define-globalized-minor-mode global-evil-matchit-mode
   evil-matchit-mode turn-on-evil-matchit-mode
-  "Global minor mode to emulate matchit.vim")
+  "Global minor mode to emulate matchit.vim.")
 
 ;; initialize evilmi-plugins only once
 (evilmi-init-plugins)
