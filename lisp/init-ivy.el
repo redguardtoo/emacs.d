@@ -14,11 +14,17 @@
   keyword)
 
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
-  (if (region-active-p)
-      (counsel-escape (my-selected-str))
-    (if default-when-no-active-region
-        default-when-no-active-region
-      (read-string hint))))
+  (let* (keyword)
+    (cond
+     ((region-active-p)
+      (setq keyword (counsel-escape (my-selected-str)))
+      ;; de-select region
+      (set-mark-command nil))
+     (t
+      (setq keyword (if default-when-no-active-region
+          default-when-no-active-region
+          (read-string hint)))))
+    keyword))
 
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint &optional no-keyword filter)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
@@ -357,7 +363,7 @@ Or else, find files since 24 weeks (6 months) ago."
   "File names to ignore when grepping.")
 (defun my-grep-cli (keyword)
   "Extended regex is used, like (pattern1|pattern2)."
-  (let* (opts)
+  (let* (opts cmd)
     (cond
      ((executable-find "ag")
       (setq opts (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
@@ -368,7 +374,7 @@ Or else, find files since 24 weeks (6 months) ago."
                          " "
                          (mapconcat (lambda (e) (format "--ignore='%s'" e))
                                     my-grep-ingore-file-names " ")))
-      (format "ag -s --nocolor --nogroup --silent %s \"%s\" -- ." opts keyword))
+      (setq cmd (format "ag -s --nocolor --nogroup --silent %s \"%s\" --" opts keyword)))
      (t
       (setq opts (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
                                     my-grep-ingore-dirs " ")
@@ -379,7 +385,9 @@ Or else, find files since 24 weeks (6 months) ago."
                          (mapconcat (lambda (e) (format "--exclude='%s'" e))
                                     my-grep-ingore-file-names " ")))
       ;; use extended regex always
-      (format "grep -rsnE %s \"%s\" * ." opts keyword)))))
+      (setq cmd (format "grep -rsnE %s \"%s\" *" opts keyword))))
+    ;; (message "cmd=%s" cmd)
+    cmd))
 
 (defun my-grep ()
   "Grep at project root directory or current directory.
@@ -387,13 +395,16 @@ If ag (the_silver_searcher) exists, use ag.
 Extended regex is used, like (pattern1|pattern2)."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
-         (default-directory (or (and (fboundp 'ffip-get-project-root-directory)
-                                     (ffip-get-project-root-directory))
-                                default-directory))
-         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "\n" t)))
-    (ivy-read (format "matching \"%s\" at %s:" keyword default-directory)
+         (dir (and (fboundp 'ffip-get-project-root-directory)
+                   (ffip-get-project-root-directory)))
+         (default-directory (file-name-as-directory dir))
+         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t)))
+
+    (ivy-read (format "matching \"%s\" at %s:" keyword dir)
               collection
-              :action 'counsel--open-grepped-file)))
+              :action `(lambda (line)
+                         (let* ((default-directory dir))
+                           (counsel--open-grepped-file line))))))
 ;; }}
 
 (defun counsel-browse-kill-ring (&optional n)
