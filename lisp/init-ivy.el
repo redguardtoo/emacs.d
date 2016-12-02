@@ -7,7 +7,12 @@
   (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
   (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
   (setq keyword (replace-regexp-in-string "\\]" "\\\\\]" keyword))
-  (setq keyword (replace-regexp-in-string "{" "\\\\\{" keyword))
+  ;; perl-regex support non-ASCII characters
+  ;; Turn on `-P` from `git grep' and `grep'
+  ;; the_silver_searcher needs no setup
+  (setq keyword (replace-regexp-in-string "(" "\\\\x28" keyword))
+  (setq keyword (replace-regexp-in-string ")" "\\\\x29" keyword))
+  (setq keyword (replace-regexp-in-string "{" "\\\\\\{" keyword))
   (setq keyword (replace-regexp-in-string "}" "\\\\\}" keyword))
   (setq keyword (replace-regexp-in-string "(" "\\\\\(" keyword))
   (setq keyword (replace-regexp-in-string ")" "\\\\\)" keyword))
@@ -68,7 +73,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
 Extended regex is used, like (pattern1|pattern2)."
   (interactive)
   (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                "git --no-pager grep -I --full-name -n --no-color -E -e \"%s\""
+                                "git --no-pager grep -P -I --full-name -n --no-color -E -e \"%s\""
                                 "grep"))
 
 (defvar counsel-git-grep-author-regex nil)
@@ -125,24 +130,42 @@ It's SLOW when more than 20 git blame process start."
                                 "git ls-tree -r HEAD --name-status | grep \"%s\""
                                 "file"))
 
+(defun counsel-insert-grepped-line (val)
+  (let ((lst (split-string val ":")) text-line)
+    ;; the actual text line could contain ":"
+    (setq text-line (replace-regexp-in-string (format "^%s:%s:" (car lst) (nth 1 lst)) "" val))
+    ;; trim the text line
+    (setq text-line (replace-regexp-in-string (rx (* (any " \t\n")) eos) "" text-line))
+    (kill-new text-line)
+    (if insert-line (insert text-line))
+    (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst))))
+
 (defun counsel-replace-current-line (leading-spaces content)
   (beginning-of-line)
   (kill-line)
   (insert (concat leading-spaces content))
   (end-of-line))
 
-(defun counsel-git-grep-complete-line ()
-  "Complete line by use text from (line-beginning-position) to (point)."
-  (interactive)
+(defun counsel-git-grep-complete-line (&optional other-grep)
+  "Complete line using text from (line-beginning-position) to (point).
+If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
+  (interactive "P")
   (let* ((cur-line (my-line-str (point)))
          (default-directory (locate-dominating-file
                              default-directory ".git"))
          (keyword (counsel-escape (replace-regexp-in-string "^[ \t]*" "" cur-line)))
-         (cmd (format "git --no-pager grep -I -h --no-color -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
-                      keyword))
+         (cmd (cond
+               ((not other-grep)
+                (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
+                        keyword))
+               (t
+                (concat  (my-grep-cli keyword (if (executable-find "ag") "" "-h")) ; tell grep not to output file name
+                         (if (executable-find "ag") " | sed s\"\/^.*:[0-9]*:\/\/\"" "") ; remove file names for ag
+                         " | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"))))
          (leading-spaces "")
-         (collection (split-string (shell-command-to-string cmd) "\n" t)))
+         (collection (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
 
+         (message "cmd=%s" cmd)
     ;; grep lines without leading/trailing spaces
     (when collection
       (if (string-match "^\\([ \t]*\\)" cur-line)
@@ -161,20 +184,10 @@ It's SLOW when more than 20 git blame process start."
   "Grep in the current git repository and yank the line.
 If INSERT-LINE is not nil, insert the line grepped"
   (interactive "P")
-  (let* ((fn (lambda (val)
-               (let ((lst (split-string val ":")) text-line)
-                 ;; the actual text line could contain ":"
-                 (setq text-line (replace-regexp-in-string (format "^%s:%s:" (car lst) (nth 1 lst)) "" val))
-                 ;; trim the text line
-                 (setq text-line (replace-regexp-in-string (rx (* (any " \t\n")) eos) "" text-line))
-                 (kill-new text-line)
-                 (if insert-line (insert text-line))
-                 (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst))))))
-
-    (counsel-git-grep-or-find-api fn
-                                  "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
-                                  "grep"
-                                  nil)))
+  (counsel-git-grep-or-find-api 'counsel-insert-grepped-line
+                                "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
+                                "grep"
+                                nil))
 
 (defvar counsel-my-name-regex ""
   "My name used by `counsel-git-find-my-file', support regex like '[Tt]om [Cc]hen'.")
@@ -361,31 +374,43 @@ Or else, find files since 24 weeks (6 months) ago."
     "*.min.css"
     "*~")
   "File names to ignore when grepping.")
-(defun my-grep-cli (keyword)
+(defun my-grep-exclude-opts ()
+  (cond
+   ((executable-find "ag")
+    (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
+                       my-grep-ingore-dirs " ")
+            " "
+            (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
+                       my-grep-ingore-file-exts " ")
+            " "
+            (mapconcat (lambda (e) (format "--ignore='%s'" e))
+                       my-grep-ingore-file-names " ")))
+   (t
+    (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
+                       my-grep-ingore-dirs " ")
+            " "
+            (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
+                       my-grep-ingore-file-exts " ")
+            " "
+            (mapconcat (lambda (e) (format "--exclude='%s'" e))
+                       my-grep-ingore-file-names " ")))))
+
+(defun my-grep-cli (keyword &optional extra-opts)
   "Extended regex is used, like (pattern1|pattern2)."
   (let* (opts cmd)
+    (unless extra-opts (setq extra-opts ""))
     (cond
      ((executable-find "ag")
-      (setq opts (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
-                                    my-grep-ingore-dirs " ")
-                         " "
-                         (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
-                                    my-grep-ingore-file-exts " ")
-                         " "
-                         (mapconcat (lambda (e) (format "--ignore='%s'" e))
-                                    my-grep-ingore-file-names " ")))
-      (setq cmd (format "ag -s --nocolor --nogroup --silent %s \"%s\" --" opts keyword)))
+      (setq cmd (format "ag -s --nocolor --nogroup --silent %s %s \"%s\" --"
+                        (my-grep-exclude-opts)
+                        extra-opts
+                        keyword)))
      (t
-      (setq opts (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
-                                    my-grep-ingore-dirs " ")
-                         " "
-                         (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
-                                    my-grep-ingore-file-exts " ")
-                         " "
-                         (mapconcat (lambda (e) (format "--exclude='%s'" e))
-                                    my-grep-ingore-file-names " ")))
       ;; use extended regex always
-      (setq cmd (format "grep -rsnE %s \"%s\" *" opts keyword))))
+      (setq cmd (format "grep -rsnE -P %s \"%s\" *"
+                        (my-grep-exclude-opts)
+                        extra-opts
+                        keyword))))
     ;; (message "cmd=%s" cmd)
     cmd))
 
