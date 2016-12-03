@@ -77,6 +77,8 @@
   '(progn
      (defhydra hydra-gnus-summary (:color blue)
        "?"
+       ("s" gnus-summary-show-thread "Show thread")
+       ("h" gnus-summary-hide-thread "Hide thread")
        ("n" gnus-summary-insert-new-articles "Refresh / N")
        ("f" gnus-summary-mail-forward "Fwd C-c C-f")
        ("!" gnus-summary-tick-article-forward "Mail -> disk !")

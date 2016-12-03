@@ -5,9 +5,9 @@
 // So you need prepare follow files:
 //   - frontend/index.js (@see react-indexjs.yasnippet)
 //   - frontend/index.template.ejs (used by HtmlWebpackPlugin, @see html5-webpack.yasnippet)
-//   - frontend/index.template.ejs (@see html5-webpack.yasnippet)
 //   - frontend/components/Home/Home.js
 //   - frontend/components/Dashboard/Dashboard.js
+//   - frontend/styles/ (storing global css files)
 //   - package.json (@see package-reactjs.yasnippet)
 //   - webpack.config.js
 //   - .babelrc (file contents: {"presets": ["react", "es2015"], "plugins": ["transform-object-rest-spread"]})
@@ -24,6 +24,68 @@ function getSrcDir(child) {
 function getDistDir() {
   return process.env.NODE_ENV === 'development'? 'frontend-dist/js': 'src/main/resources/static/js';
 }
+
+function getFilesToCopy() {
+  var arr =[
+    {from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: '../css/' },
+    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.eot', to: '../fonts/' },
+    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.svg', to: '../fonts/' },
+    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf', to: '../fonts/' },
+    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', to: '../fonts/' },
+    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2', to: '../fonts/' },
+    {from: 'node_modules/font-awesome/css/font-awesome.min.css', to: '../css/' },
+    {from: 'node_modules/font-awesome/fonts/FontAwesome.otf', to: '../fonts'},
+    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.eot', to: '../fonts'},
+    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.svg', to: '../fonts'},
+    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.ttf', to: '../fonts'},
+    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff', to: '../fonts'},
+    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff2', to: '../fonts'},
+  ];
+  return arr;
+}
+
+function getWebpackPlugins() {
+  var arr = [
+    // it's stupid to copy file one by one, but I haven't figured out another way
+    new CopyWebpackPlugin(getFilesToCopy()),
+    new webpack.DefinePlugin({
+      isDev: process.env.NODE_ENV === 'development'
+    }),
+    new HtmlWebpackPlugin({
+      filename: '../index.html',
+      template: path.resolve(__dirname, 'frontend/index.template.ejs'),
+      inject: 'body',
+      cssDir: getSrcDir('/css')
+    })
+  ];
+  if(process.env.NODE_ENV === 'production') {
+    arr.push(
+      new webpack.optimize.UglifyJsPlugin({
+        // Don't beautify output (enable for neater output)
+        beautify: false,
+        // Eliminate comments
+        comments: false,
+        // Compression specific options
+        compress: {
+          warnings: false,
+          // Drop `console` statements
+          drop_console: true
+        },
+        // Mangling specific options
+        mangle: {
+          // Don't mangle $
+          except: ['$'],
+          // Don't care about IE8
+          screw_ie8 : true,
+          // Don't mangle function names
+          keep_fnames: true
+        }
+      })
+    );
+  }
+  return arr;
+}
+
 module.exports = {
   entry: './frontend/index.js',
   output: {
@@ -34,34 +96,7 @@ module.exports = {
   devServer: {
     historyApiFallback: true
   },
-  plugins: [
-    // it's stupid to copy file one by one, but I haven't figured out another way
-    new CopyWebpackPlugin([
-      // {from: 'frontend/index.template.ejs', to:'../index.html' },
-      {from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: '../css/' },
-      {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.eot', to: '../fonts/' },
-      {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.svg', to: '../fonts/' },
-      {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf', to: '../fonts/' },
-      {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', to: '../fonts/' },
-      {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2', to: '../fonts/' },
-      {from: 'node_modules/font-awesome/css/font-awesome.min.css', to: '../css/' },
-      {from: 'node_modules/font-awesome/fonts/FontAwesome.otf', to: '../fonts'},
-      {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.eot', to: '../fonts'},
-      {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.svg', to: '../fonts'},
-      {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.ttf', to: '../fonts'},
-      {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff', to: '../fonts'},
-      {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff2', to: '../fonts'},
-    ]),
-    new webpack.DefinePlugin({
-      isDev: process.env.NODE_ENV === 'development'
-    }),
-    new HtmlWebpackPlugin({
-      filename: '../index.html',
-      template: path.resolve(__dirname, 'frontend/index.template.ejs'),
-      inject: 'body',
-      cssDir: getSrcDir('/css')
-    })
-  ],
+  plugins: getWebpackPlugins(),
   resolve: {
     extensions: ['', '.js', '.jsx'],
     modules: [
@@ -86,8 +121,12 @@ module.exports = {
       } ,
       {
         test: /\.css$/,
-        exclude: /node_modules/,
+        exclude: /node_modules|styles/,
         loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader'
+      }, {
+        test: /\.css$/,
+        include: /styles/, // global css
+        loader: 'style-loader!css-loader!postcss-loader'
       }, {
         test: /\.css$/,
         include: /node_modules/,
