@@ -128,7 +128,7 @@
 (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
 ;; }}
 
-;; dired
+;; {{ dired
 (eval-after-load 'dired
   '(progn
      (defhydra hydra-dired (:color blue)
@@ -146,6 +146,7 @@
 (defun dired-mode-hook-hydra-setup ()
   (local-set-key (kbd "y") 'hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
+;; }}
+
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
-
