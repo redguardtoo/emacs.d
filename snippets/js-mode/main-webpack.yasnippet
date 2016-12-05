@@ -94,7 +94,8 @@ module.exports = {
     publicPath: getSrcDir('/js/')
   },
   devServer: {
-    historyApiFallback: true
+    historyApiFallback: true,
+    compress:true
   },
   plugins: getWebpackPlugins(),
   resolve: {
