@@ -8,7 +8,7 @@
   "version": "1.0.0",
   "description": "$0",
   "scripts": {
-    "http": "node_modules/.bin/webpack-dev-server --content-base frontend-dist/ --port 3333",
+    "http": "node_modules/.bin/webpack-dev-server --content-base frontend-dist/ --port 3333 --host 0.0.0.0",
     "build": "node_modules/.bin/cross-env NODE_ENV=production node_modules/.bin/webpack",
     "devbuild": "node_modules/.bin/cross-env NODE_ENV=development node_modules/.bin/webpack",
     "clean": "node_modules/.bin/rimraf src/main/resources/static/js/* src/main/resources/static/fonts/* src/main/resources/static/css/* src/main/resources/static/index.html",
