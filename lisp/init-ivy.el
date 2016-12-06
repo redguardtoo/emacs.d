@@ -2,7 +2,7 @@
 (defun counsel-escape (keyword)
   (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
   (setq keyword (replace-regexp-in-string "\\?" "\\\\\?" keyword))
-  (setq keyword (replace-regexp-in-string "\\$" "\\\\\$" keyword))
+  (setq keyword (replace-regexp-in-string "\\$" "\\\\x24" keyword))
   (setq keyword (replace-regexp-in-string "\\*" "\\\\\*" keyword))
   (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
   (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
@@ -12,10 +12,8 @@
   ;; the_silver_searcher needs no setup
   (setq keyword (replace-regexp-in-string "(" "\\\\x28" keyword))
   (setq keyword (replace-regexp-in-string ")" "\\\\x29" keyword))
-  (setq keyword (replace-regexp-in-string "{" "\\\\\\{" keyword))
-  (setq keyword (replace-regexp-in-string "}" "\\\\\}" keyword))
-  (setq keyword (replace-regexp-in-string "(" "\\\\\(" keyword))
-  (setq keyword (replace-regexp-in-string ")" "\\\\\)" keyword))
+  (setq keyword (replace-regexp-in-string "{" "\\\\x7b" keyword))
+  (setq keyword (replace-regexp-in-string "}" "\\\\x7d" keyword))
   keyword)
 
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
