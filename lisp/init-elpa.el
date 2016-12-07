@@ -12,6 +12,7 @@ But you may use safer HTTPS instead.")
     bbdb
     color-theme
     ivy
+    js-doc
     rjsx-mode
     counsel
     wgrep
@@ -230,6 +231,7 @@ ARCHIVE is the string name of the package archive.")
 ;; C-x r l to list bookmarks
 (require-package 'bookmark+)
 (require-package 'multi-term)
+(require-package 'js-doc)
 (require-package 'js2-mode)
 (require-package 'rjsx-mode)
 (require-package 's)

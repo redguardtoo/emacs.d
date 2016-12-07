@@ -43,8 +43,7 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun my-common-js-setup ()
-  (unless (featurep 'js-comint) (require 'js-comint))
-  (unless (featurep 'js-doc) (require 'js-doc)))
+  (unless (featurep 'js-comint) (require 'js-comint)))
 
 (defun mo-js-mode-hook ()
   (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
@@ -266,8 +265,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
     (js2-refactor-mode 1)
     ;; js2-mode has its own syntax linter
     (flymake-mode -1)
-    (define-key js2-mode-map "\C-cd" 'js-doc-insert-function-doc)
-    (define-key js2-mode-map "@" 'js-doc-insert-tag)
+    ;; call js-doc commands through `counsel-M-x'!
+
     ;; @see https://github.com/mooz/js2-mode/issues/350
     (setq forward-sexp-function nil)))
 
