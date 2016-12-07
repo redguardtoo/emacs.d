@@ -133,9 +133,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
            (executable-find ispell-program-name)))
 
 (defun enable-flyspell-mode-conditionally ()
-  (if (and (not *no-memory*)
-           ispell-program-name
-           (executable-find ispell-program-name))
+  (if (can-enable-flyspell-mode)
       (flyspell-mode 1)))
 
 (if (can-enable-flyspell-mode)

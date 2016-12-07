@@ -808,4 +808,7 @@ If FILE-OPENED, current file is still opened."
 (add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
 ;; }}
 
+;; flymake
+(setq flymake-gui-warnings-enabled nil)
+
 (provide 'init-misc)
