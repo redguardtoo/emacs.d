@@ -799,4 +799,13 @@ If FILE-OPENED, current file is still opened."
 (autoload 'verilog-mode "verilog-mode" "Verilog mode" t )
 (add-to-list 'auto-mode-alist '("\\.[ds]?vh?\\'" . verilog-mode))
 
+;; {{ xterm
+(defun run-after-make-frame-hooks (frame)
+  (select-frame frame)
+  (unless window-system
+    ;; Mouse in a terminal (Use shift to paste with middle button)
+    (xterm-mouse-mode 1)))
+(add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
+;; }}
+
 (provide 'init-misc)
