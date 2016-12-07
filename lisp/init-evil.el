@@ -443,7 +443,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
        "bm" 'pomodoro-start ;; beat myself
        "ii" 'counsel-imenu-goto
-       "im" 'ido-imenu
        "ij" 'rimenu-jump
        "." 'evil-ex
        ;; @see https://github.com/pidu/git-timemachine
