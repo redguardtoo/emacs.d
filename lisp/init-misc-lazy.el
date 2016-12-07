@@ -284,8 +284,7 @@ The full path into relative path insert it as a local file link in org-mode"
   (let ((rlt (format "%S" (get-text-property (point) 'face))))
     (kill-new rlt)
     (copy-yank-str rlt)
-    (message "%s => clipboard & yank ring" rlt)
-    ))
+    (message "%s => clipboard & yank ring" rlt)))
 
 (defun current-thing-at-point ()
   (interactive)

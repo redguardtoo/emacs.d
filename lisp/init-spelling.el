@@ -1,9 +1,10 @@
-;; flyspell set up for web-mode
+;; {{ flyspell setup for web-mode
 (defun web-mode-flyspell-verify ()
-  (let ((f (get-text-property (- (point) 1) 'face))
-        thing
-        rlt)
+  (let* ((f (get-text-property (- (point) 1) 'face))
+         rlt)
     (cond
+     ;; Check the words with these font faces, possibly.
+     ;; This *blacklist* will be tweaked in next condition
      ((not (memq f '(web-mode-html-attr-value-face
                      web-mode-html-tag-face
                      web-mode-html-attr-name-face
@@ -17,20 +18,36 @@
                      web-mode-css-selector-face
                      web-mode-css-color-face
                      web-mode-type-face
-                     web-mode-block-control-face)
-                 ))
+                     web-mode-block-control-face)))
       (setq rlt t))
+     ;; check attribute value under certain conditions
      ((memq f '(web-mode-html-attr-value-face))
       (save-excursion
         (search-backward-regexp "=['\"]" (line-beginning-position) t)
         (backward-char)
-        (setq thing (thing-at-point 'symbol))
-        (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$" thing))
-        rlt))
-     (t t))
+        (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
+                                (thing-at-point 'symbol)))))
+     ;; finalize the blacklist
+     (t
+      (setq rlt nil)))
     rlt))
-
 (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
+;; }}
+
+;; {{ flyspell setup for js2-mode
+(defun js-flyspell-verify ()
+  (let* ((f (get-text-property (- (point) 1) 'face)))
+    ;; *whitelist*
+    ;; only words with following font face will be checked
+    (memq f '(js2-function-call
+              js2-function-param
+              js2-object-property
+              font-lock-variable-name-face
+              font-lock-string-face
+              font-lock-function-name-face))))
+(put 'js2-mode 'flyspell-mode-predicate 'js-flyspell-verify)
+(put 'rjsx-mode 'flyspell-mode-predicate 'js-flyspell-verify)
+;; }}
 
 (eval-after-load 'flyspell
   '(progn
@@ -109,15 +126,14 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
     ))
 
 (defadvice flyspell-auto-correct-word (around my-flyspell-auto-correct-word activate)
-  (let ((old-ispell-extra-args ispell-extra-args))
+  (let* ((old-ispell-extra-args ispell-extra-args))
     (ispell-kill-ispell t)
     ;; use emacs original arguments
     (setq ispell-extra-args (flyspell-detect-ispell-args))
     ad-do-it
     ;; restore our own ispell arguments
     (setq ispell-extra-args old-ispell-extra-args)
-    (ispell-kill-ispell t)
-    ))
+    (ispell-kill-ispell t)))
 
 (defun text-mode-hook-setup ()
   ;; Turn off RUN-TOGETHER option when spell check text-mode
@@ -136,9 +152,12 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
   (if (can-enable-flyspell-mode)
       (flyspell-mode 1)))
 
+;; turn on flyspell-mode for programming languages
 (if (can-enable-flyspell-mode)
     (add-hook 'prog-mode-hook 'flyspell-prog-mode))
 
+;; I don't use flyspell in text-mode because I often write Chinese.
+;; I'd rather manually spell check the English text
 
 ;; you can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
