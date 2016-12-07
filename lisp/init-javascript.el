@@ -50,7 +50,6 @@
   (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
     (my-common-js-setup)
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
-    (message "mo-js-mode-hook called")
     (flymake-mode 1)))
 
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
@@ -66,7 +65,7 @@
   "List of line infomration of original imenu items.")
 
 (defun js2-imenu--get-line-start-end (pos)
-  (let (b e)
+  (let* (b e)
     (save-excursion
       (goto-char pos)
       (setq b (line-beginning-position))
@@ -74,7 +73,7 @@
     (list b e)))
 
 (defun js2-imenu--get-pos (item)
-  (let (val)
+  (let* (val)
     (cond
      ((integerp item)
       (setq val item))
@@ -85,7 +84,7 @@
     val))
 
 (defun js2-imenu--get-extra-item-pos (item)
-  (let (val)
+  (let* (val)
     (cond
      ((integerp item)
       (setq val item))
@@ -106,33 +105,31 @@
 (defun js2-imenu--extract-line-info (item)
   "Recursively parse the original imenu items created by js2-mode.
 The line numbers of items will be extracted."
-  (let (val)
+  (let* (val)
     (if item
-      (cond
-       ;; Marker or line number
-       ((setq val (js2-imenu--get-pos item))
-        (push (js2-imenu--get-line-start-end val)
-              js2-imenu-original-item-lines))
+        (cond
+         ;; Marker or line number
+         ((setq val (js2-imenu--get-pos item))
+          (push (js2-imenu--get-line-start-end val)
+                js2-imenu-original-item-lines))
 
-       ;; The item is Alist, example: (hello . 163)
-       ((and (listp item) (not (listp (cdr item))))
-        (setq val (js2-imenu--get-pos (cdr item)))
-        (if val (push (js2-imenu--get-line-start-end val)
-                      js2-imenu-original-item-lines)))
+         ;; The item is Alist, example: (hello . 163)
+         ((and (listp item) (not (listp (cdr item))))
+          (setq val (js2-imenu--get-pos (cdr item)))
+          (if val (push (js2-imenu--get-line-start-end val)
+                        js2-imenu-original-item-lines)))
 
-       ;; The item is a Plist
-       ((and (listp item) (listp (cdr item)))
-        (js2-imenu--extract-line-info (cadr item))
-        (js2-imenu--extract-line-info (cdr item)))
+         ;; The item is a Plist
+         ((and (listp item) (listp (cdr item)))
+          (js2-imenu--extract-line-info (cadr item))
+          (js2-imenu--extract-line-info (cdr item)))
 
-       ;;Error handling
-       (t (message "Impossible to here! item=%s" item)
-          )))
-    ))
+         ;;Error handling
+         (t (message "Impossible to here! item=%s" item))))))
 
 (defun js2-imenu--item-exist (pos lines)
   "Try to detect does POS belong to some LINE"
-  (let (rlt)
+  (let* (rlt)
     (dolist (line lines)
       (if (and (< pos (cadr line)) (>= pos (car line)))
           (setq rlt t)))
@@ -235,7 +232,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 ;; {{ print json path, will be removed when latest STABLE js2-mode released
 (defun js2-get-element-index-from-array-node (elem array-node &optional hardcoded-array-index)
   "Get index of ELEM from ARRAY-NODE or 0 and return it as string."
-  (let ((idx 0) elems (rlt hardcoded-array-index))
+  (let* ((idx 0) elems (rlt hardcoded-array-index))
     (setq elems (js2-array-node-elems array-node))
     (if (and elem (not hardcoded-array-index))
         (setq rlt (catch 'nth-elt
@@ -245,52 +242,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
                       (setq idx (1+ idx)))
                     0)))
     (format "[%s]" rlt)))
-
-(defun js2-print-json-path (&optional hardcoded-array-index)
-  "Print the path to the JSON value under point, and save it in the kill ring.
-If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it."
-  (interactive "P")
-  (let (previous-node current-node
-        key-name
-        rlt)
-
-    ;; The `js2-node-at-point' starts scanning from AST root node.
-    ;; So there is no way to optimize it.
-    (setq current-node (js2-node-at-point))
-
-    (while (not (js2-ast-root-p current-node))
-      (cond
-       ;; JSON property node
-       ((js2-object-prop-node-p current-node)
-        (setq key-name (js2-prop-node-name (js2-object-prop-node-left current-node)))
-        (if rlt (setq rlt (concat "." key-name rlt))
-          (setq rlt (concat "." key-name))))
-
-       ;; Array node
-       ((or (js2-array-node-p current-node))
-        (setq rlt (concat (js2-get-element-index-from-array-node previous-node
-                                                                 current-node
-                                                                 hardcoded-array-index)
-                          rlt)))
-
-       ;; Other nodes are ignored
-       (t))
-
-      ;; current node is archived
-      (setq previous-node current-node)
-      ;; Get parent node and continue the loop
-      (setq current-node (js2-node-parent current-node)))
-
-    (cond
-     (rlt
-      ;; Clean the final result
-      (setq rlt (replace-regexp-in-string "^\\." "" rlt))
-      (kill-new rlt)
-      (message "%s => kill-ring" rlt))
-     (t
-      (message "No JSON path found!")))
-
-    rlt))
 ;; }}
 
 (eval-after-load 'js2-mode
