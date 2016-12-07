@@ -337,8 +337,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))))
 
-(add-hook 'coffee-mode-hook 'flymake-coffee-load)
-
 ;; {{ js-beautify
 (defun js-beautify (&optional indent-size)
   "Beautify selected region or whole buffer with js-beautify.
