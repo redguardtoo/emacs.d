@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: if(this.props.fn) { this.props.fn(para) }
+# key: this
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+if(this.props.${1:fn}) { this.props.${1:$(yas/substr yas-text "[^ ]*")}($0); }
