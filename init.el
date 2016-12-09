@@ -64,17 +64,14 @@
   (require 'idle-require)
   (require 'init-elpa)
   (require 'init-exec-path) ;; Set up $PATH
-  (require 'init-frame-hooks)
   ;; any file use flyspell should be initialized after init-spelling.el
   ;; actually, I don't know which major-mode use flyspell.
   (require 'init-spelling)
-  (require 'init-xterm)
   (require 'init-gui-frames)
   (require 'init-ido)
   (require 'init-dired)
   (require 'init-uniquify)
   (require 'init-ibuffer)
-  (require 'init-flymake)
   (require 'init-ivy)
   (require 'init-hippie-expand)
   (require 'init-windows)

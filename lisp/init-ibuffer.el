@@ -34,7 +34,6 @@
                                 (mode . objc-mode)
                                 (mode . sql-mode)
                                 (mode . python-mode)
-                                (mode . coffee-mode)
                                 (mode . php-mode)
                                 (mode . sh-mode)
                                 (mode . json-mode)

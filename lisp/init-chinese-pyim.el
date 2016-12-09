@@ -22,8 +22,7 @@
     (if current-input-method (message "IME on!")))
    (t
     ;; NOT evil-mode
-    (toggle-input-method)))
-  )
+    (toggle-input-method))))
 
 (defadvice evil-insert-state (around evil-insert-state-hack activate)
   ad-do-it
@@ -44,7 +43,6 @@
      ;; another official dictionary
      (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix :dict-type pinyin-dict)))
 
-     ;; {{ fuzzy pinyin setup
      (defun pyim-fuzzy-pinyin-adjust-shanghai ()
        "As Shanghai guy, I can't tell difference between:
   - 'en' and 'eng'
@@ -65,9 +63,6 @@
 
      ;; Comment out below line for default fuzzy algorithm,
      ;; or just `(setq pyim-fuzzy-pinyin-adjust-function nil)`
-     (setq pyim-fuzzy-pinyin-adjust-function 'pyim-fuzzy-pinyin-adjust-shanghai)
-     ;; }}
-
-     ))
+     (setq pyim-fuzzy-pinyin-adjust-function 'pyim-fuzzy-pinyin-adjust-shanghai)))
 
 (provide 'init-chinese-pyim)
