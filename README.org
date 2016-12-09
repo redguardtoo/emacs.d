@@ -1,1 +1,2 @@
-我是新手，感谢大神的配置（https://github.com/redguardtoo/emacs.d），这是我自己在大神的配置下慢慢自己摸索的，请不要见笑！
+我是新手，感谢大神的配置 https://github.com/redguardtoo/emacs.d
+这是我自己在大神的配置下慢慢自己摸索的，请不要见笑！
