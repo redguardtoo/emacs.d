@@ -158,3 +158,13 @@
 ;;; no-byte-compile: t
 ;;; End:
 (put 'erase-buffer 'disabled nil)
+
+
+;; w3m配置项（用于上网）
+;; (add-to-list 'load-path "C:/Users/Administrator/AppData/Roaming/.emacs.d/w3m-lisp") ;;w3m所需要的lisp文件，所在路径
+(add-to-list 'exec-path "E:/Emacs/Emacs/w3m") ;;指定w3m可执行程序，所在的执行路径
+;; (require 'w3m-load)
+;; (setq w3m-use-favicon nil)
+;; (setq w3m-command-arguments '("-cookie" "-F"))
+;; (setq w3m-use-cookies t)
+;; (setq w3m-home-page "http://www.baidu.com")
