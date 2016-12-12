@@ -342,7 +342,9 @@ See \"Reusing passwords for several connections\" from INFO.
   (if (and (not (and buffer-file-name
                      (file-writable-p buffer-file-name)))
            ;; sudo edit only physical file
-           buffer-file-name)
+           buffer-file-name
+           ;; sudo edit only /etc/**/*
+           (string-match-p "^/etc/" buffer-file-name))
       (find-alternate-file (concat "/sudo:root@127.0.0.1:"
                                    buffer-file-name))))
 ;; }}
