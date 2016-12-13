@@ -761,7 +761,7 @@ If FILE-OPENED, current file is still opened."
   (let* ((msg (read-string "Say (ENTER to abort):"))
          (open-opts (if file-opened "-f leaveunchanged+reopen -r" ""))
          (full-opts (format "submit -d '%s' %s" msg open-opts)))
-    (message "(p4-generate-cmd full-opts)=%s" (p4-generate-cmd full-opts))
+    ;; (message "(p4-generate-cmd full-opts)=%s" (p4-generate-cmd full-opts))
     (if (string= "" msg)
         (message "Abort submit.")
       (shell-command (p4-generate-cmd full-opts))
