@@ -2,11 +2,12 @@
 
 ;;; Copyright (C) 2008 Paul Huff
 ;;; Copyright (C) 2015 Stefano Mazzucco
+;;; Copyright (C) 2016 Chen Bin
 
 ;;; Author: Paul Huff <paul.huff@gmail.com>, Stefano Mazzucco <MY FIRST NAME - AT - CURSO - DOT - RE>
 ;;; Maintainer: Chen Bin <chenbin.sh AT gmail DOT com>
 ;;; Created: 15 Feb 2014
-;;; Version: 0.0.5
+;;; Version: 1.0.0
 ;;; URL: https://github.com/redguardtoo/js-comint
 ;;; Package-Requires: ()
 ;;; Keywords: javascript, node, inferior-mode, convenience
@@ -59,6 +60,8 @@
 
 ;;  Do: `M-x run-js'
 ;;  Away you go.
+;;  `node_modules' is *automatically* searched and appended into environment
+;;  variable `NODE_PATH'. So 3rd party javascript is usable out of box.
 
 ;;  If you have nvm, you can select the versions of node.js installed and run
 ;;  them.  This is done thanks to nvm.el.
@@ -67,8 +70,19 @@
 ;;  The first time you start the JS interpreter with run-js, you will be asked
 ;;  to select a version of node.js
 ;;  If you want to change version of node js, run `js-select-node-version'
-
-;;  You can add  the following couple of lines to your .emacs to take advantage of
+;;
+;;  `js-clear' clears the content of REPL.
+;;
+;; You may get cleaner output by following setup (highly recommended):
+;;
+;;   (defun inferior-js-mode-hook-setup ()
+;;     (add-hook 'comint-output-filter-functions 'js-comint-process-output))
+;;   (add-hook 'inferior-js-mode-hook 'inferior-js-mode-hook-setup t)
+;;
+;;  `js-comint-process-output' uses `js-comint-drop-regexp' which could be
+;;  customized by users.
+;;
+;;  You can add the following lines to your .emacs to take advantage of
 ;;  cool keybindings for sending things to the javascript interpreter inside
 ;;  of Steve Yegge's most excellent js2-mode.
 ;;
@@ -112,7 +126,12 @@
 (defvar js-prompt-regexp "^\\(?:> \\)"
   "Prompt for `run-js'.")
 
-(defvar js-nvm-current-version nil "Current version of node.")
+(defvar js-comint-drop-regexp
+  "^[ \t]*undefined[\r\n]+"
+  "Regexp that matches text to silently drop.")
+
+(defvar js-nvm-current-version nil
+  "Current version of node.")
 
 (defun js-list-nvm-versions (prompt)
   "List all available node versions from nvm prompting the user with PROMPT.
@@ -148,15 +167,29 @@ Return a string representing the node version."
            "/node"))))
 
 (defun js--is-nodejs ()
-  (string= "node"
-           (substring-no-properties inferior-js-program-command -4 nil)))
+  (string-match-p "node$" inferior-js-program-command))
 
 (defun js--guess-load-file-cmd (filename)
   (let ((cmd (concat "require(\"" filename "\")\n")))
     (when (not (js--is-nodejs))
       (setq cmd (concat "load(\"" filename "\")\n")))
-    cmd
-    ))
+    cmd))
+
+;;;###autoload
+(defun js-clear ()
+  "Clear the *js* buffer."
+  (interactive)
+  (let* ((buf (get-buffer inferior-js-buffer))
+         (old-buf (current-buffer)))
+    (save-excursion
+      (cond
+       ((buffer-live-p buf)
+        (switch-to-buffer buf)
+        (erase-buffer)
+        (switch-to-buffer old-buf)
+        (message "*js* buffer cleared."))
+       (t
+        (error "*js* buffer doesn't exist!"))))))
 
 ;;;###autoload
 (defun run-js (cmd &optional dont-switch-p)
@@ -187,6 +220,25 @@ is run).
       (setq inferior-js-program-command (pop inferior-js-program-arguments)))))
 
   (setenv "NODE_NO_READLINE" "1")
+
+  ;; add "node_modules/" into $NODE_PATH
+  (let* ((node-modules (locate-dominating-file default-directory "node_modules"))
+         (node-path (getenv "NODE_PATH")))
+    (cond
+     (node-modules
+      (setq node-modules (concat (file-name-as-directory node-modules) "node_modules"))
+      (cond
+       ((or (not node-path)
+            (string= "" node-path))
+        ;; set
+        (setenv "NODE_PATH" node-modules))
+       ((not (string-match-p node-modules node-path))
+        ;; append
+        (setenv "NODE_PATH" (concat node-path ":" node-modules))))
+      (message "%s added into \$NODE_PATH" node-modules))
+     (t
+      (message "Can't find node_modules/"))))
+
   (if (not (comint-check-proc "*js*"))
       (with-current-buffer
           (apply 'make-comint "js" inferior-js-program-command
@@ -236,18 +288,27 @@ is run).
      (point))
    (point)))
 
+(defun js-get-buffer-point-min ()
+  (let* ((rlt (point-min)))
+    (save-excursion
+      (goto-char rlt)
+      (when (= (following-char) ?#)
+        (forward-line)
+        (setq rlt (line-beginning-position))))
+    rlt))
+
 ;;;###autoload
 (defun js-send-buffer ()
   "Send the buffer to the inferior Javascript process."
   (interactive)
-  (js-send-region (point-min) (point-max)))
+  (js-send-region (js-get-buffer-point-min) (point-max)))
 
 
 ;;;###autoload
 (defun js-send-buffer-and-go ()
   "Send the buffer to the inferior Javascript process."
   (interactive)
-  (js-send-region-and-go (point-min) (point-max)))
+  (js-send-region-and-go (js-get-buffer-point-min) (point-max)))
 
 ;;;###autoload
 (defun js-load-file (filename)
@@ -265,6 +326,18 @@ is run).
     (run-js inferior-js-program-command t)
     (comint-send-string inferior-js-buffer (js--guess-load-file-cmd filename))
     (switch-to-js inferior-js-buffer)))
+
+;;;###autoload
+(defun js-comint-process-output (string)
+  "Cleaner output."
+  (let* ((start-marker (or comint-last-output-start
+                            (point-min-marker)))
+          (end-marker (process-mark (get-buffer-process (current-buffer)))))
+    ;; shamelessly copied from `ansi-color-process-output'
+    (save-excursion
+      (goto-char start-marker)
+      (while (re-search-forward js-comint-drop-regexp end-marker t)
+        (replace-match "")))))
 
 ;;;###autoload
 (defun switch-to-js (eob-p)
