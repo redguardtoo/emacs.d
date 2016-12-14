@@ -2,7 +2,7 @@
 - Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- I intentionally make packages from [[http://melpa.org][melpa-unstable]] *uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to add packages from melpa-unstable
+- I intentionally make packages from [[http://melpa.org][melpa-unstable]] *uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install packages from melpa-unstable
 - Other issues are covered in FAQ
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 * Features
@@ -11,7 +11,7 @@
 - Native key bindings are preserved
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] (Emacs in Shell)
 - Robust (For example, you can install packages behind Corp firewall)
-- Popular programming languages supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
+- Popular programming languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
 * Installation
 Most users should follow the section "Install in normal way".
 
@@ -19,7 +19,7 @@ You need the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
 ** Install in normal way
-Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= is [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
+Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= in [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
 Please uninstall any package which is not installed at =~/.emacs.d=. For example, run =apt-get autoremove emacs-w3m= on Debian/Ubuntu.
 
@@ -27,15 +27,15 @@ If you don't know what I mean, then *do nothing*.
 
 All packages should be placed at =~/.emacs.d= from now on.
 
-There are TWO ways to install this setup:
+There are two ways to install this setup (I recommend the first way):
 
-- *Way 1*, download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into =~/.emacs.d=, OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
+1. download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into =~/.emacs.d=, OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
 
-- *Way 2*, use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
+2. use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
 
 Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
 
-By default, all packages will be installed automatically during Emacs startup. Edit =~/.emacs.d/init-elpa.el= to avoid certain package be installed automatically.
+By default, packages are installed automatically during Emacs startup.
 
 ** Install stable version in easiest way (OPTIONAL)
 You only need two zip files instead of git or network.
@@ -200,7 +200,34 @@ So pressing ",bu" equals =M-x backward-up-list=. The official tutorials I recomm
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 * FAQ
-** Toggle color theme
+** Color theme
+*** Preview color theme
+Check [[https://emacsthemes.com/]].
+
+Write down the name of color theme (for example, molokai).
+
+*** Setup color theme manually (recommended)
+Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
+#+BEGIN_SRC elisp
+;; the color theme name "molokai"" could be replaced with other theme name
+(require 'color-theme-molokai)
+(color-theme-molokai)
+#+END_SRC
+
+=M-x color-theme-select= *may not work* because of some design flaw in Emacs.
+
+Please note there is *NO unified way* to enable color theme because there two types of color theme. You need read color theme's documentation at first.
+
+My sample code works for most color themes.
+
+If you insist on configuring the color theme in a different way, please,
+- Comment out the line containing =(require 'init-color-theme)= in =~/.emacs.d/init.el= at first
+- Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
+*** Use color theme in terminal
+#+BEGIN_SRC sh
+TERM=xterm-256color emacs -nw
+#+END_SRC
+*** Toggle color theme
 By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-theme.el][color-theme-molokai]] is used.
 
 But you can run the =M-x my-toggle-color-theme= to switch to the fallback theme =color-theme-deep-blue=.
@@ -210,14 +237,16 @@ You can change the definition of =my-toggle-color-theme= in =init-color-theme.el
 Please =M-x multi-term=.
 
 If you want to use Zsh instead of Bash, please modify init-term-mode.el
-** Use HTTPS instead of HTTP to download packages
+** Use HTTPS to download packages
 =(setq melpa-use-https-repo t)=. =melpa-use-https-repo= is defined in init-elpa.el.
 ** Setup fonts in GUI Emacs
-Non-Chinese use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]] and Chinese use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
+Non-Chinese use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
-Neither package is included in this setup. You need install them manually.
+Chinese use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
+
+They are not included in this setup. You need install them manually.
 ** Synchronize setup with Git
-Most people should synchronize from my stable setup which is updated every 6 months:
+Most people should synchronize from my stable setup which is updated every 6+ months:
 #+begin_src bash
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git stable
 #+end_src
@@ -234,9 +263,7 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 ** Indentation
-Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]].
-
-Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
+Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheat sheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
@@ -244,29 +271,27 @@ Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other software may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
 ** Plugins doesn't work?
-If two plugins conflicts, the more frequently used plugin takes priority.
+If two plugins conflict, the more frequently used plugin takes priority.
 
-But there exists workaround for less used plugin. Check "~/.emacs.d/lisp/init-evil.el" for the list of alternative.
+But there exists workaround for less used plugin. Check =~/.emacs.d/lisp/init-evil.el= for the list of alternative.
 
 For example, if =which-func-mode= cannot display function name at mode-line, you can use =M-x popup-which-function= instead.
 
 =popup-which-function= is mentioned in init-evil.el.
 ** How to use org-mode
-Press =M-x org-version=, then read corresponding online manual.
-
-If you find anything doesn't work out of the box, it's because you haven't do the required setup required by official setup yet.
+Press =M-x org-version=, then read corresponding online manual to setup.
 
 For example, =org-capture= need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 ** OS X user?
-You need replace legacy Emacs 22 and ctags with the new versions.
+Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
 ** Locked packages
-Some packages (Evil, Helm, Web-mode ...) are so important to my workflow that I locked their versions.
+Some packages (Evil, Web-mode ...) are so important to my workflow so they are locked.
 
 Those packages are placed at =~/.emacs.d/site-lisp=.
 
-They will not be upgraded through ELPA automatically unless you delete corresponding folders.
+They will not be upgraded through ELPA unless you delete them at =~/.emacs.d/site-lisp=.
 ** Customize global variables
 Some variables are hard coded so you cannot "M-x customize" to modify them.
 
@@ -281,7 +306,7 @@ If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/Interactivel
 
 You can keep pressing =C-f= to ignore the completions.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if you declare *Environment variable* HOME which points to a user directory =C:\Users\<username>= on Windows 7+. You need extract =.emacs.d= into the directory HOME points to.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK *environment variable* HOME points to a user directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory.
 ** Yasnippet key bindings
 Instead of =M-x yas-expand= or press TAB key, you may press =M-j= instead.
 ** Non-English users
@@ -291,7 +316,7 @@ Type below command in shell:
 #+begin_src bash
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
-** Government blocks the internet?
+** Government blocks the internet
 You may need [[https://github.com/goagent/goagent][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
 ** Email
 If you use Gnus for email, check init-gnus.el and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
@@ -300,20 +325,19 @@ Some package cannot be downloaded automatically because of network problem.
 
 You could
 - =M-x list-packages= to manually install it
-- Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically
-** Disable vim key binding
+- Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
+** Disable Vim key binding
 By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
-It's defined in "~/.emacs.d/lisp/init-evil.el". Press =C-z= to switch between Emacs and Vim key bindings.
+It's defined in =~/.emacs.d/lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
 Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
 ** C++ auto-completion doesn't work?
 I assume you are using company-mode. Other packages have similar setup.
 
-At minimum:
-- You need install clang
-- Make sure your code is syntax correct at the beginning
+If you use clang to parse the C++ code:
+- Make sure your code is syntax correct
 - assign reasonable value into company-clang-arguments
 
 Here is sample code:
@@ -323,33 +347,6 @@ Here is sample code:
 
 In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
 
-** Color theme
-*** Preview color theme
-Check [[https://emacsthemes.com/]].
-
-Write down the name of color theme (for example, molokai).
-
-*** Setup color theme manually (recommended)
-Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
-#+BEGIN_SRC elisp
-;; the color theme name "molokai"" could be replaced with other theme name
-(require 'color-theme-molokai)
-(color-theme-molokai)
-#+END_SRC
-
-"M-x color-theme-select" *may not work* because of some design flaw in Emacs.
-
-Please note there is *NO unified way* to enable color theme. You need read color theme's documentation at first.
-
-My sample code works for most color themes.
-
-If you *insist on configuring the color theme in a different way*, please,
-- Comment out the line containing =(require 'init-color-theme)= in =~/.emacs.d/init.el= at first
-- Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
-*** Use color theme in terminal
-#+BEGIN_SRC sh
-TERM=xterm-256color emacs -nw
-#+END_SRC
 ** Chinese Input Method Editor
 Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
 
@@ -365,18 +362,18 @@ curl http://ftp.gnu.org/gnu/emacs/emacs-24.3.tar.gz | tar xvz -C ~/tmp/emacs-24.
 cd ~/tmp/emacs-24.3;
 mkdir -p ~/myemacs/24.3;
 rm -rf ~/myemacs/24.3/*;
-./configure --prefix=~/myemacs/24.3 --without-gtk --without-gtk3 --without-aqua --without-x --without-xpm --without-png --without-gif --without-alsa --without-tiff --without-jpeg --without-aqua --without-rsvg --without-xft --without-xaw3d --without-xim --without-xpm --without-dbus --without-makeinfo --with-x-toolkit=no --without-sound --without-sync-input --without-pop;make;make install
+./configure --prefix=~/myemacs/24.3 --without-x --without-dbus --without-sound && make && make install
 #+end_src
 
 Feel free to replace 24.3 with other version number.
 ** Directory structure
 =~/.emacs.d/init.el= is the main file. It includes all the other *.el files.
 
-=~/.emacs.d/lisp/init-elpa.el= defines how and what packages will be installed from [[http://melpa.org][MELPA]].
+=~/.emacs.d/lisp/init-elpa.el= defines what packages will be installed from [[http://melpa.org][MELPA]].
 
-The package manager will extract packages into =~/.emacs.d/elpa/=.
+Packages are installed into =~/.emacs.d/elpa/=.
 
-I also manually download and extract some packages into =~/.emacs.d/site-lisp/=. Packages in =~/.emacs.d/site-lisp/= is not visible to the package manager.
+I also manually download and extract some packages into =~/.emacs.d/site-lisp/=. Packages in =~/.emacs.d/site-lisp/= are *not visible* to the package manager.
 
 My own snippets for [[https://github.com/capitaomorte/yasnippet][Yasnippet]] is at =~/.emacs.d/snippets=.
 
@@ -390,16 +387,16 @@ The latest Emacs23 compatible version of setup is 1.2!
 Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
-- Follow the section "Install stable version in easiest way" but skip the download steps
+- Follow the section =Install stable version in easiest way" but skip the download steps
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
-Emacs is *portable* on any platform. So you can install Emacs even when you are not root of the Linux server. Please read "Install Emacs at home directory" for HOW
+Emacs is *portable* on any platform. Please read "Install Emacs at home directory" for how.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 * Report bug
-- Check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first to find a solution, please
+- Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first to find a solution
 - If your issue is still NOT resolved, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs, reproduce the issue
 - Send the error messages to the original developer if it's third party package issue
 - If you are *sure* it's my issue, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
