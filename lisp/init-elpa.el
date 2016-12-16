@@ -135,8 +135,12 @@ ARCHIVE is the string name of the package archive.")
 ;; Don't take Melpa versions of certain packages
 (setq package-filter-function
       (lambda (package version archive)
+        (message "require-package called => %s %s" package version)
         (or (not (string-equal archive "melpa"))
-            (memq package melpa-include-packages)
+            (and (memq package melpa-include-packages)
+                 ;; this version of ivy is buggy
+                 (not (and (string= package "ivy")
+                           (equal version '(20161213 719)))))
             ;; use all color themes
             (string-match (format "%s" package) "-theme"))))
 
