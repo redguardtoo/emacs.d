@@ -466,4 +466,10 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
     (if (< n 0) (setq n 0))
     (my-insert-str (nth n kill-ring)))))
 
+(eval-after-load 'ivy
+  '(progn
+     ;; work around ivy issue.
+     ;; @see https://github.com/abo-abo/swiper/issues/828
+     (setq ivy-display-style 'fancy)))
+
 (provide 'init-ivy)
