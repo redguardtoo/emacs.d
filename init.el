@@ -29,6 +29,9 @@
                    (*linux* nil)
                    (t nil)))
 
+(setq *emacs24old*  (or (and (= emacs-major-version 24) (= emacs-minor-version 3))
+                        (not *emacs24*)))
+
 ;; *Message* buffer should be writable in 24.4+
 (defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)
   (if (string= "*Messages*" (buffer-name))

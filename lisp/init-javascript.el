@@ -284,9 +284,10 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
  ((not *no-memory*)
   (setq auto-mode-alist (cons '("\\.ts\\'" . js2-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js2-mode) auto-mode-alist))
-  (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode))
+  (unless *emacs24old*
+    (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
+    (add-to-list 'auto-mode-alist '("components\\/.*\\.js\\'" . rjsx-mode)))
   (add-to-list 'auto-mode-alist '("\\.mock.js\\'" . js-mode))
-  (add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))

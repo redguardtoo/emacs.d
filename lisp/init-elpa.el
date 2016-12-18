@@ -13,7 +13,6 @@ But you may use safer HTTPS instead.")
     color-theme
     ivy
     js-doc
-    rjsx-mode
     counsel
     wgrep
     robe
@@ -236,7 +235,8 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'multi-term)
 (require-package 'js-doc)
 (require-package 'js2-mode)
-(require-package 'rjsx-mode)
+(unless *emacs24old*
+  (require-package 'rjsx-mode))
 (require-package 's)
 ;; js2-refactor requires js2, dash, s, multiple-cursors, yasnippet
 ;; I don't use multiple-cursors, but js2-refactor requires it
