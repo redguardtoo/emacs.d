@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: this.fn = this.fn.bind(this)
+# key: this
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+this.${1:fn} = this.${1:$(yas/substr yas-text "[^ ]*")}.bind(this);
