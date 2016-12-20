@@ -292,6 +292,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
  (t
   (setq auto-mode-alist (cons '("\\.js\\(\\.erb\\)?\\'" . js-mode) auto-mode-alist))
   (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))))
+(add-to-list 'auto-mode-alist '("\\.babelrc\\'" . js-mode))
 
 ;; {{ js-beautify
 (defun js-beautify (&optional indent-size)
