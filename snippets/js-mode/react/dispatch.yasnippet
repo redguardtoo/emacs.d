@@ -1,0 +1,13 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: react simple dispatch
+# key: dispatch
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// copy below code into reducer.js
+// case '${1:$(yas/substr yas-text "[^ ]*")}':
+//   finalStoreState = { ...storeState, ${2:$(yas/substr yas-text "[^ ]*")}: action.${2:$(yas/substr yas-text "[^ ]*")} };
+//   break;
+this.props.dispatch({
+  type: '${1:EVT_SHOW_STH}',
+  ${2:showSth}: true
+});
