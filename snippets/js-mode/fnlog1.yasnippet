@@ -1,9 +1,8 @@
 # -*- mode: snippet -*-
-# name: var name = function (...) { console.log('fn called'); }
+# name: [var |this.|$scope.|vm.]name = function() {..}
 # key: fn
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-var ${1:name} = function (${2:args}) {
-  console.log('${1:$(yas/substr yas-text "[^ ]*")} called');
-  $0
+${1:var }${2:name} = function($0) {
+  console.log('${2:$(yas/substr yas-text "[^ ]*")} called');
 };
