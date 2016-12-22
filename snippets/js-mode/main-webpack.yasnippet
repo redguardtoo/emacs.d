@@ -10,12 +10,18 @@
 //   - frontend/styles/ (storing global css files)
 //   - package.json (@see package-reactjs.yasnippet)
 //   - webpack.config.js
-//   - .babelrc (file contents: {"presets": ["react", "es2015"], "plugins": ["transform-object-rest-spread"]})
+//   - .babelrc (file contents: {"presets": ["react", ["es2015", {"loose":true}]], "plugins": ["lodash", "transform-object-rest-spread", "transform-runtime"]})
 
+var LodashModuleReplacementPlugin = require('lodash-webpack-plugin');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var webpack = require('webpack');
 var path = require('path');
+
+if(!process.env.NODE_ENV) {
+  // make webpack-dev-server happy to run the `webpack`
+  process.env.NODE_ENV = 'development';
+}
 
 function getSrcDir(child) {
   return process.env.NODE_ENV === 'development'? child: '' + child;
@@ -26,37 +32,39 @@ function getDistDir() {
 }
 
 function getFilesToCopy() {
-  var arr =[
-    {from: 'node_modules/bootstrap/dist/css/bootstrap.min.css', to: '../css/' },
-    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.eot', to: '../fonts/' },
-    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.svg', to: '../fonts/' },
-    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.ttf', to: '../fonts/' },
-    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff', to: '../fonts/' },
-    {from: 'node_modules/bootstrap/dist/fonts/glyphicons-halflings-regular.woff2', to: '../fonts/' },
-    {from: 'node_modules/font-awesome/css/font-awesome.min.css', to: '../css/' },
-    {from: 'node_modules/font-awesome/fonts/FontAwesome.otf', to: '../fonts'},
-    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.eot', to: '../fonts'},
-    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.svg', to: '../fonts'},
-    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.ttf', to: '../fonts'},
-    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff', to: '../fonts'},
-    {from: 'node_modules/font-awesome/fonts/fontawesome-webfont.woff2', to: '../fonts'},
+  var list =[
+    {from: 'node_modules/bootstrap/dist/css/*', to: '../css/', flatten:true },
+    {from: 'node_modules/bootstrap/dist/fonts/*', to: '../fonts/', flatten:true },
+    {from: 'node_modules/font-awesome/css/*', to: '../css/', flatten:true },
+    {from: 'node_modules/font-awesome/fonts/*', to: '../fonts', flatten: true}
   ];
-  return arr;
+
+  if(process.env.NODE_ENV === 'development') {
+    list.push({from:'src/main/resources/static/images/*', to: '../images', flatten:true});
+  }
+  return list;
 }
 
 function getWebpackPlugins() {
   var arr = [
+    new LodashModuleReplacementPlugin,
     // it's stupid to copy file one by one, but I haven't figured out another way
     new CopyWebpackPlugin(getFilesToCopy()),
+    // full moment.js is too big. @see https://github.com/moment/moment/issues/2416
+    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
+      'process.env': {'NODE_ENV': '"production"'},
       isDev: process.env.NODE_ENV === 'development'
     }),
+    new webpack.optimize.OccurrenceOrderPlugin,
+    new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"),
     new HtmlWebpackPlugin({
       filename: '../index.html',
       template: path.resolve(__dirname, 'frontend/index.template.ejs'),
       inject: 'body',
       cssDir: getSrcDir('/css')
     })
+    // new webpack.optimize.DedupePlugin() // @see https://github.com/webpack/webpack/issues/1982
   ];
   if(process.env.NODE_ENV === 'production') {
     arr.push(
@@ -65,6 +73,7 @@ function getWebpackPlugins() {
         beautify: false,
         // Eliminate comments
         comments: false,
+        screw_ie8 : true,
         // Compression specific options
         compress: {
           warnings: false,
@@ -73,12 +82,8 @@ function getWebpackPlugins() {
         },
         // Mangling specific options
         mangle: {
-          // Don't mangle $
-          except: ['$'],
-          // Don't care about IE8
-          screw_ie8 : true,
           // Don't mangle function names
-          keep_fnames: true
+          // keep_fnames: true // about 8% js file size increase
         }
       })
     );
@@ -87,15 +92,28 @@ function getWebpackPlugins() {
 }
 
 module.exports = {
-  entry: './frontend/index.js',
+  // we don't need source map in dev version because code is NOT uglified
+  devtool: process.env.NODE_ENV === 'production'? 'cheap-module-source-map': null,
+  entry: {
+    app:'./frontend/index.js',
+    vendor: [
+      'react',
+      'react-dom',
+      'react-bootstrap',
+      'redux',
+      'redux-thunk',
+      'react-redux'
+    ]
+  },
   output: {
     path: path.resolve(__dirname, getDistDir()),
     filename: 'bundle.js',
     publicPath: getSrcDir('/js/')
   },
+  // dev web sever setup which has nothing to do with production code
   devServer: {
     historyApiFallback: true,
-    compress:true
+    compress: true // less page loading time
   },
   plugins: getWebpackPlugins(),
   resolve: {
@@ -137,6 +155,11 @@ module.exports = {
         exclude: [/node_modules/, /.+\.config.js/],
         loader: 'babel'
       }, {
+        // whatwg-fetch use Promsie which IE11 doesn't support
+        test: /\.js$/,
+        include: [/whatwg-.*/],
+        loader: 'babel'
+      }, {
         test: /\.(jpe?g|gif|png|svg)$/i,
         loader: 'url-loader?limit=10000'
       }, {
@@ -156,6 +179,9 @@ module.exports = {
       addDependencyTo: webpack
     }),
     require('postcss-simple-vars')({ silent: false}),
-    require('postcss-nested')()
+    // though IE9+ already supports calc() out of box
+    require('postcss-calc')({warnWhenCannotResolve: true}),
+    require('postcss-nested')(),
+    require('autoprefixer')({ browsers: ['last 2 versions'] })
   ]
 };

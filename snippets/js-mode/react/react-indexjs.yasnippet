@@ -14,19 +14,22 @@
 //   - node_modules/
 //   - package.json (@see package-reactjs.yasnippet)
 //   - webpack.config.js (@see main-webpack.yasnippet)
-//   - .babelrc (file contents: {"presets": ["react", "es2015"], "plugins": ["transform-object-rest-spread"]})
+//   - .babelrc (@see main-webpack.yasnippet)
 
-import "babel-polyfill"; // ie11
 require('es5-shim'); //ie 9
 
 // Client entry point
 import React from 'react';
-import { Router, Route, browserHistory, IndexRoute } from 'react-router';
-import ReactDOM from 'react-dom';
+import { Router, Route, browserHistory } from 'react-router';
+import { render } from 'react-dom';
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'; // reducer could resolve the promise
 import { Provider } from 'react-redux';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'; // route saved into store
+import { reducer as formReducer } from 'redux-form';
+
+// Base stylesheet (OPTIONAL)
+//require('./styles/main.css');
 
 // Initialize store
 function rootReducer(storeState={}, action) {
@@ -43,6 +46,7 @@ function rootReducer(storeState={}, action) {
 };
 const store = createStore(
   combineReducers({
+    form: formReducer,
     app:rootReducer,
     routing: routerReducer
   }),
@@ -107,7 +111,7 @@ const rootRoute = {
 };
 const history = syncHistoryWithStore(browserHistory, store);
 
-ReactDOM.render(
+render(
   <Provider store={store}>
     <Router history={history}>
       {rootRoute}
