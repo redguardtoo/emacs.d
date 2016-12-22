@@ -1,0 +1,156 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: modal with form validation (redux-form required)
+# expand-env: ((yas-indent-line 'fixed))
+# key: modal
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// add `import { reducer as formReducer } from 'redux-form'; combineReducers({form: formReducer})` into index.js
+import React from 'react';
+import {connect} from 'react-redux';
+import { Field, reduxForm } from 'redux-form';
+
+function validatorRequired(val) {
+  return !val && 'Required';
+}
+
+function validatorAlphaNumeric(val) {
+  return !/^[a-zA-Z0-9]+$/.test(val) && 'Please input alphanumberica characters';
+}
+
+import {
+  Button,
+  Input,
+  Modal,
+  FormGroup,
+  ControlLabel,
+  FormControl,
+  HelpBlock,
+  Form,
+  Col,
+} from 'react-bootstrap';
+
+class InputText extends React.Component {
+
+  getlabelWidth() {
+    return this.props.labelWidth? this.props.labelWidth: 2;
+  }
+
+  getFormControlWidth() {
+    return 12 - this.getlabelWidth();
+  }
+
+  getFormControl() {
+    var input = this.props.input;
+    return (
+      <FormControl type={this.props.type?this.props.type:'text'}
+                   placeholder={this.props.placeholder}
+                   value={input.value}
+                   autoFocus={this.props.autoFocus}
+                   onDrop={input.onDrop}
+                   onDragChange={input.onDragChange}
+                   onChange={input.onChange}
+                   onBlur={input.onBlur}
+                   onFocus={ input.onFocus} />
+    );
+  }
+
+  getValidationMessage(meta) {
+    if(!meta) return null;
+    return (
+      <small>
+        {(meta.dirty || meta.touched) && ((meta.error && <span>{meta.error}</span>) || (meta.warning && <span>{meta.warning}</span>))}
+      </small>
+    );
+  }
+
+  render () {
+    // (meta.dirty === !meta.pristine) => if user has modify content of the control yet
+    // meta.touched => if the control has lost focus yet
+    const { placeholder, type, input, meta} = this.props;
+
+    // horizontal layout
+    if(this.props.horizontal) {
+      return(
+        <FormGroup controlId={input.name} validationState={ (meta.dirty || meta.touched)? (meta.error ? 'error' : 'success'):'' }>
+          <Col componentClass={ControlLabel} sm={ this.getlabelWidth() }>{this.props.children}</Col>
+          <Col sm={ this.getFormControlWidth() }>
+            { this.getFormControl() }
+            <FormControl.Feedback />
+            { this.getValidationMessage(meta) }
+          </Col>
+        </FormGroup>
+      );
+    }
+
+    // normal layout
+    return (
+      <FormGroup controlId={input.name} validationState={ (meta.dirty || meta.touched)? (meta.error ? 'error' : 'success'):'' }>
+        <ControlLabel>{this.props.children}</ControlLabel>
+        { this.getFormControl() }
+        <FormControl.Feedback />
+        { this.getValidationMessage() }
+      </FormGroup>
+    );
+  }
+}
+
+export class `(file-name-base buffer-file-name)` extends React.Component {
+  constructor(props) {
+    super(props);
+    this.close = this.close.bind(this);
+    this.save = this.save.bind(this);
+  }
+
+  close() {
+    this.props.reset();
+    this.props.dispatch({
+      type: 'EVT_SHOW_`(upcase (file-name-base buffer-file-name) )`',
+      show`(file-name-base buffer-file-name)`: false
+    });
+  }
+
+  save(values) {
+    console.log('`(file-name-base buffer-file-name)`.js: `(file-name-base buffer-file-name)`.save called => ', 'values=', values);
+    this.close();
+  }
+
+  render() {
+    const { error, handleSubmit, pristine, submitting } = this.props;
+    return (
+      <Modal show={this.props.show`(file-name-base buffer-file-name)`} onHide={ this.close }>
+        <Form onSubmit={ handleSubmit(this.save) } horizontal>
+          <Modal.Header closeButton>
+            <Modal.Title>Add bookmark</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Field name="theName"
+                   horizontal
+                   autoFocus
+                   labelWidth={2}
+                   placeholder="Please enter name"
+                   component={InputText}
+                   validate={[validatorRequired, validatorAlphaNumeric]}>
+              Name *
+            </Field>
+            <hr />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={ this.close } >Close</Button>
+            <Button type="submit" disabled={ error || submitting}>Save</Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    );
+  }
+}
+
+export default connect(
+  function (storeState) {
+    // store state to props
+    return {
+      show`(file-name-base buffer-file-name)`: storeState.app.show`(file-name-base buffer-file-name)`
+    };
+  }
+)(reduxForm({
+  form: '`(file-name-base buffer-file-name)`' // a unique name for this form
+})(`(file-name-base buffer-file-name)`));
