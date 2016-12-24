@@ -421,6 +421,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "df" 'counsel-git-diff-file
        "rjs" 'run-js
        "jsr" 'js-send-region
+       "jsb" '(lambda () (interactive) (js-clear) (js-send-buffer))
        "rmz" 'run-mozilla
        "rpy" 'run-python
        "rlu" 'run-lua
