@@ -179,7 +179,7 @@ Return a string representing the node version."
 (defun js-clear ()
   "Clear the *js* buffer."
   (interactive)
-  (let* ((buf (get-buffer inferior-js-buffer))
+  (let* ((buf (and inferior-js-buffer (get-buffer inferior-js-buffer)))
          (old-buf (current-buffer)))
     (save-excursion
       (cond
@@ -189,7 +189,7 @@ Return a string representing the node version."
         (switch-to-buffer old-buf)
         (message "*js* buffer cleared."))
        (t
-        (error "*js* buffer doesn't exist!"))))))
+        (message "*js* buffer doesn't exist!"))))))
 
 ;;;###autoload
 (defun run-js (cmd &optional dont-switch-p)
