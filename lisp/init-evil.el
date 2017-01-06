@@ -19,8 +19,8 @@
 (require 'evil)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
-;; cursor is alway black because of evil
-;; here is the workaround
+;; Cursor is alway black because of evil.
+;; Here is the workaround
 (setq evil-default-cursor t)
 
 ;; {{ multiple-cursors
@@ -108,13 +108,14 @@
 
 
 ;; {{ nearby file path as text object,
-;;      - "vif" to select only basename
-;;      - "vaf" to select the full path
+;;      - "vif" to select base name
+;;      - "vaf" to select full path
 ;;
-;;  example: "/hello/world" "/test/back.exe"
-;;               "C:hello\\hello\\world\\test.exe" "D:blah\\hello\\world\\base.exe"
-;;
-;; tweak evil-filepath-is-nonname to re-define a path
+;;  example:
+;;    "/hello/world"
+;;    "/test/back.exe"
+;;    "C:hello\\hello\\world\\test.exe"
+;;    "D:blah\\hello\\world\\base.exe"
 (defun evil-filepath-is-separator-char (ch)
   "Check ascii table that CH is slash characters.
 If the character before and after CH is space or tab, CH is NOT slash"
@@ -132,28 +133,21 @@ If the character before and after CH is space or tab, CH is NOT slash"
     rlt))
 
 (defun evil-filepath-not-path-char (ch)
-  "Check ascii table for charctater "
-  (let (rlt)
-    (if (or (and (<= 0 ch) (<= ch 32))
-            (= ch 34) ; double quotes
-            (= ch 39) ; single quote
-            (= ch 40) ; (
-            (= ch 41) ; )
-            (= ch 60) ; <
-            (= ch 62) ; >
-            (= ch 91) ; [
-            (= ch 93) ; ]
-            (= ch 96) ; `
-            (= ch 123) ; {
-            (= ch 125) ; }
-            (= 127 ch))
-        (setq rlt t))
-    rlt))
-
-(defun evil-filepath-char-not-placed-at-end-of-path (ch)
-  (or (= 44 ch) ; ,
-      (= 46 ch) ; .
-      ))
+  "Check ascii table for charctater."
+  (or (and (<= 0 ch) (<= ch 32))
+      (memq ch
+            '(34 ; double quotes
+              ?'
+              40 ; (
+              41 ; )
+              ?<
+              ?>
+              91 ; [
+              93 ; ]
+              ?`
+              ?{
+              ?}
+              127))))
 
 (defun evil-filepath-calculate-path (b e)
   (let (rlt f)
@@ -167,21 +161,22 @@ If the character before and after CH is space or tab, CH is NOT slash"
     rlt))
 
 (defun evil-filepath-get-path-already-inside ()
-  (let (b e)
+  (let* (b e)
     (save-excursion
       (setq b (evil-filepath-search-forward-char 'evil-filepath-not-path-char t)))
     (save-excursion
-      (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char))
-      (when e
+      (when (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char))
         (goto-char (- e 1))
         ;; example: hello/world,
-        (if (evil-filepath-char-not-placed-at-end-of-path (following-char))
-            (setq e (- e 1)))
-        ))
+        (if (memq (following-char) '(?, ?.))
+            (setq e (- e 1)))))
     (evil-filepath-calculate-path b e)))
 
 (defun evil-filepath-search-forward-char (fn &optional backward)
-  (let (found rlt (limit (if backward (point-min) (point-max))) out-of-loop)
+  (let* (found
+         rlt
+         (limit (if backward (point-min) (point-max)))
+         out-of-loop)
     (save-excursion
       (while (not out-of-loop)
         ;; for the char, exit
@@ -197,10 +192,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (defun evil-filepath-extract-region ()
   "Find the closest file path"
-  (let (rlt
-        b
-        f1
-        f2)
+  (let* (rlt
+         b
+         f1
+         f2)
 
     (if (and (not (evil-filepath-not-path-char (following-char)))
              (setq rlt (evil-filepath-get-path-already-inside)))
@@ -232,13 +227,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (evil-define-text-object evil-filepath-inner-text-object (&optional count begin end type)
   "File name of nearby path"
-  (let ((selected-region (evil-filepath-extract-region)))
+  (let* ((selected-region (evil-filepath-extract-region)))
     (if selected-region
         (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
 
 (evil-define-text-object evil-filepath-outer-text-object (&optional NUM begin end type)
-  "Nearby path"
-  (let ((selected-region (evil-filepath-extract-region)))
+  "Nearby path."
+  (let* ((selected-region (evil-filepath-extract-region)))
     (if selected-region
         (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
 
@@ -261,8 +256,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   (interactive)
   (if (eq major-mode 'message-mode)
       (org-mode)
-    (if (eq major-mode 'org-mode) (message-mode))
-    ))
+    (if (eq major-mode 'org-mode) (message-mode))))
 
 ;; (evil-set-initial-state 'org-mode 'emacs)
 
@@ -330,10 +324,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
 (define-key evil-visual-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
 
-(require 'evil-numbers)
-(define-key evil-normal-state-map "+" 'evil-numbers/inc-at-pt)
-(define-key evil-normal-state-map "-" 'evil-numbers/dec-at-pt)
-
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
 
@@ -341,8 +331,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
   '(progn
-     (setq expand-region-contract-fast-key "z")
-     ))
+     (setq expand-region-contract-fast-key "z")))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
@@ -709,8 +698,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; change default key bindings (if you want) HERE
 ;; (setq evil-exchange-key (kbd "zx"))
 (evil-exchange-install)
-;; }}
-
 ;; }}
 
 (provide 'init-evil)
