@@ -1,3 +1,8 @@
+我是新手，感谢大神的配置 https://github.com/redguardtoo/emacs.d
+这是我自己在大神的配置下慢慢自己摸索的，请不要见笑！
+
+
+
 * Checklist
 - Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
@@ -402,3 +407,4 @@ Emacs is *portable* on any platform. Please read "Install Emacs at home director
 - If you are *sure* it's my issue, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
 
 Bug report should include details (OS, Emacs version ...).
+
