@@ -688,8 +688,14 @@ If step is -1, go backward."
             (delete-file fb)))
     (message "Please select region at first!")))
 
-;; cliphist.el
+;; {{ cliphist.el
 (setq cliphist-use-ivy t)
+(defun my-select-cliphist-item (num str)
+  (unless (featurep 'simpleclip)
+    (require 'simpleclip))
+  (simpleclip-set-contents str))
+(setq cliphist-select-item-callback 'my-select-cliphist-item)
+;; }}
 
 (defun pabs()
   "Relative path to full path."
