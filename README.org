@@ -2,7 +2,7 @@
 - Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- I intentionally make packages from [[http://melpa.org][melpa-unstable]] *uninstallable* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install packages from melpa-unstable
+- I intentionally make packages from [[http://melpa.org][MELPA]] *invisible* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install those packages
 - Other issues are covered in FAQ
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 * Features
@@ -269,7 +269,7 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
-Other software may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept =M-x=]].
+Other desktop applications may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x']].
 ** Plugins doesn't work?
 If two plugins conflict, the more frequently used plugin takes priority.
 
@@ -331,7 +331,7 @@ By default EVIL (Vim emulation in Emacs) is used. You can comment out line conta
 ** Evil setup
 It's defined in =~/.emacs.d/lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
-Please reading [[https://gitorious.org/evil/evil/blobs/raw/doc/doc/evil.pdf][its PDF manual]] before using evil-mode.
+Please reading [[https://bitbucket.org/lyro/evil/raw/f2648b841f9bcded8764ce63410065d2b8c5f856/doc/evil.pdf][its PDF manual]] before using evil-mode.
 
 ** C++ auto-completion doesn't work?
 I assume you are using company-mode. Other packages have similar setup.
@@ -387,7 +387,7 @@ The latest Emacs23 compatible version of setup is 1.2!
 Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
-- Follow the section =Install stable version in easiest way" but skip the download steps
+- Follow the section =Install stable version in easiest way= but skip the download steps
 
 Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
 
