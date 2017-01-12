@@ -339,6 +339,7 @@ INDENT-SIZE decide the indentation level.
                 "assert"
                 "assign"
                 "beforeEach"
+                "Blob"
                 "browser"
                 "by"
                 "clearInterval"
