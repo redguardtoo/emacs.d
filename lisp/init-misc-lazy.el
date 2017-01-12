@@ -468,8 +468,7 @@ Including indent-buffer, which should not be called automatically on save."
  (when (file-writable-p (file-truename "~/.emacs.d/history"))
    (setq history-length 8000)
    (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-   (savehist-mode 1))
- (message "Failed to access ~/.emacs.d/history"))
+   (savehist-mode 1)))
 ;; }}
 
 (provide 'init-misc-lazy)
