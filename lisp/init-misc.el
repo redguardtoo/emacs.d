@@ -780,6 +780,28 @@ If FILE-OPENED, current file is still opened."
   (interactive)
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
+
+(defun p4history ()
+  "Show history of current file with patches displayed, like `git log -p'."
+  (interactive)
+  (let* ((changes (split-string (shell-command-to-string (p4-generate-cmd "changes")) "\n"))
+         rlt-buf
+         (content (mapconcat (lambda (line)
+                               (let* ((chg (nth 1 (split-string line "[\t ]+"))))
+                                 (if chg (shell-command-to-string (format "p4 describe -du %s" chg)))))
+                             changes
+                             "\n\n")))
+    (if (get-buffer "*p4log*")
+        (kill-buffer "*p4log*"))
+    (setq rlt-buf (get-buffer-create "*p4log*"))
+    (save-current-buffer
+      (switch-to-buffer-other-window rlt-buf)
+      (set-buffer rlt-buf)
+      (erase-buffer)
+      (insert content)
+      (diff-mode)
+      (goto-char (point-min))
+      (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
 ;; }}
 
 (defun my-get-total-hours ()
