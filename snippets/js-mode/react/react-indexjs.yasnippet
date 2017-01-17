@@ -26,7 +26,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk'; // reducer could resolve the promise
 import { Provider } from 'react-redux';
 import { syncHistoryWithStore, routerReducer } from 'react-router-redux'; // route saved into store
-import { reducer as formReducer } from 'redux-form';
+import update from 'immutability-helper';
 
 // Base stylesheet (OPTIONAL)
 //require('./styles/main.css');
@@ -36,7 +36,7 @@ function rootReducer(storeState={}, action) {
   var finalStoreState;
   switch (action.type) {
   case 'EVT_DO_STH':
-    finalStoreState = { ...storeState, foo: 'foo' };
+    finalStoreState = update(storeState, {foo: {$set: action.foo}});
     break;
   default:
     // return original state
@@ -46,7 +46,6 @@ function rootReducer(storeState={}, action) {
 };
 const store = createStore(
   combineReducers({
-    form: formReducer,
     app:rootReducer,
     routing: routerReducer
   }),

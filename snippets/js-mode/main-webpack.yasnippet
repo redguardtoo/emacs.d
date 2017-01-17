@@ -36,7 +36,7 @@ function getFilesToCopy() {
     {from: 'node_modules/bootstrap/dist/css/*', to: '../css/', flatten:true },
     {from: 'node_modules/bootstrap/dist/fonts/*', to: '../fonts/', flatten:true },
     {from: 'node_modules/font-awesome/css/*', to: '../css/', flatten:true },
-    {from: 'node_modules/font-awesome/fonts/*', to: '../fonts', flatten: true}
+    {from: 'node_modules/font-awesome/fonts/*', to: '../fonts', flatten:true}
   ];
 
   if(process.env.NODE_ENV === 'development') {
@@ -73,7 +73,7 @@ function getWebpackPlugins() {
         beautify: false,
         // Eliminate comments
         comments: false,
-        screw_ie8 : true,
+        screw_ie8: true,
         // Compression specific options
         compress: {
           warnings: false,
@@ -97,6 +97,7 @@ module.exports = {
   entry: {
     app:'./frontend/index.js',
     vendor: [
+      'core-js',
       'react',
       'react-dom',
       'react-bootstrap',
@@ -137,10 +138,9 @@ module.exports = {
       }, {
         test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
         loader: "file-loader"
-      } ,
-      {
+      }, {
         test: /\.css$/,
-        exclude: /node_modules|styles/,
+        exclude: /node_modules|styles/, //exclude css in `node_modules` and `styles/`
         loader: 'style-loader!css-loader?localIdentName=[name]__[local]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader'
       }, {
         test: /\.css$/,
@@ -155,18 +155,12 @@ module.exports = {
         exclude: [/node_modules/, /.+\.config.js/],
         loader: 'babel'
       }, {
-        // whatwg-fetch use Promsie which IE11 doesn't support
-        test: /\.js$/,
-        include: [/whatwg-.*/],
-        loader: 'babel'
-      }, {
         test: /\.(jpe?g|gif|png|svg)$/i,
         loader: 'url-loader?limit=10000'
       }, {
         test: /\.json$/,
         loader: 'json-loader'
-      },
-      {
+      }, {
         test: /\.font.(js|json)$/,
         loader: "style!css!fontgen?embed&types=woff,eot,ttf"
       }
