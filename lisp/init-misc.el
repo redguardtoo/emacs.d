@@ -691,9 +691,7 @@ If step is -1, go backward."
 ;; {{ cliphist.el
 (setq cliphist-use-ivy t)
 (defun my-select-cliphist-item (num str)
-  (unless (featurep 'simpleclip)
-    (require 'simpleclip))
-  (simpleclip-set-contents str))
+  (my-pclip str))
 (setq cliphist-select-item-callback 'my-select-cliphist-item)
 ;; }}
 

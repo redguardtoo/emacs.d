@@ -5,18 +5,11 @@
 ;; kill-ring and clipboard are same? No, it's annoying!
 ;; (setq save-interprogram-paste-before-kill t)
 
-(defun test-simpleclip ()
-  (simpleclip-set-contents "testsimpleclip!")
-  (string= "testsimpleclip!" (simpleclip-get-contents)))
-
-(setq simpleclip-works (test-simpleclip))
-
 ;; you need install xsel under Linux
 ;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)
   (unless clipboard-only (kill-new msg))
-  (if simpleclip-works (simpleclip-set-contents msg)
-    (my-pclip-fallback msg)))
+  (my-pclip msg))
 
 (defun cp-filename-of-current-buffer () "Copy file name (NOT full path) into the yank ring and OS clipboard."
   (interactive)
@@ -59,40 +52,6 @@
     (copy-yank-str (file-truename buffer-file-name))
     (message "file full path => clipboard & yank ring")))
 
-(defun my-gclip-fallback ()
-  (cond
-   ((eq system-type 'darwin)
-    (with-output-to-string
-      (with-current-buffer standard-output
-        (call-process "/usr/bin/pbpaste" nil t nil "-Prefer" "txt"))))
-   ((eq system-type 'cygwin)
-    (with-output-to-string
-      (with-current-buffer standard-output
-        (call-process "getclip" nil t nil))))
-   ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-    (with-output-to-string
-      (with-current-buffer standard-output
-        (call-process "xsel" nil t nil "--clipboard" "--output"))))
-   (t
-    (error "Clipboard support not available"))))
-
-(defun my-pclip-fallback (str-val)
-  (cond
-   ((eq system-type 'darwin)
-    (with-temp-buffer
-      (insert str-val)
-      (call-process-region (point-min) (point-max) "/usr/bin/pbcopy")))
-   ((eq system-type 'cygwin)
-    (with-temp-buffer
-      (insert str-val)
-      (call-process-region (point-min) (point-max) "putclip")))
-   ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-    (with-temp-buffer
-      (insert str-val)
-      (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input")))
-   (t
-    (error "Clipboard support not available"))))
-
 (defun copy-to-x-clipboard (&optional num)
   "If NUM equals 1, copy the downcased string.
 If NUM equals 2, copy the captalized string.
@@ -100,7 +59,7 @@ If NUM equals 3, copy the upcased string.
 If NUM equals 4, kill-ring => clipboard."
   (interactive "P")
   (let* ((thing (my-use-selected-string-or-ask "")))
-    (if (region-active-p) (push-mark))
+    (if (region-active-p) (deactivate-mark))
     (cond
      ((not num))
      ((= num 1)
@@ -114,8 +73,7 @@ If NUM equals 4, kill-ring => clipboard."
      (t
       (message "C-h f copy-to-x-clipboard to find right usage")))
 
-    (if simpleclip-works (simpleclip-set-contents thing)
-      (my-pclip-fallback thing))
+    (my-pclip thing)
     (if (not (and num (= 4 num))) (message "kill-ring => clipboard")
       (message "thing => clipboard!"))))
 
@@ -132,7 +90,7 @@ If N is 3, converted dashed to camelcased then paste."
              (not (eolp))
              (not (eobp)))
     (forward-char))
-  (let* ((str (if simpleclip-works (simpleclip-get-contents) (my-gclip-fallback))))
+  (let* ((str (my-gclip)))
     (cond
      ((not n)
       ;; do nothing
