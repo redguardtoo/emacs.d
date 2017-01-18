@@ -1,5 +1,5 @@
 * Checklist
-- Tested with Emacs 24.3.1, 24.4, 24.5 on Linux/Windows/Cygwin/Mac
+- Tested with Emacs 24.3.1, 24.4, 24.5, 25.1 on Linux/Windows/Cygwin/Mac
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - I intentionally make packages from [[http://melpa.org][MELPA]] *invisible* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install those packages
