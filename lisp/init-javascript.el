@@ -326,6 +326,13 @@ INDENT-SIZE decide the indentation level.
     (goto-char orig-point)))
 ;; }}
 
+;; {{ js-comint
+(defun js-clear-send-buffer ()
+  (interactive)
+  (js-clear)
+  (js-send-buffer))
+;; }}
+
 (setq-default js2-additional-externs
               '("$"
                 "$A" ; salesforce lightning component
