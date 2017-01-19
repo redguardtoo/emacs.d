@@ -366,6 +366,11 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed."
                                            (evilmi-script-get-tag evilmi-script-jump))))
         '(lua-mode vimrc-mode))
 
+  ;; css/scss/less
+  (mapc (lambda (mode)
+          (plist-put evilmi-plugins mode '((evilmi-simple-get-tag evilmi-simple-jump))))
+        '(css-mode less-mode scss-mode))
+
   ;; Ruby
   (autoload 'evilmi-ruby-get-tag "evil-matchit-ruby" nil)
   (autoload 'evilmi-ruby-jump "evil-matchit-ruby" nil)
