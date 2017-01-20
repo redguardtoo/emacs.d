@@ -138,7 +138,6 @@
                                init-hs-minor-mode
                                init-writting
                                init-pomodoro
-                               init-emacspeak
                                init-artbollocks-mode
                                init-semantic))
   (idle-require-mode 1) ;; starts loading
