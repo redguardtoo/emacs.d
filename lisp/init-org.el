@@ -176,7 +176,7 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
 
   ;; for some reason, org8 disable odt export by default
   (add-to-list 'org-export-backends 'odt)
-  (add-to-list 'org-export-backends 'org) ; for org-mime
+  ;; (add-to-list 'org-export-backends 'org) ; for org-mime
 
   ;; org-mime setup, run this command in org-file, than yank in `message-mode'
   (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
