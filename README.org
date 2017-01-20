@@ -2,16 +2,16 @@
 - Tested with Emacs 24.3.1, 24.4, 24.5, 25.1 on Linux/Windows/Cygwin/Mac
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- I intentionally make packages from [[http://melpa.org][MELPA]] *invisible* by default. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install those packages
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* by default. But all packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 * Features
-- Stable
-- Efficient
+- Stable, Emacs will never crash after full package upgrade
+- Efficient, tested on 10 years old computer
 - Native key bindings are preserved
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] (Emacs in Shell)
-- Robust (For example, you can install packages behind Corp firewall)
-- Popular programming languages are supported (C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...)
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
+- Robust, you can install packages without network access
+- Popular programming languages are supported, C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...
 * Installation
 Most users should follow the section "Install in normal way".
 
@@ -186,19 +186,15 @@ Required for vim user,
 *** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 ** Key bindings
-I only use key bindings defined in =~/.emacs.d/lisp/init-evil.el=.
+Key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
 
-For example, there is below code in that file,
-#+begin_src elisp
-(nvmap :prefix ","
-       "bu" 'backward-up-list)
-#+end_src
+For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing =,bu= will execute command =backward-up-list=.
 
-It means I press ",bu" to execute command =backward-up-list=.
-
-So pressing ",bu" equals =M-x backward-up-list=. The official tutorials I recommended provide enough information about usage of the commands.
+The tutorials I recommended provide enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
+
+You can override my key bindings in =~/.custome.el=.
 * FAQ
 ** Color theme
 *** Preview color theme
@@ -326,8 +322,8 @@ Some package cannot be downloaded automatically because of network problem.
 You could
 - =M-x list-packages= to manually install it
 - Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
-** Disable Vim key binding
-By default EVIL (Vim emulation in Emacs) is used. You can comment out line containing =(require 'init-evil)= in init.el to unload it.
+** Disable Vim key bindings
+By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
 It's defined in =~/.emacs.d/lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
@@ -337,7 +333,7 @@ Please reading [[https://bitbucket.org/lyro/evil/raw/f2648b841f9bcded8764ce63410
 I assume you are using company-mode. Other packages have similar setup.
 
 If you use clang to parse the C++ code:
-- Make sure your code is syntax correct
+- Make sure code is syntax correct
 - assign reasonable value into company-clang-arguments
 
 Here is sample code:
@@ -345,7 +341,7 @@ Here is sample code:
 (setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
 #+end_src
 
-In "friendly" Visual C++, you need do [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]].
+In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
 
 ** Chinese Input Method Editor
 Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
@@ -356,7 +352,7 @@ Or else =~/.emacs.d/pyim/pyim-personal.txt= will be created.
 
 ** Install Emacs elsewhere
 Run below commands:
-#+begin_src sh
+#+begin_src bash
 mkdir -p ~/tmp;
 curl http://ftp.gnu.org/gnu/emacs/emacs-24.3.tar.gz | tar xvz -C ~/tmp/emacs-24.3
 cd ~/tmp/emacs-24.3;
