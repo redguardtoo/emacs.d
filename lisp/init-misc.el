@@ -301,10 +301,16 @@
 ;; @see http://stackoverflow.com/questions/4222183/emacs-how-to-jump-to-function-definition-in-el-file
 (global-set-key (kbd "C-h C-f") 'find-function)
 
+;; {{ time format
+;; If you want to customize time format, read documantation of `format-time-string'
+;; and customize `display-time-format'.
+;; (setq display-time-format "%a %b %e")
+
 ;; from RobinH, Time management
-(setq display-time-24hr-format t)
+(setq display-time-24hr-format t) ; the date in modeline is English too, magic!
 (setq display-time-day-and-date t)
-(display-time)
+(display-time) ; show date in modeline
+;; }}
 
 ;;a no-op function to bind to if you want to set a keystroke to null
 (defun void () "this is a no-op" (interactive))
