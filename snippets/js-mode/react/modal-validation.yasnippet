@@ -1,0 +1,153 @@
+# -*- coding: utf-8; mode: snippet -*-
+
+
+# name: modal with form validation (react-redux-form required)
+# expand-env: ((yas-indent-line 'fixed))
+# key: modal
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// npm install --save react-redux-form react-bootstrap
+import React from 'react';
+import { connect } from 'react-redux';
+import {
+  Button,
+  Modal,
+  FormGroup,
+  ControlLabel,
+  Col
+} from 'react-bootstrap';
+
+import { LocalForm, Control, Errors, Field } from 'react-redux-form';
+
+function validatorRequired(val) {
+  return val && val.length > 0;
+}
+
+export class FormInput extends React.Component {
+  getFormControlWidth() {
+    return 12 - this.getLabelWidth();
+  }
+
+  getLabelWidth() {
+    return this.props.labelWidth? this.props.labelWidth: 2;
+  }
+
+  showErrors(field) {
+    console.log('FormInput.showErrors called => ', 'field=', field);
+    return field.touched && !field.focus;
+  }
+
+  render() {
+    // please use '<input>' instead of 'FormControl', react-redux-form problem
+    return (
+      <FormGroup>
+        <Col sm={ this.getLabelWidth() }>
+          <ControlLabel>
+            {this.props.children}
+          </ControlLabel>
+        </Col>
+        <Col sm={ this.getFormControlWidth() }>
+          <Field model={this.props.model}>
+            <input className="form-control" type={this.props.type?this.props.type:'text'}/>
+          </Field>
+          <small>
+            <Errors model={this.props.model} messages={this.props.messages} show={this.showErrors} />
+            {
+              this.props.extraModel? <Errors model={this.props.extraModel} messages={this.props.messages} show={this.showErrors} />:null
+            }
+          </small>
+        </Col>
+      </FormGroup>
+    );
+  }
+}
+
+function validatorNewPasswordsMatch(user) {
+  return user.newPassword === user.confirmNewPassword;
+};
+
+export class `(file-name-base buffer-file-name)` extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.formValidators = {
+      '': { newPasswordsMatch:validatorNewPasswordsMatch},
+      oldPassword: { required: validatorRequired },
+      newPassword: { required: validatorRequired },
+      confirmNewPassword: { required:validatorRequired }
+    };
+    this.close = this.close.bind(this);
+    this.save = this.save.bind(this);
+  }
+
+  close() {
+    // case 'EVT_SHOW_`(upcase (file-name-base buffer-file-name))`':
+    //  finalStoreState = update(storeState, {show`(file-name-base buffer-file-name)`: {$set: action.show`(file-name-base buffer-file-name)`}});
+    //  break;
+    this.props.dispatch({
+      type: 'EVT_SHOW_`(upcase (file-name-base buffer-file-name))`',
+      show`(file-name-base buffer-file-name)`: false
+    });
+  }
+
+  save(values) {
+    var self = this;
+    console.log('values=', values);
+  }
+  render() {
+    return (
+      <Modal show={this.props.show`(file-name-base buffer-file-name)`} onHide={ this.close }>
+        <LocalForm model="user"
+                   validators={this.formValidators}
+                   onSubmit={this.save}
+                   className="form-horizontal">
+          <Modal.Header closeButton>
+            <Modal.Title>Change Password</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <FormInput type="password"
+                         labelWidth={5}
+                         messages={{required: 'Required'}}
+                         model=".oldPassword"
+                         autoFocus>
+              Old Password *
+            </FormInput>
+            <FormInput type="password"
+                         labelWidth={5}
+                         messages={{required: 'Required'}}
+                         model=".newPassword">
+              New Password *
+            </FormInput>
+            <FormInput type="password"
+                         labelWidth={5}
+                         messages={{required: 'Required', newPasswordsMatch: 'Password and confirm password does not match'}}
+                         model=".confirmNewPassword"
+                         extraModel="user">
+              Confirm New Password *
+            </FormInput>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button type="submit">OK</Button>
+            <Button onClick={ this.close }>Cancel</Button>
+          </Modal.Footer>
+        </LocalForm>
+      </Modal>
+    );
+  }
+}
+
+
+// latest way to use react-router 2.x
+`(file-name-base buffer-file-name)`.contextTypes = {
+    // @see https://github.com/grommet/grommet/issues/441
+    router: React.PropTypes.object.isRequired
+};
+
+export default connect(
+  function (storeState) {
+    // store state to props
+    return {
+      show`(file-name-base buffer-file-name)`: storeState.app.show`(file-name-base buffer-file-name)`
+    };
+  }
+)(`(file-name-base buffer-file-name)`);

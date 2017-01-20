@@ -203,8 +203,7 @@
        (t
         (setq cmd (format "curl -L %s > %s.%s"  url (w3mext-subject-to-target-filename) (file-name-extension url)))
         (kill-new cmd)
-        (if (fboundp 'simpleclip-set-contents)
-            (simpleclip-set-contents cmd))
+        (my-pclip cmd)
         (message "%s => clipd/kill-ring" cmd))))
     ))
 

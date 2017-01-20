@@ -1,0 +1,13 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: return new Promise(...)
+# key: promise
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// @see https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise
+// var p = new Promise(...); p.then(function() {}).catch(function() {});
+return new Promise(function(resolve, reject) {
+  var resp = {status: 'OK'};
+  setTimeout(function() {
+    resolve(resp);
+  }, 2000);
+});

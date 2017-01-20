@@ -181,9 +181,49 @@
             (format "rundll32.exe %SystemRoot%\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &" file))))
     rlt))
 
+;; {{ simpleclip has problem on Emacs 25.1
+(defun test-simpleclip ()
+  (simpleclip-set-contents "testsimpleclip!")
+  (string= "testsimpleclip!" (simpleclip-get-contents)))
+
+(setq simpleclip-works (test-simpleclip))
+
+(defun my-gclip ()
+  (if simpleclip-works (simpleclip-get-contents)
+    (cond
+     ((eq system-type 'darwin)
+      (with-output-to-string
+        (with-current-buffer standard-output
+          (call-process "/usr/bin/pbpaste" nil t nil "-Prefer" "txt"))))
+     ((eq system-type 'cygwin)
+      (with-output-to-string
+        (with-current-buffer standard-output
+          (call-process "getclip" nil t nil))))
+     ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
+      (with-output-to-string
+        (with-current-buffer standard-output
+          (call-process "xsel" nil t nil "--clipboard" "--output")))))))
+
+(defun my-pclip (str-val)
+  (if simpleclip-works (simpleclip-set-contents str-val)
+    (cond
+     ((eq system-type 'darwin)
+      (with-temp-buffer
+        (insert str-val)
+        (call-process-region (point-min) (point-max) "/usr/bin/pbcopy")))
+     ((eq system-type 'cygwin)
+      (with-temp-buffer
+        (insert str-val)
+        (call-process-region (point-min) (point-max) "putclip")))
+     ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
+      (with-temp-buffer
+        (insert str-val)
+        (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input"))))))
+;; }}
+
 (defun make-concated-string-from-clipboard (concat-char)
-  (let (rlt (str (replace-regexp-in-string "'" "" (upcase (simpleclip-get-contents)))))
-    (setq rlt (replace-regexp-in-string "[ ,-:]+" concat-char str))
+  (let* ((str (replace-regexp-in-string "'" "" (upcase (my-gclip))))
+         (rlt (replace-regexp-in-string "[ ,-:]+" concat-char str)))
     rlt))
 
 ;; {{ diff region SDK

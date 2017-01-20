@@ -9,7 +9,7 @@
 ;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)
   (unless clipboard-only (kill-new msg))
-  (simpleclip-set-contents msg))
+  (my-pclip msg))
 
 (defun cp-filename-of-current-buffer () "Copy file name (NOT full path) into the yank ring and OS clipboard."
   (interactive)
@@ -34,15 +34,14 @@
 (defun cp-filename-line-number-of-current-buffer ()
   "Copy file:line into the yank ring and clipboard"
   (interactive)
-  (let (filename linenum rlt)
-    (when buffer-file-name
-      (setq filename (file-name-nondirectory buffer-file-name))
-      (setq linenum (save-restriction
+  (when buffer-file-name
+    (let* ((filename (file-name-nondirectory buffer-file-name))
+           (linenum (save-restriction
                       (widen)
                       (save-excursion
                         (beginning-of-line)
                         (1+ (count-lines 1 (point))))))
-      (setq rlt (format "%s:%d" filename linenum))
+           (rlt (format "%s:%d" filename linenum)))
       (copy-yank-str rlt)
       (message "%s => clipboard & yank ring" rlt))))
 
@@ -60,6 +59,7 @@ If NUM equals 3, copy the upcased string.
 If NUM equals 4, kill-ring => clipboard."
   (interactive "P")
   (let* ((thing (my-use-selected-string-or-ask "")))
+    (if (region-active-p) (deactivate-mark))
     (cond
      ((not num))
      ((= num 1)
@@ -69,11 +69,11 @@ If NUM equals 4, kill-ring => clipboard."
      ((= num 3)
       (setq thing (upcase thing)))
      ((= num 4)
-      (simpleclip-set-contents (car kill-ring)))
+      (setq thing (car kill-ring)))
      (t
       (message "C-h f copy-to-x-clipboard to find right usage")))
 
-    (simpleclip-set-contents thing)
+    (my-pclip thing)
     (if (not (and num (= 4 num))) (message "kill-ring => clipboard")
       (message "thing => clipboard!"))))
 
@@ -90,7 +90,7 @@ If N is 3, converted dashed to camelcased then paste."
              (not (eolp))
              (not (eobp)))
     (forward-char))
-  (let* ((str (simpleclip-get-contents)))
+  (let* ((str (my-gclip)))
     (cond
      ((not n)
       ;; do nothing
