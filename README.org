@@ -274,7 +274,7 @@ But there exists workaround for less used plugin. Check =~/.emacs.d/lisp/init-ev
 For example, if =which-func-mode= cannot display function name at mode-line, you can use =M-x popup-which-function= instead.
 
 =popup-which-function= is mentioned in init-evil.el.
-** How to use org-mode
+** Use org-mode
 Press =M-x org-version=, then read corresponding online manual to setup.
 
 For example, =org-capture= need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
@@ -362,6 +362,13 @@ rm -rf ~/myemacs/24.3/*;
 #+end_src
 
 Feel free to replace 24.3 with other version number.
+** Change Time Locale
+Insert below code into =~/.emacs=,
+#+begin_src elisp
+;; Use en_US locale to format time.
+;; if not set, the OS locale is used.
+(setq system-time-locale "C")
+#+end_src
 ** Directory structure
 =~/.emacs.d/init.el= is the main file. It includes all the other *.el files.
 
