@@ -15,7 +15,7 @@
       browse-url-browser-function 'w3m
       ;; use shr to view html mail, but if libxml NOT available
       ;; use w3m isntead. That's Emacs 24.3+ default logic
-      ;; mm-text-html-renderer 'shr
+       mm-text-html-renderer 'w3m ; I prefer w3m
       w3m-use-toolbar t
       ;; show images in the browser
       ;; setq w3m-default-display-inline-images t
