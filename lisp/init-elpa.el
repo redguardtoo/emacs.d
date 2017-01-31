@@ -202,6 +202,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
+(require-package 'counsel-bbdb)
 (require-package 'elpy)
 (require-package 'hl-sexp)
 (require-package 'ibuffer-vc)

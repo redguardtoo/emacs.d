@@ -119,6 +119,7 @@
   '(progn
      (defhydra hydra-message (:color blue)
        "?"
+       ("a" counsel-bbdb-complete-mail "Mail address")
        ("ca" mml-attach-file "Attach C-c C-a")
        ("cc" message-send-and-exit "Send C-c C-c")
        ("q" nil "Bye"))))
