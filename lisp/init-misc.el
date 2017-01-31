@@ -752,12 +752,14 @@ If step is -1, go backward."
   "(car p4-file-to-url) is the original file prefix
 (cadr p4-file-to-url) is the url prefix")
 
+(defun p4-current-file-url ()
+  (replace-regexp-in-string (car p4-file-to-url)
+                            (cadr p4-file-to-url)
+                            buffer-file-name))
+
 (defun p4-generate-cmd (opts)
-  (format "p4 %s %s"
-          opts
-          (replace-regexp-in-string (car p4-file-to-url)
-                                    (cadr p4-file-to-url)
-                                    buffer-file-name)))
+  (format "p4 %s %s" opts (p4-current-file-url)))
+
 (defun p4edit ()
   "p4 edit current file."
   (interactive)
@@ -785,14 +787,48 @@ If FILE-OPENED, current file is still opened."
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
 
+(defun p4-show-changelist-patch (line)
+  (let* ((chg (nth 1 (split-string line "[\t ]+")))
+         (url (p4-current-file-url))
+         (pattern "^==== //.*====$")
+         sep
+         seps
+         (start 0)
+         (original (if chg (shell-command-to-string (format "p4 describe -du %s" chg)) ""))
+         rlt)
+
+    (while (setq sep (string-match pattern original start))
+      (let* ((str (match-string 0 original)))
+        (setq start (+ sep (length str)))
+        (add-to-list 'seps (list sep str) t)))
+    (setq rlt (substring original 0 (car (nth 0 seps))))
+    (let* ((i 0) found)
+      (while (and (not found)
+                  (< i (length seps)))
+        (when (string-match url (cadr (nth i seps)))
+          (setq rlt (concat rlt (substring original
+                                           (car (nth i seps))
+                                           (if (= i (- (length seps) 1))
+                                               (length original)
+                                             (car (nth (+ 1 i) seps))))))
+          ;; out of loop now since current file patch found
+          (setq found t))
+        (setq i (+ 1 i))))
+
+    ;; remove p4 verbose bullshit
+    (setq rlt (replace-regexp-in-string "^Affected files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+Differences \.\.\.[\r\n]+"
+                                        ""
+                                        rlt))
+    ;; one line short description of change list
+    (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
+    rlt))
+
 (defun p4history ()
-  "Show history of current file with patches displayed, like `git log -p'."
+  "Show history of current file like `git log -p'."
   (interactive)
   (let* ((changes (split-string (shell-command-to-string (p4-generate-cmd "changes")) "\n"))
          rlt-buf
-         (content (mapconcat (lambda (line)
-                               (let* ((chg (nth 1 (split-string line "[\t ]+"))))
-                                 (if chg (shell-command-to-string (format "p4 describe -du %s" chg)))))
+         (content (mapconcat 'p4-show-changelist-patch
                              changes
                              "\n\n")))
     (if (get-buffer "*p4log*")
@@ -805,6 +841,12 @@ If FILE-OPENED, current file is still opened."
       (insert content)
       (diff-mode)
       (goto-char (point-min))
+      ;; nice imenu output
+      (setq imenu-create-index-function
+            (lambda ()
+              (save-excursion
+                (imenu--generic-function '((nil "^[0-9]+ by .*" 0))))))
+      ;; quit easily in evil-mode
       (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
 ;; }}
 
