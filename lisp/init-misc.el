@@ -102,12 +102,15 @@
 ;; I only use git
 (setq ffip-diff-backends '(my-git-show-selected-commit
                            my-git-diff-current-file
-                           my-git-log-patch-current-file
+                           ;; `git log -p' current file
+                           (shell-command-to-string (format "cd $(git rev-parse --show-toplevel) && git --no-pager log --date=short -p '%s'"
+                                                            (buffer-file-name)))
                            "cd $(git rev-parse --show-toplevel) && git diff"
                            "cd $(git rev-parse --show-toplevel) && git diff --cached"
                            (shell-command-to-string (format "cd $(git rev-parse --show-toplevel) && git --no-pager log --date=short -S'%s' -p"
                                                             (read-string "Git search string:")))
                            (car kill-ring)))
+
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
   (interactive)
