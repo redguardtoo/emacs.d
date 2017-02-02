@@ -826,17 +826,11 @@ If FILE-OPENED, current file is still opened."
     (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
     rlt))
 
-(defun p4history ()
-  "Show history of current file like `git log -p'."
-  (interactive)
-  (let* ((changes (split-string (shell-command-to-string (p4-generate-cmd "changes")) "\n"))
-         rlt-buf
-         (content (mapconcat 'p4-show-changelist-patch
-                             changes
-                             "\n\n")))
-    (if (get-buffer "*p4log*")
-        (kill-buffer "*p4log*"))
-    (setq rlt-buf (get-buffer-create "*p4log*"))
+(defun p4--create-buffer (buf-name content &optional enable-imenu)
+  (let* (rlt-buf)
+    (if (get-buffer buf-name)
+        (kill-buffer buf-name))
+    (setq rlt-buf (get-buffer-create buf-name))
     (save-current-buffer
       (switch-to-buffer-other-window rlt-buf)
       (set-buffer rlt-buf)
@@ -845,12 +839,28 @@ If FILE-OPENED, current file is still opened."
       (diff-mode)
       (goto-char (point-min))
       ;; nice imenu output
-      (setq imenu-create-index-function
-            (lambda ()
-              (save-excursion
-                (imenu--generic-function '((nil "^[0-9]+ by .*" 0))))))
-      ;; quit easily in evil-mode
-      (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
+      (if enable-imenu
+          (setq imenu-create-index-function
+                (lambda ()
+                  (save-excursion
+                    (imenu--generic-function '((nil "^[0-9]+ by .*" 0))))))
+        ;; quit easily in evil-mode
+        (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))))))
+
+(defun p4diff ()
+  "Show diff of current file like `git diff'."
+  (interactive)
+  (let* ((content (shell-command-to-string (p4-generate-cmd "diff -du -db"))))
+    (p4--create-buffer "*p4diff*" content)))
+
+(defun p4history ()
+  "Show history of current file like `git log -p'."
+  (interactive)
+  (let* ((changes (split-string (shell-command-to-string (p4-generate-cmd "changes")) "\n"))
+         (content (mapconcat 'p4-show-changelist-patch
+                             changes
+                             "\n\n")))
+    (p4--create-buffer "*p4log*" content t)))
 ;; }}
 
 (defun my-get-total-hours ()
