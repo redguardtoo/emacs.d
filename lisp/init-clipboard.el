@@ -96,7 +96,7 @@ If N is 3, converted dashed to camelcased then paste."
       ;; do nothing
       )
      ((= 1 n)
-      (setq str (replace-regexp-in-string "^\\(+\\|-.*\\|@@ .*$\\)" "" str)))
+      (setq str (replace-regexp-in-string "^\\(+\\|-\\|@@ $\\)" "" str)))
      ((= 2 n)
       (kill-new str))
      ((= 3 n)
