@@ -282,7 +282,9 @@ This function will execute the actions specified in an extended definition and
 apply a predicate if there is one."
   (cond ((and (listp def)
               (not (keymapp def))
-              (not (functionp def)))
+              ;; lambda
+              (not (functionp def))
+              (not (eq (car def) 'menu-item)))
          (unless (keywordp (car def))
            (setq def (cons :command def)))
          (dolist (keyword general-extended-def-keywords)
@@ -639,7 +641,7 @@ Any local keybindings will be shown first followed by global keybindings."
     (goto-char (point-min))
     (read-only-mode)))
 
-;;; Commands that Could Aid in Key Definition
+;;; Functions/Macros to Aid Key Definition
 ;; https://emacs.stackexchange.com/questions/6037/emacs-bind-key-to-prefix/13432#13432
 ;; altered to allow execution in a emacs state
 ;; and to create a named function with a docstring
@@ -821,6 +823,9 @@ version of which-key from after 2016-11-21."
                                           :keys ,char
                                           :fallback ,fallback)))))))
 
+(defvar general--repeat-info nil
+  "Used for debugging repeat behavior for `general-key-dispatch'.")
+
 (defun general--dispatch-repeat (flag)
   "Modified version of `evil-repeat-keystrokes'.
 It will remove extra keys that would be added in a general-dispatch-... command
@@ -830,8 +835,7 @@ aborted when it should be."
    ((eq flag 'pre)
     (when evil-this-register
       (evil-repeat-record
-       `(set evil-this-register ,evil-this-register)))
-    (setq evil-repeat-keys (this-command-keys)))
+       `(set evil-this-register ,evil-this-register))))
    ((eq flag 'post)
     (let* ((command (cl-getf general--last-dispatch :command))
            (repeat-prop (evil-get-command-property command :repeat t))
@@ -841,29 +845,62 @@ aborted when it should be."
            (reversed-repeat-info (reverse evil-repeat-info))
            count
            next-repeat-item)
-      ;; prevent double recording
       (while (and (stringp (setq next-repeat-item (car reversed-repeat-info)))
                   (string-match "^[0-9]+$" next-repeat-item))
-        ;; evil counts will appear in last items, e.g. ("c3" "3" "3")
-        ;; NOTE: this won't work if the user binds digits in the dispatch
-        ;; command (though I can't imagine a situation where that would be
-        ;; useful)
+        ;; need to rely on evil-repeat-info to get counts
+        ;; evil counts will appear as last items, e.g. ("c3" "3" "3")
+        ;; this will work even if the user binds digits in the dispatch command
+        ;; as long as the key to invoke the dispatch command is not also a digit
+        ;; (the 3 in "c3" is the only duplicate)
         (push (pop reversed-repeat-info) count))
       (setq evil-repeat-info (if (= (length count) 0)
                                  (butlast evil-repeat-info)
                                (nreverse (cdr reversed-repeat-info))))
+      ;; for debugging purposes only
+      (setq general--repeat-info
+            (list invoked-keys keys (this-command-keys)
+                  (cl-copy-list evil-repeat-info) count))
       (if (general--repeat-abort-p repeat-prop)
           (evil-repeat-abort)
         (evil-repeat-record
          (cond
-          ;; TODO is this ever needed anymore?
-          ;; ((zerop (length (this-command-keys)))
-          ;;  evil-repeat-keys)
           (fallback
            (concat invoked-keys (apply #'concat count) (this-command-keys)))
           (t
-           (concat invoked-keys keys))))
+           (concat invoked-keys
+                   keys
+                   (unless (or (string= (concat invoked-keys keys)
+                                        (this-command-keys))
+                               (eq (evil-get-command-property command :repeat)
+                                   'general--simulate-repeat))
+                     ;; (this-command-keys) will contain the text object if the
+                     ;; matched command is an operator
+                     (concat count (this-command-keys)))))))
         (evil-clear-command-keys))))))
+
+(cl-defmacro general-predicate-dispatch
+    (fallback-def &rest defs
+                  &key docstring
+                  &allow-other-keys)
+  (declare (indent 1))
+  "Create a menu item that will run FALLBACK-DEF or a definition from DEFS.
+DEFS consists of <predicate> <definition> pairs. Binding this menu-item to a key
+will cause that key to act as the corresponding definition (a command, keymap,
+etc) for the first matched predicate. If no predicate is matched FALLBACK-DEF
+will be run. When FALLBACK-DEF is nil and no predicates are matched, the keymap
+with the next highest precedence for the pressed key will be checked. DOCSTRING
+can be specified as a description for the menu item."
+  ;; remove keyword arguments from defs
+  (let ((defs (cl-loop for (key value) on defs by 'cddr
+                       unless (keywordp key)
+                       collect (list key value))))
+    `'(menu-item
+       ,(or docstring "") nil
+       :filter (lambda (&optional _)
+                 (cond ,@(mapcar (lambda (pred-def)
+                                   `(,(car pred-def) ,(cadr pred-def)))
+                                 defs)
+                       (t ,fallback-def))))))
 
 ;;; Optional Setup
 ;;;###autoload
@@ -1000,6 +1037,9 @@ aliases such as `nmap' for `general-nmap'."
                                    (or (symbolp def)
                                        (when (and (symbolp (car def))
                                                   (not (keywordp (car def)))
+                                                  (not (memq
+                                                        (car def)
+                                                        '(menu-item lambda)))
                                                   (not (keymapp def)))
                                          (setq def (car def)))
                                        (setq def (cl-getf def :command)))))
