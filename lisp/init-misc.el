@@ -704,6 +704,17 @@ If step is -1, go backward."
 (setq cliphist-select-item-callback 'my-select-cliphist-item)
 ;; }}
 
+(defun extract-list-from-package-json ()
+  "Extract package list from package.json."
+  (interactive)
+  (let* ((str (my-use-selected-string-or-ask "")))
+    (message "my-select-cliphist-item called => %s" str)
+    (setq str (replace-regexp-in-string ":.*$\\|\"" "" str))
+    ;; join lines
+    (setq str (replace-regexp-in-string "[\r\n \t]+" " " str))
+    (copy-yank-str str)
+    (message "%s => clipboard & yank ring" str)))
+
 (defun pabs()
   "Relative path to full path."
   (interactive)
