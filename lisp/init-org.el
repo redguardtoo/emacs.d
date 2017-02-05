@@ -220,17 +220,18 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
   (if is-promote (org-do-promote)
     (org-do-demote)))
 
+;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 (defun org-mime-html-hook-setup ()
   (org-mime-change-element-style "pre"
                                  "color:#E6E1DC; background-color:#232323; padding:0.5em;")
   (org-mime-change-element-style "blockquote"
                                  "border-left: 2px solid gray; padding-left: 4px;"))
-;; org-mime setup
+
 (eval-after-load 'org-mime
   '(progn
+     (setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))
      (add-hook 'org-mime-html-hook 'org-mime-html-hook-setup)))
 
-;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 ;; demo video: http://vimeo.com/album/1970594/video/13158054
 (add-hook 'message-mode-hook
           (lambda ()

@@ -54,6 +54,7 @@
 (autoload 'moz-minor-mode "moz" "Mozilla Minor and Inferior Mozilla Modes" t)
 (autoload 'org-mime-htmlize "org-mime" nil t)
 (autoload 'org-mime-org-buffer-htmlize "org-mime" nil t)
+(autoload 'org-mime-org-subtree-htmlize "org-mime" nil t)
 (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
 (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
 (autoload 'yari "yari" "" t nil)
