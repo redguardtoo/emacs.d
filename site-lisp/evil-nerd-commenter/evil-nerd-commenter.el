@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 2.3.1
+;; Version: 2.3.2
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -75,6 +75,7 @@
 ;;   "cp" 'evilnc-comment-or-uncomment-paragraphs
 ;;   "cr" 'comment-or-uncomment-region
 ;;   "cv" 'evilnc-toggle-invert-comment-line-by-line
+;;   "."  'evilnc-copy-and-comment-operator
 ;;   "\\" 'evilnc-comment-operator)
 ;;
 ;; For certain major modes, you need manual setup to override its original
@@ -132,7 +133,7 @@ See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
-    ;; See code in (defun comment-search-forward) from emacs 24.2.3.1:
+    ;; See code in (defun comment-search-forward) from emacs 24.2.3.2:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
     ;;     (or (match-end 1) (match-beginning 0)))
@@ -650,7 +651,7 @@ Then we operate the expanded region.  NUM is ignored."
 (defun evilnc-version ()
   "The version number."
   (interactive)
-  (message "2.3.1"))
+  (message "2.3.2"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys ()
@@ -677,6 +678,8 @@ Then we operate the expanded region.  NUM is ignored."
   ;; Install operator for evil text objects
   (eval-after-load 'evil-nerd-commenter-operator
     '(progn
+       (define-key evil-normal-state-map ",." 'evilnc-copy-and-comment-operator)
+       (define-key evil-visual-state-map ",." 'evilnc-copy-and-comment-operator)
        (define-key evil-normal-state-map ",," 'evilnc-comment-operator)
        (define-key evil-visual-state-map ",," 'evilnc-comment-operator))))
 

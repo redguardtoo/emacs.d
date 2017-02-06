@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 2.3.1
+;; Version: 2.3.2
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -29,7 +29,7 @@
 ;;; Commentary:
 
 ;;
-;; Provides an operator for evil-mode.
+;; Provides operators for evil-mode.
 
 ;;; Code:
 
@@ -64,6 +64,17 @@
   (if (and (evil-called-interactively-p)
            (eq type 'line))
     (evil-first-non-blank)))
+
+(evil-define-operator evilnc-copy-and-comment-operator (beg end)
+  "Inserts an out commented copy of the text from BEG to END."
+  :move-point nil
+  (interactive "<r>")
+  (let ((p (point)))
+    (evil-yank-lines beg end nil 'lines)
+    (comment-region beg end)
+    (goto-char beg)
+    (evil-paste-before 1)
+    (goto-char p)))
 
 (provide 'evil-nerd-commenter-operator)
 ;;; evil-nerd-commenter-operator.el ends here
