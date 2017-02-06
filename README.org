@@ -66,14 +66,14 @@ These tools are *OPTIONAL*.
 
 Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
 **** w3m (web browser in console)
-- Needed by =w3m= (w3m is emacs package name written in elisp)
+- Required by =w3m= (w3m is emacs package name written in elisp)
 - Install through OS package manager
 - Please note only emacs with GUI can display image
 **** lua
 - Required by =flymake-lua=
 - Install through OS package manager
 **** aspell or hunspell
-- Needed by =flyspell=
+- Required by =flyspell=
 - hunspell is the alternative of =aspell=. So you need only one of them.
 - Install through OS package manager
 - For aspell, you may need its dictionary =aspell-en=
@@ -81,63 +81,62 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - I recommend aspell for programmers
 
 **** sbcl (lisp environment)
-- Needed by lisp =slime=
+- Required by lisp =slime=
 - Install through OS package manager
 
 **** tidy
-- Needed by =web-mode= for syntax check and =tidy.el= html formatting
+- Required by =web-mode= for syntax check and =tidy.el= html formatting
 - Install through OS package manager
 
 **** csslint
-- Install =node.js= through OS package manager, then =sudo npm install -g csslint=
-
+- Install =node.js= through OS package manager, then =npm install -g csslint=
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
-- Needed by =org-mode= to export org file to odt file when image embedded
+- Required by =org-mode= to export org file to odt file when image embedded
 - Install through OS package manager
 **** zip and unzip
-- Needed by =org-mode= to export org file to odt file
+- Required by =org-mode= to export org file to odt file
 - Install through OS package manager
 **** jshint
-- Install =node.js= through OS package manager, then =sudo npm install -g jshint=
+- Install =node.js= through OS package manager, then =npm install -g jshint=
 - required by js-mode
 - by default I use js2-mode which does NOT need jshint
 **** xsel
-- Needed by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
+- Required by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
 - Install through OS package manager
 
 **** [[http://www.cmake.org][CMake]]
-- Needed by =cpputils-cmake=
+- Required by =cpputils-cmake=
 - Install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
 
 **** [[http://clang.llvm.org][Clang]]
-- Needed by =cpputils-cmake=, =company-clang=
+- Required by =cpputils-cmake=, =company-clang=
 - Install through OS package manager
 - If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
 
 **** GCC/Make
-- Needed by =flymake=
+- Required by =flymake=
 - Install through OS package manager
 
 **** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
-- Needed by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
+- Required by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
 - Used by Firefox
 
 **** [[http://ctags.sourceforge.net][CTags]]
 - It creates tags file for code navigation and code completion
-- Needed by many tags related packages
+- Required by many tags related packages
 - Install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
-- Needed by =ggtags.el=
-- It creates index files for code navigation
+- Required by =ggtags.el=
+- It creates index files for code navigation and auto-completion
 - More advanced than ctags, supports references and has better performance
 - Install through OS package manager
 
 **** LibreOffice
-- Only one executable =soffice= needed when converting odt file into doc/pdf
+- Only the executable =soffice= is used when converting odt file into doc/pdf
 - conversion happens automatically when exporting org-mode to odt
 - The conversion command is in variable =org-export-odt-convert-processes=
 - Install through OS package manager
@@ -177,8 +176,8 @@ At minimum you need know:
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-**** Step 4, solve your first problem
-For that problem, you can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
+** Step 4, what's your real world problem
+You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 *** Evil-mode tutorial
 Required for vim user,
 - Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
@@ -212,14 +211,15 @@ Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
 
 =M-x color-theme-select= *may not work* because of some design flaw in Emacs.
 
-Please note there is *NO unified way* to enable color theme because there two types of color theme. You need read color theme's documentation at first.
+There is *NO unified way* to enable color theme because two color theme systems exist. You need read color theme's documentation at first.
 
-My sample code works for most color themes.
+My code works for most color themes.
 
 If you insist on configuring the color theme in a different way, please,
 - Comment out the line containing =(require 'init-color-theme)= in =~/.emacs.d/init.el= at first
 - Read [[http://www.emacswiki.org/emacs?action=browse;oldid=ColorTheme;id=ColorAndCustomThemes][EmacsWiki]]
 *** Use color theme in terminal
+Start Emacs this way,
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
@@ -242,12 +242,12 @@ Chinese use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setu
 
 They are not included in this setup. You need install them manually.
 ** Synchronize setup with Git
-Most people should synchronize from my stable setup which is updated every 6+ months:
+Synchronize from my stable setup which is updated every 6+ months:
 #+begin_src bash
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git stable
 #+end_src
 
-But advanced users can use latest setup:
+Or latest setup which is unstable:
 #+begin_src bash
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git
 #+end_src
@@ -267,13 +267,10 @@ Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other desktop applications may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept `M-x']].
 ** Plugins doesn't work?
-If two plugins conflict, the more frequently used plugin takes priority.
+If key bindings of multiple plugins conflict, I preserve the key bindings for the more frequently used plugin.
 
-But there exists workaround for less used plugin. Check =~/.emacs.d/lisp/init-evil.el= for the list of alternative.
+I re-assign the alternative key bindings to less used plugins. Check =~/.emacs.d/lisp/init-evil.el= for details.
 
-For example, if =which-func-mode= cannot display function name at mode-line, you can use =M-x popup-which-function= instead.
-
-=popup-which-function= is mentioned in init-evil.el.
 ** Use org-mode
 Press =M-x org-version=, then read corresponding online manual to setup.
 
@@ -327,10 +324,11 @@ By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(
 ** Evil setup
 It's defined in =~/.emacs.d/lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
-Please reading [[https://bitbucket.org/lyro/evil/raw/f2648b841f9bcded8764ce63410065d2b8c5f856/doc/evil.pdf][its PDF manual]] before using evil-mode.
-
+Please read [[https://github.com/emacs-evil/evil/raw/master/doc/evil.pdf][its PDF manual]] before using evil-mode.
 ** C++ auto-completion doesn't work?
 I assume you are using company-mode. Other packages have similar setup.
+
+There are many ways to scan the C++ source files and create the candidates used by company frontend. The Emacs Lisp code and command line tools to scan the C++ files are company backends. =company-clang= is a popular backend because Clang is good at processing C++.
 
 If you use clang to parse the C++ code:
 - Make sure code is syntax correct
@@ -343,6 +341,13 @@ Here is sample code:
 
 In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
 
+You can use other company backends instead of =company-clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
+
+Other backends produce less precise results but are more efficient and easier to setup.
+** Auto-completion for other languages except C++
+It's similar to C++ setup. You can use company as frontend. But backend is the key. For example, you can't use =company-clang= for PHP because Clang can't handle PHP. But GNU Global supports PHP, so you can use =company-gtags= instead.
+
+For languages GNU Global doesn't support, you can always fallback to =company-etags= and CTags by using regular expression. Regular expressions could be place in =~/.ctags=.
 ** Chinese Input Method Editor
 Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
 
@@ -350,7 +355,7 @@ If your *personal* word file =~/.eim/pyim-personal.txt= exists, it will be used.
 
 Or else =~/.emacs.d/pyim/pyim-personal.txt= will be created.
 
-** Install Emacs elsewhere
+** Install multiple versions of Emacs
 Run below commands:
 #+begin_src bash
 mkdir -p ~/tmp;
@@ -392,9 +397,7 @@ Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section =Install stable version in easiest way= but skip the download steps
 
-Since most third party plugins don't support Emacs 23 any more. I strongly recommend you upgrading to Emacs 24 instead!
-
-Emacs is *portable* on any platform. Please read "Install Emacs at home directory" for how.
+Since most third party plugins don't support Emacs 23 any more, I strongly recommend upgrading to Emacs 24!
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
