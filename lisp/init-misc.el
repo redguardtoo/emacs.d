@@ -830,9 +830,10 @@ If FILE-OPENED, current file is still opened."
         (setq i (+ 1 i))))
 
     ;; remove p4 verbose bullshit
-    (setq rlt (replace-regexp-in-string "^Affected files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+Differences \.\.\.[\r\n]+"
+    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+"
                                         ""
                                         rlt))
+    (setq rlt (replace-regexp-in-string "Differences \.\.\.[\r\n]+" "" rlt))
     ;; one line short description of change list
     (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
     rlt))
@@ -854,9 +855,9 @@ If FILE-OPENED, current file is still opened."
           (setq imenu-create-index-function
                 (lambda ()
                   (save-excursion
-                    (imenu--generic-function '((nil "^[0-9]+ by .*" 0))))))
-        ;; quit easily in evil-mode
-        (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))))))
+                    (imenu--generic-function '((nil "^[0-9]+ by .*" 0)))))))
+      ;; quit easily in evil-mode
+      (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
 
 (defun p4diff ()
   "Show diff of current file like `git diff'."
