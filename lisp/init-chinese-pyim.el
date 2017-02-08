@@ -34,11 +34,7 @@
   '(progn
      (setq pyim-punctuation-translate-p nil) ;; use western punctuation (ban jiao fu hao)
      (setq default-input-method "chinese-pyim")
-     (setq pyim-use-tooltip 'popup) ; don't use tooltip
-     ;; personal dictionary should be out of ~/.emacs.d if possible
-     (if (file-exists-p (file-truename "~/.eim/pyim-personal.txt"))
-         (setq pyim-personal-file "~/.eim/pyim-personal.txt"))
-     ;; another official dictionary
-     (setq pyim-dicts '((:name "pinyin1" :file "~/.emacs.d/pyim/py.txt" :coding utf-8-unix :dict-type pinyin-dict)))))
+     ;; don't use tooltip
+     (setq pyim-use-tooltip 'popup)))
 
 (provide 'init-chinese-pyim)
