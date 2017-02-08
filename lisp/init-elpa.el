@@ -253,5 +253,6 @@ But you may use safer HTTPS instead.")
 (require-package 'define-word)
 (require-package 'quack) ; for scheme
 (require-package 'hydra)
+(require-package 'chinese-pyim)
 
 (provide 'init-elpa)
