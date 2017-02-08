@@ -2,6 +2,7 @@
 - Tested with Emacs 24.3.1, 24.4, 24.5, 25.1 on Linux/Windows/Cygwin/Mac (I will stop 24.3 support at <2018-01-01>)
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
+- If you use Windows Emacs, you have to [[https://www.gnu.org/software/emacs/manual/emacs-gnutls.html][install GnuTLS Dlls manually]] to be able to install packages from remote repositories
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* by default. But all packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 - Please read section "About Emacs 23" if you uses Emacs 23.4
@@ -233,8 +234,6 @@ You can change the definition of =my-toggle-color-theme= in =init-color-theme.el
 Please =M-x multi-term=.
 
 If you want to use Zsh instead of Bash, please modify init-term-mode.el
-** Use HTTPS to download packages
-=(setq melpa-use-https-repo t)=. =melpa-use-https-repo= is defined in init-elpa.el.
 ** Setup fonts in GUI Emacs
 Non-Chinese use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
