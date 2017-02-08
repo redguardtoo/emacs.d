@@ -237,4 +237,10 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
           (lambda ()
             (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
 ;; }}
+
+(defun org-agenda-show-agenda-and-todo (&optional arg)
+  "Better org-mode agenda view."
+  (interactive "P")
+  (org-agenda arg "n"))
+
 (provide 'init-org)
