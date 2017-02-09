@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 2.3.2
+;; Version: 2.3.3
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -57,7 +57,7 @@
 ;;
 ;; Setup:
 ;;
-;; 1. If comma is your leader key, as most Vim users do, setup is one liner,
+;; If comma is your leader key, as most Vim users do, setup is one liner,
 ;; (evilnc-default-hotkeys)
 ;;
 ;; If you use evil-leader and its default leader key,
@@ -78,6 +78,11 @@
 ;;   "."  'evilnc-copy-and-comment-operator
 ;;   "\\" 'evilnc-comment-operator)
 ;;
+;; You can setup `evilnc-original-above-comment-when-copy-and-comment' to decide which
+;; style to use when `evilnc-copy-and-comment-lines' or `evilnc-copy-and-comment-operator',
+;;   - Place the commented out text above original text
+;;   - Or place the original text above commented out text
+;;
 ;; For certain major modes, you need manual setup to override its original
 ;; keybindings,
 ;;
@@ -90,6 +95,10 @@
 ;;; Code:
 
 (autoload 'count-lines "simple")
+
+(defvar evilnc-original-above-comment-when-copy-and-comment nil
+  "Original text is above commented out when using `evilnc-copy-and-comment-lines'
+ and `evilnc-copy-and-comment-operator'.")
 
 (defvar evilnc-invert-comment-line-by-line nil
   "If t then invert region comment status line by line.
@@ -133,7 +142,7 @@ See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
-    ;; See code in (defun comment-search-forward) from emacs 24.2.3.2:
+    ;; See code in (defun comment-search-forward) from emacs 24.2.3.3:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
     ;;     (or (match-end 1) (match-beginning 0)))
@@ -312,7 +321,9 @@ Code snippets embedded in Org-mode is identified and right `major-mode' is used.
 
     (if evilnc-invert-comment-line-by-line
         (evilnc--invert-comment beg end)
-      (funcall fn beg end))
+      (setq pos (point))
+      (funcall fn beg end)
+      (goto-char pos))
 
     ;; turn off  3rd party language's major-mode temporarily and clean the shit
     (when lang-f
@@ -583,10 +594,18 @@ Then we operate the expanded region.  NUM is ignored."
    '(lambda (beg end)
       (evilnc--fix-buggy-major-modes)
       (let* ((str (buffer-substring-no-properties beg end)))
-        (goto-char end)
-        (newline 1)
-        (insert-before-markers str)
-        (comment-region beg end)))
+        (cond
+         (evilnc-original-above-comment-when-copy-and-comment
+          (let* ((p (point)))
+            (comment-region beg end)
+            (goto-char beg)
+            (insert-before-markers (concat str "\n"))
+            (goto-char p)))
+         (t
+          (goto-char end)
+          (newline 1)
+          (insert-before-markers str)
+          (comment-region beg end)))))
    num))
 
 ;;;###autoload
@@ -651,11 +670,12 @@ Then we operate the expanded region.  NUM is ignored."
 (defun evilnc-version ()
   "The version number."
   (interactive)
-  (message "2.3.2"))
+  (message "2.3.3"))
 
 ;;;###autoload
-(defun evilnc-default-hotkeys ()
-  "Set the hotkeys of evil-nerd-comment."
+(defun evilnc-default-hotkeys (&optional no-evil-keybindings)
+  "Set up the key bindings of evil-nerd-comment.
+If NO-EVIL-KEYBINDINGS is t, we don't define keybindings in evil-mode."
   (interactive)
 
   ;; Install hotkeys for Emacs mode
@@ -665,23 +685,24 @@ Then we operate the expanded region.  NUM is ignored."
   (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
 
   ;; Install key bindings for evil
-  (eval-after-load 'evil
-    '(progn
-       (define-key evil-normal-state-map ",ci" 'evilnc-comment-or-uncomment-lines)
-       (define-key evil-normal-state-map ",cl" 'evilnc-quick-comment-or-uncomment-to-the-line)
-       (define-key evil-normal-state-map ",ll" 'evilnc-quick-comment-or-uncomment-to-the-line)
-       (define-key evil-normal-state-map ",cc" 'evilnc-copy-and-comment-lines)
-       (define-key evil-normal-state-map ",cp" 'evilnc-comment-or-uncomment-paragraphs)
-       (define-key evil-normal-state-map ",cr" 'comment-or-uncomment-region)
-       (define-key evil-normal-state-map ",cv" 'evilnc-toggle-invert-comment-line-by-line)))
+  (unless no-evil-keybindings
+    (eval-after-load 'evil
+      '(progn
+         (define-key evil-normal-state-map ",ci" 'evilnc-comment-or-uncomment-lines)
+         (define-key evil-normal-state-map ",cl" 'evilnc-quick-comment-or-uncomment-to-the-line)
+         (define-key evil-normal-state-map ",ll" 'evilnc-quick-comment-or-uncomment-to-the-line)
+         (define-key evil-normal-state-map ",cc" 'evilnc-copy-and-comment-lines)
+         (define-key evil-normal-state-map ",cp" 'evilnc-comment-or-uncomment-paragraphs)
+         (define-key evil-normal-state-map ",cr" 'comment-or-uncomment-region)
+         (define-key evil-normal-state-map ",cv" 'evilnc-toggle-invert-comment-line-by-line)))
 
-  ;; Install operator for evil text objects
-  (eval-after-load 'evil-nerd-commenter-operator
-    '(progn
-       (define-key evil-normal-state-map ",." 'evilnc-copy-and-comment-operator)
-       (define-key evil-visual-state-map ",." 'evilnc-copy-and-comment-operator)
-       (define-key evil-normal-state-map ",," 'evilnc-comment-operator)
-       (define-key evil-visual-state-map ",," 'evilnc-comment-operator))))
+    ;; Install operator for evil text objects
+    (eval-after-load 'evil-nerd-commenter-operator
+      '(progn
+         (define-key evil-normal-state-map ",." 'evilnc-copy-and-comment-operator)
+         (define-key evil-visual-state-map ",." 'evilnc-copy-and-comment-operator)
+         (define-key evil-normal-state-map ",," 'evilnc-comment-operator)
+         (define-key evil-visual-state-map ",," 'evilnc-comment-operator)))))
 
 ;; Attempt to define the operator on first load.
 ;; Will only work if evil has been loaded
