@@ -53,8 +53,7 @@ function getWebpackPlugins() {
     // full moment.js is too big. @see https://github.com/moment/moment/issues/2416
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
-      'process.env': {'NODE_ENV': '"production"'},
-      isDev: process.env.NODE_ENV === 'development'
+      'process.env': {'NODE_ENV': '"production"'}
     }),
     new webpack.optimize.OccurrenceOrderPlugin,
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"),
