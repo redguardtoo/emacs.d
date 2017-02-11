@@ -46,11 +46,18 @@ if no files marked, always operate on current line in dired-mode
          ((file-exists-p (concat dir "Chinese.sub"))
           (setq ad-return-value (concat ad-return-value
                                         " -vobsub Subs/Chinese")))
-         (t
-          (setq basename (file-name-base (car (dired-get-marked-files 'no-dir))))
-          (if (file-exists-p (concat dir basename ".sub"))
-              (setq ad-return-value (concat ad-return-value
-                                            " -vobsub Subs/" basename)))))))
+         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -vobsub Subs/" basename)))
+         ((file-exists-p (concat dir "English.srt"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/English.srt")))
+         ((file-exists-p (concat dir "Chinese.srt"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/Chinesesrt")))
+         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/" basename ".srt"))))))
   ad-return-value)
 
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
