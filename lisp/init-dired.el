@@ -37,14 +37,20 @@ if no files marked, always operate on current line in dired-mode
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
   (if (string-match-p "^mplayer -quiet" ad-return-value)
       (let* ((dir (file-name-as-directory (concat default-directory
-                                                  "Subs"))))
+                                                  "Subs")))
+             basename)
         (cond
          ((file-exists-p (concat dir "English.sub"))
           (setq ad-return-value (concat ad-return-value
                                         " -vobsub Subs/English")))
          ((file-exists-p (concat dir "Chinese.sub"))
           (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/Chinese"))))))
+                                        " -vobsub Subs/Chinese")))
+         (t
+          (setq basename (file-name-base (car (dired-get-marked-files 'no-dir))))
+          (if (file-exists-p (concat dir basename ".sub"))
+              (setq ad-return-value (concat ad-return-value
+                                            " -vobsub Subs/" basename)))))))
   ad-return-value)
 
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
