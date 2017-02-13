@@ -3,17 +3,15 @@
 
 ;; {{ NO spell check for embedded snippets
 (defun org-mode-is-code-snippet ()
-  (let (rlt
-        (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\)")
-        (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\)")
-        (old-flag case-fold-search)
-        b e)
-      (save-excursion
-        (setq case-fold-search t)
-        (setq b (re-search-backward begin-regexp nil t))
-        (if b (setq e (re-search-forward end-regexp nil t)))
-        (setq case-fold-search old-flag))
-      (if (and b e (< (point) e)) (setq rlt t))
+  (let* (rlt
+         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\)")
+         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\)")
+         (case-fold-search t)
+         b e)
+    (save-excursion
+      (if (setq b (re-search-backward begin-regexp nil t))
+          (setq e (re-search-forward end-regexp nil t))))
+    (if (and b e (< (point) e)) (setq rlt t))
     rlt))
 
 ;; no spell check for property
