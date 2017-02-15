@@ -1,0 +1,21 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: icon using font-awesome
+# key: icon
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// USAGE:
+//   <MyIcon glyph="users" className="fa-4x" />
+//   Please note className is optional!
+import React from 'react';
+
+export default class MyIcon extends React.Component {
+  getClassName() {
+    return this.props.className? this.props.className:'';
+  }
+
+  render() {
+    return (
+      <i className={\`fa fa-\${this.props.glyph} fa \${this.getClassName()}\`} aria-hidden="true" />
+    );
+  }
+}
