@@ -152,7 +152,7 @@
     rlt))
 
 (defun my-guess-mplayer-path ()
-  (let ((rlt "mplayer"))
+  (let* ((rlt "mplayer"))
     (cond
      (*is-a-mac* (setq rlt "mplayer -quiet"))
      (*linux* (setq rlt "mplayer -quiet -stop-xscreensaver"))
