@@ -14,8 +14,8 @@
       w3m-mailto-url-function     'compose-mail
       browse-url-browser-function 'w3m
       ;; use shr to view html mail, but if libxml NOT available
-      ;; use w3m isntead. That's Emacs 24.3+ default logic
-       mm-text-html-renderer 'w3m ; I prefer w3m
+      ;; use w3m isntead. That's macs 24.3+ default logic
+      mm-text-html-renderer 'w3m ; I prefer w3m
       w3m-use-toolbar t
       ;; show images in the browser
       ;; setq w3m-default-display-inline-images t
@@ -151,28 +151,32 @@
 (defun w3mext-open-link-or-image-or-url ()
   "Opens the current link or image or current page's uri or any url-like text under cursor in firefox."
   (interactive)
-  (let (url)
+  (let* (url)
     (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
       (setq url (w3m-anchor))
       (if (or (not url) (string= url "buffer://"))
           (setq url (or (w3m-image) w3m-current-url))))
-    (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))
-    ))
+    (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))))
+
+(defun w3mext-encode-specials (str)
+  (setq str (replace-regexp-in-string "(" "%28" str))
+  (setq str (replace-regexp-in-string ")" "%29" str))
+  (setq str (replace-regexp-in-string ")" "%20" str)))
 
 (defun w3mext-open-with-mplayer ()
   (interactive)
   (let (url cmd str)
     (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
-      (setq url (w3m-anchor))
+      ;; wierd, `w3m-anchor' fail to extract url while `w3m-image' can
+      (setq url (or (w3m-anchor) (w3m-image)))
       (unless url
         (save-excursion
           (goto-char (point-min))
           (when (string-match "^Archived-at: <?\\([^ <>]*\\)>?" (setq str (my-buffer-str)))
             (setq url (match-string 1 str)))))
-
+      (setq url (w3mext-encode-specials url))
       (setq cmd (format "%s -cache 2000 %s &" (my-guess-mplayer-path) url))
-      (when (or (not url) (string= url "buffer://"))
-        (setq url (w3m-image))
+      (when (string= url "buffer://")
         ;; cache 2M data and don't block UI
         (setq cmd (my-guess-image-viewer-path url t))))
     (if url (shell-command cmd))))
