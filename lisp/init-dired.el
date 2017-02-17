@@ -79,7 +79,7 @@ if no files marked, always operate on current line in dired-mode
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                      ("djview" "djvu")
-                     ("firefox" "xml" "xhtml" "html" "htm" "mht")))
+                     ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
        (add-to-list 'dired-guess-shell-alist-user
                     (list (concat "\\." (regexp-opt (cdr file) t) "$")
                           (car file))))))
