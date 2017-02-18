@@ -6,8 +6,8 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.0.5
-;; Package-Requires: ((cl-lib "0.5"))
+;; Version: 0.0.6
+;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -60,6 +60,9 @@
 ;; Or just setup your export options in org buffer/subtree which is overrided
 ;; by `org-mime-export-options' when it's NOT nil.
 ;;
+;; You can change `org-mime-up-subtree-heading' before exporting subtree.
+;; heck its documentation.
+;;
 ;; Quick start:
 ;; Write mail in message-mode, make sure the mail body follows org format.
 ;; Before sending mail, `M-x org-mime-htmlize'
@@ -81,7 +84,6 @@
 ;;; Code:
 (require 'cl-lib)
 (require 'org)
-(require 'ox) ; org export lib
 
 (defcustom org-mime-use-property-inheritance nil
   "Non-nil means al MAIL_ properties apply also for sublevels."
@@ -131,16 +133,28 @@ buffer holding\nthe text to be exported.")
 (defvar org-mime-debug nil
   "Enable debug logger.")
 
-(defun org-mime--export-string (s &optional opts)
+(defvar org-mime-up-subtree-heading 'org-up-heading-safe
+  "Funtion to call before exporting subtree.
+You could use either `org-up-heading-safe' or `org-back-to-heading'.")
+
+
+(defun org-mime--chomp (str)
+  "Chomp leading and tailing whitespace from STR."
+  (while (string-match "\\`[\n\r]+\\|^\\s-+\\|\\s-+$\\|[\n\r]+\\'"
+                       str)
+    (setq str (replace-match "" t t str)))
+  str)
+
+(defun org-mime--export-string (s fmt &optional opts)
   "Export string S into HTML format.  OPTS is export options."
   (if org-mime-debug (message "org-mime--export-string called => %s" opts))
   ;; we won't export title from org file anyway
   (if opts (setq opts (plist-put opts 'title nil)))
   (if (fboundp 'org-export-string-as)
-      ;; emacs24
-      (org-export-string-as s 'html t (if org-mime-export-options org-mime-export-options opts))
-    ;; emacs 23
-    (org-export-string s "html")))
+      ;; emacs24.4+
+      (org-export-string-as s fmt t (if org-mime-export-options org-mime-export-options opts))
+    ;; emacs 24.3
+    (org-export-string s (symbol-name fmt))))
 
 ;; example hook, for setting a dark background in <pre style="background-color: #EEE;"> elements
 (defun org-mime-change-element-style (element style)
@@ -255,6 +269,7 @@ If ARG is not NIL, use `org-mime-fixedwith-wrap' to wrap the exported text."
          (html-and-images
           (org-mime-replace-images
            (org-mime--export-string body
+                                    'html
                                     (if (fboundp 'org-export--get-inbuffer-options)
                                         (org-export--get-inbuffer-options)))
            tmp-file))
@@ -306,12 +321,12 @@ If ARG is not NIL, use `org-mime-fixedwith-wrap' to wrap the exported text."
                                (buffer-string))
                            body))))
       (let* ((org-link-file-path-type 'absolute)
-             (plain (org-export-string-as (org-babel-trim body) 'ascii t nil))
+             (plain (org-mime--export-string (org-mime--chomp body) 'ascii))
              ;; we probably don't want to export a huge style file
              (org-export-htmlize-output-type 'inline-css)
              (html-and-images
               (org-mime-replace-images
-               (org-mime--export-string (bhook body 'html) opts)
+               (org-mime--export-string (bhook body 'html) 'html opts)
                file))
              (images (cdr html-and-images))
              (html (org-mime-apply-html-hook (car html-and-images))))
@@ -349,8 +364,8 @@ current org-mode file exported to html and encoded in both html
 and in org formats as mime alternatives."
   (interactive)
   (save-excursion
-    (org-up-heading-safe)
-    (cl-flet ((mp (p) (org-entry-get nil p org-mime-use-property-inheritance)))
+    (funcall org-mime-up-subtree-heading)
+    (flet ((mp (p) (org-entry-get nil p org-mime-use-property-inheritance)))
       (let* ((file (buffer-file-name (current-buffer)))
              (subject (or (mp "MAIL_SUBJECT") (nth 4 (org-heading-components))))
              (to (mp "MAIL_TO"))
