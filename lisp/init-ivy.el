@@ -411,6 +411,7 @@ Or else, find files since 24 weeks (6 months) ago."
                         keyword))))
     ;; (message "cmd=%s" cmd)
     cmd))
+
 (defun my-root-dir ()
   (file-name-as-directory (and (fboundp 'ffip-get-project-root-directory)
        (ffip-get-project-root-directory))))
@@ -465,6 +466,25 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
     (setq n (1- n))
     (if (< n 0) (setq n 0))
     (my-insert-str (nth n kill-ring)))))
+
+(defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
+  (unless (featurep 'pinyinlib) (require 'pinyinlib))
+  (let* ((pys (split-string regexp "[ \t]+"))
+         (regexp (format ".*%s.*"
+                         (mapconcat 'pinyinlib-build-regexp-string pys ".*"))))
+    (ivy--switch-buffer-matcher regexp candidates)))
+
+(defun ivy-switch-buffer-by-pinyin ()
+  "Switch to another buffer."
+  (interactive)
+  (unless (featurep 'ivy) (require 'ivy))
+  (let ((this-command 'ivy-switch-buffer))
+    (ivy-read "Switch to buffer: " 'internal-complete-buffer
+              :matcher #'ivy-switch-buffer-matcher-pinyin
+              :preselect (buffer-name (other-buffer (current-buffer)))
+              :action #'ivy--switch-buffer-action
+              :keymap ivy-switch-buffer-map
+              :caller 'ivy-switch-buffer)))
 
 (eval-after-load 'ivy
   '(progn
