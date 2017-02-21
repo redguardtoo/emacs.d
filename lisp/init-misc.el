@@ -448,6 +448,8 @@ See \"Reusing passwords for several connections\" from INFO.
       recentf-exclude '("/tmp/"
                         "/ssh:"
                         "/sudo:"
+                        "recentf$"
+                        "company-statistics-cache\\.el$"
                         ;; ctags
                         "/TAGS$"
                         ;; global
@@ -459,6 +461,8 @@ See \"Reusing passwords for several connections\" from INFO.
                         "\\.mp[34]$"
                         "\\.avi$"
                         "\\.pdf$"
+                        "\\.docx?$"
+                        "\\.xlsx?$"
                         ;; sub-titles
                         "\\.sub$"
                         "\\.srt$"
