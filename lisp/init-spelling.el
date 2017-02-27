@@ -176,4 +176,17 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
       ad-do-it))
 ;; }}
 
+(defun my-clean-aspell-dict ()
+  "Clean ~/.aspell.pws (dictionary used by aspell)."
+  (interactive)
+  (let* ((dict (file-truename "~/.aspell.en.pws"))
+         (lines (read-lines dict))
+         ;; sort words
+         (aspell-words (sort (cdr lines) 'string<)))
+    (with-temp-file dict
+      (insert (format "%s %d\n%s"
+                        "personal_ws-1.1 en"
+                        (length aspell-words)
+                        (mapconcat 'identity aspell-words "\n"))))))
+
 (provide 'init-spelling)
