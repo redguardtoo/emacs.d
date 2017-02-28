@@ -7,7 +7,7 @@
 - Other issues are covered in FAQ
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 * Features
-- Stable, Emacs will never crash after full package upgrade
+- Stable, Emacs will never crash after a full package upgrade
 - Efficient, tested on 10 years old computer
 - Native key bindings are preserved
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
@@ -160,13 +160,15 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Install through OS package manager
 * Usage
 ** Tutorial (OPTIONAL)
-=~/.emacs.d/lisp/init-evil.el= contains my most frequently used key bindings.
+=~/.emacs.d/lisp/init-evil.el= list my frequently used key bindings.
 *** Basic tutorial
 Everyone should finish this tutorial at first.
 **** Step 1, learn OS basics
 At minimum you need know,
-- What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment variable]] 
-- What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard streams]]
+- What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]] 
+- What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
+
+The purpose it to know how Emacs interacts with other command line programs.
 **** Step 2, read official tutorial at least once
 Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
@@ -176,7 +178,7 @@ At minimum you need know:
 **** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
-Please watch the [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
+Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 ** Step 4, what's your real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 *** Evil-mode tutorial
@@ -188,7 +190,7 @@ See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master E
 ** Key bindings
 Key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
 
-For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing =,bu= will execute command =backward-up-list=.
+For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing ",bu" executes command =backward-up-list=.
 
 The tutorials I recommended provide enough information about commands.
 
@@ -348,16 +350,28 @@ Other backends produce less precise results but are more efficient and easier to
 ** Auto-completion for other languages
 It's similar to C++ setup. You can use company as frontend. But backend is the key. For example, you can't use =company-clang= for PHP because Clang can't handle PHP. But GNU Global supports PHP, so you can use =company-gtags= instead.
 
-For languages GNU Global doesn't support, you can always fallback to =company-etags= and CTags by using regular expression. Regular expressions could be place in =~/.ctags=.
+For languages GNU Global doesn't support, you can always fallback to =company-etags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]] by using regular expression. Regular expressions could be placed in =~/.ctags=.
 ** Chinese Input Method Editor
-Run command =M-x toggle-input-method= to toggle input method. A 20M Chinese dictionary is already provided.
+=M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/chinese-pyim][chinese-pyim]].
 
-If your *personal* word file =~/.eim/pyim-personal.txt= exists, it will be used.
+If your *personal* dictionary =~/.eim/personal.pyim= exists, it will be used.
 
-Or else =~/.emacs.d/pyim/pyim-personal.txt= will be created.
+You can =M-x my-pyim-export-dictionary= to export your personal words into personal.pyim.
 
+We use minimum setup recommended by chinese-pyim site.
+
+You can override our setup in =~/.custom.el=,
+#+begin_src elisp
+(eval-after-load 'chinese-pyim
+  '(progn
+     ;; Use great dictionary which can be fetch by:
+     ;; `curl -L https://github.com/tumashu/chinese-pyim-greatdict/raw/master/pyim-greatdict.pyim.gz | zcat > ~/.eim/pyim-greatdict.pyim`
+     (if (and my-pyim-directory
+              (file-exists-p (my-pyim-personal-dict "pyim-greatdict.pyim")))
+         (add-to-list 'pyim-dicts (list :name "pyim-greatdict" :file (my-pyim-personal-dict "pyim-greatdict.pyim"))))))
+#+end_src
 ** Install multiple versions of Emacs
-Run below commands:
+Run below commands in shell:
 #+begin_src bash
 mkdir -p ~/tmp;
 curl http://ftp.gnu.org/gnu/emacs/emacs-24.3.tar.gz | tar xvz -C ~/tmp/emacs-24.3
@@ -369,7 +383,7 @@ rm -rf ~/myemacs/24.3/*;
 
 Feel free to replace 24.3 with other version number.
 ** Change Time Locale
-Insert below code into =~/.emacs=,
+Insert below code into =~/.emacs= or =~/.custom.el,
 #+begin_src elisp
 ;; Use en_US locale to format time.
 ;; if not set, the OS locale is used.

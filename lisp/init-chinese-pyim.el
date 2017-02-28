@@ -31,7 +31,8 @@
 ;; }}
 
 (defvar my-pyim-directory
-  "~/.eim")
+  "~/.eim"
+  "There directory of peronsal dictionaries for chinese-pyim.")
 
 (add-to-list 'auto-mode-alist '("\\.pyim\\'" . text-mode))
 
@@ -40,6 +41,7 @@
                          (or dict-name "personal.pyim"))))
 
 (defun my-pyim-export-dictionary ()
+  "Export words you use in chinese-pyim into personal dictionary."
   (interactive)
   (with-temp-buffer
     (maphash
