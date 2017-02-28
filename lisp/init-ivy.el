@@ -1,3 +1,8 @@
+(ivy-mode 1)
+(setq ivy-use-virtual-buffers t)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
 (defun counsel-escape (keyword)
   (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
