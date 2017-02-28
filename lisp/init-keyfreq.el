@@ -20,25 +20,23 @@
         backward-char
         backward-kill-word
         backward-word
-        browse-kill-ring-insert-and-quit
         browse-kill-ring-forward
+        browse-kill-ring-insert-and-quit
         browse-kill-ring-quit
         clipboard-kill-ring-save
+        comint-previous-input
+        comint-send-input
         company-complete-common
         company-complete-number
         company-complete-selection
         company-ignore
-        comint-send-input
-        comint-previous-input
         delete-backward-char
-        ;; {{ nothing to optimize in dired
-        dired
+        describe-variable
+        dired ; nothing to optimize in dired
         dired-do-async-shell-command
         dired-find-file
         diredp-next-line
         diredp-previous-line
-        ;; }}
-        describe-variable
         erase-message-buffer
         eval-buffer
         evil-a-WORD
@@ -47,6 +45,8 @@
         evil-backward-word-begin
         evil-change
         evil-change-line
+        evil-complete-next
+        evil-complete-previous
         evil-delete
         evil-delete-backward-char-and-join
         evil-delete-char
@@ -59,15 +59,14 @@
         evil-escape-minibuffer
         evil-escape-motion-state
         evil-escape-visual-state
-        evil-goto-definition
-        evil-goto-mark-line
-        evil-jump-backward
-        evil-ex-completion
         evil-ex
         evil-ex-command
+        evil-ex-completion
         evil-ex-delete-backward-char
-        evil-exit-visual-state
         evil-exit-emacs-state
+        evil-exit-visual-state
+        evil-filepath-inner-text-object
+        evil-filepath-outer-text-object
         evil-find-char
         evil-find-char-to
         evil-first-non-blank
@@ -75,32 +74,30 @@
         evil-forward-char
         evil-forward-word-begin
         evil-forward-word-end
+        evil-goto-definition
         evil-goto-first-line
         evil-goto-line
-        evil-set-marker
-        evil-filepath-inner-text-object
-        evil-filepath-outer-text-object
-        evil-inner-single-quote
-        evil-inner-double-quote
-        evil-inner-word
-        evil-inner-WORD
-        evil-paste-before
+        evil-goto-mark-line
         evil-indent
+        evil-inner-WORD
+        evil-inner-double-quote
+        evil-inner-single-quote
+        evil-inner-word
         evil-insert
         evil-join
+        evil-jump-backward
         evil-jump-forward
         evil-mc-make-and-goto-next-match
         evil-next-line
         evil-next-visual-line
         evil-normal-state
-        evil-complete-previous
-        evil-complete-next
-        evil-repeat
         evil-open-below
         evil-paste-after
+        evil-paste-before
         evil-previous-line
         evil-previous-visual-line
         evil-record-macro
+        evil-repeat
         evil-replace
         evil-ret
         evil-scroll-page-down
@@ -108,36 +105,36 @@
         evil-search-forward
         evil-search-next
         evil-search-word-forward
+        evil-set-marker
         evil-substitute
+        evil-visual-block
         evil-visual-char
         evil-visual-line
-        evil-visual-block
         evil-yank
         exit-minibuffer
         ffip
         forward-char
         forward-word
-        my-setup-develop-environment
         gnus
+        gnus-summary-exit
         gnus-summary-next-page
         gnus-summary-scroll-up
         gnus-topic-select-group
-        gnus-summary-exit
         goto-line
-        pwd
+        hippie-expand
         ido-complete
         ido-delete-backward-updir
         ido-exit-minibuffer
         ido-switch-buffer
         indent-new-comment-line
         isearch-abort
-        isearch-other-meta-char
-        isearch-other-control-char
         isearch-backward-regexp
         isearch-cancel
         isearch-delete-char
         isearch-exit
         isearch-forward-regexp
+        isearch-other-control-char
+        isearch-other-meta-char
         isearch-printing-char
         isearch-repeat-forward
         isearch-ring-retreat
@@ -155,29 +152,31 @@
         keyfreq-show
         kill-sentence
         left-char
+        markdown-exdent-or-delete
         minibuffer-complete
         minibuffer-complete-and-exit
         minibuffer-keyboard-quit
         move-beginning-of-line
         move-end-of-line
         mwheel-scroll
+        my-setup-develop-environment
         newline-and-indent
         next-history-element
         next-line
-        hippie-expand
         org-beginning-of-line
         org-ctrl-c-ctrl-c
         org-cycle
+        org-delete-backward-char
         org-end-of-line
         org-force-self-insert
         org-return
         org-self-insert-command
         org-todo
         package-menu-execute
-        paredit-doublequote
         paredit-backward-delete
         paredit-backward-kill-word
         paredit-close-round
+        paredit-doublequote
         paredit-newline
         paredit-open-round
         paredit-semicolon
@@ -185,20 +184,11 @@
         previous-history-element
         previous-line
         push-button
+        pwd
         quit-window
         right-char
         save-buffer
         save-buffers-kill-terminal
-        web-mode
-        web-mode-jshint
-        web-mode-test
-        web-mode-reload
-        web-mode-reveal
-        web-mode-complete
-        web-mode-navigate
-        web-mode-surround
-        web-mode-tag-beginning
-        web-mode-part-beginning
         scroll-down-command
         scroll-up-command
         select-window-0
@@ -222,10 +212,20 @@
         w3m-goto-url
         w3m-next-anchor
         w3m-view-this-url
+        web-mode
+        web-mode-complete
+        web-mode-jshint
+        web-mode-navigate
+        web-mode-part-beginning
+        web-mode-reload
+        web-mode-reveal
+        web-mode-surround
+        web-mode-tag-beginning
+        web-mode-test
+        yank
         yas-compile-directory
         yas-expand
         yas-next-field-or-maybe-expand
-        yank
         ))
 
 (unless (file-exists-p (file-truename keyfreq-file))
