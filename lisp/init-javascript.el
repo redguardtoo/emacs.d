@@ -296,6 +296,11 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq auto-mode-alist (cons '("\\.ts\\'" . js-mode) auto-mode-alist))))
 (add-to-list 'auto-mode-alist '("\\.babelrc\\'" . js-mode))
 
+;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
+(eval-after-load 'rjsx-mode
+  '(progn
+     (define-key rjsx-mode-map "<" nil)))
+
 ;; {{ js-beautify
 (defun js-beautify (&optional indent-size)
   "Beautify selected region or whole buffer with js-beautify.
