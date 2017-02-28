@@ -9,10 +9,12 @@
 (add-to-list 'auto-mode-alist '("\\.aspell\\.en\\.pws\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.meta\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.?muttrc\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.ctags\\'" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.mailcap\\'" . conf-mode))
 ;; }}
 
+
+(add-to-list 'auto-mode-alist '("TAGS\\'" . text-mode))
+(add-to-list 'auto-mode-alist '("\\.ctags\\'" . text-mode))
 
 ;; {{ auto-yasnippet
 ;; Use C-q instead tab to complete snippet
