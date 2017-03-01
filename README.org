@@ -3,9 +3,9 @@
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://www.gnu.org/software/emacs/manual/emacs-gnutls.html][install GnuTLS Dlls manually]] to be able to install packages from remote repositories
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* by default. But all packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
-- Other issues are covered in FAQ
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Please read section "About Emacs 23" if you uses Emacs 23.4
+- Other issues are covered in FAQ
 * Features
 - Stable, Emacs will never crash after a full package upgrade
 - Efficient, tested on 10 years old computer
@@ -196,7 +196,7 @@ The tutorials I recommended provide enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
-You can override my key bindings in =~/.custome.el=.
+You can override default key bindings in =~/.custome.el=.
 * FAQ
 ** Color theme
 *** Preview color theme
