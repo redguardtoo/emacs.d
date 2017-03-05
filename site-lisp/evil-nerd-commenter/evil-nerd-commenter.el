@@ -1,10 +1,10 @@
 ;;; evil-nerd-commenter.el --- Comment/uncomment lines efficiently. Like Nerd Commenter in Vim
 
-;; Copyright (C) 2013-2016, Chen Bin
+;; Copyright (C) 2013-2017, Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 2.3.3
+;; Version: 3.0.0
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -83,6 +83,12 @@
 ;;   - Place the commented out text above original text
 ;;   - Or place the original text above commented out text
 ;;
+;; We defined comment text object "c" which can have multi-lines.
+;; Press "vac" to select outer object (comment with limiters).
+;; Press "vic" to select inner object (comment without limiter).
+;; You can assign other key instead of "c" to the text object by
+;; customizing `evilnc-comment-text-object'.
+
 ;; For certain major modes, you need manual setup to override its original
 ;; keybindings,
 ;;
@@ -93,6 +99,8 @@
 ;; See https://github.com/redguardtoo/evil-nerd-commenter for detail.
 ;;
 ;;; Code:
+
+(require 'evil-nerd-commenter-sdk)
 
 (autoload 'count-lines "simple")
 
@@ -107,6 +115,11 @@ Please note it has NOT effect on evil text object!")
 (defvar evilnc-comment-both-snippet-html nil
   "Comment both embedded snippet and HTML tag if they are mixed in one line.
 `web-mode' required.")
+
+(defvar evilnc-comment-text-object "c"
+  "The comment object.
+`vic` to select inner object.
+`vac` to select outer objectselect outer object.")
 
 (defun evilnc--count-lines (beg end)
   "Assume BEG is less than END."
@@ -126,14 +139,6 @@ Please note it has NOT effect on evil text object!")
       (re-search-forward "[\n\C-m]" nil 'end (1- line-num))
       (forward-line (1- line-num)))))
 
-(defun evilnc--web-mode-is-comment (&optional pos)
-  "Check whether the code at POS is comment.
-`web-mode' removes its API, so create our own."
-  (unless pos (setq pos (point)))
-  (not (null (or (eq (get-text-property pos 'tag-type) 'comment)
-                 (eq (get-text-property pos 'block-token) 'comment)
-                 (eq (get-text-property pos 'part-token) 'comment)))))
-
 (defun evilnc--fix-buggy-major-modes ()
   "Fix major modes whose comment regex is buggy.
 See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
@@ -142,7 +147,7 @@ See http://lists.gnu.org/archive/html/bug-gnu-emacs/2013-03/msg00891.html."
     ;; since comment-use-syntax is nil in autoconf.el, the comment-start-skip need
     ;; make sure its first parenthesized expression match the string exactly before
     ;; the "dnl", check the comment-start-skip in lisp-mode for sample.
-    ;; See code in (defun comment-search-forward) from emacs 24.2.3.3:
+    ;; See code in (defun comment-search-forward) from emacs 24.2:
     ;; (if (not comment-use-syntax)
     ;;     (if (re-search-forward comment-start-skip limit noerror)
     ;;     (or (match-end 1) (match-beginning 0)))
@@ -354,12 +359,12 @@ Code snippets embedded in Org-mode is identified and right `major-mode' is used.
                      (goto-char beg)
                      (goto-char (line-end-position))
                      (re-search-backward "^\\|[^[:space:]]")
-                     (evilnc--web-mode-is-comment))
-                   (evilnc--web-mode-is-comment (/ (+ beg end) 2))
+                     (evilnc-web-mode-is-comment))
+                   (evilnc-web-mode-is-comment (/ (+ beg end) 2))
                    (save-excursion
                      (goto-char end)
                      (back-to-indentation)
-                     (evilnc--web-mode-is-comment)))))
+                     (evilnc-web-mode-is-comment)))))
     rlt))
 
 (defun evilnc--web-mode-do-current-line ()
@@ -449,8 +454,7 @@ If UNITS is 16, line 16, line 116, and line 216 are good candidates."
       (setq r (* r 10))
       (setq l (- l 1)))
     (if (>= (mod cur-line-num r) UNITS)
-        (setq UNITS (+ UNITS r))
-      )
+        (setq UNITS (+ UNITS r)))
     (setq dst-line-num (+ cur-line-num (- UNITS (mod cur-line-num r))))))
 
 ;; ==== below this line are public commands
@@ -670,7 +674,7 @@ Then we operate the expanded region.  NUM is ignored."
 (defun evilnc-version ()
   "The version number."
   (interactive)
-  (message "2.3.3"))
+  (message "3.0.0"))
 
 ;;;###autoload
 (defun evilnc-default-hotkeys (&optional no-evil-keybindings)
@@ -699,10 +703,15 @@ If NO-EVIL-KEYBINDINGS is t, we don't define keybindings in evil-mode."
     ;; Install operator for evil text objects
     (eval-after-load 'evil-nerd-commenter-operator
       '(progn
+         ;; operator to comment at text objects
          (define-key evil-normal-state-map ",." 'evilnc-copy-and-comment-operator)
          (define-key evil-visual-state-map ",." 'evilnc-copy-and-comment-operator)
          (define-key evil-normal-state-map ",," 'evilnc-comment-operator)
-         (define-key evil-visual-state-map ",," 'evilnc-comment-operator)))))
+         (define-key evil-visual-state-map ",," 'evilnc-comment-operator)
+
+         ;; comment itself is text object
+         (define-key evil-inner-text-objects-map evilnc-comment-text-object 'evilnc-inner-comment)
+         (define-key evil-outer-text-objects-map evilnc-comment-text-object 'evilnc-outer-commenter)))))
 
 ;; Attempt to define the operator on first load.
 ;; Will only work if evil has been loaded
