@@ -109,13 +109,21 @@
     (while (evilnc-is-comment (+ e 1))
       (setq e (+ e 1)))
 
+    ;; we could select extra spaces at the end of comment
+    ;; so we need go back
+    (let* ((str (save-excursion
+                  (goto-char e)
+                  (buffer-substring-no-properties (line-beginning-position) e))))
+      (if (string-match "^[ \t]+$" str)
+          (setq e (- (length str)))))
+
     (if (< b e) (setq rlt (cons b e)))
     rlt))
 
 (defun evilnc-ajusted-comment-end (b e)
   (let* ((next-end-char (evilnc-get-char (- e 2)))
          (end-char (evilnc-get-char (- e 1))))
-    ;; avoid selecting CR/LF
+    ;; avoid selecting CR/LF at the end of comment
     (while (and (< b e)
                 (memq (evilnc-get-char (- e 1)) '(10 13)))
       (setq e (- e 1)))
