@@ -1,0 +1,44 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: spinner icon using font-awesome
+# key: spinner
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// USAGE:
+//  <LoadingSpinner visible={true} />
+import React from 'react';
+// Optional
+import st from './LoadingSpinner.css';
+
+// /* LoadingSpinner.css */
+// .loadingWrapper {
+// text-align: center;
+// padding: 64px;
+// width: 100%;
+// }
+// .loading {
+// font-size: 32px;
+// line-height: 64px;
+// }
+
+export class MyIcon extends React.Component {
+  getClassName() {
+    return this.props.className? this.props.className:'';
+  }
+
+  render() {
+    return (
+      <i className={\`fa fa-\${this.props.glyph} fa \${this.getClassName()}\`} aria-hidden="true" />
+    );
+  }
+}
+
+export default class LoadingSpinner extends React.Component {
+  render() {
+    return (
+      <div className={ \`\${this.props.visible? '': 'hidden'} \${st.loadingWrapper}\`}>
+        <MyIcon glyph="spinner" className="fa-spin fa-4x" />
+        <span className={st.loading}>Loading ...</span>
+      </div>
+    );
+  }
+}

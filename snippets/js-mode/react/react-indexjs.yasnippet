@@ -66,8 +66,7 @@ class App extends React.Component {
 }
 
 function getRoutePath(p) {
-  // isDev is set through webpack.DefinePlugin
-  return (isDev? '/':'/') + (p? p:'');
+  return (process.env.NODE_ENV === 'production'? '/':'/') + (p? p:'');
 }
 
 // the path is relative to the root directory which defined in webpack.config.js

@@ -1,0 +1,107 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: tooltip using postcss and reactjs
+# key: tooltip
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+// /* MyTooltip.css: */
+// $arrowHeight: 16px;
+// $tooltipMargin: 5px;
+// $tooltipColor: #AFAFAF;
+// $tooltipTextcolor: white;
+// .tooltip {
+//   background-color: $tooltipColor;
+//   font-size: 14px;
+//   position: fixed;
+//   display: block;
+//   color: $tooltipTextcolor;
+//   padding: 16px;
+//   z-index: 99999;
+//   text-align: center;
+//   text-decoration: none;
+//   border-radius: 16px;
+//   -ms-filter:"progid:DXImageTransform.Microsoft.Dropshadow(OffX=2, OffY=10, Color='#000')";
+//   filter: drop-shadow(rgba(0, 0, 0, 0.3) 0 2px 10px);
+// }
+// .top {
+//   margin-top: calc(-$tooltipMargin - $arrowHeight);
+//   &:after {
+//     border: $arrowHeight solid;
+//     border-color: $tooltipColor transparent transparent transparent;
+//     content: "";
+//     left: 50%;
+//     margin-left: -10px;
+//     position: absolute;
+//     top: 100%;
+//   }
+// }
+// .bottom {
+//   margin-top: calc($tooltipMargin + $arrowHeight);
+//   &:after {
+//     border: $arrowHeight solid;
+//     border-color: transparent transparent $tooltipColor transparent;
+//     content: "";
+//     left: 50%;
+//     margin-left: -$arrowHeight;
+//     position: absolute;
+//     bottom: 100%;
+//   }
+// }
+
+// Usage:
+// <MyTooltip
+//   trigger={ this.state.tooltipTrigger }
+//   getTriggerRect={ optionalFunction }>
+//   placement={optionalPlacement}
+//   <div>hello world, bye world</div>
+// </MyTooltip>
+// tooltip is displayed if and only if trigger is not null!
+// If getTriggerRect is defined, we try to use props.getTriggerRect(rect) to
+// get the trigger's position and size. For example, we expect result should be
+// {left: 9, right: 50, top: 14, bottom: 90 }
+// Or else, trigger.getBoundingClientRect() is used.
+import React from 'react';
+import st from './MyTooltip.css';
+
+export default class MyTooltip extends React.Component {
+
+  render() {
+    const { placement, trigger, getTriggerRect } = this.props;
+    let placementStyles = {};
+
+    if (!trigger) {
+      return null;
+    }
+    console.log('MSSimpleTooltip.js: render called => ', 'trigger=', trigger);
+    const triggerRect = getTriggerRect? getTriggerRect(trigger):trigger.getBoundingClientRect();
+
+    if(placement === 'top') {
+      placementStyles = {
+        left: triggerRect.left + (triggerRect.right - triggerRect.left) / 2,
+        top: triggerRect.top,
+        transform: 'translate(-50%, -100%)'
+      };
+    } else if (placement === 'bottom') {
+      placementStyles = {
+        left: triggerRect.left + (triggerRect.right - triggerRect.left) / 2,
+        top: triggerRect.bottom,
+        transform: 'translateX(-50%)'
+      };
+    } else {
+      return null;
+    }
+
+    return (
+      <div className={ \`\${st.tooltip} \${st[placement]}\` } style={ placementStyles } >
+        { this.props.children }
+      </div>
+    );
+  }
+}
+
+MyTooltip.propTypes = {
+  placement: React.PropTypes.oneOf(['top', 'bottom'])
+};
+
+MyTooltip.defaultProps = {
+  placement: 'bottom'
+};

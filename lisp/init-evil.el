@@ -528,7 +528,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xm" 'my-M-x
        "xx" 'er/expand-region
        "xf" 'ido-find-file
-       "xb" 'ido-switch-buffer
+       "xb" 'ivy-switch-buffer-by-pinyin
        "xh" 'mark-whole-buffer
        "xk" 'ido-kill-buffer
        "xs" 'save-buffer
@@ -567,6 +567,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "jj" 'scroll-other-window-up
        "yy" 'hydra-launcher/body
        "hh" 'multiple-cursors-hydra/body
+       "gi" 'gist-region ; only workable on my computer
        "tt" 'my-toggle-indentation
        "gs" 'git-gutter:set-start-revision
        "gh" 'git-gutter-reset-to-head-parent

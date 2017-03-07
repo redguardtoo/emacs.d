@@ -60,22 +60,14 @@ But you may use safer HTTPS instead.")
 
 ;; We include the org repository for completeness, but don't use it.
 ;; Lock org-mode temporarily:
-(if melpa-use-https-repo
-    (setq package-archives
-          '(;; uncomment below line if you need use GNU ELPA
-            ;; ("gnu" . "https://elpa.gnu.org/packages/")
-            ;; ("org" . "http://orgmode.org/elpa/") ; latest org-mode
-            ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
-            ("melpa" . "https://melpa.org/packages/")
-            ("melpa-stable" . "https://stable.melpa.org/packages/")))
-  (setq package-archives
-        '(;; uncomment below line if you need use GNU ELPA
-          ;; ("gnu" . "http://elpa.gnu.org/packages/")
-          ;; ("org" . "http://orgmode.org/elpa/") ; latest org-mode
-          ("my-js2-mode" . "http://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
-          ("melpa" . "http://melpa.org/packages/")
-          ("melpa-stable" . "http://stable.melpa.org/packages/"))))
-
+(setq package-archives
+      '(;; uncomment below line if you need use GNU ELPA
+        ;; ("gnu" . "https://elpa.gnu.org/packages/")
+        ;; ("org" . "http://orgmode.org/elpa/") ; latest org-mode
+        ("localelpa" . "~/.emacs.d/localelpa/")
+        ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
+        ("melpa" . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 ;; Un-comment below line if your extract https://github.com/redguardtoo/myelpa/archive/master.zip into ~/myelpa/
 ;; (setq package-archives '(("myelpa" . "~/myelpa")))
@@ -99,26 +91,43 @@ But you may use safer HTTPS instead.")
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
 
-;; Add support to package.el for pre-filtering available packages
-(defvar package-filter-function nil
+(defun package-filter-function (package version archive)
   "Optional predicate function used to internally filter packages used by package.el.
 
-The function is called with the arguments PACKAGE VERSION ARCHIVE, where
-PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
-ARCHIVE is the string name of the package archive.")
+  The function is called with the arguments PACKAGE VERSION ARCHIVE, where
+  PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
+  ARCHIVE is the string name of the package archive."
+  (let* (rlt)
+    (cond
+      ((string= archive "melpa-stable")
+       (setq rlt t)
+       ;; don's install `request v0.0.3' which drop suppport of Emacs 24.3
+       (if (string= package "request") (setq rlt nil)))
+      ((string= archive "melpa")
+       (cond
+         ;; a few exceptions from unstable melpa
+         ((or (memq package melpa-include-packages)
+              ;; install all color themes
+              (string-match (format "%s" package) "-theme"))
+          (setq rlt t))
+         (t
+           ;; I don't trust melpa which is too unstable
+           (setq rlt nil))))
+      (t
+        ;; other third party repositories I trust
+        (setq rlt t)))
+    rlt))
 
 (defadvice package--add-to-archive-contents
   (around filter-packages (package archive) activate)
-  "Add filtering of available packages using `package-filter-function', if non-nil."
-  (when (or (null package-filter-function)
-      (funcall package-filter-function
-         (car package)
-         (funcall (if (fboundp 'package-desc-version)
-          'package--ac-desc-version
-        'package-desc-vers)
-            (cdr package))
-         archive))
-    ad-do-it))
+  "Add filtering of available packages using `package-filter-function'."
+  (if (package-filter-function (car package)
+                               (funcall (if (fboundp 'package-desc-version)
+                                            'package--ac-desc-version
+                                          'package-desc-vers)
+                                        (cdr package))
+                               archive)
+      ad-do-it))
 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
@@ -130,20 +139,6 @@ ARCHIVE is the string name of the package archive.")
       (progn
         (package-refresh-contents)
         (require-package package min-version t)))))
-
-;; Don't take Melpa versions of certain packages
-(setq package-filter-function
-      (lambda (package version archive)
-        (or (not (string-equal archive "melpa"))
-            (and (memq package melpa-include-packages)
-                 ;; this version of ivy is buggy
-                 (not (and (string= package "ivy")
-                           (equal version '(20161213 719)))))
-            ;; use all color themes
-            (string-match (format "%s" package) "-theme"))))
-
-;; un-comment below code if you prefer use all the package on melpa (unstable) without limitation
-;; (setq package-filter-function nil)
 
 ;;------------------------------------------------------------------------------
 ;; Fire up package.el and ensure the following packages are installed.
@@ -165,9 +160,9 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'haskell-mode)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
-(require-package 'yagist)
+(require-package 'gist)
 (require-package 'wgrep)
-(require-package 'request) ; http post/get tool
+(require-package 'request)
 (require-package 'lua-mode)
 (require-package 'robe)
 (require-package 'inf-ruby)
@@ -176,6 +171,8 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'paredit)
 (require-package 'erlang)
 (require-package 'findr)
+(require-package 'pinyinlib)
+(require-package 'find-by-pinyin-dired)
 (require-package 'jump)
 (require-package 'nvm)
 (require-package 'writeroom-mode)
@@ -202,6 +199,7 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
+(require-package 'counsel-bbdb)
 (require-package 'elpy)
 (require-package 'hl-sexp)
 (require-package 'ibuffer-vc)
@@ -257,5 +255,6 @@ ARCHIVE is the string name of the package archive.")
 (require-package 'define-word)
 (require-package 'quack) ; for scheme
 (require-package 'hydra)
+(require-package 'chinese-pyim)
 
 (provide 'init-elpa)
