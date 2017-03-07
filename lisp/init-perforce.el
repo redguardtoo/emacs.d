@@ -71,8 +71,9 @@ If FILE-OPENED, current file is still opened."
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
 
-(defun p4-show-changelist-patch (chg)
-  (let* ((url (p4-current-file-url))
+(defun p4-show-changelist-patch (chg &optional not-current-file)
+  (let* ((url (if not-current-file (p4-dir-to-url (ffip-project-root))
+                (p4-current-file-url)))
          (pattern "^==== //.*====$")
          sep
          seps
@@ -80,23 +81,28 @@ If FILE-OPENED, current file is still opened."
          (original (if chg (shell-command-to-string (format "p4 describe -du %s" chg)) ""))
          rlt)
 
-    (while (setq sep (string-match pattern original start))
-      (let* ((str (match-string 0 original)))
-        (setq start (+ sep (length str)))
-        (add-to-list 'seps (list sep str) t)))
-    (setq rlt (substring original 0 (car (nth 0 seps))))
-    (let* ((i 0) found)
-      (while (and (not found)
-                  (< i (length seps)))
-        (when (string-match url (cadr (nth i seps)))
-          (setq rlt (concat rlt (substring original
-                                           (car (nth i seps))
-                                           (if (= i (- (length seps) 1))
-                                               (length original)
-                                             (car (nth (+ 1 i) seps))))))
-          ;; out of loop now since current file patch found
-          (setq found t))
-        (setq i (+ 1 i))))
+    (cond
+     (not-current-file
+      (setq rlt original))
+     (t
+      (while (setq sep (string-match pattern original start))
+        (let* ((str (match-string 0 original)))
+          (setq start (+ sep (length str)))
+          (add-to-list 'seps (list sep str) t)))
+      (setq rlt (substring original 0 (car (nth 0 seps))))
+      (let* ((i 0) found)
+        ;; search patch for current file
+        (while (and (not found)
+                    (< i (length seps)))
+          (when (string-match url (cadr (nth i seps)))
+            (setq rlt (concat rlt (substring original
+                                             (car (nth i seps))
+                                             (if (= i (- (length seps) 1))
+                                                 (length original)
+                                               (car (nth (+ 1 i) seps))))))
+            ;; out of loop now since current file patch found
+            (setq found t))
+          (setq i (+ 1 i))))))
 
     ;; remove p4 verbose bullshit
     (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+"
@@ -107,12 +113,18 @@ If FILE-OPENED, current file is still opened."
     (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
     rlt))
 
-(defun p4--create-buffer (buf-name content &optional enable-imenu)
+(defvar p4-imenu-parse-hunk-header-rules
+  '((nil "^==== *//depot/\\(.*\\) *====" 1))
+  "Rules to extract hunk header in diff for imenu usage.")
+
+(defun p4--create-buffer (buf-name content &optional enable-imenu force-default-directory)
   (let* (rlt-buf)
     (if (get-buffer buf-name)
         (kill-buffer buf-name))
     (setq rlt-buf (get-buffer-create buf-name))
     (save-current-buffer
+      (if force-default-directory
+          (setq default-directory force-default-directory))
       (switch-to-buffer-other-window rlt-buf)
       (set-buffer rlt-buf)
       (erase-buffer)
@@ -120,11 +132,18 @@ If FILE-OPENED, current file is still opened."
       (diff-mode)
       (goto-char (point-min))
       ;; nice imenu output
-      (if enable-imenu
-          (setq imenu-create-index-function
-                (lambda ()
-                  (save-excursion
-                    (imenu--generic-function '((nil "^[0-9]+ by .*" 0)))))))
+      (cond
+       ((= enable-imenu 1)
+        (setq imenu-create-index-function
+              (lambda ()
+                (save-excursion
+                  (imenu--generic-function '((nil "^[0-9]+ by .*" 0)))))))
+       ((= enable-imenu 2)
+        (setq imenu-create-index-function
+              (lambda ()
+                (save-excursion
+                  (imenu--generic-function p4-imenu-parse-hunk-header-rules))))))
+
       ;; quit easily in evil-mode
       (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
 
@@ -155,8 +174,9 @@ If FILE-OPENED, current file is still opened."
               :preselect 0
               :action (lambda (line)
                         (p4--create-buffer "*p4show*"
-                                           (p4-show-changelist-patch (p4--extract-changenumber line))
-                                           t)))))
+                                           (p4-show-changelist-patch (p4--extract-changenumber line) t)
+                                           2
+                                           (ffip-project-root))))))
 
 (defun p4history ()
   "Show history of current file like `git log -p'."
@@ -164,6 +184,6 @@ If FILE-OPENED, current file is still opened."
   (let* ((content (mapconcat #'p4-show-changelist-patch
                              (p4-changes nil t)
                              "\n\n")))
-   (p4--create-buffer "*p4log*" content t)))
+   (p4--create-buffer "*p4log*" content 1 default-directory)))
 
 (provide 'init-perforce)
