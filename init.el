@@ -132,13 +132,13 @@
 
   ;; {{ idle require other stuff
   (setq idle-require-idle-delay 2)
-  (setq idle-require-symbols '(init-misc-lazy
+  (setq idle-require-symbols '(init-perforce
+                               init-misc-lazy
                                init-which-func
                                init-fonts
                                init-hs-minor-mode
                                init-writting
                                init-pomodoro
-                               init-emacspeak
                                init-artbollocks-mode
                                init-semantic))
   (idle-require-mode 1) ;; starts loading

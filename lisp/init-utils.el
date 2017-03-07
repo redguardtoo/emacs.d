@@ -10,6 +10,20 @@
          retval)
      ,@clean-up))
 
+;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
+(defun get-string-from-file (filePath)
+  "Return filePath's file content."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (buffer-string)))
+
+(defun read-lines (filePath)
+  "Return a list of lines of a file at filePath."
+  (with-temp-buffer
+    (insert-file-contents filePath)
+    (split-string (buffer-string) "\n" t)))
+;; }}
+
 ;; Handier way to add modes to auto-mode-alist
 (defun add-auto-mode (mode &rest patterns)
   "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."
@@ -152,7 +166,7 @@
     rlt))
 
 (defun my-guess-mplayer-path ()
-  (let ((rlt "mplayer"))
+  (let* ((rlt "mplayer"))
     (cond
      (*is-a-mac* (setq rlt "mplayer -quiet"))
      (*linux* (setq rlt "mplayer -quiet -stop-xscreensaver"))

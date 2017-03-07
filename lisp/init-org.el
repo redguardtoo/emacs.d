@@ -3,17 +3,15 @@
 
 ;; {{ NO spell check for embedded snippets
 (defun org-mode-is-code-snippet ()
-  (let (rlt
-        (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\)")
-        (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\)")
-        (old-flag case-fold-search)
-        b e)
-      (save-excursion
-        (setq case-fold-search t)
-        (setq b (re-search-backward begin-regexp nil t))
-        (if b (setq e (re-search-forward end-regexp nil t)))
-        (setq case-fold-search old-flag))
-      (if (and b e (< (point) e)) (setq rlt t))
+  (let* (rlt
+         (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\)")
+         (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\)")
+         (case-fold-search t)
+         b e)
+    (save-excursion
+      (if (setq b (re-search-backward begin-regexp nil t))
+          (setq e (re-search-forward end-regexp nil t))))
+    (if (and b e (< (point) e)) (setq rlt t))
     rlt))
 
 ;; no spell check for property
@@ -220,20 +218,27 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
   (if is-promote (org-do-promote)
     (org-do-demote)))
 
+;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 (defun org-mime-html-hook-setup ()
   (org-mime-change-element-style "pre"
                                  "color:#E6E1DC; background-color:#232323; padding:0.5em;")
   (org-mime-change-element-style "blockquote"
                                  "border-left: 2px solid gray; padding-left: 4px;"))
-;; org-mime setup
+
 (eval-after-load 'org-mime
   '(progn
+     (setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))
      (add-hook 'org-mime-html-hook 'org-mime-html-hook-setup)))
 
-;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 ;; demo video: http://vimeo.com/album/1970594/video/13158054
 (add-hook 'message-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c M-o") 'org-mime-htmlize)))
 ;; }}
+
+(defun org-agenda-show-agenda-and-todo (&optional arg)
+  "Better org-mode agenda view."
+  (interactive "P")
+  (org-agenda arg "n"))
+
 (provide 'init-org)

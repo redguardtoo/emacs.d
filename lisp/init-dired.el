@@ -37,14 +37,27 @@ if no files marked, always operate on current line in dired-mode
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
   (if (string-match-p "^mplayer -quiet" ad-return-value)
       (let* ((dir (file-name-as-directory (concat default-directory
-                                                  "Subs"))))
+                                                  "Subs")))
+             basename)
         (cond
          ((file-exists-p (concat dir "English.sub"))
           (setq ad-return-value (concat ad-return-value
                                         " -vobsub Subs/English")))
          ((file-exists-p (concat dir "Chinese.sub"))
           (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/Chinese"))))))
+                                        " -vobsub Subs/Chinese")))
+         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -vobsub Subs/" basename)))
+         ((file-exists-p (concat dir "English.srt"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/English.srt")))
+         ((file-exists-p (concat dir "Chinese.srt"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/Chinesesrt")))
+         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+          (setq ad-return-value (concat ad-return-value
+                                        " -sub Subs/" basename ".srt"))))))
   ad-return-value)
 
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
@@ -61,17 +74,15 @@ if no files marked, always operate on current line in dired-mode
      (require 'dired+)
      (setq dired-recursive-deletes 'always)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
-                     ("unrar x" "rar")
+                     ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
                      ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "ogm" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm")
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
-                     ("7z x" "7z")
                      ("djview" "djvu")
-                     ("firefox" "xml" "xhtml" "html" "htm" "mht")))
-       (add-to-list 'dired-guess-shell-alist-default
+                     ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
+       (add-to-list 'dired-guess-shell-alist-user
                     (list (concat "\\." (regexp-opt (cdr file) t) "$")
-                          (car file))))
-     ))
+                          (car file))))))
 
 ;; {{ Write backup files to own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html

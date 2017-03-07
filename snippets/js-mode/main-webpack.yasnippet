@@ -53,8 +53,7 @@ function getWebpackPlugins() {
     // full moment.js is too big. @see https://github.com/moment/moment/issues/2416
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
     new webpack.DefinePlugin({
-      'process.env': {'NODE_ENV': '"production"'},
-      isDev: process.env.NODE_ENV === 'development'
+      'process.env': {'NODE_ENV': '"production"'}
     }),
     new webpack.optimize.OccurrenceOrderPlugin,
     new webpack.optimize.CommonsChunkPlugin("vendor", "vendor.bundle.js"),
@@ -179,3 +178,10 @@ module.exports = {
     require('autoprefixer')({ browsers: ['last 2 versions'] })
   ]
 };
+
+// Local Variables:
+// coding: utf-8
+// tab-width: 2
+// js-indent-level: 2
+// js2-basic-offset: 2
+// End:
