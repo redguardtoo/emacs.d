@@ -702,4 +702,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-exchange-install)
 ;; }}
 
+;; {{ evil-lion
+;; After pressing `glip=` or `gl2j=` (gl is the operator, ip or 2j is text object, = separator):
+;; one = 1
+;; three = 3
+;; fifteen = 15
+;;
+;; will become:
+;; one     = 1
+;; three   = 3
+;; fifteen = 15
+;;
+;; If the align separator is / you will be prompted for a regular expression instead of a plain character.
+(require 'evil-lion)
+(evil-lion-install)
+;; }}
+
 (provide 'init-evil)
