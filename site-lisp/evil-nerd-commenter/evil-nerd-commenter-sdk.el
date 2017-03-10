@@ -42,6 +42,19 @@
                  (eq (get-text-property pos 'block-token) 'comment)
                  (eq (get-text-property pos 'part-token) 'comment)))))
 
+(defun evilnc-is-pure-comment (pos)
+  (let* ((fontfaces (if (> pos 0) (get-text-property pos 'face))))
+    (if (not (listp fontfaces))
+        (setf fontfaces (list fontfaces)))
+    (or (and (string= major-mode "web-mode")
+             (evilnc-web-mode-is-comment pos))
+        (evilnc--check-fonts fontfaces
+                             '(font-lock-comment-face
+                               font-lock-comment-delimiter-face)))))
+
+(defun evilnc-is-whitespace (pos)
+  (member (evilnc-get-char pos) '(32 9)))
+
 (defun evilnc-is-comment (pos)
   "Check whether the code at POS is comment by comparing font face."
   (let* ((fontfaces (if (> pos 0) (get-text-property pos 'face))))
@@ -50,16 +63,12 @@
     (cond
      ((or (< pos (point-min)) (> pos (point-max)))
       nil)
-     ((and (not fontfaces)
-           ;; character under cursor is SPACE or TAB
-           (member (evilnc-get-char pos) '(32 9)))
-      t)
-     ((string= major-mode "web-mode")
-      (evilnc-web-mode-is-comment pos))
+     ((not fontfaces)
+      ;; character under cursor is SPACE or TAB
+      ;; and out of comment
+      (evilnc-is-whitespace pos))
      (t
-      (evilnc--check-fonts fontfaces
-                           '(font-lock-comment-face
-                             font-lock-comment-delimiter-face))))))
+      (evilnc-is-pure-comment pos)))))
 
 (defun evilnc-get-char (pos)
   (save-excursion

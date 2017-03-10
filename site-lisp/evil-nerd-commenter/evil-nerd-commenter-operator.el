@@ -28,7 +28,7 @@
 
 ;;; Code:
 
-(require 'evil)
+(require 'evil nil 'noerror)
 (require 'evil-nerd-commenter-sdk)
 
 (defvar evilnc-c-style-comment-modes
@@ -97,6 +97,12 @@
       ;; or else beg end will be screwed up
       (comment-region beg end))))
 
+(defun evilnc-is-one-line-comment (b e)
+  "one line comment, just select the comment."
+  (save-excursion
+    (goto-char b)
+    (and (<= (line-beginning-position) b)
+         (<= e (line-end-position)))))
 
 (defun evilnc-get-comment-bounds ()
   (let* ((b (point))
@@ -105,6 +111,7 @@
     ;; extend begin
     (while (evilnc-is-comment (- b 1))
       (setq b (- b 1)))
+
     ;; extend end
     (while (evilnc-is-comment (+ e 1))
       (setq e (+ e 1)))
@@ -113,11 +120,27 @@
     ;; so we need go back
     (let* ((str (save-excursion
                   (goto-char e)
-                  (buffer-substring-no-properties (line-beginning-position) e))))
-      (if (string-match "^[ \t]+$" str)
-          (setq e (- (length str)))))
+                  (buffer-substring-no-properties (line-beginning-position) e)))
+           (empty-line-p (string-match "^[ \t]*$" str)))
+      (if empty-line-p
+          ;; empty line plus line feed
+          (setq e (- e (length str) 1))))
+    (cond
+     ((>= b e)
+      (setq rlt nil))
+     ((evilnc-is-one-line-comment b e)
+      ;; contract begin
+      (while (not (evilnc-is-pure-comment b))
+        (setq b (+ b 1)))
 
-    (if (< b e) (setq rlt (cons b e)))
+      ;; contract end
+      (while (not (evilnc-is-pure-comment e))
+        (setq e (- e 1)))
+
+      (if (< b e) (setq rlt (cons b (+ e 1)))))
+     (t
+      ;; multi-line comment
+      (setq rlt (cons b e))))
     rlt))
 
 (defun evilnc-ajusted-comment-end (b e)
@@ -145,7 +168,6 @@
         (setq e (- e 1)))))
     e))
 
-;;;###autoload
 (evil-define-text-object evilnc-inner-comment (&optional count begin end type)
   "An inner comment text object."
   (let* ((bounds (evilnc-get-comment-bounds)))
@@ -160,12 +182,18 @@
                   (goto-char (cdr bounds))
                   (goto-char (evilnc-ajusted-comment-end b (line-end-position)))
                   (point))))
+        (when (evilnc-is-one-line-comment b e)
+          (while (and (< b e)
+                      (or (evilnc-is-comment-delimiter e)
+                          (and (evilnc-is-pure-comment e)
+                               (evilnc-is-whitespace e))))
+            (setq e (- e 1)))
+          (setq e (+ e 1)))
 
-        (evil-range b e 'block :expanded t)))
+        (if (< b e) (evil-range b e 'block :expanded t))))
      (t
       (error "Not inside a comment.")))))
 
-;;;###autoload
 (evil-define-text-object evilnc-outer-commenter (&optional count begin end type)
   "An outer comment text object."
   (let* ((bounds (evilnc-get-comment-bounds)))
@@ -179,3 +207,7 @@
 
 (provide 'evil-nerd-commenter-operator)
 ;;; evil-nerd-commenter-operator.el ends here
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars unresolved)
+;; End:
