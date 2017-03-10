@@ -149,16 +149,16 @@ It's SLOW when more than 20 git blame process start."
   (insert (concat leading-spaces content))
   (end-of-line))
 
-(defun counsel-git-grep-complete-line (&optional other-grep)
+(defvar counsel-complete-line-use-git t)
+(defun counsel-complete-line-by-grep ()
   "Complete line using text from (line-beginning-position) to (point).
 If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
-  (interactive "P")
+  (interactive)
   (let* ((cur-line (my-line-str (point)))
-         (default-directory (locate-dominating-file
-                             default-directory ".git"))
+         (default-directory (ffip-project-root))
          (keyword (counsel-escape (replace-regexp-in-string "^[ \t]*" "" cur-line)))
          (cmd (cond
-               ((not other-grep)
+               (counsel-complete-line-use-git
                 (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
                         keyword))
                (t
@@ -181,7 +181,7 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
                   collection
                   :action (lambda (l)
                             (counsel-replace-current-line leading-spaces l))))))))
-(global-set-key (kbd "C-x C-l") 'counsel-git-grep-complete-line)
+(global-set-key (kbd "C-x C-l") 'counsel-complete-line-by-grep)
 
 (defun counsel-git-grep-yank-line (&optional insert-line)
   "Grep in the current git repository and yank the line.
@@ -374,6 +374,8 @@ Or else, find files since 24 weeks (6 months) ago."
     "history"
     "#*#"
     "*.min.js"
+    "*bundle*.js"
+    "*vendor*.js"
     "*.min.css"
     "*~")
   "File names to ignore when grepping.")

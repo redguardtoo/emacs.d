@@ -323,6 +323,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map (kbd "M-y") 'counsel-browse-kill-ring)
 (define-key evil-normal-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
 (define-key evil-visual-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
+(define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
+(define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 
 (require 'evil-matchit)
 (global-evil-matchit-mode 1)
