@@ -2,6 +2,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.emacs-project\\'" . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("archive-contents\\'" . emacs-lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.emacs\\.bmk\\'" . emacs-lisp-mode))
 
 ;; @see http://blog.urth.org/2011/06/02/flymake-versus-the-catalyst-restarter/
 (defun flymake-create-temp-intemp (file-name prefix)
