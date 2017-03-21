@@ -3,7 +3,6 @@
 # key: for
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-for(let v of ${1:ArrayOrMapOrSetOrString}) {
-  // use any statement like break/continue/return here
+for(let ${1:v} of ${2:ArrayOrMapOrSetOrString}) {
   $0
 }
