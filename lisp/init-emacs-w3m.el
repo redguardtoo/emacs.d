@@ -120,9 +120,18 @@
 ; {{ Search using external browser
 (setq browse-url-generic-program
       (cond
-       (*is-a-mac* "open")
-       (*linux* (executable-find "firefox"))
-       ))
+       (*is-a-mac* ; mac
+        "open")
+       (*unix* ; linux or unix
+        (executable-find "firefox"))
+       (t
+        ;; Windows: you need add "firefox.exe" to environment variable PATH
+        ;; @see https://en.wikipedia.org/wiki/PATH_(variable)
+        (executable-find "firefox")
+        ;; if you prefer chrome
+        ;; (executable-find "chrome")
+        )))
+
 (setq browse-url-browser-function 'browse-url-generic)
 
 ;; use external browser to search programming stuff

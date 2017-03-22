@@ -188,12 +188,13 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
-  (let ((browse-url-browser-function
-         (cond
-          ;; open with external browser
-          ((equal (ad-get-arg 0) '(4)) 'browse-url-generic)
-          ;; open with w3m
-          (t 'w3m-browse-url))))
+  "`C-u M-x org-open-at-point` open link with `browse-url-generic-program'"
+  (let* ((browse-url-browser-function
+          (cond
+           ;; open with `browse-url-generic-program'
+           ((equal (ad-get-arg 0) '(4)) 'browse-url-generic)
+           ;; open with w3m
+           (t 'w3m-browse-url))))
     ad-do-it))
 
 (defadvice org-publish (around org-publish-advice activate)
