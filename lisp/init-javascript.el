@@ -12,7 +12,8 @@
               js2-bounce-indent-p t)
 
 (setq javascript-common-imenu-regex-list
-      '(("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
+      '(("Attribute" " \\([a-z][a-zA-Z0-9-_]+\\) *= *\{[a-zA-Z0-9_.(), ]+\}\\( \\|$\\)" 1)
+        ("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Controller" "[. \t]controllerAs:[ \t]*['\"]\\([^'\"]+\\)" 1)
         ("Filter" "[. \t]filter([ \t]*['\"]\\([^'\"]+\\)" 1)
         ("State" "[. \t]state[(:][ \t]*['\"]\\([^'\"]+\\)" 1)
