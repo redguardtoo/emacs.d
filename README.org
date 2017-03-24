@@ -154,9 +154,12 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Required by sdcv.el
 - Install through OS package manager
 - Run =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
+**** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
+- Used by =M-x my-grep= to search text in files
+- Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
+- Tweak environment variable PATH to let Emacs find ripgrep
 **** [[https://github.com/ggreer/the_silver_searcher][the_silver_search (ag)]]
-- Search text in files
-- Required by `M-x my-grep`
+- Used by =M-x my-grep= to search text in files if [[https://github.com/BurntSushi/ripgrep][ripgrep]] not installed
 - Install through OS package manager
 * Usage
 ** Tutorial (OPTIONAL)
@@ -179,7 +182,7 @@ At minimum you need know:
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-** Step 4, what's your real world problem
+**** Step 4, what's your real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 *** Evil-mode tutorial
 Required for vim user,

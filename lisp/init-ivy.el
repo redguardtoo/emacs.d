@@ -151,6 +151,8 @@ It's SLOW when more than 20 git blame process start."
   (end-of-line))
 
 (defvar counsel-complete-line-use-git t)
+(defun counsel-find-quickest-grep ()
+ (or (executable-find "rg") (executable-find "ag")))
 (defun counsel-complete-line-by-grep ()
   "Complete line using text from (line-beginning-position) to (point).
 If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
@@ -163,8 +165,8 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
                 (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
                         keyword))
                (t
-                (concat  (my-grep-cli keyword (if (executable-find "ag") "" "-h")) ; tell grep not to output file name
-                         (if (executable-find "ag") " | sed s\"\/^.*:[0-9]*:\/\/\"" "") ; remove file names for ag
+                (concat  (my-grep-cli keyword (if (counsel-find-quickest-grep) "" "-h")) ; tell grep not to output file name
+                         (if (counsel-find-quickest-grep) " | sed s\"\/^.*:[0-9]*:\/\/\"" "") ; remove file names for ag
                          " | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"))))
          (leading-spaces "")
          (collection (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
@@ -382,8 +384,19 @@ Or else, find files since 24 weeks (6 months) ago."
   "File names to ignore when grepping.")
 (defun my-grep-exclude-opts ()
   (cond
+   ((executable-find "rg")
+    (concat "-s --no-heading "
+     (mapconcat (lambda (e) (format "-g='!%s/*'" e))
+                       my-grep-ingore-dirs " ")
+            " "
+            (mapconcat (lambda (e) (format "-g='!*.%s'" e))
+                       my-grep-ingore-file-exts " ")
+            " "
+            (mapconcat (lambda (e) (format "-g='!%s'" e))
+                       my-grep-ingore-file-names " ")))
    ((executable-find "ag")
-    (concat (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
+    (concat "-s --nocolor --nogroup --silent "
+            (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
                        my-grep-ingore-dirs " ")
             " "
             (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
@@ -406,8 +419,9 @@ Or else, find files since 24 weeks (6 months) ago."
   (let* (opts cmd)
     (unless extra-opts (setq extra-opts ""))
     (cond
-     ((executable-find "ag")
-      (setq cmd (format "ag -s --nocolor --nogroup --silent %s %s \"%s\" --"
+     ((counsel-find-quickest-grep)
+      (setq cmd (format "%s %s %s \"%s\" --"
+                        (counsel-find-quickest-grep)
                         (my-grep-exclude-opts)
                         extra-opts
                         keyword)))
