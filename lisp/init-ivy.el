@@ -151,8 +151,13 @@ It's SLOW when more than 20 git blame process start."
   (end-of-line))
 
 (defvar counsel-complete-line-use-git t)
+
 (defun counsel-find-quickest-grep ()
- (or (executable-find "rg") (executable-find "ag")))
+  (let* ((exe (or (executable-find "rg") (executable-find "ag"))))
+    ;; ripgrep says that "-n" is enabled actually not,
+    ;; so we manually add it
+    (if exe (concat exe " -n"))))
+
 (defun counsel-complete-line-by-grep ()
   "Complete line using text from (line-beginning-position) to (point).
 If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
