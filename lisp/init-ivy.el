@@ -440,9 +440,12 @@ Or else, find files since 24 weeks (6 months) ago."
     cmd))
 
 (defun my-root-dir ()
-  (file-name-as-directory (and (fboundp 'ffip-get-project-root-directory)
-       (ffip-get-project-root-directory))))
+  "If ffip is not installed, use `default-directory'."
+  (file-name-as-directory (or (and (fboundp 'ffip-get-project-root-directory)
+                                   (ffip-get-project-root-directory))
+                              default-directory)))
 
+(defvar my-grep-show-full-directory t)
 (defun my-grep ()
   "Grep at project root directory or current directory.
 If ag (the_silver_searcher) exists, use ag.
@@ -450,9 +453,11 @@ Extended regex is used, like (pattern1|pattern2)."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
          (default-directory (my-root-dir))
-         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t)))
+         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t))
+         (dir (if my-grep-show-full-directory (my-root-dir)
+                (file-name-as-directory (file-name-base (directory-file-name (my-root-dir)))))))
 
-    (ivy-read (format "matching \"%s\" at %s:" keyword (my-root-dir))
+    (ivy-read (format "matching \"%s\" at %s:" keyword dir)
               collection
               :action `(lambda (line)
                          (let* ((default-directory (my-root-dir)))
