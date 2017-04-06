@@ -71,6 +71,11 @@ If FILE-OPENED, current file is still opened."
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
 
+(defun p4add ()
+  "p4 add current file."
+  (interactive)
+  (shell-command (p4-generate-cmd "add")))
+
 (defun p4-show-changelist-patch (chg &optional not-current-file)
   (let* ((url (if not-current-file (p4-dir-to-url (ffip-project-root))
                 (p4-current-file-url)))
