@@ -14,6 +14,7 @@ But you may use safer HTTPS instead.")
     ivy
     js-doc
     counsel
+    swiper ; abo-abo has not released 9.0 yet, at least he didn't tag master branch
     wgrep
     robe
     groovy-mode
