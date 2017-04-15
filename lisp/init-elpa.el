@@ -11,10 +11,12 @@ But you may use safer HTTPS instead.")
   '(ace-mc
     bbdb
     color-theme
-    ivy
     js-doc
-    counsel
-    swiper ; abo-abo has not released 9.0 yet, at least he didn't tag master branch
+    ;; {{ since stable v0.9.1 released, we go back to stable version
+    ;; ivy
+    ;; counsel
+    ;; swiper ; abo-abo has not released 9.0 yet, at least he didn't tag master branch
+    ;; }}
     wgrep
     robe
     groovy-mode
