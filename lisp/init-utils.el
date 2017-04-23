@@ -197,8 +197,11 @@
 
 ;; {{ simpleclip has problem on Emacs 25.1
 (defun test-simpleclip ()
-  (simpleclip-set-contents "testsimpleclip!")
-  (string= "testsimpleclip!" (simpleclip-get-contents)))
+  (condition-case nil
+      (simpleclip-set-contents "testsimpleclip!")
+      (delete-file filename)
+      (string= "testsimpleclip!" (simpleclip-get-contents))
+    (error nil)))
 
 (setq simpleclip-works (test-simpleclip))
 
