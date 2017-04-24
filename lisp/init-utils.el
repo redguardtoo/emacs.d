@@ -197,13 +197,27 @@
 
 ;; {{ simpleclip has problem on Emacs 25.1
 (defun test-simpleclip ()
-  (condition-case nil
-      (simpleclip-set-contents "testsimpleclip!")
-      (delete-file filename)
-      (string= "testsimpleclip!" (simpleclip-get-contents))
-    (error nil)))
+  (unwind-protect
+      (let (retval)
+        (condition-case ex
+            (progn
+              (simpleclip-set-contents "testsimpleclip!")
+              (setq retval
+                    (string= "testsimpleclip!"
+                             (simpleclip-get-contents))))
+          ('error
+           (message (format "Please install %s to support clipboard from terminal."
+                            (cond
+                             (*unix*
+                              "xsel or xclip")
+                             ((or *cygwin* *wind64*)
+                              "cygutils-extra from Cygwin")
+                             (t
+                              "CLI clipboard tools"))))
+           (setq retval nil)))
+        retval)))
 
-(setq simpleclip-works (test-simpleclip))
+(setq simpleclip-works (test-simpleclip) )
 
 (defun my-gclip ()
   (if simpleclip-works (simpleclip-get-contents)
