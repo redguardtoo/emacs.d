@@ -235,6 +235,15 @@ By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-
 But you can run the =M-x my-toggle-color-theme= to switch to the fallback theme =color-theme-deep-blue=.
 
 You can change the definition of =my-toggle-color-theme= in =init-color-theme.el=.
+** git-gutter
+I use modified version of =git-gutter= for now until my pull request is merged into official repository.
+
+You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS (Perforce, for example),
+#+begin_src elisp
+(setq git-gutter:exp-to-create-diff
+      (shell-command-to-string (format "p4 diff -du -db %s"
+                                       (file-relative-name buffer-file-name))))
+#+end_src
 ** Start a shell inside Emacs
 Please =M-x multi-term=.
 
@@ -301,7 +310,7 @@ BTW, please *read my comments* above the code at first.
 ** Open file with Ido
 If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the suggestions.
 
-Keep pressing =C-f= to ignore the suggestions.
+Keep pressing =C-f= to ignore suggestions.
 ** Windows
 I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if it knows how to find the third party command line tools. Cygwin provides most of those tools by default. Add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the tools automatically.
 
