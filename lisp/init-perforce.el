@@ -191,4 +191,44 @@ If FILE-OPENED, current file is still opened."
                              "\n\n")))
    (p4--create-buffer "*p4log*" content 1 default-directory)))
 
+;; Used in my patched emacs-git-messenger:
+;; (setq git-messenger:exp-to-create-commit-details 'p4-create-commit-details)
+(defun p4-create-commit-details ()
+  "Return '(commit-id author msg)"
+  (let* ((content (shell-command-to-string (p4-generate-cmd "annotate -c -q")))
+         (line-num (line-number-at-pos))
+         filelog-content
+         cur-line
+         changelist
+         commit-msg
+         rlt)
+
+    (with-temp-buffer
+      (insert content)
+      (goto-line line-num)
+      (setq cur-line (buffer-substring-no-properties (line-beginning-position)
+                                                     (line-end-position)))
+      (if (string-match "^\\([0-9]+\\): " cur-line)
+          (setq changelist (match-string 1 cur-line))))
+
+    (when changelist
+      (setq content (shell-command-to-string (p4-generate-cmd "p4 changes -l")))
+      (let* ((b (string-match (format "^Change %s on" changelist) filelog-content))
+             (e (string-match "^Change [0-9]+ on" filelog-content b)))
+        (if (or (not e) (<= e b))
+            (setq e (length filelog-content)))
+        (setq commit-msg (substring-no-properties filelog-content b e))))
+
+    ;; We need extract information from below text:
+    ;; Change 299998 on 2017/04/05 by somebody
+    ;;
+    ;;     test1 blah
+    (if (and commit-msg
+             (string-match "Change \\([0-9]+\\) on.* by \\([^ ]+\\)$" commit-msg))
+        (setq rlt (list (match-string 1 commit-msg)
+                        (match-string 2 commit-msg)
+                        commit-msg)))
+    ;; (message "rlt=%s" rlt)
+    rlt))
+
 (provide 'init-perforce)
