@@ -6,7 +6,7 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
@@ -147,14 +147,23 @@ You could use either `org-up-heading-safe' or `org-back-to-heading'.")
 
 (defun org-mime--export-string (s fmt &optional opts)
   "Export string S into HTML format.  OPTS is export options."
-  (if org-mime-debug (message "org-mime--export-string called => %s" opts))
-  ;; we won't export title from org file anyway
-  (if opts (setq opts (plist-put opts 'title nil)))
-  (if (fboundp 'org-export-string-as)
-      ;; emacs24.4+
-      (org-export-string-as s fmt t (if org-mime-export-options org-mime-export-options opts))
-    ;; emacs 24.3
-    (org-export-string s (symbol-name fmt))))
+  (let* (rlt)
+    (if org-mime-debug (message "org-mime--export-string called => %s" opts))
+    ;; we won't export title from org file anyway
+    (if opts (setq opts (plist-put opts 'title nil)))
+    (if (fboundp 'org-export-string-as)
+        ;; emacs24.4+
+        (setq rlt (org-export-string-as s fmt t (if org-mime-export-options org-mime-export-options opts)))
+      ;; emacs 24.3
+      (setq rlt (org-export-string s (symbol-name fmt)))
+      ;; manually remove the drawers, see https://github.com/org-mime/org-mime/issues/3
+      ;; Only happens on Emacs 24.3
+      (let* ((b (string-match ":END:" rlt)))
+        (if (and b (> b 0))
+            (setq rlt (substring-no-properties rlt
+                                               (+ b (length ":END:"))
+                                               (length rlt))))))
+    rlt))
 
 ;; example hook, for setting a dark background in <pre style="background-color: #EEE;"> elements
 (defun org-mime-change-element-style (element style)
