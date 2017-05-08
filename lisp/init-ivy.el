@@ -1,3 +1,4 @@
+(require 'counsel)
 ;; (ivy-mode 1)
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
@@ -445,6 +446,25 @@ Or else, find files since 24 weeks (6 months) ago."
                                    (ffip-get-project-root-directory))
                               default-directory)))
 
+;; TIP: after `M-x my-grep', you can:
+;; - then `C-c C-o' or `M-x ivy-occur'
+;; - `C-x C-q' or `M-x ivy-wgrep-change-to-wgrep-mode'
+;; - `C-c C-c' or `M-x wgrep-finish-edit'
+(defun my-grep-occur ()
+  "Generate a custom occur buffer for `my-grep'."
+  (unless (eq major-mode 'ivy-occur-grep-mode)
+    (ivy-occur-grep-mode))
+  (setq default-directory (my-root-dir))
+  (let* ((cands (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t)))
+    ;; Need precise number of header lines for `wgrep' to work.
+    (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
+                    default-directory))
+    (insert (format "%d candidates:\n" (length cands)))
+    (ivy--occur-insert-lines
+     (mapcar
+      (lambda (cand) (concat "./" cand))
+      cands))))
+
 (defvar my-grep-show-full-directory t)
 (defun my-grep ()
   "Grep at project root directory or current directory.
@@ -459,9 +479,16 @@ Extended regex is used, like (pattern1|pattern2)."
 
     (ivy-read (format "matching \"%s\" at %s:" keyword dir)
               collection
+              :history 'counsel-git-grep-history
               :action `(lambda (line)
                          (let* ((default-directory (my-root-dir)))
-                           (counsel--open-grepped-file line))))))
+                           (counsel--open-grepped-file line)))
+              :unwind (lambda ()
+                        (counsel-delete-process)
+                        (swiper--cleanup))
+              :caller 'my-grep)))
+(ivy-set-occur 'my-grep 'my-grep-occur)
+(ivy-set-display-transformer 'my-grep 'counsel-git-grep-transformer)
 ;; }}
 
 (defun counsel-browse-kill-ring (&optional n)
