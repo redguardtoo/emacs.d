@@ -1,4 +1,5 @@
 (require 'counsel)
+(require 'cl-lib)
 ;; (ivy-mode 1)
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
@@ -455,7 +456,14 @@ Or else, find files since 24 weeks (6 months) ago."
   (unless (eq major-mode 'ivy-occur-grep-mode)
     (ivy-occur-grep-mode))
   (setq default-directory (my-root-dir))
-  (let* ((cands (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t)))
+  ;; we use regex in elisp, don't unquote regex
+  (let* ((regex (setq ivy--old-re
+                      (ivy--regex
+                       (progn (string-match "\"\\(.*\\)\"" (buffer-name))
+                              (match-string 1 (buffer-name))))))
+         (cands (remove nil (mapcar (lambda (s) (if (string-match-p regex s) s))
+                                    (split-string (shell-command-to-string (my-grep-cli keyword))
+                                                  "[\r\n]+" t)))))
     ;; Need precise number of header lines for `wgrep' to work.
     (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
                     default-directory))
