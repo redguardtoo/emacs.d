@@ -2,12 +2,15 @@
   "(car p4-file-to-url) is the original file prefix
 (cadr p4-file-to-url) is the url prefix")
 
-(defun p4-current-file-url ()
+(defun p4-convert-file-to-url (file)
   (replace-regexp-in-string (car p4-file-to-url)
                             (cadr p4-file-to-url)
-                            buffer-file-name))
+                            file))
 
-(defun p4-dir-to-url (dir)
+(defun p4-covert-current-file-to-url ()
+  (p4-convert-file-to-url buffer-file-name))
+
+(defun p4-convert-dir-to-url (dir)
   "Convert directory to p4 url."
   (replace-regexp-in-string (car p4-file-to-url)
                             (cadr p4-file-to-url)
@@ -15,7 +18,7 @@
 
 (defun p4-generate-cmd (opts &optional not-current-file)
   (format "p4 %s %s" opts (if not-current-file "..."
-                            (p4-current-file-url))))
+                            (p4-covert-current-file-to-url))))
 
 (defun p4edit ()
   "p4 edit current file."
@@ -40,7 +43,7 @@ If FILE-OPENED, current file is still opened."
 (defun p4url ()
   "Get Perforce depot url of the file."
   (interactive)
-  (let* ((url (p4-current-file-url)))
+  (let* ((url (p4-covert-current-file-to-url)))
     (copy-yank-str url)
     (message "%s => clipboard & yank ring" url)))
 
@@ -77,8 +80,8 @@ If FILE-OPENED, current file is still opened."
   (shell-command (p4-generate-cmd "add")))
 
 (defun p4-show-changelist-patch (chg &optional not-current-file)
-  (let* ((url (if not-current-file (p4-dir-to-url (ffip-project-root))
-                (p4-current-file-url)))
+  (let* ((url (if not-current-file (p4-convert-dir-to-url (ffip-project-root))
+                (p4-covert-current-file-to-url)))
          (pattern "^==== //.*====$")
          sep
          seps
@@ -154,7 +157,7 @@ If FILE-OPENED, current file is still opened."
 
 (defun p4-changes (just-lines current-file)
   (let* ((cmd (if current-file (p4-generate-cmd "changes")
-                (format "p4 changes %s" (p4-dir-to-url (ffip-project-root)))))
+                (format "p4 changes %s" (p4-convert-dir-to-url (ffip-project-root)))))
          (lines (split-string (shell-command-to-string cmd) "\n")))
     (if just-lines lines
       (delq nil (mapcar #'p4--extract-changenumber lines)))))
@@ -182,6 +185,23 @@ If FILE-OPENED, current file is still opened."
                                            (p4-show-changelist-patch (p4--extract-changenumber line) t)
                                            2
                                            (ffip-project-root))))))
+
+(defun p4edit-in-wgrep-buffer()
+  (interactive)
+  (save-restriction
+    (let* ((start (wgrep-goto-first-found))
+           (end (wgrep-goto-end-of-found))
+           fn-accessed)
+      (narrow-to-region start end)
+      (goto-char (point-min))
+      (unless (featurep 'wgrep) (require 'featurep))
+      (while (not (eobp))
+        (if (looking-at wgrep-line-file-regexp)
+            (let* ((fn (match-string-no-properties 1)))
+              (unless (string= fn fn-accessed)
+                (setq fn-accessed fn)
+                (shell-command ("p4 edit %s" fn)))))
+        (forward-line 1)))))
 
 (defun p4history ()
   "Show history of current file like `git log -p'."
