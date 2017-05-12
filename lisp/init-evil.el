@@ -509,6 +509,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
        "oag" 'org-agenda
        "otl" 'org-toggle-link-display
+       "oa" '(lambda ()
+               (interactive)
+               (unless (featurep 'org) (require 'org))
+               (counsel-org-agenda-headlines))
        "om" 'toggle-org-or-message-mode
        "ut" 'undo-tree-visualize
        "ar" 'align-regexp
