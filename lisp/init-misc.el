@@ -721,7 +721,7 @@ If step is -1, go backward."
     (copy-yank-str str)
     (message "%s => clipboard & yank ring" str)))
 
-(defun pabs()
+(defun my-insert-absolute-path()
   "Relative path to full path."
   (interactive)
   (let* ((str (my-use-selected-string-or-ask "Input relative path:"))
@@ -729,7 +729,7 @@ If step is -1, go backward."
     (copy-yank-str path)
     (message "%s => clipboard & yank ring" path)))
 
-(defun prel()
+(defun my-insert-relative-path()
   "Full path to relative path."
   (interactive)
   (let* ((str (my-use-selected-string-or-ask "Input absolute path:"))
