@@ -639,6 +639,16 @@ If the character before and after CH is space or tab, CH is NOT slash"
                     "jk" 'js2r-kill)
 ;; }}
 
+;; Press `dd' to delete lines in `wgrep-mode' in evil directly
+(defadvice evil-delete (around evil-delete-hack activate)
+  ;; make buffer writable
+  (if (and (boundp 'wgrep-prepared) wgrep-prepared)
+      (wgrep-toggle-readonly-area))
+  ad-do-it
+  ;; make buffer read-only
+  (if (and (boundp 'wgrep-prepared) wgrep-prepared)
+      (wgrep-toggle-readonly-area)))
+
 ;; {{ Use `;` as leader key, for searching something
 (nvmap :prefix ";"
        ;; Search character(s) at the beginning of word
