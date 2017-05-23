@@ -387,6 +387,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ff" 'toggle-full-window ;; I use WIN+F in i3
        "ip" 'find-file-in-project
        "kk" 'find-file-in-project-by-selected
+       "kn" 'find-file-with-similar-name ; ffip v5.3.1
        "fd" 'find-directory-in-project-by-selected
        "trm" 'get-term
        "tff" 'toggle-frame-fullscreen
