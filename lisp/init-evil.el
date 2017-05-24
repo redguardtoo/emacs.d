@@ -49,6 +49,16 @@
   (push '(91 . ("[" . "]")) evil-surround-pairs-alist)
   (push '(93 . ("[" . "]")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
+
+(defun evil-surround-js-mode-hook-setup ()
+  ;; ES6
+  (push '(?1 . ("{`" . "`}")) evil-surround-pairs-alist)
+  (push '(?2 . ("${" . "}")) evil-surround-pairs-alist)
+  (push '(?4 . ("(e) => " . "(e)")) evil-surround-pairs-alist)
+  ;; ReactJS
+  (push '(?3 . ("classNames(" . ")")) evil-surround-pairs-alist))
+(add-hook 'js-mode-hook 'evil-surround-js-mode-hook-setup)
+
 (defun evil-surround-emacs-lisp-mode-hook-setup ()
   (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 (add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
