@@ -455,7 +455,8 @@ Or else, find files since 24 weeks (6 months) ago."
   "Generate a custom occur buffer for `my-grep'."
   (unless (eq major-mode 'ivy-occur-grep-mode)
     (ivy-occur-grep-mode))
-  (setq default-directory (my-root-dir))
+  ;; useless to set `default-directory', it's already correct
+  ;; (message "default-directory=%s" default-directory)
   ;; we use regex in elisp, don't unquote regex
   (let* ((regex (setq ivy--old-re
                       (ivy--regex
