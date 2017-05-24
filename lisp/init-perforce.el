@@ -200,7 +200,7 @@ If FILE-OPENED, current file is still opened."
             (let* ((fn (match-string-no-properties 1)))
               (unless (string= fn fn-accessed)
                 (setq fn-accessed fn)
-                (shell-command ("p4 edit %s" fn)))))
+                (shell-command (format "p4 edit %s" fn)))))
         (forward-line 1)))))
 
 (defun p4history ()
