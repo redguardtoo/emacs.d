@@ -7,34 +7,17 @@
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-escape (keyword)
-  (setq keyword (replace-regexp-in-string "\"" "\\\\\"" keyword))
-  (setq keyword (replace-regexp-in-string "\\?" "\\\\\?" keyword))
-  (setq keyword (replace-regexp-in-string "\\$" "\\\\x24" keyword))
-  (setq keyword (replace-regexp-in-string "\\*" "\\\\\*" keyword))
-  (setq keyword (replace-regexp-in-string "\\." "\\\\\." keyword))
-  (setq keyword (replace-regexp-in-string "\\[" "\\\\\[" keyword))
-  (setq keyword (replace-regexp-in-string "\\]" "\\\\\]" keyword))
-  ;; perl-regex support non-ASCII characters
-  ;; Turn on `-P` from `git grep' and `grep'
-  ;; the_silver_searcher needs no setup
-  (setq keyword (replace-regexp-in-string "(" "\\\\x28" keyword))
-  (setq keyword (replace-regexp-in-string ")" "\\\\x29" keyword))
-  (setq keyword (replace-regexp-in-string "{" "\\\\x7b" keyword))
-  (setq keyword (replace-regexp-in-string "}" "\\\\x7d" keyword))
-  keyword)
-
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
-  (let* (keyword)
+  (let (keyword)
     (cond
      ((region-active-p)
-      (setq keyword (counsel-escape (my-selected-str)))
+      (setq keyword (counsel-unquote-regex-parens (my-selected-str)))
       ;; de-select region
       (set-mark-command nil))
      (t
       (setq keyword (if default-when-no-active-region
-          default-when-no-active-region
-          (read-string hint)))))
+                        default-when-no-active-region
+                      (read-string hint)))))
     keyword))
 
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint &optional no-keyword filter)
@@ -166,7 +149,7 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
   (interactive)
   (let* ((cur-line (my-line-str (point)))
          (default-directory (ffip-project-root))
-         (keyword (counsel-escape (replace-regexp-in-string "^[ \t]*" "" cur-line)))
+         (keyword (counsel-unquote-regex-parens (replace-regexp-in-string "^[ \t]*" "" cur-line)))
          (cmd (cond
                (counsel-complete-line-use-git
                 (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
@@ -178,7 +161,6 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
          (leading-spaces "")
          (collection (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
 
-         (message "cmd=%s" cmd)
     ;; grep lines without leading/trailing spaces
     (when collection
       (if (string-match "^\\([ \t]*\\)" cur-line)
