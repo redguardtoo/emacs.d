@@ -78,6 +78,7 @@ if no files marked, always operate on current line in dired-mode
                      ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "ogm" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm" "part")
                      ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
                      ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
+                     ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
                      ("djview" "djvu")
                      ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
        (add-to-list 'dired-guess-shell-alist-user
