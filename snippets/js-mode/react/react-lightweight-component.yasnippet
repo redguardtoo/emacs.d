@@ -1,0 +1,23 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: react lightweight component
+# key: main
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+import React from 'react';
+// Optional
+import st from './`(file-name-base buffer-file-name)`.css';
+
+export default class `(file-name-base buffer-file-name)` extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    return (
+      <h1>Hello, this is `(file-name-base buffer-file-name)`</h1>
+    );
+  }
+}
