@@ -137,7 +137,8 @@ If FILE-OPENED, current file is still opened."
       (set-buffer rlt-buf)
       (erase-buffer)
       (insert content)
-      (diff-mode)
+      ;; `ffip-diff-mode' inherits from `diff-mode'
+      (ffip-diff-mode)
       (goto-char (point-min))
       ;; nice imenu output
       (cond
