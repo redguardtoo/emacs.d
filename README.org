@@ -99,12 +99,11 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Install through OS package manager
 **** jshint
 - Install =node.js= through OS package manager, then =npm install -g jshint=
-- required by js-mode
-- by default I use js2-mode which does NOT need jshint
+- Required by js-mode
+- I use js2-mode which does NOT need jshint
 **** xsel
 - Required by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
 - Install through OS package manager
-
 **** [[http://www.cmake.org][CMake]]
 - Required by =cpputils-cmake=
 - Install through OS package manager
@@ -235,6 +234,16 @@ By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-
 But you can run the =M-x my-toggle-color-theme= to switch to the fallback theme =color-theme-deep-blue=.
 
 You can change the definition of =my-toggle-color-theme= in =init-color-theme.el=.
+** js2-mode
+I release patched =js2-mode= based on [[https://github.com/mooz/js2-mode][latest official version]] every three months. My patched version has better imenu support.
+
+Please =package-refresh-content= from time to time upgrade =js2-mode=.
+** React and JSX
+I use =rjsx-mode= with Emacs v25+. It's based on =js2-mode= so it has excellent imenu support.
+
+But =web-mode= v15+ is also very popular to edit jsx files.
+
+In order to replace =rjsx-mode= with =web-mode=, you need search line =(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))= in =init-javascript.el= and replace =rjsx-mode= with =web-mode= on that line.
 ** git-gutter
 I use modified version of =git-gutter= for now until my pull request is merged into official repository.
 
@@ -331,9 +340,7 @@ If you use Gnus for email, check init-gnus.el and read [[http://blog.binchen.org
 ** Cannot download ELPA packages?
 Some package cannot be downloaded automatically because of network problem.
 
-You could,
-- =M-x list-packages= to manually install it
-- Or =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
+You could =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
