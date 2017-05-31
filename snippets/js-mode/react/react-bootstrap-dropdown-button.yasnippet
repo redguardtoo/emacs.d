@@ -1,0 +1,17 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: DropdownButton from `react-bootstrap`
+# key: dropdown
+# expand-env: ((yas-indent-line 'fixed))
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+<DropdownButton
+  title={ this.state.${1:key}}
+  id="${1:$(yas/substr yas-text "[^ ]*")}"
+>
+  <MenuItem eventKey="val1" key="val1" onClick={ () => this.setState({${1:$(yas/substr yas-text "[^ ]*")}: 'val1'}) }>
+    val1
+  </MenuItem>
+  <MenuItem eventKey="val2" key="val2" onClick={ () => this.setState({${1:$(yas/substr yas-text "[^ ]*")}: 'val2'}) }>
+    val2
+  </MenuItem>
+</DropdownButton>
