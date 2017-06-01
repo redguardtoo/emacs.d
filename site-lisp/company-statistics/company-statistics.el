@@ -1,10 +1,10 @@
 ;;; company-statistics.el --- Sort candidates using completion history  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2014-2015  Free Software Foundation, Inc.
+;; Copyright (C) 2014-2017  Free Software Foundation, Inc.
 
 ;; Author: Ingo Lohmar <i.lohmar@gmail.com>
 ;; URL: https://github.com/company-mode/company-statistics
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: abbrev, convenience, matching
 ;; Package-Requires: ((emacs "24.3") (company "0.8.5"))
 
@@ -113,7 +113,7 @@ number)."
 (defun company-statistics--initialized-p ()
   (hash-table-p company-statistics--scores))
 
-(defun company-statistics--log-resize (option new-size)
+(defun company-statistics--log-resize (_option new-size)
   (when (company-statistics--initialized-p)
     ;; hash scoresheet auto-resizes, but log does not
     (let ((new-hist (make-vector new-size nil))
@@ -141,15 +141,18 @@ number)."
 (defun company-statistics--save ()
   "Save statistics."
   (with-temp-buffer
+    (set-buffer-multibyte nil)
     (let (print-level print-length)
-      (insert
+      (encode-coding-string
        (format
         "%S"
         `(setq
           company-statistics--scores ,company-statistics--scores
           company-statistics--log ,company-statistics--log
-          company-statistics--index ,company-statistics--index))))
-    (write-file company-statistics-file)))
+          company-statistics--index ,company-statistics--index))
+       'utf-8 nil (current-buffer))
+      (let ((coding-system-for-write 'binary))
+        (write-region nil nil company-statistics-file)))))
 
 (defun company-statistics--maybe-save ()
   (when (and (company-statistics--initialized-p)
@@ -162,7 +165,7 @@ number)."
 
 ;; score calculation for insert/retrieval --- can be changed on-the-fly
 
-(defun company-statistics-score-change-light (cand)
+(defun company-statistics-score-change-light (_cand)
   "Count for global score and mode context."
   (list (cons nil 1)
         (cons major-mode 1)))           ;major-mode is never nil
@@ -212,7 +215,7 @@ May be separated by punctuation, but not by whitespace."
   (when buffer-file-name
     (list :file buffer-file-name)))
 
-(defun company-statistics-capture-context-heavy (manual)
+(defun company-statistics-capture-context-heavy (_manual)
   "Calculate some context, once for the whole completion run."
   (save-excursion
     (backward-char (length company-prefix))
@@ -222,7 +225,7 @@ May be separated by punctuation, but not by whitespace."
                       (company-statistics--parent-symbol)
                       (company-statistics--file-name))))))
 
-(defun company-statistics-score-change-heavy (cand)
+(defun company-statistics-score-change-heavy (_cand)
   "Count for global score, mode context, last keyword, parent symbol,
 buffer file name."
   (let ((last-kwd (assoc :keyword company-statistics--context))

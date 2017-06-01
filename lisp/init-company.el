@@ -12,8 +12,7 @@
 (eval-after-load 'company
   '(progn
      ;; @see https://github.com/company-mode/company-mode/issues/348
-     (unless (featurep 'company-statistics)
-       (require 'company-statistics))
+     (require 'company-statistics)
      (company-statistics-mode)
 
      (add-to-list 'company-backends 'company-cmake)
