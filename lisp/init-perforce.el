@@ -119,6 +119,8 @@ If FILE-OPENED, current file is still opened."
     (setq rlt (replace-regexp-in-string "Differences \.\.\.[\r\n]+" "" rlt))
     ;; one line short description of change list
     (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
+    ;; `diff-mode' friendly format
+    (setq rlt (replace-regexp-in-string "^==== \\(.*\\)#[0-9]+ (text) ====[\r\n]+" "--- \\1\n+++ \\1\n" rlt))
     rlt))
 
 (defvar p4-imenu-parse-hunk-header-rules
@@ -140,18 +142,12 @@ If FILE-OPENED, current file is still opened."
       ;; `ffip-diff-mode' inherits from `diff-mode'
       (ffip-diff-mode)
       (goto-char (point-min))
-      ;; nice imenu output
-      (cond
-       ((= enable-imenu 1)
-        (setq imenu-create-index-function
-              (lambda ()
-                (save-excursion
-                  (imenu--generic-function '((nil "^[0-9]+ by .*" 0)))))))
-       ((= enable-imenu 2)
-        (setq imenu-create-index-function
-              (lambda ()
-                (save-excursion
-                  (imenu--generic-function p4-imenu-parse-hunk-header-rules))))))
+      ;; we want to see change list instead
+      (if enable-imenu
+          (setq imenu-create-index-function
+                (lambda ()
+                  (save-excursion
+                    (imenu--generic-function '((nil "^[0-9]+ by .*" 0)))))))
 
       ;; quit easily in evil-mode
       (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
@@ -184,7 +180,7 @@ If FILE-OPENED, current file is still opened."
               :action (lambda (line)
                         (p4--create-buffer "*p4show*"
                                            (p4-show-changelist-patch (p4--extract-changenumber line) t)
-                                           2
+                                           nil
                                            (ffip-project-root))))))
 
 (defun p4edit-in-wgrep-buffer()
@@ -210,7 +206,7 @@ If FILE-OPENED, current file is still opened."
   (let* ((content (mapconcat #'p4-show-changelist-patch
                              (p4-changes nil t)
                              "\n\n")))
-   (p4--create-buffer "*p4log*" content 1 default-directory)))
+   (p4--create-buffer "*p4log*" content t default-directory)))
 
 ;; Used in my patched emacs-git-messenger:
 ;; (setq git-messenger:exp-to-create-commit-details 'p4-create-commit-details)
