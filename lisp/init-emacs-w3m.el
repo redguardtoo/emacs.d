@@ -176,7 +176,7 @@
   (interactive)
   (let (url cmd str)
     (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))
-      ;; wierd, `w3m-anchor' fail to extract url while `w3m-image' can
+      ;; weird, `w3m-anchor' fail to extract url while `w3m-image' can
       (setq url (or (w3m-anchor) (w3m-image)))
       (unless url
         (save-excursion
