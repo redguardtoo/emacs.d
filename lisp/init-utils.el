@@ -269,9 +269,10 @@
       (set-buffer rlt-buf)
       (erase-buffer)
       (insert ,content)
-      (diff-mode)
+      ;; `ffip-diff-mode' is more powerful than `diff-mode'
+      (ffip-diff-mode)
       (goto-char (point-min))
-      ;; evil keybinding
+      ;; Evil keybinding
       (if (fboundp 'evil-local-set-key)
           (evil-local-set-key 'normal "q"
                               (lambda ()

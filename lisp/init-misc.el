@@ -621,7 +621,7 @@ If step is -1, go backward."
 (add-hook 'string-edit-at-point-hook 'string-edit-at-point-hook-setup)
 ;; }}
 
-;; Diff two regions
+;; {{ Diff two regions
 ;; Step 1: Select a region and `M-x diff-region-tag-selected-as-a'
 ;; Step 2: Select another region and `M-x diff-region-compare-with-b'
 ;; Press "q" in evil-mode or "C-c C-c" to exit the diff output buffer
@@ -652,7 +652,7 @@ If step is -1, go backward."
     rlt))
 
 (defun diff-region-tag-selected-as-a ()
-  "Select a region to compare"
+  "Select a region to compare."
   (interactive)
   (when (region-active-p)
     (let (tmp buf)
@@ -663,45 +663,60 @@ If step is -1, go backward."
         (set-buffer buf)
         (erase-buffer))
       (append-to-buffer buf (car tmp) (cadr tmp))))
-  (message "Now select other region to compare and run `diff-region-compare-with-b`"))
+  (message "Now select other region to compare and run `diff-region-compare-with-b'"))
 
 (defun diff-region-compare-with-b ()
-  "Compare current region with region selected by `diff-region-tag-selected-as-a' "
+  "Compare current region with region selected by `diff-region-tag-selected-as-a'.
+If no region is selected. You will be asked to use `kill-ring' or clipboard instead.
+`simpleclip' need be installed to read clipboard."
   (interactive)
-  (if (region-active-p)
-      (let (rlt-buf
-            diff-output
-            (fa (make-temp-file (expand-file-name "scor"
-                                                  (or small-temporary-file-directory
-                                                      temporary-file-directory))))
-            (fb (make-temp-file (expand-file-name "scor"
-                                                  (or small-temporary-file-directory
-                                                      temporary-file-directory)))))
-        ;;  save current content as file B
-        (when fb
-          (setq tmp (diff-region-format-region-boundary (region-beginning) (region-end)))
-          (write-region (car tmp) (cadr tmp) fb))
-
-        (when (and fa (file-exists-p fa) fb (file-exists-p fb))
-          ;; save region A as file A
-          (save-current-buffer
-            (set-buffer (get-buffer-create "*Diff-regionA*"))
-            (write-region (point-min) (point-max) fa))
-          ;; diff NOW!
-          ;; show the diff output
-          (if (string= (setq diff-output (shell-command-to-string (format "diff -Nabur %s %s" fa fb))) "")
-              ;; two regions are same
-              (message "Two regions are SAME!")
-            ;; show the diff
-            (diff-region-open-diff-output diff-output
-                                          "*Diff-region-output*")))
-
-        ;; clean the temporary files
-        (if (and fa (file-exists-p fa))
-            (delete-file fa))
-        (if (and fb (file-exists-p fb))
-            (delete-file fb)))
-    (message "Please select region at first!")))
+  (let* (rlt-buf
+         diff-output
+         ;; file A
+         (fa (make-temp-file (expand-file-name "scor"
+                                               (or small-temporary-file-directory
+                                                   temporary-file-directory))))
+         ;; file B
+         (fb (make-temp-file (expand-file-name "scor"
+                                               (or small-temporary-file-directory
+                                                   temporary-file-directory)))))
+    (when (and fa (file-exists-p fa) fb (file-exists-p fb))
+      (cond
+       ((region-active-p)
+        ;; text from selected region
+        (setq tmp (diff-region-format-region-boundary (region-beginning) (region-end)))
+        (write-region (car tmp) (cadr tmp) fb))
+       (t
+        ;; text from `kill-ring' or clipboard
+        (unless (featurep 'ido) (require 'ido))
+        (let* ((choice (ido-completing-read "Since no region selected, compare text in:"
+                                            '("kill-ring" "clipboard")))
+               (txt (cond
+                     ((string= choice "kill-ring")
+                      (car kill-ring))
+                     ((string= choice "clipboard")
+                      (unless (featurep 'simpleclip) (require 'simpleclip))
+                      (simpleclip-get-contents)))))
+          (with-temp-file fb
+            (insert txt)))))
+      ;; save region A as file A
+      (save-current-buffer
+        (set-buffer (get-buffer-create "*Diff-regionA*"))
+        (write-region (point-min) (point-max) fa))
+      ;; diff NOW!
+      ;; show the diff output
+      (if (string= (setq diff-output (shell-command-to-string (format "diff -Nabur %s %s" fa fb))) "")
+          ;; two regions are same
+          (message "Two regions are SAME!")
+        ;; show the diff
+        (diff-region-open-diff-output diff-output
+                                      "*Diff-region-output*"))
+      ;; clean the temporary files
+      (if (and fa (file-exists-p fa))
+          (delete-file fa))
+      (if (and fb (file-exists-p fb))
+          (delete-file fb)))))
+;; }}
 
 ;; {{ cliphist.el
 (setq cliphist-use-ivy t)
