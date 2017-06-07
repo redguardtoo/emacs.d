@@ -115,10 +115,12 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
 
+**** pandoc
+- Required by =markdown-preview= from =markdown-mode=
+- Install through OS package manager
 **** GCC/Make
 - Required by =flymake=
 - Install through OS package manager
-
 **** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
 - Required by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
 - Used by Firefox
