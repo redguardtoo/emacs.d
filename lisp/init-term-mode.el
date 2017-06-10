@@ -71,7 +71,7 @@
       '(("C-c" . term-interrupt-subjob)
         ("C-p" . term-send-up)
         ("C-n" . term-send-down)
-        ("C-s" . isearch-forward)
+        ("C-s" . swiper)
         ("C-r" . term-send-reverse-search-history)
         ("C-m" . term-send-raw)
         ("C-k" . term-send-kill-whole-line)
