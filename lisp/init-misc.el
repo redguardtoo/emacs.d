@@ -1,9 +1,3 @@
-;; {{ swiper&ivy-mode
-(defun swiper-the-thing ()
-  (interactive)
-  (swiper (my-use-selected-string-or-ask "")))
-;; }}
-
 ;; {{ shell and conf
 (add-to-list 'auto-mode-alist '("\\.[^b][^a][a-zA-Z]*rc$" . conf-mode))
 (add-to-list 'auto-mode-alist '("\\.aspell\\.en\\.pws\\'" . conf-mode))

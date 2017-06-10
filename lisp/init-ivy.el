@@ -542,4 +542,12 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
      ;; @see https://github.com/abo-abo/swiper/issues/828
      (setq ivy-display-style 'fancy)))
 
+;; {{ swiper&ivy-mode
+(defun swiper-the-thing ()
+  (interactive)
+  (swiper (my-use-selected-string-or-ask "")))
+
+(global-set-key (kbd "C-s") 'swiper)
+;; }}
+
 (provide 'init-ivy)
