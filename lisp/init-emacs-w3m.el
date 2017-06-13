@@ -13,9 +13,13 @@
       w3m-command-arguments       '("-F" "-cookie")
       w3m-mailto-url-function     'compose-mail
       browse-url-browser-function 'w3m
-      ;; use shr to view html mail, but if libxml NOT available
-      ;; use w3m isntead. That's macs 24.3+ default logic
-      mm-text-html-renderer 'w3m ; I prefer w3m
+      ;; use shr to view html mail which is dependent on libxml
+      ;; I prefer w3m. That's emacs 24.3+ default setup.
+      ;; If you prefer colored mail body and other advanced features,
+      ;; you can either comment out below line and let Emacs decide the
+      ;; best html mail rendering engine, or "(setq mm-text-html-renderer 'shr)"
+      ;; in "~/.gnus.el"
+      ;; mm-text-html-renderer 'w3m ; I prefer w3m
       w3m-use-toolbar t
       ;; show images in the browser
       ;; setq w3m-default-display-inline-images t

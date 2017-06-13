@@ -66,10 +66,16 @@ You can install them in any way you like. But =OS package manager= is easier.
 These tools are *OPTIONAL*.
 
 Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
-**** w3m (web browser in console)
-- Required by =w3m= (w3m is emacs package name written in elisp)
+**** w3m (web browser)
+- Required by =emacs-w3m=
 - Install through OS package manager
-- Please note only emacs with GUI can display image
+- Only GUI Emacs can display image
+
+You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML mail be rendered by =w3m= instead of the default HTML rendering engine =shr=.
+
+=shr= supports COLOR but =w3m= not.
+
+But my =w3m= based utilities can open built in video/audio/image. They can't be used until you replace =shr= with =w3m=. Anyway, your choice.
 **** lua
 - Required by =flymake-lua=
 - Install through OS package manager
