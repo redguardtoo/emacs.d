@@ -4,6 +4,8 @@
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
 (global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "C-x b") 'ivy-switch-buffer)
+
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
