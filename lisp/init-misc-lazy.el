@@ -172,10 +172,7 @@ grab matched string, cssize them, and insert into kill ring"
 (defun display-line-number ()
   "display current line number in mini-buffer"
   (interactive)
-  (let (l)
-    (setq l (line-number-at-pos))
-    (message "line number:%d" l)
-    ))
+  (message "line number:%d" (line-number-at-pos)))
 
 (eval-after-load 'grep
   '(progn
