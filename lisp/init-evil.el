@@ -275,10 +275,19 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
+  "gj" 'outline-forward-same-level
+  "gk" 'outline-backward-same-level
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
   ">" 'org-demote-or-promote ; indent
+  (kbd "TAB") 'org-cycle)
+
+(evil-declare-key 'normal markdown-mode-map
+  "gh" 'outline-up-heading
+  "gl" 'outline-next-visible-heading
+  "gj" 'outline-forward-same-level
+  "gk" 'outline-backward-same-level
   (kbd "TAB") 'org-cycle)
 
 (loop for (mode . state) in
@@ -611,7 +620,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ms" 'mc/skip-to-next-like-this
        "me" 'mc/edit-lines)
 
-;; per-major-mode leader setup
+;; per-major-mode setup
 (general-define-key :states '(normal motion insert emacs)
                     :keymaps 'js2-mode-map
                     :prefix "SPC"
