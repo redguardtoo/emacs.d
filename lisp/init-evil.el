@@ -292,7 +292,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (loop for (mode . state) in
       '((minibuffer-inactive-mode . emacs)
-        (ggtags-global-mode . emacs)
         (grep-mode . emacs)
         (Info-mode . emacs)
         (term-mode . emacs)
@@ -518,8 +517,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "hf" 'find-function
        "hk" 'describe-key
        "hv" 'describe-variable
-       "gt" 'ggtags-find-tag-dwim
-       "gr" 'ggtags-find-reference
+       "gt" 'counsel-gtags-dwim ; jump from reference to definition or vice versa
+       "gr" 'counsel-gtags-find-symbol
+       "gu" 'counsel-gtags-update-tags
        "fb" 'flyspell-buffer
        "fe" 'flyspell-goto-next-error
        "fa" 'flyspell-auto-correct-word

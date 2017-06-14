@@ -138,11 +138,10 @@ But my =w3m= based utilities can open built in video/audio/image. They can't be 
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
-- Required by =ggtags.el=
+- Required by =counsel-gtags=
 - It creates index files for code navigation and auto-completion
-- More advanced than ctags, supports references and has better performance
+- Please read [[https://www.gnu.org/software/global/manual/global.html][GNU Global manual]] to understand environment variables =GTAGSLIBPATH= and =MAKEOBJDIRPREFIX=
 - Install through OS package manager
-
 **** LibreOffice
 - Only the executable =soffice= is used when converting odt file into doc/pdf
 - conversion happens automatically when exporting org-mode to odt
@@ -170,7 +169,7 @@ But my =w3m= based utilities can open built in video/audio/image. They can't be 
 - Install through OS package manager
 * Usage
 ** Tutorial (OPTIONAL)
-=~/.emacs.d/lisp/init-evil.el= list my frequently used key bindings.
+Basic knowledge of Linux/Unix is recommended except the tutorials . At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
 *** Basic tutorial
 Everyone should finish this tutorial at first.
 **** Step 1, learn OS basics
@@ -189,7 +188,7 @@ At minimum you need know:
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-**** Step 4, what's your real world problem
+**** Step 4, start from real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 *** Evil-mode tutorial
 Required for vim user,

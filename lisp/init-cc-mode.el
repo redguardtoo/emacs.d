@@ -78,11 +78,8 @@
                ;; `man global' to figure out why
                (not (string-match-p "GTAGS not found"
                                     (shell-command-to-string "global -p"))))
-      (setq gtags-suggested-key-mapping t)
-      (ggtags-mode 1)
       ;; emacs 24.4+ will set up eldoc automatically.
       ;; so below code is NOT needed.
-      (setq-local eldoc-documentation-function #'ggtags-eldoc-function)
       (eldoc-mode 1))
     ))
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-setup)
