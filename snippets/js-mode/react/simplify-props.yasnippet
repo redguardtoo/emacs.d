@@ -1,0 +1,6 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: let { a, b, ...props } = this.props;
+# key: props
+# contributor: Chen Bin <chenbin.sh AT gmail>
+# --
+let { `(mapconcat (lambda (s) (replace-regexp-in-string "this\.props\." "" s)) (delete-dups (string-all-matches "this\.props.\.[a-zA-Z][a-zA-Z0-9]*" (buffer-substring-no-properties (point-min) (point-max)))) ", ")`, ...props } = this.props;
