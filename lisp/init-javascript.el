@@ -52,10 +52,6 @@
     (setq imenu-create-index-function 'mo-js-imenu-make-index)
     (flymake-mode 1)))
 
-(defun inferior-js-mode-hook-setup ()
-  (add-hook 'comint-output-filter-functions 'js-comint-process-output))
-(add-hook 'inferior-js-mode-hook 'inferior-js-mode-hook-setup t)
-
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 (eval-after-load 'js-mode
   '(progn
