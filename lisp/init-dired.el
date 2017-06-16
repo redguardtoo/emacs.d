@@ -67,6 +67,8 @@ if no files marked, always operate on current line in dired-mode
 
 (eval-after-load 'dired
   '(progn
+     ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
+     (setq dired-listing-switches "-laGh1v --group-directories-first")
      ;; {{ @see https://oremacs.com/2017/03/18/dired-ediff/
      ;; -*- lexical-binding: t -*-
      (defun ora-ediff-files ()
