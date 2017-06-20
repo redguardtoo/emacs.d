@@ -848,6 +848,11 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 ;; }}
 
+;; @see https://stackoverflow.com/questions/3417438/closing-all-other-buffers-in-emacs
+(defun kill-all-but-current-buffer ()
+  (interactive)
+    (mapc 'kill-buffer (cdr (buffer-list (current-buffer)))))
+
 (defun minibuffer-inactive-mode-hook-setup ()
   ;; make `try-expand-dabbrev' from `hippie-expand' work in mini-buffer
   ;; @see `he-dabbrev-beg', so we need re-define syntax for '/'
