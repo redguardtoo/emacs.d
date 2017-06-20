@@ -50,7 +50,7 @@
     (unless (evil-visual-state-p)
       (kill-new old)
       (evil-visual-state))
-    (evil-ex (concat "'<,'>s/\\<\\(" escaped-old "\\)\\>/"))))
+    (evil-ex (concat "'<,'>s%" escaped-old "%"))))
 
 ;;;###autoload
 (defun evilmr-show-tagged-region ()
