@@ -154,13 +154,13 @@ non-nil."
 ;; http://endlessparentheses.com/define-context-aware-keys-in-emacs.html
 (defun general--maybe-apply-predicate (predicate def)
   "Apply PREDICATE to DEF.
-If PREDICATE is nil or DEF is not a function, just return DEF."
+If PREDICATE is nil just return DEF."
   (if predicate
       `(menu-item
         "" nil
         :filter (lambda (&optional _)
                   (when ,predicate
-                    (,def))))
+                    ',def)))
     def))
 
 (defun general--remove-keys (maps keys)
@@ -362,12 +362,11 @@ KEYMAP is 'local. MAPS is any number of keys and commands to bind."
     `(let ((maps ',maps)
            (keymap ',keymap)
            (state ',state))
-       (while (not (cl-endp maps))
+       (while maps
          (if (eq keymap 'local)
              ;; has no &rest
              (evil-local-set-key state (pop maps) (pop maps))
-           ;; TODO use evil-define-key* after it has been in evil for a while
-           (evil-define-key state keymap (pop maps) (pop maps)))))))
+           (evil-define-key* state keymap (pop maps) (pop maps)))))))
 
 (defun general--define-key
     (states keymap maps non-normal-maps global-maps kargs)
@@ -485,26 +484,36 @@ MAPS will be recorded for later use with `general-describe-keybindings'."
     (when (and prefix-command
                (not (boundp prefix-command)))
       (define-prefix-command prefix-command prefix-map prefix-name))
+    ;; TODO reduce code reduction here
     (when non-normal-prefix
       (setq non-normal-prefix-maps
             (general--apply-prefix-and-kbd
              (general--concat t non-normal-prefix infix) maps))
       (when prefix-command
         (push prefix-command non-normal-prefix-maps)
-        (push non-normal-prefix non-normal-prefix-maps)))
+        (push (if general-implicit-kbd
+                  (kbd non-normal-prefix)
+                non-normal-prefix)
+              non-normal-prefix-maps)))
     (when global-prefix
       (setq global-prefix-maps
             (general--apply-prefix-and-kbd
              (general--concat t global-prefix infix) maps))
       (when prefix-command
         (push prefix-command global-prefix-maps)
-        (push global-prefix global-prefix-maps)))
+        (push (if general-implicit-kbd
+                  (kbd global-prefix)
+                global-prefix)
+              global-prefix-maps)))
     ;; last so not applying prefix twice
     (setq maps (general--apply-prefix-and-kbd
                 (general--concat t prefix infix) maps))
     (when prefix-command
       (push prefix-command maps)
-      (push prefix maps))
+      (push (if general-implicit-kbd
+                (kbd prefix)
+              prefix)
+            maps))
     (dolist (keymap keymaps)
       (when (memq keymap '(insert emacs normal visual operator motion replace))
         (setq keymap (general--evil-keymap-for-state keymap)))
@@ -842,6 +851,7 @@ aborted when it should be."
            (fallback (cl-getf general--last-dispatch :fallback))
            (invoked-keys (cl-getf general--last-dispatch :invoked-keys))
            (keys (cl-getf general--last-dispatch :keys))
+           (old-repeat-info (cl-copy-list evil-repeat-info))
            (reversed-repeat-info (reverse evil-repeat-info))
            count
            next-repeat-item)
@@ -858,8 +868,11 @@ aborted when it should be."
                                (nreverse (cdr reversed-repeat-info))))
       ;; for debugging purposes only
       (setq general--repeat-info
-            (list invoked-keys keys (this-command-keys)
-                  (cl-copy-list evil-repeat-info) count))
+            (list :invoked-keys invoked-keys :keys keys
+                  :this-command-keys (this-command-keys)
+                  :old-evil-repeat-info old-repeat-info
+                  :evil-repeat-info (cl-copy-list evil-repeat-info)
+                  :count count))
       (if (general--repeat-abort-p repeat-prop)
           (evil-repeat-abort)
         (evil-repeat-record
