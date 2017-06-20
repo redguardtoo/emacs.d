@@ -457,12 +457,16 @@ Or else, find files since 24 weeks (6 months) ago."
      (mapcar
       (lambda (cand) (concat "./" cand))
       cands))))
+;; goto `wgrep-mode' automatically after `C-c C-o', (why press extra `C-x C-q'?)
+(defun ivy-occur-grep-mode-hook-setup ()
+  (ivy-wgrep-change-to-wgrep-mode))
+(add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
 (defvar my-grep-show-full-directory t)
 (defun my-grep ()
   "Grep at project root directory or current directory.
-If ag (the_silver_searcher) exists, use ag.
-Extended regex is used, like (pattern1|pattern2)."
+Try to find best grep program (ripgrep, the silver searcher, grep...) automatically.
+Extended regex like (pattern1|pattern2) is used."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
          (default-directory (my-root-dir))

@@ -183,7 +183,9 @@ Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled t
 
 At minimum you need know:
 - How to move cursor
-- How to read help by pressing =C-h v= and =C-h f=.
+- =C-h v= to describe variable
+- =C-h f= to describe function
+- =C-h k= to check function key binding
 **** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
@@ -241,6 +243,12 @@ By default [[https://github.com/alloy-d/color-theme-molokai/blob/master/molokai-
 But you can run the =M-x my-toggle-color-theme= to switch to the fallback theme =color-theme-deep-blue=.
 
 You can change the definition of =my-toggle-color-theme= in =init-color-theme.el=.
+** Grep/Replace text in project
+Many third party plugins bundled in this setup have already provided all the features you needed. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
+
+A generic grep tool =my-grep= is provided if you don't use =git=. Since =my-grep= is based on =counsel/ivy=, it also supports "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
+
+The good news is my setup optimizes the multi-edit workflow. After =M-x my-grep= (or pregre ",qq"), you only need press =C-c C-o= once to use =wgrep-mode=, and you can edit text (for example, delete lines) in =wgrep-mode= without any futher key presssing.
 ** js2-mode
 I release patched =js2-mode= based on [[https://github.com/mooz/js2-mode][latest official version]] every three months. My patched version has better imenu support.
 
