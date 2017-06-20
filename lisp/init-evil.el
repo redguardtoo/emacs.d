@@ -430,11 +430,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "mm" 'counsel-bookmark-goto
        "mk" 'bookmark-set
        "yy" 'counsel-browse-kill-ring
-       "gf" 'counsel-git-find-file
+       "gf" 'counsel-git ; find file
        "gc" 'counsel-git-find-file-committed-with-line-at-point
        "gl" 'counsel-git-grep-yank-line
        "gg" 'counsel-git-grep-in-project ; quickest grep should be easy to press
-       "ga" 'counsel-git-grep-by-author
        "gm" 'counsel-git-find-my-file
        "gs" 'ffip-show-diff ; find-file-in-project 5.0+
        "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
@@ -454,7 +453,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "lq" 'highlight-symbol-query-replace
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
        "bm" 'pomodoro-start ;; beat myself
-       "ii" 'counsel-imenu-goto
+       "ii" 'counsel-imenu
        "ij" 'rimenu-jump
        "." 'evil-ex
        ;; @see https://github.com/pidu/git-timemachine
@@ -476,7 +475,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cxr" 'org-clock-report ; `C-c C-x C-r'
        "qq" 'my-grep
        "xc" 'save-buffers-kill-terminal
-       "rr" 'counsel-recentf-goto
+       "rr" 'counsel-recentf
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
        "rf" 'counsel-goto-recent-directory
        "da" 'diff-region-tag-selected-as-a

@@ -201,12 +201,12 @@ If IN-PROJECT is t, operate in project root."
                 (shell-command (format "p4 edit %s" fn)))))
         (forward-line 1)))))
 
-(defun p4history ()
+(defun p4history (&optional in-project)
   "Show history of current file like `git log -p'."
-  (interactive)
-  (let* ((content (mapconcat #'p4-show-changelist-patch
-                             (p4-changes nil t)
-                             "\n\n")))
+  (interactive "P")
+  (let* ((content (mapconcat #'identity
+                             (p4-changes t (not in-project))
+                             "\n")))
    (p4--create-buffer "*p4log*" content t default-directory)))
 
 ;; Used in my patched emacs-git-messenger:

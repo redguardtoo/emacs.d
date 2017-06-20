@@ -67,35 +67,7 @@ Extended regex is used, like (pattern1|pattern2)."
                                 "git --no-pager grep -P -I --full-name -n --no-color -E -e \"%s\""
                                 "grep"))
 
-(defvar counsel-git-grep-author-regex nil)
-
-;; `git --no-pager blame -w -L 397,+1 --porcelain lisp/init-evil.el'
-(defun counsel--filter-grepped-by-author (collection)
-  (if counsel-git-grep-author-regex
-      (delq nil
-            (mapcar
-             (lambda (v)
-               (let (blame-cmd (arr (split-string v ":" t)))
-                 (setq blame-cmd
-                       (format "git --no-pager blame -w -L %s,+1 --porcelain %s"
-                               (cadr arr) ; line number
-                               (car arr))) ; file
-                 (if (string-match-p (format "\\(author %s\\|author Not Committed\\)"
-                                               counsel-git-grep-author-regex)
-                                       (shell-command-to-string blame-cmd))
-                   v)))
-             collection))
-    collection))
-
-(defun counsel-git-grep-by-author ()
-  "Grep in the current git repository.
-It's SLOW when more than 20 git blame process start."
-  (interactive)
-  (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                "git --no-pager grep --full-name -n --no-color -i -e \"%s\""
-                                "grep by author"
-                                nil
-                                'counsel--filter-grepped-by-author))
+;; grep by author is bad idea because it's too slow
 
 (defun counsel-git-show-file ()
   "Find file in HEAD commit or whose commit hash is selected region."
@@ -113,13 +85,6 @@ It's SLOW when more than 20 git blame process start."
                                 "git --no-pager diff --name-only"
                                 "files from `git-diff' "
                                 t))
-
-(defun counsel-git-find-file ()
-  "Find file in the current git repository."
-  (interactive)
-  (counsel-git-grep-or-find-api 'find-file
-                                "git ls-tree -r HEAD --name-status | grep \"%s\""
-                                "file"))
 
 (defun counsel-insert-grepped-line (val)
   (let ((lst (split-string val ":")) text-line)
@@ -219,25 +184,6 @@ Or else, find files since 24 weeks (6 months) ago."
                           (list (cons key (cons key (copy-marker (cdr elm)))))
                           )))))
 
-(defun counsel-imenu-goto ()
-  "Imenu based on ivy-mode."
-  (interactive)
-  (unless (featurep 'imenu)
-    (require 'imenu nil t))
-  (let* ((imenu-auto-rescan t)
-         (items (imenu--make-index-alist t)))
-    (ivy-read "imenu items:"
-              (ivy-imenu-get-candidates-from (delete (assoc "*Rescan*" items) items))
-              :action (lambda (k)
-                        ;; minor error handling
-                        (if (listp (cdr k)) (setq k (cdr k)))
-                        ;; copied from ido-imenu, don't know the purpose
-                        (push-mark (point))
-                        ;; better way to imenu
-                        (imenu k)
-                        (if (memq major-mode '(org-mode))
-                            (org-show-subtree))))))
-
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark.  Requires bookmark+"
   (interactive)
@@ -292,7 +238,7 @@ Or else, find files since 24 weeks (6 months) ago."
       (counsel-git-grep-or-find-api 'counsel--open-grepped-file
                                     (format "git --no-pager show --pretty=\"format:\" --name-only \"%s\"" hash)
                                     (format "files in commit %s:" (substring hash 0 7))
-                                    nil
+                                    t
                                     t))
      (t
       (message "Current line is NOT committed yet!")))))
@@ -312,19 +258,6 @@ Or else, find files since 24 weeks (6 months) ago."
                 :action (lambda (val)
                           (kill-new val)
                           (message "%s => kill-ring" val)))))
-
-(defun counsel-git-show-hash-diff-mode (hash)
-  (let ((show-cmd (format "git --no-pager show --no-color %s" hash)))
-    (diff-region-open-diff-output (shell-command-to-string show-cmd)
-                                  "*Git-show")))
-
-(defun counsel-recentf-goto ()
-  "Recent files."
-  (interactive)
-  (unless recentf-mode (recentf-mode 1))
-  (if (fboundp 'counsel-recentf)
-      (counsel-recentf)
-    (ivy-recentf)))
 
 (defun counsel-goto-recent-directory ()
   "Goto recent directories."
