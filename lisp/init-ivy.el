@@ -22,13 +22,12 @@
                       (read-string hint)))))
     keyword))
 
-(defmacro counsel-git-grep-or-find-api (fn git-cmd hint &optional no-keyword filter)
+(defmacro counsel-git-grep-or-find-api (fn git-cmd hint no-keyword)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 Yank the file name at the same time.  FILTER is function to filter the collection"
   `(let* ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
           (default-directory (locate-dominating-file
                               default-directory ".git"))
-          keyword
           collection)
 
      (unless ,no-keyword
@@ -40,7 +39,6 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                                                     (format ,git-cmd keyword)))
                          "\n"
                          t))
-     (if ,filter (setq collection (funcall ,filter collection)))
      (cond
       ((and collection (= (length collection) 1))
        (funcall ,fn (car collection)))
@@ -49,7 +47,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
                  collection
                  :action ,fn)))))
 
-(defun counsel--open-grepped-file (val)
+(defun counsel--open-file (val)
   (let* ((lst (split-string val ":"))
          (linenum (string-to-number (cadr lst))))
     ;; open file
@@ -58,14 +56,6 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
     (when (and linenum (> linenum 0))
       (goto-char (point-min))
       (forward-line (1- linenum)))))
-
-(defun counsel-git-grep-in-project ()
-  "Grep in the current git repository.
-Extended regex is used, like (pattern1|pattern2)."
-  (interactive)
-  (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                "git --no-pager grep -P -I --full-name -n --no-color -E -e \"%s\""
-                                "grep"))
 
 ;; grep by author is bad idea because it's too slow
 
@@ -96,7 +86,7 @@ Extended regex is used, like (pattern1|pattern2)."
     (if insert-line (insert text-line))
     (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst))))
 
-(defun counsel-replace-current-line (leading-spaces content)
+(defun counsel--replace-current-line (leading-spaces content)
   (beginning-of-line)
   (kill-line)
   (insert (concat leading-spaces content))
@@ -134,12 +124,12 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
           (setq leading-spaces (match-string 1 cur-line)))
       (cond
        ((= 1 (length collection))
-        (counsel-replace-current-line leading-spaces (car collection)))
+        (counsel--replace-current-line leading-spaces (car collection)))
        ((> (length collection) 1)
         (ivy-read "lines:"
                   collection
                   :action (lambda (l)
-                            (counsel-replace-current-line leading-spaces l))))))))
+                            (counsel--replace-current-line leading-spaces l))))))))
 (global-set-key (kbd "C-x C-l") 'counsel-complete-line-by-grep)
 
 (defun counsel-git-grep-yank-line (&optional insert-line)
@@ -169,20 +159,6 @@ Or else, find files since 24 weeks (6 months) ago."
     ;; (message "cmd=%s" cmd)
     (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
 ;; }}
-
-(defun ivy-imenu-get-candidates-from (alist &optional prefix)
-  (cl-loop for elm in alist
-           nconc (if (imenu--subalist-p elm)
-                       (ivy-imenu-get-candidates-from
-                        (cl-loop for (e . v) in (cdr elm) collect
-                                 (cons e (if (integerp v) (copy-marker v) v)))
-                        ;; pass the prefix to next recursive call
-                        (concat prefix (if prefix ".") (car elm)))
-                   (and (cdr elm) ; bug in imenu, should not be needed.
-                        (setcdr elm (copy-marker (cdr elm))) ; Same as [1].
-                        (let ((key (concat prefix (if prefix ".") (car elm))) )
-                          (list (cons key (cons key (copy-marker (cdr elm)))))
-                          )))))
 
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark.  Requires bookmark+"
@@ -214,34 +190,6 @@ Or else, find files since 24 weeks (6 months) ago."
                         (unless (featurep 'bookmark+)
                           (require 'bookmark+))
                         (bookmark-jump bookmark)))))
-
-(defun counsel-git-find-file-committed-with-line-at-point ()
-  (interactive)
-  (let* ((default-directory (locate-dominating-file
-                            default-directory ".git"))
-        (filename (file-truename buffer-file-name))
-        (linenum (save-restriction
-                   (widen)
-                   (save-excursion
-                     (beginning-of-line)
-                     (1+ (count-lines 1 (point))))))
-        (git-cmd (format "git --no-pager blame -w -L %d,+1 --porcelain %s"
-                         linenum
-                         filename))
-        (str (shell-command-to-string git-cmd))
-        hash)
-
-    (cond
-     ((and (string-match "^\\([0-9a-z]\\{40\\}\\) " str)
-           (not (string= (setq hash (match-string 1 str)) "0000000000000000000000000000000000000000")))
-      ;; (message "hash=%s" hash)
-      (counsel-git-grep-or-find-api 'counsel--open-grepped-file
-                                    (format "git --no-pager show --pretty=\"format:\" --name-only \"%s\"" hash)
-                                    (format "files in commit %s:" (substring hash 0 7))
-                                    t
-                                    t))
-     (t
-      (message "Current line is NOT committed yet!")))))
 
 (defun counsel-yank-bash-history ()
   "Yank the bash history."
@@ -366,7 +314,6 @@ Or else, find files since 24 weeks (6 months) ago."
 
 ;; TIP: after `M-x my-grep', you can:
 ;; - then `C-c C-o' or `M-x ivy-occur'
-;; - `C-x C-q' or `M-x ivy-wgrep-change-to-wgrep-mode'
 ;; - `C-c C-c' or `M-x wgrep-finish-edit'
 (defun my-grep-occur ()
   "Generate a custom occur buffer for `my-grep'."
@@ -412,7 +359,7 @@ Extended regex like (pattern1|pattern2) is used."
               :history 'counsel-git-grep-history
               :action `(lambda (line)
                          (let* ((default-directory (my-root-dir)))
-                           (counsel--open-grepped-file line)))
+                           (counsel--open-file line)))
               :unwind (lambda ()
                         (counsel-delete-process)
                         (swiper--cleanup))
@@ -420,6 +367,14 @@ Extended regex like (pattern1|pattern2) is used."
 (ivy-set-occur 'my-grep 'my-grep-occur)
 (ivy-set-display-transformer 'my-grep 'counsel-git-grep-transformer)
 ;; }}
+
+(defun counsel-git-grep-by-selected ()
+  (interactive)
+  (cond
+   ((region-active-p)
+    (counsel-git-grep counsel-git-grep-cmd-default (my-selected-str)))
+   (t
+    (counsel-git-grep))))
 
 (defun counsel-browse-kill-ring (&optional n)
   "Use `browse-kill-ring' if it exists and N is 1.
