@@ -22,7 +22,8 @@
 (defun my-yas-reload-all ()
   (interactive)
   (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
-  (yas-reload-all))
+  (yas-reload-all)
+  (yas-minor-mode 1))
 
 (defun my-yas-field-to-statement(str sep)
   "If STR=='a.b.c' and SEP=' && ',
@@ -118,7 +119,6 @@
      (defadvice yas-insert-snippet (around use-completing-prompt activate)
        "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
        (let ((yas-prompt-functions '(yas-completing-prompt)))
-         ad-do-it))
-     ))
+         ad-do-it))))
 
 (provide 'init-yasnippet)
