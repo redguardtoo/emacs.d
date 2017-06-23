@@ -1,10 +1,11 @@
 # -*- coding: utf-8; mode: snippet -*-
-# name: (defun ...)
+# name: ;;;###autoload (defun (interfactive)...)
 # key: f
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
+;;;###autoload
 (defun ${1:func-name} ($2)
-  (interactive "sEnter a string:")
-  (let ($3)
+  (interactive)
+  (let* ($3)
   $0
   ))
