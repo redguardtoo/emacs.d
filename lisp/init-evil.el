@@ -567,7 +567,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "vs" 'git-gutter:stage-hunk
        "vr" 'git-gutter:revert-hunk
        "vl" 'vc-print-log
-       "vv" 'git-messenger:popup-message
+       "vv" 'vc-msg-show
        "v=" 'git-gutter:popup-hunk
        "hh" 'cliphist-paste-item
        "yu" 'cliphist-select-item

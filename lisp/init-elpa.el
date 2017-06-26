@@ -253,7 +253,6 @@ But you may use safer HTTPS instead.")
 (require-package 'company-c-headers)
 (require-package 'legalese)
 (require-package 'simple-httpd)
-(require-package 'git-messenger)
 ;; (require-package 'git-gutter) ; use my patched version
 (require-package 'flx-ido)
 (require-package 'neotree)
