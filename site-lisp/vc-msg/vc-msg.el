@@ -55,8 +55,9 @@ is used to locate VCS root directory.")
   "Show the mesesage at beginning of line.")
 
 (defvar vc-msg-plugins
-  '((:type "git" :execute vc-msg-git-execute :format vc-msg-git-format)
-    (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format))
+  '((:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format)
+    (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format)
+    (:type "git" :execute vc-msg-git-execute :format vc-msg-git-format))
   "List of VCS plugins.
 A plugin is a `plist'. Sample to add a new plugin:
 
@@ -76,8 +77,8 @@ But if result is string, `my-execute' fails and returns error message.
 If result is `nil', `my-execute' fails silently.
 Please check `vc-msg-git-execute' and `vc-msg-git-format' for sample.")
 
-(defvar vc-msg-newbie-friendly-p t
-  "Show extra friendly hint for newbies.")
+(defvar vc-msg-newbie-friendly-msg "Press q to quit"
+  "Extra friendly hint for newbies.")
 
 (defun vc-msg-match-plugin (plugin)
   "Try match plugin.
@@ -158,10 +159,10 @@ Return string keyword or `nil'."
           (setq message (funcall formatter commit-info))
 
           ;; Hint in minibuffer might be not visible enough
-          (if vc-msg-newbie-friendly-p
+          (if vc-msg-newbie-friendly-msg
               (setq message (format "%s\n\n%s"
                                     message
-                                    "Press q to quit")))
+                                    vc-msg-newbie-friendly-msg)))
           ;; show the message in popup
           (while (not finish)
             (let* ((menu (popup-tip message :point (vc-msg-show-position) :nowait t)))
@@ -177,7 +178,7 @@ Return string keyword or `nil'."
          ((stringp commit-info)
           ;; Failed. Show the reason.
           (kill-new commit-info)
-          (message (format "'%s' failed => kill-ring"
+          (message (format "`%s` failed => kill-ring"
                            commit-info)))
          (t
           ;; Failed for unknown reason

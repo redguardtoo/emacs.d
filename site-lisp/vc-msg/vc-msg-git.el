@@ -24,6 +24,8 @@
 ;;
 
 ;;; Code:
+(require 'vc-msg-sdk)
+
 (defvar vc-msg-git-program "git")
 
 ;;;###autoload
@@ -72,61 +74,6 @@ Parse the command execution output and return a plist:
      (t
       cmd))))
 
-(defun vc-msg-git-format-timezone (zone)
-  (concat zone
-          " "
-          (cond
-           ((string= zone "-1200")
-            "Eniwetok")
-           ((string= zone "-1100")
-            "Midway Island")
-           ((string= zone "-1000")
-            "Hawaii")
-           ((string= zone "-0900")
-            "Alaska")
-           ((string= zone "-0800")
-            "Los Angeles")
-           ((string= zone "-0700")
-            "Salt Lake City")
-           ((string= zone "-0600")
-            "Chicago")
-           ((string= zone "-0500")
-            "Boston")
-           ((string= zone "-0400")
-            "Caracas")
-           ((string= zone "-0300")
-            "Rio")
-           ((string= zone "-0200")
-            "Mid-Atlantic")
-           ((string= zone "-0100")
-            "Azores")
-           ((string= zone "+0100")
-            "Berlin")
-           ((string= zone "+0200")
-            "Cario")
-           ((string= zone "+0300")
-            "Moscow")
-           ((string= zone "+0400")
-            "Baku")
-           ((string= zone "+0500")
-            "New Dehli")
-           ((string= zone "+0600")
-            "Kathmandu")
-           ((string= zone "+0700")
-            "Bangkok")
-           ((string= zone "+0800")
-            "Shanghai")
-           ((string= zone "+0900")
-            "Tokyo")
-           ((string= zone "+1000")
-            "Sydney")
-           ((string= zone "+1100")
-            "Solomon Island")
-           ((string= zone "+1200")
-            "Auckland")
-           (t
-            ""))))
-
 ;;;###autoload
 (defun vc-msg-git-format (info)
   (let* ((author (plist-get info :author)))
@@ -135,10 +82,10 @@ Parse the command execution output and return a plist:
       "* Not Commited Yet*")
      (t
       (format "Commit: %s\nAuthor: %s\nDate: %s\nTimezone: %s\n\n%s"
-              (substring (plist-get info :id) 0 8)
+              (vc-msg-sdk-format-id (plist-get info :id))
               author
-              (current-time-string (seconds-to-time (string-to-number (plist-get info :author-time))))
-              (vc-msg-git-format-timezone (plist-get info :author-tz))
+              (vc-msg-sdk-format-datetime (plist-get info :author-time))
+              (vc-msg-sdk-format-timezone (plist-get info :author-tz))
               (plist-get info :summary))
       ))))
 
