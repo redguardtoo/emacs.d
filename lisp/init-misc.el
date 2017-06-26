@@ -860,4 +860,9 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                       (modify-syntax-entry ?/ "." table)
                       table)))
 (add-hook 'minibuffer-inactive-mode-hook 'minibuffer-inactive-mode-hook-setup)
+
+;; {{ dumb-jump
+(setq dumb-jump-selector 'ivy)
+(dumb-jump-mode)
+;; }}
 (provide 'init-misc)

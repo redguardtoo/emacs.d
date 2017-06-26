@@ -261,6 +261,7 @@ But you may use safer HTTPS instead.")
 (require-package 'hydra)
 (require-package 'chinese-pyim)
 (require-package 'web-mode)
+(require-package 'dumb-jump)
 (require-package 'emms)
 
 (provide 'init-elpa)
