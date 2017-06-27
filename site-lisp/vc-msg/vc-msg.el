@@ -183,8 +183,7 @@ Return string keyword or `nil'."
          ((stringp commit-info)
           ;; Failed. Show the reason.
           (kill-new commit-info)
-          (message (format "`%s` failed => kill-ring"
-                           commit-info)))
+          (message commit-info))
          (t
           ;; Failed for unknown reason
           (message "Shell command failed.")))))))

@@ -83,7 +83,7 @@ Parse the command execution output and return a plist:
                 :summary (vc-msg-sdk-extract-summary "^Description:" output)))))
      (t
       ;; failed, send back the cmd
-      cmd))))
+      (format "`%s` failed. Do you forget `p4 login`?" cmd)))))
 
 ;;;###autoload
 (defun vc-msg-p4-format (info)

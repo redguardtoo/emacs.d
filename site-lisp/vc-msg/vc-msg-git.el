@@ -28,6 +28,9 @@
 
 (defvar vc-msg-git-program "git")
 
+(defun vc-msg-git-blame-output (cmd)
+  (shell-command-to-string cmd))
+
 ;;;###autoload
 (defun vc-msg-git-program-arguments (file line)
   (format "--no-pager blame -w -L %d,+1 --porcelain %s" line file))
@@ -40,9 +43,7 @@ Parse the command execution output and return a plist:
   (let* ((cmd (format "%s %s"
                       vc-msg-git-program
                       (vc-msg-git-program-arguments file line)))
-         (output (shell-command-to-string cmd))
-         ;; (output "9999 \nauthor cb\nauthor-time 292993\nauthor-tz 0900\nsummary abcde")
-         )
+         (output (vc-msg-git-blame-output cmd)))
     ;; I prefer simpler code:
     ;; if output doesn't match certain text pattern
     ;; we assum the command fail
@@ -72,7 +73,7 @@ Parse the command execution output and return a plist:
               :author-tz author-tz
               :summary summary)))
      (t
-      cmd))))
+      (format "`%s` failed." cmd)))))
 
 ;;;###autoload
 (defun vc-msg-git-format (info)

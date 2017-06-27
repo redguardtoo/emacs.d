@@ -75,7 +75,7 @@ Parse the command execution output and return a plist:
                 :summary (vc-msg-sdk-extract-summary "^summary:" output)))))
      (t
       ;; failed, send back the cmd
-      cmd))))
+      (format "`%s` failed." cmd)))))
 
 ;;;###autoload
 (defun vc-msg-hg-format (info)
