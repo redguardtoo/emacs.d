@@ -28,6 +28,15 @@
 
 (defvar vc-msg-p4-program "p4")
 
+(defvar vc-msg-p4-file-to-url nil
+  "(car p4-file-to-url) is the original file prefix.
+(cadr p4-file-to-url) is the url prefix.
+Please note it supports regular expression.
+It's used to convert a local file path to peforce URL.
+If you use Windows version p4 in Cygwin Emacs, or Cygwin
+version p4 in Window Emacs. You need to convert the path
+to URL.")
+
 (defun vc-msg-p4-generate-cmd (opts)
   (format "%s %s" vc-msg-p4-program opts))
 
@@ -43,17 +52,20 @@
   "Use FILE and LINE-NUM to produce p4 command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
+  ;; convert file to perforce url
+  (if (and vc-msg-p4-file-to-url (listp vc-msg-p4-file-to-url))
+      (setq file (replace-regexp-in-string (car vc-msg-p4-file-to-url)
+                                           (cadr vc-msg-p4-file-to-url)
+                                           (file-truename file))))
   ;; there is no one comamnd to get the commit information for current line
   (let* ((cmd (vc-msg-p4-generate-cmd (format "annotate -c -q %s" file)))
          (output (vc-msg-p4-anonate-output cmd))
          id)
     ;; I prefer simpler code:
     ;; if output doesn't match certain text pattern
-    ;; we assum the command fail
+    ;; we assume the command fail
     (cond
-     ((setq id (vc-msg-sdk-extract-id-from-output line-num
-                                                  "^\\([0-9]+\\): "
-                                                  output))
+     ((setq id (vc-msg-sdk-extract-id-from-output line-num "^\\([0-9]+\\): " output))
       (when id
         ;; this command should always be successful
         (setq output (vc-msg-p4-changelist-output id))
