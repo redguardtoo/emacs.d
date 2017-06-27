@@ -10,6 +10,7 @@ But you may use safer HTTPS instead.")
 (defvar melpa-include-packages
   '(ace-mc
     bbdb
+    dumb-jump
     color-theme
     js-doc
     ;; {{ since stable v0.9.1 released, we go back to stable version
