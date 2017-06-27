@@ -90,7 +90,7 @@ Parse the command execution output and return a plist:
   (let* ((author (plist-get info :author)))
     (cond
      ((string-match-p "Not Committed Yet" author)
-      "* Not Commited Yet*")
+      "*Not Commited Yet*")
      (t
       (format "Commit: %s\nAuthor: %s\nDate: %s\n\n%s"
               (plist-get info :id)
