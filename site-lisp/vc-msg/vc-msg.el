@@ -131,6 +131,11 @@ Return string keyword or `nil'."
 (defun vc-msg-prompt ()
   "[q]uit")
 
+(defun vc-msg-clean (str)
+  "Clean the string (carriage return, for example)."
+  (setq str (replace-regexp-in-string "\r\n" "\n" str))
+  (replace-regexp-in-string "\r" "\n" str))
+
 ;;;###autoload
 (defun vc-msg-show ()
   "Show commit messeage of current line"
@@ -165,7 +170,7 @@ Return string keyword or `nil'."
                                     vc-msg-newbie-friendly-msg)))
           ;; show the message in popup
           (while (not finish)
-            (let* ((menu (popup-tip message :point (vc-msg-show-position) :nowait t)))
+            (let* ((menu (popup-tip (vc-msg-clean message) :point (vc-msg-show-position) :nowait t)))
               (unwind-protect
                   (setq finish (catch 'vc-msg-loop
                                  (popup-menu-event-loop menu

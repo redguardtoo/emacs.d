@@ -107,8 +107,8 @@ Either return id or `nil'"
 
 (defun vc-msg-sdk-trim (str)
   "Trim STR."
-  (setq str (replace-regexp-in-string "[ \t\n]*\\'" "" str))
-  (replace-regexp-in-string "\\`[ \t\n]*" "" str))
+  (setq str (replace-regexp-in-string "[ \t\r\n]*\\'" "" str))
+  (replace-regexp-in-string "\\`[ \t\r\n]*" "" str))
 
 (defun vc-msg-sdk-extract-summary (pattern output)
   "PATTERN is the beginning of summary extracted from OUTPUT.
