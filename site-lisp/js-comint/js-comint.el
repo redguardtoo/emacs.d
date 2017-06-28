@@ -7,7 +7,7 @@
 ;;; Author: Paul Huff <paul.huff@gmail.com>, Stefano Mazzucco <MY FIRST NAME - AT - CURSO - DOT - RE>
 ;;; Maintainer: Chen Bin <chenbin.sh AT gmail DOT com>
 ;;; Created: 15 Feb 2014
-;;; Version: 1.0.0
+;;; Version: 1.1.0
 ;;; URL: https://github.com/redguardtoo/js-comint
 ;;; Package-Requires: ()
 ;;; Keywords: javascript, node, inferior-mode, convenience
@@ -175,7 +175,7 @@ Return a string representing the node version."
 (defun js-comint-quit-or-cancel ()
   "Send ^C to Javascript REPL."
   (interactive)
-  (process-send-string (get-process js-comint-buffer) "\x03"))
+  (process-send-string (js-comint-get-process) "\x03"))
 
 (defun js-comint--path-sep ()
   (if (eq system-type 'windows-nt) ";" ":"))
@@ -186,6 +186,10 @@ Return a string representing the node version."
     (if dir (concat (file-name-as-directory dir)
                     "node_modules")
       default-directory)))
+
+(defun js-comint-get-process ()
+  (and js-comint-buffer
+       (get-process js-comint-buffer)))
 
 ;;;###autoload
 (defun js-comint-add-module-path ()
@@ -252,8 +256,8 @@ Return a string representing the node version."
 Javascript REPL process.  The environment variable `NODE_PATH'
 is setup by `js-comint-module-paths' before the process starts."
   (interactive)
-  (when (get-process js-comint-buffer)
-    (process-send-string (get-process js-comint-buffer) ".exit\n")
+  (when (js-comint-get-process)
+    (process-send-string (js-comint-get-process) ".exit\n")
     ;; wait the process to be killed
     (sit-for 1))
   (js-comint-start-or-switch-to-repl))
@@ -269,11 +273,18 @@ is setup by `js-comint-module-paths' before the process starts."
       (while (re-search-forward js-comint-drop-regexp end t)
         (replace-match "")))))
 
+(defun js-comint-get-buffer-name ()
+  (format "*%s*" js-comint-buffer))
+
+(defun js-comint-get-buffer ()
+  (and js-comint-buffer
+       (get-buffer (js-comint-get-buffer-name))))
+
 ;;;###autoload
 (defun js-comint-clear ()
   "Clear the Javascript REPL."
   (interactive)
-  (let* ((buf (get-buffer js-comint-buffer))
+  (let* ((buf (js-comint-get-buffer) )
          (old-buf (current-buffer)))
     (save-excursion
       (cond
@@ -322,36 +333,50 @@ starts."
   (js-comint-start-or-switch-to-repl))
 (defalias 'run-js 'js-comint-repl)
 
-;;;###autoload
-(defun js-comint-send-region (start end)
-  "Send the current region to the inferior Javascript process."
-  (interactive "r")
-  (js-comint-repl js-comint-program-command)
-  (comint-send-region js-comint-buffer start end)
-  (comint-send-string js-comint-buffer "\n"))
+(defun js-comint-send-string (str)
+  (comint-send-string (js-comint-get-process)
+                      (concat str "\n")))
 
 ;;;###autoload
-(defalias 'js-comint-send-region 'js-send-region)
+(defun js-comint-send-region ()
+  "Send the current region to the inferior Javascript process.
+If no region selected, you could manually input javascript expression."
+  (interactive)
+  (let* ((str (if (region-active-p)
+                  (buffer-substring-no-properties (region-beginning) (region-end))
+                (read-string "input js expression: "))))
+    (message "str=%s" str)
+    (js-comint-send-string str)))
+
+;;;###autoload
+(defalias 'js-send-region 'js-comint-send-region)
 
 ;;;###autoload
 (defun js-comint-send-last-sexp ()
-  "Send the previous sexp to the inferior Javascript process."
+  "Send the previous sexp to the inferior Javascript process.  `evil-mode' friendly."
   (interactive)
-  (js-send-region
-   (save-excursion
-     (backward-sexp)
-     (move-beginning-of-line nil)
-     (point))
-   (point)))
+  (let* ((b (save-excursion
+              (backward-sexp)
+              (move-beginning-of-line nil)
+              (point)))
+         (e (if (and (boundp 'evil-mode)
+                     evil-mode
+                     (eq evil-state 'normal))
+                (+ 1 (point))
+              (point)))
+         (str (buffer-substring-no-properties b e)))
+    (js-comint-send-string str)))
 
 ;;;###autoload
-(defalias 'js-send-last-sexp 'js-comint-send-region)
+(defalias 'js-send-last-sexp 'js-comint-send-last-sexp)
 
 ;;;###autoload
 (defun js-comint-send-buffer ()
   "Send the buffer to the inferior Javascript process."
   (interactive)
-  (js-send-region (point-min) (point-max)))
+  (js-comint-send-string
+   (buffer-substring-no-properties (point-min)
+                                   (point-max))))
 
 ;;;###autoload
 (defalias 'js-send-buffer 'js-comint-send-buffer)
@@ -362,7 +387,7 @@ starts."
   (interactive "f")
   (let ((filename (expand-file-name filename)))
     (js-comint-repl js-comint-program-command)
-    (comint-send-string js-comint-buffer (js-comint-guess-load-file-cmd filename))))
+    (comint-send-string (js-comint-get-process) (js-comint-guess-load-file-cmd filename))))
 
 ;;;###autoload
 (defalias 'js-load-file 'js-comint-load-file)
@@ -372,8 +397,8 @@ starts."
   "Switch to the javascript process buffer.
 With argument, position cursor at end of buffer."
   (interactive "P")
-  (if (and js-comint-buffer (get-buffer js-comint-buffer))
-      (pop-to-buffer js-comint-buffer)
+  (if (js-comint-get-buffer)
+      (pop-to-buffer (js-comint-get-buffer))
     (error "No current process buffer.  See variable `js-comint-buffer'")))
 (defalias 'switch-to-js 'js-comint-switch-repl)
 
