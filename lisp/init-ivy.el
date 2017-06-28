@@ -160,6 +160,20 @@ Or else, find files since 24 weeks (6 months) ago."
     (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
 ;; }}
 
+(defun counsel--build-bookmark-candidate (bookmark)
+  (let (key)
+    ;; build key which will be displayed
+    (cond
+     ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
+      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark)))))
+     ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
+      ;; bmkp-jump-w3m is from bookmark+
+      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark)))))
+     (t
+      (setq key (car bookmark))))
+    ;; re-shape the data so full bookmark be passed to ivy-read:action
+    (cons key bookmark)))
+
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark.  Requires bookmark+"
   (interactive)
@@ -169,19 +183,7 @@ Or else, find files since 24 weeks (6 months) ago."
   (bookmark-maybe-load-default-file)
 
   (let* ((bookmarks (and (boundp 'bookmark-alist) bookmark-alist))
-         (collection (delq nil (mapcar (lambda (bookmark)
-                                         (let (key)
-                                           ;; build key which will be displayed
-                                           (cond
-                                            ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
-                                             (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark)))))
-                                            ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
-                                             ;; bmkp-jump-w3m is from bookmark+
-                                             (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark)))))
-                                            (t
-                                             (setq key (car bookmark))))
-                                           ;; re-shape the data so full bookmark be passed to ivy-read:action
-                                           (cons key bookmark)))
+         (collection (delq nil (mapcar #'counsel--build-bookmark-candidate
                                        bookmarks))))
     ;; do the real thing
     (ivy-read "bookmarks:"
