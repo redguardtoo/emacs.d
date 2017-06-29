@@ -112,7 +112,7 @@ If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
                 (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
                         keyword))
                (t
-                (concat  (my-grep-cli keyword (if (counsel-find-quickest-grep) "" "-h")) ; tell grep not to output file name
+                (concat  (my-grep-cli keyword nil (if (counsel-find-quickest-grep) "" "-h")) ; tell grep not to output file name
                          (if (counsel-find-quickest-grep) " | sed s\"\/^.*:[0-9]*:\/\/\"" "") ; remove file names for ag
                          " | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"))))
          (leading-spaces "")
@@ -222,7 +222,7 @@ Or else, find files since 24 weeks (6 months) ago."
 
 
 ;; {{ ag/grep
-(defvar my-grep-ingore-dirs
+(defvar my-grep-ignore-dirs
   '(".git"
     ".bzr"
     ".svn"
@@ -235,13 +235,13 @@ Or else, find files since 24 weeks (6 months) ago."
     ".metadata"
     "logs")
   "Directories to ignore when grepping.")
-(defvar my-grep-ingore-file-exts
+(defvar my-grep-ignore-file-exts
   '("log"
     "properties"
     "session"
     "swp")
   "File extensions to ignore when grepping.")
-(defvar my-grep-ingore-file-names
+(defvar my-grep-ignore-file-names
   '("TAGS"
     "tags"
     "GTAGS"
@@ -256,39 +256,48 @@ Or else, find files since 24 weeks (6 months) ago."
     "*.min.css"
     "*~")
   "File names to ignore when grepping.")
-(defun my-grep-exclude-opts ()
-  (cond
-   ((executable-find "rg")
-    (concat "-s --no-heading "
-     (mapconcat (lambda (e) (format "-g='!%s/*'" e))
-                       my-grep-ingore-dirs " ")
-            " "
-            (mapconcat (lambda (e) (format "-g='!*.%s'" e))
-                       my-grep-ingore-file-exts " ")
-            " "
-            (mapconcat (lambda (e) (format "-g='!%s'" e))
-                       my-grep-ingore-file-names " ")))
-   ((executable-find "ag")
-    (concat "-s --nocolor --nogroup --silent "
-            (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
-                       my-grep-ingore-dirs " ")
-            " "
-            (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
-                       my-grep-ingore-file-exts " ")
-            " "
-            (mapconcat (lambda (e) (format "--ignore='%s'" e))
-                       my-grep-ingore-file-names " ")))
-   (t
-    (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
-                       my-grep-ingore-dirs " ")
-            " "
-            (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
-                       my-grep-ingore-file-exts " ")
-            " "
-            (mapconcat (lambda (e) (format "--exclude='%s'" e))
-                       my-grep-ingore-file-names " ")))))
 
-(defun my-grep-cli (keyword &optional extra-opts)
+(defvar my-grep-opts-cache '())
+
+(defun my-grep-exclude-opts (use-cache)
+  (let* ((ignore-dirs (if use-cache (plist-get my-grep-opts-cache :ignore-dirs)
+                        my-grep-ignore-dirs))
+         (ignore-file-exts (if use-cache (plist-get my-grep-opts-cache :ignore-file-exts)
+                             my-grep-ignore-file-exts))
+         (ignore-file-names (if use-cache (plist-get my-grep-opts-cache :ignore-file-names)
+                              my-grep-ignore-file-names)))
+    (cond
+     ((executable-find "rg")
+      (concat "-s --no-heading "
+              (mapconcat (lambda (e) (format "-g='!%s/*'" e))
+                         ignore-dirs " ")
+              " "
+              (mapconcat (lambda (e) (format "-g='!*.%s'" e))
+                         ignore-file-exts " ")
+              " "
+              (mapconcat (lambda (e) (format "-g='!%s'" e))
+                         ignore-file-names " ")))
+     ((executable-find "ag")
+      (concat "-s --nocolor --nogroup --silent "
+              (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
+                         my-grep-ignore-dirs " ")
+              " "
+              (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
+                         ignore-file-exts " ")
+              " "
+              (mapconcat (lambda (e) (format "--ignore='%s'" e))
+                         ignore-file-names " ")))
+     (t
+      (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
+                         my-grep-ignore-dirs " ")
+              " "
+              (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
+                         ignore-file-exts " ")
+              " "
+              (mapconcat (lambda (e) (format "--exclude='%s'" e))
+                         ignore-file-names " "))))))
+
+(defun my-grep-cli (keyword use-cache &optional extra-opts)
   "Extended regex is used, like (pattern1|pattern2)."
   (let* (opts cmd)
     (unless extra-opts (setq extra-opts ""))
@@ -296,13 +305,13 @@ Or else, find files since 24 weeks (6 months) ago."
      ((counsel-find-quickest-grep)
       (setq cmd (format "%s %s %s \"%s\" --"
                         (counsel-find-quickest-grep)
-                        (my-grep-exclude-opts)
+                        (my-grep-exclude-opts use-cache)
                         extra-opts
                         keyword)))
      (t
       ;; use extended regex always
       (setq cmd (format "grep -rsnE -P %s \"%s\" *"
-                        (my-grep-exclude-opts)
+                        (my-grep-exclude-opts use-cache)
                         extra-opts
                         keyword))))
     ;; (message "cmd=%s" cmd)
@@ -329,8 +338,9 @@ Or else, find files since 24 weeks (6 months) ago."
                        (progn (string-match "\"\\(.*\\)\"" (buffer-name))
                               (match-string 1 (buffer-name))))))
          (cands (remove nil (mapcar (lambda (s) (if (string-match-p regex s) s))
-                                    (split-string (shell-command-to-string (my-grep-cli keyword))
+                                    (split-string (shell-command-to-string (my-grep-cli keyword t))
                                                   "[\r\n]+" t)))))
+
     ;; Need precise number of header lines for `wgrep' to work.
     (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
                     default-directory))
@@ -341,10 +351,17 @@ Or else, find files since 24 weeks (6 months) ago."
       cands))))
 ;; goto `wgrep-mode' automatically after `C-c C-o', (why press extra `C-x C-q'?)
 (defun ivy-occur-grep-mode-hook-setup ()
-  (ivy-wgrep-change-to-wgrep-mode))
+  ;; no syntax highlight, I only care performance when searching/replacing
+  (font-lock-mode -1)
+  ;; no truncate line, unnecessary calculation
+  (setq truncate-lines nil)
+  ;; turn on wgrep right now
+  ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
+  )
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
 (defvar my-grep-show-full-directory t)
+(defvar my-grep-debug nil)
 (defun my-grep ()
   "Grep at project root directory or current directory.
 Try to find best grep program (ripgrep, the silver searcher, grep...) automatically.
@@ -352,9 +369,13 @@ Extended regex like (pattern1|pattern2) is used."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
          (default-directory (my-root-dir))
-         (collection (split-string (shell-command-to-string (my-grep-cli keyword)) "[\r\n]+" t))
+         (collection (split-string (shell-command-to-string (my-grep-cli keyword nil)) "[\r\n]+" t))
          (dir (if my-grep-show-full-directory (my-root-dir)
                 (file-name-as-directory (file-name-base (directory-file-name (my-root-dir)))))))
+
+    (plist-put my-grep-opts-cache :ignore-dirs my-grep-ignore-dirs)
+    (plist-put my-grep-opts-cache :ignore-file-exts my-grep-ignore-file-exts)
+    (plist-put my-grep-opts-cache :ignore-file-names my-grep-ignore-file-names)
 
     (ivy-read (format "matching \"%s\" at %s:" keyword dir)
               collection
