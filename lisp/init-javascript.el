@@ -3,6 +3,7 @@
 
 (setq-default js2-use-font-lock-faces t
               js2-mode-must-byte-compile nil
+              js2-strict-trailing-comma-warning nil ; it's encouraged to use trailing comma in ES6
               js2-idle-timer-delay 0.5 ; NOT too big for real time syntax check
               js2-auto-indent-p nil
               js2-indent-on-enter-key nil ; annoying instead useful
