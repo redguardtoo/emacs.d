@@ -55,7 +55,8 @@ is used to locate VCS root directory.")
   "Show the mesesage at beginning of line.")
 
 (defvar vc-msg-plugins
-  '((:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format)
+  '((:type "svn" :execute vc-msg-svn-execute :format vc-msg-svn-format)
+    (:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format)
     (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format)
     (:type "git" :execute vc-msg-git-execute :format vc-msg-git-format))
   "List of VCS plugins.
