@@ -33,7 +33,10 @@
 
 ;;;###autoload
 (defun vc-msg-git-program-arguments (file line)
-  (format "--no-pager blame -w -L %d,+1 --porcelain %s" line file))
+  "git blame LINE in FILE.  Note git option `-C' track text copied elsewhere.
+`-M' tracked moved content inside file.
+See https://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
+  (format "--no-pager blame -C -M -w -L %d,+1 --porcelain %s" line file))
 
 ;;;###autoload
 (defun vc-msg-git-execute (file line &optional extra)
