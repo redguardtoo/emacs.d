@@ -865,4 +865,8 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (setq dumb-jump-selector 'ivy)
 (dumb-jump-mode)
 ;; }}
+
+(defun vc-msg-hook-setup (vcs-type commit-info)
+  (message "vc-msg-hook-setup called => %s %s" vcs-type commit-info))
+(add-hook 'vc-msg-hook 'vc-msg-hook-setup)
 (provide 'init-misc)

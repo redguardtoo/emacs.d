@@ -36,6 +36,9 @@
   "Extra VCS overrides result of `vc-msg-detect-vcs-type'.
 A string like 'git' or 'svn' to lookup `vc-msg-plugins'.")
 
+(defvar vc-msg-copy-id-to-kill-ring t
+  "Copy commit id/hash/changelist into `kill-ring' when `vc-msg-show'.")
+
 (defvar vc-msg-known-vcs
   '(("p4" . (let* ((output (shell-command-to-string "p4 client -o"))
                    (root-dir (if (string-match "^Root:[ \t]+\\(.*\\)" output)
@@ -46,7 +49,7 @@ A string like 'git' or 'svn' to lookup `vc-msg-plugins'.")
     ("svn" . ".svn")
     ("hg" . ".hg")
     ("git" . ".git"))
-  "List of know VCS.
+  "List of known VCS.
 In VCS, the key like 'git' or 'svn' is used to locate plugin
 in `vc-msg-plugins'.  The directory name like '.git' or '.svn'
 is used to locate VCS root directory.")
@@ -80,6 +83,18 @@ Please check `vc-msg-git-execute' and `vc-msg-git-format' for sample.")
 
 (defvar vc-msg-newbie-friendly-msg "Press q to quit"
   "Extra friendly hint for newbies.")
+
+(defcustom vc-msg-hook nil
+  "Hook for `vc-msg-show'.
+The first parameter of hook is VCS type (\"git\", fore example).
+The second parameter is the `plist' of extrated information,
+- `(plist-get param :id)`
+- `(plist-get param :author)`
+- `(plist-get param :author-time)`
+- `(plist-get param :author-summary)`
+Other extra fields of param may exists which is produced by plugin
+and is a blackbox to 'vc-msg.el'."
+  :type 'hook)
 
 (defun vc-msg-match-plugin (plugin)
   "Try match plugin.
@@ -179,7 +194,15 @@ Return string keyword or `nil'."
                                                         'popup-menu-fallback
                                                         :prompt (vc-msg-prompt))
                                  t))
-                (popup-delete menu)))))
+                (popup-delete menu))))
+
+          (run-hook-with-args 'vc-msg-hook current-vcs-type commit-info)
+
+          ;; copy the commit it/hash/changelist
+          (when vc-msg-copy-id-to-kill-ring
+            (let* ((id (plist-get commit-info :id)))
+              (kill-new id)
+              (message "%s => kill-ring" id))))
 
          ((stringp commit-info)
           ;; Failed. Show the reason.
