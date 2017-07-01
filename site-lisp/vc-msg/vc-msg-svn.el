@@ -91,6 +91,21 @@ Parse the command execution output and return a plist:
           (vc-msg-sdk-format-timezone (plist-get info :author-tz))
           (plist-get info :summary)))
 
+(defun vc-msg-svn-show-code ()
+  "Show code."
+  (let* ((info vc-msg-previous-commit-info)
+         (cmd (vc-msg-svn-generate-cmd (format "diff --internal-diff -c %s" (plist-get info :id)))))
+    (vc-msg-sdk-get-or-create-buffer
+     "vs-msg"
+     (shell-command-to-string cmd))))
+
+(defvar vc-msg-svn-extra
+  '(("c" "[c]ode" vc-msg-svn-show-code))
+  "Extra keybindings/commands used by `vc-msg-map'.
+An example:
+'((\"c\" \"[c]ode\" (lambda (message info))
+  (\"d\" \"[d]iff\" (lambda (message info))))")
+
 (provide 'vc-msg-svn)
 ;;; vc-msg-svn.el ends here
 

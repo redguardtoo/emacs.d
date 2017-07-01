@@ -25,12 +25,38 @@
 ;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 ;;; Commentary:
+;; You only need run "M-x vc-msg-show" and follow the hint.
+
+;; The current VCS will be detected automatically. If for some
+;; reason you need force the VCS type (Peforce, for example),
+;; it's just one liner:
+;;   (setq vc-msg-force-vcs "p4")
 ;;
+;; You can add hook to =vc-msg-hook=,
+;;   (defun vc-msg-hook-setup (vcs-type commit-info)
+;;     ;; copy commit id to clipboard
+;;     (message (format "%s\n%s\n%s\n%"
+;;                      (plist-get commit-info :id)
+;;                      (plist-get commit-info :author)
+;;                      (plist-get commit-info :author-time)
+;;                      (plist-get commit-info :author-summary))))
+;;   (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
+;;
+;; Perforce is detected automatically. You don't need any manual setup.
+;; But if you use Windows version of perforce CLI in Cygwin Emacs, we
+;; provide the variable `vc-msg-p4-file-to-url' to convert file path to
+;; ULR so Emacs and Perforce CLI could communicate the file location
+;; correctly:
+;;   (setq vc-msg-p4-file-to-url '("//depot/development/proj1" ".*/proj1"))
+;;
+;; The program provides a plugin framework so you can easily write a
+;; plugin to support any alien VCS. Please use "vc-msg-git.el" as a sample.
 
 ;;; Code:
 
 (require 'cl-lib)
 (require 'popup)
+(require 'vc-msg-sdk)
 
 (defvar vc-msg-force-vcs nil
   "Extra VCS overrides result of `vc-msg-detect-vcs-type'.
@@ -58,10 +84,10 @@ is used to locate VCS root directory.")
   "Show the mesesage at beginning of line.")
 
 (defvar vc-msg-plugins
-  '((:type "svn" :execute vc-msg-svn-execute :format vc-msg-svn-format)
-    (:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format)
-    (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format)
-    (:type "git" :execute vc-msg-git-execute :format vc-msg-git-format))
+  '((:type "svn" :execute vc-msg-svn-execute :format vc-msg-svn-format :extra vc-msg-svn-extra)
+    (:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format :extra vc-msg-hg-extra)
+    (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format :extra vc-msg-p4-extra)
+    (:type "git" :execute vc-msg-git-execute :format vc-msg-git-format :extra vc-msg-git-extra))
   "List of VCS plugins.
 A plugin is a `plist'. Sample to add a new plugin:
 
@@ -96,6 +122,9 @@ Other extra fields of param may exists which is produced by plugin
 and is a blackbox to 'vc-msg.el'."
   :type 'hook)
 
+(defvar vc-msg-previous-commit-info nil
+  "Store the data extracted by (plist-get :execute plugin).")
+
 (defun vc-msg-match-plugin (plugin)
   "Try match plugin.
 Return string keyword or `nil'."
@@ -127,30 +156,81 @@ Return string keyword or `nil'."
         (cl-some #'vc-msg-match-plugin
                  vc-msg-known-vcs)))))
 
-;;;###autoload
+(defun vc-msg-find-plugin ()
+  (let* ((plugin (cl-some (lambda (e)
+                            (if (string= (plist-get e :type) current-vcs-type) e))
+                          vc-msg-plugins)))
+    (if plugin
+        ;; load the plugin in run time
+        (let* ((plugin-file (intern (concat "vc-msg-" (plist-get plugin :type)))))
+          (unless (featurep plugin-file)
+            (require plugin-file))))
+    plugin))
+
 (defun vc-msg-close ()
+  "Close the popup."
   (interactive)
   (throw 'vc-msg-loop t))
+
+(defun vc-msg-get-friendly-id (plugin commit-info)
+  "Show user the short id if PLUGIN and COMMIT-INFO is correct."
+  (let* ((vcs-type (plist-get plugin :type))
+         (id (plist-get commit-info :id)))
+    (if (member vcs-type '("git" "hg"))
+        (vc-msg-sdk-short-id id)
+      id)))
+
+(defun vc-msg-copy-all ()
+  "Copy the content of popup into `kill-ring'."
+  (interactive)
+  (let* ((plugin (vc-msg-find-plugin))
+         formatter)
+    (when plugin
+      (setq formatter (plist-get plugin :format))
+      (kill-new (funcall formatter vc-msg-previous-commit-info))
+      (message "Copy all from commit %s"
+               (vc-msg-get-friendly-id plugin
+                                       vc-msg-previous-commit-info)))
+    (vc-msg-close)))
 
 (defvar vc-msg-map
   (let ((map (make-sparse-keymap)))
     ;; key bindings
     (define-key map (kbd "q") 'vc-msg-close)
+    (define-key map (kbd "w") 'vc-msg-copy-all)
     map)
   "Keymap of vc-msg popup.")
 
 (defun vc-msg-show-position ()
+  "Where to show the popup."
   (if vc-msg-show-at-line-beginning-p
       (line-beginning-position)
     (point)))
 
-(defun vc-msg-prompt ()
-  "[q]uit")
+(defun vc-msg-prompt (extra-commands)
+  (concat "[q]uit [w]Copy all "
+          (mapconcat #'cadr extra-commands " ")))
 
 (defun vc-msg-clean (str)
   "Clean the string (carriage return, for example)."
   (setq str (replace-regexp-in-string "\r\n" "\n" str))
   (replace-regexp-in-string "\r" "\n" str))
+
+(defun vc-msg-update-keymap (extra-commands)
+  "EXTRA-COMMANDS is like:
+'((\"d\" \"details\" (lambda (message \"%s\" info))
+  (\"a\" \"diff\" (lambda (message \"%s\" info))))"
+  (if extra-commands
+      (dolist (c extra-commands)
+        (let* ((key (car c))
+               (fn (nth 2 c)))
+          (define-key vc-msg-map (kbd key)
+            `(lambda ()
+               (interactive)
+               (funcall (quote ,fn))
+               ;; have to happend after `funcall'
+               (vc-msg-close))))))
+  vc-msg-map)
 
 ;;;###autoload
 (defun vc-msg-show ()
@@ -158,22 +238,18 @@ Return string keyword or `nil'."
   (interactive)
   (let* (finish
          (current-vcs-type (vc-msg-detect-vcs-type))
-         (plugin (cl-some (lambda (e)
-                            (if (string= (plist-get e :type) current-vcs-type) e))
-                          vc-msg-plugins)))
-    (when plugin
-      ;; load the plugin in run time
-      (let* ((plugin-file (intern (concat "vc-msg-" (plist-get plugin :type)))))
-        (unless (featurep plugin-file)
-          (require plugin-file)))
-
+         (plugin (vc-msg-find-plugin)))
+    (if plugin
       (let* ((executer (plist-get plugin :execute))
              (formatter (plist-get plugin :format))
              (commit-info (funcall executer
                                    (file-name-nondirectory buffer-file-name)
                                    (line-number-at-pos)))
+             message
+             (extra-commands (symbol-value (plist-get plugin :extra))))
 
-             message)
+        (vc-msg-update-keymap extra-commands)
+
         (cond
          ((listp commit-info)
           ;; the message to display
@@ -184,25 +260,29 @@ Return string keyword or `nil'."
               (setq message (format "%s\n\n%s"
                                     message
                                     vc-msg-newbie-friendly-msg)))
+
+          (setq vc-msg-previous-commit-info commit-info)
+
+          ;; copy the commit it/hash/changelist
+          (when vc-msg-copy-id-to-kill-ring
+            (let* ((id (vc-msg-get-friendly-id plugin commit-info)))
+              (kill-new id)
+              (message "%s => kill-ring" id)))
+
           ;; show the message in popup
           (while (not finish)
             (let* ((menu (popup-tip (vc-msg-clean message) :point (vc-msg-show-position) :nowait t)))
               (unwind-protect
                   (setq finish (catch 'vc-msg-loop
                                  (popup-menu-event-loop menu
+                                                        ;; update `vc-msg-map' with extra keybindgs&commands
                                                         vc-msg-map
                                                         'popup-menu-fallback
-                                                        :prompt (vc-msg-prompt))
+                                                        :prompt (vc-msg-prompt extra-commands))
                                  t))
                 (popup-delete menu))))
 
-          (run-hook-with-args 'vc-msg-hook current-vcs-type commit-info)
-
-          ;; copy the commit it/hash/changelist
-          (when vc-msg-copy-id-to-kill-ring
-            (let* ((id (plist-get commit-info :id)))
-              (kill-new id)
-              (message "%s => kill-ring" id))))
+          (run-hook-with-args 'vc-msg-hook current-vcs-type commit-info))
 
          ((stringp commit-info)
           ;; Failed. Show the reason.

@@ -32,7 +32,7 @@
   "(car p4-file-to-url) is the original file prefix.
 (cadr p4-file-to-url) is the url prefix.
 Please note it supports regular expression.
-It's used to convert a local file path to peforce URL.
+It's used to convert a local file path to perforce URL.
 If you use Windows version p4 in Cygwin Emacs, or Cygwin
 version p4 in Window Emacs. You need to convert the path
 to URL.")
@@ -97,6 +97,21 @@ Parse the command execution output and return a plist:
               author
               (plist-get info :author-time)
               (plist-get info :summary))))))
+
+(defun vc-msg-p4-show-code ()
+  "Show code."
+  (let* ((info vc-msg-previous-commit-info)
+         (cmd (vc-msg-p4-generate-cmd (format "describe -du %s" (plist-get info :id)))))
+    (vc-msg-sdk-get-or-create-buffer
+     "vs-msg"
+     (shell-command-to-string cmd))))
+
+(defvar vc-msg-p4-extra
+  '(("c" "[c]ode" vc-msg-p4-show-code))
+  "Extra keybindings/commands used by `vc-msg-map'.
+An example:
+'((\"c\" \"[c]ode\" (lambda (message info))
+  (\"d\" \"[d]iff\" (lambda (message info))))")
 
 (provide 'vc-msg-p4)
 ;;; vc-msg-p4.el ends here

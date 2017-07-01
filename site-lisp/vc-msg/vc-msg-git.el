@@ -31,21 +31,22 @@
 (defun vc-msg-git-blame-output (cmd)
   (shell-command-to-string cmd))
 
-;;;###autoload
-(defun vc-msg-git-program-arguments (file line)
-  "git blame LINE in FILE.  Note git option `-C' track text copied elsewhere.
-`-M' tracked moved content inside file.
-See https://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
-  (format "--no-pager blame -C -M -w -L %d,+1 --porcelain %s" line file))
+(defun vc-msg-git-generate-cmd (opts)
+  (format "%s --no-pager %s" vc-msg-git-program opts))
 
 ;;;###autoload
-(defun vc-msg-git-execute (file line &optional extra)
+(defun vc-msg-git-blame-arguments (file line-num)
+  "git blame FILE at LINE-NUM.  Note git option `-C' track text copied elsewhere.
+`-M' tracked moved content inside file.
+See https://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
+  (format "blame -C -M -w -L %d,+1 --porcelain %s" line-num file))
+
+;;;###autoload
+(defun vc-msg-git-execute (file line-num &optional extra)
   "Use FILE and LINE to produce git command.
 Parse the command execution output and return a plist:
-'(:id str :author str :date str :message str)."
-  (let* ((cmd (format "%s %s"
-                      vc-msg-git-program
-                      (vc-msg-git-program-arguments file line)))
+'(:id str :author str :author-time str :summary str)."
+  (let* ((cmd (vc-msg-git-generate-cmd (vc-msg-git-blame-arguments file line-num)))
          (output (vc-msg-git-blame-output cmd)))
     ;; I prefer simpler code:
     ;; if output doesn't match certain text pattern
@@ -86,12 +87,26 @@ Parse the command execution output and return a plist:
       "* Not Commited Yet*")
      (t
       (format "Commit: %s\nAuthor: %s\nDate: %s\nTimezone: %s\n\n%s"
-              (vc-msg-sdk-format-id (plist-get info :id))
+              (vc-msg-sdk-short-id (plist-get info :id))
               author
               (vc-msg-sdk-format-datetime (plist-get info :author-time))
               (vc-msg-sdk-format-timezone (plist-get info :author-tz))
-              (plist-get info :summary))
-      ))))
+              (plist-get info :summary))))))
+
+(defun vc-msg-git-show-code ()
+  "Show code."
+  (let* ((info vc-msg-previous-commit-info)
+         (cmd (vc-msg-git-generate-cmd (format "show %s" (plist-get info :id)))))
+    (vc-msg-sdk-get-or-create-buffer
+     "vs-msg"
+     (shell-command-to-string cmd))))
+
+(defvar vc-msg-git-extra
+  '(("c" "[c]ode" vc-msg-git-show-code))
+  "Extra keybindings/commands used by `vc-msg-map'.
+An example:
+'((\"c\" \"[c]ode\" (lambda (message info))
+  (\"d\" \"[d]iff\" (lambda (message info))))")
 
 (provide 'vc-msg-git)
 ;;; vc-msg-git.el ends here

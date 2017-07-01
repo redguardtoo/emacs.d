@@ -80,11 +80,26 @@ Parse the command execution output and return a plist:
 ;;;###autoload
 (defun vc-msg-hg-format (info)
   (format "Commit: %s\nAuthor: %s\nDate: %s\nTimezone: %s\n\n%s"
-          (vc-msg-sdk-format-id (plist-get info :id))
+          (vc-msg-sdk-short-id (plist-get info :id))
           (plist-get info :author)
           (plist-get info :author-time)
           (vc-msg-sdk-format-timezone (plist-get info :author-tz))
           (plist-get info :summary)))
+
+(defun vc-msg-hg-show-code ()
+  "Show code."
+  (let* ((info vc-msg-previous-commit-info)
+         (cmd (vc-msg-hg-generate-cmd (format "diff -c %s" (plist-get info :id)))))
+    (vc-msg-sdk-get-or-create-buffer
+     "vs-msg"
+     (shell-command-to-string cmd))))
+
+(defvar vc-msg-hg-extra
+  '(("c" "[c]ode" vc-msg-hg-show-code))
+  "Extra keybindings/commands used by `vc-msg-map'.
+An example:
+'((\"c\" \"code\" (lambda (message info))
+  (\"d\" \"diff\" (lambda (message info))))")
 
 (provide 'vc-msg-hg)
 ;;; vc-msg-hg.el ends here

@@ -25,9 +25,7 @@
 
 ;;; Code:
 
-(provide 'vc-msg-sdk)
-
-(defun vc-msg-sdk-format-id (id)
+(defun vc-msg-sdk-short-id (id)
   "Format commit ID."
   (substring id 0 8))
 
@@ -110,6 +108,32 @@ Either return id or `nil'"
   (setq str (replace-regexp-in-string "[ \t\r\n]*\\'" "" str))
   (replace-regexp-in-string "\\`[ \t\r\n]*" "" str))
 
+(defun vc-msg-sdk-quit-window ()
+  (interactive)
+  (quit-window t))
+
+(defun vc-msg-sdk-get-or-create-buffer (buf-name content)
+  "Get or create buffer with BUF-NAME.
+CONTENT is inserted into buffer."
+  (let* (rlt-buf)
+    (if (get-buffer buf-name)
+        (kill-buffer buf-name))
+    (setq rlt-buf (get-buffer-create buf-name))
+    (save-current-buffer
+      (switch-to-buffer-other-window rlt-buf)
+      (set-buffer rlt-buf)
+      (erase-buffer)
+      (insert content)
+
+      ;; `ffip-diff-mode' inherits from `diff-mode'
+      (diff-mode)
+      (goto-char (point-min))
+
+      ;; quit easily
+      (local-set-key (kbd "q") 'vc-msg-sdk-quit-window)
+      (if (and (boundp 'evil-mode) evil-mode)
+          (evil-local-set-key 'normal "q" 'vc-msg-sdk-quit-window)))))
+
 (defun vc-msg-sdk-extract-summary (pattern output)
   "PATTERN is the beginning of summary extracted from OUTPUT.
 PATTERN itself is not part of summary."
@@ -125,3 +149,4 @@ PATTERN itself is not part of summary."
     (vc-msg-sdk-trim summary)))
 ;;; vc-msg-sdk.el ends here
 
+(provide 'vc-msg-sdk)

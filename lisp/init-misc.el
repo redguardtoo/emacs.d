@@ -866,7 +866,11 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (dumb-jump-mode)
 ;; }}
 
+;; {{ vc-msg
 (defun vc-msg-hook-setup (vcs-type commit-info)
-  (message "vc-msg-hook-setup called => %s %s" vcs-type commit-info))
+  ;; copy commit id to clipboard
+  (my-pclip (plist-get commit-info :id)))
 (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
+;; }}
+
 (provide 'init-misc)
