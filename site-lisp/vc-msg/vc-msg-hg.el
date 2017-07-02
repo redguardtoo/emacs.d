@@ -29,17 +29,20 @@
 (defvar vc-msg-hg-program "hg")
 
 (defun vc-msg-hg-generate-cmd (opts)
+  "Generate Mercurial command form OPTS."
   (format "HGPLAIN=1 LANG=utf-8 %s %s" vc-msg-hg-program opts))
 
 (defun vc-msg-hg-blame-output (cmd)
+  "Run CMD in shell to get output."
   (shell-command-to-string cmd))
 
 (defun vc-msg-hg-changelist-output (id)
+  "Run command in shell by ID to get output."
   (let* ((cmd (vc-msg-hg-generate-cmd (format "log -r %s" id))))
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-hg-execute (file line-num &optional extra)
+(defun vc-msg-hg-execute (file line-num)
   "Use FILE and LINE-NUM to produce hg command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
@@ -79,6 +82,7 @@ Parse the command execution output and return a plist:
 
 ;;;###autoload
 (defun vc-msg-hg-format (info)
+  "Format popup message from INFO."
   (format "Commit: %s\nAuthor: %s\nDate: %s\nTimezone: %s\n\n%s"
           (vc-msg-sdk-short-id (plist-get info :id))
           (plist-get info :author)

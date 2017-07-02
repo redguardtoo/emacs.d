@@ -30,11 +30,11 @@
   (substring id 0 8))
 
 (defun vc-msg-sdk-format-datetime (seconds)
-  "Format SECONDS to date and time"
+  "Format SECONDS to date and time."
   (current-time-string (seconds-to-time (string-to-number seconds))))
 
 (defun vc-msg-sdk-format-timezone (timezone)
-  "Format TIMETIMEZONE and show city as extra information."
+  "Format TIMEZONE and show city as extra information."
   (concat timezone
           " "
           (cond
@@ -91,7 +91,7 @@
 
 (defun vc-msg-sdk-extract-id-from-output (line-num pattern output)
   "Go to LINE-NUM.  Use PATTERN to extract commit id from OUTPUT.
-Either return id or `nil'"
+Return either id or nil."
   (let* (id cur-line)
     (if (string-match-p pattern output)
       (with-temp-buffer
@@ -109,6 +109,7 @@ Either return id or `nil'"
   (replace-regexp-in-string "\\`[ \t\r\n]*" "" str))
 
 (defun vc-msg-sdk-quit-window ()
+  "Quit window."
   (interactive)
   (quit-window t))
 

@@ -1,9 +1,9 @@
-;;; vc-msg.el --- Show Version Control Software (VCS) commit message of current line
+;;; vc-msg.el --- Show commit information of current line
 
 ;; Copyright (C) 2017 Chen Bin
 ;;
 ;; Version: 0.0.1
-;; Keywords: git vcs svn hg messenger
+;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
 ;; Package-Requires: ((emacs "24.1"))
@@ -27,30 +27,30 @@
 ;;; Commentary:
 ;; You only need run "M-x vc-msg-show" and follow the hint.
 
-;; The current VCS will be detected automatically. If for some
-;; reason you need force the VCS type (Peforce, for example),
-;; it's just one liner:
+;; The current Version Control Software (VCS) is detected automatically.
+;; If ou need force the VCS type (Peforce, for example),
+;; it's only one liner setup:
 ;;   (setq vc-msg-force-vcs "p4")
 ;;
 ;; You can add hook to =vc-msg-hook=,
 ;;   (defun vc-msg-hook-setup (vcs-type commit-info)
 ;;     ;; copy commit id to clipboard
-;;     (message (format "%s\n%s\n%s\n%"
+;;     (message (format "%s\n%s\n%s\n%s"
 ;;                      (plist-get commit-info :id)
 ;;                      (plist-get commit-info :author)
 ;;                      (plist-get commit-info :author-time)
 ;;                      (plist-get commit-info :author-summary))))
 ;;   (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
 ;;
-;; Perforce is detected automatically. You don't need any manual setup.
+;; Perforce is detected automatically.  You don't need any manual setup.
 ;; But if you use Windows version of perforce CLI in Cygwin Emacs, we
 ;; provide the variable `vc-msg-p4-file-to-url' to convert file path to
 ;; ULR so Emacs and Perforce CLI could communicate the file location
 ;; correctly:
-;;   (setq vc-msg-p4-file-to-url '("//depot/development/proj1" ".*/proj1"))
+;;   (setq vc-msg-p4-file-to-url '(".*/proj1" "//depot/development/proj1"))
 ;;
 ;; The program provides a plugin framework so you can easily write a
-;; plugin to support any alien VCS. Please use "vc-msg-git.el" as a sample.
+;; plugin to support any alien VCS.  Please use "vc-msg-git.el" as a sample.
 
 ;;; Code:
 
@@ -89,7 +89,7 @@ is used to locate VCS root directory.")
     (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format :extra vc-msg-p4-extra)
     (:type "git" :execute vc-msg-git-execute :format vc-msg-git-format :extra vc-msg-git-extra))
   "List of VCS plugins.
-A plugin is a `plist'. Sample to add a new plugin:
+A plugin is a `plist'.  Sample to add a new plugin:
 
   (defun my-execute (file line &optional extra))
   (defun my-format (info))
@@ -104,7 +104,7 @@ A plugin is a `plist'. Sample to add a new plugin:
 
 The result of `my-execute' is blackbox outside of plugin.
 But if result is string, `my-execute' fails and returns error message.
-If result is `nil', `my-execute' fails silently.
+If result is nil, `my-execute' fails silently.
 Please check `vc-msg-git-execute' and `vc-msg-git-format' for sample.")
 
 (defvar vc-msg-newbie-friendly-msg "Press q to quit"
@@ -126,8 +126,7 @@ and is a blackbox to 'vc-msg.el'."
   "Store the data extracted by (plist-get :execute plugin).")
 
 (defun vc-msg-match-plugin (plugin)
-  "Try match plugin.
-Return string keyword or `nil'."
+  "Try match PLUGIN.  Return string keyword or nil."
   (let* ((type (car plugin))
          (algorithm (cdr plugin)))
     (cond
@@ -157,6 +156,7 @@ Return string keyword or `nil'."
                  vc-msg-known-vcs)))))
 
 (defun vc-msg-find-plugin ()
+  "Find plugin automatically using `vc-msg-plugins'."
   (let* ((plugin (cl-some (lambda (e)
                             (if (string= (plist-get e :type) current-vcs-type) e))
                           vc-msg-plugins)))
@@ -208,11 +208,12 @@ Return string keyword or `nil'."
     (point)))
 
 (defun vc-msg-prompt (extra-commands)
+  "Show popup prompt for built in commands and EXTRA-COMMANDS."
   (concat "[q]uit [w]Copy all "
           (mapconcat #'cadr extra-commands " ")))
 
 (defun vc-msg-clean (str)
-  "Clean the string (carriage return, for example)."
+  "Clean the STR carriage return, for example)."
   (setq str (replace-regexp-in-string "\r\n" "\n" str))
   (replace-regexp-in-string "\r" "\n" str))
 
@@ -234,7 +235,7 @@ Return string keyword or `nil'."
 
 ;;;###autoload
 (defun vc-msg-show ()
-  "Show commit messeage of current line"
+  "Show commit messeage of current line."
   (interactive)
   (let* (finish
          (current-vcs-type (vc-msg-detect-vcs-type))

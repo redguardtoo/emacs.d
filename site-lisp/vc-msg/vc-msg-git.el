@@ -29,21 +29,24 @@
 (defvar vc-msg-git-program "git")
 
 (defun vc-msg-git-blame-output (cmd)
+  "Generate blame output by running CMD in shell."
   (shell-command-to-string cmd))
 
 (defun vc-msg-git-generate-cmd (opts)
+  "Generate Git command from OPTS."
   (format "%s --no-pager %s" vc-msg-git-program opts))
 
 ;;;###autoload
 (defun vc-msg-git-blame-arguments (file line-num)
-  "git blame FILE at LINE-NUM.  Note git option `-C' track text copied elsewhere.
+  "Git blame FILE at LINE-NUM.
+Note git option `-C' track text copied elsewhere,
 `-M' tracked moved content inside file.
 See https://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
   (format "blame -C -M -w -L %d,+1 --porcelain %s" line-num file))
 
 ;;;###autoload
-(defun vc-msg-git-execute (file line-num &optional extra)
-  "Use FILE and LINE to produce git command.
+(defun vc-msg-git-execute (file line-num)
+  "Use FILE and LINE-NUM to produce git command.
 Parse the command execution output and return a plist:
 '(:id str :author str :author-time str :summary str)."
   (let* ((cmd (vc-msg-git-generate-cmd (vc-msg-git-blame-arguments file line-num)))
@@ -81,6 +84,7 @@ Parse the command execution output and return a plist:
 
 ;;;###autoload
 (defun vc-msg-git-format (info)
+  "Format the message for popup from INFO."
   (let* ((author (plist-get info :author)))
     (cond
      ((string-match-p "Not Committed Yet" author)
