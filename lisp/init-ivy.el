@@ -376,6 +376,7 @@ Extended regex like (pattern1|pattern2) is used."
     (plist-put my-grep-opts-cache :ignore-dirs my-grep-ignore-dirs)
     (plist-put my-grep-opts-cache :ignore-file-exts my-grep-ignore-file-exts)
     (plist-put my-grep-opts-cache :ignore-file-names my-grep-ignore-file-names)
+    (message "my-grep-opts-cache=%s" my-grep-opts-cache)
 
     (ivy-read (format "matching \"%s\" at %s:" keyword dir)
               collection

@@ -152,8 +152,10 @@ If FILE-OPENED, current file is still opened."
       ;; quit easily in evil-mode
       (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t))))))
 
-(defun p4-changes (just-lines current-file)
-  (let* ((cmd (p4-generate-cmd "changes" (not current-file)))
+(defun p4-changes (&optional just-lines in-project)
+  "Show changelists.  IF JUST-LINES is t, show the lines instead of changelists.
+IF IN-PROJECT is t, show changelists of current project instead current file."
+  (let* ((cmd (p4-generate-cmd "changes" in-project))
          (lines (split-string (shell-command-to-string cmd) "\n")))
     (if just-lines lines
       (delq nil (mapcar #'p4--extract-changenumber lines)))))
@@ -169,7 +171,7 @@ If IN-PROJECT is t, operate in project root."
   "p4 show changes of current file.
 If IN-PROJECT is t, operate in project root."
   (interactive "P")
-  (let* ((lines (p4-changes t (not in-project))))
+  (let* ((lines (p4-changes t in-project)))
     ;; According to Perforce documenation of `p4 describe`:
     ;; If a changelist is pending, it is flagged as such in the output,
     ;; and the list of open files is shown.
@@ -201,12 +203,12 @@ If IN-PROJECT is t, operate in project root."
                 (shell-command (format "p4 edit %s" fn)))))
         (forward-line 1)))))
 
-(defun p4history (&optional in-project)
+(defun p4history ()
   "Show history of current file like `git log -p'."
-  (interactive "P")
-  (let* ((content (mapconcat #'identity
-                             (p4-changes t (not in-project))
-                             "\n")))
-   (p4--create-buffer "*p4log*" content t default-directory)))
+  (interactive)
+  (let* ((content (mapconcat #'p4-show-changelist-patch
+                             (p4-changes)
+                   "\n\n")))
+    (p4--create-buffer "*p4history*" content)))
 
 (provide 'init-perforce)
