@@ -53,6 +53,37 @@
   "Return the directory in which the `LIBRARY-NAME' load file is found."
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
+(defmacro my-select-from-kill-ring (fn &optional n)
+  "Use `browse-kill-ring' if it exists and N is 1.
+If N > 1, assume just yank the Nth item in `kill-ring'.
+If N is nil, use `ivy-mode' to browse the `kill-ring'."
+  (interactive "P")
+  `(cond
+    ((or (not ,n) (and (= ,n 1) (not (fboundp 'browse-kill-ring))))
+     ;; remove duplicates in `kill-ring'
+     (let* ((candidates (cl-remove-if
+                         (lambda (s)
+                           (or (< (length s) 5)
+                               (string-match "\\`[\n[:blank:]]+\\'" s)))
+                         (delete-dups kill-ring))))
+       (let* ((ivy-height (/ (frame-height) 2)))
+         (ivy-read "Browse `kill-ring':"
+                   (mapcar
+                    (lambda (s)
+                      (let* ((w (frame-width))
+                             ;; display kill ring item in one line
+                             (key (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
+                        ;; strip the whitespace
+                        (setq key (replace-regexp-in-string "^[ \t]+" "" key))
+                        ;; fit to the minibuffer width
+                        (if (> (length key) w)
+                            (setq key (concat (substring key 0 (- w 4)) "...")))
+                        (cons key s)))
+                    candidates)
+                   :action #',fn))))
+    ((= ,n 1)
+     (browse-kill-ring))))
+
 (defun my-insert-str (str)
   ;; ivy8 or ivy9
   (if (consp str) (setq str (cdr str)))

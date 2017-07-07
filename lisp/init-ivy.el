@@ -405,35 +405,7 @@ Extended regex like (pattern1|pattern2) is used."
 If N > 1, assume just yank the Nth item in `kill-ring'.
 If N is nil, use `ivy-mode' to browse the `kill-ring'."
   (interactive "P")
-  (cond
-   ((or (not n) (and (= n 1) (not (fboundp 'browse-kill-ring))))
-    ;; remove duplicates in `kill-ring'
-    (let* ((candidates (cl-remove-if
-                   (lambda (s)
-                     (or (< (length s) 5)
-                         (string-match "\\`[\n[:blank:]]+\\'" s)))
-                   (delete-dups kill-ring))))
-      (let* ((ivy-height (/ (frame-height) 2)))
-        (ivy-read "Browse `kill-ring':"
-                  (mapcar
-                   (lambda (s)
-                     (let* ((w (frame-width))
-                            ;; display kill ring item in one line
-                            (key (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
-                       ;; strip the whitespace
-                       (setq key (replace-regexp-in-string "^[ \t]+" "" key))
-                       ;; fit to the minibuffer width
-                       (if (> (length key) w)
-                           (setq key (concat (substring key 0 (- w 4)) "...")))
-                       (cons key s)))
-                   candidates)
-                  :action 'my-insert-str))))
-   ((= n 1)
-    (browse-kill-ring))
-   ((> n 1)
-    (setq n (1- n))
-    (if (< n 0) (setq n 0))
-    (my-insert-str (nth n kill-ring)))))
+  (my-select-from-kill-ring my-insert-str n))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
   (unless (featurep 'pinyinlib) (require 'pinyinlib))
