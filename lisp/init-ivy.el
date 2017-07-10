@@ -258,6 +258,7 @@ Or else, find files since 24 weeks (6 months) ago."
 (defvar my-grep-opts-cache '())
 
 (defun my-grep-exclude-opts (use-cache)
+  (message "my-grep-exclude-opts called => %s" use-cache)
   (let* ((ignore-dirs (if use-cache (plist-get my-grep-opts-cache :ignore-dirs)
                         my-grep-ignore-dirs))
          (ignore-file-exts (if use-cache (plist-get my-grep-opts-cache :ignore-file-exts)
@@ -268,7 +269,7 @@ Or else, find files since 24 weeks (6 months) ago."
      ((executable-find "ag")
       (concat "-s --nocolor --nogroup --silent -z " ; -z to grep *.gz
               (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
-                         my-grep-ignore-dirs " ")
+                         ignore-dirs " ")
               " "
               (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
                          ignore-file-exts " ")
@@ -277,7 +278,7 @@ Or else, find files since 24 weeks (6 months) ago."
                          ignore-file-names " ")))
      (t
       (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
-                         my-grep-ignore-dirs " ")
+                         ignore-dirs " ")
               " "
               (mapconcat (lambda (e) (format "--exclude='*.%s'" e))
                          ignore-file-exts " ")
@@ -361,9 +362,9 @@ Extended regex like (pattern1|pattern2) is used."
          (dir (if my-grep-show-full-directory (my-root-dir)
                 (file-name-as-directory (file-name-base (directory-file-name (my-root-dir)))))))
 
-    (plist-put my-grep-opts-cache :ignore-dirs my-grep-ignore-dirs)
-    (plist-put my-grep-opts-cache :ignore-file-exts my-grep-ignore-file-exts)
-    (plist-put my-grep-opts-cache :ignore-file-names my-grep-ignore-file-names)
+    (setq my-grep-opts-cache (plist-put my-grep-opts-cache :ignore-dirs my-grep-ignore-dirs))
+    (setq my-grep-opts-cache (plist-put my-grep-opts-cache :ignore-file-exts my-grep-ignore-file-exts))
+    (setq my-grep-opts-cache (plist-put my-grep-opts-cache :ignore-file-names my-grep-ignore-file-names))
     (message "my-grep-opts-cache=%s" my-grep-opts-cache)
 
     (ivy-read (format "matching \"%s\" at %s:" keyword dir)
