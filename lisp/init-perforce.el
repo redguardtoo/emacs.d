@@ -197,10 +197,14 @@ If IN-PROJECT is t, operate in project root."
       (unless (featurep 'wgrep) (require 'featurep))
       (while (not (eobp))
         (if (looking-at wgrep-line-file-regexp)
-            (let* ((fn (match-string-no-properties 1)))
-              (unless (string= fn fn-accessed)
-                (setq fn-accessed fn)
-                (shell-command (format "p4 edit %s" fn)))))
+            (let* ((filename (match-string-no-properties 1)) buf)
+              (unless (string= filename fn-accessed)
+                (setq fn-accessed filename)
+                (shell-command (format "p4 edit %s" filename))
+                (if (setq buf (get-file-buffer filename))
+                    (with-current-buffer buf
+                      ;; turn off read-only since we've already `p4 edit'
+                      (read-only-mode -1))))))
         (forward-line 1)))))
 
 (defun p4history ()
