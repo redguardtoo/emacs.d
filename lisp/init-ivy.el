@@ -95,10 +95,8 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
 (defvar counsel-complete-line-use-git t)
 
 (defun counsel-find-quickest-grep ()
-  (let* ((exe (or (executable-find "rg") (executable-find "ag"))))
-    ;; ripgrep says that "-n" is enabled actually not,
-    ;; so we manually add it
-    (if exe (concat exe " -n"))))
+  ;; on debian ag v0.26.0 does not support "-n" option
+  (executable-find "ag"))
 
 (defun counsel-complete-line-by-grep ()
   "Complete line using text from (line-beginning-position) to (point).
@@ -267,18 +265,8 @@ Or else, find files since 24 weeks (6 months) ago."
          (ignore-file-names (if use-cache (plist-get my-grep-opts-cache :ignore-file-names)
                               my-grep-ignore-file-names)))
     (cond
-     ((executable-find "rg")
-      (concat "-s --no-heading "
-              (mapconcat (lambda (e) (format "-g='!%s/*'" e))
-                         ignore-dirs " ")
-              " "
-              (mapconcat (lambda (e) (format "-g='!*.%s'" e))
-                         ignore-file-exts " ")
-              " "
-              (mapconcat (lambda (e) (format "-g='!%s'" e))
-                         ignore-file-names " ")))
      ((executable-find "ag")
-      (concat "-s --nocolor --nogroup --silent "
+      (concat "-s --nocolor --nogroup --silent -z " ; -z to grep *.gz
               (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
                          my-grep-ignore-dirs " ")
               " "
@@ -364,7 +352,7 @@ Or else, find files since 24 weeks (6 months) ago."
 (defvar my-grep-debug nil)
 (defun my-grep ()
   "Grep at project root directory or current directory.
-Try to find best grep program (ripgrep, the silver searcher, grep...) automatically.
+Try to find best grep program (the silver searcher, grep...) automatically.
 Extended regex like (pattern1|pattern2) is used."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))
