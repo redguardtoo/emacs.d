@@ -342,8 +342,8 @@ Or else, find files since 24 weeks (6 months) ago."
 (defun ivy-occur-grep-mode-hook-setup ()
   ;; no syntax highlight, I only care performance when searching/replacing
   (font-lock-mode -1)
-  ;; no truncate line, unnecessary calculation
-  (setq truncate-lines nil)
+  ;; @see https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
+  (column-number-mode -1)
   ;; turn on wgrep right now
   ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
   )
