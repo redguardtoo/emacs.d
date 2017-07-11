@@ -256,7 +256,9 @@
     (setq flyspell-check-doublon nil)
     ;; enable for all programming modes
     ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-    (subword-mode)
+    (unless (derived-mode-p 'js2-mode)
+      (subword-mode 1))
+
     (setq-default electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
     (electric-pair-mode 1)
 
