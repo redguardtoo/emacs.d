@@ -207,11 +207,15 @@ If IN-PROJECT is t, operate in project root."
                       (read-only-mode -1))))))
         (forward-line 1)))))
 
-(defun p4history ()
-  "Show history of current file like `git log -p'."
-  (interactive)
+(defun p4history (&optional num)
+  "Show history of current file like `git log -p'.
+NUM default values i 10.  Show the latest NUM changes."
+  (interactive "P")
+  (unless num
+    (setq num 10))
   (let* ((content (mapconcat #'p4-show-changelist-patch
-                             (p4-changes)
+                             (if num (subseq (p4-changes) 0 num)
+                               (p4-changes))
                    "\n\n")))
     (p4--create-buffer "*p4history*" content)))
 
