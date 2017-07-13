@@ -31,18 +31,21 @@
 (require 'evil-matchit)
 
 (defun evilmi--simple-find-open-brace (cur-line)
+  (if evilmi-debug (message "evilmi--simple-find-open-brace called => cur-line=%s (point)=%d" cur-line (point)))
   (let (rlt)
     ;; javascript code line "(function(...) { ..."
     ;; C code line "} else {"
-    (if (or (string-match "^[ \t]*[\(\}]?[_a-zA-Z0-9]+.*{ *\\(\/\/.*\\)?$" cur-line)
-            (string-match "^[ \t]*[\(\}]?[_a-zA-Z0-9]+.*{ *\\(\/\*[^/]*\*\/\\)?$" cur-line))
-        (setq rlt 1)
+    (cond
+     ;; css-mode use characters ".:-"
+     ((or (string-match "^[ \t]*[\(\}]?[.:_a-zA-Z0-9-]+.*{ *\\(\/\/.*\\)?$" cur-line)
+          (string-match "^[ \t]*[\(\}]?[.:_a-zA-Z0-9-]+.*{ *\\(\/\*[^/]*\*\/\\)?$" cur-line))
+      (setq rlt 1))
+     (t
       (save-excursion
         (forward-line)
         (setq cur-line (evilmi-sdk-curline))
         (if (string-match "^[ \t]*{ *$" cur-line)
-            (setq rlt 2))
-        ))
+            (setq rlt 2)))))
     rlt))
 
 ;;;###autoload
@@ -53,7 +56,7 @@
          (ch (if tmp (car tmp)))
          rlt)
 
-    (if evilmi-debug (message "evilmi-simple-get-tag called => %s" ch))
+    (if evilmi-debug (message "evilmi-simple-get-tag called => ch=%s (point)=%d" ch (point)))
 
     (cond
      ;; In evil-visual-state, the (preceding-char) is actually the character under cursor
@@ -75,7 +78,7 @@
 ;;;###autoload
 (defun evilmi-simple-jump (rlt NUM)
   (when rlt
-    (if evilmi-debug (message "evilmi-simple-jump called"))
+    (if evilmi-debug (message "evilmi-simple-jump called (point)=%d" (point)))
 
     ;; In latex-mode `scan-sexps' does NOT work properly between "[]"
     ;; so we have to fallback to evil's API.
@@ -84,7 +87,7 @@
       (evilmi--simple-jump))
 
     ;; hack for javascript
-    (if (string-match "^[ \t]*})\\((.*)\\)?\; *$"
+    (if (string-match-p "^[ \t]*})\\((.*)\\)?\; *$"
                       (evilmi-sdk-curline))
         (line-end-position)
       (1+ (point)))))

@@ -99,6 +99,7 @@ Set this flag into `t' to always use simple jump.")
 (defun evilmi--is-jump-forward ()
   "Return: (forward-direction font-face-under-cursor character-under-cursor).
 If font-face-under-cursor is NOT nil, the quoted string is being processed."
+  (if evilmi-debug (message "evilmi--is-jump-forward called"))
   (let* ((tmp (evilmi--get-char-under-cursor))
          (ch (car tmp))
          (p (cadr tmp))
@@ -130,6 +131,9 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed."
                   fontfaces))))
 
 (defun evilmi--scan-sexps (is-forward)
+  "Get the position of matching tag.
+If IS-FORWARD is t, jump forward; or else jump backward."
+  (if evilmi-debug (message "evilmi--scan-sexps called => %s" is-forward))
   (let* ((start-pos (if is-forward (point) (+ 1 (point))))
          (arg (if is-forward 1 -1))
          (limit (if is-forward (point-max) (point-min)))
@@ -209,6 +213,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed."
 
 ;; @see http://emacs.stackexchange.com/questions/13222/a-elisp-function-to-jump-between-matched-pair
 (defun evilmi--find-position-to-jump (ff is-forward ch)
+  (if evilmi-debug (message "evilmi--find-position-to-jump called => %s %s %s %d" ff is-forward ch (point)))
   "Non-nil ff means jumping between quotes"
   (let* ((rlt (if ff (evilmi--find-the-other-quote-char ff is-forward ch)
                 (evilmi--scan-sexps is-forward))))
@@ -225,6 +230,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed."
 (defun evilmi--simple-jump ()
   "Alternative for evil-jump-item."
   (interactive)
+  (if evilmi-debug (message "evilmi--simple-jump called (point)=%d" (point)))
   (let* ((tmp (evilmi--is-jump-forward))
          (jump-forward (car tmp))
          ;; if ff is not nil, it's jump between quotes
@@ -235,6 +241,7 @@ If font-face-under-cursor is NOT nil, the quoted string is being processed."
     (evilmi--tweak-selected-region ff jump-forward)))
 
 (defun evilmi--operate-on-item (num &optional FUNC)
+  (if evilmi-debug (message "evilmi--operate-on-item called => %s (point)=%d" num (point)))
   (let* ((plugin (plist-get evilmi-plugins major-mode))
          rlt
          jumped

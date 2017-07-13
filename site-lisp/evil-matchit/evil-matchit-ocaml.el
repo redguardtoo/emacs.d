@@ -1,5 +1,5 @@
 (defvar evilmi-ocaml-keywords
-  '((("struct" "begin" "object") ("end"))
+  '((("struct" "begin" "sig" "object") ("end"))
     (("if") ("then"))
     (("match") ("with"))
     (("match" "try") ("with"))
