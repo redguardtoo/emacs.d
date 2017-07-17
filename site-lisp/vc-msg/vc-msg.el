@@ -6,7 +6,7 @@
 ;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
-;; Package-Requires: ((emacs "24.1"))
+;; Package-Requires: ((emacs "24.3") (popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -28,7 +28,7 @@
 ;; You only need run "M-x vc-msg-show" and follow the hint.
 
 ;; The current Version Control Software (VCS) is detected automatically.
-;; If ou need force the VCS type (Peforce, for example),
+;; If you need force the VCS type (Peforce, for example),
 ;; it's only one liner setup:
 ;;   (setq vc-msg-force-vcs "p4")
 ;;
@@ -58,14 +58,20 @@
 (require 'popup)
 (require 'vc-msg-sdk)
 
-(defvar vc-msg-force-vcs nil
+(defgroup vc-msg nil
+  "vc-msg"
+  :group 'vc)
+
+(defcustom vc-msg-force-vcs nil
   "Extra VCS overrides result of `vc-msg-detect-vcs-type'.
-A string like 'git' or 'svn' to lookup `vc-msg-plugins'.")
+A string like 'git' or 'svn' to lookup `vc-msg-plugins'."
+  :type 'string)
 
-(defvar vc-msg-copy-id-to-kill-ring t
-  "Copy commit id/hash/changelist into `kill-ring' when `vc-msg-show'.")
+(defcustom vc-msg-copy-id-to-kill-ring t
+  "Copy commit id/hash/changelist into `kill-ring' when `vc-msg-show'."
+  :type 'boolean)
 
-(defvar vc-msg-known-vcs
+(defcustom vc-msg-known-vcs
   '(("p4" . (let* ((output (shell-command-to-string "p4 client -o"))
                    (root-dir (if (string-match "^Root:[ \t]+\\(.*\\)" output)
                                  (match-string 1 output))))
@@ -78,12 +84,14 @@ A string like 'git' or 'svn' to lookup `vc-msg-plugins'.")
   "List of known VCS.
 In VCS, the key like 'git' or 'svn' is used to locate plugin
 in `vc-msg-plugins'.  The directory name like '.git' or '.svn'
-is used to locate VCS root directory.")
+is used to locate VCS root directory."
+  :type '(repeat sexp))
 
-(defvar vc-msg-show-at-line-beginning-p t
-  "Show the mesesage at beginning of line.")
+(defcustom vc-msg-show-at-line-beginning-p t
+  "Show the mesesage at beginning of line."
+  :type 'boolean)
 
-(defvar vc-msg-plugins
+(defcustom vc-msg-plugins
   '((:type "svn" :execute vc-msg-svn-execute :format vc-msg-svn-format :extra vc-msg-svn-extra)
     (:type "hg" :execute vc-msg-hg-execute :format vc-msg-hg-format :extra vc-msg-hg-extra)
     (:type "p4" :execute vc-msg-p4-execute :format vc-msg-p4-format :extra vc-msg-p4-extra)
@@ -105,10 +113,12 @@ A plugin is a `plist'.  Sample to add a new plugin:
 The result of `my-execute' is blackbox outside of plugin.
 But if result is string, `my-execute' fails and returns error message.
 If result is nil, `my-execute' fails silently.
-Please check `vc-msg-git-execute' and `vc-msg-git-format' for sample.")
+Please check `vc-msg-git-execute' and `vc-msg-git-format' for sample."
+  :type '(repeat sexp))
 
-(defvar vc-msg-newbie-friendly-msg "Press q to quit"
-  "Extra friendly hint for newbies.")
+(defcustom vc-msg-newbie-friendly-msg "Press q to quit"
+  "Extra friendly hint for newbies."
+  :type 'string)
 
 (defcustom vc-msg-hook nil
   "Hook for `vc-msg-show'.
@@ -122,8 +132,9 @@ Other extra fields of param may exists which is produced by plugin
 and is a blackbox to 'vc-msg.el'."
   :type 'hook)
 
-(defvar vc-msg-previous-commit-info nil
-  "Store the data extracted by (plist-get :execute plugin).")
+(defcustom vc-msg-previous-commit-info nil
+  "Store the data extracted by (plist-get :execute plugin)."
+  :type 'sexp)
 
 (defun vc-msg-match-plugin (plugin)
   "Try match PLUGIN.  Return string keyword or nil."
@@ -235,7 +246,7 @@ and is a blackbox to 'vc-msg.el'."
 
 ;;;###autoload
 (defun vc-msg-show ()
-  "Show commit messeage of current line."
+  "Show commit message of current line."
   (interactive)
   (let* (finish
          (current-vcs-type (vc-msg-detect-vcs-type))

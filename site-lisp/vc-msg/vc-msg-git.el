@@ -26,7 +26,10 @@
 ;;; Code:
 (require 'vc-msg-sdk)
 
-(defvar vc-msg-git-program "git")
+(defcustom vc-msg-git-program "git"
+  "Git program."
+  :type 'string
+  :group 'vc-msg)
 
 (defun vc-msg-git-blame-output (cmd)
   "Generate blame output by running CMD in shell."
@@ -105,12 +108,14 @@ Parse the command execution output and return a plist:
      "vs-msg"
      (shell-command-to-string cmd))))
 
-(defvar vc-msg-git-extra
+(defcustom vc-msg-git-extra
   '(("c" "[c]ode" vc-msg-git-show-code))
   "Extra keybindings/commands used by `vc-msg-map'.
 An example:
 '((\"c\" \"[c]ode\" (lambda (message info))
-  (\"d\" \"[d]iff\" (lambda (message info))))")
+  (\"d\" \"[d]iff\" (lambda (message info))))"
+  :type '(repeat sexp)
+  :group 'vc-msg)
 
 (provide 'vc-msg-git)
 ;;; vc-msg-git.el ends here

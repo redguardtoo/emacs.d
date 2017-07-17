@@ -26,16 +26,21 @@
 ;;; Code:
 (require 'vc-msg-sdk)
 
-(defvar vc-msg-p4-program "p4")
+(defcustom vc-msg-p4-program "p4"
+  "Perforce program."
+  :type 'string
+  :group 'vc-msg)
 
-(defvar vc-msg-p4-file-to-url nil
+(defcustom vc-msg-p4-file-to-url nil
   "Please note (car vc-msg-p4-file-to-url) is the original file prefix.
 And (cadr vc-msg-p4-file-to-url) is the url prefix.
 Please note it supports regular expression.
 It's used to convert a local file path to Perforce URL.
 If you use Windows version p4 in Cygwin Emacs, or Cygwin
 version p4 in Windows Emacs, you need convert the path
-to URL.")
+to URL."
+  :type '(repeat string)
+  :group 'vc-msg)
 
 (defun vc-msg-p4-generate-cmd (opts)
   "Generate Perforce CLI from OPTS."
@@ -110,12 +115,14 @@ Parse the command execution output and return a plist:
      "vs-msg"
      (shell-command-to-string cmd))))
 
-(defvar vc-msg-p4-extra
+(defcustom vc-msg-p4-extra
   '(("c" "[c]ode" vc-msg-p4-show-code))
   "Extra keybindings/commands used by `vc-msg-map'.
 An example:
 '((\"c\" \"[c]ode\" (lambda (message info))
-  (\"d\" \"[d]iff\" (lambda (message info))))")
+  (\"d\" \"[d]iff\" (lambda (message info))))"
+  :type '(repeat sexp)
+  :group 'vc-msg)
 
 (provide 'vc-msg-p4)
 ;;; vc-msg-p4.el ends here

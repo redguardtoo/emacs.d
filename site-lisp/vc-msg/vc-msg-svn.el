@@ -26,7 +26,10 @@
 ;;; Code:
 (require 'vc-msg-sdk)
 
-(defvar vc-msg-svn-program "svn")
+(defcustom vc-msg-svn-program "svn"
+  "Subversion program."
+  :type 'string
+  :group 'vc-msg)
 
 (defun vc-msg-svn-generate-cmd (opts)
   "Generate Subversion CLI from OPTS."
@@ -103,12 +106,14 @@ Parse the command execution output and return a plist:
      "vs-msg"
      (shell-command-to-string cmd))))
 
-(defvar vc-msg-svn-extra
+(defcustom vc-msg-svn-extra
   '(("c" "[c]ode" vc-msg-svn-show-code))
   "Extra keybindings/commands used by `vc-msg-map'.
 An example:
 '((\"c\" \"[c]ode\" (lambda (message info))
-  (\"d\" \"[d]iff\" (lambda (message info))))")
+  (\"d\" \"[d]iff\" (lambda (message info))))"
+  :type '(repeat sexp)
+  :group 'vc-msg)
 
 (provide 'vc-msg-svn)
 ;;; vc-msg-svn.el ends here

@@ -26,7 +26,10 @@
 ;;; Code:
 (require 'vc-msg-sdk)
 
-(defvar vc-msg-hg-program "hg")
+(defcustom vc-msg-hg-program "hg"
+  "Mercurial program."
+  :type 'string
+  :group 'vc-msg)
 
 (defun vc-msg-hg-generate-cmd (opts)
   "Generate Mercurial command form OPTS."
@@ -98,12 +101,14 @@ Parse the command execution output and return a plist:
      "vs-msg"
      (shell-command-to-string cmd))))
 
-(defvar vc-msg-hg-extra
+(defcustom vc-msg-hg-extra
   '(("c" "[c]ode" vc-msg-hg-show-code))
   "Extra keybindings/commands used by `vc-msg-map'.
 An example:
 '((\"c\" \"code\" (lambda (message info))
-  (\"d\" \"diff\" (lambda (message info))))")
+  (\"d\" \"diff\" (lambda (message info))))"
+  :type '(repeat sexp)
+  :group 'vc-msg)
 
 (provide 'vc-msg-hg)
 ;;; vc-msg-hg.el ends here
