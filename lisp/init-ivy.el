@@ -1,5 +1,4 @@
 (require 'counsel)
-(require 'cl-lib)
 ;; (ivy-mode 1)
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
