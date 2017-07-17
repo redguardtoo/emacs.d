@@ -1,7 +1,7 @@
 * Features
 - Efficient. Emacs *starts up in one second*
 - Stable, Emacs will never crash after a full package upgrade
-- Native key bindings are preserved
+- Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
 - Robust, you can install packages without network access
 - Popular programming languages are supported, C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...
@@ -165,6 +165,11 @@ But my =w3m= based utilities can open built in video/audio/image. They can't be 
 - Install through OS package manager
 I don't use =ripgrep= because it does not support [[not support https://github.com/BurntSushi/ripgrep/issues/225][decompression]].
 * Usage
+I *avoid overriding the original setup* of third party tool.
+
+If I mention certain directories is used by certain tool, you can always confirm the information in the tool's original manual.
+
+You can also =grep keyword= in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Tutorial (OPTIONAL)
 Basic knowledge of Linux/Unix is recommended except the tutorials . At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
 *** Basic tutorial
@@ -340,6 +345,7 @@ By default, environment variable =HOME= points to the directory =C:\Users\<usern
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
 - Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you need always to run it when you update the snippets. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
 - You can add your snippets into =~/.emacs.d/snippets=.
+- Run =grep -rns  --exclude='.yas*' 'key:' *= in =~/.emacs.d/snippets= to see my own snippets
 ** Non-English users
 Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
 ** Behind corporate firewall
