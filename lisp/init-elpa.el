@@ -70,7 +70,7 @@ But you may use safer HTTPS instead.")
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
         ;; ("org" . "http://orgmode.org/elpa/") ; latest org-mode
         ("localelpa" . "~/.emacs.d/localelpa/")
-        ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/")
+        ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
@@ -165,12 +165,11 @@ But you may use safer HTTPS instead.")
 (require-package 'haskell-mode)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
-(unless *emacs24old*
-  (require-package 'gist))
+(unless *emacs24old* (require-package 'gist))
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
-(require-package 'robe)
+(unless *emacs24old* (require-package 'robe))
 (require-package 'inf-ruby)
 (require-package 'workgroups2)
 (require-package 'yaml-mode)
