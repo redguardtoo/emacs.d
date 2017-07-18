@@ -20,7 +20,7 @@ You need the section "Install stable version in easiest way" *if and only if*:
 - You are absolutely newbie, knowing nothing about Linux/Unix
 - You are living in North Korea without internet access
 ** Install in normal way
-Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= in [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
+Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
 Please uninstall any package which is not installed at =~/.emacs.d=. For example, run =apt-get autoremove emacs-w3m= on Debian/Ubuntu.
 
@@ -34,7 +34,7 @@ There are two ways to install this setup (I recommend the first way):
 
 2. use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
 
-Ensure that the init.el contained in this repo ends up at ~/.emacs.d/init.el.
+Ensure that the init.el contained in this repo ends up at =~/.emacs.d/init.el=.
 
 By default, packages are installed automatically during Emacs startup.
 
@@ -73,9 +73,9 @@ Please ignore any related error message. For example, if aspell and hunspell are
 
 You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML mail be rendered by =w3m= instead of the default HTML rendering engine =shr=.
 
-=shr= supports COLOR but =w3m= not.
+=shr= supports COLOR while =w3m= not.
 
-But my =w3m= based utilities can open built in video/audio/image. They can't be used until you replace =shr= with =w3m=. Anyway, your choice.
+But my =w3m= based utilities can open built in video/audio/image. They can't be used until you use =w3m=. Anyway, your choice.
 **** lua
 - Required by =flymake-lua=
 - Install through OS package manager
@@ -85,8 +85,9 @@ But my =w3m= based utilities can open built in video/audio/image. They can't be 
 - Install through OS package manager
 - For aspell, you may need its dictionary =aspell-en=
 - I force the dictionary to "en_US" in =~/.emacs./lisp/init-spelling.el=. You can modify it.
-- I recommend aspell for programmers
+- I recommend aspell for programmers. Non-programmers find hunspell is better on typo correction
 
+If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
 **** sbcl (lisp environment)
 - Required by lisp =slime=
 - Install through OS package manager
@@ -94,7 +95,6 @@ But my =w3m= based utilities can open built in video/audio/image. They can't be 
 **** tidy
 - Required by =web-mode= for syntax check and =tidy.el= html formatting
 - Install through OS package manager
-
 **** csslint
 - Install =node.js= through OS package manager, then =npm install -g csslint=
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
@@ -171,7 +171,7 @@ If I mention certain directories is used by certain tool, you can always confirm
 
 You can also =grep keyword= in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Tutorial (OPTIONAL)
-Basic knowledge of Linux/Unix is recommended except the tutorials . At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
+Basic knowledge of Linux/Unix is required. At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
 *** Basic tutorial
 Everyone should finish this tutorial at first.
 **** Step 1, learn OS basics
