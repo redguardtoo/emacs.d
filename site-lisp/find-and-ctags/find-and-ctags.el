@@ -150,6 +150,18 @@ If FORCE is t, the commmand is executed without consulting the timer."
             (shell-command cmd))))
     file))
 
+;;;#autoload
+(defun find-and-ctags-generate-tags (src-dir &optional opts-matrix force)
+  "Ask ctags to create TAGS and return the directory of TAGS.
+SRC-DIR is the `default-directory' to run the command.
+Each row of OPTS-MATRIX contains two items.
+The first item is the command line options pass to `find'.
+The second is the command line options pass `ctags'.
+If FORCE is t, the commmand is executed without consulting the timer.
+
+In summary, it's same as `find-and-ctags-run-ctags-if-needed' but return the directory of TAGS."
+  (file-name-directory (find-and-ctags-run-ctags-if-needed src-dir opts-matrix force)) )
+
 (defun find-and-ctags-buffer-dir ()
   "Find a directory for current buffer.
 Could be parent of `buffer-file-name' or `default-directory' or anything.
@@ -189,6 +201,8 @@ If IS-USED-AS-API is true, friendly message is suppressed"
   (interactive)
   (let (opts-matrix)
     (dolist (tag tags-table-list)
+      (unless (string-matchi-p "TAGS$" tag)
+        (setq tag (concat (file-name-absolute-p tag) "TAGS")))
       (setq opts-matrix (gethash tag find-and-ctags-cli-opts-hash))
       (if opts-matrix
           (apply 'find-and-ctags-run-ctags-if-needed
