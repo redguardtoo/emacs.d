@@ -1,6 +1,6 @@
 ;;; evil-matchit-sql.el ---sql plugin of evil-matchit
 
-;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2017 Chen Bin <chenbin.sh@gmail.com>
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 
@@ -27,7 +27,7 @@
 ;;; Code:
 
 ;; OPTIONAL, you don't need SDK to write a plugin for evil-matchit
-;; but SDK don make you write less code, isn't it?
+;; but SDK do make you write less code, isn't it?
 ;; All you need to do is just define the match-tags for SDK algorithm to lookup.
 (require 'evil-matchit-sdk)
 

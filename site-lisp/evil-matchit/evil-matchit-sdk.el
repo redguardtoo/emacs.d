@@ -1,7 +1,6 @@
 (defvar evilmi-sdk-extract-keyword-howtos
   '(("^[ \t]*\\([a-z]+\!?\\)\\( .*\\| *\\)$" 1)
-    ("^.* \\(do\\) |[a-z0-9A-Z,|]+|$" 1)
-    )
+    ("^.* \\(do\\) |[a-z0-9A-Z,|]+|$" 1))
   "The list of HOWTO on extracting keyword from current line.
 Each howto is actually a pair. The first element of pair is the regular
 expression to match the current line. The second is the index of sub-matches
@@ -267,5 +266,14 @@ is-function-exit-point could be unknown status"
           (setq found t)
         ))
     where-to-jump-in-theory))
+
+(defun evilmi-count-matches (regexp str)
+  (let* ((count 0)
+         (start 0))
+    (unless start (setq start 0))
+    (while (string-match regexp str start)
+      (setq count (1+ count))
+      (setq start (match-end 0)))
+    count))
 
 (provide 'evil-matchit-sdk)

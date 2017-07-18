@@ -1,6 +1,6 @@
 ;;; evil-matchit-latex.el ---latex plugin of evil-matchit
 
-;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2017 Chen Bin <chenbin.sh@gmail.com>
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 

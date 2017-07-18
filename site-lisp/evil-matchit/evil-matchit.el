@@ -1,10 +1,10 @@
 ;;; evil-matchit.el --- Vim matchit ported to Evil
 
-;; Copyright (C) 2014-2016 Chen Bin <chenbin.sh@gmail.com>
+;; Copyright (C) 2014-2017 Chen Bin <chenbin.sh@gmail.com>
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-matchit
-;; Version: 2.2.2
+;; Version: 2.2.3
 ;; Keywords: matchit vim evil
 ;; Package-Requires: ((evil "1.0.7"))
 ;;
@@ -307,8 +307,14 @@ If IS-FORWARD is t, jump forward; or else jump backward."
 
   ;; Emacs Org-mode
   (autoload 'evilmi-org-get-tag "evil-matchit-org" nil)
-  (autoload 'evilmi-org-jump "evil-matchit-org" nil t)
+  (autoload 'evilmi-org-jump "evil-matchit-org" nil)
   (plist-put evilmi-plugins 'org-mode '((evilmi-org-get-tag evilmi-org-jump)))
+
+
+  ;; Markdown
+  (autoload 'evilmi-markdown-get-tag "evil-matchit-markdown" nil)
+  (autoload 'evilmi-markdown-jump "evil-matchit-markdown" nil)
+  (plist-put evilmi-plugins 'markdown-mode '((evilmi-markdown-get-tag evilmi-markdown-jump)))
 
   ;; Latex
   (autoload 'evilmi-latex-get-tag "evil-matchit-latex" nil)
@@ -486,7 +492,7 @@ If IS-FORWARD is t, jump forward; or else jump backward."
 ;;;###autoload
 (defun evilmi-version()
   (interactive)
-  (message "2.2.2"))
+  (message "2.2.3"))
 
 ;;;###autoload
 (define-minor-mode evil-matchit-mode
