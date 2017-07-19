@@ -349,22 +349,21 @@ INDENT-SIZE decide the indentation level.
                 "$A" ; salesforce lightning component
                 "$LightningApp" ; salesforce
                 "AccessifyHTML5"
+                "Blob"
+                "FormData"
                 "KeyEvent"
                 "Raphael"
                 "React"
                 "__dirname" ; Node
                 "_content" ; Keysnail
+                "after"
+                "afterEach"
                 "angular"
                 "app"
                 "assert"
                 "assign"
                 "before"
                 "beforeEach"
-                "after"
-                "afterEach"
-                "documentRef"
-                "global"
-                "Blob"
                 "browser"
                 "by"
                 "clearInterval"
@@ -373,6 +372,8 @@ INDENT-SIZE decide the indentation level.
                 "content" ; Keysnail
                 "define"
                 "describe"
+                "documentRef"
+                "global"
                 "display" ; Keysnail
                 "element"
                 "expect"
