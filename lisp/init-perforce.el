@@ -187,6 +187,8 @@ If IN-PROJECT is t, operate in project root."
                                            (ffip-project-root))))))
 
 (defun p4edit-in-wgrep-buffer()
+  "'p4 edit' files in wgrep buffer.
+Turn off `read-only-mode' of opened files."
   (interactive)
   (save-restriction
     (let* ((start (wgrep-goto-first-found))
