@@ -16,29 +16,22 @@
 ;; Insert below setup into ~/.emacs.d/init.el:
 ;; (defun my-setup-develop-environment ()
 ;;   (interactive)
-
 ;;   ;; you can use `find-and-ctags-current-full-filename-match-pattern-p' instead
-;;   (when (find-and-ctags-current-path-match-pattern-p "/MYPROJ")
-;;     (setq-local tags-table-list
-;;                 (list (find-and-ctags-run-ctags-if-needed "~/workspace/MYPROJ" ; project directory
-;;                                                           '(("-not -size +64k" "--exclude=*.min.js") ; (find-opts ctags-opts)
-;;                                                             ;; you may add more find-opts ctags-opts pair HERE to run find&ctags again to APPEND to same TAGS file
-;;                                                             ;; ctags-opts must contain "-a" to append
-;;                                                             ;; (find-opts "-a")
-;;                                                             )))))
-;;   ;; for other projects
-;;   ;; insert NEW `when' statements here
-;;   )
+;;   (if (find-and-ctags-current-path-match-pattern-p "/MYPROJ")
+;;     (vist-tags-table (find-and-ctags-run-ctags-if-needed "~/workspace/MYPROJ" ; project directory
+;;                                                          '(("-not -size +64k" "--exclude=*.min.js") ; (find-opts ctags-opts)
+;;                                                            ;; you may add more find-opts ctags-opts pair HERE to run find&ctags again to APPEND to same TAGS file
+;;                                                            ;; ctags-opts must contain "-a" to append
+;;                                                            ;; (find-opts "-a")
+;;                                                            ))
+;;                      t)))
 ;; (add-hook 'prog-mode-hook 'my-setup-develop-environment) ; prog-mode require emacs24+
 ;; (add-hook 'lua-mode-hook 'my-setup-develop-environment) ; lua-mode does NOT inherit from prog-mode
 ;; ;; OPTIONAL
 ;; (add-hook 'after-save-hook 'find-and-ctags-auto-update-tags)
 ;;
-;; In above setup, TAGS will be updated *automatically* every 5 minutes.
-;; But you can manually update TAGS by `M-x find-and-ctags-update-all-tags-force'.
-;; If you want to manually update the TAGS, `M-x find-and-ctags-update-all-tags-force'.
-;;
-;; After `tags-table-list' is set, You can `M-x find-tag' to start code navigation
+;; In above setup, TAGS is updated *automatically* every 5 minutes.
+;; It can also be manually update by `find-and-ctags-update-all-tags-force'.
 ;;
 ;; You can use `find-and-ctags-get-hostname' for per computer setup.
 ;; For example, if my home PC hostname is like "AU0247589",
@@ -160,7 +153,7 @@ The second is the command line options pass `ctags'.
 If FORCE is t, the commmand is executed without consulting the timer.
 
 In summary, it's same as `find-and-ctags-run-ctags-if-needed' but return the directory of TAGS."
-  (file-name-directory (find-and-ctags-run-ctags-if-needed src-dir opts-matrix force)) )
+  (file-name-directory (find-and-ctags-run-ctags-if-needed)) )
 
 (defun find-and-ctags-buffer-dir ()
   "Find a directory for current buffer.
@@ -199,8 +192,11 @@ If it's nil, fallback to `default-directory'."
   "Update all TAGS files listed in `tags-table-list'.
 If IS-USED-AS-API is true, friendly message is suppressed"
   (interactive)
-  (let (opts-matrix)
-    (dolist (tag tags-table-list)
+  (let* (opts-matrix
+         (tags-list tags-table-list))
+    (if tags-file-name
+        (setq tags-list (add-to-list 'tagslist tags-file-name)))
+    (dolist (tag tags-list)
       (unless (string-match-p "TAGS$" tag)
         (setq tag (concat (file-name-absolute-p tag) "TAGS")))
       (setq opts-matrix (gethash tag find-and-ctags-cli-opts-hash))
@@ -212,7 +208,7 @@ If IS-USED-AS-API is true, friendly message is suppressed"
                  (list opts-matrix t))
         (find-and-ctags-run-ctags-if-needed (file-name-directory tag) '(("" "")) t))
       (unless is-used-as-api
-        (message "All tag files in `tags-table-list' are updated!")))))
+        (message "Tags in `tags-file-name' and `tags-table-list' are updated!")))))
 
 ;;;###autoload
 (defun find-and-ctags-auto-update-tags()
@@ -230,8 +226,7 @@ If IS-USED-AS-API is true, friendly message is suppressed"
     (setq find-and-ctags-updated-timer (current-time))
     (find-and-ctags-update-all-tags-force t)
     (message "All tag files have been updated after %d seconds!"
-             (- (float-time (current-time)) (float-time find-and-ctags-updated-timer))))
-   ))
+             (- (float-time (current-time)) (float-time find-and-ctags-updated-timer))))))
 
 (provide 'find-and-ctags)
 ;;; find-and-ctags.el ends here
