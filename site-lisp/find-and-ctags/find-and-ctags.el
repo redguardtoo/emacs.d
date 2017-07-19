@@ -201,7 +201,7 @@ If IS-USED-AS-API is true, friendly message is suppressed"
   (interactive)
   (let (opts-matrix)
     (dolist (tag tags-table-list)
-      (unless (string-matchi-p "TAGS$" tag)
+      (unless (string-match-p "TAGS$" tag)
         (setq tag (concat (file-name-absolute-p tag) "TAGS")))
       (setq opts-matrix (gethash tag find-and-ctags-cli-opts-hash))
       (if opts-matrix
