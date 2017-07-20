@@ -195,7 +195,7 @@ If IS-USED-AS-API is true, friendly message is suppressed"
   (let* (opts-matrix
          (tags-list tags-table-list))
     (if tags-file-name
-        (setq tags-list (add-to-list 'tagslist tags-file-name)))
+        (setq tags-list (add-to-list 'tags-list tags-file-name)))
     (dolist (tag tags-list)
       (unless (string-match-p "TAGS$" tag)
         (setq tag (concat (file-name-absolute-p tag) "TAGS")))
@@ -226,7 +226,8 @@ If IS-USED-AS-API is true, friendly message is suppressed"
     (setq find-and-ctags-updated-timer (current-time))
     (find-and-ctags-update-all-tags-force t)
     (message "All tag files have been updated after %d seconds!"
-             (- (float-time (current-time)) (float-time find-and-ctags-updated-timer))))))
+             (- (float-time (current-time)) (float-time find-and-ctags-updated-timer))))
+   ))
 
 (provide 'find-and-ctags)
 ;;; find-and-ctags.el ends here
