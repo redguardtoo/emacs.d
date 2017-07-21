@@ -218,14 +218,15 @@ Check [[https://emacsthemes.com/]].
 Write down the name of color theme (for example, molokai).
 
 *** Setup color theme manually (recommended)
-Insert below code into "~/.emacs.d/lisp/init-color-theme.el",
+Search below code in =~/.emacs.d/lisp/init-color-theme.el= and replace "molokai" with your color theme name,
 #+BEGIN_SRC elisp
 ;; the color theme name "molokai"" could be replaced with other theme name
-(require 'color-theme-molokai)
+(unless (featurep 'color-theme-molokai)
+  (require 'color-theme-molokai))
 (color-theme-molokai)
 #+END_SRC
 
-=M-x color-theme-select= *may not work* because of some design flaw in Emacs.
+Please note =M-x color-theme-select= *may not work* because of some design flaw in Emacs.
 
 There is *NO unified way* to enable color theme because two color theme systems exist. You need read color theme's documentation at first.
 
