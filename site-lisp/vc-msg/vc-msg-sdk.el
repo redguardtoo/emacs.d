@@ -126,14 +126,17 @@ CONTENT is inserted into buffer."
       (erase-buffer)
       (insert content)
 
-      ;; `ffip-diff-mode' inherits from `diff-mode'
       (diff-mode)
       (goto-char (point-min))
 
       ;; quit easily
       (local-set-key (kbd "q") 'vc-msg-sdk-quit-window)
       (if (and (boundp 'evil-mode) evil-mode)
-          (evil-local-set-key 'normal "q" 'vc-msg-sdk-quit-window)))))
+          (evil-local-set-key 'normal "q" 'vc-msg-sdk-quit-window))
+
+      ;; You can run `ffip-diff-mode' which inherits from `diff-mode' but is better
+      ;; `ffip-diff-mode' is from package find-file-in-project v5.3.2
+      (run-hook-with-args 'vc-msg-show-code-hook))))
 
 (defun vc-msg-sdk-extract-summary (pattern output)
   "PATTERN is the beginning of summary extracted from OUTPUT.

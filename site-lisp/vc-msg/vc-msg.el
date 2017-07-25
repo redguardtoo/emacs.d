@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.3
 ;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
@@ -32,7 +32,7 @@
 ;; it's only one liner setup:
 ;;   (setq vc-msg-force-vcs "p4")
 ;;
-;; You can add hook to =vc-msg-hook=,
+;; You can add hook to `vc-msg-hook',
 ;;   (defun vc-msg-hook-setup (vcs-type commit-info)
 ;;     ;; copy commit id to clipboard
 ;;     (message (format "%s\n%s\n%s\n%s"
@@ -41,6 +41,13 @@
 ;;                      (plist-get commit-info :author-time)
 ;;                      (plist-get commit-info :author-summary))))
 ;;   (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
+;;
+;; Hook `vc-msg-show-code-hook' is hook after code of certain commit
+;; is displayed. Here is sample code:
+;;   (defun vc-msg-show-code-setup ()
+;;     ;; use `ffip-diff-mode' from package find-file-in-project instead of `diff-mode'
+;;     (ffip-diff-mode))
+;;   (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
 ;;
 ;; Perforce is detected automatically.  You don't need any manual setup.
 ;; But if you use Windows version of perforce CLI in Cygwin Emacs, we
@@ -130,6 +137,10 @@ The second parameter is the `plist' of extrated information,
 - `(plist-get param :author-summary)`
 Other extra fields of param may exists which is produced by plugin
 and is a blackbox to 'vc-msg.el'."
+  :type 'hook)
+
+(defcustom vc-msg-show-code-hook nil
+  "Hook after showing the code in a new buffer."
   :type 'hook)
 
 (defcustom vc-msg-previous-commit-info nil

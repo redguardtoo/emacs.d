@@ -110,10 +110,20 @@ Parse the command execution output and return a plist:
 (defun vc-msg-p4-show-code ()
   "Show code."
   (let* ((info vc-msg-previous-commit-info)
-         (cmd (vc-msg-p4-generate-cmd (format "describe -du %s" (plist-get info :id)))))
+         (cmd (vc-msg-p4-generate-cmd (format "describe -du %s" (plist-get info :id))))
+         (rlt (shell-command-to-string cmd)))
+    ;; remove p4 verbose bullshit and create a standard diff output
+    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+"
+                                        ""
+                                        rlt))
+    (setq rlt (replace-regexp-in-string "Differences \.\.\.[\r\n]+" "" rlt))
+    ;; one line short description of change list
+    (setq rlt (replace-regexp-in-string "Change \\([0-9]+\\) by \\([^ @]+\\)@[^ @]+ on \\([^ \r\n]*\\).*[\r\n \t]+\\([^ \t].*\\)" "\\1 by \\2@\\3 \\4" rlt))
+    ;; `diff-mode' friendly format
+    (setq rlt (replace-regexp-in-string "^==== \\(.*\\)#[0-9]+ (text) ====[\r\n]+" "--- \\1\n+++ \\1\n" rlt))
     (vc-msg-sdk-get-or-create-buffer
      "vs-msg"
-     (shell-command-to-string cmd))))
+     rlt)))
 
 (defcustom vc-msg-p4-extra
   '(("c" "[c]ode" vc-msg-p4-show-code))
