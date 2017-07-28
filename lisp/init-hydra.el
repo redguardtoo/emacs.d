@@ -149,5 +149,123 @@
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
 ;; }}
 
+;; increase and decrease font size in GUI emacs
+;; @see https://oremacs.com/download/london.pdf
+(when (display-graphic-p)
+  (defhydra hydra-zoom (global-map "C-c")
+    "zoom"
+    ("g" text-scale-increase "in")
+    ("l" text-scale-decrease "out")
+    ("r" (text-scale-set 0) "reset")
+    ("0" (text-scale-set 0) :bind nil :exit t)
+    ("1" (text-scale-set 0) nil :bind nil :exit t)))
+(defvar whitespace-mode nil)
+
+;; {{ @see https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
+(defhydra hydra-toggle (:color pink)
+  "
+_a_ abbrev-mode:       %`abbrev-mode
+_d_ debug-on-error:    %`debug-on-error
+_f_ auto-fill-mode:    %`auto-fill-function
+_t_ truncate-lines:    %`truncate-lines
+_w_ whitespace-mode:   %`whitespace-mode
+"
+  ("a" abbrev-mode nil)
+  ("d" toggle-debug-on-error nil)
+  ("f" auto-fill-mode nil)
+  ("t" toggle-truncate-lines nil)
+  ("w" whitespace-mode nil)
+  ("q" nil "quit"))
+;; Recommended binding:
+(global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
+;; }}
+
+;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
+(defhydra hydra-window ()
+  "
+Movement^^   ^Split^         ^Switch^     ^Resize^
+-----------------------------------------------------
+_h_ Left     _v_ertical      _b_uffer     _q_ X left
+_j_ Down     _x_ horizontal  _f_ind files _w_ X Down
+_k_ Top      _z_ undo        _a_ce 1      _e_ X Top
+_l_ Right    _Z_ reset       _s_wap       _r_ X Right
+_F_ollow     _D_lt Other     _S_ave       max_i_mize
+_SPC_ cancel _o_nly this     _d_elete
+"
+  ("h" windmove-left )
+  ("j" windmove-down )
+  ("k" windmove-up )
+  ("l" windmove-right )
+  ("q" hydra-move-splitter-left)
+  ("w" hydra-move-splitter-down)
+  ("e" hydra-move-splitter-up)
+  ("r" hydra-move-splitter-right)
+  ("b" ivy-switch-buffer)
+  ("f" counsel-find-file)
+  ("F" follow-mode)
+  ("a" (lambda ()
+         (interactive)
+         (ace-window 1)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body)))
+  ("v" (lambda ()
+         (interactive)
+         (split-window-right)
+         (windmove-right)))
+  ("x" (lambda ()
+         (interactive)
+         (split-window-below)
+         (windmove-down)))
+  ("s" (lambda ()
+         (interactive)
+         (ace-window 4)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body)))
+  ("S" save-buffer)
+  ("d" delete-window)
+  ("D" (lambda ()
+         (interactive)
+         (ace-window 16)
+         (add-hook 'ace-window-end-once-hook
+                   'hydra-window/body)))
+  ("o" delete-other-windows)
+  ("i" ace-maximize-window)
+  ("z" (progn
+         (winner-undo)
+         (setq this-command 'winner-undo)))
+  ("Z" winner-redo)
+  ("SPC" nil))
+(global-set-key (kbd "C-c C-w") 'hydra-window/body)
+;; }}
+
+;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
+(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
+                                      :hint nil)
+  "
+Git gutter:
+  _j_: next hunk     _s_tage hunk   _q_uit
+  _k_: previous hunk _r_evert hunk  _Q_uit and deactivate git-gutter
+  _h_: first hunk    _p_opup hunk
+  _l_: last hunk     set _R_evision
+"
+  ("j" git-gutter:next-hunk)
+  ("k" git-gutter:previous-hunk)
+  ("h" (progn (goto-char (point-min))
+              (git-gutter:next-hunk 1)))
+  ("l" (progn (goto-char (point-min))
+              (git-gutter:previous-hunk 1)))
+  ("s" git-gutter:stage-hunk)
+  ("r" git-gutter:revert-hunk)
+  ("p" git-gutter:popup-hunk)
+  ("R" git-gutter:set-start-revision)
+  ("q" nil :color blue)
+  ("Q" (progn (git-gutter-mode -1)
+              ;; git-gutter-fringe doesn't seem to
+              ;; clear the markup right away
+              (sit-for 0.1)
+              (git-gutter:clear))
+   :color blue))
+(global-set-key (kbd "C-c C-g") 'hydra-git-gutter/body)
+;; }}
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
