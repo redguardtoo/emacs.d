@@ -1,3 +1,31 @@
+;;; evil-matchit-ocaml.el -- tuareg-mode  plugin of evil-matchit
+
+;; Copyright (C) 2014-2017 Chen Bin <chenbin.sh@gmail.com>
+
+;; Author: Tomasz Kołodziejski <tkolodziejski@gmail.com>
+
+;; This file is not part of GNU Emacs.
+
+;;; License:
+
+;; This file is part of evil-matchit
+;;
+;; evil-matchit is free software: you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+;;
+;; evil-matchit is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+;;
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+;;; Code:
+
 (defvar evilmi-ocaml-keywords
   '((("struct" "begin" "sig" "object") ("end"))
     (("if") ("then"))
@@ -8,13 +36,15 @@
     ())
   "Ocaml keywords.")
 
+(defvar evilmi-ocaml-all-keywords
+  (apply 'append (apply 'append evilmi-ocaml-keywords)))
+
 (defvar evilmi-ocaml-keywords-regex
-  (let ((all-keywords (apply 'append (apply 'append evilmi-ocaml-keywords))))
-    (format "\\<\\(%s\\)\\>" (mapconcat 'identity all-keywords "\\|")))
+  (format "\\<\\(%s\\)\\>" (mapconcat 'identity evilmi-ocaml-all-keywords "\\|"))
   "Regexp to find next/previous keyword.")
 
 ;; jumps to next keyword. Returs nil if there's no next word
-(defun evilmi-ocaml-next-word (direction)
+(defun evilmi-ocaml-next-keyword (direction)
   (if (= direction 0)
       (let ((new-point (save-excursion
           (forward-char)
@@ -46,7 +76,7 @@
 (defun evilmi-ocaml-go (tag-info level direction)
   (if (= level 0)
       (point)
-    (if (evilmi-ocaml-next-word direction)
+    (if (evilmi-ocaml-next-keyword direction)
         (progn
           (setq keyword (evilmi-ocaml-get-word))
 
@@ -61,9 +91,17 @@
       nil)))
 
 (defun evilmi-ocaml-goto-word-beginning ()
-  ;; this is so that when the cursor is on the first character we don't jump to previous word
-  (forward-char)
-  (search-backward-regexp "\\<"))
+  (let ((bounds (bounds-of-thing-at-point 'word))
+        (word (thing-at-point 'word))
+        (line-end (line-end-position)))
+    (if bounds (goto-char (car bounds)))
+    (let ((next-keyword
+           (save-excursion
+             (if (find word evilmi-ocaml-all-keywords :test 'equal)
+                 (point)
+               (evilmi-ocaml-next-keyword 0)
+               (if (< (point) line-end) (point))))))
+      (if next-keyword (goto-char next-keyword)))))
 
 ;;;###autoload
 (defun evilmi-ocaml-get-tag ()
