@@ -122,8 +122,8 @@ If FILE-OPENED, current file is still opened."
             (setq found t))
           (setq i (+ 1 i))))))
 
-    ;; remove p4 verbose bullshit
-    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+"
+    ;; clean the verbose summary
+    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+"
                                         ""
                                         rlt))
     (setq rlt (replace-regexp-in-string "Differences \.\.\.[\r\n]+" "" rlt))
@@ -226,8 +226,9 @@ NUM default values i 10.  Show the latest NUM changes."
   (unless num
     (setq num 10))
   (let* ((content (mapconcat #'p4-show-changelist-patch
-                             (if num (subseq (p4-changes) 0 num)
-                               (p4-changes))
+                             (let* ((chgs (p4-changes)))
+                               (if (and num (< num (length chgs))) (subseq chgs 0 num)
+                                 chgs))
                    "\n\n")))
     (p4--create-buffer "*p4history*" content)))
 
