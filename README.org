@@ -54,7 +54,7 @@ Here are the *exact steps*,
 Now you are using local package repository =~/projs/melpa=.
 
 You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =~/.emacs.d/lisp/init-elpa.el=.
-** Third party tools (OPTIONAL)
+** Third party command line program (OPTIONAL)
 *** Install
 You can install them in any way you like. But =OS package manager= is easier.
 
@@ -62,12 +62,14 @@ You can install them in any way you like. But =OS package manager= is easier.
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
 - [[https://github.com/mxcl/homebrew][homebrew]] at Mac
 - any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
-*** List of tools
-These tools are *OPTIONAL*.
+
+If the program is developed with certain programming language. That language may provide its own package manager which allows you install the program for only current user. For example, python package manager has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
+*** List of command line programs
+These programs are *OPTIONAL*.
 
 Please ignore any related error message. For example, if aspell and hunspell are not installed, you can ignore all the flyspell error messages.
 **** fortune-zh or fortune
-- Show ancient Chinese poem quotes from random sources
+- Show ancient Chinese poem or quotes from random sources
 - Install through OS package manager
 **** w3m (web browser)
 - Required by =emacs-w3m=
@@ -167,9 +169,9 @@ If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell
 - Install through OS package manager
 I don't use =ripgrep= because it does not support [[not support https://github.com/BurntSushi/ripgrep/issues/225][decompression]].
 * Usage
-I *avoid overriding the original setup* of third party tool.
+I *avoid overriding the original setup* of third party command line program.
 
-If I mention certain directories is used by certain tool, you can always confirm the information in the tool's original manual.
+If I mention certain directories is used by certain program, you can always confirm the information in its manual.
 
 You can also =grep keyword= in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Tutorial (OPTIONAL)
@@ -251,7 +253,7 @@ You can change the definition of =my-toggle-color-theme= in =init-color-theme.el
 ** Grep/Replace text in project
 Many third party plugins bundled in this setup have already provided all the features you needed. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
 
-A generic grep tool =my-grep= is provided if you don't use =git=. Since =my-grep= is based on =counsel/ivy=, it also supports "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
+A generic grep program =my-grep= is provided if you don't use =git=. Since =my-grep= is based on =counsel/ivy=, it also supports "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
 
 The good news is my setup optimizes the multi-edit workflow. After =M-x my-grep= or pressing ",qq", you only need press =C-c C-o= once to use =wgrep-mode=, and you can edit text (for example, delete lines) in =wgrep-mode= without any extra key pressing.
 ** js2-mode
@@ -341,9 +343,9 @@ If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/Interactivel
 
 Keep pressing =C-f= to ignore suggestions.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if it knows how to find the third party command line tools. Cygwin provides most of those tools by default. Add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the tools automatically.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if it knows how to find the third party command line programs. Cygwin provides most of them by default. Please add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the program automatically.
 
-By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into the directory.
+By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can setup =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
 - Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you need always to run it when you update the snippets. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
@@ -359,7 +361,7 @@ http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 ** Government blocks the internet
 You may need [[https://github.com/goagent/goagent][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
 ** Email
-If you use Gnus for email, check init-gnus.el and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
+If you use Gnus for email, check =init-gnus.el= and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** Cannot download ELPA packages?
 Some package cannot be downloaded automatically because of network problem.
 
@@ -373,7 +375,7 @@ Please read [[https://github.com/emacs-evil/evil/raw/master/doc/evil.pdf][its PD
 ** C++ auto-completion doesn't work?
 I assume you are using company-mode. Other packages have similar setup.
 
-There are many ways to scan the C++ source files and create the candidates used by company frontend. The Emacs Lisp code and command line tools to scan the C++ files are company backends. =company-clang= is a popular backend because Clang is good at processing C++.
+There are many ways to scan the C++ source files. The Emacs Lisp code and command line programs to scan the C++ files are company backends. =company-clang= is a popular backend because Clang is good at processing C++.
 
 If you use clang to parse the C++ code:
 - Make sure code is syntax correct
