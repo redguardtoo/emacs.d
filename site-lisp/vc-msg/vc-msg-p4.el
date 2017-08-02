@@ -113,7 +113,8 @@ Parse the command execution output and return a plist:
          (cmd (vc-msg-p4-generate-cmd (format "describe -du %s" (plist-get info :id))))
          (rlt (shell-command-to-string cmd)))
     ;; remove p4 verbose bullshit and create a standard diff output
-    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+\\(\.\.\. .*[\r\n]+\\)+"
+    ;; Don't be too greedy, or else regex will overflow
+    (setq rlt (replace-regexp-in-string "^\\(Affected\\|Moved\\) files \.\.\.[\r\n]+"
                                         ""
                                         rlt))
     (setq rlt (replace-regexp-in-string "Differences \.\.\.[\r\n]+" "" rlt))
