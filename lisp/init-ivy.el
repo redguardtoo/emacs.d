@@ -97,6 +97,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
   ;; on debian ag v0.26.0 does not support "-n" option
   (executable-find "ag"))
 
+;; TODO, code will be migrated into eacl
 (defun counsel-complete-line-by-grep ()
   "Complete line using text from (line-beginning-position) to (point).
 If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."

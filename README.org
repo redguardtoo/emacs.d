@@ -373,7 +373,7 @@ It's defined in =~/.emacs.d/lisp/init-evil.el=. Press =C-z= to switch between Em
 
 Please read [[https://github.com/emacs-evil/evil/raw/master/doc/evil.pdf][its PDF manual]] before using evil-mode.
 ** C++ auto-completion doesn't work?
-I assume you are using company-mode. Other packages have similar setup.
+I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
 
 There are many ways to scan the C++ source files. The Emacs Lisp code and command line programs to scan the C++ files are company backends. =company-clang= is a popular backend because Clang is good at processing C++.
 
@@ -395,6 +395,8 @@ Other backends produce less precise results but are more efficient and easier to
 It's similar to C++ setup. You can use company as frontend. But backend is the key. For example, you can't use =company-clang= for PHP because Clang can't handle PHP. But GNU Global supports PHP, so you can use =company-gtags= instead.
 
 For languages GNU Global doesn't support, you can always fall back to =company-etags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]] by using regular expression. Regular expressions could be placed in =~/.ctags=.
+
+You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-statement=.
 ** Chinese Input Method Editor
 =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/chinese-pyim][chinese-pyim]].
 

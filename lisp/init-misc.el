@@ -878,4 +878,9 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
 ;; }}
 
+;; {{ eacl - emacs auto complete line(s)
+(global-set-key (kbd "C-x C-l") 'eacl-complete-line)
+(global-set-key (kbd "C-x ;") 'eacl-complete-statement)
+
+;; }}
 (provide 'init-misc)
