@@ -298,7 +298,7 @@ Or else, find files since 24 weeks (6 months) ago."
                         keyword)))
      (t
       ;; use extended regex always
-      (setq cmd (format "grep -rsnE -P %s \"%s\" *"
+      (setq cmd (format "grep -rsnE %s %s \"%s\" *"
                         (my-grep-exclude-opts use-cache)
                         extra-opts
                         keyword))))
