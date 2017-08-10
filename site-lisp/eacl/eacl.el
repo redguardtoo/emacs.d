@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: autocomplete line
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eapl
@@ -26,10 +26,26 @@
 
 ;;; Commentary:
 
-;; `eacl-complete-line' complete line. You could assign key binding
+;; Mutiple commands are provided to grep files in the project to get
+;; Multiple commands are provided to grep files in the project to get
+;; auto complete candidates.
+;; The keyword to grep is the text from line beginning to current cursor.
+;; Project is *automatically* detected if Git/Mercurial/Subversion is used.
+;; You can override the project root by setting `eacl-project-root',
+;;
+;; List of commands,
+;;
+;; `eacl-complete-line' complete line.  You could assign key binding
 ;; "C-x C-l" to this command.
-;; `eacl-complete-statement' complete statement. Statement could be
+;;
+;; `eacl-complete-statement' completes statement.  Statement could be
 ;; multiple lines and is matched by pattern `eacl-statement-regex'.
+;; According to default value of `eacl-statement-regex'.
+;; Statement ends with ";"
+;;
+;; `eacl-complete-snippet' completes snippets ending with "}"
+;;
+;; `eacl-complete-tag' completes HTML tag ending with ">"
 ;;
 ;; GNU Grep, Emacs 24.3 and counsel (https://github.com/abo-abo/swiper)
 ;; are required.
@@ -86,7 +102,7 @@
   :type '(repeat sexp)
   :group 'eacl)
 
-(defvar eacl-grep-ignore-file-names
+(defcustom eacl-grep-ignore-file-names
   '("TAGS"
     "tags"
     "GTAGS"
@@ -100,14 +116,30 @@
     "*vendor*.js"
     "*.min.css"
     "*~")
-  "File names to ignore when grepping.")
+  "File names to ignore when grepping."
+  :type '(repeat sexp)
+  :group 'eacl)
 
+;;;###autoload
 (defun eacl-get-project-root ()
   "Get project root."
   (or eacl-project-root
       (cl-some (apply-partially 'locate-dominating-file
                                 default-directory)
                eacl-project-file)))
+
+;;;###autoload
+(defun eacl-current-line ()
+  "Current line."
+  (buffer-substring-no-properties (line-beginning-position)
+                                  (point)))
+
+;;;###autoload
+(defun eacl-leading-spaces (cur-line)
+  "Leading space at the begining of CUR-LINE."
+  (if (string-match "^\\([ \t]*\\)" cur-line)
+      (match-string 1 cur-line)
+    ""))
 
 (defun eacl-grep-exclude-opts ()
   "Create grep exclude options."
@@ -120,6 +152,7 @@
           (mapconcat (lambda (e) (format "--exclude='%s'" e))
                      eacl-grep-ignore-file-names " ")))
 
+;;;###autoload
 (defun eacl-get-keyword (cur-line)
   "Get trimmed keyword from CUR-LINE."
   (let* ((keyword (replace-regexp-in-string "^[ \t]*"
@@ -146,31 +179,30 @@
         (setq key (concat (substring key 0 (- w 4)) "...")))
     (cons key s)))
 
-(defun eacl-complete-line-or-statement (complete-line)
-  "Complete line or statement according to boolean flag COMPLETE-LINE."
+(defun eacl-complete-line-or-statement (regex cur-line keyword)
+  "Complete line or statement according to REGEX.
+CUR-LINE and KEYWORD are also required.
+If REGEX is not nil, complete statement."
   (let* ((default-directory (or (eacl-get-project-root) default-directory))
-         (cur-line (buffer-substring-no-properties (line-beginning-position) (point)))
-         (keyword (eacl-get-keyword cur-line))
-         (cmd-format-opts (if complete-line "%s -rshI %s \"%s\" *"
-                            "%s -rsnhPzoI %s \"%s\" *"))
+         (cmd-format-opts (if regex "%s -rsnhPzoI %s \"%s\" *"
+                            "%s -rshI %s \"%s\" *"))
          (cmd (format cmd-format-opts
                       eacl-grep-program
                       (eacl-grep-exclude-opts)
-                      (if complete-line keyword (concat keyword eacl-statement-regex))))
-         (leading-spaces "")
-         (sep (if complete-line "[\r\n]+" "^[0-9]+:"))
+                      (if regex (concat keyword regex)
+                        keyword)))
+         (leading-spaces (eacl-leading-spaces cur-line))
+         (sep (if regex "^[0-9]+:" "[\r\n]+"))
          (collection (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+")))
     (when collection
-      (if (string-match "^\\([ \t]*\\)" cur-line)
-          (setq leading-spaces (match-string 1 cur-line)))
+      (setq collection (delq nil (delete-dups collection)))
       (cond
        ((= 1 (length collection))
         ;; insert only candidate
         (eacl-replace-current-line leading-spaces (car collection)))
        ((> (length collection) 1)
         ;; uniq
-        (setq collection (delq nil (delete-dups collection)))
-        (unless complete-line
+        (if regex
           (setq collection (mapcar 'eacl-create-candidate-summary collection)))
         (ivy-read "candidates:"
                   collection
@@ -183,14 +215,36 @@
   "Complete line by grepping in project.
 The keyword to grep is the text from line beginning to current cursor."
   (interactive)
-  (eacl-complete-line-or-statement t))
+  (let* ((cur-line (eacl-current-line))
+         (keyword (eacl-get-keyword cur-line)))
+    (eacl-complete-line-or-statement nil cur-line keyword)))
 
 ;;;###autoload
 (defun eacl-complete-statement ()
   "Complete statement which end with pattern `eacl-statement-regex'.
 The keyword to grep is the text from line beginning to current cursor."
   (interactive)
-  (eacl-complete-line-or-statement nil))
+  (let* ((cur-line (eacl-current-line))
+         (keyword (eacl-get-keyword cur-line)))
+    (eacl-complete-line-or-statement eacl-statement-regex cur-line keyword)))
+
+;;;###autoload
+(defun eacl-complete-snippet ()
+  "Complete snippet which ends with \"}\".
+The keyword to grep is the text from line beginning to current cursor."
+  (interactive)
+  (let* ((eacl-statement-regex "[^}]*}"))
+    (eacl-complete-statement)))
+
+;;;###autoload
+(defun eacl-complete-tag ()
+  "Complete snippet which ends with \">\".
+The keyword to grep is the text from line beginning to current cursor."
+  (interactive)
+  (let* ((cur-line (eacl-current-line))
+         (keyword (concat "<" (replace-regexp-in-string "^<" "" (eacl-get-keyword cur-line))))
+         (regex "[^>]*>"))
+    (eacl-complete-line-or-statement regex cur-line keyword)))
 
 (provide 'eacl)
 ;;; eacl.el ends here
