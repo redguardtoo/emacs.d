@@ -215,6 +215,8 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 You can override default key bindings in =~/.custome.el=.
 * FAQ
+** Override default setup
+You place your setup in =~/.custom.el= so it's not overwritten by the update.
 ** Color theme
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
@@ -398,24 +400,11 @@ For languages GNU Global doesn't support, you can always fall back to =company-e
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-statement=.
 ** Chinese Input Method Editor
-=M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/chinese-pyim][chinese-pyim]].
+   =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
 If your *personal* dictionary =~/.eim/personal.pyim= exists, it will be used.
 
-You can =M-x my-pyim-export-dictionary= to export your personal words into personal.pyim.
-
-We use minimum setup recommended by chinese-pyim site.
-
-You can override our setup in =~/.custom.el=,
-#+begin_src elisp
-(eval-after-load 'chinese-pyim
-  '(progn
-     ;; Use great dictionary which can be fetch by:
-     ;; `curl -L https://github.com/tumashu/chinese-pyim-greatdict/raw/master/pyim-greatdict.pyim.gz | zcat > ~/.eim/pyim-greatdict.pyim`
-     (if (and my-pyim-directory
-              (file-exists-p (my-pyim-personal-dict "pyim-greatdict.pyim")))
-         (add-to-list 'pyim-dicts (list :name "pyim-greatdict" :file (my-pyim-personal-dict "pyim-greatdict.pyim"))))))
-#+end_src
+You can =M-x my-pyim-export-dictionary= to export your personal words into personal.pyim. Check =init-chinese-pyim.el= for more information.
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash

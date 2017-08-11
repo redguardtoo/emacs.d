@@ -76,7 +76,7 @@
 
      ;; You can also set up the great dictionary (80M) the same way as peronsal dictionary
      ;; great dictionary can be downloaded this way:
-     ;; `curl -L https://github.com/tumashu/chinese-pyim-greatdict/raw/master/pyim-greatdict.pyim.gz | zcat > ~/.eim/pyim-greatdict.pyim`
+     ;; `curl -L https://github.com/tumashu/pyim-greatdict/raw/master/pyim-greatdict.pyim.gz | zcat > ~/.eim/pyim-greatdict.pyim`
 
      ;; don't use tooltip
      (setq pyim-use-tooltip 'popup)))
