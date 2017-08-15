@@ -230,6 +230,6 @@ NUM default values i 10.  Show the latest NUM changes."
                                (if (and num (< num (length chgs))) (subseq chgs 0 num)
                                  chgs))
                    "\n\n")))
-    (p4--create-buffer "*p4history*" content)))
+    (p4--create-buffer "*p4history*" content t)))
 
 (provide 'init-perforce)
