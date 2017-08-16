@@ -196,6 +196,15 @@ If IN-PROJECT is t, operate in project root."
                                            nil
                                            (ffip-project-root))))))
 
+(defun p4--edit-file (filename &optional fn-accessed)
+  "'p4 edit' FILENAME unless it equals FN-ACCESSED."
+  (unless (string= filename fn-accessed)
+    (shell-command (format "p4 edit %s" filename))
+    (if (setq buf (get-file-buffer filename))
+        (with-current-buffer buf
+          ;; turn off read-only since we've already `p4 edit'
+          (read-only-mode -1)))))
+
 (defun p4edit-in-wgrep-buffer()
   "'p4 edit' files in wgrep buffer.
 Turn off `read-only-mode' of opened files."
@@ -210,14 +219,28 @@ Turn off `read-only-mode' of opened files."
       (while (not (eobp))
         (if (looking-at wgrep-line-file-regexp)
             (let* ((filename (match-string-no-properties 1)) buf)
-              (unless (string= filename fn-accessed)
-                (setq fn-accessed filename)
-                (shell-command (format "p4 edit %s" filename))
-                (if (setq buf (get-file-buffer filename))
-                    (with-current-buffer buf
-                      ;; turn off read-only since we've already `p4 edit'
-                      (read-only-mode -1))))))
+              (p4--edit-file filename fn-accessed)
+              (setq fn-accessed filename)))
         (forward-line 1)))))
+
+
+(defun p4edit-in-diff-mode()
+  "'p4 edit' files in `diff-mode'.
+Turn off `read-only-mode' of opened files."
+  (interactive)
+  (unless (featurep 'imenu)
+    (require 'imenu nil t))
+  (let* ((imenu-auto-rescan t)
+         (imenu-auto-rescan-maxout (if current-prefix-arg
+                                       (buffer-size)
+                                     imenu-auto-rescan-maxout))
+         (items (imenu--make-index-alist t))
+         fn-accessed)
+    (setq items (delete nil (delete-dups (mapcar #'car (delete (assoc "*Rescan*" items) items)))))
+    (save-restriction
+     (dolist (filename items)
+       (p4--edit-file filename fn-accessed)
+       (setq fn-accessed filename)))))
 
 (defun p4history (&optional num)
   "Show history of current file like `git log -p'.

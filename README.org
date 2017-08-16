@@ -259,6 +259,8 @@ Many third party plugins bundled in this setup have already provided all the fea
 A generic grep program =my-grep= is provided if you don't use =git=. Since =my-grep= is based on =counsel/ivy=, it also supports "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
 
 The good news is my setup optimizes the multi-edit workflow. After =M-x my-grep= or pressing ",qq", you only need press =C-c C-o= once to use =wgrep-mode=, and you can edit text (for example, delete lines) in =wgrep-mode= without any extra key pressing.
+** Hydra/Swiper/Counsel/Ivy
+I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 ** js2-mode
 I release patched =js2-mode= based on [[https://github.com/mooz/js2-mode][latest official version]] every three months. My patched version has better imenu support.
 

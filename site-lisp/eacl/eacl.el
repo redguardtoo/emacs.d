@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2017 Chen Bin
 ;;
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: autocomplete line
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eapl
-;; Package-Requires: ((counsel "0.9.1") (emacs "24.3"))
+;; Package-Requires: ((ivy "0.9.1") (emacs "24.3"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -152,13 +152,34 @@
           (mapconcat (lambda (e) (format "--exclude='%s'" e))
                      eacl-grep-ignore-file-names " ")))
 
+(defun eacl-unquote-regex-parens (str)
+  (let ((start 0)
+        ms)
+    (while (setq start (string-match "\\\\)\\|\\\\(\\|[()]" str start))
+      (setq ms (match-string-no-properties 0 str))
+      (cond ((equal ms "\\(")
+             (setq str (replace-match "(" nil t str))
+             (setq start (+ start 1)))
+            ((equal ms "\\)")
+             (setq str (replace-match ")" nil t str))
+             (setq start (+ start 1)))
+            ((equal ms "(")
+             (setq str (replace-match "\\(" nil t str))
+             (setq start (+ start 2)))
+            ((equal ms ")")
+             (setq str (replace-match "\\)" nil t str))
+             (setq start (+ start 2)))
+            (t
+             (error "unexpected"))))
+    str))
+
 ;;;###autoload
 (defun eacl-get-keyword (cur-line)
   "Get trimmed keyword from CUR-LINE."
   (let* ((keyword (replace-regexp-in-string "^[ \t]*"
                                             ""
                                             cur-line)))
-    (counsel-unquote-regex-parens keyword)))
+    (eacl-unquote-regex-parens keyword)))
 
 (defun eacl-replace-current-line (leading-spaces content)
   "Insert LEADING-SPACES and CONTENT."
@@ -185,7 +206,7 @@ CUR-LINE and KEYWORD are also required.
 If REGEX is not nil, complete statement."
   (let* ((default-directory (or (eacl-get-project-root) default-directory))
          (cmd-format-opts (if regex "%s -rsnhPzoI %s \"%s\" *"
-                            "%s -rshI %s \"%s\" *"))
+                            "%s -rshEI %s \"%s\" *"))
          (cmd (format cmd-format-opts
                       eacl-grep-program
                       (eacl-grep-exclude-opts)

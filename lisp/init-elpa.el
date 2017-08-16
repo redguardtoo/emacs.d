@@ -16,7 +16,7 @@ But you may use safer HTTPS instead.")
     ;; {{ since stable v0.9.1 released, we go back to stable version
     ;; ivy
     ;; counsel
-    ;; swiper ; abo-abo has not released 9.0 yet, at least he didn't tag master branch
+    ;; swiper
     ;; }}
     wgrep
     robe
@@ -259,6 +259,7 @@ But you may use safer HTTPS instead.")
 (require-package 'define-word)
 (require-package 'quack) ; for scheme
 (require-package 'hydra)
+(require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'pyim)
 (require-package 'web-mode)
 (require-package 'dumb-jump)
