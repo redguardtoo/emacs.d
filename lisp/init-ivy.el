@@ -93,51 +93,18 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
 
 (defvar counsel-complete-line-use-git t)
 
-(defun counsel-find-quickest-grep ()
-  ;; on debian ag v0.26.0 does not support "-n" option
-  (executable-find "ag"))
+(defun counsel-has-quick-grep ()
+  (executable-find "rg"))
 
-;; TODO, code will be migrated into eacl
-(defun counsel-complete-line-by-grep ()
-  "Complete line using text from (line-beginning-position) to (point).
-If OTHER-GREP is not nil, we use the_silver_searcher and grep instead."
-  (interactive)
-  (let* ((cur-line (my-line-str (point)))
-         (default-directory (ffip-project-root))
-         (keyword (counsel-unquote-regex-parens (replace-regexp-in-string "^[ \t]*" "" cur-line)))
-         (cmd (cond
-               (counsel-complete-line-use-git
-                (format "git --no-pager grep --no-color -P -I -h -i -e \"^[ \\t]*%s\" | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"
-                        keyword))
-               (t
-                (concat  (my-grep-cli keyword nil (if (counsel-find-quickest-grep) "" "-h")) ; tell grep not to output file name
-                         (if (counsel-find-quickest-grep) " | sed s\"\/^.*:[0-9]*:\/\/\"" "") ; remove file names for ag
-                         " | sed s\"\/^[ \\t]*\/\/\" | sed s\"\/[ \\t]*$\/\/\" | sort | uniq"))))
-         (leading-spaces "")
-         (collection (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
+(defun counsel-find-quick-grep (&optional for-swiper)
+  ;; ripgrep says that "-n" is enabled actually not,
+  ;; so we manually add it
+  (concat (executable-find "rg")
+          " -n -M 256 --no-heading --color never "
+          (if for-swiper "-i '%s' %s" "-s")))
 
-    ;; grep lines without leading/trailing spaces
-    (when collection
-      (if (string-match "^\\([ \t]*\\)" cur-line)
-          (setq leading-spaces (match-string 1 cur-line)))
-      (cond
-       ((= 1 (length collection))
-        (counsel--replace-current-line leading-spaces (car collection)))
-       ((> (length collection) 1)
-        (ivy-read "lines:"
-                  collection
-                  :action (lambda (l)
-                            (counsel--replace-current-line leading-spaces l))))))))
-(global-set-key (kbd "C-x C-l") 'counsel-complete-line-by-grep)
-
-(defun counsel-git-grep-yank-line (&optional insert-line)
-  "Grep in the current git repository and yank the line.
-If INSERT-LINE is not nil, insert the line grepped"
-  (interactive "P")
-  (counsel-git-grep-or-find-api 'counsel-insert-grepped-line
-                                "git --no-pager grep -I --full-name -n --no-color -i -e \"%s\""
-                                "grep"
-                                nil))
+(if (counsel-has-quick-grep)
+    (setq counsel-grep-base-command (counsel-find-quick-grep t)))
 
 (defvar counsel-my-name-regex ""
   "My name used by `counsel-git-find-my-file', support regex like '[Tt]om [Cc]hen'.")
@@ -266,15 +233,14 @@ Or else, find files since 24 weeks (6 months) ago."
          (ignore-file-names (if use-cache (plist-get my-grep-opts-cache :ignore-file-names)
                               my-grep-ignore-file-names)))
     (cond
-     ((executable-find "ag")
-      (concat "-s --nocolor --nogroup --silent -z " ; -z to grep *.gz
-              (mapconcat (lambda (e) (format "--ignore-dir='%s'" e))
+     ((counsel-has-quick-grep)
+      (concat (mapconcat (lambda (e) (format "-g='!%s/*'" e))
                          ignore-dirs " ")
               " "
-              (mapconcat (lambda (e) (format "--ignore='*.%s'" e))
+              (mapconcat (lambda (e) (format "-g='!*.%s'" e))
                          ignore-file-exts " ")
               " "
-              (mapconcat (lambda (e) (format "--ignore='%s'" e))
+              (mapconcat (lambda (e) (format "-g='!%s'" e))
                          ignore-file-names " ")))
      (t
       (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
@@ -291,9 +257,9 @@ Or else, find files since 24 weeks (6 months) ago."
   (let* (opts cmd)
     (unless extra-opts (setq extra-opts ""))
     (cond
-     ((counsel-find-quickest-grep)
+     ((counsel-has-quick-grep)
       (setq cmd (format "%s %s %s \"%s\" --"
-                        (counsel-find-quickest-grep)
+                        (counsel-find-quick-grep)
                         (my-grep-exclude-opts use-cache)
                         extra-opts
                         keyword)))
@@ -353,7 +319,7 @@ Or else, find files since 24 weeks (6 months) ago."
 (defvar my-grep-debug nil)
 (defun my-grep ()
   "Grep at project root directory or current directory.
-Try to find best grep program (the silver searcher, grep...) automatically.
+Try to find best grep program (ripgrep, grep...) automatically.
 Extended regex like (pattern1|pattern2) is used."
   (interactive)
   (let* ((keyword (counsel-read-keyword "Enter grep pattern: "))

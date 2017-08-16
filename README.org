@@ -164,10 +164,11 @@ If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell
 - Required by sdcv.el
 - Install through OS package manager
 - Run =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
-**** [[https://github.com/ggreer/the_silver_searcher][the_silver_search (ag)]]
-- Used by =M-x my-grep= to grep text
-- Install through OS package manager
-I don't use =ripgrep= because it does not support [[not support https://github.com/BurntSushi/ripgrep/issues/225][decompression]].
+**** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
+- Used by =M-x my-grep= to search text in files
+- Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
+- Tweak environment variable PATH to let Emacs find ripgrep
+I will keep using =ripgrep= instead of =the-silver-searcher= from now on.
 * Usage
 I *avoid overriding the original setup* of third party command line program.
 
