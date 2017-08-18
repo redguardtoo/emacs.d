@@ -149,11 +149,6 @@
     ))
 ;; }}
 
-;; {{ crontab
-;; in shell "EDITOR='emacs -nw' crontab -e" to edit cron job
-(add-to-list 'auto-mode-alist '("crontab.*\\'" . crontab-mode))
-;; }}
-
 ;; cmake
 (setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
                               '(("\\.cmake\\'" . cmake-mode))

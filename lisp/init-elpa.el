@@ -43,7 +43,6 @@ But you may use safer HTTPS instead.")
     htmlize
     scratch
     session
-    crontab-mode
     bookmark+
     flymake-lua
     multi-term
@@ -193,7 +192,6 @@ But you may use safer HTTPS instead.")
 (require-package 'scratch)
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
-(require-package 'crontab-mode)
 (require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
