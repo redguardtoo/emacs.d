@@ -28,7 +28,7 @@
 
 ;;; Code:
 
-(require 'evil nil 'noerror)
+(require 'evil)
 (require 'evil-nerd-commenter-sdk)
 
 (defvar evilnc-c-style-comment-modes
@@ -143,7 +143,7 @@
       (setq rlt (cons b e))))
     rlt))
 
-(defun evilnc-ajusted-comment-end (b e)
+(defun evilnc-adjusted-comment-end (b e)
   (let* ((next-end-char (evilnc-get-char (- e 2)))
          (end-char (evilnc-get-char (- e 1))))
     ;; avoid selecting CR/LF at the end of comment
@@ -178,10 +178,19 @@
                   (forward-word 1)
                   (forward-word -1)
                   (point)))
+             (line-end-of-b (save-excursion
+                                    (goto-char b)
+                                    (line-end-position)))
+             (offset-b (save-excursion
+                         (goto-char b)
+                         (- b (line-beginning-position))))
              (e (save-excursion
                   (goto-char (cdr bounds))
-                  (goto-char (evilnc-ajusted-comment-end b (line-end-position)))
-                  (point))))
+                  (goto-char (evilnc-adjusted-comment-end b (line-end-position)))
+                  (point)))
+             line-beginning-of-e
+             offset-e)
+        ;; keep move e to the end of comment
         (when (evilnc-is-one-line-comment b e)
           (while (and (< b e)
                       (or (evilnc-is-comment-delimiter e)
@@ -189,8 +198,35 @@
                                (evilnc-is-whitespace e))))
             (setq e (- e 1)))
           (setq e (+ e 1)))
-
-        (if (< b e) (evil-range b e 'block :expanded t))))
+        ;;     b                line-end-of-b
+        ;;     +---------------------+
+        ;;     |                     |
+        ;;     +---------------------|
+        ;; line-beginning-of-e       e
+        (setq line-beginning-of-e (save-excursion
+                                    (goto-char e)
+                                    (+ (line-beginning-position) offset-b)
+                                    (forward-word 1)
+                                    (forward-word -1)
+                                    (point)))
+        (setq offset-e (save-excursion
+                         (goto-char e)
+                         (- line-beginning-of-e (line-beginning-position))))
+        ;; switch start/end of block region if required
+        (let* (block-b block-e)
+          (cond
+           ((> (- line-end-of-b b)
+                   (- e line-beginning-of-e))
+            (setq block-b (if (> offset-e offset-b) (- line-beginning-of-e
+                                                       (- offset-e offset-b))
+                            line-beginning-of-e))
+            (setq block-e line-end-of-b))
+           (t
+            (setq block-b (if (> offset-b offset-e) (- b (- offset-b
+                                                            offset-e))
+                            b))
+            (setq block-e e)))
+          (evil-range block-b block-e 'block :expanded t))))
      (t
       (error "Not inside a comment.")))))
 
@@ -209,5 +245,5 @@
 ;;; evil-nerd-commenter-operator.el ends here
 
 ;; Local Variables:
-;; byte-compile-warnings: (not free-vars unresolved)
+;; no-byte-compile: t
 ;; End:
