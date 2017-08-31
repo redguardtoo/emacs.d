@@ -481,7 +481,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cxr" 'org-clock-report ; `C-c C-x C-r'
        "qq" 'my-grep
        "xc" 'save-buffers-kill-terminal
-       "rr" 'counsel-recentf
+       "rr" 'my-counsel-recentf
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
        "rf" 'counsel-goto-recent-directory
        "da" 'diff-region-tag-selected-as-a

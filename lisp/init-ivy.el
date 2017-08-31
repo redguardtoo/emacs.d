@@ -21,6 +21,18 @@
                       (read-string hint)))))
     keyword))
 
+(defun my-counsel-recentf ()
+  "Find a file on `recentf-list'."
+  (interactive)
+  (require 'recentf)
+  (recentf-mode)
+  (ivy-read "Recentf: " (mapcar #'substring-no-properties recentf-list)
+            :initial-input (if (region-active-p) (my-selected-str))
+            :action (lambda (f)
+                      (with-ivy-window
+                       (find-file f)))
+            :caller 'counsel-recentf))
+
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint no-keyword)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
 Yank the file name at the same time.  FILTER is function to filter the collection"

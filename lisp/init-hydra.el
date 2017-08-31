@@ -6,7 +6,7 @@
   ("mq" lookup-doc-in-man "man")
   ("mk" bookmark-set "New bmark")
   ("mm" counsel-bookmark-goto "Go bmark")
-  ("rr" counsel-recentf-goto "Recent file")
+  ("rr" my-counsel-recentf "Recent file")
   ("ss" wg-create-workgroup "New layout")
   ("ll" my-wg-switch-workgroup "Load layout")
   ("tr" ansi-term "Term")
