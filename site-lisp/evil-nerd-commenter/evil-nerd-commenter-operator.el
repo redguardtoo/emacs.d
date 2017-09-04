@@ -46,7 +46,36 @@
     perl-mode
     php-mode
     swift-mode
-    web-mode))
+    web-mode)
+  "Major modes using C comment syntax.")
+
+(defvar evilnc-temporary-goal-column 0
+  "Value passed to `temporary-goal-column' which specify the right edge
+of rectangle yank.")
+
+(defadvice evil-visual-highlight-block (around evil-visual-highlight-block-hack activate)
+  ad-do-it
+  (when (eq this-command 'evilnc-inner-comment)
+    (dolist (overlay evil-visual-block-overlays)
+      (let* ((b (overlay-start overlay))
+             (e (save-excursion
+                  (goto-char (overlay-end overlay))
+                  (line-end-position))))
+        (move-overlay overlay b e)))))
+
+(defadvice evil-apply-on-block (around evil-apply-on-block-around-hack activate)
+  (let* ((tmp-command last-command))
+    ;; force `evil-apply-on-block' use our temporary-goal-column
+    (when (> evilnc-temporary-goal-column 0)
+      (setq temporary-goal-column (max temporary-goal-column
+                                       evilnc-temporary-goal-column))
+      ;; Read `evil-apply-on-block'. Note `temporary-goal-column' is used
+      ;; if and only if `last-command' is `next-line' or `previous-line'
+      (setq last-command 'next-line))
+    ad-do-it
+    ;; restore last command
+    (setq last-command tmp-command)
+    (setq evilnc-temporary-goal-column 0)))
 
 (evil-define-operator evilnc-comment-operator (beg end type)
   "Comments text from BEG to END with TYPE."
@@ -73,7 +102,7 @@
     (let* ((newpos (evilnc--extend-to-whole-comment beg end) ))
       (evilnc--comment-or-uncomment-region (nth 0 newpos) (nth 1 newpos)))))
 
-  ;; place cursor on beginning of line
+  place cursor on beginning of line
   (if (and (called-interactively-p 'any)
            (eq type 'line))
     (evil-first-non-blank)))
@@ -98,15 +127,18 @@
       (comment-region beg end))))
 
 (defun evilnc-is-one-line-comment (b e)
-  "one line comment, just select the comment."
+  "One line comment."
   (save-excursion
     (goto-char b)
     (and (<= (line-beginning-position) b)
-         (<= e (line-end-position)))))
+         ;; e is the upper limit great than (line-end-position)
+         (<= e (1+ (line-end-position))))))
 
 (defun evilnc-get-comment-bounds ()
+  "Return bounds like (cons beg end)."
   (let* ((b (point))
          (e (point))
+         (col 0)
          rlt)
     ;; extend begin
     (while (evilnc-is-comment (- b 1))
@@ -154,12 +186,12 @@
     ;; avoid selecting comment limiter
     (cond
      ((and (memq major-mode evilnc-c-style-comment-modes)
-           (= end-char 47) ; "/" => 47
-           (= next-end-char 42)) ; "*" => 42
+           (= end-char ?/)
+           (= next-end-char ?*))
       ;; avoid selecting the ending comment limiter "*/"
       (setq e (- e 2))
       (while (and (> e b)
-                  (= (evilnc-get-char (- e 1)) 42))
+                  (= (evilnc-get-char (- e 1)) ?*))
         (setq e (- e 1))))
      (t
       ;; other languages we can safely use font face
@@ -168,65 +200,87 @@
         (setq e (- e 1)))))
     e))
 
+(defun evilnc-is-c-style-comment (pos)
+  "Is C style comment at POS?"
+  (and (memq major-mode evilnc-c-style-comment-modes)
+       (= (evilnc-get-char pos) ?/)
+       (= (memq (evilnc-get-char (1+ pos)) '(?/ ?*)))))
+
+(defun evilnc-comment-column-bounds (beg end &optional c-style)
+  "From BEG to END find column bounds of rectangle selection.
+Return (cons col-min col-max) or nil."
+  (let* ((col-min most-positive-fixnum)
+         (col-max 0))
+    (while (< beg end)
+      (when (and (not (evilnc-is-whitespace beg))
+                 (evilnc-is-pure-comment beg)
+                 (not (or (evilnc-is-comment-delimiter beg)
+                          (and c-style
+                               (memq (evilnc-get-char beg) '(?/ ?*))))))
+        (let* ((col (evil-column beg)))
+          (if (< col col-min)
+              (setq col-min col))
+          (if (> col col-max)
+              (setq col-max col))))
+      (setq beg (1+ beg)))
+    (if (< col-min col-max)
+        (cons col-min col-max))))
+
 (evil-define-text-object evilnc-inner-comment (&optional count begin end type)
   "An inner comment text object."
-  (let* ((bounds (evilnc-get-comment-bounds)))
+  (let* ((bounds (evilnc-get-comment-bounds))
+         b
+         e
+         c-style)
     (cond
      (bounds
-      (let* ((b (save-excursion
+      (setq b (car bounds))
+      (setq e (cdr bounds))
+      (cond
+       ((setq c-style (evilnc-is-c-style-comment b))
+        (while (and (< b e)
+                    (or (evilnc-is-whitespace b)
+                        (evilnc-is-line-end b)
+                        (memq (evilnc-get-char b) '(?/ ?*))))
+          (setq b (1+ b)))
+        (while (and (< b e)
+                    (or (evilnc-is-whitespace e)
+                        (evilnc-is-line-end e)
+                        (memq (evilnc-get-char e) '(?/ ?*))))
+          (setq e (1- e)))
+        (setq e (1+ e))
+        (setq b (save-excursion
+                  (goto-char b)
+                  (forward-word 1)
+                  (forward-word -1)
+                  (point))))
+       (t
+        (setq b (save-excursion
                   (goto-char (car bounds))
                   (forward-word 1)
                   (forward-word -1)
                   (point)))
-             (line-end-of-b (save-excursion
-                                    (goto-char b)
-                                    (line-end-position)))
-             (offset-b (save-excursion
-                         (goto-char b)
-                         (- b (line-beginning-position))))
-             (e (save-excursion
+        (setq e (save-excursion
                   (goto-char (cdr bounds))
                   (goto-char (evilnc-adjusted-comment-end b (line-end-position)))
-                  (point)))
-             line-beginning-of-e
-             offset-e)
+                  (point)))))
+      (cond
+       ((evilnc-is-one-line-comment b e)
         ;; keep move e to the end of comment
-        (when (evilnc-is-one-line-comment b e)
-          (while (and (< b e)
-                      (or (evilnc-is-comment-delimiter e)
-                          (and (evilnc-is-pure-comment e)
-                               (evilnc-is-whitespace e))))
-            (setq e (- e 1)))
-          (setq e (+ e 1)))
-        ;;     b                line-end-of-b
-        ;;     +---------------------+
-        ;;     |                     |
-        ;;     +---------------------|
-        ;; line-beginning-of-e       e
-        (setq line-beginning-of-e (save-excursion
-                                    (goto-char e)
-                                    (+ (line-beginning-position) offset-b)
-                                    (forward-word 1)
-                                    (forward-word -1)
-                                    (point)))
-        (setq offset-e (save-excursion
-                         (goto-char e)
-                         (- line-beginning-of-e (line-beginning-position))))
-        ;; switch start/end of block region if required
-        (let* (block-b block-e)
+        (evil-range b ;; (if c-style (1+ e) e)
+                    e))
+       (t
+        ;; multi-line comment
+        (let* ((col-b (evil-column b))
+               (col-bounds (evilnc-comment-column-bounds b e c-style)))
           (cond
-           ((> (- line-end-of-b b)
-                   (- e line-beginning-of-e))
-            (setq block-b (if (> offset-e offset-b) (- line-beginning-of-e
-                                                       (- offset-e offset-b))
-                            line-beginning-of-e))
-            (setq block-e line-end-of-b))
+           (col-bounds
+            (if (> col-b (car col-bounds))
+                (setq b (- b (- col-b (car col-bounds)))))
+            (setq evilnc-temporary-goal-column (cdr col-bounds)))
            (t
-            (setq block-b (if (> offset-b offset-e) (- b (- offset-b
-                                                            offset-e))
-                            b))
-            (setq block-e e)))
-          (evil-range block-b block-e 'block :expanded t))))
+            (setq evilnc-temporary-goal-column (evil-column e)))))
+        (evil-range b e 'block :expanded t))))
      (t
       (error "Not inside a comment.")))))
 

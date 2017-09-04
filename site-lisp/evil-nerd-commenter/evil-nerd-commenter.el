@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/evil-nerd-commenter
-;; Version: 3.0.3
+;; Version: 3.1.0
 ;; Keywords: commenter vim line evil
 ;;
 ;; This file is not part of GNU Emacs.
@@ -89,8 +89,7 @@
 ;; We defined comment text object "c" which can have multi-lines.
 ;; Press "vac" to select outer object (comment with limiters).
 ;; Press "vic" to select inner object (comment without limiter).
-;; Please note in order to select innner object precisel,x
-;; either the first or last line is the longest line.
+;;
 ;; You can assign other key instead of "c" to the text object by
 ;; customizing `evilnc-comment-text-object'.
 
@@ -686,7 +685,7 @@ Then we operate the expanded region.  NUM is ignored."
 (defun evilnc-version ()
   "The version number."
   (interactive)
-  (message "3.0.3"))
+  (message "3.1.0"))
 
 (defvar evil-normal-state-map)
 (defvar evil-visual-state-map)
