@@ -102,7 +102,7 @@ of rectangle yank.")
     (let* ((newpos (evilnc--extend-to-whole-comment beg end) ))
       (evilnc--comment-or-uncomment-region (nth 0 newpos) (nth 1 newpos)))))
 
-  place cursor on beginning of line
+  ;; place cursor on beginning of line
   (if (and (called-interactively-p 'any)
            (eq type 'line))
     (evil-first-non-blank)))
