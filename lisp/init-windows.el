@@ -20,23 +20,6 @@
 (global-set-key "\C-x2" (split-window-func-with-other-buffer 'split-window-vertically))
 (global-set-key "\C-x3" (split-window-func-with-other-buffer 'split-window-horizontally))
 
-;;----------------------------------------------------------------------------
-;; Rearrange split windows
-;;----------------------------------------------------------------------------
-(defun split-window-horizontally-instead ()
-  (interactive)
-  (save-excursion
-    (delete-other-windows)
-    (funcall (split-window-func-with-other-buffer 'split-window-horizontally))))
-
-(defun split-window-vertically-instead ()
-  (interactive)
-  (save-excursion
-    (delete-other-windows)
-    (funcall (split-window-func-with-other-buffer 'split-window-vertically))))
-
-(global-set-key "\C-x|" 'split-window-horizontally-instead)
-(global-set-key "\C-x_" 'split-window-vertically-instead)
 
 (defun scroll-other-window-up ()
   (interactive)
@@ -68,7 +51,7 @@
           (if this-win-2nd (other-window 1))))))
 
 (defun rotate-windows ()
-  "Rotate your windows"
+  "Rotate windows in clock-wise direction."
   (interactive)
   (cond ((not (> (count-windows)1))
          (message "You can't rotate a single window!"))
