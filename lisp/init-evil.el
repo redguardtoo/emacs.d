@@ -498,6 +498,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "x1" 'delete-other-windows
        "x2" 'my-split-window-vertically
        "x3" 'my-split-window-horizontally
+       "s2" 'ffip-split-window-vertically
+       "s3" 'ffip-split-window-horizontally
        "rw" 'rotate-windows
        "ru" 'undo-tree-save-state-to-register ; C-x r u
        "rU" 'undo-tree-restore-state-from-register ; C-x r U
@@ -532,7 +534,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ne" 'flymake-goto-next-error
        "fw" 'ispell-word
        "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
-       "oag" 'org-agenda
+       "og" 'org-agenda
        "otl" 'org-toggle-link-display
        "oa" '(lambda ()
                (interactive)
