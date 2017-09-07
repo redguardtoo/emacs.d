@@ -18,6 +18,8 @@
 
 (defun my-split-window-horizontally (&optional ratio)
   "Split window horizontally and resize the new window.
+'C-u number M-x my-split-window-horizontally' uses pre-defined
+ratio from `my-ratio-dict'.
 Always focus bigger window."
   (interactive "P")
   (let* (ratio-val)
@@ -35,6 +37,8 @@ Always focus bigger window."
 
 (defun my-split-window-vertically (&optional ratio)
   "Split window vertically and resize the new window.
+'C-u number M-x my-split-window-vertically' uses pre-defined
+ratio from `my-ratio-dict'.
 Always focus bigger window."
   (interactive "P")
   (let* (ratio-val)
