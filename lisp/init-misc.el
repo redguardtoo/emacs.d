@@ -72,33 +72,34 @@
 
 
 ;; {{ find-file-in-project (ffip)
-(defun my-git-show-selected-commit ()
-  "Run 'git show selected-commit' in shell."
-  (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
-         (git-cmd-rlts (split-string (shell-command-to-string git-cmd) "\n" t))
-         (line (ivy-read "git log:" git-cmd-rlts)))
-    (shell-command-to-string (format "git show %s"
-                                     (car (split-string line "|" t))))))
+(defun my-git-versions ()
+  (let* ((git-cmd (concat "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an' "
+                          buffer-file-name)))
+    (nconc (split-string (shell-command-to-string "git branch --no-color --all") "\n" t)
+           (split-string (shell-command-to-string git-cmd) "\n" t))))
+
+(defun my-git-diff()
+  "Run 'git diff version'."
+  (let* ((default-directory (locate-dominating-file default-directory ".git"))
+         (line (ivy-read "diff current file:" (my-git-versions)))
+         (version (replace-regexp-in-string "^ *\\*? *" "" (car (split-string line "|" t)))))
+    (shell-command-to-string (format "git --no-pager diff %s" version))))
+
 
 (defun my-git-diff-current-file ()
   "Run 'git diff version:current-file current-file'."
-  (let* ((git-cmd (concat "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an' "
-                          buffer-file-name))
-         (git-root (locate-dominating-file default-directory ".git"))
-         (git-cmd-rlts (nconc (split-string (shell-command-to-string "git branch --no-color --all") "\n" t)
-                              (split-string (shell-command-to-string git-cmd) "\n" t)))
-         (line (ivy-read "git diff same file with version" git-cmd-rlts)))
+  (let* ((default-directory (locate-dominating-file default-directory ".git"))
+         (line (ivy-read "diff current file:" (my-git-versions))))
     (shell-command-to-string (format "git --no-pager diff %s:%s %s"
                                      (replace-regexp-in-string "^ *\\*? *" "" (car (split-string line "|" t)))
-                                     (file-relative-name buffer-file-name git-root)
+                                     (file-relative-name buffer-file-name default-directory)
                                      buffer-file-name))))
 
 (setq ffip-match-path-instead-of-filename t)
 ;; I only use git
-(setq ffip-diff-backends '(my-git-show-selected-commit
-                           my-git-diff-current-file
+(setq ffip-diff-backends '(my-git-diff-current-file
+                           my-git-diff
                            ;; `git log -p' current file
-                           ("git diff" . "cd $(git rev-parse --show-toplevel) && git diff")
                            ("git diff --cached" . "cd $(git rev-parse --show-toplevel) && git diff --cached")
                            ("git log -p" . (shell-command-to-string (format "cd $(git rev-parse --show-toplevel) && git --no-pager log --date=short -p '%s'"
                                                                             (buffer-file-name))))
