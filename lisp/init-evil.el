@@ -687,7 +687,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;;   '(progn
        ;;      (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
        ;;      (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3")))
-       ";" 'avy-goto-char-timer
+       ";" 'avy-goto-char-2
+       "w" 'avy-goto-word-or-subword-1
        "db" 'sdcv-search-pointer ; in buffer
        "dt" 'sdcv-search-input+ ; in tip
        "dd" 'my-lookup-dict-org
@@ -779,6 +780,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;;  - "gg" the first occurence, "G" the last occurence
 ;;  - Please note ";;" or `avy-goto-char-timer' is also useful
 (require 'evil-iedit-state)
+;; }}
+
+;; {{ Evil’s f/F/t/T commands with Pinyin supptt,
+(require 'evil-find-char-pinyin)
+(evil-find-char-pinyin-mode 1)
 ;; }}
 
 (provide 'init-evil)
