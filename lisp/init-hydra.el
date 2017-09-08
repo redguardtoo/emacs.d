@@ -267,5 +267,23 @@ Git gutter:
    :color blue))
 (global-set-key (kbd "C-c C-g") 'hydra-git-gutter/body)
 ;; }}
+
+(defhydra hydra-search ()
+  "
+Dictionary^^       ^Search text^
+---------------------------------
+_b_ sdcv at point  _;_ 2 chars
+_t_ sdcv input     _w_ (sub)word
+_q_ cancel
+"
+  ("b" sdcv-search-pointer )
+  ("t" sdcv-search-input+ )
+  (";" avy-goto-char-2 )
+  ("w" avy-goto-word-or-subword-1 )
+  ("q" nil))
+(global-set-key (kbd "C-c ;") 'hydra-search/body)
+;; (global-set-key (kbd "C-c ; b") 'sdcv-search-pointer)
+;; (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
+
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
