@@ -3,24 +3,34 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Bookmark^  ^Workgroups^  ^Misc
---------------------------------------------
-_n_ New     _s_ Save      _t_ Term
-_m_ Goto    _l_ Load      _p_ company-ispell
-_q_ Quit
+^Emms^       ^Misc^
+-------------------------------
+_r_andom     _t_erm
+_n_ext       _a_utoComplete
+_p_revious   _s_ave workgroup
+_P_ause      _l_oad workgroup
+_O_pen       _b_ookmark
+_L_ Playlist Goto book_m_ark
+_q_uit
 "
-  ("n" bookmark-set)
+  ("b" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("r" my-counsel-recentf)
   ("s" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)
-  ("p" toggle-company-ispell)
+  ("a" toggle-company-ispell)
+  ("r" emms-random)
+  ("n" emms-next)
+  ("p" emms-previous)
+  ("P" emms-pause)
+  ("O" emms-play-playlist)
+  ("L" emms-playlist-mode-go)
   ("q" nil))
 
 (defhydra multiple-cursors-hydra (:color green :hint nil)
   "
-     ^Up^            ^Down^        ^Other^
+^Up^            ^Down^          ^Other^
 ----------------------------------------------
 [_p_]   Next    [_n_]   Next    [_l_] Edit lines
 [_P_]   Skip    [_N_]   Skip    [_a_] Mark all
@@ -146,7 +156,7 @@ _q_ Quit
 ;; @see https://oremacs.com/download/london.pdf
 (when (display-graphic-p)
   (defhydra hydra-zoom (global-map "C-c")
-    "zoom"
+    "Zoom"
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
     ("r" (text-scale-set 0) "reset")

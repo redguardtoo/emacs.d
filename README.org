@@ -206,7 +206,7 @@ Required for vim user,
 *** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 ** Key bindings
-Key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
+Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
 
 For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing ",bu" executes command =backward-up-list=.
 
@@ -214,7 +214,9 @@ The tutorials I recommended provide enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
-You can override default key bindings in =~/.custome.el=.
+[[https://github.com/abo-abo/hydra][Hydra]] is use to define keybindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
+
+You can override any key bindings in =~/.custome.el=.
 * FAQ
 ** Override default setup
 Place your setup in =~/.custom.el= so it's not overwritten by the update.
@@ -260,7 +262,7 @@ A generic grep program =my-grep= is provided if you don't use =git=. Since =my-g
 
 Multi-edit workflow is optimized. After =M-x my-grep= or pressing ",qq", press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
 
-You can specify the ignore regex like =!keyword1= in =ivy=. If you want to ignore multiple keywords, you *must* use syntax like =!keyword1\|!keyword2=. As I tested in cousnel v0.9.1, non of its grep commands supports ignore syntax *reliably*. So I suggest using =my-grep= instead.
+You can specify the ignore regex like =!keyword1= in =ivy=. If you want to ignore multiple keywords, you *must* use syntax like =!keyword1\|!keyword2=. As I tested in counsel v0.9.1, non of its grep commands supports ignore syntax *reliably*. So I suggest using =my-grep= instead.
 ** Hydra/Swiper/Counsel/Ivy
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 ** js2-mode
@@ -317,11 +319,6 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other desktop applications may intercept the key bindings. For example, someone [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept "M-x"]].
-** Plugins doesn't work?
-If key bindings of multiple plugins conflict, I preserve the key bindings for the more frequently used plugin.
-
-I re-assign the alternative key bindings to less used plugins. Check =~/.emacs.d/lisp/init-evil.el= for details.
-
 ** Use org-mode
 Press =M-x org-version=, then read corresponding online manual to setup.
 
