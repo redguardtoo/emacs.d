@@ -14,6 +14,13 @@
 (setq emacs-load-start-time (current-time))
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
 
+;; {{ emergency security fix
+;; https://bugs.debian.org/766397
+(setq tls-program '("gnutls-cli --x509cafile %t -p %p %h"))
+(eval-after-load "enriched"
+  '(defun enriched-decode-display-prop (start end &optional param)
+     (list start end)))
+;; }}
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)
 ;;----------------------------------------------------------------------------
