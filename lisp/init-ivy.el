@@ -403,4 +403,7 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
 (global-set-key (kbd "C-s") 'swiper)
 ;; }}
 
+(global-set-key (kbd "C-h v") 'counsel-describe-variable)
+(global-set-key (kbd "C-h f") 'counsel-describe-function)
+
 (provide 'init-ivy)
