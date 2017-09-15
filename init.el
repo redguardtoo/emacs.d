@@ -16,7 +16,6 @@
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397
-(setq tls-program '("gnutls-cli --x509cafile %t -p %p %h"))
 (eval-after-load "enriched"
   '(defun enriched-decode-display-prop (start end &optional param)
      (list start end)))
