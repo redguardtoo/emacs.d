@@ -264,5 +264,6 @@ But you may use safer HTTPS instead.")
 (require-package 'package-lint) ; lint package before submit it to MELPA
 (require-package 'iedit)
 (require-package 'ace-pinyin)
+(require-package 'org-jira) ; @see https://github.com/ahungry/org-jira
 
 (provide 'init-elpa)
