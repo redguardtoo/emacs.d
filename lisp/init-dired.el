@@ -2,6 +2,10 @@
 
 ;; search file name only when focus is over file
 (setq dired-isearch-filenames 'dwim)
+;; when there is two dired buffer, Emacs will select another buffer
+;; as target buffer (target for copying files, for example).
+;; It's similar to windows commander.
+(setq dired-dwim-target t)
 ; Listing directory failed but access-file worked
 (when (eq system-type 'darwin)
   (require 'ls-lisp)
