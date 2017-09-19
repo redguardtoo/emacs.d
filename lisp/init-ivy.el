@@ -112,7 +112,7 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
   ;; ripgrep says that "-n" is enabled actually not,
   ;; so we manually add it
   (concat (executable-find "rg")
-          " -n -M 256 --no-heading --color never "
+          " -n -M 128 --no-heading --color never "
           (if for-swiper "-i '%s' %s" "-s")))
 
 (if (counsel-has-quick-grep)

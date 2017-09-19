@@ -20,6 +20,7 @@
 (add-hook 'scss-mode-hook 'yasnippet-generic-setup-for-mode-hook)
 
 (defun my-yas-reload-all ()
+  "Compile and reload yasnippets.  Run the command after adding new snippets."
   (interactive)
   (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
   (yas-reload-all)
