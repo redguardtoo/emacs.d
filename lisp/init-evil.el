@@ -14,7 +14,6 @@
 
 (adjust-major-mode-keymap-with-evil "git-timemachine")
 (adjust-major-mode-keymap-with-evil "browse-kill-ring")
-(adjust-major-mode-keymap-with-evil "etags-select")
 
 (require 'evil)
 
@@ -329,7 +328,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (magit-commit-mode . normal)
         (magit-diff-mode . normal)
         (browse-kill-ring-mode . normal)
-        (etags-select-mode . normal)
         (js2-error-buffer-mode . emacs)
         )
       do (evil-set-initial-state mode state))
@@ -344,8 +342,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map "Y" (kbd "y$"))
 (define-key evil-normal-state-map "go" 'goto-char)
 (define-key evil-normal-state-map (kbd "M-y") 'counsel-browse-kill-ring)
-(define-key evil-normal-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
-(define-key evil-visual-state-map (kbd "C-]") 'etags-select-find-tag-at-point)
+(define-key evil-normal-state-map (kbd "C-]") 'mctags-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") 'mctags-find-tag-at-point)
 (define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 
@@ -431,8 +429,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "tua" 'artbollocks-mode
        "cby" 'cb-switch-between-controller-and-view
        "cbu" 'cb-get-url-from-controller
-       "ht" 'etags-select-find-tag-at-point ; better than find-tag C-]
-       "hp" 'etags-select-find-tag
+       "ht" 'mctags-find-tag-at-point ; better than find-tag C-]
        "mm" 'counsel-bookmark-goto
        "mk" 'bookmark-set
        "yy" 'counsel-browse-kill-ring

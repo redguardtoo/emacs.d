@@ -630,7 +630,6 @@ If STATE is nil, Evil is disabled in the buffer."
     emms-metaplaylist-mode
     emms-playlist-mode
     ess-help-mode
-    etags-select-mode
     fj-mode
     gc-issues-mode
     gdb-breakpoints-mode
