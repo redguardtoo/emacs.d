@@ -138,8 +138,11 @@ _q_uit
      (defhydra hydra-dired (:color blue)
        "?"
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
-       ("s1" (shell-command (format "periscope.py -l en %s &"
-                                    (dired-file-name-at-point))) "1 subtitle")
+       ("s1"
+        (let* ((video-file (dired-file-name-at-point))
+               (default-directory (file-name-directory video-file)))
+          (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file))))
+        "1 subtitle")
        ("cf" (let* ((f (file-truename (dired-file-name-at-point))))
                (copy-yank-str f)
                (message "filename %s => clipboard & yank ring" f)) "Copy filename")

@@ -36,37 +36,46 @@
 
 (require 'ivy)
 
-(defcustom mctags-ignore-path-patterns
+(defcustom mctags-ignore-directories
   '(;; VCS
-    "*/.git/*"
-    "*/.svn/*"
-    "*/.cvs/*"
-    "*/.bzr/*"
-    "*/.hg/*"
+    ".git"
+    ".svn"
+    ".cvs"
+    ".bzr"
+    ".hg"
+    ;; project misc
+    "bin"
+    ;; Mac
+    ".DS_Store"
+    ;; html/javascript/css
+    ".npm"
+    ".tmp" ; TypeScript
+    ".sass-cache" ; SCSS/SASS
+    ".idea*"
+    "node_modules"
+    "bower_components"
+    ;; Java
+    ".cask")
+  "Ignore directories.  Wildcast is supported."
+  :type '(repeat 'string))
+
+(defcustom mctags-ignore-filenames
+  '(;; VCS
     ;; simple text file
     "*.json"
     ;; project misc
     "*.log"
-    "*/bin/*"
-    ;; Mac
-    "*/.DS_Store/*"
     ;; Ctags
-    "*/tags"
-    "*/TAGS"
+    "tags"
+    "TAGS"
     ;; Global/Cscope
-    "*/GTAGS"
-    "*/GPATH"
-    "*/GRTAGS"
-    "*/cscope.files"
+    "GTAGS"
+    "GPATH"
+    "GRTAGS"
+    "cscope.files"
     ;; html/javascript/css
-    "*/.npm/*"
-    "*/.tmp/*" ; TypeScript
-    "*/.sass-cache/*" ; SCSS/SASS
-    "*/.idea/*"
     "*min.js"
     "*min.css"
-    "*/node_modules/*"
-    "*/bower_components/*"
     ;; Images
     "*.png"
     "*.jpg"
@@ -78,6 +87,7 @@
     ;; documents
     "*.doc"
     "*.docx"
+    "*.xls"
     "*.pdf"
     ;; C/C++
     "*.obj"
@@ -89,22 +99,20 @@
     "*.dll"
     "*.exe"
     ;; Java
-    "*/.metadata*"
-    "*/.gradle/*"
+    ".metadata*"
     "*.class"
     "*.war"
     "*.jar"
     ;; Emacs/Vim
     "*flymake"
-    "*/#*#"
+    "#*#"
     ".#*"
     "*.swp"
     "*~"
     "*.elc"
-    "*/.cask/*"
     ;; Python
     "*.pyc")
-  "Ignore path patterns."
+  "Ignore file names.  Wildcast is supported."
   :type '(repeat 'string))
 
 (defcustom mctags-project-file '(".svn" ".hg" ".git")
@@ -187,11 +195,13 @@ If FORCE is t, the commmand is executed without checking the timer."
                         (mctags-guess-program "ctags")))
          (default-directory src-dir)
          ;; run find&ctags to create TAGS
-         (cmd (format "%s . \\( %s \\) -prune -o -type f -not -name 'TAGS' -not -size +%sk | %s -e -L -"
+         (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s | %s -e -L -"
                       find-pg
-                      (mapconcat (lambda (p) (format "-iwholename \"%s\"" p))
-                                 mctags-ignore-path-patterns " -or ")
+                      (mapconcat (lambda (p) (format "-iwholename \"*/%s/*\"" p))
+                                 mctags-ignore-directories " -or ")
                       mctags-max-file-size
+                      (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
+                                 mctags-ignore-filenames " ")
                       ctags-pg))
          (tags-file (concat (file-name-as-directory src-dir) "TAGS"))
          (doit (or force (not (file-exists-p tags-file)))))
