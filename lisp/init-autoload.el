@@ -8,6 +8,7 @@
 (autoload 'csv-nav-mode "csv-nav-mode" "Major mode for navigating comma-separated value files." t)
 (autoload 'mctags-find-tag-at-point "mctags" "" t nil)
 (autoload 'mctags-scan-code "mctags" "" t nil)
+(autoload 'mctags-grep "mctags" "" t nil)
 (autoload 'turn-on-stripe-buffer-mode "stripe-buffer" "" nil)
 (autoload 'turn-on-stripe-table-mode "stripe-buffer" "" nil)
 (autoload 'doxygen-insert-function-comment "doxygen" "insert comment for the function at point" t)
