@@ -11,12 +11,15 @@
   (unless clipboard-only (kill-new msg))
   (my-pclip msg))
 
-(defun cp-filename-of-current-buffer () "Copy file name (NOT full path) into the yank ring and OS clipboard."
-  (interactive)
+(defun cp-filename-of-current-buffer (&optional n)
+  "Copy file name (NOT full path) into the yank ring and OS clipboard.
+If N is not nil, copy file name and line number."
+  (interactive "P")
   (when buffer-file-name
-    (let* ((filename (file-name-nondirectory buffer-file-name)))
-      (copy-yank-str filename)
-      (message "filename %s => clipboard & yank ring" filename))))
+    (let* ((filename (file-name-nondirectory buffer-file-name))
+           (s (if n (format "%s:%s" filename (line-number-at-pos)) filename)))
+      (copy-yank-str s)
+      (message "%s => clipboard&kill-ring" s))))
 
 (defun cp-ffip-ivy-last ()
   "Copy visible keys of `ivy-last' into `kill-ring' and clipboard."
@@ -30,20 +33,6 @@
                 (ivy-state-collection ffip-ivy-last-saved)
                 "\n"))
     (message "%d items from ivy-last => clipboard & yank ring" (length ivy-last))))
-
-(defun cp-filename-line-number-of-current-buffer ()
-  "Copy file:line into the yank ring and clipboard"
-  (interactive)
-  (when buffer-file-name
-    (let* ((filename (file-name-nondirectory buffer-file-name))
-           (linenum (save-restriction
-                      (widen)
-                      (save-excursion
-                        (beginning-of-line)
-                        (1+ (count-lines 1 (point))))))
-           (rlt (format "%s:%d" filename linenum)))
-      (copy-yank-str rlt)
-      (message "%s => clipboard & yank ring" rlt))))
 
 (defun cp-fullpath-of-current-buffer ()
   "Copy full path into the yank ring and OS clipboard"

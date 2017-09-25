@@ -402,7 +402,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ntd" 'neotree-project-dir
        "nth" 'neotree-hide
        "nts" 'neotree-show
-       "fl" 'cp-filename-line-number-of-current-buffer
        "fn" 'cp-filename-of-current-buffer
        "fp" 'cp-fullpath-of-current-buffer
        "dj" 'dired-jump ;; open the dired from current file
