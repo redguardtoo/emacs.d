@@ -720,8 +720,8 @@ Shamelessly copied from org2blog/wp-replace-pre()."
         (setq html-text (org2nikola-replace-pre html-text))))
 
     ;; post content should NOT contain title
-    (setq html-text (replace-regexp-in-string "<h2  id=\"sec-1\">.*<\/h2>" "" html-text))
-    (setq html-text (replace-regexp-in-string "<h3  id=\"sec-1\">.*<\/h3>" "" html-text))
+    (setq html-text (replace-regexp-in-string "<h2  *id=\"sec-1\">.*<\/h2>" "" html-text))
+    (setq html-text (replace-regexp-in-string "<h3  *id=\"sec-1\">.*<\/h3>" "" html-text))
     (setq html-text (org2nikola-replace-urls html-text org-directory))
 
     (with-temp-file html-file
