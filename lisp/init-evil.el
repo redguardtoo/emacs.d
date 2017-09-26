@@ -295,6 +295,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; You may delete this setup to use Evil NORMAL state always.
 (loop for (mode . state) in
       '((minibuffer-inactive-mode . emacs)
+        (calendar-mode . emacs)
         (grep-mode . emacs)
         (Info-mode . emacs)
         (term-mode . emacs)
