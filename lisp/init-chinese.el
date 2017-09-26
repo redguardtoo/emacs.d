@@ -30,6 +30,7 @@
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
 
+;; {{ pyim
 (defvar my-pyim-directory
   "~/.eim"
   "There directory of peronsal dictionaries for pyim.")
@@ -80,5 +81,6 @@
 
      ;; don't use tooltip
      (setq pyim-use-tooltip 'popup)))
+;; }}
 
-(provide 'init-chinese-pyim)
+(provide 'init-chinese)
