@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/mctags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: ctags grep find
-;; Version: 1.1.0
+;; Version: 1.1.2
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -32,6 +32,11 @@
 ;;   "M-x mctags-grep" to grep
 ;;
 ;; That's all!
+;;
+;; Tips:
+;; You can use ivy's negative pattern to filter candidates.
+;; For example, input "keyword1 !keyword2 keyword3" means:
+;;   "(keyword1 and (not (keyword2 or keyword3))"
 ;;
 ;; See https://github.com/redguardtoo/mctags/ for more advanced tips.
 
@@ -138,13 +143,15 @@ Default value is 300 seconds."
   :type 'string)
 
 (defcustom mctags-ctags-program nil
-  "Ctags. Program is automatically detected if it's nil."
+  "Ctags.  Program is automatically detected if it's nil."
   :type 'string)
 
 ;; Timer to run auto-update TAGS.
 (defvar mctags-timer nil "Internal timer.")
 
-(defvar mctags-opts-cache '() "grep options cache")
+(defvar mctags-opts-cache '() "Grep CLI options cache.")
+
+(defvar mctags-tagname-history nil "History of tagnames.")
 
 (defun mctags-guess-program (name)
   "Guess executable path from its NAME on Windows."
@@ -191,7 +198,7 @@ Default value is 300 seconds."
                nil))))
 
 (defun mctags-scan-dir (src-dir &optional force)
-  "Create tags file from SRC_DIR.
+  "Create tags file from SRC-DIR.
 If FORCE is t, the commmand is executed without checking the timer."
   ;; TODO save the ctags-opts into hash
   (let* ((find-pg (or mctags-find-program
@@ -219,7 +226,7 @@ If FORCE is t, the commmand is executed without checking the timer."
 
 ;;;###autoload
 (defun mctags-directory-p (regex)
-  "Does directory of `buffer-file-name' match REGEX?"
+  "Does directory of current file match REGEX?"
   (let* ((dir (or (if buffer-file-name (file-name-directory buffer-file-name))
                   ;; buffer is created in real time
                   default-directory
@@ -228,13 +235,13 @@ If FORCE is t, the commmand is executed without checking the timer."
 
 ;;;###autoload
 (defun mctags-filename-p (regex)
-  "Does `buffer-file-name' match REGEX?"
+  "Does current file match REGEX?"
   (let* ((file (or buffer-file-name default-directory "")))
     (string-match-p regex file)))
 
 ;;;###autoload
 (defun mctags-update-tags-file-force (&optional quiet)
-  "Update tags file.  Be quiet if QUIET is t"
+  "Update tags file.  Be quiet if QUIET is t."
   (interactive)
   (let* ((tags-file (mctags-locate-tags-file)))
     (when tags-file
@@ -249,7 +256,7 @@ If FORCE is t, the commmand is executed without checking the timer."
     (buffer-string)))
 
 (defun mctags-collect-tags (tagname)
-  "Parse tags file to find matches of TAGNAME."
+  "Parse tags file to find occurrences of TAGNAME."
   (let* ((str (mctags-read-file (mctags-locate-tags-file)))
          (tag-regex (concat "^.*?\\(" "\^?\\(.+[:.']" tagname "\\)\^A"
                             "\\|" "\^?" tagname "\^A"
@@ -284,6 +291,7 @@ If FORCE is t, the commmand is executed without checking the timer."
     cands))
 
 (defun mctags-selected-str ()
+  "Get selected string."
   (if (region-active-p)
       (buffer-substring-no-properties (region-beginning) (region-end))))
 
@@ -351,10 +359,10 @@ Focus on TAGNAME if it's not nil."
      (t
       (setq rlt t)))
     (unless rlt
-      (error "Can't find TAGS.  Please run `mctags-scan-code' at least once."))))
+      (error "Can't find TAGS.  Please run `mctags-scan-code' at least once!"))))
 
 ;;;###autoload
-(defun mctags-scan-code (&option dir)
+(defun mctags-scan-code (&optional dir)
   "Use Ctags to scan code at DIR."
   (interactive)
   (let* ((src-dir (or dir
@@ -362,19 +370,36 @@ Focus on TAGNAME if it's not nil."
                                            (mctags-project-root)))))
     (if src-dir (mctags-scan-dir src-dir t))))
 
-;;;###autoload
-(defun mctags-find-tag-at-point ()
-  "Find tag at point, and display all matches."
-  (interactive)
-  (mctags-tags-file-must-exist)
-  (let* ((tagname (mctags-tagname-at-point))
-         (cands (mctags-collect-tags tagname)))
+(defun mctags-find-tag-api (tagname)
+  "Find tag with given TAGNAME."
+  (let* ((cands (mctags-collect-tags tagname)))
+    (add-to-list 'mctags-tagname-history tagname)
     (cond
      ((not cands)
       ;; OK let's try grep if no tag found
       (mctags-grep tagname (format "No tag found. " tagname)))
      (t
       (mctags-open-cand cands)))))
+
+;;;###autoload
+(defun mctags-find-tag ()
+  "Input tagname to find tag."
+  (interactive)
+  (let* ((tagname (read-string "Please input tag name:")))
+    (when (and tagname (not (string= tagname "")))
+        (mctags-find-tag-api tagname))))
+
+;;;###autoload
+(defun mctags-find-tag-at-point ()
+  "Find tag using tagname at point, and display all matched tags."
+  (interactive)
+  (mctags-tags-file-must-exist)
+  (let* ((tagname (mctags-tagname-at-point)))
+    (cond
+     (tagname
+      (mctags-find-tag-api tagname))
+     (t
+      (message "No tag at point")))))
 
 ;;;###autoload
 (defun mctags-update-tags-file()
@@ -405,6 +430,7 @@ Focus on TAGNAME if it's not nil."
                     (float-time mctags-timer))))))))
 
 (defun mctags-read-keyword (hint)
+  "Read keyword with HINT."
   (let* (keyword)
     (cond
      ((region-active-p)
@@ -416,9 +442,11 @@ Focus on TAGNAME if it's not nil."
     keyword))
 
 (defun mctags-has-quick-grep ()
+  "Does ripgrep program exist?"
   (executable-find "rg"))
 
 (defun mctags-exclude-opts (use-cache)
+  "Grep CLI options.  IF USE-CACHE is t, the options is read from cache."
   (let* ((ignore-dirs (if use-cache (plist-get mctags-opts-cache :ignore-dirs)
                         mctags-ignore-directories))
          (ignore-file-names (if use-cache (plist-get mctags-opts-cache :ignore-file-names)
@@ -438,7 +466,8 @@ Focus on TAGNAME if it's not nil."
                          ignore-file-names " "))))))
 
 (defun mctags-grep-cli (keyword use-cache &optional extra-opts)
-  "Extended regex is used, like (pattern1|pattern2)."
+  "Use KEYWORD, USE-CACHE, and EXTRA-OPTS to build CLI.
+Extended regex is used, like (pattern1|pattern2)."
   (let* (opts cmd)
     (unless extra-opts (setq extra-opts ""))
     (cond
