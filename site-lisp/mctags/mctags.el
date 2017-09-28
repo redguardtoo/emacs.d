@@ -1,12 +1,12 @@
-;;; mctags.el ---  Complete solution to use ctags in Emacs
+;;; mctags.el ---  Complete solution to use ctags
 
-;; Copyright (C) 2014-2017 Chen Bin
+;; Copyright (C) 2017 by Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/mctags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
-;; Keywords: ctags grep find
-;; Version: 1.1.2
+;; Keywords: tools, convenience
+;; Version: 1.1.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,7 +42,12 @@
 
 ;;; Code:
 
+(require 'xref)
 (require 'counsel) ; counsel dependent on ivy
+
+(defgroup mctags nil
+  "Complete solution to use ctags."
+  :group 'tools)
 
 (defcustom mctags-ignore-directories
   '(;; VCS
@@ -65,6 +70,7 @@
     ;; Java
     ".cask")
   "Ignore directories.  Wildcast is supported."
+  :group 'mctags
   :type '(repeat 'string))
 
 (defcustom mctags-ignore-filenames
@@ -121,33 +127,46 @@
     ;; Python
     "*.pyc")
   "Ignore file names.  Wildcast is supported."
+  :group 'mctags
   :type '(repeat 'string))
 
 (defcustom mctags-project-file '(".svn" ".hg" ".git")
   "The file/directory used to locate project root.
 May be set using .dir-locals.el.  Checks each entry if set to a list."
+  :group 'mctags
   :type '(repeat 'string))
 
 (defcustom mctags-max-file-size 64
   "Ignore files bigger than `mctags-max-file-size' kilobytes."
+  :group 'mctags
   :type 'integer)
 
 (defcustom mctags-update-interval 300
   "The interval (seconds) to update TAGS.
 Used by `mctags-update-tags-file'.
 Default value is 300 seconds."
+  :group 'mctags
   :type 'integer)
 
 (defcustom mctags-find-program nil
-  "GNU find.  Program is automatically detected if it's nil."
+  "GNU find program.  Automatically detected if it's nil."
+  :group 'mctags
   :type 'string)
 
 (defcustom mctags-ctags-program nil
-  "Ctags.  Program is automatically detected if it's nil."
+  "Ctags program.  Automatically detected if it's nil."
+  :group 'mctags
+  :type 'string)
+
+(defcustom mctags-grep-program nil
+  "Grep program.  Automatically detected if it's nil."
+  :group 'mctags
   :type 'string)
 
 ;; Timer to run auto-update TAGS.
 (defvar mctags-timer nil "Internal timer.")
+
+(defvar mctags-keyword nil "The keyword to grep.")
 
 (defvar mctags-opts-cache '() "Grep CLI options cache.")
 
@@ -201,10 +220,8 @@ Default value is 300 seconds."
   "Create tags file from SRC-DIR.
 If FORCE is t, the commmand is executed without checking the timer."
   ;; TODO save the ctags-opts into hash
-  (let* ((find-pg (or mctags-find-program
-                       (mctags-guess-program "find")))
-         (ctags-pg (or mctags-ctags-program
-                        (mctags-guess-program "ctags")))
+  (let* ((find-pg (or mctags-find-program (mctags-guess-program "find")))
+         (ctags-pg (or mctags-ctags-program (mctags-guess-program "ctags")))
          (default-directory src-dir)
          ;; run find&ctags to create TAGS
          (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s | %s -e -L -"
@@ -218,11 +235,11 @@ If FORCE is t, the commmand is executed without checking the timer."
                       ctags-pg))
          (tags-file (concat (file-name-as-directory src-dir) "TAGS"))
          (doit (or force (not (file-exists-p tags-file)))))
-      ;; always update cli options
-      (when doit
-        (message "%s at %s" cmd default-directory)
-        (shell-command cmd)
-        (visit-tags-table tags-file t))))
+    ;; always update cli options
+    (when doit
+      (message "%s at %s" cmd default-directory)
+      (shell-command cmd)
+      (visit-tags-table tags-file t))))
 
 ;;;###autoload
 (defun mctags-directory-p (regex)
@@ -334,16 +351,17 @@ Focus on TAGNAME if it's not nil."
                           (nth 2 val) ; tagname
                           )))
 
-(defun mctags-open-cand (cands)
-  "Open CANDS."
+(defun mctags-open-cand (cands time)
+  "Open CANDS.  Start open tags file at TIME."
   ;; mark current point for `pop-tag-mark'
-  (ring-insert find-tag-marker-ring (point-marker))
+  (xref-push-marker-stack)
   (cond
    ((= 1 (length cands))
     ;; open the file directly
     (mctags-open-file (car cands)))
    (t
-    (ivy-read "tag? "
+    (ivy-read (format  "Find Tag (%.01f seconds): "
+                       (float-time (time-since time)))
               cands
               :action #'mctags-open-file))))
 
@@ -372,14 +390,15 @@ Focus on TAGNAME if it's not nil."
 
 (defun mctags-find-tag-api (tagname)
   "Find tag with given TAGNAME."
-  (let* ((cands (mctags-collect-tags tagname)))
+  (let* ((time (current-time))
+         (cands (mctags-collect-tags tagname)))
     (add-to-list 'mctags-tagname-history tagname)
     (cond
      ((not cands)
       ;; OK let's try grep if no tag found
-      (mctags-grep tagname (format "No tag found. " tagname)))
+      (mctags-grep tagname "No tag found. "))
      (t
-      (mctags-open-cand cands)))))
+      (mctags-open-cand cands time)))))
 
 ;;;###autoload
 (defun mctags-find-tag ()
@@ -431,15 +450,14 @@ Focus on TAGNAME if it's not nil."
 
 (defun mctags-read-keyword (hint)
   "Read keyword with HINT."
-  (let* (keyword)
-    (cond
-     ((region-active-p)
-      (setq keyword (counsel-unquote-regex-parens (mctags-selected-str)))
-      ;; de-select region
-      (set-mark-command nil))
-     (t
-      (setq keyword (read-string hint))))
-    keyword))
+  (cond
+   ((region-active-p)
+    (setq mctags-keyword (counsel-unquote-regex-parens (mctags-selected-str)))
+    ;; de-select region
+    (set-mark-command nil))
+   (t
+    (setq mctags-keyword (read-string hint))))
+  mctags-keyword)
 
 (defun mctags-has-quick-grep ()
   "Does ripgrep program exist?"
@@ -474,13 +492,14 @@ Extended regex is used, like (pattern1|pattern2)."
      ((mctags-has-quick-grep)
       (setq cmd (format "%s %s %s \"%s\" --"
                         (concat (executable-find "rg")
-                                " -n -M 128 --no-heading --color never -s")
+                                " -n -M 512 --no-heading --color never -s")
                         (mctags-exclude-opts use-cache)
                         extra-opts
                         keyword)))
      (t
       ;; use extended regex always
-      (setq cmd (format "grep -rsnE %s %s \"%s\" *"
+      (setq cmd (format "%s -rsnE %s %s \"%s\" *"
+                        (or mctags-grep-program (mctags-guess-program "grep"))
                         (mctags-exclude-opts use-cache)
                         extra-opts
                         keyword))))
@@ -497,13 +516,17 @@ If HINT is not nil, it's used as grep hint."
   (let* ((keyword (if default-keyword default-keyword
                     (mctags-read-keyword "Enter grep pattern: ")))
          (default-directory (mctags-project-root))
+         (time (current-time))
          (collection (split-string (shell-command-to-string (mctags-grep-cli keyword nil)) "[\r\n]+" t))
          (dir-summary (file-name-as-directory (file-name-base (directory-file-name (mctags-project-root))))))
 
     (setq mctags-opts-cache (plist-put mctags-opts-cache :ignore-dirs mctags-ignore-directories))
     (setq mctags-opts-cache (plist-put mctags-opts-cache :ignore-file-names mctags-ignore-filenames))
 
-    (ivy-read (concat hint (format "Grep \"%s\" at %s:" keyword dir-summary))
+    (ivy-read (concat hint (format "Grep \"%s\" at %s (%.01f seconds): "
+                                   keyword
+                                   dir-summary
+                                   (float-time (time-since time))))
               collection
               :history 'counsel-git-grep-history ; share history with counsel
               :action `(lambda (line)
@@ -520,7 +543,7 @@ If HINT is not nil, it's used as grep hint."
   ;; useless to set `default-directory', it's already correct
   ;; we use regex in elisp, don't unquote regex
   (let* ((cands (ivy--filter ivy-text
-                             (split-string (shell-command-to-string (mctags-grep-cli keyword t))
+                             (split-string (shell-command-to-string (mctags-grep-cli mctags-keyword t))
                                            "[\r\n]+" t))))
     ;; Need precise number of header lines for `wgrep' to work.
     (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
