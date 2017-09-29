@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/mctags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.1.4
+;; Version: 1.1.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,7 +42,6 @@
 
 ;;; Code:
 
-(require 'xref)
 (require 'counsel) ; counsel dependent on ivy
 
 (defgroup mctags nil
@@ -140,6 +139,13 @@ May be set using .dir-locals.el.  Checks each entry if set to a list."
   "Ignore files bigger than `mctags-max-file-size' kilobytes."
   :group 'mctags
   :type 'integer)
+
+
+(defcustom mctags-after-update-tags-file-hook nil
+  "Hook after tags file is actually updated.
+The parameter of hook is full path of tags file."
+  :group 'mctags
+  :type 'hook)
 
 (defcustom mctags-update-interval 300
   "The interval (seconds) to update TAGS.
@@ -265,6 +271,7 @@ If FORCE is t, the commmand is executed without checking the timer."
   (let* ((tags-file (mctags-locate-tags-file)))
     (when tags-file
       (mctags-scan-dir (file-name-directory tags-file) t)
+      (run-hook-with-args 'mctags-after-update-tags-file-hook tags-file)
       (unless quiet
         (message "%s is updated!" tags-file)))))
 
