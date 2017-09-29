@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/mctags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.1.3
+;; Version: 1.1.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -172,6 +172,8 @@ Default value is 300 seconds."
 
 (defvar mctags-tagname-history nil "History of tagnames.")
 
+(defvar mctags-find-tag-candidates nil "Find tag candidate.")
+
 (defun mctags-guess-program (name)
   "Guess executable path from its NAME on Windows."
   (let (rlt)
@@ -272,7 +274,7 @@ If FORCE is t, the commmand is executed without checking the timer."
     (insert-file-contents file)
     (buffer-string)))
 
-(defun mctags-collect-tags (tagname)
+(defun mctags-collect-cands (tagname)
   "Parse tags file to find occurrences of TAGNAME."
   (let* ((str (mctags-read-file (mctags-locate-tags-file)))
          (tag-regex (concat "^.*?\\(" "\^?\\(.+[:.']" tagname "\\)\^A"
@@ -282,6 +284,7 @@ If FORCE is t, the commmand is executed without checking the timer."
          (tag-file-path (file-name-directory (mctags-locate-tags-file)))
          full-tagname
          filename
+         tag-line
          cands
          linenum)
     (with-temp-buffer
@@ -363,7 +366,25 @@ Focus on TAGNAME if it's not nil."
     (ivy-read (format  "Find Tag (%.01f seconds): "
                        (float-time (time-since time)))
               cands
-              :action #'mctags-open-file))))
+              :action #'mctags-open-file
+              :caller 'mctags-find-tag))))
+
+(defun mctags-find-tag-occur ()
+  "Generate a custom occur buffer for `mctags-find-tag'."
+  (unless (eq major-mode 'ivy-occur-grep-mode)
+    (ivy-occur-grep-mode))
+  ;; we use regex in elisp, don't unquote regex
+  (let* ((cands (ivy--filter ivy-text mctags-find-tag-candidates)))
+    ;; Need precise number of header lines for `wgrep' to work.
+    (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
+                    (file-name-directory (mctags-locate-tags-file))))
+    (insert (format "%d candidates:\n" (length cands)))
+    (ivy--occur-insert-lines
+     (mapcar
+      (lambda (cand) (concat "./" cand))
+      cands))))
+(ivy-set-occur 'mctags-find-tag 'mctags-find-tag-occur)
+(ivy-set-display-transformer 'mctags-find-tag 'counsel-git-grep-transformer)
 
 (defun mctags-tags-file-must-exist ()
   "Make sure tags file does exist."
@@ -390,15 +411,15 @@ Focus on TAGNAME if it's not nil."
 
 (defun mctags-find-tag-api (tagname)
   "Find tag with given TAGNAME."
-  (let* ((time (current-time))
-         (cands (mctags-collect-tags tagname)))
+  (let* ((time (current-time)))
+    (setq mctags-find-tag-candidates (mctags-collect-cands tagname))
     (add-to-list 'mctags-tagname-history tagname)
     (cond
-     ((not cands)
+     ((not mctags-find-tag-candidates)
       ;; OK let's try grep if no tag found
       (mctags-grep tagname "No tag found. "))
      (t
-      (mctags-open-cand cands time)))))
+      (mctags-open-cand mctags-find-tag-candidates time)))))
 
 ;;;###autoload
 (defun mctags-find-tag ()
@@ -553,6 +574,7 @@ If HINT is not nil, it's used as grep hint."
      (mapcar
       (lambda (cand) (concat "./" cand))
       cands))))
+
 (ivy-set-occur 'mctags-grep 'mctags-grep-occur)
 (ivy-set-display-transformer 'mctags-grep 'counsel-git-grep-transformer)
 
