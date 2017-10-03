@@ -6,8 +6,8 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.0.7
-;; Package-Requires: ((emacs "24") (cl-lib "0.5"))
+;; Version: 0.0.8
+;; Package-Requires: ((emacs "24.3") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -80,10 +80,29 @@
 ;;   (add-hook 'org-mode-hook
 ;;             (lambda ()
 ;;               (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)))
+;;
+;; Extra Tips:
+;; 1. In order to embed image into your mail, use below org syntax,
+;;   [[/full/path/to/your.jpg]]
+;;
+;; 2. It's easy to add your own emphasis symbol.  For example, in order to render
+;; text between "@" in red color, you can use `org-mime-html-hook':
+;;   (add-hook 'org-mime-html-hook
+;;             (lambda ()
+;;               (while (re-search-forward "@\\([^@]*\\)@" nil t)
+;;                 (replace-match "<span style=\"color:red\">\\1</span>"))))
+;;
+;; 3. Since v0.0.8, the quoted mail use modern style (like Gmail). If you prefer
+;;    the original style, please set `org-mime-beautify-quoted-mail' to nil.
 
 ;;; Code:
 (require 'cl-lib)
 (require 'org)
+
+(defcustom org-mime-beautify-quoted-mail t
+  "Beautify quoted mail in more clean HTML, like Gmail."
+  :group 'org-mime
+  :type 'boolean)
 
 (defcustom org-mime-use-property-inheritance nil
   "Non-nil means al MAIL_ properties apply also for sublevels."
@@ -204,6 +223,34 @@ You could use either `org-up-heading-safe' or `org-back-to-heading'.")
                (buffer-string)))))
     (vm "?")))
 
+(defun org-mime-cleanup-quoted (html)
+  "Clean up quoted mail in modern UI style."
+  (cond
+   (org-mime-beautify-quoted-mail
+    (with-temp-buffer
+      ;; clean title of quoted
+      (insert (replace-regexp-in-string
+               "<p>[\n\r]*&gt;&gt;&gt;&gt;&gt; .* == \\([^\r\n]*\\)[\r\n]*</p>"
+               "<div class=\"gmail_quote\">\\1</div>"
+               html))
+      ;; now handle body, try to find beginning
+      (goto-char (point-min))
+      (search-forward-regexp "^[^ ]*&gt; ")
+      (search-backward-regexp "<p>")
+      ;; gmail use this style
+      (insert "<blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\">\n")
+      ;; find end
+      (goto-char (point-max))
+      (search-backward-regexp "^[^ ]*&gt; ")
+      (search-forward-regexp "</p>")
+      (goto-char (+ (point) 1))
+      (insert "</blockquote>")
+      (setq html (buffer-substring-no-properties (point-min) (point-max))))
+    ;; remove "User> "
+    (replace-regexp-in-string "^ *[^ ]*&gt; " "" html))
+   (t
+    html)))
+
 (defun org-mime-multipart (plain html &optional images)
   "Markup a multipart/alternative PLAIN with PLAIN and HTML alternatives.
 If html portion of message includes IMAGES they are wrapped in multipart/related part."
@@ -212,7 +259,7 @@ If html portion of message includes IMAGES they are wrapped in multipart/related
 		  plain
 		  (when images "<#multipart type=related>")
 		  "<#part type=text/html>"
-		  html
+		  (org-mime-cleanup-quoted html)
 		  images
 		  (when images "<#/multipart>\n")
 		  "<#/multipart>\n"))
@@ -374,7 +421,7 @@ and in org formats as mime alternatives."
   (interactive)
   (save-excursion
     (funcall org-mime-up-subtree-heading)
-    (flet ((mp (p) (org-entry-get nil p org-mime-use-property-inheritance)))
+    (cl-flet ((mp (p) (org-entry-get nil p org-mime-use-property-inheritance)))
       (let* ((file (buffer-file-name (current-buffer)))
              (subject (or (mp "MAIL_SUBJECT") (nth 4 (org-heading-components))))
              (to (mp "MAIL_TO"))
