@@ -1,4 +1,4 @@
-;;; mctags.el ---  Complete solution to use ctags
+;;; mctags.el ---  Fast and complete Ctags solution
 
 ;; Copyright (C) 2017 by Chen Bin
 
@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/mctags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.1.6
+;; Version: 1.1.7
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -42,6 +42,8 @@
 
 ;;; Code:
 
+(require 'xref nil t)
+(require 'cl-lib)
 (require 'counsel) ; counsel dependent on ivy
 
 (defgroup mctags nil
@@ -57,6 +59,8 @@
     ".hg"
     ;; project misc
     "bin"
+    "fonts"
+    "images"
     ;; Mac
     ".DS_Store"
     ;; html/javascript/css
@@ -66,7 +70,9 @@
     ".idea*"
     "node_modules"
     "bower_components"
-    ;; Java
+    ;; python
+    ".tox"
+    ;; emacs
     ".cask")
   "Ignore directories.  Wildcast is supported."
   :group 'mctags
@@ -81,6 +87,11 @@
     ;; Ctags
     "tags"
     "TAGS"
+    ;; compressed
+    "*.gz"
+    "*.zip"
+    "*.tar"
+    "*.rar"
     ;; Global/Cscope
     "GTAGS"
     "GPATH"
@@ -101,7 +112,9 @@
     "*.doc"
     "*.docx"
     "*.xls"
+    "*.ppt"
     "*.pdf"
+    "*.odt"
     ;; C/C++
     "*.obj"
     "*.o"
@@ -182,13 +195,13 @@ Default value is 300 seconds."
 
 (defun mctags-guess-program (name)
   "Guess executable path from its NAME on Windows."
-  (let (rlt)
-    (if (eq system-type 'windows-nt)
-        (cond
-         ((file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-         ((file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-         ((file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-         (t (setq rlt nil))))
+  (let* (rlt)
+    (when (eq system-type 'windows-nt)
+      (cond
+       ((file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       (t (setq rlt nil))))
     (if rlt rlt name)))
 
 ;;;###autoload
@@ -234,11 +247,13 @@ If FORCE is t, the commmand is executed without checking the timer."
          ;; run find&ctags to create TAGS
          (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s | %s -e -L -"
                       find-pg
-                      (mapconcat (lambda (p) (format "-iwholename \"*/%s*\""
-                                                     (file-name-as-directory p)))
+                      (mapconcat (lambda (p)
+                                   (format "-iwholename \"*/%s*\""
+                                           (shell-quote-argument (file-name-as-directory p))))
                                  mctags-ignore-directories " -or ")
                       mctags-max-file-size
-                      (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
+                      (mapconcat (lambda (n)
+                                   (format "-not -name \"%s\"" (shell-quote-argument n)))
                                  mctags-ignore-filenames " ")
                       ctags-pg))
          (tags-file (concat (file-name-as-directory src-dir) "TAGS"))
@@ -252,7 +267,8 @@ If FORCE is t, the commmand is executed without checking the timer."
 ;;;###autoload
 (defun mctags-directory-p (regex)
   "Does directory of current file match REGEX?"
-  (let* ((dir (or (if buffer-file-name (file-name-directory buffer-file-name))
+  (let* ((dir (or (when buffer-file-name
+                    (file-name-directory buffer-file-name))
                   ;; buffer is created in real time
                   default-directory
                   "")))
@@ -289,11 +305,7 @@ If FORCE is t, the commmand is executed without checking the timer."
                             "\\|" "\\<" tagname "[ \f\t()=,;]*\^?[0-9,]"
                             "\\)"))
          (tag-file-path (file-name-directory (mctags-locate-tags-file)))
-         full-tagname
-         filename
-         tag-line
-         cands
-         linenum)
+         cands)
     (with-temp-buffer
       (insert str)
       (modify-syntax-entry ?_ "w")
@@ -301,26 +313,25 @@ If FORCE is t, the commmand is executed without checking the timer."
       (while (search-forward tagname nil t)
         (beginning-of-line)
         (when (re-search-forward tag-regex (point-at-eol) 'goto-eol)
-          (setq full-tagname (or (match-string-no-properties 2) tagname))
           (beginning-of-line)
           (re-search-forward "\\s-*\\(.*?\\)\\s-*\^?\\(.*?\\)\\([0-9]+\\),[0-9]+$")
-          (setq tag-line (match-string-no-properties 1))
-          (setq linenum (string-to-number (match-string-no-properties 3)))
           (end-of-line)
-          (save-excursion
-            (re-search-backward "\f")
-            (re-search-forward "^\\(.*?\\),")
-            (setq filename (match-string-no-properties 1)))
-          (add-to-list 'cands
-                       (cons (format "%s:%d:%s" filename linenum tag-line)
-                             (list filename linenum tagname)))))
+          (let* ((tag-line (match-string-no-properties 1))
+                 (linenum (string-to-number (match-string-no-properties 3)))
+                 (filename (save-excursion
+                             (re-search-backward "\f")
+                             (re-search-forward "^\\(.*?\\),")
+                             (match-string-no-properties 1))))
+            (add-to-list 'cands
+                         (cons (format "%s:%d:%s" filename linenum tag-line)
+                               (list filename linenum tagname))))))
       (modify-syntax-entry ?_ "_"))
     cands))
 
 (defun mctags-selected-str ()
   "Get selected string."
-  (if (region-active-p)
-      (buffer-substring-no-properties (region-beginning) (region-end))))
+  (when (region-active-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
 
 (defun mctags-tagname-at-point ()
   "Get tag name at point."
@@ -347,10 +358,8 @@ Focus on TAGNAME if it's not nil."
       (re-search-forward tagname)
       (goto-char (match-beginning 0)))
     ;; flash, Emacs v25 only API
-    (when (featurep 'xref)
-      (require 'xref)
-      (xref-pulse-momentarily)))
-  )
+    (when (fboundp 'xref-pulse-momentarily)
+      (xref-pulse-momentarily))))
 
 (defun mctags-open-file (item)
   "Find and open file of ITEM."
@@ -358,13 +367,13 @@ Focus on TAGNAME if it's not nil."
     (mctags-open-file-api (nth 0 val) ; file
                           (nth 1 val) ; linenum
                           (file-name-directory (mctags-locate-tags-file))
-                          (nth 2 val) ; tagname
-                          )))
+                          (nth 2 val)))) ; tagname
 
 (defun mctags-open-cand (cands time)
   "Open CANDS.  Start open tags file at TIME."
   ;; mark current point for `pop-tag-mark'
-  (xref-push-marker-stack)
+  (when (fboundp 'xref-push-marker-stack)
+    (xref-push-marker-stack))
   (cond
    ((= 1 (length cands))
     ;; open the file directly
@@ -395,17 +404,11 @@ Focus on TAGNAME if it's not nil."
 
 (defun mctags-tags-file-must-exist ()
   "Make sure tags file does exist."
-  (let* (rlt src-dir)
-    (cond
-     ((not (mctags-locate-tags-file))
-      (when (setq src-dir (read-directory-name "Ctags will scan code at:"
-                                               (mctags-project-root)))
-        (mctags-scan-dir src-dir t)
-        (setq rlt t)))
-     (t
-      (setq rlt t)))
-    (unless rlt
-      (error "Can't find TAGS.  Please run `mctags-scan-code' at least once!"))))
+  (when (not (mctags-locate-tags-file))
+    (let* ((src-dir (read-directory-name "Ctags will scan code at:"
+                                         (mctags-project-root))))
+      (if src-dir (mctags-scan-dir src-dir t)
+        (error "Can't find TAGS.  Please run `mctags-scan-code'!")))))
 
 ;;;###autoload
 (defun mctags-scan-code (&optional dir)
@@ -414,7 +417,8 @@ Focus on TAGNAME if it's not nil."
   (let* ((src-dir (or dir
                       (read-directory-name "Ctags will scan code at:"
                                            (mctags-project-root)))))
-    (if src-dir (mctags-scan-dir src-dir t))))
+    (when src-dir
+      (mctags-scan-dir src-dir t))))
 
 (defun mctags-find-tag-api (tagname)
   "Find tag with given TAGNAME."
@@ -499,39 +503,38 @@ Focus on TAGNAME if it's not nil."
                               mctags-ignore-filenames)))
     (cond
      ((mctags-has-quick-grep)
-      (concat (mapconcat (lambda (e) (format "-g='!%s/*'" e))
+      (concat (mapconcat (lambda (e)
+                           (format "-g='!%s/*'" (shell-quote-argument e)))
                          ignore-dirs " ")
               " "
-              (mapconcat (lambda (e) (format "-g='!%s'" e))
+              (mapconcat (lambda (e)
+                           (format "-g='!%s'" (shell-quote-argument e)))
                          ignore-file-names " ")))
      (t
-      (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
+      (concat (mapconcat (lambda (e)
+                           (format "--exclude-dir='%s'" (shell-quote-argument e)))
                          ignore-dirs " ")
               " "
-              (mapconcat (lambda (e) (format "--exclude='%s'" e))
+              (mapconcat (lambda (e)
+                           (format "--exclude='%s'" (shell-quote-argument e)))
                          ignore-file-names " "))))))
 
-(defun mctags-grep-cli (keyword use-cache &optional extra-opts)
-  "Use KEYWORD, USE-CACHE, and EXTRA-OPTS to build CLI.
+(defun mctags-grep-cli (keyword use-cache)
+  "Use KEYWORD and USE-CACHE to build CLI.
 Extended regex is used, like (pattern1|pattern2)."
-  (let* (opts cmd)
-    (unless extra-opts (setq extra-opts ""))
-    (cond
-     ((mctags-has-quick-grep)
-      (setq cmd (format "%s %s %s \"%s\" --"
-                        (concat (executable-find "rg")
-                                " -n -M 512 --no-heading --color never -s")
-                        (mctags-exclude-opts use-cache)
-                        extra-opts
-                        keyword)))
-     (t
-      ;; use extended regex always
-      (setq cmd (format "%s -rsnE %s %s \"%s\" *"
-                        (or mctags-grep-program (mctags-guess-program "grep"))
-                        (mctags-exclude-opts use-cache)
-                        extra-opts
-                        keyword))))
-    cmd))
+  (cond
+   ((mctags-has-quick-grep)
+    (format "%s %s \"%s\" --"
+            (concat (executable-find "rg")
+                    " -n -M 512 --no-heading --color never -s")
+            (mctags-exclude-opts use-cache)
+            keyword))
+   (t
+    ;; use extended regex always
+    (format "%s -rsnE %s \"%s\" *"
+            (or mctags-grep-program (mctags-guess-program "grep"))
+            (mctags-exclude-opts use-cache)
+            keyword))))
 
 ;;;###autoload
 (defun mctags-grep (&optional default-keyword hint)
