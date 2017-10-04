@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -221,7 +221,7 @@ some buffer, but only if `global-undo-tree-mode' is also
 activated."
        (when (and (boundp 'global-undo-tree-mode)
                   global-undo-tree-mode)
-         (undo-tree-mode 1)))
+         (turn-on-undo-tree-mode)))
 
      (add-hook 'evil-local-mode-hook #'evil-turn-on-undo-tree-mode)
 
@@ -479,6 +479,7 @@ the mark and entering `recursive-edit'."
 (declare-function 'avy-goto-word-1-below "avy")
 (declare-function 'avy-goto-subword-0 "avy")
 (declare-function 'avy-goto-subword-1 "avy")
+(declare-function 'avy-goto-char-timer "avy")
 
 (defmacro evil-enclose-avy-for-motion (&rest body)
   "Enclose avy to make it suitable for motions.
@@ -513,6 +514,7 @@ Based on `evil-enclose-ace-jump-for-motion'."
 (evil-define-avy-motion avy-goto-char-2-above inclusive)
 (evil-define-avy-motion avy-goto-char-2-below inclusive)
 (evil-define-avy-motion avy-goto-char-in-line inclusive)
+(evil-define-avy-motion avy-goto-char-timer inclusive)
 (evil-define-avy-motion avy-goto-word-0 exclusive)
 (evil-define-avy-motion avy-goto-word-1 exclusive)
 (evil-define-avy-motion avy-goto-word-1-above exclusive)
@@ -528,6 +530,7 @@ Based on `evil-enclose-ace-jump-for-motion'."
                    avy-goto-char-2-above
                    avy-goto-char-2-below
                    avy-goto-char-in-line
+                   avy-goto-char-timer
                    avy-goto-word-0
                    avy-goto-word-1
                    avy-goto-word-1-above
@@ -550,6 +553,21 @@ Based on `evil-enclose-ace-jump-for-motion'."
      (add-to-list 'evil-motion-state-modes 'ag-mode)
      (evil-add-hjkl-bindings ag-mode-map 'motion)))
 
+;; visual-line-mode integration
+(when evil-respect-visual-line-mode
+  (let ((swaps '((evil-next-line . evil-next-visual-line)
+                 (evil-previous-line . evil-previous-visual-line)
+                 (evil-beginning-of-line . evil-beginning-of-visual-line)
+                 (evil-end-of-line . evil-end-of-visual-line))))
+    (dolist (swap swaps)
+      (define-key visual-line-mode-map (vector 'remap (car swap)) (cdr swap))
+      (define-key visual-line-mode-map (vector 'remap (cdr swap)) (car swap)))))
+
 (provide 'evil-integration)
+
+;;; abbrev.el
+(when evil-want-abbrev-expand-on-insert-exit
+  (eval-after-load 'abbrev
+    '(add-hook 'evil-insert-state-exit-hook 'expand-abbrev)))
 
 ;;; evil-integration.el ends here

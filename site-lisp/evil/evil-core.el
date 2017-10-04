@@ -2,7 +2,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -625,7 +625,8 @@ happen when the keymap is accessed from `read-key-sequence'. In
 particular, if it is access from `define-key' the returned
 mapping will always be the ESC prefix map."
   (if (and (not evil-inhibit-esc)
-           (or evil-local-mode (evil-ex-p))
+           (or evil-local-mode (evil-ex-p)
+               (active-minibuffer-window))
            (not (evil-emacs-state-p))
            (let ((keys (this-single-command-keys)))
              (and (> (length keys) 0)
@@ -1229,7 +1230,7 @@ If ARG is nil, don't display a message in the echo area.%s" name doc)
                (unless evil-no-display
                  (evil-refresh-cursor ',state)
                  (evil-refresh-mode-line ',state)
-                 (when (evil-called-interactively-p)
+                 (when (called-interactively-p 'any)
                    (redisplay)))
                ,@body
                (run-hooks ',entry-hook)

@@ -3,7 +3,7 @@
 ;; Author: Frank Fischer <frank.fischer at mathematik.tu-chemnitz.de>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -61,7 +61,7 @@
 ;; of all commands that are executed starting and ending in normal
 ;; state.
 ;;
-;; Not all commands are recored. There are several commands that are
+;; Not all commands are recorded. There are several commands that are
 ;; completely ignored and other commands that even abort the currently
 ;; active recording, e.g., commands that change the current buffer.
 ;;
@@ -320,6 +320,16 @@ invoked the current command"
   (clear-this-command-keys t)
   (setq evil-repeat-keys ""))
 
+(defun evil-this-command-keys (&optional post-cmd)
+  "Version of `this-command-keys' with finer control over prefix args."
+  (let ((arg (if post-cmd current-prefix-arg prefix-arg)))
+    (vconcat
+     (when (and (numberp arg)
+                ;; Only add prefix if no repeat info recorded yet
+                (null evil-repeat-info))
+       (string-to-vector (number-to-string arg)))
+     (this-single-command-keys))))
+
 (defun evil-repeat-keystrokes (flag)
   "Repeation recording function for commands that are repeated by keystrokes."
   (cond
@@ -327,11 +337,11 @@ invoked the current command"
     (when evil-this-register
       (evil-repeat-record
        `(set evil-this-register ,evil-this-register)))
-    (setq evil-repeat-keys (this-command-keys)))
+    (setq evil-repeat-keys (evil-this-command-keys)))
    ((eq flag 'post)
-    (evil-repeat-record (if (zerop (length (this-command-keys)))
+    (evil-repeat-record (if (zerop (length (evil-this-command-keys t)))
                             evil-repeat-keys
-                          (this-command-keys)))
+                          (evil-this-command-keys t)))
     ;; erase commands keys to prevent double recording
     (evil-clear-command-keys))))
 

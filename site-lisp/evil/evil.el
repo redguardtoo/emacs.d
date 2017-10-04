@@ -1,6 +1,9 @@
 ;;; evil.el --- extensible vi layer
 
-;; Authors:
+;; The following list of authors was kept up to date until the beginning of
+;; 2017, when evil moved under new maintainers. For authors since then, please
+;; consult the git logs.
+
 ;;      Alessandro Piras <laynor at gmail.com>
 ;;      Alexander Baier <alexander.baier at mailbox.org>
 ;;      Antono Vasiljev <antono.vasiljev at gmail.com>
@@ -48,16 +51,16 @@
 ;;      Xiao Hanyu <xiaohanyu1988 at gmail.com>
 ;;      York Zhao <yzhao at telecor.com>
 
-;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
+;; Maintainers: The emacs-evil team. <https://github.com/orgs/emacs-evil/people>
 ;;      To get in touch, please use the bug tracker or the
 ;;      mailing list (see below).
 ;; Created: 2011-03-01
-;; Version: 1.2.12
+;; Version: 1.2.13
 ;; Keywords: emulation, vim
-;; URL: http://gitorious.org/evil
-;;      Repository: git://gitorious.org/evil/evil.git
+;; URL: https://github.com/emacs-evil/evil
+;;      Repository: https://github.com/emacs-evil/evil.git
 ;;      EmacsWiki: http://www.emacswiki.org/emacs/Evil
-;; Bug tracker: https://bitbucket.org/lyro/evil/issues
+;; Bug tracker: https://github.com/emacs-evil/evil/issues
 ;;      If you have bug reports, suggestions or patches, please
 ;;      create an issue at the bug tracker (open for everyone).
 ;;      Other discussions (tips, extensions) go to the mailing list.
@@ -95,7 +98,7 @@
 ;;
 ;; Evil lives in a Git repository. To obtain Evil, do
 ;;
-;;      git clone git://gitorious.org/evil/evil.git
+;;      git clone git://github.com/emacs-evil/evil.git
 ;;
 ;; Move Evil to ~/.emacs.d/evil (or somewhere else in the `load-path').
 ;; Then add the following lines to ~/.emacs:

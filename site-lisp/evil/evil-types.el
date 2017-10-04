@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -369,6 +369,55 @@ If visual state is inactive then those values are nil."
   :ex-arg substitution
   (when (evil-ex-p)
     (evil-ex-get-substitute-info evil-ex-argument t)))
+
+(evil-define-interactive-code "<xc/>"
+  "Ex register and count argument, both optional.
+Can be used for commands such as :delete [REGISTER] [COUNT] where the
+command can be called with either zero, one or two arguments. When the
+argument is one, if it's numeric it's treated as a COUNT, otherwise -
+REGISTER"
+  (when (evil-ex-p)
+    (evil-ex-get-optional-register-and-count evil-ex-argument)))
+
+(defun evil-ex-get-optional-register-and-count (string)
+  "Parse STRING as an ex arg with both optional REGISTER and COUNT.
+Returns a list (REGISTER COUNT)."
+  (let* ((split-args (split-string (or string "")))
+         (arg-count (length split-args))
+         (arg0 (car split-args))
+         (arg1 (cadr split-args))
+         (number-regex "^-?[1-9][0-9]*$")
+         (register nil)
+         (count nil))
+    (cond
+     ;; :command REGISTER or :command COUNT
+     ((= arg-count 1)
+      (if (string-match-p number-regex arg0)
+          (setq count arg0)
+        (setq register arg0)))
+     ;; :command REGISTER COUNT
+     ((eq arg-count 2)
+      (setq register arg0
+            count arg1))
+     ;; more than 2 args aren't allowed
+     ((> arg-count 2)
+      (user-error "Invalid use")))
+
+    ;; if register is given, check it's valid
+    (when register
+      (unless (= (length register) 1)
+        (user-error "Invalid register"))
+      (setq register (string-to-char register)))
+
+    ;; if count is given, check it's valid
+    (when count
+      (unless (string-match-p number-regex count)
+        (user-error "Invalid count"))
+      (setq count (string-to-number count))
+      (unless (> count 0)
+        (user-error "Invalid count")))
+
+    (list register count)))
 
 (provide 'evil-types)
 

@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -216,6 +216,18 @@ a line."
   :type 'boolean
   :group 'evil)
 
+(defcustom evil-respect-visual-line-mode nil
+  "Whether to remap movement commands when `visual-line-mode' is active.
+This variable must be set before evil is loaded. The commands
+swapped are
+
+`evil-next-line'         <-> `evil-next-visual-line'
+`evil-previous-line'     <-> `evil-previous-visual-line'
+`evil-beginning-of-line' <-> `evil-beginning-of-visual-line'
+`evil-end-of-line'       <-> `evil-end-of-visual-line'"
+  :type 'boolean
+  :group 'evil)
+
 (defcustom evil-repeat-find-to-skip-next t
   "Whether a repeat of t or T should skip an adjacent character."
   :type 'boolean
@@ -245,7 +257,7 @@ interpretation of evil."
 (defcustom evil-mode-line-format 'before
   "The position of the mode line tag.
 Either a symbol or a cons-cell. If it is a symbol it should be
-one of 'before, 'after or 'nil. 'before mean the the tag is
+one of 'before, 'after or 'nil. 'before means the tag is
 placed before the mode-list, 'after means it is placed after the
 mode-list, and 'nil means no mode line tag. If it is a cons cell
 it should have the form (WHERE . WHICH) where WHERE is either
@@ -384,6 +396,13 @@ this list contains the symbol 'not then its meaning is inverted,
 i.e., all states listed here highlight the closing parenthesis
 before point."
   :type '(repeat symbol)
+  :group 'evil)
+
+(defcustom evil-kill-on-visual-paste t
+  "Whether `evil-visual-paste' adds the replaced text to the kill
+ring, making it the default for the next paste. The default, t,
+replicates the default vim behavior."
+  :type 'boolean
   :group 'evil)
 
 (defcustom evil-want-C-i-jump t
@@ -608,6 +627,7 @@ If STATE is nil, Evil is disabled in the buffer."
     cfw:calendar-mode
     completion-list-mode
     Custom-mode
+    custom-theme-choose-mode
     debugger-mode
     delicious-search-mode
     desktop-menu-blist-mode
@@ -630,6 +650,7 @@ If STATE is nil, Evil is disabled in the buffer."
     emms-metaplaylist-mode
     emms-playlist-mode
     ess-help-mode
+    etags-select-mode
     fj-mode
     gc-issues-mode
     gdb-breakpoints-mode
@@ -781,7 +802,6 @@ If STATE is nil, Evil is disabled in the buffer."
     Man-mode
     speedbar-mode
     undo-tree-visualizer-mode
-    view-mode
     woman-mode)
   "Modes that should come up in Motion state."
   :type  '(repeat symbol)
@@ -1087,7 +1107,7 @@ always uses plain Emacs regular expressions."
   :group 'evil)
 
 (defcustom evil-ex-search-persistent-highlight t
-  "If non-nil matches remained highlighted when the search ends."
+  "If non-nil matches remain highlighted when the search ends."
   :type 'boolean
   :group 'evil)
 
@@ -1136,7 +1156,7 @@ the replacement is shown interactively."
   :group 'evil)
 
 (defcustom evil-ex-substitute-global nil
-  "If non-nil substitute patterns a global by default.
+  "If non-nil substitute patterns are global by default.
 Usually (if this variable is nil) a substitution works only on
 the first match of a pattern in a line unless the 'g' flag is
 given, in which case the substitution happens on all matches in a
@@ -1174,8 +1194,14 @@ Set to 0 to use the default height for `split-window'."
   "Show error output of a shell command in the error buffer.
 If this variable is non-nil the error output of a shell command
 goes to the messages buffer instead of being mixed with the
-regular output. This happens only of the exit status of the
+regular output. This happens only if the exit status of the
 command is non-zero."
+  :type 'boolean
+  :group 'evil)
+
+(defcustom evil-want-abbrev-expand-on-insert-exit t
+  "If non-nil abbrevs will be expanded when leaving Insert state
+like in Vim. This variable is read only on load."
   :type 'boolean
   :group 'evil)
 
@@ -1197,12 +1223,6 @@ SYMBOL is made permanent buffer local."
 and `evil-scroll-down'.
 Determines how many lines should be scrolled.
 Default value is 0 - scroll half the screen.")
-
-(evil-define-local-var evil-scroll-line-count 1
-  "Holds last used prefix for `evil-scroll-line-up'
-and `evil-scroll-line-down'.
-Determines how many lines should be scrolled.
-Default value is 1 line.")
 
 (evil-define-local-var evil-state nil
   "The current Evil state.
@@ -1259,6 +1279,11 @@ having higher priority.")
 
 (defvar evil-command-properties nil
   "Specifications made by `evil-define-command'.")
+
+(defvar evil-change-commands '(evil-change)
+  "Commands that wrap or replace `evil-change'.
+This list exists to apply an inconsistency with vim's change command
+to commands that wrap or redefine it. See emacs-evil/evil#916.")
 
 (defvar evil-transient-vars '(cua-mode transient-mark-mode select-active-regions)
   "List of variables pertaining to Transient Mark mode.")
@@ -1625,7 +1650,14 @@ Elements have the form (NAME . FUNCTION).")
      :toggle     ,(lambda () (origami-toggle-node (current-buffer) (point)))
      :open       ,(lambda () (origami-open-node (current-buffer) (point)))
      :open-rec   ,(lambda () (origami-open-node-recursively (current-buffer) (point)))
-     :close      ,(lambda () (origami-close-node (current-buffer) (point)))))
+     :close      ,(lambda () (origami-close-node (current-buffer) (point))))
+    ((vdiff-mode)
+     :open-all   vdiff-open-all-folds
+     :close-all  vdiff-close-all-folds
+     :toggle     nil
+     :open       vdiff-open-fold
+     :open-rec   vdiff-open-fold
+     :close      vdiff-close-fold))
   "Actions to be performed for various folding operations.
 
 The value should be a list of fold handlers, were a fold handler has
@@ -1805,30 +1837,19 @@ Otherwise the previous command is assumed as substitute.")
     (with-temp-buffer
       (let ((dir (file-name-directory (or load-file-name
                                           byte-compile-current-file))))
-        (cond
-         ;; git repository
-         ((and (file-exists-p (concat dir "/.git"))
-               (condition-case nil
+        ;; git repository
+        (if (and (file-exists-p (concat dir "/.git"))
+                 (ignore-errors
                    (zerop (call-process "git" nil '(t nil) nil
                                         "rev-parse"
-                                        "--short" "HEAD"))
-                 (error nil)))
-          (goto-char (point-min))
-          (concat "evil-git-"
-                  (buffer-substring (point-min)
-                                    (line-end-position))))
-         ;; mercurial repository
-         ((and (file-exists-p (concat dir "/.hg"))
-               (condition-case nil
-                   (zerop (call-process "hg" nil '(t nil) nil
-                                        "parents"
-                                        "--template"
-                                        "evil-hg-{node|short}"))
-                 (error nil)))
-          (goto-char (point-min))
-          (buffer-substring (point-min) (line-end-position)))
-         ;; no repo, use plain version
-         (t "1.2.12")))))
+                                        "--short" "HEAD"))))
+            (progn
+              (goto-char (point-min))
+              (concat "evil-git-"
+                      (buffer-substring (point-min)
+                                        (line-end-position))))
+          ;; no repo, use plain version
+          "1.2.13"))))
   "The current version of Evil")
 
 (defun evil-version ()

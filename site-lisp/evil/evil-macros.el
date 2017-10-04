@@ -3,7 +3,7 @@
 ;; Author: Vegard Øye <vegard_oye at hotmail.com>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -396,7 +396,7 @@ if COUNT is positive, and to the left of it if negative.
            (cond
             ;; Visual state: extend the current selection
             ((and (evil-visual-state-p)
-                  (evil-called-interactively-p))
+                  (called-interactively-p 'any))
              ;; if we are at the beginning of the Visual selection,
              ;; go to the left (negative COUNT); if at the end,
              ;; go to the right (positive COUNT)
@@ -518,7 +518,7 @@ if COUNT is positive, and to the left of it if negative.
        (unwind-protect
            (let ((evil-inhibit-operator evil-inhibit-operator-value))
              (unless (and evil-inhibit-operator
-                          (evil-called-interactively-p))
+                          (called-interactively-p 'any))
                ,@body))
          (setq evil-inhibit-operator-value nil)))))
 

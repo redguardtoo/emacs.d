@@ -3,7 +3,7 @@
 ;; Author: Frank Fischer <frank fischer at mathematik.tu-chemnitz.de>
 ;; Maintainer: Vegard Øye <vegard_oye at hotmail.com>
 
-;; Version: 1.2.12
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -42,6 +42,7 @@
 
 (require 'evil-common)
 (require 'evil-states)
+(require 'shell)
 
 ;;; Code:
 
@@ -564,9 +565,7 @@ keywords and function:
 This function must be called from the :runner function of some
 argument handler that requires shell completion."
   (when (and (eq flag 'start)
-             (not evil-ex-shell-argument-initialized)
-             (require 'shell nil t)
-             (require 'comint nil t))
+             (not evil-ex-shell-argument-initialized))
     (set (make-local-variable 'evil-ex-shell-argument-initialized) t)
     (cond
      ;; Emacs 24
@@ -579,43 +578,13 @@ argument handler that requires shell completion."
           '(evil-ex-command-completion-at-point
             evil-ex-argument-completion-at-point))))
 
-;; because this variable is used only for Emacs 23 shell completion,
-;; we put it here instead of "evil-vars.el"
-(defvar evil-ex-shell-argument-range nil
-  "Internal helper variable for Emacs 23 shell completion.")
-
-(defun evil-ex-shell-command-completion-at-point ()
-  "Completion at point function for shell commands."
-  (cond
-   ;; Emacs 24
-   ((fboundp 'comint-completion-at-point)
-    (comint-completion-at-point))
-   ;; Emacs 23
-   ((fboundp 'minibuffer-complete-shell-command)
-    (set (make-local-variable 'evil-ex-shell-argument-range)
-         (list (point-min) (point-max)))
-    #'(lambda ()
-        ;; We narrow the buffer to the argument so
-        ;; `minibuffer-complete-shell-command' will correctly detect
-        ;; the beginning of the argument.  When narrowing the buffer
-        ;; to the argument the leading text in the minibuffer will be
-        ;; hidden. Therefore we add a dummy overlay which shows that
-        ;; text during narrowing.
-        (let* ((beg (car evil-ex-shell-argument-range))
-               (end (cdr evil-ex-shell-argument-range))
-               (prev-text (buffer-substring
-                           (point-min)
-                           (car evil-ex-shell-argument-range)))
-               (ov (make-overlay beg beg)))
-          (overlay-put ov 'before-string prev-text)
-          (save-restriction
-            (apply #'narrow-to-region evil-ex-shell-argument-range)
-            (minibuffer-complete-shell-command))
-          (delete-overlay ov))))))
+(define-obsolete-function-alias
+  'evil-ex-shell-command-completion-at-point
+  'comint-completion-at-point)
 
 (evil-ex-define-argument-type shell
   "Shell argument type, supports completion."
-  :completion-at-point evil-ex-shell-command-completion-at-point
+  :completion-at-point comint-completion-at-point
   :runner evil-ex-init-shell-argument-completion)
 
 (defun evil-ex-file-or-shell-command-completion-at-point ()
@@ -623,7 +592,7 @@ argument handler that requires shell completion."
            (= (char-after (point-min)) ?!))
       (save-restriction
         (narrow-to-region (1+ (point-min)) (point-max))
-        (evil-ex-shell-command-completion-at-point))
+        (comint-completion-at-point))
     (list (point-min) (point-max) #'read-file-name-internal)))
 
 (evil-ex-define-argument-type file-or-shell
@@ -870,15 +839,13 @@ START is the start symbol, which defaults to `expression'."
     (when result
       (setq command (car-safe result)
             string (cdr-safe result))
-      ;; check whether the command is followed by a slash and the
-      ;; part before the slash is not a known ex binding
-      ;; (maybe we should check for other characters, too? But only
-      ;; the slash is used commonly in Emacs functions)
+      ;; check whether the parsed command is followed by a slash or
+      ;; number and the part before it is not a known ex binding
       (when (and (> (length string) 0)
-                 (= (aref string 0) ?/)
+                 (string-match-p "^[/[:digit:]]" string)
                  (not (evil-ex-binding command t)))
-        ;; if this is the case, assume the slash and all following
-        ;; symbol characters form an (Emacs-)command
+        ;; if this is the case, assume the slash or number and all
+        ;; following symbol characters form an (Emacs-)command
         (setq result (evil-parser (concat command string)
                                   'emacs-binding
                                   evil-ex-grammar)

@@ -2,7 +2,7 @@
 
 ;; Author: Bailey Ling <bling at live.ca>
 
-;; Version: 1.2.10
+;; Version: 1.2.13
 
 ;;
 ;; This file is NOT part of GNU Emacs.
@@ -24,8 +24,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with Evil.  If not, see <http://www.gnu.org/licenses/>.
 
-(eval-when-compile (require 'cl))
-
+(require 'cl-lib)
 (require 'evil-core)
 (require 'evil-states)
 
@@ -35,6 +34,11 @@
   "Evil jump list configuration options."
   :prefix "evil-jumps"
   :group 'evil)
+
+(defcustom evil-jumps-cross-buffers t
+  "When non-nil, the jump commands can cross borders between buffers, otherwise the jump commands act only within the current buffer."
+  :type 'boolean
+  :group 'evil-jumps)
 
 (defcustom evil-jumps-max-length 100
   "The maximum number of jumps to keep track of."
@@ -129,24 +133,35 @@
                                           nil)))
                                   (ring-elements (evil--jumps-get-window-jump-list))))))
 
-(defun evil--jumps-jump-to-index (idx)
+(defun evil--jumps-jump (idx shift)
   (let ((target-list (evil--jumps-get-window-jump-list)))
-    (evil--jumps-message "jumping to %s" idx)
+    (evil--jumps-message "jumping from %s by %s" idx shift)
     (evil--jumps-message "target list = %s" target-list)
-    (when (and (< idx (ring-length target-list))
-               (>= idx 0))
-      (run-hooks 'evil-jumps-pre-jump-hook)
-      (setf (evil-jumps-struct-idx (evil--jumps-get-current)) idx)
-      (let* ((place (ring-ref target-list idx))
-             (pos (car place))
-             (file-name (cadr place)))
-        (setq evil--jumps-jumping t)
-        (if (string-match-p evil--jumps-buffer-targets file-name)
-            (switch-to-buffer file-name)
-          (find-file file-name))
-        (setq evil--jumps-jumping nil)
-        (goto-char pos)
-        (run-hooks 'evil-jumps-post-jump-hook)))))
+    (setq idx (+ idx shift))
+    (let* ((current-file-name (or (buffer-file-name) (buffer-name)))
+           (size (ring-length target-list)))
+      (unless evil-jumps-cross-buffers
+        ;; skip jump marks pointing to other buffers
+        (while (and (< idx size) (>= idx 0)
+                    (not (string= current-file-name
+                                  (let* ((place (ring-ref target-list idx))
+                                         (pos (car place)))
+                                    (cadr place)))))
+          (setq idx (+ idx shift))))
+      (when (and (< idx size) (>= idx 0))
+        ;; actual jump
+        (run-hooks 'evil-jumps-pre-jump-hook)
+        (let* ((place (ring-ref target-list idx))
+               (pos (car place))
+               (file-name (cadr place)))
+          (setq evil--jumps-jumping t)
+          (if (string-match-p evil--jumps-buffer-targets file-name)
+              (switch-to-buffer file-name)
+            (find-file file-name))
+          (setq evil--jumps-jumping nil)
+          (goto-char pos)
+          (setf (evil-jumps-struct-idx (evil--jumps-get-current)) idx)
+          (run-hooks 'evil-jumps-post-jump-hook))))))
 
 (defun evil--jumps-push ()
   "Pushes the current cursor/file position to the jump list."
@@ -189,7 +204,7 @@
     :entries (let* ((jumps (evil--jumps-savehist-sync))
                     (count 0))
                (cl-loop for jump in jumps
-                        collect `(nil [,(number-to-string (incf count))
+                        collect `(nil [,(number-to-string (cl-incf count))
                                        ,(number-to-string (car jump))
                                        (,(cadr jump))])))
     :select-action #'evil--show-jumps-select-action))
@@ -224,17 +239,21 @@ POS defaults to point."
              (idx (evil-jumps-struct-idx struct)))
         (evil--jumps-message "jumping back %s" idx)
         (when (= idx -1)
-          (setq idx (+ idx 1))
+          (setq idx 0)
           (setf (evil-jumps-struct-idx struct) 0)
           (evil--jumps-push))
-        (evil--jumps-jump-to-index (+ idx 1))))))
+        (evil--jumps-jump idx 1)))))
 
 (defun evil--jump-forward (count)
   (let ((count (or count 1)))
     (evil-motion-loop (nil count)
       (let* ((struct (evil--jumps-get-current))
              (idx (evil-jumps-struct-idx struct)))
-        (evil--jumps-jump-to-index (- idx 1))))))
+        (when (= idx -1)
+          (setq idx 0)
+          (setf (evil-jumps-struct-idx struct) 0)
+          (evil--jumps-push))
+          (evil--jumps-jump idx -1)))))
 
 (defun evil--jumps-window-configuration-hook (&rest args)
   (let* ((window-list (window-list-1 nil nil t))

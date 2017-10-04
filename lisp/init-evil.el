@@ -1,8 +1,9 @@
 ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
 ;; evil 1.0.8 search word instead of symbol
 (setq evil-symbol-word-search t)
-;; load undo-tree and ert
-(add-to-list 'load-path "~/.emacs.d/site-lisp/evil/lib")
+(require 'undo-tree)
+;; For the motions g; g, and for the last-change-register ., 
+(require 'goto-chg)
 
 ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
 (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
