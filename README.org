@@ -6,7 +6,7 @@
 - Robust, you can install packages without network access
 - Popular programming languages are supported, C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...
 * Checklist
-- Tested with Emacs 24.3, 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/Mac (I will stop 24.3 support at <2018-01-01>)
+- Tested with Emacs 24.3, 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/macOS (I will stop 24.3 support at <2018-01-01>)
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://www.gnu.org/software/emacs/manual/emacs-gnutls.html][install GnuTLS Dlls manually]] to be able to install packages from remote repositories
@@ -56,12 +56,12 @@ Now you are using local package repository =~/projs/melpa=.
 You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =~/.emacs.d/lisp/init-elpa.el=.
 ** Third party command line program (OPTIONAL)
 *** Install
-You can install them in any way you like. But =OS package manager= is easier.
+You can install them in any way you like. But using =OS package manager= is easier.
 
 =OS package manager= means:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
-- [[https://github.com/mxcl/homebrew][homebrew]] at Mac
-- any package manager at Linux (apt-get at Ubuntu, yum at Redhat, pacman at Arch, emerge at Gentoo ...)
+- [[https://github.com/mxcl/homebrew][homebrew]] at macOS
+- any package manager at Linux (=apt-get= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
 If the program is developed with certain programming language. That language may provide its own package manager which allows you install the program for only current user. For example, python package manager has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
 *** List of command line programs
@@ -71,6 +71,12 @@ Please ignore any related error message. For example, if aspell and hunspell are
 **** fortune-zh or fortune
 - Show ancient Chinese poem or quotes from random sources
 - Install through OS package manager
+
+Please note you can't install =forture-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
+- install fortune
+- Download =forture-zh= code from [[https://github.com/debiancn/fortune-zh]]
+- Extract code and run =make= in its folder
+- copy data files and the script named fortune-zh into corresponding folders which =fortune= is using. You may need edit the file =forture-zh= before copying
 **** w3m (web browser)
 - Required by =emacs-w3m=
 - Install through OS package manager
@@ -214,7 +220,7 @@ The tutorials I recommended provide enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
-[[https://github.com/abo-abo/hydra][Hydra]] is use to define keybindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
+[[https://github.com/abo-abo/hydra][Hydra]] is use to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
 
 You can override any key bindings in =~/.custome.el=.
 * FAQ
@@ -323,7 +329,7 @@ Other desktop applications may intercept the key bindings. For example, someone 
 Press =M-x org-version=, then read corresponding online manual to setup.
 
 For example, =org-capture= need your [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
-** OS X user?
+** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
