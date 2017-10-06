@@ -22,7 +22,7 @@ But you may use safer HTTPS instead.")
     robe
     groovy-mode
     inf-ruby
-    company ; I won't wait another 2 years for stable
+    ;; company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
     move-text
@@ -203,7 +203,6 @@ But you may use safer HTTPS instead.")
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
-(require-package 'elpy)
 (require-package 'hl-sexp)
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
@@ -249,6 +248,7 @@ But you may use safer HTTPS instead.")
 (require-package 'yasnippet)
 (require-package 'company)
 (require-package 'company-c-headers)
+(require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
