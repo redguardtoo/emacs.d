@@ -1,6 +1,7 @@
 * Features
 - Efficient. Emacs *starts up in one second*
-- Stable, Emacs will never crash after a full package upgrade
+- Robust. Emacs will never crash after a full package upgrade
+- Support Windows. You won't get inferior performance on Windows
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
 - Robust, you can install packages without network access
@@ -334,11 +335,11 @@ Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
 ** Locked packages
-Some packages (Evil, Web-mode ...) are so important to my workflow so they are locked.
+Some packages (Evil, Web-mode ...) are so important to my workflow that they are locked.
 
 Those packages are placed at =~/.emacs.d/site-lisp=.
 
-They will not be upgraded through ELPA unless you delete them at =~/.emacs.d/site-lisp=.
+They will not be upgraded through ELPA unless you delete them at =~/.emacs.d/site-lisp= at first.
 ** Customize global variables
 Some variables are hard coded so you cannot "M-x customize" to modify them.
 
