@@ -903,4 +903,15 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   '(define-key grep-mode-map
      (kbd "C-c C-c") 'wgrep-finish-edit))
 ;; }}
+
+;; {{
+(require 'typewriter-mode)
+(defun toggle-typewriter ()
+  "Turn on/off typewriter."
+  (interactive)
+  (if (bound-and-true-p typewriter-mode)
+      (typewriter-mode -1)
+    (typewriter-mode 1)))
+;; }}
+
 (provide 'init-misc)

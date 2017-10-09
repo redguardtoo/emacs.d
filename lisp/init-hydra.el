@@ -3,10 +3,10 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Emms^       ^Misc^
--------------------------------
-_r_andom     _t_erm
-_n_ext       _a_utoComplete
+^Emms^       ^Misc^             ^Typewriter^
+------------------------------------------------
+_r_andom     _t_erm             _E_nable/Disable
+_n_ext       _a_utoComplete     _V_intage/Modern
 _p_revious   _s_ave workgroup
 _P_ause      _l_oad workgroup
 _O_pen       _b_ookmark
@@ -20,6 +20,8 @@ _q_uit
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)
   ("a" toggle-company-ispell)
+  ("E" toggle-typewriter)
+  ("V" twm/toggle-sound-style)
   ("r" emms-random)
   ("n" emms-next)
   ("p" emms-previous)

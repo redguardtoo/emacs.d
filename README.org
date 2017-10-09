@@ -221,7 +221,9 @@ The tutorials I recommended provide enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
-[[https://github.com/abo-abo/hydra][Hydra]] is use to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
+[[https://github.com/abo-abo/hydra][Hydra]] is used to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
+
+You can always press =C-c C-y= anywhere to bring up default hydra menu.
 
 You can override any key bindings in =~/.custome.el=.
 * FAQ
