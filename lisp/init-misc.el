@@ -21,7 +21,7 @@
 
 ;; {{ ace-link
 (ace-link-setup-default)
-(global-set-key (kbd "M-o") 'ace-link-addr)
+(global-set-key (kbd "M-o") 'ace-link)
 ;; }}
 
 ;; open header file under cursor
