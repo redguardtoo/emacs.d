@@ -32,6 +32,7 @@
 (defcustom twm/play-command
   (case system-type
     ('darwin "afplay %s")
+    ('windows-nt "powershell -c (New-Object Media.SoundPlayer \"%s\").PlaySync();")
     ('gnu/linux "aplay %s"))
   "Command to play sound file."
   :group 'typewriter-mode)
