@@ -914,4 +914,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
     (typewriter-mode 1)))
 ;; }}
 
+;; @see https://github.com/szermatt/emacs-bash-completion
+(bash-completion-setup)
+
 (provide 'init-misc)
