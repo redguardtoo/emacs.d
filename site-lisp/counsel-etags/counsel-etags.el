@@ -99,6 +99,7 @@
     "GRTAGS"
     "cscope.files"
     ;; html/javascript/css
+    "*bundle.js"
     "*min.js"
     "*min.css"
     ;; Images
@@ -191,9 +192,9 @@ Exuberant Ctags is preferred.  But you can use \"etags\" instead by
   :type 'boolean)
 
 (defcustom counsel-etags-update-tags-backend
-  'counsel-etags-update-tags-internal
+  'counsel-etags-update-tags-force
   "The function we used to update tags file during auto-updating.
-By default, it's `counsel-etags-update-tags-internal', but you can define your
+By default, it's `counsel-etags-update-tags-force', but you can define your
 own function instead."
   :group 'counsel-etags
   :type 'sexp)
@@ -297,7 +298,7 @@ If FORCE is t, the commmand is executed without checking the timer."
     (string-match-p regex file)))
 
 ;;;###autoload
-(defun counsel-etags-update-tags-internal ()
+(defun counsel-etags-update-tags-force ()
   "Update tags file now."
   (interactive)
   (let* ((tags-file (counsel-etags-locate-tags-file)))
