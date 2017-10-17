@@ -234,13 +234,18 @@ own function instead."
     (buffer-string)))
 
 (defun counsel-etags-locate-tags-file ()
-  "Find tags file: either from `tags-file-name' or parent directory."
-  (cond
-   ((and tags-file-name (file-exists-p tags-file-name))
-    tags-file-name)
-   (t
-    (let* ((dir (locate-dominating-file default-directory "TAGS")))
-      (if dir (concat dir "TAGS"))))))
+  "Find tags file: Search in parent directory or use `tags-file-name'."
+  (let* ((dir (locate-dominating-file default-directory "TAGS")))
+    (cond
+     ;; Since we use `tags-file-name' only. The assumption is that the
+     ;; only one tags fiel is created per project. So in theory we should find
+     ;; tags file in parent directory
+     ;; Besides, we don't need worry about right location of tags file when
+     ;; switching projects,  using "search-parent-directory-first" method.
+     (dir
+      (concat dir "TAGS"))
+     ((and tags-file-name (file-exists-p tags-file-name))
+      tags-file-name))))
 
 (defun counsel-etags-project-root ()
   "Return the root of the project."
@@ -345,15 +350,34 @@ If FORCE is t, the commmand is executed without checking the timer."
       (modify-syntax-entry ?_ "_"))
     cands))
 
+(defun counsel-etags-encode(s)
+  "Encode S."
+    ;; encode "{}[]"
+    (setq s (replace-regexp-in-string "\"" "\\\\\"" s))
+    (setq s (replace-regexp-in-string "\\?" "\\\\\?" s))
+    (setq s (replace-regexp-in-string "\\$" "\\\\x24" s))
+    (setq s (replace-regexp-in-string "\\*" "\\\\\*" s))
+    (setq s (replace-regexp-in-string "\\." "\\\\\." s))
+    (setq s (replace-regexp-in-string "\\[" "\\\\\[" s))
+    (setq s (replace-regexp-in-string "\\]" "\\\\\]" s))
+    ;; perl-regex support non-ASCII characters
+    ;; Turn on `-P` from `git grep' and `grep'
+    ;; the_silver_searcher and ripgrep need no setup
+    (setq s (replace-regexp-in-string "{" "\\\\{" s))
+    (setq s (replace-regexp-in-string "}" "\\\\}" s))
+    s)
+
 (defun counsel-etags-selected-str ()
-  "Get selected string."
-  (when (region-active-p)
-    (buffer-substring-no-properties (region-beginning) (region-end))))
+  "Get selected string.  Suppose plain text instead regex in selected text.
+So we need *encode* the string."
+  (if (region-active-p)
+      (counsel-etags-encode (buffer-substring-no-properties (region-beginning)
+                                                            (region-end)))))
 
 (defun counsel-etags-tagname-at-point ()
   "Get tag name at point."
-  (if (counsel-etags-selected-str) (counsel-etags-selected-str)
-    (find-tag-default)))
+  (let* ((s (counsel-etags-selected-str)))
+    (if s s (find-tag-default))))
 
 (defun counsel-etags-forward-line (lnum)
   "Forward LNUM lines."

@@ -141,6 +141,23 @@
       (match-string 1 cur-line)
     ""))
 
+(defun eacl-encode(s)
+  "Encode S."
+    ;; encode "{}[]"
+    (setq s (replace-regexp-in-string "\"" "\\\\\"" s))
+    (setq s (replace-regexp-in-string "\\?" "\\\\\?" s))
+    (setq s (replace-regexp-in-string "\\$" "\\\\x24" s))
+    (setq s (replace-regexp-in-string "\\*" "\\\\\*" s))
+    (setq s (replace-regexp-in-string "\\." "\\\\\." s))
+    (setq s (replace-regexp-in-string "\\[" "\\\\\[" s))
+    (setq s (replace-regexp-in-string "\\]" "\\\\\]" s))
+    ;; perl-regex support non-ASCII characters
+    ;; Turn on `-P` from `git grep' and `grep'
+    ;; the_silver_searcher and ripgrep need no setup
+    (setq s (replace-regexp-in-string "{" "\\\\{" s))
+    (setq s (replace-regexp-in-string "}" "\\\\}" s))
+    s)
+
 (defun eacl-grep-exclude-opts ()
   "Create grep exclude options."
   (concat (mapconcat (lambda (e) (format "--exclude-dir='%s'" e))
@@ -152,34 +169,13 @@
           (mapconcat (lambda (e) (format "--exclude='%s'" e))
                      eacl-grep-ignore-file-names " ")))
 
-(defun eacl-unquote-regex-parens (str)
-  (let ((start 0)
-        ms)
-    (while (setq start (string-match "\\\\)\\|\\\\(\\|[()]" str start))
-      (setq ms (match-string-no-properties 0 str))
-      (cond ((equal ms "\\(")
-             (setq str (replace-match "(" nil t str))
-             (setq start (+ start 1)))
-            ((equal ms "\\)")
-             (setq str (replace-match ")" nil t str))
-             (setq start (+ start 1)))
-            ((equal ms "(")
-             (setq str (replace-match "\\(" nil t str))
-             (setq start (+ start 2)))
-            ((equal ms ")")
-             (setq str (replace-match "\\)" nil t str))
-             (setq start (+ start 2)))
-            (t
-             (error "unexpected"))))
-    str))
-
 ;;;###autoload
 (defun eacl-get-keyword (cur-line)
   "Get trimmed keyword from CUR-LINE."
   (let* ((keyword (replace-regexp-in-string "^[ \t]*"
                                             ""
                                             cur-line)))
-    (eacl-unquote-regex-parens keyword)))
+    (eacl-encode keyword)))
 
 (defun eacl-replace-current-line (leading-spaces content)
   "Insert LEADING-SPACES and CONTENT."
@@ -215,6 +211,7 @@ If REGEX is not nil, complete statement."
          (leading-spaces (eacl-leading-spaces cur-line))
          (sep (if regex "^[0-9]+:" "[\r\n]+"))
          (collection (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+")))
+    ;; (message "cmd=%s" cmd)
     (when collection
       (setq collection (delq nil (delete-dups collection)))
       (cond
