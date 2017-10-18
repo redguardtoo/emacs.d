@@ -62,12 +62,9 @@ But you may use safer HTTPS instead.")
     company-c-headers)
   "Don't install any Melpa packages except these packages")
 
-;; We include the org repository for completeness, but don't use it.
-;; Lock org-mode temporarily:
 (setq package-archives
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-        ;; ("org" . "http://orgmode.org/elpa/") ; latest org-mode
         ("localelpa" . "~/.emacs.d/localelpa/")
         ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
         ("melpa" . "https://melpa.org/packages/")
