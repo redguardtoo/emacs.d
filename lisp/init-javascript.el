@@ -354,6 +354,7 @@ INDENT-SIZE decide the indentation level.
                 "KeyEvent"
                 "Raphael"
                 "React"
+                "URLSearchParams"
                 "__dirname" ; Node
                 "_content" ; Keysnail
                 "after"
