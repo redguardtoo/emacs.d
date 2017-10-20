@@ -7,7 +7,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.1.8
+;; Version: 1.1.9
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -517,8 +517,8 @@ used by other hooks or commands.  The tags updating might now happen."
 
        (t
         (setq counsel-etags-timer (current-time))
-        (funcall 'counsel-etags-update-tags-backend)
-        (message "All tag files have been updated after %d seconds!"
+        (funcall counsel-etags-update-tags-backend)
+        (message "counsel-etag took %d seconds to update TAGS!"
                  (- (float-time (current-time))
                     (float-time counsel-etags-timer))))))))
 
