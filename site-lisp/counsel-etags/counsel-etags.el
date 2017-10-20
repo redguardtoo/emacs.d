@@ -31,6 +31,7 @@
 ;;
 ;;   "M-x counsel-etags-scan-code" to create tags file
 ;;   "M-x counsel-etags-grep" to grep
+;;   "M-x counsel-etags-grep-symbol-at-point" to grep the symbol at point
 ;;
 ;; That's all!
 ;;
@@ -608,6 +609,13 @@ If HINT is not nil, it's used as grep hint."
                                 (linenum (string-to-number (cadr lst))))
                            (counsel-etags-open-file-api file linenum (counsel-etags-project-root))))
               :caller 'counsel-etags-grep)))
+
+;;;###autoload
+(defun counsel-etags-grep-symbol-at-point ()
+  "Similar to `counsel-etags-grep' but grep symbol at point."
+  (interactive)
+  (counsel-etags-grep (if (region-active-p) (counsel-etags-selected-str)
+                        (thing-at-point 'symbol))))
 
 (defun counsel-etags-grep-occur ()
   "Generate a custom occur buffer for `counsel-etags-grep'."
