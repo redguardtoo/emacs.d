@@ -467,11 +467,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rd" 'evilmr-replace-in-defun
        "rb" 'evilmr-replace-in-buffer
        "ts" 'evilmr-tag-selected-region ;; recommended
-       "rt" 'evilmr-replace-in-tagged-region ;; recommended
        "tua" 'artbollocks-mode
        "cby" 'cb-switch-between-controller-and-view
        "cbu" 'cb-get-url-from-controller
        "ht" 'counsel-etags-find-tag-at-point ; better than find-tag C-]
+       "rt" 'counsel-etags-recent-tag
        "mm" 'counsel-bookmark-goto
        "mk" 'bookmark-set
        "yy" 'counsel-browse-kill-ring
