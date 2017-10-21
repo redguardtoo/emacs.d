@@ -1,4 +1,6 @@
+;; emacs24 require calling `package-initialize' explicitly
 (require 'package)
+(package-initialize)
 
 ;; Set it to `t' to use safer HTTPS to download packages
 (defvar melpa-use-https-repo nil
