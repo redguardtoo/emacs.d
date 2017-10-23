@@ -297,6 +297,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (loop for (mode . state) in
       '((minibuffer-inactive-mode . emacs)
         (calendar-mode . emacs)
+        (special-mode . emacs)
         (grep-mode . emacs)
         (Info-mode . emacs)
         (term-mode . emacs)
