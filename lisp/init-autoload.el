@@ -9,6 +9,8 @@
 (autoload 'counsel-etags-find-tag-at-point "counsel-etags" "" t nil)
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
+(autoload 'counsel-etags-grep-symbol-at-point "counsel-etags" "" t nil)
+(autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
 (autoload 'turn-on-stripe-buffer-mode "stripe-buffer" "" nil)
 (autoload 'turn-on-stripe-table-mode "stripe-buffer" "" nil)
 (autoload 'doxygen-insert-function-comment "doxygen" "insert comment for the function at point" t)
