@@ -49,6 +49,11 @@
 ;;
 ;; GNU Grep, Emacs 24.3 and counsel (https://github.com/abo-abo/swiper)
 ;; are required.
+;;
+;; Please use HomeBrew (https://brew.sh/) to install GNU Grep on macOS.
+;; Then insert `(setq eacl-grep-program "ggrep")' into "~/.emacs".
+;; The bundled "BSD Grep" on macOS is too outdated to use.
+
 
 ;;; Code:
 (require 'ivy)
@@ -209,9 +214,10 @@ If REGEX is not nil, complete statement."
                       (if regex (concat keyword regex)
                         keyword)))
          (leading-spaces (eacl-leading-spaces cur-line))
-         (sep (if regex "^[0-9]+:" "[\r\n]+"))
+         ;; Please note grep's "-z" will output null character at the end of each candidate
+         (sep (if regex "\x0[0-9]+:" "[\r\n]+"))
          (collection (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+")))
-    ;; (message "cmd=%s" cmd)
+    ;; (message "cmd=%s collection length=%s sep=%s" cmd (length collection) sep)
     (when collection
       (setq collection (delq nil (delete-dups collection)))
       (cond
