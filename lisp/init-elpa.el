@@ -30,6 +30,7 @@
     counsel-gtags ; the stable version is never released
     noflet
     db
+    package-lint
     creole
     web
     idomenu
