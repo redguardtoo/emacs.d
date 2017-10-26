@@ -70,6 +70,7 @@
 (autoload 'eacl-complete-line "eacl" "")
 (autoload 'eacl-complete-statement "eacl" "")
 (autoload 'eacl-complete-snippet "eacl" "")
+(autoload 'eacl-complete-tag "eacl" "")
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here
