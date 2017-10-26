@@ -67,13 +67,8 @@
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")))
 
-;; Un-comment below line if your extract https://github.com/redguardtoo/myelpa/archive/master.zip into ~/myelpa/
-;; (setq package-archives '(("myelpa" . "~/myelpa")))
-
-;; Or Un-comment below line if you install package from https://github.com/redguardtoo/myelpa/
-;; (setq package-archives '(("myelpa" . "https://raw.github.com/redguardtoo/myelpa/master/")))
-
-
+;; Un-comment below line if you follow "Install stable version in easiest way"
+;; (setq package-archives '(("myelpa" . "~/projs/myelpa")))
 
 ;;------------------------------------------------------------------------------
 ;; Internal implementation, newbies should NOT touch code below this line!
