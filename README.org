@@ -10,7 +10,7 @@
 - Tested with Emacs 24.3, 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/macOS (I will stop 24.3 support at <2018-01-01>)
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://www.gnu.org/software/emacs/manual/emacs-gnutls.html][install GnuTLS Dlls manually]] to be able to install packages from remote repositories
+- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailble= on Windows
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 - Other issues are covered in FAQ

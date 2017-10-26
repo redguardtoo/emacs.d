@@ -2,11 +2,6 @@
 (require 'package)
 (package-initialize)
 
-;; Set it to `t' to use safer HTTPS to download packages
-(defvar melpa-use-https-repo nil
-  "By default, HTTP is used to download packages.
-But you may use safer HTTPS instead.")
-
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
