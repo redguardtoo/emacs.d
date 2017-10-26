@@ -479,7 +479,15 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gf" 'counsel-git ; find file
        "gg" 'counsel-git-grep-by-selected ; quickest grep should be easy to press
        "gm" 'counsel-git-find-my-file
-       "gs" 'ffip-show-diff ; find-file-in-project 5.0+
+       "gs" (lambda ()
+              (interactive)
+              (let* ((ffip-diff-backends
+                      '(("Show git git commit" . (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+                                                       (collection (split-string (shell-command-to-string git-cmd) "\n" t))
+                                                       (item (ffip-completing-read "git log:" collection)))
+                                                  (when item
+                                                    (shell-command-to-string (format "git show %s" (car (split-string item "|" t))))))))))
+                (ffip-show-diff 0)))
        "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
        "sf" 'counsel-git-show-file
        "sh" 'my-select-from-search-text-history
