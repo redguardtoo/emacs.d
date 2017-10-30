@@ -179,7 +179,7 @@ I will keep using =ripgrep= instead of =the-silver-searcher= from now on.
 * Usage
 I *avoid overriding the original setup* of third party command line program.
 
-If I mention certain directories is used by certain program, you can always confirm the information in its manual.
+If I mention certain directories is used by certain program, you can always find the same information in its original manual.
 
 You can also =grep keyword= in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Tutorial (OPTIONAL)
@@ -236,9 +236,9 @@ To navigate, =M-x counsel-etags-find-tag-at-point=.
 
 To enable code auto-completion, =M-x counsel-etags-scan-code= at least once.
 
-Optinally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
+Optionally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
 
-No futher setup is required.
+No further setup is required.
 ** Color theme
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
