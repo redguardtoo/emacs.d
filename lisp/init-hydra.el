@@ -311,7 +311,7 @@ _q_ cancel
   ("a" avy-goto-char-timer )
 
   ("q" nil))
-(global-set-key (kbd "C-c ;") 'hydra-search/body)
+(global-set-key (kbd "C-c C-s") 'hydra-search/body)
 ;; (global-set-key (kbd "C-c ; b") 'sdcv-search-pointer)
 ;; (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 
