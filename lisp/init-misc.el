@@ -889,7 +889,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; {{ eacl - emacs auto complete line(s)
-(global-set-key (kbd "C-c C-l") 'eacl-complete-line)
+(global-set-key (kbd "C-x C-l") 'eacl-complete-line)
 (global-set-key (kbd "C-c ;") 'eacl-complete-statement)
 (global-set-key (kbd "C-c C-]") 'eacl-complete-snippet)
 (global-set-key (kbd "C-c C-t") 'eacl-complete-tag)
