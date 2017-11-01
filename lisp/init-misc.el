@@ -892,7 +892,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (global-set-key (kbd "C-x C-l") 'eacl-complete-line)
 (global-set-key (kbd "C-c ;") 'eacl-complete-statement)
 (global-set-key (kbd "C-c C-]") 'eacl-complete-snippet)
-(global-set-key (kbd "C-c C-t") 'eacl-complete-tag)
+(global-set-key (kbd "C-c .") 'eacl-complete-tag)
 ;; }}
 
 ;; {{ wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
