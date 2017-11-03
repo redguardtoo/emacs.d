@@ -917,4 +917,25 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; @see https://github.com/szermatt/emacs-bash-completion
 (bash-completion-setup)
 
+;; {{ eacl and other general grep (rgrep, grep ...) setup
+(eval-after-load 'grep
+  '(progn
+     (dolist (v '("auto"
+                  "target"
+                  "node_modules"
+                  "bower_components"
+                  ".sass_cache"
+                  ".cache"
+                  ".npm"
+                  "elpa"))
+       (add-to-list 'grep-find-ignored-directories v))
+
+     (dolist (v '("*.min.js"
+                  "*.bundle.js"
+                  "*.min.css"
+                  "*.json"
+                  "*.log"))
+       (add-to-list 'grep-find-ignored-files v))))
+;; }}
+
 (provide 'init-misc)

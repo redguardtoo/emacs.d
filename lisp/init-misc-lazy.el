@@ -174,22 +174,6 @@ grab matched string, cssize them, and insert into kill ring"
   (interactive)
   (message "line number:%d" (line-number-at-pos)))
 
-(eval-after-load 'grep
-  '(progn
-     (dolist (v '("auto"
-                  "target"
-                  "node_modules"
-                  "bower_components"
-                  ".sass_cache"
-                  ".cache"
-                  ".git"
-                  ".cvs"
-                  ".svn"
-                  ".hg"
-                  "elpa"))
-       (add-to-list 'grep-find-ignored-directories v))
-     ))
-
 ;; {{ unique lines
 (defun uniquify-all-lines-region (start end)
   "Find duplicate lines in region START to END keeping first occurrence."
