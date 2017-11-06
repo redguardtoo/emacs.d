@@ -6,7 +6,6 @@
 (global-set-key (kbd "C-x 4 u") 'winner-undo)
 (global-set-key (kbd "C-x 4 U") 'winner-redo)
 
-(/ .61803398875 (- 1 .61803398875))
 
 (defvar my-ratio-dict
   '((1 . 1.61803398875)
