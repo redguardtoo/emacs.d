@@ -6,6 +6,7 @@
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
   '(ace-mc
+    ace-window ; lastest stable is released on year 2014
     bbdb
     dumb-jump
     color-theme
