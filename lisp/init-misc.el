@@ -924,6 +924,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                   "target"
                   "node_modules"
                   "bower_components"
+                  "*dist"
                   ".sass_cache"
                   ".cache"
                   ".npm"
@@ -931,6 +932,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
        (add-to-list 'grep-find-ignored-directories v))
 
      (dolist (v '("*.min.js"
+                  "*.map"
                   "*.bundle.js"
                   "*.min.css"
                   "*.json"

@@ -218,7 +218,8 @@ If REGEX is not nil, complete statement."
          (rlt t))
     ;; (message "keyword=%s" keyword)
     ;; (message "quoted keyword=%s" quoted-keyword)
-    ;; (message "cmd=%s collection length=%s sep=%s" cmd (length collection) sep)
+    ;; (message "cmd=%s" cmd)
+    ;; (message "collection length=%s sep=%s" (length collection) sep)
     (when collection
       (setq collection (delq nil (delete-dups collection)))
       (cond
