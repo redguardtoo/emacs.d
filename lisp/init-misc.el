@@ -243,7 +243,6 @@
   (unless (is-buffer-file-temp)
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
-    (setq compilation-window-height 8)
     (setq compilation-finish-functions
           '(compilation-finish-hide-buffer-on-success))
 
