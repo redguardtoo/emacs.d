@@ -582,6 +582,7 @@ Focus on TAGNAME if it's not nil."
 (defun counsel-etags-find-tag ()
   "Input tagname to find tag."
   (interactive)
+  (counsel-etags-tags-file-must-exist)
   (let* ((tagname (read-string "Please input tag name:")))
     (when (and tagname (not (string= tagname "")))
         (counsel-etags-find-tag-api tagname))))
