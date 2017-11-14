@@ -934,6 +934,12 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                   "*.map"
                   "*.bundle.js"
                   "*.min.css"
+                  "tags"
+                  "TAGS"
+                  "GTAGS"
+                  "GRTAGS"
+                  "GPATH"
+                  "cscope.files"
                   "*.json"
                   "*.log"))
        (add-to-list 'grep-find-ignored-files v))))
