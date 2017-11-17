@@ -7,7 +7,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.3.3
+;; Version: 1.3.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -37,8 +37,14 @@
 ;; That's all!
 ;;
 ;; Tips:
-;; You can use ivy's negative pattern to filter candidates.
-;; For example, input "keyword1 !keyword2 keyword3" means:
+;; - Add below code into "~/.emacs" to auto-update scan code:
+;;   (add-hook 'prog-mode-hook
+;;     (lambda ()
+;;       (add-hook 'after-save-hook
+;;                 'counsel-etags-virtual-update-tags 'append 'local)))
+;;
+;; - You can use ivy's negative pattern to filter candidates.
+;;   For example, input "keyword1 !keyword2 keyword3" means:
 ;;   "(keyword1 and (not (keyword2 or keyword3))"
 ;;
 ;; See https://github.com/redguardtoo/counsel-etags/ for more advanced tips.
@@ -634,8 +640,8 @@ used by other hooks or commands.  The tags updating might now happen."
          (tags-file (counsel-etags-locate-tags-file)))
     (when (and dir
                tags-file
-               (string-match-p (file-name-directory tags-file)
-                               dir))
+               (string-match-p (file-name-directory (file-truename tags-file))
+                               (file-truename dir)))
       (cond
        ((not counsel-etags-timer)
         ;; start timer if not started yet
