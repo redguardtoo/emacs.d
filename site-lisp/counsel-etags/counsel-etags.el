@@ -7,7 +7,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.3.4
+;; Version: 1.3.5
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -538,21 +538,27 @@ Focus on TAGNAME if it's not nil."
   (add-to-list 'counsel-etags-tagname-history item)
   (counsel-etags-open-file-internal item))
 
+(defmacro counsel-etags-push-marker-stack (mark)
+  "Save current MARK (position)."
+  `(when (fboundp 'xref-push-marker-stack)
+     (xref-push-marker-stack ,mark)))
+
 (defun counsel-etags-open-cand (cands time)
   "Open CANDS.  Start open tags file at TIME."
   ;; mark current point for `pop-tag-mark'
-  (when (fboundp 'xref-push-marker-stack)
-    (xref-push-marker-stack))
-  (cond
-   ((= 1 (length cands))
-    ;; open the file directly
-    (counsel-etags-open-file (car cands)))
-   (t
-    (ivy-read (format  "Find Tag (%.01f seconds): "
-                       (float-time (time-since time)))
-              cands
-              :action #'counsel-etags-open-file
-              :caller 'counsel-etags-find-tag))))
+  (let* ((v-last-mark (point-marker)))
+    (cond
+     ((= 1 (length cands))
+      ;; open the file directly
+      (counsel-etags-push-marker-stack v-last-mark)
+      (counsel-etags-open-file (car cands)))
+     (t
+      (ivy-read (format  "Find Tag (%.01f seconds): "
+                         (float-time (time-since time)))
+                cands
+                :action #'counsel-etags-open-file
+                :caller 'counsel-etags-find-tag)
+      (counsel-etags-push-marker-stack v-last-mark)))))
 
 (defun counsel-etags-find-tag-occur ()
   "Generate a custom occur buffer for `counsel-etags-find-tag'."
@@ -723,7 +729,8 @@ Extended regex like (pattern1|pattern2) is used.
 If DEFAULT-KEYWORD is not nil, it's used as grep keyword.
 If HINT is not nil, it's used as grep hint."
   (interactive)
-  (let* ((keyword (if default-keyword default-keyword
+  (let* ((v-last-mark (point-marker))
+         (keyword (if default-keyword default-keyword
                     (counsel-etags-read-keyword "Enter grep pattern: ")))
          (default-directory (counsel-etags-locate-project))
          (time (current-time))
@@ -745,7 +752,8 @@ If HINT is not nil, it's used as grep hint."
                                 (file (concat (counsel-etags-locate-project) (car lst)))
                                 (linenum (string-to-number (cadr lst))))
                            (counsel-etags-open-file-api file linenum)))
-              :caller 'counsel-etags-grep)))
+              :caller 'counsel-etags-grep)
+    (counsel-etags-push-marker-stack v-last-mark)))
 
 ;;;###autoload
 (defun counsel-etags-grep-symbol-at-point ()
