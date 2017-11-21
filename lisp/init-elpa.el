@@ -9,6 +9,7 @@
     ace-window ; lastest stable is released on year 2014
     bbdb
     dumb-jump
+    websocket ; to talk to the browser
     color-theme
     js-doc
     ;; {{ since stable v0.9.1 released, we go back to stable version
@@ -259,5 +260,6 @@
 (require-package 'iedit)
 (require-package 'ace-pinyin)
 (require-package 'bash-completion)
+(require-package 'websocket)
 
 (provide 'init-elpa)
