@@ -12,6 +12,7 @@
     websocket ; to talk to the browser
     color-theme
     js-doc
+    jss ; remote debugger of browser
     ;; {{ since stable v0.9.1 released, we go back to stable version
     ;; ivy
     ;; counsel
@@ -261,5 +262,6 @@
 (require-package 'ace-pinyin)
 (require-package 'bash-completion)
 (require-package 'websocket)
+(require-package 'jss)
 
 (provide 'init-elpa)
