@@ -33,6 +33,7 @@
 
 (defvar evilmi-org-extract-keyword-howtos
   '(("^[ \t]*#\\+\\([a-zA-Z_]+\\).*$" 1)
+    ("^[ \t]*\\:\\([a-zA-Z_]+\\)\\:$" 1)
     )
   "The list of HOWTO on extracting keyword from current line.
 Each howto is actually a pair. The first element of pair is the regular
@@ -46,6 +47,7 @@ between '\\(' and '\\)' in regular expression.
   '((("begin_src") () ( "end_src") "MONOGAMY")
     (("begin_example") () ( "end_example") "MONOGAMY")
     (("begin_html") () ( "end_html") "MONOGAMY")
+    (("results") () ( "end") "MONOGAMY")
     ))
 
 (defun evilmi--element-property (property element)

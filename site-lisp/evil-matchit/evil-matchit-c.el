@@ -44,6 +44,25 @@
 
 ;;;###autoload
 (defun evilmi-c-jump (rlt NUM)
-  (evilmi-sdk-jump rlt NUM evilmi-c-match-tags evilmi-c-extract-keyword-howtos))
+  (let* ((old-pos (point))
+         (pos (evilmi-sdk-jump rlt NUM evilmi-c-match-tags evilmi-c-extract-keyword-howtos))
+         (orig-tag (and rlt (nth 3 (cadr rlt)))))
+
+    ;; Place cursor over last case of 'switch' statement and press %:
+    ;; Should go back to beginning of switch:
+    ;;   switch(c) {
+    ;;   case 'a':
+    ;;       break;
+    ;;   case 'b':
+    ;;       break;
+    ;;   }
+    (when (and (string= orig-tag "case")
+               ;; failed to find matching tag
+               (not pos))
+      (goto-char old-pos)
+      ;; Goto outer bracket
+      (c-beginning-of-defun)
+      (setq pos (beginning-of-line)))
+    pos))
 
 (provide 'evil-matchit-c)

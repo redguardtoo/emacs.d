@@ -163,6 +163,9 @@ is-function-exit-point could be unknown status"
 
 ;;;###autoload
 (defun evilmi-sdk-jump (rlt num match-tags howtos)
+  "Use RLT, NUM, MATCH-TAGS and HOWTOS to jump.
+Return nil if no matching tag found.  Please note (point) is changed
+after calling this function."
   (let* ((orig-tag-type (nth 1 (nth 1 rlt)))
          (orig-tag-info (nth 1 rlt))
          cur-tag-type
@@ -172,7 +175,7 @@ is-function-exit-point could be unknown status"
          keyword
          found
          where-to-jump-in-theory)
-    (if evilmi-debug (message "evilmi-sdk-jump called => %s" rlt))
+    (if evilmi-debug (message "evilmi-sdk-jump called => rlt=%s (piont)=%s" rlt (point)))
 
     (while (not found)
       (forward-line (if (= orig-tag-type 2) -1 1))
@@ -183,7 +186,6 @@ is-function-exit-point could be unknown status"
       (when keyword
         (setq cur-tag-info (evilmi-sdk-get-tag-info keyword match-tags))
         (when (evilmi--same-type cur-tag-info orig-tag-info)
-
           (setq cur-tag-type (nth 1 cur-tag-info))
 
           ;; key algorithm
@@ -198,7 +200,6 @@ is-function-exit-point could be unknown status"
 
            ;; open (0) -> closed (2) found when level is zero, level--
            ((and (= orig-tag-type 0) (= cur-tag-type 2))
-
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (goto-char (line-end-position))
               (setq where-to-jump-in-theory (line-end-position))
@@ -220,51 +221,43 @@ is-function-exit-point could be unknown status"
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (back-to-indentation)
               (setq where-to-jump-in-theory (1- (line-beginning-position)))
-              (setq found t)
-              )
-            )
+              (setq found t)))
+
            ;; mid (1) -> closed (2) found when level is zero, level --
            ((and (= orig-tag-type 1) (= cur-tag-type 2))
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (goto-char (line-end-position))
               (setq where-to-jump-in-theory (line-end-position))
-              (setq found t)
-              )
-            (setq level (1- level))
-            )
+              (setq found t))
+            (setq level (1- level)))
+
            ;; mid (1) -> open (0) level++
            ((and (= orig-tag-type 1) (= cur-tag-type 0))
-            (setq level (1+ level))
-            )
+            (setq level (1+ level)))
 
            ;; now handle closed tag
            ;; closed (2) -> mid (1) ignore,impossible
-           ((and (= orig-tag-type 2) (= cur-tag-type 1))
-            )
+           ((and (= orig-tag-type 2) (= cur-tag-type 1)))
+
            ;; closed (2) -> closed (2) level++
            ((and (= orig-tag-type 2) (= cur-tag-type 2))
-            (setq level (1+ level))
-            )
+            (setq level (1+ level)))
+
            ;; closed (2) -> open (0) found when level is zero, level--
            ((and (= orig-tag-type 2) (= cur-tag-type 0))
             (when (evilmi-sdk-tags-is-matched level orig-tag-info cur-tag-info match-tags)
               (setq where-to-jump-in-theory (line-beginning-position))
               (back-to-indentation)
-              (setq found t)
-              )
-            (setq level (1- level))
-            )
-           (t (message "why here?"))
-           )
-          )
-        )
+              (setq found t))
+            (setq level (1- level)))
+
+           (t (message "why here?")))))
 
       ;; we will stop at end or beginning of buffer anyway
       (if (or (= (line-end-position) (point-max))
-              (= (line-beginning-position) (point-min))
-              )
-          (setq found t)
-        ))
+              (= (line-beginning-position) (point-min)))
+          (setq found t)))
+
     where-to-jump-in-theory))
 
 (defun evilmi-count-matches (regexp str)
