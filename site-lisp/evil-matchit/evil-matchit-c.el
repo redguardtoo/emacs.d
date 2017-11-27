@@ -61,7 +61,7 @@
                (not pos))
       (goto-char old-pos)
       ;; Goto outer bracket
-      (c-beginning-of-defun)
+      (backward-up-list)
       (setq pos (beginning-of-line)))
     pos))
 
