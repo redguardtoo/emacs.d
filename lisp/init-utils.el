@@ -196,11 +196,16 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
       (setq rlt nil)))
     rlt))
 
+(defvar my-mplayer-extra-opts ""
+  "Extra options for mplayer (ao or vo setup).  For example,
+you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
+
 (defun my-guess-mplayer-path ()
   (let* ((rlt "mplayer"))
     (cond
      (*is-a-mac* (setq rlt "mplayer -quiet"))
-     (*linux* (setq rlt "mplayer -quiet -stop-xscreensaver"))
+     (*linux*
+      (setq rlt (format "mplayer -quiet -stop-xscreensaver %s" my-mplayer-extra-opts)))
      (*cygwin*
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
           (setq rlt "/cygdrive/c/mplayer/mplayer.exe -quiet")
