@@ -77,11 +77,11 @@
       (setq eldoc-echo-area-use-multiline-p t)
       (turn-on-eldoc-mode))
     (enable-paredit-mode)
+    (lispy-mode 1)
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)
-    (flymake-mode)
-    (checkdoc-minor-mode)))
-
+    (flymake-mode 1)
+    (checkdoc-minor-mode 1)))
 (add-hook 'emacs-lisp-mode-hook 'elisp-mode-hook-setup)
 
 (provide 'init-elisp)

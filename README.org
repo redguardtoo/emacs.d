@@ -73,11 +73,11 @@ Please ignore any related error message. For example, if aspell and hunspell are
 - Show ancient Chinese poem or quotes from random sources
 - Install through OS package manager
 
-Please note you can't install =forture-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
+Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
 - install fortune
-- Download =forture-zh= code from [[https://github.com/debiancn/fortune-zh]]
+- Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
-- copy data files and the script named fortune-zh into corresponding folders which =fortune= is using. You may need edit the file =forture-zh= before copying
+- copy data files and the script named fortune-zh into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
 **** w3m (web browser)
 - Required by =emacs-w3m=
 - Install through OS package manager
@@ -468,6 +468,8 @@ Here are the steps to use that setup:
 - Follow the section =Install stable version in easiest way= but skip the download steps
 
 Since most third party plugins don't support Emacs 23 any more, I strongly recommend upgrading to Emacs 24!
+** Editing Emacs Lisp
+We use [[https://github.com/abo-abo/lispy/tree/0.26.0][lispy]] and [[https://github.com/noctuid/lispyville][lispyville]] when editing Emacs Lisp. So you need be familar with their key bindings.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
