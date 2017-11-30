@@ -1,4 +1,4 @@
-;;; js-comint.el --- Run a JavaScript interpreter in an inferior process window.
+;;; js-comint.el --- JavaScript interpreter in window.
 
 ;;; Copyright (C) 2008 Paul Huff
 ;;; Copyright (C) 2015 Stefano Mazzucco
@@ -7,9 +7,9 @@
 ;;; Author: Paul Huff <paul.huff@gmail.com>, Stefano Mazzucco <MY FIRST NAME - AT - CURSO - DOT - RE>
 ;;; Maintainer: Chen Bin <chenbin.sh AT gmail DOT com>
 ;;; Created: 15 Feb 2014
-;;; Version: 1.1.0
+;;; Version: 1.1.1
 ;;; URL: https://github.com/redguardtoo/js-comint
-;;; Package-Requires: ()
+;;; Package-Requires: ((emacs "24.3"))
 ;;; Keywords: javascript, node, inferior-mode, convenience
 
 ;; This file is NOT part of GNU Emacs.
@@ -18,7 +18,7 @@
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License as
-;; published by the Free Software Foundation; either version 2, or
+;; published by the Free Software Foundation; either version 3, or
 ;; at your option any later version.
 
 ;; js-comint.el is distributed in the hope that it will be useful, but
@@ -37,7 +37,7 @@
 
 ;;; Commentary:
 
-;; js-comint.el is a comint mode for Emacs which allows you to run a
+;; This program is a comint mode for Emacs which allows you to run a
 ;; compatible javascript repl like Node.js/Spidermonkey/Rhino inside Emacs.
 ;; It also defines a few functions for sending javascript input to it
 ;; quickly.
@@ -49,14 +49,17 @@
 ;;  Optionally, set the `js-comint-program-command' string
 ;;  and the `js-comint-program-arguments' list to the executable that runs
 ;;  the JS interpreter and the arguments to pass to it respectively.
-;;  Do: `M-x js-comint-repl'
+;;  For example, on windows you might need below setup:
+;;    (setq inferior-js-program-command "C:/Program Files/nodejs/node.exe")
+;;
+;;  After setup, do: `M-x js-comint-repl'
 ;;  Away you go.
 ;;  `node_modules' is *automatically* searched and appended into environment
-;;  variable `NODE_PATH'. So 3rd party javascript is usable out of box.
+;;  variable `NODE_PATH'.  So 3rd party javascript is usable out of box.
 
 ;;  If you have nvm, you can select the versions of node.js installed and run
 ;;  them.  This is done thanks to nvm.el.
-;;  Please note nvm.el is optional. So you need *manually* install it.
+;;  Please note nvm.el is optional.  So you need *manually* install it.
 ;;  To enable nvm support, run `js-do-use-nvm'.
 ;;  The first time you start the JS interpreter with `js-comint-repl', you will
 ;;be asked to select a version of Node.js
@@ -75,8 +78,7 @@
 ;;   (add-hook 'js2-mode-hook
 ;;             (lambda ()
 ;;               (local-set-key (kbd "C-x C-e") 'js-send-last-sexp)
-;;               (local-set-key (kbd "C-c b") 'js-send-buffer)
-;;               ))
+;;               (local-set-key (kbd "C-c b") 'js-send-buffer)))
 
 ;;; Code:
 
@@ -93,8 +95,7 @@
   :group 'js-comint)
 
 (defvar js-comint-module-paths '()
-  "List of modules paths which could be used by NodeJS
-to search modules.")
+  "List of modules paths which could be used by NodeJS to search modules.")
 
 (defvar js-comint-drop-regexp
   "\\(\x1b\\[[0-9]+[GJK]\\|^[ \t]*undefined[\r\n]+\\)"
@@ -170,6 +171,7 @@ Return a string representing the node version."
            "/node"))))
 
 (defun js-comint-guess-load-file-cmd (filename)
+  "Create Node file loading command for FILENAME."
   (concat "require(\"" filename "\")\n"))
 
 (defun js-comint-quit-or-cancel ()
@@ -178,9 +180,11 @@ Return a string representing the node version."
   (process-send-string (js-comint-get-process) "\x03"))
 
 (defun js-comint--path-sep ()
+  "Separator of file path."
   (if (eq system-type 'windows-nt) ";" ":"))
 
 (defun js-comint--suggest-module-path ()
+  "Find node_modules."
   (let* ((dir (locate-dominating-file default-directory
                                       "node_modules")))
     (if dir (concat (file-name-as-directory dir)
@@ -188,6 +192,7 @@ Return a string representing the node version."
       default-directory)))
 
 (defun js-comint-get-process ()
+  "Get repl process."
   (and js-comint-buffer
        (get-process js-comint-buffer)))
 
@@ -218,7 +223,7 @@ Return a string representing the node version."
 
 ;;;###autoload
 (defun js-comint-save-setup ()
-  "Save current setup to `.dir-locals.el'"
+  "Save current setup to \".dir-locals.el\"."
   (interactive)
   (let* (sexp
          (root (read-directory-name "Where to create .dir-locals.el: "
@@ -236,6 +241,7 @@ Return a string representing the node version."
       (message "Nothing to save. `js-comint-module-paths' is empty.")))))
 
 (defun js-comint-setup-module-paths ()
+  "Setup node_modules path."
   (let* ((paths (mapconcat 'identity
                            js-comint-module-paths
                            (js-comint--path-sep)))
@@ -252,9 +258,10 @@ Return a string representing the node version."
 
 ;;;###autoload
 (defun js-comint-reset-repl ()
-  "Kill existing REPL process if possible.  Create a new
-Javascript REPL process.  The environment variable `NODE_PATH'
-is setup by `js-comint-module-paths' before the process starts."
+  "Kill existing REPL process if possible.
+Create a new Javascript REPL process.
+The environment variable `NODE_PATH' is setup by `js-comint-module-paths'
+before the process starts."
   (interactive)
   (when (js-comint-get-process)
     (process-send-string (js-comint-get-process) ".exit\n")
@@ -262,8 +269,8 @@ is setup by `js-comint-module-paths' before the process starts."
     (sit-for 1))
   (js-comint-start-or-switch-to-repl))
 
-(defun js-cominit-filter-output (string)
-  "Filter extra escape sequences from output."
+(defun js-comint-filter-output (string)
+  "Filter extra escape sequences from STRING."
   (let ((beg (or comint-last-output-start
                  (point-min-marker)))
         (end (process-mark (get-buffer-process (current-buffer)))))
@@ -274,9 +281,11 @@ is setup by `js-comint-module-paths' before the process starts."
         (replace-match "")))))
 
 (defun js-comint-get-buffer-name ()
+  "Get repl buffer name."
   (format "*%s*" js-comint-buffer))
 
 (defun js-comint-get-buffer ()
+  "Get rpl buffer."
   (and js-comint-buffer
        (get-buffer (js-comint-get-buffer-name))))
 
@@ -298,7 +307,10 @@ is setup by `js-comint-module-paths' before the process starts."
 (defalias 'js-clear 'js-comint-clear)
 
 
+;;;###autoload
 (defun js-comint-start-or-switch-to-repl ()
+  "Start a new repl or switch to existing repl."
+  (interactive)
   (setenv "NODE_NO_READLINE" "1")
   (js-comint-setup-module-paths)
   (let* ((repl-mode (or (getenv "NODE_REPL_MODE") "magic"))
@@ -311,9 +323,8 @@ is setup by `js-comint-module-paths' before the process starts."
 
 ;;;###autoload
 (defun js-comint-repl (cmd)
-  "Run an Javascript process.  The environment variable `NODE_PATH'
-is setup by `js-comint-module-paths' before the process
-starts."
+  "Start a Javascript process by running CMD.
+The environment variable \"NODE_PATH\" is setup by `js-comint-module-paths'."
   (interactive
    (list
     ;; You can select node version here
@@ -334,6 +345,7 @@ starts."
 (defalias 'run-js 'js-comint-repl)
 
 (defun js-comint-send-string (str)
+  "Send STR to repl."
   (comint-send-string (js-comint-get-process)
                       (concat str "\n")))
 
@@ -353,7 +365,7 @@ If no region selected, you could manually input javascript expression."
 
 ;;;###autoload
 (defun js-comint-send-last-sexp ()
-  "Send the previous sexp to the inferior Javascript process.  `evil-mode' friendly."
+  "Send the previous sexp to the inferior Javascript process."
   (interactive)
   (let* ((b (save-excursion
               (backward-sexp)
@@ -382,25 +394,17 @@ If no region selected, you could manually input javascript expression."
 (defalias 'js-send-buffer 'js-comint-send-buffer)
 
 ;;;###autoload
-(defun js-comint-load-file (filename)
-  "Load a file in the javascript interpreter."
+(defun js-comint-load-file (file)
+  "Load FILE into the javascript interpreter."
   (interactive "f")
-  (let ((filename (expand-file-name filename)))
+  (let ((file (expand-file-name file)))
     (js-comint-repl js-comint-program-command)
-    (comint-send-string (js-comint-get-process) (js-comint-guess-load-file-cmd filename))))
+    (comint-send-string (js-comint-get-process) (js-comint-guess-load-file-cmd file))))
 
 ;;;###autoload
 (defalias 'js-load-file 'js-comint-load-file)
 
-;;;###autoload
-(defun js-comint-switch-to-repl (eob-p)
-  "Switch to the javascript process buffer.
-With argument, position cursor at end of buffer."
-  (interactive "P")
-  (if (js-comint-get-buffer)
-      (pop-to-buffer (js-comint-get-buffer))
-    (error "No current process buffer.  See variable `js-comint-buffer'")))
-(defalias 'switch-to-js 'js-comint-switch-repl)
+(defalias 'switch-to-js 'js-comint-start-or-switch-to-repl)
 
 (defvar js-comint-mode-map
   (let ((map (make-sparse-keymap)))
@@ -417,7 +421,7 @@ With argument, position cursor at end of buffer."
   (setq comint-process-echoes t)
   ;; Ignore duplicates
   (setq comint-input-ignoredups t)
-  (add-hook 'comint-output-filter-functions 'js-cominit-filter-output nil t)
+  (add-hook 'comint-output-filter-functions 'js-comint-filter-output nil t)
   (use-local-map js-comint-mode-map)
   (ansi-color-for-comint-mode-on))
 
