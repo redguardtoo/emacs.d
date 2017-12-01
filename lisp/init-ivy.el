@@ -258,7 +258,7 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 
-;; better performance on everything (especially windows), required ivy-0.10.0
+;; better performance on everything (especially windows), ivy-0.10.0 required
 (setq ivy-dynamic-exhibit-delay-ms 200)
 
 (provide 'init-ivy)
