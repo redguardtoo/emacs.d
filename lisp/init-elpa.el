@@ -11,6 +11,10 @@
     dumb-jump
     websocket ; to talk to the browser
     color-theme
+    evil-exchange
+    evil-find-char-pinyin
+    evil-lion
+    iedit
     undo-tree
     lispy
     lispyville
@@ -270,5 +274,16 @@
 (require-package 'undo-tree)
 (require-package 'lispy)
 (require-package 'lispyville)
+(require-package 'evil)
+(require-package 'evil-escape)
+(require-package 'evil-exchange)
+(require-package 'evil-find-char-pinyin)
+(require-package 'evil-iedit-state)
+(require-package 'evil-mark-replace)
+(require-package 'evil-matchit)
+(require-package 'evil-nerd-commenter)
+(require-package 'evil-surround)
+(require-package 'evil-visualstar)
+
 
 (provide 'init-elpa)
