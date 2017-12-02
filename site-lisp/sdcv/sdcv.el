@@ -375,9 +375,6 @@ Argument DICTIONARY-LIST the word that need transform."
   ;; Record current translate object.
   (setq sdcv-current-translate-object word)
 
-  (mapconcat (lambda (dict)
-               (concat "-u \"" dict "\""))
-             dictionary-list " ")
   ;; Return translate result.
   (let (cmd)
     (sdcv-filter
