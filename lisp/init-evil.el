@@ -345,6 +345,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
 
 (define-key evil-normal-state-map "Y" (kbd "y$"))
+(define-key evil-normal-state-map (kbd "RET") 'ivy-switch-buffer-by-pinyin)
 (define-key evil-normal-state-map "go" 'goto-char)
 (define-key evil-normal-state-map (kbd "M-y") 'counsel-browse-kill-ring)
 (define-key evil-normal-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
@@ -476,6 +477,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "mm" 'counsel-bookmark-goto
        "mk" 'bookmark-set
        "yy" 'counsel-browse-kill-ring
+       "cf" 'counsel-grep
        "gf" 'counsel-git ; find file
        "gg" 'counsel-git-grep-by-selected ; quickest grep should be easy to press
        "gm" 'counsel-git-find-my-file
