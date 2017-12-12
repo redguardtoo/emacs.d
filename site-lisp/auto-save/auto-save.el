@@ -113,6 +113,7 @@
                                "\\.gif"
                                "\\.svg"
                                "\\.ico"
+                               "\\.gpg"
                                "archive-contents")
   "List of regexps and predicates for filenames excluded from the auto save list.
 When a filename matches any of the regexps or satisfies any of the
@@ -144,7 +145,7 @@ That is, if it doesn't match any of the `auto-save-exclude' checks."
 
 (defun auto-save-buffers ()
   (interactive)
-  (let ((autosave-buffer-list))
+  (let* (autosave-buffer-list)
     (save-excursion
       (dolist (buf (buffer-list))
         (set-buffer buf)
