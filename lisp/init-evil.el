@@ -251,12 +251,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
-(require 'evil-escape)
-(setq-default evil-escape-delay 0.5)
+(setq-default evil-escape-delay 0.3)
 (setq evil-escape-excluded-major-modes '(dired-mode))
 (setq-default evil-escape-key-sequence "kj")
+;; disable evil-escape when input method is on
 (evil-escape-mode 1)
 ;; }}
+
 
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
