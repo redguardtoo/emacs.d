@@ -483,7 +483,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gs" (lambda ()
               (interactive)
               (let* ((ffip-diff-backends
-                      '(("Show git git commit" . (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+                      '(("Show git commit" . (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
                                                        (collection (split-string (shell-command-to-string git-cmd) "\n" t))
                                                        (item (ffip-completing-read "git log:" collection)))
                                                   (when item
