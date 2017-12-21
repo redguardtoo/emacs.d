@@ -482,6 +482,8 @@ See \"Reusing passwords for several connections\" from INFO.
     ad-do-it
     (setenv "GPG_AGENT_INFO" agent)))
 
+(setq epa-pinentry-mode 'loopback)
+
 ;; https://github.com/abo-abo/ace-window
 ;; `M-x ace-window ENTER m` to swap window
 (global-set-key (kbd "C-x o") 'ace-window)
