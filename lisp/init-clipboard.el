@@ -3,7 +3,7 @@
       x-select-enable-primary t)
 
 ;; kill-ring and clipboard are same? No, it's annoying!
-;; (setq save-interprogram-paste-before-kill t)
+(setq save-interprogram-paste-before-kill nil)
 
 ;; you need install xsel under Linux
 ;; xclip has some problem when copying under Linux

@@ -50,7 +50,6 @@
               compilation-scroll-output t
               ediff-split-window-function 'split-window-horizontally
               ediff-window-setup-function 'ediff-setup-windows-plain
-              save-interprogram-paste-before-kill t
               grep-highlight-matches t
               grep-scroll-output t
               indent-tabs-mode nil
