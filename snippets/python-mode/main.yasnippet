@@ -1,43 +1,23 @@
 # -*- coding: utf-8; mode: snippet -*-
-# name: main
+# name: draw plot with ipython
 # key: main
-# contributor: Chen Bin <chenbin DOT sh AT gmail>
-# expand-env: ((yas/indent-line 'fixed) (yas/wrap-around-region 'nil))
+# contributor: Chen Bin <chenbin DOT sh AT gmail
 # --
-#!/usr/bin/env python
-# -*- coding: utf-8; mode: python; tab-width: 4; indent-tabs-mode: nil; c-basic-offset: 4 -*- vim:fenc=utf-8:ft=python:et:sw=4:ts=4:sts=4
-
-import getopt
-import sys
-
-
-def usage():
-    print '''
-NAME
-    ${1:description}
-Usage
-    python ${2:program.py} [options]
-'''[1:-1]
-
-
-if __name__ == '__main__':
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "hf:", ["help", "file="])
-    except getopt.GetoptError as err:
-        # print help information and exit:
-        print str(err) # will print something like "option -a not recognized"
-        usage()
-        sys.exit(2)
-
-    file = ""
-
-    for o, a in opts:
-        if o in ("-h", "--help"):
-            usage()
-            sys.exit()
-        elif o in ("-f", "--file"):
-            file = a
-        else:
-            assert False, "unhandled option"
-
-    print "hello world"
+import sympy as sympy
+import numpy as np
+import seaborn as sbn # pip install --user seaborn
+from scipy import *
+from matplotlib import pyplot as plt
+sbn.set()
+xData = np.arange(0, 10, 1)
+yData1 = xData.__pow__(2.0)
+yData2 = np.arange(15, 61, 5)
+plt.figure(num=1, figsize=(8, 6))
+plt.title('Plot 1', size=14)
+plt.xlabel('x-axis', size=14)
+plt.ylabel('y-axis', size=14)
+plt.plot(xData, yData1, color='b', linestyle='--', marker='o', label='y1 data')
+plt.plot(xData, yData2, color='r', linestyle='-', label='y2 data')
+plt.legend(loc='upper left')
+# plt.savefig('plot1.png', format='png')
+plt.show()
