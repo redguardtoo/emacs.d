@@ -7,7 +7,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.3.5
+;; Version: 1.3.8
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -26,18 +26,26 @@
 ;;; Commentary:
 
 ;; Usage:
+;;   "Exuberant Ctags" and "GNU Find" should exist at first.
+;;
 ;;   "M-x counsel-etags-find-tag-at-point" to navigate.  This command will also
 ;;   run `counsel-etags-scan-code' automatically if tags file is not built yet.
 ;;
 ;;   "M-x counsel-etags-scan-code" to create tags file
 ;;   "M-x counsel-etags-grep" to grep
 ;;   "M-x counsel-etags-grep-symbol-at-point" to grep the symbol at point
-;;   "M-x counsel-etags-recent-tag" open recent tag
+;;   "M-x counsel-etags-recent-tag" to open recent tag
+;;   "M-x counsel-etags-find-tag" to fuzzy searching tag
 ;;
 ;; That's all!
 ;;
 ;; Tips:
 ;; - Add below code into "~/.emacs" to auto-update scan code:
+;;
+;;   ;; Don't ask before rereading the TAGS files if they have changed
+;;   (setq tags-revert-without-query t)
+;;   ;; Don't warn when TAGS files are large
+;;   (setq large-file-warning-threshold nil)
 ;;   (add-hook 'prog-mode-hook
 ;;     (lambda ()
 ;;       (add-hook 'after-save-hook
@@ -47,7 +55,17 @@
 ;;   For example, input "keyword1 !keyword2 keyword3" means:
 ;;   "(keyword1 and (not (keyword2 or keyword3))"
 ;;
-;; See https://github.com/redguardtoo/counsel-etags/ for more advanced tips.
+;; - You can setup `counsel-etags-ignore-directories' and `counsel-etags-ignore-filenames',
+;;   (eval-after-load 'counsel-etags
+;;     '(progn
+;;        ;; counsel-etags-ignore-directories does NOT support wildcast
+;;        (add-to-list 'counsel-etags-ignore-directories "build_clang")
+;;        (add-to-list 'counsel-etags-ignore-directories "build_clang")
+;;        ;; counsel-etags-ignore-filenames supports wildcast
+;;        (add-to-list 'counsel-etags-ignore-filenames "TAGS")
+;;        (add-to-list 'counsel-etags-ignore-filenames "*.json")))
+
+;; See https://github.com/redguardtoo/counsel-etags/ for more tips.
 
 ;;; Code:
 
@@ -76,14 +94,14 @@
     ".npm"
     ".tmp" ; TypeScript
     ".sass-cache" ; SCSS/SASS
-    ".idea*"
+    ".idea"
     "node_modules"
     "bower_components"
     ;; python
     ".tox"
     ;; emacs
     ".cask")
-  "Ignore directories.  Wildcast is supported."
+  "Ignore directory names."
   :group 'counsel-etags
   :type '(repeat 'string))
 
@@ -227,6 +245,8 @@ own function instead."
 So we don't need project root at all.  Or you can setup `counsel-etags-project-root'."
   "Message to display when no project is found.")
 
+(defvar counsel-etags-debug nil "Enable debug mode.")
+
 (defvar counsel-etags-timer nil "Internal timer.")
 
 (defvar counsel-etags-keyword nil "The keyword to grep.")
@@ -245,6 +265,12 @@ So we don't need project root at all.  Or you can setup `counsel-etags-project-r
        ((file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
        ((file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
        ((file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "f:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "g:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "h:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "i:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "j:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
+       ((file-executable-p (setq rlt (concat "k:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
        (t (setq rlt nil))))
     (if rlt rlt name)))
 
@@ -288,6 +314,11 @@ So we don't need project root at all.  Or you can setup `counsel-etags-project-r
         (progn (message counsel-etags-no-project-msg)
                nil))))
 
+(defun counsel-etags-dir-pattern (s)
+  ;; trim the '*'
+  (setq s (replace-regexp-in-string "\\`[*]*" "" (replace-regexp-in-string "[*]*\\'" "" s)))
+  (file-name-as-directory s))
+
 (defun counsel-etags-scan-dir (src-dir &optional force)
   "Create tags file from SRC-DIR.
 If FORCE is t, the commmand is executed without checking the timer."
@@ -295,24 +326,25 @@ If FORCE is t, the commmand is executed without checking the timer."
   (let* ((find-pg (or counsel-etags-find-program (counsel-etags-guess-program "find")))
          (ctags-pg (or counsel-etags-tags-program (format "%s -e -L" (counsel-etags-guess-program "ctags"))))
          (default-directory src-dir)
-         ;; run find&ctags to create TAGS
-         (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s | %s -"
+         ;; run find&ctags to create TAGS, `-print` is important option to filter correctly
+         (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s -print | %s -"
                       find-pg
                       (mapconcat (lambda (p)
-                                   (format "-iwholename \"*/%s*\""
-                                           (shell-quote-argument (file-name-as-directory p))))
+                                   (format "-iwholename \"*/%s*\"" (counsel-etags-dir-pattern p)))
                                  counsel-etags-ignore-directories " -or ")
                       counsel-etags-max-file-size
-                      (mapconcat (lambda (n)
-                                   (format "-not -name \"%s\"" (shell-quote-argument n)))
+                      (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
                                  counsel-etags-ignore-filenames " ")
                       ctags-pg))
          (tags-file (concat (file-name-as-directory src-dir) "TAGS"))
          (doit (or force (not (file-exists-p tags-file)))))
     ;; always update cli options
     (when doit
-      (message "%s at %s" cmd default-directory)
-      (shell-command cmd)
+      (message "%s at %s" (if ffip-debug cmd "Scan") default-directory)
+      ;; Run the shell command without any interrupt or extra information
+      (let* ((async-shell-command-buffer 'new-buffer)
+             (display-buffer-alist '(("Async Shell Command" display-buffer-no-window))))
+        (async-shell-command cmd))
       (visit-tags-table tags-file t))))
 
 ;;;###autoload
@@ -429,17 +461,18 @@ IS-STRING is t if the candidate is string."
      (t
       cands))))
 
-(defun counsel-etags-collect-cands (tagname &optional dir)
-  "Parse tags file to find occurrences of TAGNAME in DIR."
+(defun counsel-etags-collect-cands (tagname fuzzy &optional dir)
+  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR."
   (let* ((force-tags-file (and dir
                                (file-exists-p (concat (file-name-as-directory dir) "TAGS"))
                                (concat (file-name-as-directory dir) "TAGS")))
          (tags-file (or force-tags-file
                         (counsel-etags-locate-tags-file)))
          (str (counsel-etags-read-file tags-file))
-         (tag-regex (concat "^.*?\\(" "\^?\\(.+[:.']" tagname "\\)\^A"
-                            "\\|" "\^?" tagname "\^A"
-                            "\\|" "\\<" tagname "[ \f\t()=,;]*\^?[0-9,]"
+         (fuzzy-tagname (if fuzzy (format "[a-zA-Z0-9_$-]*%s[a-zA-Z0-9_$-]*" tagname) tagname))
+         (tag-regex (concat "^.*?\\(" "\^?\\(.+[:.']" fuzzy-tagname "\\)\^A"
+                            "\\|" "\^?" fuzzy-tagname "\^A"
+                            "\\|" "\\<" fuzzy-tagname "[ \f\t()=,;]*\^?[0-9,]"
                             "\\)"))
          (tag-file-path (file-name-directory (counsel-etags-locate-tags-file)))
          cands)
@@ -596,10 +629,10 @@ Focus on TAGNAME if it's not nil."
     (when src-dir
       (counsel-etags-scan-dir src-dir t))))
 
-(defun counsel-etags-find-tag-api (tagname &optional dir)
-  "Find tag with given TAGNAME in DIR."
+(defun counsel-etags-find-tag-api (tagname fuzzy &optional dir)
+  "Find tag with given TAGNAME using FUZZY algorithm in DIR."
   (let* ((time (current-time)))
-    (setq counsel-etags-find-tag-candidates (counsel-etags-collect-cands tagname dir))
+    (setq counsel-etags-find-tag-candidates (counsel-etags-collect-cands tagname fuzzy dir))
     (cond
      ((not counsel-etags-find-tag-candidates)
       ;; OK let's try grep if no tag found
@@ -609,12 +642,12 @@ Focus on TAGNAME if it's not nil."
 
 ;;;###autoload
 (defun counsel-etags-find-tag ()
-  "Input tagname to find tag."
+  "Find tag by fuzzy matching."
   (interactive)
   (counsel-etags-tags-file-must-exist)
-  (let* ((tagname (read-string "Please input tag name:")))
+  (let* ((tagname (read-string "Please input keyword for fuzzy matching:")))
     (when (and tagname (not (string= tagname "")))
-        (counsel-etags-find-tag-api tagname))))
+        (counsel-etags-find-tag-api tagname t))))
 
 ;;;###autoload
 (defun counsel-etags-find-tag-at-point ()
@@ -624,7 +657,7 @@ Focus on TAGNAME if it's not nil."
   (let* ((tagname (counsel-etags-tagname-at-point)))
     (cond
      (tagname
-      (counsel-etags-find-tag-api tagname))
+      (counsel-etags-find-tag-api tagname nil))
      (t
       (message "No tag at point")))))
 
@@ -689,19 +722,19 @@ used by other hooks or commands.  The tags updating might now happen."
     (cond
      ((counsel-etags-has-quick-grep)
       (concat (mapconcat (lambda (e)
-                           (format "-g='!%s/*'" (shell-quote-argument e)))
+                           (format "-g='!%s/*'" e))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "-g='!%s'" (shell-quote-argument e)))
+                           (format "-g='!%s'" e))
                          ignore-file-names " ")))
      (t
       (concat (mapconcat (lambda (e)
-                           (format "--exclude-dir='%s'" (shell-quote-argument e)))
+                           (format "--exclude-dir='%s'" e))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "--exclude='%s'" (shell-quote-argument e)))
+                           (format "--exclude='%s'" e))
                          ignore-file-names " "))))))
 
 (defun counsel-etags-grep-cli (keyword use-cache)
