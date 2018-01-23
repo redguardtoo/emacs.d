@@ -919,6 +919,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
        (add-to-list 'grep-find-ignored-files v))))
 ;; }}
 
-(add-hook 'lispy-mode-hook #'lispyville-mode)
+(unless *emacs24old* (add-hook 'lispy-mode-hook #'lispyville-mode))
 
 (provide 'init-misc)
