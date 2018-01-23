@@ -751,7 +751,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ga" 'w3m-java-search
        "gh" 'w3mext-hacker-search ; code search in all engines with firefox
        "gq" 'w3m-stackoverflow-search
-       "mm" 'mpc-which-song
+       "mw" 'mpc-which-song
        "mn" 'mpc-next-prev-song
        "mp" '(lambda () (interactive) (mpc-next-prev-song t)))
 ;; }}
