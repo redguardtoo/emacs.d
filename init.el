@@ -41,6 +41,7 @@
                    (*linux* nil)
                    (t nil)))
 
+;; emacs 24.3-
 (setq *emacs24old*  (or (and (= emacs-major-version 24) (= emacs-minor-version 3))
                         (not *emacs24*)))
 

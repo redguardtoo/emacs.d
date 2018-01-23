@@ -69,12 +69,15 @@
     workgroups2
     zoutline
     company-c-headers)
-  "Don't install any Melpa packages except these packages")
+  "Packages to install from melpa-unstable.")
+
+(defvar melpa-stable-banned-packages nil
+  "Banned packages from melpa-stable")
 
 (setq package-archives
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-        ("localelpa" . "~/.emacs.d/localelpa/")
+        ;; ("localelpa" . "~/.emacs.d/localelpa/")
         ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
         ;; {{ backup repositories
         ;; ("melpa" . "http://mirrors.163.com/elpa/melpa/")
@@ -110,21 +113,14 @@
   (let* (rlt)
     (cond
       ((string= archive "melpa-stable")
-       (setq rlt t)
-       ;; don's install `request v0.0.3' which drop suppport of Emacs 24.3
-       (if (string= package "request") (setq rlt nil)))
+       (set rlt (not (memq package melpa-stable-banned-packages))))
       ((string= archive "melpa")
-       (cond
-         ;; a few exceptions from unstable melpa
-         ((or (memq package melpa-include-packages)
-              ;; install all color themes
-              (string-match (format "%s" package) "-theme"))
-          (setq rlt t))
-         (t
-           ;; I don't trust melpa which is too unstable
-           (setq rlt nil))))
+       ;; NO unstable packages with a few exceptions
+       (setq rlt (or (memq package melpa-include-packages)
+                      ;; color themes are welcomed
+                      (string-match (format "%s" package) "-theme"))))
       (t
-        ;; other third party repositories I trust
+        ;; I'm not picky on other repositories
         (setq rlt t)))
     rlt))
 
@@ -168,11 +164,11 @@
 (require-package 'haskell-mode)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
-(unless *emacs24old* (require-package 'gist))
+(require-package 'gist)
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
-(unless *emacs24old* (require-package 'robe))
+(require-package 'robe)
 (require-package 'inf-ruby)
 (require-package 'workgroups2)
 (require-package 'yaml-mode)
@@ -239,8 +235,7 @@
 (require-package 'multi-term)
 (require-package 'js-doc)
 (require-package 'js2-mode)
-(unless *emacs24old*
-  (require-package 'rjsx-mode))
+(require-package 'rjsx-mode)
 (require-package 's)
 ;; js2-refactor requires js2, dash, s, multiple-cursors, yasnippet
 ;; I don't use multiple-cursors, but js2-refactor requires it
@@ -273,7 +268,7 @@
 (require-package 'jss)
 (require-package 'undo-tree)
 (require-package 'lispy)
-(unless *emacs24old* (require-package 'lispyville))
+(require-package 'lispyville)
 (require-package 'evil)
 (require-package 'evil-escape)
 (require-package 'evil-exchange)
