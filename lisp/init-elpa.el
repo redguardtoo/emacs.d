@@ -273,7 +273,7 @@
 (require-package 'jss)
 (require-package 'undo-tree)
 (require-package 'lispy)
-(require-package 'lispyville)
+(unless *emacs24old* (require-package 'lispyville))
 (require-package 'evil)
 (require-package 'evil-escape)
 (require-package 'evil-exchange)

@@ -458,16 +458,16 @@ My own snippets is at =~/.emacs.d/snippets=.
 
 Other directories don't matter.
 ** About Emacs 23
-Emacs 23 support was dropped on <2015-04-21>.
-
-The latest Emacs23 compatible version of setup is 1.2!
+Version 1.2 of this setup is the last versionit to support Emacs v23.
 
 Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section =Install stable version in easiest way= but skip the download steps
+** About Emacs 24.3
+Version 2.6 is the last versionit to support =Emacs 24.3=.
 
-Since most third party plugins don't support Emacs 23 any more, I strongly recommend upgrading to Emacs 24!
+Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.6.zip]] and you are good to go.
 ** Editing Emacs Lisp
 We use [[https://github.com/abo-abo/lispy/tree/0.26.0][lispy]] and [[https://github.com/noctuid/lispyville][lispyville]] when editing Emacs Lisp. So you need be familar with their key bindings.
 * Tips
