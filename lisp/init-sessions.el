@@ -31,6 +31,8 @@
                 (comint-input-ring        . 128)
                 (shell-command-history    . 128)
                 (evil-ex                  . 128)
+                ;; recent directories accessed by dired
+                (my-dired-recent-dirs     . 1024)
                 desktop-missing-file-warning
                 register-alist)))
 

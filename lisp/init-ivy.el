@@ -186,16 +186,17 @@ Or else, find files since 24 weeks (6 months) ago."
                           (kill-new val)
                           (message "%s => kill-ring" val)))))
 
-(defun counsel-goto-recent-directory ()
+(defun counsel-recent-dir ()
   "Goto recent directories."
   (interactive)
   (unless recentf-mode (recentf-mode 1))
-  (let* ((collection (delete-dups
-                      (append (mapcar 'file-name-directory recentf-list)
+  (let* ((cands (delete-dups
+                      (append my-dired-recent-dirs
+                              (mapcar 'file-name-directory recentf-list)
                               ;; fasd history
                               (if (executable-find "fasd")
                                   (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
-    (ivy-read "directories:" collection :action 'dired)))
+    (ivy-read "directories:" cands :action 'dired)))
 
 (defun ivy-occur-grep-mode-hook-setup ()
   ;; no syntax highlight, I only care performance when searching/replacing

@@ -3,12 +3,12 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Emms^       ^Misc^             ^Typewriter^
+^Emms^       ^Misc^
 ------------------------------------------------
-_r_andom     _t_erm             _E_nable/Disable
-_n_ext       _a_utoComplete     _V_intage/Modern
-_p_revious   _s_ave workgroup
-_P_ause      _l_oad workgroup
+_R_andom     _t_erm           _E_nable/Disable
+_n_ext       _a_utoComplete   _V_intage/Modern
+_p_revious   _s_ave workgroup Open _r_ecent file
+_P_ause      _l_oad workgroup Recent _d_irectory
 _O_pen       _b_ookmark
 _L_ Playlist Goto book_m_ark
 _q_uit       Undo _v_isualize
@@ -16,6 +16,7 @@ _q_uit       Undo _v_isualize
   ("b" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("r" my-counsel-recentf)
+  ("d" counsel-recent-dir)
   ("s" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)
@@ -23,7 +24,7 @@ _q_uit       Undo _v_isualize
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
-  ("r" emms-random)
+  ("R" emms-random)
   ("n" emms-next)
   ("p" emms-previous)
   ("P" emms-pause)

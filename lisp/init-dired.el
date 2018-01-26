@@ -31,12 +31,18 @@ if no files marked, always operate on current line in dired-mode
 (defvar binary-file-name-regexp "\\.\\(avi\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
+(defvar my-dired-recent-dirs nil "Recent directories accessed by dired.")
 ;; avoid accidently edit huge media file in dired
 (defadvice dired-find-file (around dired-find-file-hack activate)
-  (if (string-match-p binary-file-name-regexp (dired-get-file-for-visit))
-      (if (yes-or-no-p "Edit binary file?")
-          ad-do-it)
-    ad-do-it))
+  (let* ((file (dired-get-file-for-visit)))
+    (cond
+     ((string-match-p binary-file-name-regexp file)
+      ;; confirm before open big file
+      (if (yes-or-no-p "Edit binary file?") ad-do-it))
+     (t
+      (when (file-directory-p file)
+        (add-to-list 'my-dired-recent-dirs file))
+      ad-do-it))))
 
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
   (if (and (stringp ad-return-value) (string-match-p "^mplayer -quiet" ad-return-value))
