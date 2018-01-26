@@ -274,9 +274,4 @@
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 
-;; workaround issues color-theme
-(let* ((dir (file-truename "~/.emacs.d/elpa/color-theme-20070910.1007/themes")))
-  (unless (file-exists-p dir)
-    (make-directory dir)))
-
 (provide 'init-elpa)
