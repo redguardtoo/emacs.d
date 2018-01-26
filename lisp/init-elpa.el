@@ -8,6 +8,8 @@
   '(ace-mc
     ace-window ; lastest stable is released on year 2014
     bbdb
+    command-log-mode
+    auto-yasnippet
     dumb-jump
     websocket ; to talk to the browser
     color-theme
@@ -51,14 +53,10 @@
     htmlize
     scratch
     session
-    bookmark+
     flymake-lua
     multi-term
-    dired+
     inflections
-    dropdown-list
     lua-mode
-    tidy
     pomodoro
     auto-compile
     packed
@@ -113,7 +111,7 @@
   (let* (rlt)
     (cond
       ((string= archive "melpa-stable")
-       (set rlt (not (memq package melpa-stable-banned-packages))))
+       (setq rlt (not (memq package melpa-stable-banned-packages))))
       ((string= archive "melpa")
        ;; NO unstable packages with a few exceptions
        (setq rlt (or (memq package melpa-include-packages)
@@ -183,7 +181,6 @@
 (require-package 'haml-mode)
 (require-package 'scss-mode)
 (require-package 'markdown-mode)
-(require-package 'dired+)
 (require-package 'link)
 (require-package 'connection)
 (require-package 'dictionary) ; dictionary requires 'link and 'connection
@@ -207,14 +204,13 @@
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
 (require-package 'move-text)
-(require-package 'mwe-log-commands)
+(require-package 'command-log-mode)
 (require-package 'page-break-lines)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
 (require-package 'ruby-compilation)
 (require-package 'emmet-mode)
 (require-package 'session)
-(require-package 'tidy)
 (require-package 'unfill)
 (require-package 'w3m)
 (require-package 'idomenu)
@@ -227,11 +223,9 @@
 (require-package 'bbdb)
 (require-package 'pomodoro)
 (require-package 'flymake-lua)
-(require-package 'dropdown-list)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
-(require-package 'bookmark+)
 (require-package 'multi-term)
 (require-package 'js-doc)
 (require-package 'js2-mode)
@@ -280,5 +274,9 @@
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 
+;; workaround issues color-theme
+(let* ((dir (file-truename "~/.emacs.d/elpa/color-theme-20070910.1007/themes")))
+  (unless (file-exists-p dir)
+    (make-directory dir)))
 
 (provide 'init-elpa)

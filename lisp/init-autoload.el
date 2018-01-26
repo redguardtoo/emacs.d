@@ -71,6 +71,7 @@
 (autoload 'eacl-complete-statement "eacl" "")
 (autoload 'eacl-complete-snippet "eacl" "")
 (autoload 'eacl-complete-tag "eacl" "")
+(autoload 'dropdown-list "dropdown-list" "")
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

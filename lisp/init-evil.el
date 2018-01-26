@@ -514,8 +514,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "tt" 'dumb-jump-go
        "tb" 'dumb-jump-back
        "tm" 'my-git-timemachine
-       "tdb" 'tidy-buffer
-       "tdl" 'tidy-current-line
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
        "ov" 'my-overview-of-current-buffer
        "or" 'open-readme-in-git-root-directory

@@ -118,7 +118,6 @@
 
      ;; default hotkey `C-c C-s` is still valid
      ;; give yas-dropdown-prompt in yas/prompt-functions a chance
-     (require 'dropdown-list)
      (setq yas-prompt-functions '(yas-dropdown-prompt
                                   yas-ido-prompt
                                   yas-completing-prompt))
@@ -127,7 +126,7 @@
      ;; thanks to capitaomorte for providing the trick.
      (defadvice yas-insert-snippet (around use-completing-prompt activate)
        "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
-       (let ((yas-prompt-functions '(yas-completing-prompt)))
+       (let* ((yas-prompt-functions '(yas-completing-prompt)))
          ad-do-it))))
 
 (provide 'init-yasnippet)
