@@ -9,15 +9,17 @@ _R_andom     _t_erm           _E_nable/Disable
 _n_ext       _a_utoComplete   _V_intage/Modern
 _p_revious   _s_ave workgroup Open _r_ecent file
 _P_ause      _l_oad workgroup Recent _d_irectory
-_O_pen       _b_ookmark
-_L_ Playlist Goto book_m_ark
+_O_pen       _b_ookmark       Previous shell _c_ommand
+_L_ Playlist Goto book_m_ark  Last _s_hell command
 _q_uit       Undo _v_isualize
 "
+  ("c" my-dired-redo-previous-shell-command)
+  ("s" my-dired-redo-last-shell-command)
   ("b" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("r" my-counsel-recentf)
   ("d" counsel-recent-dir)
-  ("s" wg-create-workgroup)
+  ("S" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)
   ("a" toggle-company-ispell)
