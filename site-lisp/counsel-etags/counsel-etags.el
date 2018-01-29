@@ -5,9 +5,9 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/counsel-etags
-;; Package-Requires: ((emacs "24.3") (counsel "0.9.1"))
+;; Package-Requires: ((emacs "24.4") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.3.8
+;; Version: 1.3.9
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -573,8 +573,9 @@ Focus on TAGNAME if it's not nil."
 
 (defmacro counsel-etags-push-marker-stack (mark)
   "Save current MARK (position)."
-  `(when (fboundp 'xref-push-marker-stack)
-     (xref-push-marker-stack ,mark)))
+  `(if (fboundp 'xref-push-marker-stack)
+       (xref-push-marker-stack ,mark)
+     (ring-insert find-tag-marker-ring ,mark)))
 
 (defun counsel-etags-open-cand (cands time)
   "Open CANDS.  Start open tags file at TIME."
