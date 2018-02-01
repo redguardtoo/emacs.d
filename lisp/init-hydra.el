@@ -164,7 +164,8 @@ _q_uit       Undo _v_isualize
 ;; increase and decrease font size in GUI emacs
 ;; @see https://oremacs.com/download/london.pdf
 (when (display-graphic-p)
-  (defhydra hydra-zoom (global-map "C-c")
+  ;; Since we already use GUI Emacs, f2 is definitely available
+  (defhydra hydra-zoom (global-map "<f2>")
     "Zoom"
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
