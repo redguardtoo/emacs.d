@@ -60,10 +60,10 @@
   (rainbow-delimiters-mode t)
   (turn-on-eldoc-mode))
 
-(let* ((lispy-hooks '(lisp-mode-hook
-                      inferior-lisp-mode-hook
-                      lisp-interaction-mode-hook)))
-  (dolist (hook lispy-hooks)
+(let* ((hooks '(lisp-mode-hook
+                inferior-lisp-mode-hook
+                lisp-interaction-mode-hook)))
+  (dolist (hook hooks)
     (add-hook hook 'sanityinc/lisp-setup)))
 
 (provide 'init-lisp)

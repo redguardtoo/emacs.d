@@ -18,8 +18,6 @@
     evil-lion
     iedit
     undo-tree
-    lispy
-    lispyville
     js-doc
     jss ; remote debugger of browser
     ;; {{ since stable v0.9.1 released, we go back to stable version
@@ -261,8 +259,6 @@
 (require-package 'websocket) ; for debug debugging of browsers
 (require-package 'jss)
 (require-package 'undo-tree)
-(require-package 'lispy)
-(require-package 'lispyville)
 (require-package 'evil)
 (require-package 'evil-escape)
 (require-package 'evil-exchange)

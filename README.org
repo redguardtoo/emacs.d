@@ -468,8 +468,6 @@ Here are the steps to use that setup:
 Version 2.6 is the last version to support =Emacs 24.3=.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.6.zip]] and you are good to go.
-** Editing Emacs Lisp
-We use [[https://github.com/abo-abo/lispy/tree/0.26.0][lispy]] and [[https://github.com/noctuid/lispyville][lispyville]] when editing Emacs Lisp. So you need be familiar with their key bindings.
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
