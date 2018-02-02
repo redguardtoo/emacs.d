@@ -31,7 +31,10 @@ if no files marked, always operate on current line in dired-mode
 (defvar binary-file-name-regexp "\\.\\(avi\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
-(defvar my-dired-recent-dirs nil "Recent directories accessed by dired.")
+;; https://www.emacswiki.org/emacs/EmacsSession which is easier to setup than "desktop.el"
+;; See `session-globals-regexp' in "session.el".
+;; If the variable is named like "*-history", it will be automaticlaly saved.
+(defvar my-dired-directory-history nil "Recent directories accessed by dired.")
 ;; avoid accidently edit huge media file in dired
 (defadvice dired-find-file (around dired-find-file-hack activate)
   (let* ((file (dired-get-file-for-visit)))
@@ -41,7 +44,7 @@ if no files marked, always operate on current line in dired-mode
       (if (yes-or-no-p "Edit binary file?") ad-do-it))
      (t
       (when (file-directory-p file)
-        (add-to-list 'my-dired-recent-dirs file))
+        (add-to-list 'my-dired-directory-history file))
       ad-do-it))))
 
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)

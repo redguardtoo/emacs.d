@@ -921,4 +921,10 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (add-hook 'lispy-mode-hook #'lispyville-mode)
 
+
+;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el"
+(setq session-save-file (expand-file-name "~/.emacs.d/.session"))
+(add-hook 'after-init-hook 'session-initialize)
+;; }}
+
 (provide 'init-misc)

@@ -191,7 +191,7 @@ Or else, find files since 24 weeks (6 months) ago."
   (interactive)
   (unless recentf-mode (recentf-mode 1))
   (let* ((cands (delete-dups
-                      (append my-dired-recent-dirs
+                      (append my-dired-directory-history
                               (mapcar 'file-name-directory recentf-list)
                               ;; fasd history
                               (if (executable-find "fasd")

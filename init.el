@@ -99,7 +99,6 @@
   (require 'init-ivy)
   (require 'init-hippie-expand)
   (require 'init-windows)
-  (require 'init-sessions)
   (require 'init-git)
   (require 'init-markdown)
   (require 'init-erlang)
