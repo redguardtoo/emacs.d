@@ -1,8 +1,8 @@
 ;;; eacl.el --- Auto-complete line(s) by grepping project
 
-;; Copyright (C) 2017 Chen Bin
+;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 1.1.0
+;; Version: 1.1.1
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -122,6 +122,9 @@ The callback is expected to return the path of project root."
 (defvar eacl-keyword-start nil
   "The start position of multi-line keyword.  Internal variable.")
 
+(defvar eacl-debug nil
+  "Enable debug mode.  Internal variable.")
+
 (defun eacl-relative-path ()
   "Relative path of current file."
   (let* ((p (if buffer-file-truename buffer-file-truename "")))
@@ -174,16 +177,19 @@ The callback is expected to return the path of project root."
   (cond
    ((eq system-type 'ms-dos)
     (shell-quote-argument argument))
+   ((equal argument "")
+    "''")
    (t
     ;; We only use GNU Grep from Cygwin/MSYS2 even on Windows.
     ;; So we can safely assume the Linux Shell is available.
-    ;; Below code is copied from `shell-quote-argument'.
-    (if (equal argument "")
-        "''"
-      (replace-regexp-in-string "[^-0-9a-zA-Z<>{}[]:_./\n]" "\\\\\\&"
-                                (replace-regexp-in-string
-                                 "[\n\r\t ]" "[[:space:]]"
-                                 argument))))))
+    ;; Below code is copied from `shell-quote-argument'. []
+    (replace-regexp-in-string
+     "\\\\\]" "]"
+     (replace-regexp-in-string
+      "[^-0-9a-zA-Z<>{}\[:_./\n()]" "\\\\\\&"
+      (replace-regexp-in-string
+       "[\n\r\t ]" "[[:space:]]"
+       argument))))))
 
 (defun eacl-grep-exclude-opts ()
   "Create grep exclude options."
@@ -216,33 +222,41 @@ The callback is expected to return the path of project root."
   (let* ((w (frame-width))
          ;; display kill ring item in one line
          (key (eacl-clean-summary s))
-         (len (length key)))
+         (len (length key))
+         (tw (- w 4)))
     ;; fit to the minibuffer width by remove trailing characters
     (cond
      ((<= len w)) ; do nothing
 
-     ((< len (+ w (/ w 4)))
+     ((< len (+ w (/ w 8)))
       ;; strip candidate end
-      (setq key (concat (substring key 0 (- w 4)) "...")))
+      (setq key (concat (substring key 0 tw) "...")))
 
      (eacl-keyword-start
       ;; strip candidate beginning (text we already inserted)
       (let* ((from (- (point) eacl-keyword-start))
-             (to (min (+ from (- w 4))
-                      (- len from)) ))
+             (to (min (+ from tw)
+                      (- len from))))
+        ;; a corner case to cover
+        (when (>= from to)
+          (setq from (- len tw))
+          (setq to len))
+        (if eacl-debug (message "from=%s w=%s len=%s tw=%s" from w len tw))
         (setq key (concat "..." (substring key from to))))))
     (cons key s)))
 
-(defun eacl-get-candidates (cmd keyword)
+(defun eacl-get-candidates (cmd sep keyword)
   "Create candidates by running CMD.
-Candidates same as keyword in current `buffer-file-name' is excluded."
+Use SEP to split output into lines.
+Candidates same as KEYWORD in current file is excluded."
+  (if eacl-debug (message "cmd=%s" cmd))
   (let* ((cands (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+"))
          (str (format "%s:1:%s" (eacl-relative-path) keyword))
          rlt)
     (setq rlt (remove-if `(lambda (e) (string= ,str e)) cands))
     cands))
 
-(defun eacl-clean-candidates (cands &optional extra)
+(defun eacl-clean-candidates (cands)
   "Remove duplicated lines from CANDS."
   ;; remove the file name and line number
   (setq cands (mapcar (lambda (e) (replace-regexp-in-string "^[^:]+:[^:]+:"
@@ -251,12 +265,11 @@ Candidates same as keyword in current `buffer-file-name' is excluded."
                       cands))
   (delq nil (delete-dups cands)))
 
-(defun eacl-complete-line-or-statement (regex cur-line keyword &optional extra)
+(defun eacl-complete-line-or-statement (regex cur-line keyword)
   "Complete line or statement according to REGEX.
 If REGEX is nil, we only complete current line.
 CUR-LINE and KEYWORD are also required.
-If REGEX is not nil, complete statement.
-We check extra to remove current line from candidate."
+If REGEX is not nil, complete statement."
   (let* ((default-directory (or (funcall eacl-project-root-callback) default-directory))
          (quoted-keyword (eacl-shell-quote-argument keyword))
          ;; Without `-z` multi-line grep will fail.
@@ -268,8 +281,8 @@ We check extra to remove current line from candidate."
                       (if regex (concat quoted-keyword regex) quoted-keyword)))
          ;; Grep option "-z" outputs null character at the end of each candidate
          (sep (if regex "\x0" "[\r\n]+"))
-         (orig-collection (eacl-get-candidates cmd keyword))
-         (collection (eacl-clean-candidates orig-collection extra))
+         (orig-collection (eacl-get-candidates cmd sep keyword))
+         (collection (eacl-clean-candidates orig-collection))
          (rlt t))
     (when collection
       (cond
@@ -297,16 +310,13 @@ We check extra to remove current line from candidate."
 (defun eacl-complete-multi-lines-internal (regex)
   "Complete multi-lines.  REGEX is used to match the lines."
   (let* ((cur-line (eacl-current-line))
-         (file (eacl-relative-path))
-         (lnum (line-number-at-pos))
          (keyword (eacl-get-keyword cur-line))
          (eacl-keyword-start (eacl-line-beginning-position))
          (continue (eacl-check-grep-version)))
     (while continue
       (unless (eacl-complete-line-or-statement regex
                                                cur-line
-                                               keyword
-                                               (cons file lnum))
+                                               keyword)
         (message "Auto-completion done!")
         (setq continue nil))
       (cond
@@ -325,14 +335,11 @@ We check extra to remove current line from candidate."
   "Complete line by grepping project."
   (interactive)
   (let* ((cur-line (eacl-current-line))
-         (file (eacl-relative-path))
-         (lnum (line-number-at-pos))
          (eacl-keyword-start (eacl-line-beginning-position))
          (keyword (eacl-get-keyword cur-line)))
     (eacl-complete-line-or-statement nil
                                      cur-line
-                                     keyword
-                                     (cons file lnum))
+                                     keyword)
     (setq eacl-keyword-start nil)))
 
 ;;;###autoload
