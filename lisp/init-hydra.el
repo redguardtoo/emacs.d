@@ -11,13 +11,20 @@ _p_revious   _s_ave workgroup Open _r_ecent file
 _P_ause      _l_oad workgroup Recent _d_irectory
 _O_pen       _b_ookmark       Previous shell _c_ommand
 _L_ Playlist Goto book_m_ark  Last _s_hell command
-_q_uit       Undo _v_isualize
+_q_uit       Undo _v_isualize _T_oggle atomic chrome server
 "
   ("c" my-dired-redo-previous-shell-command)
   ("s" my-dired-redo-last-shell-command)
   ("b" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("r" my-counsel-recentf)
+  ("T" (cond
+        (atomic-chrome-server-atomic-chrome
+         (atomic-chrome-stop-server)
+         (message "atomic chrome server STOPPED!"))
+        (t
+         (atomic-chrome-start-server)
+         (message "atomic chrome server STARTED!"))))
   ("d" counsel-recent-dir)
   ("S" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)

@@ -6,6 +6,7 @@
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
   '(ace-mc
+    atomic-chrome
     ace-window ; lastest stable is released on year 2014
     bbdb
     command-log-mode
@@ -269,5 +270,6 @@
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
+(require-package 'atomic-chrome)
 
 (provide 'init-elpa)
