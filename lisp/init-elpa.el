@@ -13,7 +13,6 @@
     auto-yasnippet
     dumb-jump
     websocket ; to talk to the browser
-    color-theme
     evil-exchange
     evil-find-char-pinyin
     evil-lion
@@ -26,6 +25,24 @@
     ;; counsel
     ;; swiper
     ;; }}
+    moe-theme
+    ample-theme
+    alect-themes
+    tangotango-theme
+    gruber-darker-theme
+    ample-zen-theme
+    flatland-theme
+    clues-theme
+    darkburn-theme
+    soothe-theme
+    dakrone-theme
+    busybee-theme
+    bubbleberry-theme
+    cherry-blossom-theme
+    heroku-theme
+    hemisu-theme
+    badger-theme
+    distinguished-theme
     wgrep
     robe
     groovy-mode
@@ -112,6 +129,7 @@
       ((string= archive "melpa-stable")
        (setq rlt (not (memq package melpa-stable-banned-packages))))
       ((string= archive "melpa")
+       (message "package=%s" package)
        ;; NO unstable packages with a few exceptions
        (setq rlt (or (memq package melpa-include-packages)
                       ;; color themes are welcomed
@@ -150,7 +168,6 @@
 (require-package 'async)
 (require-package 'dash) ; required by string-edit
 ; color-theme 6.6.1 in elpa is buggy
-(require-package 'color-theme)
 (require-package 'auto-compile)
 (require-package 'smex)
 (require-package 'avy)
@@ -271,5 +288,33 @@
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 (require-package 'atomic-chrome)
+;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
+(require-package 'zenburn-theme)
+(require-package 'color-theme-sanityinc-solarized)
+(require-package 'color-theme-sanityinc-tomorrow)
+(require-package 'monokai-theme)
+(require-package 'moe-theme)
+(require-package 'cyberpunk-theme)
+(require-package 'ample-theme)
+(require-package 'gotham-theme)
+(require-package 'gruvbox-theme)
+(require-package 'alect-themes)
+(require-package 'grandshell-theme)
+(require-package 'tangotango-theme)
+(require-package 'gruber-darker-theme)
+(require-package 'ample-zen-theme)
+(require-package 'flatland-theme)
+(require-package 'clues-theme)
+(require-package 'darkburn-theme)
+(require-package 'soothe-theme)
+(require-package 'dakrone-theme)
+(require-package 'busybee-theme)
+(require-package 'bubbleberry-theme)
+(require-package 'cherry-blossom-theme)
+(require-package 'heroku-theme)
+(require-package 'hemisu-theme)
+(require-package 'badger-theme)
+(require-package 'distinguished-theme)
+; }}
 
 (provide 'init-elpa)
