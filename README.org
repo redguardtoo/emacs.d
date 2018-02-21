@@ -260,6 +260,7 @@ Many third party plugins bundled in this setup have already provided all the fea
 
 A generic grep program =counsel-etags-grep= is provided if you don't use =git=. Since =counsel-etags-grep= is based on =counsel/ivy=, it also supports "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
 
+
 Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing ",qq", press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
 
 You can specify the ignore regex like =!keyword1= in =ivy=. If you want to ignore multiple keywords, you *must* use syntax like =!keyword1\|!keyword2=. As I tested in counsel v0.9.1, non of its grep commands supports ignore syntax *reliably*. So I suggest using =counsel-etags-grep= instead.

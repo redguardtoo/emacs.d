@@ -4,7 +4,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/org2nikola
 ;; Keywords: blog static html export org
-;; Version: 0.1.4
+;; Version: 0.1.6
 
 ;; This file is not part of GNU Emacs.
 
@@ -521,7 +521,12 @@
     str)
 
 (defun org2nikola-export-into-html-text ()
-  (let* (html-text b e)
+  (let* (html-text
+         ;; Emacs 25+ prefer exporting drawer by default
+         ;; obviously not acception in exporting to mail body
+         (org-export-with-drawers nil)
+         b
+         e)
     (save-excursion
       (org-mark-element)
       (forward-line) ;; donot export title
@@ -537,8 +542,7 @@
                   (org-export-region-as-html b e t 'string)))
              (t
               (if (fboundp 'org-export-as)
-                  (org-export-as 'html t nil t)))
-             )))
+                  (org-export-as 'html t nil t))))))
     html-text))
 
 (defun org2nikola-fix-unsupported-language (lang)
