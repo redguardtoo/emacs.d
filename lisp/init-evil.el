@@ -528,7 +528,18 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cxi" 'org-clock-in ; `C-c C-x C-i'
        "cxo" 'org-clock-out ; `C-c C-x C-o'
        "cxr" 'org-clock-report ; `C-c C-x C-r'
-       "qq" 'counsel-etags-grep
+       "qq" (lambda (n)
+              (interactive "P")
+              (cond
+               ((not n)
+                (counsel-etags-grep))
+               ((= n 1)
+                ;; grep references of current web component
+                (counsel-etags-grep (format "<%s" (file-name-base buffer-file-name))))
+               ((= n 2)
+                ;; grep web component attribute name
+                (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
+                                                             (read-string "Component attribute name?")))))))
        "dd" 'counsel-etags-grep-symbol-at-point
        "xc" 'save-buffers-kill-terminal
        "rr" 'my-counsel-recentf
