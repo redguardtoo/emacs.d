@@ -204,7 +204,7 @@ At minimum you need know:
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-**** Step 4, start from real world problem
+**** Step 4, start from a real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 *** Evil-mode tutorial
 Required for vim user,
@@ -228,7 +228,7 @@ You can always press =C-c C-y= anywhere to bring up default hydra menu.
 You can override any key bindings in =~/.custome.el=.
 * FAQ
 ** Override default setup
-Place your setup in =~/.custom.el= so it's not overwritten by the update.
+Place your setup in =~/.custom.el=.
 ** Code navigation and auto-completion
 It's usable out of box using [[http://ctags.sourceforge.net/][Ctags]]. All you need do is to install Ctags.
 
@@ -367,10 +367,14 @@ http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 You may need [[https://github.com/goagent/goagent][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
 ** Email
 If you use Gnus for email, check =init-gnus.el= and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
-** Cannot download ELPA packages?
+** Cannot download packages?
 Some package cannot be downloaded automatically because of network problem.
 
 You could =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
+** use packages on [[https://elpa.gnu.org/][GNU ELPA]]
+By default, packages from GNU ELPA are not available. Search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= if you want to access GNU ELPA.
+
+For example, [[https://github.com/flycheck/flycheck][flycheck]] requires packages only exist on GNU ELPA.
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup

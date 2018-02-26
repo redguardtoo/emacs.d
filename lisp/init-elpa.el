@@ -89,6 +89,8 @@
 (defvar melpa-stable-banned-packages nil
   "Banned packages from melpa-stable")
 
+;; I don't use any packages from GNU ELPA because I want to minimize
+;; dependency on 3rd party web site.
 (setq package-archives
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
