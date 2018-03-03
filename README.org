@@ -343,8 +343,8 @@ Here are the steps to change their values:
 - You will find =~/.emacs.d/lisp/init-company.el= and modify =company-clang-insert-argument=
 
 BTW, please *read my comments* above the code at first.
-** Open file with Ido
-If you press =C-x C-f= to open a file, [[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] will show the suggestions.
+** Open/Save file with Ido
+[[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] shows the suggestions when you open/save files.
 
 Keep pressing =C-f= to ignore suggestions.
 ** Windows
