@@ -350,7 +350,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-visual-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
 (define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
-(define-key evil-insert-state-map (kbd "C-w") 'aya-expand)
+(define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
 
 ;; the original "gd" or `evil-goto-definition' now try `imenu', `xref', search string to `point-min'
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
