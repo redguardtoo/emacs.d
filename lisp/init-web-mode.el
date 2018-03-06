@@ -35,7 +35,7 @@
   (interactive)
   (when (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
     (set (make-local-variable 'flymake-allowed-file-name-masks)
-         '(("\\.html\\|\\.ctp\\|\\.ftl\\|\\.jsp\\|\\.php\\|\\.erb\\|\\.rhtml" flymake-html-init))
+         '(("\\.html\\|\\.ctp\\|\\.ftl\\|\\.jsp\\|\\.php\\|\\.erb\\|\\.rhtm\\|\\.vue" flymake-html-init))
          )
     (set (make-local-variable 'flymake-err-line-patterns)
          ;; only validate missing html tags
