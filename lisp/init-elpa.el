@@ -7,6 +7,7 @@
 (defvar melpa-include-packages
   '(ace-mc
     atomic-chrome
+    color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
     bbdb
     command-log-mode
@@ -105,7 +106,7 @@
         ))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
-;; (setq package-archives '(("myelpa" . "~/projs/myelpa")))
+(setq package-archives '(("myelpa" . "~/projs/myelpa")))
 
 ;;------------------------------------------------------------------------------
 ;; Internal implementation, newbies should NOT touch code below this line!
@@ -290,35 +291,37 @@
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
-(require-package 'atomic-chrome)
+(when *emacs25* (require-package 'atomic-chrome))
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
-(require-package 'zenburn-theme)
-(require-package 'color-theme-sanityinc-solarized)
-(require-package 'color-theme-sanityinc-tomorrow)
-(require-package 'monokai-theme)
-(require-package 'molokai-theme)
-(require-package 'moe-theme)
-(require-package 'cyberpunk-theme)
-(require-package 'ample-theme)
-(require-package 'gotham-theme)
-(require-package 'gruvbox-theme)
-(require-package 'alect-themes)
-(require-package 'grandshell-theme)
-(require-package 'tangotango-theme)
-(require-package 'gruber-darker-theme)
-(require-package 'ample-zen-theme)
-(require-package 'flatland-theme)
-(require-package 'clues-theme)
-(require-package 'darkburn-theme)
-(require-package 'soothe-theme)
-(require-package 'dakrone-theme)
-(require-package 'busybee-theme)
-(require-package 'bubbleberry-theme)
-(require-package 'cherry-blossom-theme)
-(require-package 'heroku-theme)
-(require-package 'hemisu-theme)
-(require-package 'badger-theme)
-(require-package 'distinguished-theme)
+(when *emacs24* (require-package 'color-theme))
+(when *emacs25*
+  (require-package 'zenburn-theme)
+  (require-package 'color-theme-sanityinc-solarized)
+  (require-package 'color-theme-sanityinc-tomorrow)
+  (require-package 'monokai-theme)
+  (require-package 'molokai-theme)
+  (require-package 'moe-theme)
+  (require-package 'cyberpunk-theme)
+  (require-package 'ample-theme)
+  (require-package 'gotham-theme)
+  (require-package 'gruvbox-theme)
+  (require-package 'alect-themes)
+  (require-package 'grandshell-theme)
+  (require-package 'tangotango-theme)
+  (require-package 'gruber-darker-theme)
+  (require-package 'ample-zen-theme)
+  (require-package 'flatland-theme)
+  (require-package 'clues-theme)
+  (require-package 'darkburn-theme)
+  (require-package 'soothe-theme)
+  (require-package 'dakrone-theme)
+  (require-package 'busybee-theme)
+  (require-package 'bubbleberry-theme)
+  (require-package 'cherry-blossom-theme)
+  (require-package 'heroku-theme)
+  (require-package 'hemisu-theme)
+  (require-package 'badger-theme)
+  (require-package 'distinguished-theme))
 ; }}
 
 (provide 'init-elpa)
