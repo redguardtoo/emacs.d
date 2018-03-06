@@ -6,7 +6,6 @@
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
   '(ace-mc
-    atomic-chrome
     color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
     bbdb
@@ -106,7 +105,7 @@
         ))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
-(setq package-archives '(("myelpa" . "~/projs/myelpa")))
+;; (setq package-archives '(("myelpa" . "~/projs/myelpa")))
 
 ;;------------------------------------------------------------------------------
 ;; Internal implementation, newbies should NOT touch code below this line!
@@ -291,7 +290,6 @@
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
-(when *emacs25* (require-package 'atomic-chrome))
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24* (require-package 'color-theme))
 (when *emacs25*
