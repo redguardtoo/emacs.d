@@ -664,6 +664,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ll" 'my-wg-switch-workgroup ; load windows layout
        "kk" 'scroll-other-window
        "jj" 'scroll-other-window-up
+       "rt" 'random-color-theme
        "yy" 'hydra-launcher/body
        "hh" 'multiple-cursors-hydra/body
        "gi" 'gist-region ; only workable on my computer

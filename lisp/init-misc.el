@@ -931,4 +931,14 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
+;; random color theme
+(defun random-color-theme ()
+  "Random color theme."
+  (interactive)
+  (unless (featurep 'counsel) (require 'counsel))
+  (let* ((available-themes (mapcar 'symbol-name (custom-available-themes)))
+         (theme (nth (random (length available-themes)) available-themes)))
+    (counsel-load-theme-action theme)
+    (message "Color theme [%s] loaded." theme)))
+
 (provide 'init-misc)
