@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 1.1.1
+;; Version: 1.1.2
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -150,10 +150,12 @@ The callback is expected to return the path of project root."
     valid))
 
 ;;;###autoload
-(defun eacl-current-line ()
+(defun eacl-current-line-info ()
   "Current line."
-  (buffer-substring-no-properties (line-beginning-position)
-                                  (point)))
+  (let* ((b (line-beginning-position))
+         (e (line-end-position)))
+    (cons (buffer-substring-no-properties b (point))
+          (buffer-substring-no-properties b e))))
 
 (defun eacl-trim-left (s)
   "Remove whitespace at the beginning of S."
@@ -199,12 +201,16 @@ The callback is expected to return the path of project root."
           (mapconcat (lambda (e) (format "--exclude='%s'" e))
                      grep-find-ignored-files " ")))
 
+(defun eacl-trim-string (string)
+  "Trim STRING."
+  (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
+
 ;;;###autoload
-(defun eacl-get-keyword (cur-line)
+(defun eacl-get-keyword (line)
   "Get trimmed keyword from CUR-LINE."
   (let* ((keyword (replace-regexp-in-string "^[ \t]*"
                                             ""
-                                            cur-line)))
+                                            line)))
     (eacl-encode keyword)))
 
 (defun eacl-replace-text (content is-multiline)
@@ -265,11 +271,12 @@ Candidates same as KEYWORD in current file is excluded."
                       cands))
   (delq nil (delete-dups cands)))
 
-(defun eacl-complete-line-or-statement (regex cur-line keyword)
+(defun eacl-complete-line-or-statement (regex keyword &optional extra)
   "Complete line or statement according to REGEX.
-If REGEX is nil, we only complete current line.
-CUR-LINE and KEYWORD are also required.
-If REGEX is not nil, complete statement."
+If REGEX is nil, we only complete single line.
+If REGEX is not nil, complete statement.
+KEYWORD is used to grep.
+EXTRA is optional information to filter candidates."
   (let* ((default-directory (or (funcall eacl-project-root-callback) default-directory))
          (quoted-keyword (eacl-shell-quote-argument keyword))
          ;; Without `-z` multi-line grep will fail.
@@ -284,11 +291,26 @@ If REGEX is not nil, complete statement."
          (orig-collection (eacl-get-candidates cmd sep keyword))
          (collection (eacl-clean-candidates orig-collection))
          (rlt t))
+
+    (when extra
+      ;; Please note when EXTRA is not nil,
+      ;; we are completing single line only
+      ;; filter out candidate similar to current line
+      (let* ((line (eacl-trim-string (cdr extra))))
+        (setq collection (delq nil (mapcar
+                                    `(lambda (s) (unless (string= s ,line) s))
+                                    collection)))))
     (when collection
       (cond
+       ((and extra (= 1 (length collection)))
+        ;; single line, just complete it now
+        (eacl-replace-text (car collection) regex))
+
        ((and (= 1 (length orig-collection))
              (= 1 (length collection)))
+        ;; multiple lines but there is only one candidate
         (eacl-replace-text (car collection) regex))
+
        ((> (length collection) 1)
         ;; uniq
         (when regex
@@ -309,13 +331,11 @@ If REGEX is not nil, complete statement."
 ;;;###autoload
 (defun eacl-complete-multi-lines-internal (regex)
   "Complete multi-lines.  REGEX is used to match the lines."
-  (let* ((cur-line (eacl-current-line))
-         (keyword (eacl-get-keyword cur-line))
+  (let* ((keyword (eacl-get-keyword (car (eacl-current-line-info))))
          (eacl-keyword-start (eacl-line-beginning-position))
          (continue (eacl-check-grep-version)))
     (while continue
       (unless (eacl-complete-line-or-statement regex
-                                               cur-line
                                                keyword)
         (message "Auto-completion done!")
         (setq continue nil))
@@ -334,12 +354,11 @@ If REGEX is not nil, complete statement."
 (defun eacl-complete-line ()
   "Complete line by grepping project."
   (interactive)
-  (let* ((cur-line (eacl-current-line))
+  (let* ((cur-line-info (eacl-current-line-info))
+         (cur-line (car cur-line-info))
          (eacl-keyword-start (eacl-line-beginning-position))
          (keyword (eacl-get-keyword cur-line)))
-    (eacl-complete-line-or-statement nil
-                                     cur-line
-                                     keyword)
+    (eacl-complete-line-or-statement nil keyword cur-line-info)
     (setq eacl-keyword-start nil)))
 
 ;;;###autoload
