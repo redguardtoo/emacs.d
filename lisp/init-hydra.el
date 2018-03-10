@@ -11,7 +11,8 @@ _p_revious   _s_ave workgroup Open _r_ecent file
 _P_ause      _l_oad workgroup Recent _d_irectory
 _O_pen       _b_ookmark       Previous shell _c_ommand
 _L_ Playlist Goto book_m_ark  Last _s_hell command
-_q_uit       Undo _v_isualize
+_S_huffle    Undo _v_isualize
+_q_uit
 "
   ("c" my-dired-redo-previous-shell-command)
   ("s" my-dired-redo-last-shell-command)
@@ -32,6 +33,7 @@ _q_uit       Undo _v_isualize
   ("P" emms-pause)
   ("O" emms-play-playlist)
   ("L" emms-playlist-mode-go)
+  ("S" (progn (emms-shuffle) (emms-random)))
   ("q" nil))
 
 (defhydra multiple-cursors-hydra (:color green :hint nil)
