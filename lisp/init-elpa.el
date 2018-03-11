@@ -46,6 +46,7 @@
     distinguished-theme
     wgrep
     robe
+    slime
     groovy-mode
     inf-ruby
     ;; company ; I won't wait another 2 years for stable
@@ -290,6 +291,7 @@
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
+(require-package 'slime)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24* (require-package 'color-theme))
 (when *emacs25*
