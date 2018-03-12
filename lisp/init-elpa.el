@@ -16,6 +16,7 @@
     evil-exchange
     evil-find-char-pinyin
     evil-lion
+    counsel-css
     iedit
     undo-tree
     js-doc
@@ -292,6 +293,7 @@
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 (require-package 'slime)
+(require-package 'counsel-css)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24* (require-package 'color-theme))
 (when *emacs25*
