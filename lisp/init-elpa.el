@@ -8,6 +8,7 @@
   '(ace-mc
     color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
+    auto-package-update
     bbdb
     command-log-mode
     auto-yasnippet
@@ -294,6 +295,7 @@
 (require-package 'evil-visualstar)
 (require-package 'slime)
 (require-package 'counsel-css)
+(require-package 'auto-package-update)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24* (require-package 'color-theme))
 (when *emacs25*
@@ -325,5 +327,8 @@
   (require-package 'badger-theme)
   (require-package 'distinguished-theme))
 ; }}
+
+;; kill buffer without my confirmation
+(setq kill-buffer-query-functions (delq 'process-kill-buffer-query-function kill-buffer-query-functions))
 
 (provide 'init-elpa)
