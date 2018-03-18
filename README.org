@@ -1,5 +1,5 @@
 * Features
-- Efficient. Emacs *starts up in one second*
+- Efficient. Startup time is *less than one second*
 - Robust. Emacs will never crash after a full package upgrade
 - Support Windows. You won't get inferior performance on Windows
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
@@ -457,6 +457,7 @@ Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https:
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
+- You can run =optimize-emacs-startup= to compile "*.el" under =~/.emacs.d/lisp/=
 * Report bug
 - Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first to find a solution
 - If your issue is still NOT resolved, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs, reproduce the issue

@@ -412,7 +412,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; My frequently used commands are listed here
 ;; For example, for line like `"ef" 'end-of-defun`
 ;;   You can either press `,ef` or `M-x end-of-defun` to execute it
-(require 'general)
+(local-require 'general)
 (general-evil-setup t)
 
 ;; {{ use `,` as leader key
@@ -593,7 +593,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "fa" 'flyspell-auto-correct-word
        "pe" 'flymake-goto-prev-error
        "ne" 'flymake-goto-next-error
-       "fw" 'ispell-word
        "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
        "og" 'org-agenda
        "otl" 'org-toggle-link-display
@@ -831,8 +830,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; fifteen = 15
 ;;
 ;; If the align separator is / you will be prompted for a regular expression instead of a plain character.
-(require 'evil-lion)
-(evil-lion-install)
+(evil-lion-mode)
 ;; }}
 
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit

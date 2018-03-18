@@ -29,7 +29,7 @@
 ;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
 
 ;; {{ git-gutter
-(require 'git-gutter)
+(local-require 'git-gutter)
 
 (defun git-gutter-reset-to-head-parent()
   (interactive)
