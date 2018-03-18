@@ -5,29 +5,29 @@
   "
 ^Emms^       ^Misc^
 ------------------------------------------------
-_R_andom     _t_erm           _E_nable/Disable
+_r_andom     _t_erm           _E_nable/Disable
 _n_ext       _a_utoComplete   _V_intage/Modern
-_p_revious   _s_ave workgroup Open _r_ecent file
+_p_revious   _C_reate workgroup Open recent _f_ile
 _P_ause      _l_oad workgroup Recent _d_irectory
-_O_pen       _b_ookmark       Previous shell _c_ommand
-_L_ Playlist Goto book_m_ark  Last _s_hell command
+_O_pen       _b_ookmark       Last dired _c_ommand
+_L_ Playlist Goto book_m_ark  Dired comand _h_istory
 _S_huffle    Undo _v_isualize
 _q_uit
 "
-  ("c" my-dired-redo-previous-shell-command)
-  ("s" my-dired-redo-last-shell-command)
+  ("c" my-dired-redo-last-command)
+  ("h" my-dired-redo-from-commands-history)
   ("b" bookmark-set)
   ("m" counsel-bookmark-goto)
-  ("r" my-counsel-recentf)
+  ("f" my-counsel-recentf)
   ("d" counsel-recent-dir)
-  ("S" wg-create-workgroup)
+  ("C" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)
   ("a" toggle-company-ispell)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
-  ("R" emms-random)
+  ("r" emms-random)
   ("n" emms-next)
   ("p" emms-previous)
   ("P" emms-pause)

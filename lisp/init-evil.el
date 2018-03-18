@@ -656,8 +656,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; {{ Use `SPC` as leader key
 ;; all keywords arguments are still supported
 (nvmap :prefix "SPC"
-       "pc" 'my-dired-redo-previous-shell-command
-       "cc" 'my-dired-redo-last-shell-command
+       "pc" 'my-dired-redo-from-commands-history
+       "cc" 'my-dired-redo-last-command
        "ss" 'wg-create-workgroup ; save windows layout
        "se" 'evil-iedit-state/iedit-mode ; start iedit in emacs
        "sc" 'shell-command

@@ -145,7 +145,7 @@ if no files marked, always operate on current line in dired-mode
 ;; }}
 
 ;; {{ try to re-play the last dired commands
-(defvar my-dired-shell-command-args-history nil
+(defvar my-dired-commands-history nil
   "History of `dired-do-shell-command' arguments.")
 (defun my-format-dired-args (args)
   (let* ((cmd (file-name-nondirectory (nth 0 args))))
@@ -154,26 +154,31 @@ if no files marked, always operate on current line in dired-mode
             (nth 2 args))))
 
 (defadvice dired-do-shell-command (before dired-do-shell-command-before-hack activate)
-  (add-to-list 'my-dired-shell-command-args-history
-               (list (my-format-dired-args (ad-get-args 0))
-                     default-directory
-                     (ad-get-args 0))))
+  (let* ((args (ad-get-args 0))
+         (files (nth 2 args)))
+    ;; only record command which operate on files
+    (when (and (listp files)
+               (> (length files) 0))
+      (add-to-list 'my-dired-commands-history
+                   (list (my-format-dired-args args)
+                         default-directory
+                         args)))))
 
-(defun my-dired-redo-last-shell-command ()
+(defun my-dired-redo-last-command ()
   "Redo last shell command."
   (interactive)
-  (let* ((info (car my-dired-shell-command-args-history)))
+  (let* ((info (car my-dired-commands-history)))
     (when info
       (let* ((default-directory (nth 1 info))
              (args (nth 2 info)))
         (apply 'dired-do-shell-command args)))))
 
-(defun my-dired-redo-previous-shell-command ()
-  "Redo previous shell command."
+(defun my-dired-redo-from-commands-history ()
+  "Redo one of previous shell commands."
   (interactive)
-  (when my-dired-shell-command-args-history
+  (when my-dired-commands-history
     (ivy-read "Previous dired shell commands:"
-              my-dired-shell-command-args-history
+              my-dired-commands-history
               :action
               (lambda (info)
                 (let* ((default-directory (nth 1 info))
