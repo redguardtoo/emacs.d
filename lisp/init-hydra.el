@@ -1,16 +1,17 @@
 ;; @see https://github.com/abo-abo/hydra
+(unless (featurep 'hydra) (require 'hydra))
 
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
 ^Emms^       ^Misc^
 ------------------------------------------------
-_r_andom     _t_erm           _E_nable/Disable
-_n_ext       _a_utoComplete   _V_intage/Modern
+_r_andom     _t_erm             _E_nable/Disable
+_n_ext       _a_utoComplete     _V_intage/Modern
 _p_revious   _C_reate workgroup Open recent _f_ile
-_P_ause      _l_oad workgroup Recent _d_irectory
-_O_pen       _b_ookmark       Last dired _c_ommand
-_L_ Playlist Goto book_m_ark  Dired comand _h_istory
+_P_ause      _l_oad workgroup   Recent _d_irectory
+_O_pen       _b_ookmark         Last dired _c_ommand
+_L_ Playlist Goto book_m_ark    Dired comand _h_istory
 _S_huffle    Undo _v_isualize
 _q_uit
 "
