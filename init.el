@@ -149,6 +149,7 @@
   (require-init 'init-emacs-w3m)
   (require-init 'init-hydra)
 
+  (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
   ;; {{ idle require other stuff
   (local-require 'idle-require)
   (setq idle-require-idle-delay 2)
