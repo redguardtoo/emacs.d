@@ -246,7 +246,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                             (cond
                              (*unix*
                               "xsel or xclip")
-                             ((or *cygwin* *wind64*)
+                             ((or *cygwin* *win64*)
                               "cygutils-extra from Cygwin")
                              (t
                               "CLI clipboard tools"))))
