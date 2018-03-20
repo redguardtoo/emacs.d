@@ -539,7 +539,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
                ((= n 2)
                 ;; grep web component attribute name
                 (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
-                                                             (read-string "Component attribute name?")))))))
+                                                            (read-string "Component attribute name?")))))
+               ((= n 3)
+                ;; grep current file name base
+                (counsel-etags-grep (format "%s" (file-name-nondirectory buffer-file-name))))))
        "dd" 'counsel-etags-grep-symbol-at-point
        "xc" 'save-buffers-kill-terminal
        "rr" 'my-counsel-recentf
