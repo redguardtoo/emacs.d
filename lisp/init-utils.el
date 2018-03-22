@@ -257,9 +257,10 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
            (setq retval nil)))
         retval)))
 
-(setq simpleclip-works (test-simpleclip) )
+(setq simpleclip-works (test-simpleclip))
 
 (defun my-gclip ()
+  (unless (featurep 'simpleclip) (require 'simpleclip))
   (if simpleclip-works (simpleclip-get-contents)
     (cond
      ((eq system-type 'darwin)

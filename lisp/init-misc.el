@@ -672,7 +672,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                      ((string= choice "kill-ring")
                       (car kill-ring))
                      ((string= choice "clipboard")
-                      (unless (featurep 'simpleclip) (require 'simpleclip))
                       (my-gclip)))))
           (with-temp-file fb
             (insert txt)))))
