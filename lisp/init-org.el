@@ -84,13 +84,20 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
                                                  use-indirect-buffer))
         ((equal major-mode 'org-mode)
          (org-narrow-to-subtree))
-        ((equal major-mode 'diff-mode)
+        ((derived-mode-p 'diff-mode)
          (let* (b e)
            (save-excursion
-             (setq b (diff-beginning-of-file))
+             ;; If the (point) is already beginning or end of file diff,
+             ;; the `diff-beginning-of-file' and `diff-end-of-file' return nil
+             (setq b (progn (diff-beginning-of-file) (point)))
              (setq e (progn (diff-end-of-file) (point))))
            (when (and b e (< b e))
              (narrow-to-region-indirect-buffer-maybe b e use-indirect-buffer))))
+        ((derived-mode-p 'prog-mode)
+         (mark-defun)
+         (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                                 (region-end)
+                                                 use-indirect-buffer))
         (t (error "Please select a region to narrow to"))))
 
 ;; Various preferences
