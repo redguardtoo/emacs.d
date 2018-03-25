@@ -379,7 +379,7 @@ See \"Reusing passwords for several connections\" from INFO.
 ;; {{ show email sent by `git send-email' in gnus
 (eval-after-load 'gnus
   '(progn
-     (require 'gnus-article-treat-patch)
+     (local-require 'gnus-article-treat-patch)
      (setq gnus-article-patch-conditions
            '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" ))
      ))
