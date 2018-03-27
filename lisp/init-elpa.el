@@ -99,7 +99,7 @@
 (setq package-archives
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-        ;; ("localelpa" . "~/.emacs.d/localelpa/")
+        ("localelpa" . "~/.emacs.d/localelpa/")
         ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
         ;; {{ backup repositories
         ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
