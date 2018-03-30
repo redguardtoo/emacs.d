@@ -47,30 +47,44 @@ if no files marked, always operate on current line in dired-mode
         (add-to-list 'my-dired-directory-history file))
       ad-do-it))))
 
+(defadvice dired-do-async-shell-command (around dired-do-async-shell-command activate)
+  "Mplayer scan dvd-ripped directory in dired correctly."
+  (let* ((args (ad-get-args 0))
+         (first-file (file-truename (and file-list (car file-list)))))
+    (cond
+     ((file-directory-p first-file)
+      (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
+                                   (my-guess-mplayer-path)
+                                   first-file)))
+     (t
+      ad-do-it))))
+
 (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
-  (if (and (stringp ad-return-value) (string-match-p "^mplayer -quiet" ad-return-value))
-      (let* ((dir (file-name-as-directory (concat default-directory
-                                                  "Subs")))
-             basename)
-        (cond
-         ((file-exists-p (concat dir "English.sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/English")))
-         ((file-exists-p (concat dir "Chinese.sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/Chinese")))
-         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -vobsub Subs/" basename)))
-         ((file-exists-p (concat dir "English.srt"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/English.srt")))
-         ((file-exists-p (concat dir "Chinese.srt"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/Chinesesrt")))
-         ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-          (setq ad-return-value (concat ad-return-value
-                                        " -sub Subs/" basename ".srt"))))))
+  (when (and (stringp ad-return-value)
+             (string-match-p "^mplayer -quiet" ad-return-value))
+    (let* ((dir (file-name-as-directory (concat default-directory
+                                                "Subs")))
+           (files (car (ad-get-args 0)))
+           basename)
+      (cond
+       ((file-exists-p (concat dir "English.sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/English")))
+       ((file-exists-p (concat dir "Chinese.sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/Chinese")))
+       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -vobsub Subs/" basename)))
+       ((file-exists-p (concat dir "English.srt"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/English.srt")))
+       ((file-exists-p (concat dir "Chinese.srt"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/Chinesesrt")))
+       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+        (setq ad-return-value (concat ad-return-value
+                                      " -sub Subs/" basename ".srt"))))))
   ad-return-value)
 
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
