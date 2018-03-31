@@ -100,11 +100,20 @@
       '(;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
         ("localelpa" . "~/.emacs.d/localelpa/")
-        ;; ("my-js2-mode" . "https://raw.githubusercontent.com/redguardtoo/js2-mode/release/") ; github has some issue
-        ;; {{ backup repositories
+
+        ;; ;; {{ 163 repository:
         ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
         ;; ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/")
+        ;; ;; }}
+
+        ;; ;; {{ tsinghua repository (more stable than 163, recommended)
+        ;; ;;See https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
+        ;; ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ;; ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+        ;; ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
+        ;; ;; ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
         ;; }}
+
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ))
