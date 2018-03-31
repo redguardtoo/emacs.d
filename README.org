@@ -10,7 +10,7 @@
 - Tested with Emacs 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/macOS
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailble= on Windows
+- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Please read section "About Emacs 23" if you uses Emacs 23.4
 - Other issues are covered in FAQ
@@ -246,10 +246,17 @@ Check [[https://emacsthemes.com/]].
 Write down the name of color theme (for example, molokai).
 
 *** Setup color theme manually (recommended)
-Search "molokai" in =~/.emacs.d/lisp/init-color-theme.el= and replace it with your own color theme name,
-
 You can =M-x counsel-load-theme= to switch themes.
 
+Or you can insert below code into end of =~/.custom.el= or =~/.emacs.d/init.el=,
+#+begin_src elisp
+;; Please note the color theme's name is "molokai"
+(when (or (display-graphic-p)
+          (string-match-p "256color"(getenv "TERM")))
+  (load-theme 'molokai t))
+#+end_src
+
+You can also run =M-x rando-color-theme= to load random color theme.
 *** Use color theme in terminal
 Start Emacs this way,
 #+BEGIN_SRC sh
