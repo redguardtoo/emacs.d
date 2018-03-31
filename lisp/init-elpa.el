@@ -105,6 +105,13 @@
         ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
         ;; ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/")
         ;; }}
+        ;; {{ 163源有问题,使用清华源 说明见 (https://mirror.tuna.tsinghua.edu.cn/help/elpa/)
+        ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+        ;; ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+        ;; ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
+        ;; ("marmalade" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/marmalade/")
+        ;; ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+        ;; }}
         ("melpa" . "https://melpa.org/packages/")
         ("melpa-stable" . "https://stable.melpa.org/packages/")
         ))
