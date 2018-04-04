@@ -658,6 +658,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; {{ Use `SPC` as leader key
 ;; all keywords arguments are still supported
 (nvmap :prefix "SPC"
+       "ee" 'my-swap-sexps
        "pc" 'my-dired-redo-from-commands-history
        "cc" 'my-dired-redo-last-command
        "ss" 'wg-create-workgroup ; save windows layout
