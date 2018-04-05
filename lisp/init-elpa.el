@@ -46,6 +46,7 @@
     hemisu-theme
     badger-theme
     distinguished-theme
+    challenger-deep-theme
     wgrep
     robe
     slime
@@ -339,7 +340,8 @@
   (require-package 'heroku-theme)
   (require-package 'hemisu-theme)
   (require-package 'badger-theme)
-  (require-package 'distinguished-theme))
+  (require-package 'distinguished-theme)
+  (require-package 'challenger-deep-theme))
 ; }}
 
 ;; kill buffer without my confirmation
