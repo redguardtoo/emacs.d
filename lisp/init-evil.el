@@ -352,6 +352,16 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 (define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
 
+(defun my-search-defun-from-pos (pos)
+  (evil-search search t t pos)
+  ;; ignore this.f1 = this.fn.bind(this) code
+  (when (and (memq major-mode '(js-mode js2-mode rjsx-mode))
+             (string-match-p "^[ \t]*this\.[a-zA-Z0-9]+[ \t]*=[ \t]*this\.[a-zA-Z0-9]*\.bind(this);"
+                             (my-line-str)))
+
+    (forward-line 1)
+    (evil-search search t t (point))))
+
 ;; the original "gd" or `evil-goto-definition' now try `imenu', `xref', search string to `point-min'
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
 (evil-define-motion my-evil-goto-definition ()
@@ -382,12 +392,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
           (setq ipos (marker-position ipos)))
          ;; imenu found a position, so go there and
          ;; highlight the occurrence
-        (if (numberp ipos)
-            (evil-search search t t ipos)
-          (evil-search search t t (point-min))))
+        (my-search-defun-from-pos (if (numberp ipos) ipos (point-min))))
        ;; otherwise just go to first occurrence in buffer
        (t
-        (evil-search search t t (point-min)))))))
+        (my-search-defun-from-pos (point-min)))))))
 ;; use "gt", someone might prefer original `evil-goto-definition'
 (define-key evil-motion-state-map "gt" 'my-evil-goto-definition)
 
