@@ -10,14 +10,14 @@ _r_andom     _t_erm             _E_nable/Disable
 _n_ext       _a_utoComplete     _V_intage/Modern
 _p_revious   _C_reate workgroup Open recent _f_ile
 _P_ause      _l_oad workgroup   Recent _d_irectory
-_O_pen       _b_ookmark         Last dired _c_ommand
+_O_pen       _B_ookmark         Last dired _c_ommand
 _L_ Playlist Goto book_m_ark    Dired comand _h_istory
-_S_huffle    Undo _v_isualize
+_S_huffle    Undo _v_isualize   _b_ack
 _q_uit
 "
   ("c" my-dired-redo-last-command)
   ("h" my-dired-redo-from-commands-history)
-  ("b" bookmark-set)
+  ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" counsel-recent-dir)
@@ -33,6 +33,7 @@ _q_uit
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
+  ("b" back-to-previous-buffer)
   ("L" emms-playlist-mode-go)
   ("S" (progn (emms-shuffle) (emms-random)))
   ("q" nil))

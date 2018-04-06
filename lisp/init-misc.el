@@ -949,4 +949,26 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
     (counsel-load-theme-action theme)
     (message "Color theme [%s] loaded." theme)))
 
+(defun switch-to-ansi-term ()
+  (interactive)
+  (let* ((buf (get-buffer "*ansi-term*"))
+         (wins (window-list))
+         current-frame-p)
+    (cond
+     ((buffer-live-p buf)
+      (dolist (win wins)
+        (when (string= (buffer-name (window-buffer win)) "*ansi-term*")
+          (when (window-live-p win)
+            (setq current-frame-p t)
+            (select-window win))))
+      (unless current-frame-p
+          (switch-to-buffer buf)))
+     (t
+      (ansi-term "/bin/bash")))))
+
+(defun switch-to-shell-or-ansi-term ()
+  (interactive)
+  (if (display-graphic-p) (switch-to-ansi-term)
+    (suspend-frame)))
+
 (provide 'init-misc)
