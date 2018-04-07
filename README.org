@@ -256,7 +256,7 @@ Or you can insert below code into end of =~/.custom.el= or =~/.emacs.d/init.el=,
   (load-theme 'molokai t))
 #+end_src
 
-You can also run =M-x rando-color-theme= to load random color theme.
+You can also run =M-x random-color-theme= to load random color theme.
 *** Use color theme in terminal
 Start Emacs this way,
 #+BEGIN_SRC sh
