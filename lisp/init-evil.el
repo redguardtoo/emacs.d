@@ -472,6 +472,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;; "cl" 'evilnc-comment-or-uncomment-to-the-line
        ;; "cc" 'evilnc-copy-and-comment-lines
        ;; "cp" 'evilnc-comment-or-uncomment-paragraphs
+       "ic" 'my-imenu-comments
        "epy" 'emmet-expand-yas
        "epl" 'emmet-expand-line
        "rd" 'evilmr-replace-in-defun
@@ -819,8 +820,18 @@ If the character before and after CH is space or tab, CH is NOT slash"
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
+;; {{ evil-nerd-commenter
 (require 'evil-nerd-commenter)
 (evilnc-default-hotkeys)
+
+(defun my-imenu-comments ()
+  "Imenu display comments."
+  (interactive)
+  (unless (featurep 'counsel) (require 'counsel))
+  (when (fboundp 'evilnc-imenu-create-index-function)
+    (let* ((imenu-create-index-function 'evilnc-imenu-create-index-function))
+      (counsel-imenu))))
+;; }}
 
 ;; {{ evil-exchange
 ;; press gx twice to exchange, gX to cancel
