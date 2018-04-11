@@ -31,6 +31,17 @@
     (add-to-list 'auto-mode-alist (cons pattern mode))))
 
 
+(defun font-belongs-to (pos fonts)
+  "Current font at POS belongs to FONTS."
+  (let* ((fontfaces (get-text-property pos 'face)))
+    (when (not (listp fontfaces))
+      (setf fontfaces (list fontfaces)))
+    (message "fontfaces=%s" fontfaces)
+    (delq nil
+          (mapcar (lambda (f)
+                    (member f fonts))
+                  fontfaces))))
+
 ;;----------------------------------------------------------------------------
 ;; String utilities missing from core emacs
 ;;----------------------------------------------------------------------------
