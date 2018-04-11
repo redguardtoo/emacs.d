@@ -227,6 +227,8 @@ You can always press =C-c C-y= anywhere to bring up default hydra menu.
 
 You can override any key bindings in =~/.custome.el=.
 * FAQ
+** default terminal shell
+You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
 Place your setup in =~/.custom.el=.
 ** Code navigation and auto-completion

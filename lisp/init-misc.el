@@ -964,7 +964,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
       (unless current-frame-p
           (switch-to-buffer buf)))
      (t
-      (ansi-term "/bin/bash")))))
+      (ansi-term my-term-program)))))
 
 (defun switch-to-shell-or-ansi-term ()
   (interactive)

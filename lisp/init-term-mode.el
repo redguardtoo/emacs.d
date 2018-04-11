@@ -9,9 +9,9 @@
 (ad-activate 'term-sentinel)
 
 ;; always use bash
-(defvar my-term-shell "/bin/bash")
+(defvar my-term-program "/bin/bash")
 (defadvice ansi-term (before force-bash)
-  (interactive (list my-term-shell)))
+  (interactive (list my-term-program)))
 (ad-activate 'ansi-term)
 
 ;; utf8
@@ -48,7 +48,7 @@
   (interactive)
   (term-send-raw-string "\C-k"))
 
-(setq multi-term-program "/bin/bash")
+(setq multi-term-program my-term-program)
 ;; check `term-bind-key-alist' for key bindings
 (eval-after-load 'multi-term
   '(progn
