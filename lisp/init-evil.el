@@ -463,6 +463,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "fp" 'cp-fullpath-of-current-buffer
        "dj" 'dired-jump ;; open the dired from current file
        "xd" 'ido-dired
+       "xo" 'ace-window
        "ff" 'toggle-full-window ;; I use WIN+F in i3
        "ip" 'find-file-in-project
        "jj" 'find-file-in-project-at-point
