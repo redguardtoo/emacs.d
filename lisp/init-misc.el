@@ -928,6 +928,20 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
+;; {{
+(add-to-list 'auto-mode-alist '("\\.adoc\\'" . adoc-mode))
+(defun adoc-imenu-index ()
+  (let* ((patterns '((nil "^=\\([= ]*[^=\n\r]+\\)" 1))))
+    (save-excursion
+      (imenu--generic-function patterns))))
+
+(defun adoc-mode-hook-setup ()
+  ;; don't wrap lines because there is table in `adoc-mode'
+  (setq truncate-lines t)
+  (setq imenu-create-index-function 'adoc-imenu-index))
+(add-hook 'adoc-mode-hook 'adoc-mode-hook-setup)
+;; }}
+
 ;; ;; useless and hard to debug
 ;; (defun optimize-emacs-startup ()
 ;;   "Speedup emacs startup by compiling."
