@@ -36,7 +36,6 @@
   (let* ((fontfaces (get-text-property pos 'face)))
     (when (not (listp fontfaces))
       (setf fontfaces (list fontfaces)))
-    (message "fontfaces=%s" fontfaces)
     (delq nil
           (mapcar (lambda (f)
                     (member f fonts))

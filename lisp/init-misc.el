@@ -928,16 +928,17 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
-(defun optimize-emacs-startup ()
-  "Speedup emacs startup by compiling."
-  (interactive)
-  (let* ((dir (file-truename "~/.emacs.d/lisp/"))
-         (files (directory-files dir)))
-    (load (file-truename "~/.emacs.d/init.el"))
-    (dolist (f files)
-      (when (string-match-p ".*\.el$" f)
-        (let* ((default-directory dir))
-          (byte-compile-file (file-truename f) t))))))
+;; ;; useless and hard to debug
+;; (defun optimize-emacs-startup ()
+;;   "Speedup emacs startup by compiling."
+;;   (interactive)
+;;   (let* ((dir (file-truename "~/.emacs.d/lisp/"))
+;;          (files (directory-files dir)))
+;;     (load (file-truename "~/.emacs.d/init.el"))
+;;     (dolist (f files)
+;;       (when (string-match-p ".*\.el$" f)
+;;         (let* ((default-directory dir))
+;;           (byte-compile-file (file-truename f) t))))))
 
 ;; random color theme
 (defun random-color-theme ()
