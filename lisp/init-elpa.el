@@ -23,7 +23,7 @@
     js-doc
     jss ; remote debugger of browser
     ;; {{ since stable v0.9.1 released, we go back to stable version
-    ;; ivy
+    ivy ; stable counsel dependent unstable ivy
     ;; counsel
     ;; swiper
     ;; }}
