@@ -48,6 +48,8 @@
   ;; wxWidgets setup
   (c-set-offset 'topmost-intro-cont 'c-wx-lineup-topmost-intro-cont)
 
+  (add-to-list 'imenu-generic-expression '(nil "^DEFUN *(\"\\([a-zA-Z0-9-]+\\)" 1))
+
   ;; make a #define be left-aligned
   (setq c-electric-pound-behavior (quote (alignleft)))
 
