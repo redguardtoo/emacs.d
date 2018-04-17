@@ -190,7 +190,7 @@ You may set it to nil to disable re-ordering for performance reason."
   :group 'counsel-etags
   :type 'boolean)
 
-(defcustom counsel-etags-max-file-size 64
+(defcustom counsel-etags-max-file-size 512
   "Ignore files bigger than `counsel-etags-max-file-size' kilobytes."
   :group 'counsel-etags
   :type 'integer)
