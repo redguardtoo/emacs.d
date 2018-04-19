@@ -337,6 +337,4 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       )))
 
 ;; }}
-
-
 (provide 'init-utils)
