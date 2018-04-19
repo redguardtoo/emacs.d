@@ -346,7 +346,7 @@ If WIN-NUM is provided (via prefix in C-u), kill the buffer in window numbered W
 
 Used for killing temporary/auto buffers like *help*, *manual* .etc, also useful
 in kill buffer in other window while keeping window split untouched."
-  (interactive "p")
+  (interactive "P")
   (let ((tgt-win)
         (cur-buf-name (buffer-name))
         (cur-win (selected-window)))
