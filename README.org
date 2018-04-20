@@ -275,6 +275,8 @@ Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing ",q
 You can specify the ignore regex like =!keyword1= in =ivy=. If you want to ignore multiple keywords, you *must* use syntax like =!keyword1\|!keyword2=. As I tested in counsel v0.9.1, non of its grep commands supports ignore syntax *reliably*. So I suggest using =counsel-etags-grep= instead.
 ** Hydra/Swiper/Counsel/Ivy
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
+
+You can input =:keyword= in ivy UI to search by Chinese Pinyin.
 ** js2-mode
 I release patched =js2-mode= based on [[https://github.com/mooz/js2-mode][latest official version]] every three months. My patched version has better imenu support.
 

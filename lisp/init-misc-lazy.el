@@ -437,11 +437,6 @@ Including indent-buffer, which should not be called automatically on save."
    (savehist-mode 1)))
 ;; }}
 
-;; {{emms
-(require 'emms-setup)
-(emms-all)
-(emms-default-players)
-;; }}
 (provide 'init-misc-lazy)
 ;;; init-misc-lazy.el ends here
 
