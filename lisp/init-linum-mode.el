@@ -45,7 +45,11 @@
              ad-do-it))
 (ad-activate 'linum-on)
 
-;; updated line number every second
+;; update line number every second so `linum-mode' won't slow down Emacs
+;; @see https://lists.gnu.org/archive/html/bug-gnu-emacs/2013-04/msg00577.html
+;; package like `nlinum-mode' has better performance but `git-gutter' is dependent
+;; on `linum-mode'.
+;; So we have to use `linum-mode'.
 (setq linum-delay t)
 (defadvice linum-schedule (around my-linum-schedule () activate)
   (run-with-idle-timer 1 nil #'linum-update-current))
