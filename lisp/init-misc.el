@@ -1003,4 +1003,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                          emms-player-vlc-playlist))
 ;; }}
 
+(global-hl-todo-mode)
+
 (provide 'init-misc)
