@@ -45,7 +45,8 @@
 Note git option `-C' track text copied elsewhere,
 `-M' tracked moved content inside file.
 See https://www.kernel.org/pub/software/scm/git/docs/git-blame.html"
-  (format "blame -C -M -w -L %d,+1 --porcelain %s" line-num file))
+  ;; @see https://stackoverflow.com/questions/15769298/git-blame-correct-author-after-merge
+  (format "blame -C -M -w -L %d,+1 --porcelain %s --no-merges" line-num file))
 
 ;;;###autoload
 (defun vc-msg-git-execute (file line-num)
