@@ -972,18 +972,21 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (defun switch-to-ansi-term ()
   (interactive)
-  (let* ((buf (get-buffer "*ansi-term*"))
+  (let* ((buf-name (if *win64* "*shell*" "*ansi-term"))
+         (buf (get-buffer buf-name))
          (wins (window-list))
          current-frame-p)
     (cond
      ((buffer-live-p buf)
       (dolist (win wins)
-        (when (string= (buffer-name (window-buffer win)) "*ansi-term*")
+        (when (string= (buffer-name (window-buffer win)) buf-name)
           (when (window-live-p win)
             (setq current-frame-p t)
             (select-window win))))
       (unless current-frame-p
           (switch-to-buffer buf)))
+     (*win64*
+        (shell))
      (t
       (ansi-term my-term-program)))))
 
