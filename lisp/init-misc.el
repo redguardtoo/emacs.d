@@ -81,8 +81,8 @@
 (defun my-git-versions ()
   (let* ((git-cmd (concat "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an' "
                           buffer-file-name)))
-    (nconc (split-string (shell-command-to-string "git branch --no-color --all") "\n" t)
-           (split-string (shell-command-to-string git-cmd) "\n" t))))
+    (nconc (nonempty-lines (shell-command-to-string "git branch --no-color --all"))
+           (nonempty-lines (shell-command-to-string git-cmd)))))
 
 
 (setq ffip-match-path-instead-of-filename t)
@@ -459,14 +459,16 @@ See \"Reusing passwords for several connections\" from INFO.
 ;; {{ music
 (defun mpc-which-song ()
   (interactive)
-  (let ((msg (car (split-string (shell-command-to-string "mpc") "\n+"))))
+  (let ((msg (car (nonempty-lines (shell-command-to-string "mpc")))))
     (message msg)
     (copy-yank-str msg)))
 
 (defun mpc-next-prev-song (&optional prev)
   (interactive)
-  (message (car (split-string (shell-command-to-string
-                               (concat "mpc " (if prev "prev" "next"))) "\n+"))))
+  (message (car (nonempty-lines (shell-command-to-string
+                                 (concat "mpc "
+                                         (if prev "prev" "next")))))))
+
 (defun lyrics()
   "Prints the lyrics for the current song"
   (interactive)
@@ -765,7 +767,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (let* ((str (if (region-active-p) (my-selected-str)
                 (my-buffer-str)))
          (total-hours 0)
-         (lines (split-string str "\n")))
+         (lines (nonempty-lines str)))
     (dolist (l lines)
       (if (string-match " \\([0-9][0-9.]*\\)h[ \t]*$" l)
           (setq total-hours (+ total-hours (string-to-number (match-string 1 l))))))

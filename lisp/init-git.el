@@ -184,6 +184,11 @@
                   target-linenum target-line)
           target-linenum)))
 
+(defun my-git-comment-amend-and-reuse-message ()
+  (interactive)
+  (let* ((s (shell-command-to-string "git --no-pager commit --amend --reuse-message=HEAD") ))
+    (message (nth 0 (nonempty-lines s)))))
+
 (defun my-goto-git-gutter ()
   (interactive)
   (if git-gutter:diffinfos

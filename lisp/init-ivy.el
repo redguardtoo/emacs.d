@@ -1,5 +1,5 @@
 (require 'counsel)
-;; (ivy-mode 1)
+(ivy-mode 1) ;; magit needs this
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
 (global-set-key (kbd "C-c C-r") 'ivy-resume)
@@ -195,7 +195,7 @@ Or else, find files since 24 weeks (6 months) ago."
                               (mapcar 'file-name-directory recentf-list)
                               ;; fasd history
                               (if (executable-find "fasd")
-                                  (split-string (shell-command-to-string "fasd -ld") "\n" t))))))
+                                  (nonempty-lines (shell-command-to-string "fasd -ld")))))))
     (ivy-read "directories:" cands :action 'dired)))
 
 (defun ivy-occur-grep-mode-hook-setup ()

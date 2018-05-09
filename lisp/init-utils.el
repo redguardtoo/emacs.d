@@ -24,6 +24,9 @@
     (split-string (buffer-string) "\n" t)))
 ;; }}
 
+(defun nonempty-lines (s)
+  (split-string s "[\r\n]+" t))
+
 ;; Handier way to add modes to auto-mode-alist
 (defun add-auto-mode (mode &rest patterns)
   "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."

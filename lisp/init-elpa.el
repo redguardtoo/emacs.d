@@ -88,6 +88,7 @@
     erlang
     workgroups2
     zoutline
+    magit
     company-c-headers
     company-statistics)
   "Packages to install from melpa-unstable.")
@@ -312,6 +313,7 @@
 (require-package 'auto-package-update)
 (require-package 'keyfreq)
 (require-package 'adoc-mode) ; asciidoc files
+(require-package 'magit)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24* (require-package 'color-theme))
 (when *emacs25*
