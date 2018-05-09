@@ -314,7 +314,10 @@
 (require-package 'adoc-mode) ; asciidoc files
 (require-package 'magit)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
-(when *emacs24* (require-package 'color-theme))
+(when *emacs24*
+  (require-package 'color-theme)
+  ;; emms v5.0 need seq
+  (require-package 'seq))
 (when *emacs25*
   (require-package 'zenburn-theme)
   (require-package 'color-theme-sanityinc-solarized)
