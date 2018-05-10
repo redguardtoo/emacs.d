@@ -1,18 +1,16 @@
 * Features
-- Efficient. Startup time is *less than one second*
-- Robust. Emacs will never crash after a full package upgrade
+- Efficient. Emacs starts up in *one second*
+- Robust. Emacs will never crash after a full package upgrade. You can install packages without network
 - Support Windows. You won't get inferior performance on Windows
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
-- Robust, you can install packages without network access
-- Popular programming languages are supported, C/C++/Java/Ruby/Perl/Python/C#/Lua/Javascript ...
 * Checklist
 - Tested with Emacs 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/macOS
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
-- Please read section "About Emacs 23" if you uses Emacs 23.4
+- Emacs 24 support will be dropped on 2019. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
 * Installation
 Most users should follow the section "Install in normal way".
@@ -454,25 +452,28 @@ I also manually download and extract some packages into =~/.emacs.d/site-lisp/=.
 My own snippets is at =~/.emacs.d/snippets=.
 
 Other directories don't matter.
-** About Emacs 23
+* Support legacy Emacs versions
+** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
 
 Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section =Install stable version in easiest way= but skip the download steps
-** About Emacs 24.3
+** Emacs 24.3
 Version 2.6 is the last version to support =Emacs 24.3=.
 
 Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.6.zip]] and you are good to go.
+** Emacs 24.4 and 24.5
+Support will be dropped on 2019
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 - You can run =optimize-emacs-startup= to compile "*.el" under =~/.emacs.d/lisp/=
 * Report bug
-- Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first to find a solution
-- If your issue is still NOT resolved, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs, reproduce the issue
-- Send the error messages to the original developer if it's third party package issue
-- If you are *sure* it's my issue, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me directly!
+- Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first
+- If the issue is still NOT resolved, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue
+- Send error messages to the original developer if it's third party package issue
+- If you are *sure* it's my issue, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
 Bug report should include details (OS, Emacs version ...).
