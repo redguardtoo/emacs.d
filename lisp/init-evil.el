@@ -695,7 +695,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "gau" 'magit-stage-modified
        "gcc" 'magit-commit-popup
        "gca" 'magit-commit-amend
-       "gja" 'my-git-comment-amend-and-reuse-message
+       "gja" 'magit-commit-extend
        "gtt" 'magit-stash
        "gta" 'magit-stash-apply
        "gv" 'git-gutter:set-start-revision
