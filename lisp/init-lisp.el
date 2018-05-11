@@ -42,15 +42,6 @@
                                       ibuffer-do-view-and-eval)
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-;; ----------------------------------------------------------------------------
-;; Highlight current sexp
-;; ----------------------------------------------------------------------------
-;; Prevent flickery behaviour due to hl-sexp-mode unhighlighting before each command
-(eval-after-load 'hl-sexp
-  '(defadvice hl-sexp-mode (after unflicker (turn-on) activate)
-     (when turn-on
-       (remove-hook 'pre-command-hook #'hl-sexp-unhighlight))))
-
 (defun my-swap-sexps (&optional num)
   "Swap two lisp sexps."
   (interactive "P")
