@@ -205,6 +205,7 @@ Or else, find files since 24 weeks (6 months) ago."
   (column-number-mode -1)
   ;; turn on wgrep right now
   ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
+  (local-set-key (kbd "RET") #'ivy-occur-press-and-switch)
   )
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
