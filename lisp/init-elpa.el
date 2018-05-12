@@ -322,9 +322,9 @@
   (require-package 'color-theme-sanityinc-solarized)
   (require-package 'color-theme-sanityinc-tomorrow)
   (require-package 'monokai-theme)
-  (require-package 'molokai-theme)
+  (require-package 'molokai-theme) ; recommended
   (require-package 'moe-theme)
-  (require-package 'cyberpunk-theme)
+  (require-package 'cyberpunk-theme) ; recommended
   (require-package 'ample-theme)
   (require-package 'gotham-theme)
   (require-package 'gruvbox-theme)
@@ -335,7 +335,8 @@
   (require-package 'ample-zen-theme)
   (require-package 'flatland-theme)
   (require-package 'clues-theme)
-  (require-package 'darkburn-theme)
+  (require-package 'darkburn-theme) ; recommended
+  (require-package 'dracula-theme) ; recommended
   (require-package 'soothe-theme)
   (require-package 'dakrone-theme)
   (require-package 'busybee-theme)
