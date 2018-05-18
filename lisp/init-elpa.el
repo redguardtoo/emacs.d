@@ -69,7 +69,6 @@
     idomenu
     buffer-move
     regex-tool
-    quack
     legalese
     htmlize
     scratch
@@ -281,7 +280,6 @@
 ;; (require-package 'git-gutter) ; use my patched version
 (require-package 'flx-ido)
 (require-package 'neotree)
-(require-package 'quack) ; for scheme
 (require-package 'hydra)
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'pyim)
