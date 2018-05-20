@@ -66,6 +66,11 @@
   "Return the directory in which the `LIBRARY-NAME' load file is found."
   (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
+(defun path-in-directory-p (file directory)
+  "FILE is in DIRECTORY."
+  (let* ((pattern (concat "^" (file-name-as-directory directory))))
+    (if (string-match-p pattern file) file)))
+
 (defmacro my-select-from-kill-ring (fn &optional n)
   "Use `browse-kill-ring' if it exists and N is 1.
 If N > 1, assume just yank the Nth item in `kill-ring'.

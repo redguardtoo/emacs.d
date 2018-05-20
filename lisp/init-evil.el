@@ -480,7 +480,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ic" 'my-imenu-comments
        "epy" 'emmet-expand-yas
        "epl" 'emmet-expand-line
-       "rd" 'evilmr-replace-in-defun
+       "rv" 'evilmr-replace-in-defun
        "rb" 'evilmr-replace-in-buffer
        "ts" 'evilmr-tag-selected-region ;; recommended
        "tua" 'artbollocks-mode
@@ -561,7 +561,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xc" 'save-buffers-kill-terminal
        "rr" 'my-counsel-recentf
        "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
-       "rf" 'counsel-recent-dir
+       "rd" 'counsel-recent-directory
        "da" 'diff-region-tag-selected-as-a
        "db" 'diff-region-compare-with-b
        "di" 'evilmi-delete-items

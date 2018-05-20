@@ -20,7 +20,7 @@ _q_uit
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
-  ("d" counsel-recent-dir)
+  ("d" counsel-recent-directory)
   ("C" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
   ("t" ansi-term)

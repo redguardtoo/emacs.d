@@ -21,17 +21,23 @@
                       (read-string hint)))))
     keyword))
 
-(defun my-counsel-recentf ()
-  "Find a file on `recentf-list'."
-  (interactive)
+(defun my-counsel-recentf (&optional n)
+  "Find a file on `recentf-list'.
+If N is not nil, only list files in current project."
+  (interactive "P")
   (require 'recentf)
   (recentf-mode)
-  (ivy-read "Recentf: " (mapcar #'substring-no-properties recentf-list)
-            :initial-input (if (region-active-p) (my-selected-str))
-            :action (lambda (f)
-                      (with-ivy-window
-                       (find-file f)))
-            :caller 'counsel-recentf))
+  (let* ((files (mapcar #'substring-no-properties recentf-list))
+         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
+    (when (and n root-dir)
+      (setq files (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) files))))
+    (ivy-read "Recentf: "
+              files
+              :initial-input (if (region-active-p) (my-selected-str))
+              :action (lambda (f)
+                        (with-ivy-window
+                          (find-file f)))
+              :caller 'counsel-recentf)))
 
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint no-keyword)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
@@ -186,16 +192,20 @@ Or else, find files since 24 weeks (6 months) ago."
                           (kill-new val)
                           (message "%s => kill-ring" val)))))
 
-(defun counsel-recent-dir ()
-  "Goto recent directories."
-  (interactive)
+(defun counsel-recent-directory (&optional n)
+  "Goto recent directories.
+If N is not nil, only list directories in current project."
+  (interactive "P")
   (unless recentf-mode (recentf-mode 1))
   (let* ((cands (delete-dups
                       (append my-dired-directory-history
                               (mapcar 'file-name-directory recentf-list)
                               ;; fasd history
                               (if (executable-find "fasd")
-                                  (nonempty-lines (shell-command-to-string "fasd -ld")))))))
+                                  (nonempty-lines (shell-command-to-string "fasd -ld"))))))
+         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
+    (when (and n root-dir)
+      (setq cands (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) cands))))
     (ivy-read "directories:" cands :action 'dired)))
 
 (defun ivy-occur-grep-mode-hook-setup ()
