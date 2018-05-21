@@ -125,11 +125,9 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
       )
 
 ;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
-(setq org-refile-targets (quote ((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))))
-;; Targets start with the file name - allows creating level 1 tasks
-(setq org-refile-use-outline-path (quote file))
-;; Targets complete in steps so we start with filename, TAB shows the next level of targets etc
-(setq org-outline-path-complete-in-steps t)
+(setq org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))
+(setq org-refile-use-outline-path 'file)
+(setq org-outline-path-complete-in-steps nil)
 
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
