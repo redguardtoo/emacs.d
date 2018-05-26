@@ -62,7 +62,7 @@ You can install them in any way you like. But using =OS package manager= is easi
 - [[https://github.com/mxcl/homebrew][homebrew]] at macOS
 - any package manager at Linux (=apt-get= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
-If the program is developed with certain programming language. That language may provide its own package manager which allows you install the program for only current user. For example, python package manager has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
+If the program is developed with certain programming language. That language may provide its own package manager which allows you to install the program only for current user. For example, python package manager has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
 *** List of command line programs
 These programs are *OPTIONAL*.
 
@@ -352,10 +352,10 @@ Here are the steps to change their values:
 - You will find =~/.emacs.d/lisp/init-company.el= and modify =company-clang-insert-argument=
 
 BTW, please *read my comments* above the code at first.
-** Open/Save file with Ido
-[[http://emacswiki.org/emacs/InteractivelyDoThings][Ido]] shows the suggestions when you open/save files.
+** Open/Save file with Counsel/Ivy
+Keep pressing =C-M-j= to ignore candidates and open/save files using current input.
 
-Keep pressing =C-f= to ignore suggestions.
+You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
 I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But native windows version is OK if it knows how to find the third party command line programs. Cygwin provides most of them by default. Please add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the program automatically.
 

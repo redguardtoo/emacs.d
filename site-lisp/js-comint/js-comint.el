@@ -214,8 +214,8 @@ Return a string representing the node version."
    ((not js-comint-module-paths)
     (message "`js-comint-module-paths' is empty."))
    (t
-    (let* ((dir (ido-completing-read "Directory to delete: "
-                                     js-comint-module-paths)))
+    (let* ((dir (completing-read "Directory to delete: "
+                                 js-comint-module-paths)))
       (when dir
         (setq js-comint-module-paths
               (delete dir js-comint-module-paths))

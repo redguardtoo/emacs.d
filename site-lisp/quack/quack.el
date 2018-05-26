@@ -4111,7 +4111,7 @@ Can be used in your `~/.emacs' file something like this:
   ;; Steal any find-file bindings.
   (when quack-remap-find-file-bindings-p
     (quack-locally-steal-key-bindings 'find-file     'quack-find-file)
-    (quack-locally-steal-key-bindings 'ido-find-file 'quack-find-file))
+    (quack-locally-steal-key-bindings 'counsel-find-file 'quack-find-file))
 
   ;; Fight against tabs.
   (when quack-tabs-are-evil-p

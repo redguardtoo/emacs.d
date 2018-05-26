@@ -94,7 +94,6 @@
   ;; actually, I don't know which major-mode use flyspell.
   (require-init 'init-spelling)
   (require-init 'init-gui-frames)
-  (require-init 'init-ido)
   (require-init 'init-uniquify)
   (require-init 'init-ibuffer)
   (require-init 'init-git)

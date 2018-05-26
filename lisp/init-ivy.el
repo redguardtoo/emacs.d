@@ -314,4 +314,22 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
       '((t . re-builder-pinyin)))
 ;; }}
 
+;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
+;; press "M-o" to choose ivy action
+(ivy-set-actions
+ 'counsel-find-file
+ '(("j" find-file-other-frame "other frame")
+   ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+   ("x" counsel-find-file-extern "open externally")
+   ("d" delete-file "delete")
+   ("r" counsel-find-file-as-root "open as root")))
+
+;; set actions when running C-x b
+;; replace "frame" with window to open in new window
+(ivy-set-actions
+ 'ivy-switch-buffer-by-pinyin
+ '(("j" switch-to-buffer-other-frame "other frame")
+   ("k" kill-buffer "kill")
+   ("r" ivy--rename-buffer-action "rename")))
+
 (provide 'init-ivy)

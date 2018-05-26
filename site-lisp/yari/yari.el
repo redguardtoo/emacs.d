@@ -107,7 +107,7 @@
   (interactive (list nil current-prefix-arg))
   (let ((completing-read-func (if (null ido-mode)
                                   'completing-read
-				'ido-completing-read)))
+				'completing-read)))
     (setq ri-topic (or ri-topic
                        (funcall completing-read-func
 				"yari: "
