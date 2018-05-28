@@ -641,7 +641,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xf" 'counsel-find-file
        "xb" 'ivy-switch-buffer-by-pinyin
        "xh" 'mark-whole-buffer
-       "xk" 'counsel-kill-buffer
+       "xk" 'kill-buffer
        "xs" 'save-buffer
        "xz" 'switch-to-shell-or-ansi-term
        "vm" 'vc-rename-file-and-buffer
