@@ -279,24 +279,31 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
 
 (defun my-gclip ()
   (unless (featurep 'simpleclip) (require 'simpleclip))
-  (if simpleclip-works (simpleclip-get-contents)
-    (cond
-     ((eq system-type 'darwin)
+  (cond
+   (simpleclip-works
+    (simpleclip-get-contents))
+   ((eq system-type 'darwin)
+    (with-output-to-string
+      (with-current-buffer standard-output
+        (call-process "/usr/bin/pbpaste" nil t nil "-Prefer" "txt"))))
+   ((eq system-type 'cygwin)
+    (with-output-to-string
+      (with-current-buffer standard-output
+        (call-process "getclip" nil t nil))))
+   ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
+    (let* ((powershell-program (executable-find "powershell.exe")))
       (with-output-to-string
         (with-current-buffer standard-output
-          (call-process "/usr/bin/pbpaste" nil t nil "-Prefer" "txt"))))
-     ((eq system-type 'cygwin)
-      (with-output-to-string
-        (with-current-buffer standard-output
-          (call-process "getclip" nil t nil))))
-     ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-      (with-output-to-string
-        (with-current-buffer standard-output
-          (call-process "xsel" nil t nil "--clipboard" "--output")))))))
+          (cond
+           (powershell-program
+            (call-process powershell-program nil t nil "-command" "Get-Clipboard"))
+           (t
+            (call-process "xsel" nil t nil "--clipboard" "--output")))))))))
 
 (defun my-pclip (str-val)
-  (if simpleclip-works (simpleclip-set-contents str-val)
     (cond
+     (simpleclip-works
+      (simpleclip-set-contents str-val))
      ((eq system-type 'darwin)
       (with-temp-buffer
         (insert str-val)
@@ -306,9 +313,15 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
         (insert str-val)
         (call-process-region (point-min) (point-max) "putclip")))
      ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-      (with-temp-buffer
-        (insert str-val)
-        (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input"))))))
+      (let* ((win64-clip-program (executable-find "clip.exe")))
+        (with-temp-buffer
+          (insert str-val)
+          (cond
+           ;; linux sub-system on Windows 10
+           (win64-clip-program
+            (call-process-region (point-min) (point-max) win64-clip-program))
+           (t
+            (call-process-region (point-min) (point-max) "xsel" nil nil nil "--clipboard" "--input"))))))))
 ;; }}
 
 (defun make-concated-string-from-clipboard (concat-char)
