@@ -128,6 +128,11 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
 (setq org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5)))
 (setq org-refile-use-outline-path 'file)
 (setq org-outline-path-complete-in-steps nil)
+(defadvice org-refile (around org-refile-hack activate)
+  ;; when `org-refile' scanning org files, disable user's org-mode hooks
+  (let* ((force-buffer-file-temp-p t))
+    ad-do-it))
+
 
 (setq org-todo-keywords
       (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
@@ -169,27 +174,28 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
      (setq org-src-fontify-natively t)))
 
 (defun org-mode-hook-setup ()
-  (setq evil-auto-indent nil)
-  ;; org-mode's own flycheck will be loaded
-  (enable-flyspell-mode-conditionally)
+  (unless (is-buffer-file-temp)
+    (setq evil-auto-indent nil)
+    ;; org-mode's own flycheck will be loaded
+    (enable-flyspell-mode-conditionally)
 
-  ;; but I don't want to auto spell check when typing,
-  ;; please comment out `(flyspell-mode -1)` if you prefer auto spell check
-  (flyspell-mode -1)
+    ;; No auto spell check during Emacs startup
+    ;; please comment out `(flyspell-mode -1)` if you prefer auto spell check
+    (flyspell-mode -1)
 
-  ;; for some reason, org8 disable odt export by default
-  (add-to-list 'org-export-backends 'odt)
-  ;; (add-to-list 'org-export-backends 'org) ; for org-mime
+    ;; for some reason, org8 disable odt export by default
+    (add-to-list 'org-export-backends 'odt)
+    ;; (add-to-list 'org-export-backends 'org) ; for org-mime
 
-  ;; org-mime setup, run this command in org-file, than yank in `message-mode'
-  (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
+    ;; org-mime setup, run this command in org-file, than yank in `message-mode'
+    (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
 
-  ;; don't spell check double words
-  (setq flyspell-check-doublon nil)
+    ;; don't spell check double words
+    (setq flyspell-check-doublon nil)
 
-  ;; display wrapped lines instead of truncated lines
-  (setq truncate-lines nil)
-  (setq word-wrap t))
+    ;; display wrapped lines instead of truncated lines
+    (setq truncate-lines nil)
+    (setq word-wrap t)))
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
