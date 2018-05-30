@@ -72,6 +72,7 @@
 (autoload 'eacl-complete-snippet "eacl" "")
 (autoload 'eacl-complete-tag "eacl" "")
 (autoload 'dropdown-list "dropdown-list" "")
+(autoload 'magit-commit-popup "magit" "")
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here
