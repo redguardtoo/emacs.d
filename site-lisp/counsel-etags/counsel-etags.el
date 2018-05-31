@@ -117,7 +117,9 @@
     "tags"
     "TAGS"
     ;; compressed
+    "*.tgz"
     "*.gz"
+    "*.xz"
     "*.zip"
     "*.tar"
     "*.rar"
@@ -147,8 +149,11 @@
     "*.odt"
     ;; C/C++
     "*.obj"
+    "*.so"
     "*.o"
     "*.a"
+    "*.ifso"
+    "*.tbd"
     "*.dylib"
     "*.lib"
     "*.d"
