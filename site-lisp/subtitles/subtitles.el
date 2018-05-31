@@ -151,6 +151,25 @@ You could narrow down region at first"
        (srt-mult-subtitles 1.042709376))
 
 
+(defun srt-convert-ssa-to-srt ()
+  "Convert a .ssa file to an .srt format."
+;; .sub (microdvd) format is:
+;; {start-frame}{stop-frame}line1_text|line2_text
+  (interactive)
+       (let ((svd-pos (point-marker))              ;; saved position
+             (NEW 1)                               ;; subtitle number
+             strt stop text)
+           (goto-char (point-min))
+           (while (re-search-forward "^\\([0-9]+:[0-9]+:[0-9.]+\\),\\([0-9]+:[0-9]+:[0-9.]+\\),.*,\\([^,]+\\)$"
+nil t)   ;; search for next
+               (setq strt (match-string 1))
+               (setq stop (match-string 2))
+               (setq text (match-string 3))
+               (srt-time-string-replace NEW strt stop)
+               (insert "\n" text "\n")
+               (setq NEW (1+ NEW)))
+           (goto-char svd-pos)))
+
 (defun srt-convert-sub-to-srt (fps)
   "Convert a .sub file (microdvd) to an .srt format.
 1 arg: FPS - frames per second."
