@@ -294,14 +294,18 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (with-current-buffer standard-output
         (call-process "getclip" nil t nil))))
    ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-    (let* ((powershell-program (executable-find "powershell.exe")))
-      (with-output-to-string
-        (with-current-buffer standard-output
-          (cond
-           (powershell-program
-            (call-process powershell-program nil t nil "-command" "Get-Clipboard"))
-           (t
-            (call-process "xsel" nil t nil "--clipboard" "--output")))))))))
+    (let* ((powershell-program (executable-find "powershell.exe"))
+           (cond
+            (powershell-program
+             ;; PowerLine adds extra white space character at the end of text
+             (string-trim-right
+              (with-output-to-string
+                (with-current-buffer standard-output
+                  (call-process powershell-program nil t nil "-command" "Get-Clipboard")))))
+            (t
+             (with-output-to-string
+               (with-current-buffer standard-output
+                 (call-process "xsel" nil t nil "--clipboard" "--output"))))))))))
 
 (defun my-pclip (str-val)
     (cond
@@ -320,7 +324,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
         (with-temp-buffer
           (insert str-val)
           (cond
-           ;; linux sub-system on Windows 10
+           ;; Linux Subsystem on Windows 10
            (win64-clip-program
             (call-process-region (point-min) (point-max) win64-clip-program))
            (t
@@ -357,8 +361,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (local-set-key (kbd "C-c C-c")
                      (lambda ()
                        (interactive)
-                       (diff-region-exit-from-certain-buffer ,buffer-name)))
-      )))
+                       (diff-region-exit-from-certain-buffer ,buffer-name))))))
 
 ;; }}
 (provide 'init-utils)
