@@ -294,7 +294,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (with-current-buffer standard-output
         (call-process "getclip" nil t nil))))
    ((memq system-type '(gnu gnu/linux gnu/kfreebsd))
-    (let* ((powershell-program (executable-find "powershell.exe"))
+    (let* ((powershell-program (executable-find "powershell.exe")))
            (cond
             (powershell-program
              ;; PowerLine adds extra white space character at the end of text
@@ -305,7 +305,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
             (t
              (with-output-to-string
                (with-current-buffer standard-output
-                 (call-process "xsel" nil t nil "--clipboard" "--output"))))))))))
+                 (call-process "xsel" nil t nil "--clipboard" "--output")))))))))
 
 (defun my-pclip (str-val)
     (cond
