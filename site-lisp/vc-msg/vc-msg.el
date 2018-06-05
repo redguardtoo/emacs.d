@@ -80,11 +80,20 @@ A string like 'git' or 'svn' to lookup `vc-msg-plugins'."
 
 (defcustom vc-msg-known-vcs
   '(("p4" . (let* ((output (shell-command-to-string "p4 client -o"))
+                   (git-root-dir (locate-dominating-file default-directory ".git"))
                    (root-dir (if (string-match "^Root:[ \t]+\\(.*\\)" output)
                                  (match-string 1 output))))
+              (if git-root-dir (setq git-root-dir
+                                     (file-truename (file-name-as-directory git-root-dir))))
+
+              (if root-dir (setq root-dir
+                                 (file-truename (file-name-as-directory root-dir))))
               ;; 'p4 client -o' has the parent directory of `buffer-file-name'
               (and root-dir
-                   (string-match-p (format "^%s" root-dir) buffer-file-name))))
+                   (string-match-p (format "^%s" root-dir) buffer-file-name)
+                   (or (not git-root-dir)
+                       ;; use `git-p4', git root same as p4 client root
+                       (> (length git-root-dir) (length root-dir))))))
     ("svn" . ".svn")
     ("hg" . ".hg")
     ("git" . ".git"))
@@ -174,8 +183,7 @@ and is a blackbox to 'vc-msg.el'."
    (t
     ;; or some "smart" algorithm will figure out the correct VCS
     (if (listp vc-msg-known-vcs)
-        (cl-some #'vc-msg-match-plugin
-                 vc-msg-known-vcs)))))
+        (cl-some #'vc-msg-match-plugin vc-msg-known-vcs)))))
 
 (defun vc-msg-find-plugin ()
   "Find plugin automatically using `vc-msg-plugins'."
