@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 1.1.2
+;; Version: 1.1.3
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -80,8 +80,9 @@
 ;;                                   "*.log"))
 ;;                        (add-to-list 'grep-find-ignored-files v)))))))
 ;;
-;; GNU Grep v3.1+, Emacs v24.3 and Ivy (https://github.com/abo-abo/swiper)
-;; are required.
+;; Emacs v24.3 and Ivy (https://github.com/abo-abo/swiper) are required.
+;; GNU Grep v3.1+ is optionally required for multi-line completion.
+;; "git grep" is automatically detected for single line completion.
 ;;
 ;; On macOS:
 ;;   - Use HomeBrew (https://brew.sh/) to install latest GNU Grep on macOS
@@ -271,6 +272,30 @@ Candidates same as KEYWORD in current file is excluded."
                       cands))
   (delq nil (delete-dups cands)))
 
+(defun eacl-git-p (path)
+  "Return non-nil if PATH is in a git repository."
+  (zerop (call-process "git" nil nil nil "ls-files" "--error-unmatch" path)))
+
+(defun eacl-search-command (search-regex multiline-p)
+  "Return a shell command that will search for SEARCH-REGEX in PATH."
+  (cond
+   (multiline-p
+    ;; Without `-z` multi-line grep will fail.
+    ;; The side-effect of `-z` is the we basically can't get line number
+    ;; The best algorithm is remove any match in current file
+    (format "%s -rszonI --null %s -- \"%s\" ."
+            eacl-grep-program
+            (eacl-grep-exclude-opts)
+            search-regex))
+   ;; git-grep does not support multiline searches.
+   ((and (buffer-file-name) (eacl-git-p (buffer-file-name)))
+    (format "git grep -h --untracked \"%s\"" search-regex))
+   (t
+    (format "%s -rshI %s -- \"%s\" ."
+            eacl-grep-program
+            (eacl-grep-exclude-opts)
+            search-regex))))
+
 (defun eacl-complete-line-or-statement (regex keyword &optional extra)
   "Complete line or statement according to REGEX.
 If REGEX is nil, we only complete single line.
@@ -279,17 +304,13 @@ KEYWORD is used to grep.
 EXTRA is optional information to filter candidates."
   (let* ((default-directory (or (funcall eacl-project-root-callback) default-directory))
          (quoted-keyword (eacl-shell-quote-argument keyword))
-         ;; Without `-z` multi-line grep will fail.
-         ;; The side-effect of `-z` is the we basically can't get line number
-         ;; The best algorithm is remove any match in current file
-         (cmd (format (if regex "%s -rszonI %s -- \"%s\" *" "%s -rshI %s -- \"%s\" *")
-                      eacl-grep-program
-                      (eacl-grep-exclude-opts)
-                      (if regex (concat quoted-keyword regex) quoted-keyword)))
+         (search-regex (if regex (concat quoted-keyword regex) quoted-keyword))
+         (cmd (eacl-search-command search-regex regex))
          ;; Grep option "-z" outputs null character at the end of each candidate
          (sep (if regex "\x0" "[\r\n]+"))
          (orig-collection (eacl-get-candidates cmd sep keyword))
          (collection (eacl-clean-candidates orig-collection))
+         (time (current-time))
          (rlt t))
 
     (when extra
@@ -315,7 +336,8 @@ EXTRA is optional information to filter candidates."
         ;; uniq
         (when regex
           (setq collection (mapcar 'eacl-multiline-candidate-summary collection)))
-        (ivy-read "candidates:"
+        (ivy-read (format "candidates (%.01f seconds):"
+                          (float-time (time-since time)))
                   collection
                   :action (lambda (l)
                             (if (consp l) (setq l (cdr l)))
