@@ -53,7 +53,10 @@
 ;; people are forced use subversion or hg, so they take priority
 (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
 
-(git-gutter:linum-setup)
+(unless (fboundp 'global-display-line-numbers-mode)
+ ;; git-gutter's workaround for linum-mode bug.
+ ;; should not be used in `display-line-number-mode`
+ (git-gutter:linum-setup))
 
 (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
 (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)

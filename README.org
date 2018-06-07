@@ -1,11 +1,11 @@
 * Features
 - Efficient. Emacs starts up in *one second*
 - Robust. Emacs will never crash after a full package upgrade. You can install packages without network
-- Support Windows. You won't get inferior performance on Windows
+- Support Windows. No inferior experience on Windows
+- Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
 * Checklist
-- Tested with Emacs 24.4, 24.5, 25.3 on Linux/Windows/Cygwin/macOS
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
