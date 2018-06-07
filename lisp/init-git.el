@@ -2,7 +2,7 @@
 ;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 ;; (setq vc-handled-backends ())
 
-;; ;; Solution 2: if NO network mounted drive involved
+;; Solution 2: if NO network mounted drive involved
 (setq vc-handled-backends '(Git SVN Hg))
 
 ;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
