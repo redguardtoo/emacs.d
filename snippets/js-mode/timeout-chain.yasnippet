@@ -9,7 +9,7 @@ function delay(fn, t) {
   // private instance variables
   var queue = [], self, timer;
   function schedule(fn, t) {
-    timer = setTimeout(function() {
+    timer = setTimeout(() => {
       timer = null;
       fn();
       if (queue.length) {
