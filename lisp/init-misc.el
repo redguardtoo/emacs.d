@@ -488,6 +488,8 @@ See \"Reusing passwords for several connections\" from INFO.
     ad-do-it
     (setenv "GPG_AGENT_INFO" agent)))
 
+;; `apt-get install pinentry-tty` if using emacs-nox
+;; Create `~/.gnupg/gpg-agent.conf' container one line `pinentry-program /usr/bin/pinentry-curses`
 (setq epa-pinentry-mode 'loopback)
 
 ;; https://github.com/abo-abo/ace-window
