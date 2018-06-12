@@ -269,6 +269,7 @@
 (require-package 'git-link)
 (require-package 'cliphist)
 (require-package 'yasnippet)
+(require-package 'yasnippet-snippets)
 (require-package 'company)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
