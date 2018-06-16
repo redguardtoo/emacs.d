@@ -35,19 +35,65 @@
 ;; }}
 
 ;; {{ flyspell setup for js2-mode
+(defvar extra-flyspell-predicate '(lambda (word) t)
+  "A callback to check WORD.  Return t if WORD is typo.")
+
+(defun my-flyspell-predicate (word)
+  "Use aspell to check WORD.  If it's typo return true."
+  (if (string-match-p (concat "^& " word)
+                      (shell-command-to-string (format "echo %s | %s %s pipe"
+                                                       word
+                                                       ispell-program-name
+                                                       (mapconcat 'identity
+                                                                  (flyspell-detect-ispell-args t)
+                                                                  " "))))
+      t))
+
+(defmacro my-flyspell-predicate-factory (preffix)
+  `(lambda (word)
+     (let* ((pattern (concat "^\\(" ,preffix "\\)\\([A-Z]\\)"))
+            rlt)
+       (cond
+        ((string-match-p pattern word)
+         (setq word (replace-regexp-in-string pattern "\\2" word))
+         (setq rlt (my-flyspell-predicate word)))
+        (t
+         (setq rlt t)))
+       rlt)))
+
 (defun js-flyspell-verify ()
-  (let* ((f (get-text-property (- (point) 1) 'face)))
-    ;; *whitelist*
-    ;; only words with following font face will be checked
-    (memq f '(js2-function-call
-              js2-function-param
-              js2-object-property
-              font-lock-variable-name-face
-              font-lock-string-face
-              font-lock-function-name-face
-              font-lock-builtin-face
-              rjsx-tag
-              rjsx-attr))))
+  (let* ((case-fold-search nil)
+         (font-matched (memq (get-text-property (- (point) 1) 'face)
+                             '(js2-function-call
+                               js2-function-param
+                               js2-object-property
+                               font-lock-variable-name-face
+                               font-lock-string-face
+                               font-lock-function-name-face
+                               font-lock-builtin-face
+                               rjsx-tag
+                               rjsx-attr)))
+         word
+         (rlt t))
+    (cond
+     ((not font-matched)
+      (setq rlt nil))
+     ((not (string-match-p "aspell$" ispell-program-name))
+      ;; Only override aspell's result
+      (setq rlt t))
+     ((string-match-p "^[a-zA-Z][a-zA-Z]$"
+                      (setq word (thing-at-point 'word)))
+      (setq rlt nil))
+     ((string-match-p "\\([A-Z][a-z]\\|^[a-z][a-z]\\)[A-Z]\\|[a-z][A-Z][a-z]$"
+                      word)
+      ;; strip two character interior words
+      (setq word (replace-regexp-in-string "\\([A-Z][a-z]\\|^[a-z][a-z]\\)\\([A-Z]\\)" "\\2" word))
+      (setq word (replace-regexp-in-string "\\([a-z]\\)[A-Z][a-z]$" "\\1" word))
+      ;; check stripped world
+      (setq rlt (my-flyspell-predicate word)))
+     (t
+      (setq rlt (funcall extra-flyspell-predicate word))))
+    rlt))
 (put 'js2-mode 'flyspell-mode-predicate 'js-flyspell-verify)
 (put 'rjsx-mode 'flyspell-mode-predicate 'js-flyspell-verify)
 ;; }}
@@ -77,7 +123,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
          ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
          (setq args (list "--sug-mode=ultra" "--lang=en_US"))
          (if run-together
-             (setq args (append args '("--run-together" "--run-together-limit=32")))))
+             (setq args (append args '("--run-together" "--run-together-limit=16")))))
         ((string-match "hunspell$" ispell-program-name)
          (setq args nil))))
     args))
