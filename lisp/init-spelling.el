@@ -77,7 +77,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
          ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
          (setq args (list "--sug-mode=ultra" "--lang=en_US"))
          (if run-together
-           (setq args (append args '("--run-together" "--run-together-limit=16" "--run-together-min=2")))))
+             (setq args (append args '("--run-together" "--run-together-limit=32")))))
         ((string-match "hunspell$" ispell-program-name)
          (setq args nil))))
     args))
