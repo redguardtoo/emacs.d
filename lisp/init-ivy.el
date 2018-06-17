@@ -275,6 +275,10 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
 ;; @see https://github.com/abo-abo/swiper/issues/1218
 (setq ivy-dynamic-exhibit-delay-ms 200)
 
+;; Press C-p and Enter to select current input as candidate
+;; https://oremacs.com/2017/11/30/ivy-0.10.0/
+(setq ivy-use-selectable-prompt t)
+
 ;; {{ input ":" at first to start pinyin search in any ivy-related packages
 (defvar ivy-pinyin-search-trigger-key ":")
 ;; @see https://emacs-china.org/t/topic/2432/3
