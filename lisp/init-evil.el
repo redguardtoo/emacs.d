@@ -275,8 +275,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
-  "gj" 'outline-forward-same-level
-  "gk" 'outline-backward-same-level
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
@@ -286,8 +284,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-declare-key 'normal markdown-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
-  "gj" 'outline-forward-same-level
-  "gk" 'outline-backward-same-level
   (kbd "TAB") 'org-cycle)
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
