@@ -72,6 +72,7 @@
                                font-lock-string-face
                                font-lock-function-name-face
                                font-lock-builtin-face
+                               rjsx-text
                                rjsx-tag
                                rjsx-attr)))
          word
