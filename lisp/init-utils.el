@@ -11,18 +11,79 @@
      ,@clean-up))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
-(defun get-string-from-file (filePath)
-  "Return filePath's file content."
+(defun get-string-from-file (file)
+  "Return FILE's content."
   (with-temp-buffer
-    (insert-file-contents filePath)
+    (insert-file-contents file)
     (buffer-string)))
 
-(defun read-lines (filePath)
-  "Return a list of lines of a file at filePath."
+(defun read-lines (file)
+  "Return a list of lines of FILE."
   (with-temp-buffer
-    (insert-file-contents filePath)
+    (insert-file-contents file)
     (split-string (buffer-string) "\n" t)))
 ;; }}
+
+(defun split-camel-case (word)
+  "Split camel case WORD into a list of strings.
+Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
+  (let* ((case-fold-search nil)
+         (len (length word))
+         ;; ten sub-words is enough
+         (runes [nil nil nil nil nil nil nil nil nil nil])
+         (runes-length 0)
+         (i 0)
+         ch
+         (last-class 0)
+         (class 0)
+         rlt)
+
+    ;; split into fields based on class of character
+    (while (< i len)
+      (setq ch (elt word i))
+      (cond
+       ;; lower case
+       ((and (>= ch ?a) (<= ch ?z))
+        (setq class 1))
+       ;; upper case
+       ((and (>= ch ?A) (<= ch ?Z))
+        (setq class 2))
+       ((and (>= ch ?0) (<= ch ?9))
+        (setq class 3))
+       (t
+        (setq class 4)))
+
+      (cond
+       ((= class last-class)
+        (aset runes
+              (1- runes-length)
+              (concat (aref runes (1- runes-length)) (char-to-string ch))))
+       (t
+        (aset runes runes-length (char-to-string ch))
+        (setq runes-length (1+ runes-length))))
+      (setq last-class class)
+      ;; end of while
+      (setq i (1+ i)))
+
+    ;; handle upper case -> lower case sequences, e.g.
+    ;;     "PDFL", "oader" -> "PDF", "Loader"
+    (setq i 0)
+    (while (< i (1- runes-length))
+      (let* ((ch-first (aref (aref runes i) 0))
+             (ch-second (aref (aref runes (1+ i)) 0)))
+        (when (and (and (>= ch-first ?A) (<= ch-first ?Z))
+                   (and (>= ch-second ?a) (<= ch-second ?z)))
+          (aset runes (1+ i) (concat (substring (aref runes i) -1) (aref runes (1+ i))))
+          (aset runes i (substring (aref runes i) 0 -1))))
+      (setq i (1+ i)))
+
+    ;; construct final result
+    (setq i 0)
+    (while (< i runes-length)
+      (when (> (length (aref runes i)) 0)
+        (setq rlt (add-to-list 'rlt (aref runes i) t)))
+      (setq i (1+ i)))
+     rlt))
 
 (defun nonempty-lines (s)
   (split-string s "[\r\n]+" t))

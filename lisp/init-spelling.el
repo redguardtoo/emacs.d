@@ -40,7 +40,7 @@
 
 (defun my-flyspell-predicate (word)
   "Use aspell to check WORD.  If it's typo return true."
-  (if (string-match-p (concat "^& " word)
+  (if (string-match-p "^&"
                       (shell-command-to-string (format "echo %s | %s %s pipe"
                                                        word
                                                        ispell-program-name
@@ -48,18 +48,6 @@
                                                                   (flyspell-detect-ispell-args t)
                                                                   " "))))
       t))
-
-(defmacro my-flyspell-predicate-factory (preffix)
-  `(lambda (word)
-     (let* ((pattern (concat "^\\(" ,preffix "\\)\\([A-Z]\\)"))
-            rlt)
-       (cond
-        ((string-match-p pattern word)
-         (setq word (replace-regexp-in-string pattern "\\2" word))
-         (setq rlt (my-flyspell-predicate word)))
-        (t
-         (setq rlt t)))
-       rlt)))
 
 (defun js-flyspell-verify ()
   (let* ((case-fold-search nil)
@@ -75,6 +63,7 @@
                                rjsx-text
                                rjsx-tag
                                rjsx-attr)))
+         subwords
          word
          (rlt t))
     (cond
@@ -83,18 +72,20 @@
      ((not (string-match-p "aspell$" ispell-program-name))
       ;; Only override aspell's result
       (setq rlt t))
-     ((string-match-p "^[a-zA-Z][a-zA-Z]$"
-                      (setq word (thing-at-point 'word)))
+     ;; ignore two character word
+     ((< (length (setq word (thing-at-point 'word))) 2)
       (setq rlt nil))
-     ((string-match-p "\\([A-Z][a-z]\\|^[a-z][a-z]\\)[A-Z]\\|[a-z][A-Z][a-zA-Z]$"
-                      word)
-      ;; strip two character interior words
-      ;; abcAzAbc => abcAbc; aaBcd => Bcd
-      (setq word (replace-regexp-in-string "\\([A-Z][a-z]\\|^[a-z][a-z]\\)\\([A-Z]\\)" "\\2" word))
-      ;; abcAb => abc; abcAB => abc
-      (setq word (replace-regexp-in-string "\\([a-z]\\)[A-Z][a-zA-Z]$" "\\1" word))
-      ;; check stripped world
-      (setq rlt (my-flyspell-predicate word)))
+     ;; handle camel case word
+     ((and (setq subwords (split-camel-case word)) (> (length subwords) 1))
+      (let* ((s (mapconcat (lambda (w)
+                             (cond
+                              ((< (length w) 3)
+                               "")
+                              ((not (string-match-p "^[a-zA-Z]*$" w))
+                               "")
+                              (t
+                               w))) subwords " ")))
+        (setq rlt (my-flyspell-predicate s))))
      (t
       (setq rlt (funcall extra-flyspell-predicate word))))
     rlt))
