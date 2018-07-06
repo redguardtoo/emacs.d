@@ -97,6 +97,21 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=. 
 - I recommend aspell for programmers. Non-programmers find hunspell is better on typo correction
 
 If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
+
+You can set =force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
+
+This seutp can spell check  camel case words either using aspell or hunspell.
+
+Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. It's content is like:
+#+begin_src conf
+personal_ws-1.1 en 4
+ABN
+ACC
+ACN
+ACT
+#+end_src
+
+Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 **** sbcl (lisp environment)
 - Required by lisp =slime=
 - Install through OS package manager
