@@ -203,6 +203,43 @@ _w_ whitespace-mode:   %`whitespace-mode
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
+
+;; helpers from https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
+(unless (featurep 'windmove)
+  (require 'windmove))
+
+(defun hydra-move-splitter-left (arg)
+  "Move window splitter left."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (shrink-window-horizontally arg)
+    (enlarge-window-horizontally arg)))
+
+(defun hydra-move-splitter-right (arg)
+  "Move window splitter right."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'right))
+      (enlarge-window-horizontally arg)
+    (shrink-window-horizontally arg)))
+
+(defun hydra-move-splitter-up (arg)
+  "Move window splitter up."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (enlarge-window arg)
+    (shrink-window arg)))
+
+(defun hydra-move-splitter-down (arg)
+  "Move window splitter down."
+  (interactive "p")
+  (if (let ((windmove-wrap-around))
+        (windmove-find-other-window 'up))
+      (shrink-window arg)
+    (enlarge-window arg)))
+
 (defhydra hydra-window ()
   "
 Movement^^   ^Split^         ^Switch^     ^Resize^
@@ -251,7 +288,7 @@ _SPC_ cancel _o_nly this     _d_elete
          (add-hook 'ace-window-end-once-hook
                    'hydra-window/body)))
   ("o" delete-other-windows)
-  ("i" ace-maximize-window)
+  ("i" ace-delete-other-windows)
   ("z" (progn
          (winner-undo)
          (setq this-command 'winner-undo)))
