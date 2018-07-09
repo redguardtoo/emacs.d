@@ -35,82 +35,9 @@
 ;; }}
 
 ;; {{ flyspell setup for js2-mode
-(defvar extra-flyspell-predicate '(lambda (word) t)
-  "A callback to check WORD.  Return t if WORD is typo.")
-
-(defun my-flyspell-predicate (word)
-  "Use aspell to check WORD.  If it's typo return t."
-  (let* ((cmd (cond
-               ;; aspell: `echo "helle world" | aspell pipe`
-               ((string-match-p "aspell$" ispell-program-name)
-                (format "echo \"%s\" | %s pipe"
-                        word
-                        ispell-program-name))
-               ;; hunspell: `echo "helle world" | hunspell -a -d en_US`
-               (t
-                (format "echo \"%s\" | %s -a -d en_US"
-                        word
-                        ispell-program-name))))
-         (cmd-output (shell-command-to-string cmd))
-         rlt)
-    ;; (message "word=%s cmd=%s" word cmd)
-    ;; (message "cmd-output=%s" cmd-output)
-    (cond
-     ((string-match-p "^&" cmd-output)
-      ;; it's a typo because at least one sub-word is typo
-      (setq rlt t))
-     (t
-      ;; not a typo
-      (setq rlt nil)))
-    rlt))
-
-(defun js-flyspell-verify ()
-  (let* ((case-fold-search nil)
-         (font-matched (memq (get-text-property (- (point) 1) 'face)
-                             '(js2-function-call
-                               js2-function-param
-                               js2-object-property
-                               js2-object-property-access
-                               font-lock-variable-name-face
-                               font-lock-string-face
-                               font-lock-function-name-face
-                               font-lock-builtin-face
-                               rjsx-text
-                               rjsx-tag
-                               rjsx-attr)))
-         subwords
-         word
-         (rlt t))
-    (cond
-     ((not font-matched)
-      (setq rlt nil))
-
-     ;; ((not (string-match-p "aspell$" ispell-program-name))
-     ;;  ;; Only override aspell's result
-     ;;  (setq rlt t))
-
-     ;; ignore two character word
-     ((< (length (setq word (thing-at-point 'word))) 2)
-      (setq rlt nil))
-
-     ;; handle camel case word
-     ((and (setq subwords (split-camel-case word)) (> (length subwords) 1))
-      (let* ((s (mapconcat (lambda (w)
-                             (cond
-                              ((< (length w) 3)
-                               "")
-                              ((not (string-match-p "^[a-zA-Z]*$" w))
-                               "")
-                              (t
-                               w))) subwords " ")))
-        (setq rlt (my-flyspell-predicate s))))
-
-     ;; `extra-flyspell-predicate' actually do nothing by default
-     (t
-      (setq rlt (funcall extra-flyspell-predicate word))))
-    rlt))
-(put 'js2-mode 'flyspell-mode-predicate 'js-flyspell-verify)
-(put 'rjsx-mode 'flyspell-mode-predicate 'js-flyspell-verify)
+(local-require 'wucuo)
+(put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
+(put 'rjsx-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
 ;; }}
 
 (eval-after-load 'flyspell
