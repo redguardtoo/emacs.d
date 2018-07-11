@@ -42,13 +42,18 @@
   "Code spell checker."
   :group 'flyspell)
 
+(defcustom wucuo-check-nil-font-face nil
+  "If nil, ignore text without font face."
+  :type 'sexp
+  :group 'wucuo)
+
 (defcustom wucuo-font-faces-to-check
   '(font-lock-string-face
-    font-lock-comment-face
     font-lock-doc-face
     font-lock-builtin-face
     font-lock-function-name-face
     font-lock-variable-name-face
+    font-lock-type-face
 
     ;; javascript
     js2-function-call
@@ -64,10 +69,25 @@
   :type '(repeat sexp)
   :group 'wucuo)
 
+(defcustom wucuo-personal-font-faces-to-check
+  '(font-lock-comment-face)
+  "Similar to `wucuo-font-faces-to-check'.
+Define personal font faces to check."
+  :type '(repeat sexp)
+  :group 'wucuo)
+
 (defcustom wucuo-extra-predicate '(lambda (word) t)
   "A callback to check WORD.  Return t if WORD is typo."
   :type 'function
   :group 'wucuo)
+
+;;;###autoload
+(defun wucuo-current-font-face (&optional quiet)
+  "Get font face under cursor."
+  (interactive)
+  (let* ((rlt (format "%S" (get-text-property (point) 'face))))
+    (kill-new rlt)
+    (unless quiet (message rlt))))
 
 ;;;###autoload
 (defun wucuo-split-camel-case (word)
@@ -177,8 +197,10 @@ Returns t to continue checking, nil otherwise.
 Flyspell mode sets this variable to whatever is the `flyspell-mode-predicate'
 property of the major mode name."
   (let* ((case-fold-search nil)
-         (font-matched (memq (get-text-property (- (point) 1) 'face)
-                             wucuo-font-faces-to-check))
+         (current-font-face (get-text-property (- (point) 1) 'face))
+         (font-matched (or (memq current-font-face wucuo-font-faces-to-check)
+                           (memq current-font-face wucuo-personal-font-faces-to-check)
+                           (and wucuo-check-nil-font-face (eq current-font-face nil))))
          subwords
          word
          (rlt t))
