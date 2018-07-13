@@ -4,7 +4,7 @@
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/org2nikola
 ;; Keywords: blog static html export org
-;; Version: 0.1.6
+;; Version: 0.1.8
 
 ;; This file is not part of GNU Emacs.
 
@@ -570,7 +570,11 @@
                               (org2nikola-guess-output-image-directory)
                               (file-name-nondirectory source-file-full-path)))
          (final-url (concat "/wp-content/" (file-name-nondirectory local-file))))
-    (copy-file source-file-full-path dst-file-full-path t)
+    (cond
+     ((file-exists-p source-file-full-path)
+      (copy-file source-file-full-path dst-file-full-path t))
+     (t
+      (setq final-url nil)))
     final-url))
 
 (defun org2nikola-replace-urls (text org-directory)
@@ -588,16 +592,14 @@
                                              (substring file-name 7)
                                            file-name)))
         (setq beg (match-end 0))
-        (if (save-match-data (not (or
-                                   (string-match org-plain-link-re file-name)
-                                   (string-match "^#" file-name)
-                                   (string-equal (file-name-nondirectory file-name) ""))))
-
-            (progn
-              (setq file-web-url (org2nikola-get-full-url file-name org-directory))
-              (setq file-all-urls
-                    (append file-all-urls (list (cons
-                                                 file-name file-web-url)))))))
+        ;; file-name could be a link to a tag
+        (when (and (save-match-data (not (or (string-match org-plain-link-re file-name)
+                                             (string-match "^#" file-name)
+                                             (string-equal (file-name-nondirectory file-name) ""))))
+                   (setq file-web-url (org2nikola-get-full-url file-name org-directory)))
+          (setq file-all-urls
+                (append file-all-urls (list (cons
+                                             file-name file-web-url))))))
       ;; replace urls in file-all-urls
       (dolist (file file-all-urls)
         (setq text (replace-regexp-in-string
