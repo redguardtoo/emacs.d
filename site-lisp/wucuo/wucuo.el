@@ -1,8 +1,8 @@
-;;; wucuo.el --- code spell checker help your code reach the status of wucuo
+;;; wucuo.el --- Spell check code with camel case words
 
 ;; Copyright (C) 2018 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: spelling
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/usrname/wucuo
@@ -26,10 +26,14 @@
 
 ;;; Commentary:
 ;;
-;; Run `wucuo-start' to setup and start up`flyspell-mode' in one shot
-;; to spell check everything in code.
+;; 1. Setup
+;; Please install either aspell or hunspell and its corresponding dictionaries.
 ;;
-;; OR if you prefer run `flyspell-buffer' manually it's just one liner setup:
+;; 2. Usage
+;; Run `wucuo-start' to setup and start `flyspell-mode'.
+;; It spell check camel case words in code.
+;;
+;; OR add one line setup if you prefer running `flyspell-buffer' manually:
 ;;  (setq flyspell-generic-check-word-predicate #'wucuo-generic-check-word-predicate)
 ;;
 ;; OR setup for only one major mode:
@@ -45,6 +49,16 @@
 (defcustom wucuo-check-nil-font-face nil
   "If nil, ignore text without font face."
   :type 'sexp
+  :group 'wucuo)
+
+(defcustom wucuo-aspell-language-to-use "en"
+  "Language to use passed to aspell option '--lang'."
+  :type 'string
+  :group 'wucuo)
+
+(defcustom wucuo-hunspell-dictionary-base-name "en_US"
+  "Dictionary base name pass to hunspell option '-d'."
+  :type 'string
   :group 'wucuo)
 
 (defcustom wucuo-font-faces-to-check
@@ -83,7 +97,8 @@ Define personal font faces to check."
 
 ;;;###autoload
 (defun wucuo-current-font-face (&optional quiet)
-  "Get font face under cursor."
+  "Get font face under cursor.
+If QUIET is t, font face is not output."
   (interactive)
   (let* ((rlt (format "%S" (get-text-property (point) 'face))))
     (kill-new rlt)
@@ -95,8 +110,8 @@ Define personal font faces to check."
 Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
   (let* ((case-fold-search nil)
          (len (length word))
-         ;; ten sub-words is enough
-         (runes [nil nil nil nil nil nil nil nil nil nil])
+         ;; 32 sub-words is enough
+         (runes [nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil])
          (runes-length 0)
          (i 0)
          ch
@@ -151,32 +166,32 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
       (setq i (1+ i)))
     rlt))
 
+(defun wucuo-spell-checker-to-string (line)
+  "Feed LINE into spell checker and return output as string."
+  (let* ((cmd (cond
+               ;; aspell: `echo "helle world" | aspell pipe --lang en`
+               ((string-match-p "aspell$" ispell-program-name)
+                (format "%s pipe --lang %s" ispell-program-name wucuo-aspell-language-to-use))
+               ;; hunspell: `echo "helle world" | hunspell -a -d en_US`
+               (t
+                (format "%s -a -d %s" ispell-program-name wucuo-hunspell-dictionary-base-name))))
+         rlt)
+    (with-temp-buffer
+      (call-process-region line ; feed line into process
+                           nil ; ignored
+                           shell-file-name
+                           nil ; don't delete
+                           t
+                           nil
+                           shell-command-switch
+                           cmd)
+      (setq rlt (buffer-substring-no-properties (point-min) (point-max))))
+    rlt))
+
 ;;;###autoload
 (defun wucuo-check-camel-case-word-predicate (word)
   "Use aspell to check WORD.  If it's typo return t."
-  (let* ((cmd (cond
-               ;; aspell: `echo "helle world" | aspell pipe`
-               ((string-match-p "aspell$" ispell-program-name)
-                (format "echo \"%s\" | %s pipe"
-                        word
-                        ispell-program-name))
-               ;; hunspell: `echo "helle world" | hunspell -a -d en_US`
-               (t
-                (format "echo \"%s\" | %s -a -d en_US"
-                        word
-                        ispell-program-name))))
-         (cmd-output (shell-command-to-string cmd))
-         rlt)
-    ;; (message "word=%s cmd=%s" word cmd)
-    ;; (message "cmd-output=%s" cmd-output)
-    (cond
-     ((string-match-p "^&" cmd-output)
-      ;; it's a typo because at least one sub-word is typo
-      (setq rlt t))
-     (t
-      ;; not a typo
-      (setq rlt nil)))
-    rlt))
+  (if (string-match-p "^&" (wucuo-spell-checker-to-string word)) t))
 
 (defun wucuo-handle-sub-word (sub-word)
   "If return empty string, SUB-WORD is not checked by spell checker."
@@ -184,7 +199,7 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
    ;; don't check 1/2 character word
    ((< (length sub-word) 3)
     "")
-   ;; don't  check word containing specical character
+   ;; don't  check word containing special character
    ((not (string-match-p "^[a-zA-Z]*$" sub-word))
     "")
    (t
@@ -223,6 +238,27 @@ property of the major mode name."
       (setq rlt (funcall wucuo-extra-predicate word))))
     rlt))
 
+;;;###autoload
+(defun wucuo-create-aspell-personal-dictionary ()
+  "Create aspell personal dictionary."
+  (interactive)
+  (with-temp-buffer
+    (let* ((file (file-truename (format "~/.aspell.%s.pws" wucuo-aspell-language-to-use))))
+      (insert (format "personal_ws-1.1 %s 2\nabcd\ndefg\n" wucuo-aspell-language-to-use))
+      (write-file file)
+      (message "%s created." file))))
+
+;;;###autoload
+(defun wucuo-create-hunspell-personal-dictionary ()
+  "Create hunspell personal dictionary."
+  (interactive)
+  (with-temp-buffer
+    (let* ((file (file-truename (format "~/.hunspell_%s" wucuo-hunspell-dictionary-base-name))))
+      (insert "abcd\ndefg\n")
+      (write-file file)
+      (message "%s created." file))))
+
+;;;###autoload
 (defun wucuo-start ()
   "Turn on wucuo to spell check code."
   (interactive)
@@ -232,4 +268,3 @@ property of the major mode name."
 
 (provide 'wucuo)
 ;;; wucuo.el ends here
-
