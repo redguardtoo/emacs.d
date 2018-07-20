@@ -6,7 +6,9 @@
       (c-lineup-topmost-intro-cont langelem))))
 
 ;; avoid default "gnu" style, use more popular one
-(setq c-default-style "linux")
+(setq c-default-style '((java-mode . "java")
+                        (awk-mode . "awk")
+                        (other . "linux")))
 
 (defun fix-c-indent-offset-according-to-syntax-context (key val)
   ;; remove the old element
