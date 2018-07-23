@@ -724,8 +724,9 @@ Shamelessly copied from org2blog/wp-replace-pre()."
     (when org2nikola-code-prettify-type
       (save-excursion
         (setq html-text (org2nikola-replace-pre html-text))))
-
     ;; post content should NOT contain title
+    ;; both org 8 and org 9
+    (setq html-text (replace-regexp-in-string (format "<h[23] .*%s.*" title) "" html-text))
     ;; org 8
     (setq html-text (replace-regexp-in-string "<h[23]  *id=\"sec-1\">.*" "" html-text))
     ;; org 9
