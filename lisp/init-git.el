@@ -199,5 +199,35 @@
 
 ;; }}
 
-(provide 'init-git)
+(defun my-git-log-trace-definition ()
+  "Similar to `magit-log-trace-definition' but UI is simpler.
+If multi-lines are selected, trace the defintion of line range.
+If only one line is selected, use current selection as function name to look up.
+If nothing is selected, use the word under cursor as function name to look up."
+  (interactive)
+  (when buffer-file-name
+    (let* ((range-or-func (cond
+                           ((region-active-p)
+                            (cond
+                             ((my-is-one-line (region-beginning) (region-end))
+                              (format ":%s" (my-selected-str)))
+                             (t
+                              (format "%s,%s"
+                                      (line-number-at-pos (region-beginning))
+                                      (line-number-at-pos (region-end))))))
+                           (t
+                            (format ":%s" (thing-at-point 'symbol)))))
+           (cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name)))
+           (content (shell-command-to-string cmd)))
+      (when (string-match-p "no match" content)
+        ;; mark current function and try again
+        (mark-defun)
+        (setq range-or-func (format "%s,%s"
+                                    (line-number-at-pos (region-beginning))
+                                    (line-number-at-pos (region-end))))
+        (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
+      (message cmd)
+      (require 'find-file-in-project)
+      (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
+(provide 'init-git)

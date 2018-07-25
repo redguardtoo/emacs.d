@@ -180,6 +180,12 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
   (buffer-substring-no-properties (line-beginning-position)
                                   (if line-end line-end (line-end-position))))
 
+(defun my-is-one-line (b e)
+  (save-excursion
+    (goto-char b)
+    (and (<= (line-beginning-position) b)
+         (<= e (1+ (line-end-position))))))
+
 (defun my-buffer-str ()
   (buffer-substring-no-properties (point-min) (point-max)))
 
