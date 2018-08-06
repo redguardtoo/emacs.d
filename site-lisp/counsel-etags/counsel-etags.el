@@ -7,7 +7,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.6.2
+;; Version: 1.6.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -869,6 +869,7 @@ used by other hooks or commands.  The tags updating might now happen."
     (when str
       (cond
        ((region-active-p)
+        (add-to-list 'minibuffer-history str)
         (setq counsel-etags-keyword (counsel-unquote-regex-parens str))
         ;; de-select region
         (set-mark-command nil))
