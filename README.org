@@ -226,11 +226,13 @@ Required for vim user,
 *** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 ** Key bindings
+You don't need remember key bindings. At the beginning, try `M-x my-command` (corresponding key binding is also displayed) instead.
+
 Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
 
 For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing ",bu" executes command =backward-up-list=.
 
-The tutorials I recommended provide enough information about commands.
+The tutorials I recommended provides enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
