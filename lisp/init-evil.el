@@ -671,6 +671,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (nvmap :prefix "SPC"
        "ee" 'my-swap-sexps
        "pc" 'my-dired-redo-from-commands-history
+       "pw" 'pwd
        "cc" 'my-dired-redo-last-command
        "ss" 'wg-create-workgroup ; save windows layout
        "se" 'evil-iedit-state/iedit-mode ; start iedit in emacs
