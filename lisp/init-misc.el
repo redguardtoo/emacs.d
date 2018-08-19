@@ -997,4 +997,8 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                          emms-player-vlc-playlist))
 ;; }}
 
+;; @see https://www.reddit.com/r/emacs/comments/988paa/emacs_on_windows_seems_lagging/
+(unless *no-memory*
+  ;; speed up font rendering for special characters
+  (setq inhibit-compacting-font-caches t))
 (provide 'init-misc)
