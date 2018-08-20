@@ -370,16 +370,18 @@ INDENT-SIZE decide the indentation level.
                 "clearTimeout"
                 "command" ; Keysnail
                 "content" ; Keysnail
+                "decodeURI"
                 "define"
                 "describe"
-                "documentRef"
-                "global"
                 "display" ; Keysnail
+                "documentRef"
                 "element"
+                "encodeURI"
                 "expect"
                 "ext" ; Keysnail
                 "fetch"
                 "gBrowser" ; Keysnail
+                "global"
                 "goDoCommand" ; Keysnail
                 "hook" ; Keysnail
                 "inject"
