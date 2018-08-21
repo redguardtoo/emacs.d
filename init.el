@@ -116,7 +116,6 @@
   (require-init 'init-linum-mode)
   (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
   ;; (require-init 'init-gist)
-  (require-init 'init-moz)
   (require-init 'init-gtags)
   ;; init-evil dependent on init-clipboard
   (require-init 'init-clipboard)

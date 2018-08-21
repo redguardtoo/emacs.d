@@ -585,8 +585,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "sl" 'sort-lines
        "ulr" 'uniquify-all-lines-region
        "ulb" 'uniquify-all-lines-buffer
-       "lj" 'moz-load-js-file-and-send-it
-       "mr" 'moz-console-clear
        "fs" 'ffip-save-ivy-last
        "fr" 'ffip-ivy-resume
        "fc" 'cp-ffip-ivy-last
