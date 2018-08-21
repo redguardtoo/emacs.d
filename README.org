@@ -1,14 +1,14 @@
 * Features
-- Efficient. Emacs starts up in *one second*
+- Fast. Emacs starts up in *one second*
 - Robust. Emacs will never crash after a full package upgrade. You can install packages without network
-- Support Windows. No inferior experience on Windows
+- Support Windows
 - Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]], all key bindings and functionality still usable when you ssh to server with [[http://www.putty.org/][PuTTY]]
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. It works when you ssh to server with [[http://www.putty.org/][PuTTY]]
 * Checklist
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to be able to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
+- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Emacs 24 support will be dropped on 2019. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
@@ -16,16 +16,14 @@
 Most users should follow the section "Install in normal way".
 
 You need the section "Install stable version in easiest way" *if and only if*:
-- You are newbie, knowing nothing about Linux/Unix
+- You have never heard Unix/Linux
 - You are living in North Korea without internet access
 ** Install in normal way
-Please remove the file =~/.emacs.d/init.el= and =~/.emacs=. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
+Please remove =~/.emacs.d/init.el= and =~/.emacs=. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
-Please uninstall any package which is not installed at =~/.emacs.d=. For example, run =apt-get autoremove emacs-w3m= on Debian/Ubuntu.
+Please uninstall third party Emacs package which is not placed at =~/.emacs.d=. For example, run =apt-get autoremove emacs-w3m= on Debian/Ubuntu.
 
 If you don't know what I mean, then *do nothing*.
-
-All packages should be placed at =~/.emacs.d= from now on.
 
 There are two ways to install this setup (I recommend the first way):
 
@@ -33,7 +31,7 @@ There are two ways to install this setup (I recommend the first way):
 
 2. use [[https://github.com/redguardtoo/emacs.d/archive/stable.zip][stable setup]], OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d; cd .emacs.d; git reset --hard stable= in shell.
 
-Ensure that the init.el contained in this repo ends up at =~/.emacs.d/init.el=.
+Ensure that =init.el= contained in this repo ends up at =~/.emacs.d/init.el=.
 
 By default, packages are installed automatically during Emacs startup.
 
@@ -100,7 +98,7 @@ If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell
 
 You can set =force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
 
-This seutp can spell check  camel case words either using aspell or hunspell.
+This setup can spell check  camel case words either using aspell or hunspell.
 
 Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. It's content is like:
 #+begin_src conf
@@ -155,14 +153,14 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Required by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
 - Used by Firefox
 
-**** [[http://ctags.sourceforge.net][CTags]]
+**** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages
 - Install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 
 **** [[http://www.gnu.org/software/global][GNU Global]]
-- Required by =counsel-gtags=
+- Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]]
 - It creates index files for code navigation and auto-completion
 - Please read [[https://www.gnu.org/software/global/manual/global.html][GNU Global manual]] to understand environment variables =GTAGSLIBPATH= and =MAKEOBJDIRPREFIX=
 - Install through OS package manager
@@ -192,13 +190,11 @@ I will keep using =ripgrep= instead of =the-silver-searcher= from now on.
 * Usage
 I *avoid overriding the original setup* of third party command line program.
 
-If I mention certain directories is used by certain program, you can always find the same information in its original manual.
-
-You can also =grep keyword= in the directory =~/.emacs.d/lisp= if you got any question on setup.
+You can also [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Tutorial (OPTIONAL)
 Basic knowledge of Linux/Unix is required. At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
 *** Basic tutorial
-Everyone should finish this tutorial at first.
+Please read this tutorial at least for once.
 **** Step 1, learn OS basics
 At minimum you need know,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]] 
@@ -222,7 +218,7 @@ You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. N
 *** Evil-mode tutorial
 Required for vim user,
 - Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
-- Read ~/.emacs.d/site-lisp/evil/doc/evil.pdf
+- Please Read =~/.emacs.d/site-lisp/evil/doc/evil.pdf=
 *** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 ** Key bindings
@@ -247,7 +243,7 @@ You can customize =my-term-program= whose default value is =/bin/bash=. It's use
 ** Override default setup
 Place your setup in =~/.custom.el=.
 ** Code navigation and auto-completion
-It's usable out of box using [[http://ctags.sourceforge.net/][Ctags]]. All you need do is to install Ctags.
+It's usable out of box if Ctags is installed
 
 To navigate, =M-x counsel-etags-find-tag-at-point=.
 
