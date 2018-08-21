@@ -8,7 +8,7 @@
 ;; You may delete these explanatory comments.
 (package-initialize)
 
-(let ((minver "24.3"))
+(let ((minver "24.4"))
   (when (version< emacs-version minver)
     (error "This config requires Emacs v%s or higher" minver)))
 

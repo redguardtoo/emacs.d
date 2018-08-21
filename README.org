@@ -390,7 +390,7 @@ Run below command in shell:
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
 ** Government blocks the internet
-You may need [[https://github.com/goagent/goagent][goagent]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting goagent server.
+Try [[https://github.com/XX-net/XX-Net]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting XX-Net.
 ** Email
 If you use Gnus for email, check =init-gnus.el= and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
 ** Cannot download packages?
@@ -398,9 +398,9 @@ Some package cannot be downloaded automatically because of network problem.
 
 You could =M-x package-refresh-content= and restart Emacs. the package will be installed automatically.
 ** use packages on [[https://elpa.gnu.org/][GNU ELPA]]
-By default, packages from GNU ELPA are not available. Search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= if you want to access GNU ELPA.
+By default, packages from GNU ELPA are NOT available. Search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= if you want to access GNU ELPA.
 
-For example, [[https://github.com/flycheck/flycheck][flycheck]] requires packages only exist on GNU ELPA.
+For example, [[https://github.com/flycheck/flycheck][flycheck]] requires packages from GNU ELPA.
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
