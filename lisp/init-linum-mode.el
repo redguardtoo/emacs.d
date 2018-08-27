@@ -41,7 +41,11 @@
 (cond
  ((fboundp 'global-display-line-numbers-mode)
   (defun display-line-numbers-mode-hook-setup ()
-    (setq display-line-numbers (if (memq major-mode linum-mode-inhibit-modes-list) nil t)))
+    (setq display-line-numbers (if (or (memq major-mode linum-mode-inhibit-modes-list)
+                                       ;; don't show line number for certain file extensions
+                                       (should-use-minimum-resource))
+                                   nil
+                                 t)))
   (add-hook 'display-line-numbers-mode-hook 'display-line-numbers-mode-hook-setup)
   (global-display-line-numbers-mode t))
  (t

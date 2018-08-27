@@ -217,8 +217,11 @@
       (message "NO COMPILATION ERRORS!"))))
 
 (defun generic-prog-mode-hook-setup ()
-  ;; turn off `linum-mode' when there are more than 5000 lines
-  (if (buffer-too-big-p) (linum-mode -1))
+  (when (buffer-too-big-p)
+    ;; Turn off `linum-mode' when there are more than 5000 lines
+    (linum-mode -1)
+    (when (should-use-minimum-resource)
+      (font-lock-mode -1)))
 
   (unless (is-buffer-file-temp)
 

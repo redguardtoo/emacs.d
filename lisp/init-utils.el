@@ -429,6 +429,10 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                      (lambda ()
                        (interactive)
                        (diff-region-exit-from-certain-buffer ,buffer-name))))))
-
 ;; }}
+
+(defun should-use-minimum-resource ()
+  (and buffer-file-name
+       (string-match-p "\.\\(mock\\|min\\)\.js" buffer-file-name)))
+
 (provide 'init-utils)
