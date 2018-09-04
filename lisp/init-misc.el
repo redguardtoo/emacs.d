@@ -216,6 +216,14 @@
       (winner-undo)
       (message "NO COMPILATION ERRORS!"))))
 
+(defun my-electric-pair-inhibit (char)
+  (or
+   ;; input single/double quotes at the end of word
+   (and (memq char '(34 39))
+        (char-before (1- (point)))
+        (eq (char-syntax (char-before (1- (point)))) ?w))
+   (electric-pair-conservative-inhibit char)))
+
 (defun generic-prog-mode-hook-setup ()
   (when (buffer-too-big-p)
     ;; Turn off `linum-mode' when there are more than 5000 lines
@@ -237,7 +245,7 @@
     (unless (derived-mode-p 'js2-mode)
       (subword-mode 1))
 
-    (setq-default electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+    (setq-default electric-pair-inhibit-predicate 'my-electric-pair-inhibit)
     (electric-pair-mode 1)
 
     ;; eldoc, show API doc in minibuffer echo area
