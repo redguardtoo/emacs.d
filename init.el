@@ -143,6 +143,7 @@
 
   (require-init 'init-emacs-w3m)
   (require-init 'init-hydra)
+  (require-init 'init-shackle)
 
   (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
   ;; {{ idle require other stuff
