@@ -193,6 +193,10 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
     ;; don't spell check double words
     (setq flyspell-check-doublon nil)
 
+    ;; create updated table of contents of org file
+    ;; @see https://github.com/snosov1/toc-org
+    (toc-org-enable)
+
     ;; display wrapped lines instead of truncated lines
     (setq truncate-lines nil)
     (setq word-wrap t)))
