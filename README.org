@@ -5,6 +5,65 @@
 - Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS
 - Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. It works when you ssh to server with [[http://www.putty.org/][PuTTY]]
+* Table of Content                                                              :noexport:TOC:
+ - [[#features][Features]]
+ - [[#checklist][Checklist]]
+ - [[#installation][Installation]]
+   - [[#install-in-normal-way][Install in normal way]]
+   - [[#install-stable-version-in-easiest-way-optional][Install stable version in easiest way (OPTIONAL)]]
+   - [[#third-party-command-line-program-optional][Third party command line program (OPTIONAL)]]
+ - [[#tutorial-optional][Tutorial (OPTIONAL)]]
+   - [[#basic-tutorial][Basic tutorial]]
+   - [[#evil-mode-tutorial][Evil-mode tutorial]]
+   - [[#methodology][Methodology]]
+ - [[#usage][Usage]]
+   - [[#quick-start][Quick start]]
+   - [[#key-bindings][Key bindings]]
+ - [[#faq][FAQ]]
+   - [[#default-terminal-shell][default terminal shell]]
+   - [[#override-default-setup][Override default setup]]
+   - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
+   - [[#color-theme][Color theme]]
+   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
+   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
+   - [[#js2-mode][js2-mode]]
+   - [[#react-and-jsx][React and JSX]]
+   - [[#git-gutter][git-gutter]]
+   - [[#start-a-shell-inside-emacs][Start a shell inside Emacs]]
+   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
+   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
+   - [[#indentation][Indentation]]
+   - [[#editing-lisp][Editing Lisp]]
+   - [[#use-smart-mode-line-or-powerline][Use smart-mode-line or powerline?]]
+   - [[#key-bindings-doesnt-work][Key bindings doesn't work?]]
+   - [[#use-org-mode][Use org-mode]]
+   - [[#macos-user][macOS user?]]
+   - [[#locked-packages][Locked packages]]
+   - [[#customize-global-variables][Customize global variables]]
+   - [[#opensave-file-with-counselivy][Open/Save file with Counsel/Ivy]]
+   - [[#windows][Windows]]
+   - [[#yasnippet][Yasnippet]]
+   - [[#non-english-users][Non-English users]]
+   - [[#behind-corporate-firewall][Behind corporate firewall]]
+   - [[#network-is-blocked][Network is blocked]]
+   - [[#email][Email]]
+   - [[#cannot-download-packages][Cannot download packages?]]
+   - [[#use-packages-on-gnu-elpa][use packages on GNU ELPA]]
+   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
+   - [[#evil-setup][Evil setup]]
+   - [[#c-auto-completion-doesnt-work][C++ auto-completion doesn't work?]]
+   - [[#auto-completion-for-other-languages][Auto-completion for other languages]]
+   - [[#chinese-input-method-editor][Chinese Input Method Editor]]
+   - [[#install-multiple-versions-of-emacs][Install multiple versions of Emacs]]
+   - [[#change-time-locale][Change Time Locale]]
+   - [[#directory-structure][Directory structure]]
+ - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
+   - [[#emacs-23][Emacs 23]]
+   - [[#emacs-243][Emacs 24.3]]
+   - [[#emacs-244-and-245][Emacs 24.4 and 24.5]]
+ - [[#tips][Tips]]
+ - [[#report-bug][Report bug]]
+
 * Checklist
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
@@ -187,21 +246,17 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
 - Tweak environment variable PATH to let Emacs find ripgrep
 I will keep using =ripgrep= instead of =the-silver-searcher= from now on.
-* Usage
-I *avoid overriding the original setup* of third party command line program.
-
-You can also [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you got any question on setup.
-** Tutorial (OPTIONAL)
+* Tutorial (OPTIONAL)
 Basic knowledge of Linux/Unix is required. At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
-*** Basic tutorial
+** Basic tutorial
 Please read this tutorial at least for once.
-**** Step 1, learn OS basics
+*** Step 1, learn OS basics
 At minimum you need know,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]] 
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
 
 The purpose it to know how Emacs interacts with other command line programs.
-**** Step 2, read official tutorial at least once
+*** Step 2, read official tutorial at least once
 Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
 At minimum you need know:
@@ -209,18 +264,34 @@ At minimum you need know:
 - =C-h v= to describe variable
 - =C-h f= to describe function
 - =C-h k= to check function key binding
-**** Step 3, know org-mode basics
+*** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
-**** Step 4, start from a real world problem
+*** Step 4, start from a real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
-*** Evil-mode tutorial
+** Evil-mode tutorial
 Required for vim user,
 - Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
 - Please Read =~/.emacs.d/site-lisp/evil/doc/evil.pdf=
-*** Methodology
+** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
+* Usage
+I *avoid overriding the original setup* of third party command line program.
+
+** Quick start
+On windows, you need install Cygwin which provides some command line tools Emacs will use. Cygwin could be installed on any hard drive but it's highly recommended don't change path of Cygwin.
+
+Install Ctags (Universal Ctags is recommended, but Exuberant Ctags is fine). On Windows you could install Ctags through Cygwin.
+
+Run =M-x cousnel-etags-find-ctags= from =counsel-etags= to navigate code by using tags files created by ctags. Tags file will be automatically created/update when you start using `counsel-etags`.
+
+Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is automatically detected if you use open source version control software. Or else the parent directory of tags file is used.
+
+Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. The project root is automatically detected if you use any popular open source version control software. Or else, you need only one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=. 
+
+The code auto completion works out of box by using tags file created by Ctags. So it means you need run =counsel-etags= at least once to fire up Ctags. =company-etags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
+You can also [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you got any question on setup.
 ** Key bindings
 You don't need remember key bindings. At the beginning, try `M-x my-command` (corresponding key binding is also displayed) instead.
 
@@ -385,7 +456,7 @@ Run below command in shell:
 #+begin_src bash
 http_proxy=http://yourname:passwd@proxy.company.com:8080 emacs -nw
 #+end_src
-** Government blocks the internet
+** Network is blocked
 Try [[https://github.com/XX-net/XX-Net]]. Run command =http_proxy=http://127.0.0.1:8087 emacs -nw= in shell after starting XX-Net.
 ** Email
 If you use Gnus for email, check =init-gnus.el= and read [[http://blog.binchen.org/?p=403][my Gnus tutorial]].
