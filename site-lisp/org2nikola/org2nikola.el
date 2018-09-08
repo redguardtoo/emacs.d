@@ -548,9 +548,9 @@
       (setq b (line-beginning-position))
       (setq e (region-end)))
 
-    (org2nikola-select-region b e)
     ;; org-export-as will detect active region and narrow to the region
     (save-excursion
+      (org2nikola-select-region b e)
       (setq html-text
             (cond
              ((version-list-< (version-to-list (org-version)) '(8 0 0))
