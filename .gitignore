@@ -60,3 +60,4 @@ custom-set-variables.el
 .smex-items
 network-security.data
 .last-package-update-day
+.dir-locals.el

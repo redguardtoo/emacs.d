@@ -104,7 +104,7 @@ Here are the *exact steps*,
 - Download [[https://github.com/redguardtoo/myelpa/archive/stable.zip]]
 - Extract the zip somewhere, say =~/projs/myelpa=
 - Make sure a file named =archive-contents= exists in =~/projs/myelpa=
-- Uncomment the line =(setq package-archives '(("myelpa" . "~/projs/myelpa/")))= that already in the =~/.emacs.d/lisp/init-elpa.el=, then change path to your own elpa directory
+- Uncomment the line containing "myelpa" in =~/.emacs.d/lisp/init-elpa.el=. Path =~/projs/myelpa/= could be modified.
 - Start Emacs now!
 
 Now you are using local package repository =~/projs/melpa=.
