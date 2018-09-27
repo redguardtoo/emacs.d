@@ -392,7 +392,9 @@ INDENT-SIZE decide the indentation level.
                 "key" ; Keysnail
                 "ko"
                 "log"
+                "mockStore"
                 "module"
+                "mountWithTheme"
                 "plugins" ; Keysnail
                 "process"
                 "require"
