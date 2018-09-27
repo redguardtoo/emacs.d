@@ -1,0 +1,9 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: const c = styled(({myProp, children, ..rest}) => ...)
+# key: sty
+# contributor: Chen Bin <chenbin DOT sh AT gmail
+# --
+// Please note innerRef can't be used any more
+const ${1:StyledDiv} = styled(({${2:myProp}, children, ...rest}) => <${3:button} {...rest}>{children}</${3:$(yas/substr yas-text "[^ ]*")}>)\`
+  $0
+\`;
