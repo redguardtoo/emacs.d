@@ -1,4 +1,26 @@
 (require 'counsel)
+
+;; {{ automatically pick up cygwin cli tools for counse
+(when *win64*
+  (let* ((path (getenv "path"))
+         (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
+                      (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
+                      (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
+    (unless (string-match-p cygpath counsel-git-cmd)
+      (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
+    (unless (string-match-p cygpath counsel-git-grep-cmd-default)
+      (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
+    ;; ;; git-log does not work
+    ;; (unless (string-match-p cygpath counsel-git-log-cmd)
+    ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
+    ;;                                     cygpath
+    ;;                                     "/cat "
+    ;;                                     cygpath
+    ;;                                     "/git log --grep '%s'")))
+    (unless (string-match-p cygpath counsel-grep-base-command)
+      (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))
+;; }}
+
 (ivy-mode 1) ;; magit needs this
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
@@ -41,7 +63,7 @@ If N is not nil, only list files in current project."
 
 (defmacro counsel-git-grep-or-find-api (fn git-cmd hint no-keyword)
   "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
-Yank the file name at the same time.  FILTER is function to filter the collection"
+Yank the file name at the same time.  FILTER is function to filter the collection."
   `(let* ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
           (default-directory (locate-dominating-file
                               default-directory ".git"))
