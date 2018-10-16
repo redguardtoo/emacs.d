@@ -1,10 +1,10 @@
 * Features
-- Fast. Emacs starts up in *one second*
-- Robust. Emacs will never crash after a full package upgrade. You can install packages without network
+- Fast. Start up in *one second*
+- Robust. Never crash after a full package upgrade. Packages could be installed without network
 - Support Windows
 - Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS
-- Original setup (key bindings, directories ...) of Emacs and 3rd party packages are respected
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. It works when you ssh to server with [[http://www.putty.org/][PuTTY]]
+- Original setup (key bindings, directories ...) are respected
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. Works when ssh to server with [[http://www.putty.org/][PuTTY]]
 * Table of Content                                                              :noexport:TOC:
  - [[#features][Features]]
  - [[#checklist][Checklist]]
@@ -26,7 +26,6 @@
    - [[#color-theme][Color theme]]
    - [[#grepreplace-text-in-project][Grep/Replace text in project]]
    - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
-   - [[#js2-mode][js2-mode]]
    - [[#react-and-jsx][React and JSX]]
    - [[#git-gutter][git-gutter]]
    - [[#start-a-shell-inside-emacs][Start a shell inside Emacs]]
@@ -65,9 +64,10 @@
  - [[#report-bug][Report bug]]
 
 * Checklist
+- Emacs 26.1 is strongly recommended. It has better performance and easier to setup on Windows
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows
+- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Since version. Please note since =Emacs 26.1=, you can download no dependency version which is just works out of box
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* while packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
 - Emacs 24 support will be dropped on 2019. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
@@ -132,7 +132,7 @@ Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]
 - install fortune
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
-- copy data files and the script named fortune-zh into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
+- copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
 **** w3m (web browser)
 - Required by =emacs-w3m=
 - Install through OS package manager
@@ -195,29 +195,22 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Required by =cpputils-cmake=
 - Install through OS package manager
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
-
 **** [[http://clang.llvm.org][Clang]]
 - Required by =cpputils-cmake=, =company-clang=
 - Install through OS package manager
 - If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
-
 **** Pandoc
 - Required by =markdown-preview= from =markdown-mode=
 - Install through OS package manager
 **** GCC/Make
 - Required by =flymake=
 - Install through OS package manager
-**** [[https://addons.mozilla.org/en-us/firefox/addon/mozrepl/][MozRepl (Firefox addon)]]
-- Required by [[http://www.emacswiki.org/emacs/MozRepl][MozRepl]]
-- Used by Firefox
-
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages
 - Install through OS package manager
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
-
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]]
 - It creates index files for code navigation and auto-completion
@@ -273,7 +266,7 @@ You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. N
 ** Evil-mode tutorial
 Required for vim user,
 - Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
-- Please Read =~/.emacs.d/site-lisp/evil/doc/evil.pdf=
+- Read [[https://github.com/emacs-evil/evil/blob/master/doc/evil.pdf]]
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * Usage
@@ -299,15 +292,13 @@ Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
 
 For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing ",bu" executes command =backward-up-list=.
 
-The tutorials I recommended provides enough information about commands.
+The tutorials I recommended has enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
 [[https://github.com/abo-abo/hydra][Hydra]] is used to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
 
 You can always press =C-c C-y= anywhere to bring up default hydra menu.
-
-You can override any key bindings in =~/.custome.el=.
 * FAQ
 ** default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
@@ -359,10 +350,6 @@ You can specify the ignore regex like =!keyword1= in =ivy=. If you want to ignor
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
 You can input =:keyword= in ivy UI to search by Chinese Pinyin.
-** js2-mode
-I release patched =js2-mode= based on [[https://github.com/mooz/js2-mode][latest official version]] every three months. My patched version has better imenu support.
-
-Please =package-refresh-content= from time to time upgrade =js2-mode=.
 ** React and JSX
 I use =rjsx-mode= with Emacs v25+. It's based on =js2-mode= so it has excellent imenu support.
 
@@ -394,12 +381,12 @@ Synchronize from my stable setup which is updated every 6+ months:
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git stable
 #+end_src
 
-Or latest setup which is unstable:
+Or latest setup:
 #+begin_src bash
 git pull https://redguardtoo@github.com/redguardtoo/emacs.d.git
 #+end_src
 
-If you don't like my commits, you can revert them:
+You can revert commit:
 #+begin_src bash
 # always start from the latest related commit
 git revert commit-2014-12-01
@@ -422,13 +409,13 @@ Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
 ** Locked packages
-Some packages (Evil, Web-mode ...) are so important to my workflow that they are locked.
+Some packages are so important to my workflow that they are locked.
 
 Those packages are placed at =~/.emacs.d/site-lisp=.
 
 They will not be upgraded through ELPA unless you delete them at =~/.emacs.d/site-lisp= at first.
 ** Customize global variables
-Some variables are hard coded so you cannot "M-x customize" to modify them.
+Some variables are hard coded so you cannot =M-x customize= to modify them.
 
 Here are the steps to change their values:
 - Find the variable description by =M-x customize=
@@ -446,8 +433,8 @@ I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. But nati
 By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can setup =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
-- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you need always to run it when you update the snippets. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
-- You can add your snippets into =~/.emacs.d/snippets=.
+- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you need always to run it when new snippets is added. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
+- You can add your snippets into =~/.emacs.d/snippets/=.
 - Run =grep -rns  --exclude='.yas*' 'key:' *= in =~/.emacs.d/snippets= to see my own snippets
 ** Non-English users
 Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
@@ -500,11 +487,11 @@ For languages GNU Global doesn't support, you can always fall back to =company-e
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-statement=.
 ** Chinese Input Method Editor
-   =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
+Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
 If your *personal* dictionary =~/.eim/personal.pyim= exists, it will be used.
 
-You can =M-x my-pyim-export-dictionary= to export your personal words into personal.pyim. Check =init-chinese-pyim.el= for more information.
+You can =M-x my-pyim-export-dictionary= to export your personal words into =personal.pyim=. Check =init-chinese-pyim.el= for more information.
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash
