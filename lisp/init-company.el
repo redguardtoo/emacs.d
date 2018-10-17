@@ -32,7 +32,9 @@
            company-idle-delay 0.2
            company-clang-insert-arguments nil
            company-require-match nil
-           company-etags-ignore-case t)
+           company-etags-ignore-case t
+           ;; @see https://github.com/company-mode/company-mode/issues/146
+           company-tooltip-align-annotations t)
 
      ;; @see https://github.com/redguardtoo/emacs.d/commit/2ff305c1ddd7faff6dc9fa0869e39f1e9ed1182d
      (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
