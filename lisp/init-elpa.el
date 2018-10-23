@@ -1,7 +1,3 @@
-;; emacs24 require calling `package-initialize' explicitly
-(require 'package)
-(package-initialize)
-
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
 (defvar melpa-include-packages
