@@ -159,6 +159,7 @@
   ;; Adding directories under "~/.emacs.d/site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
   ;; Besides, no packages from ELPA is dependent "~/.emacs.d/site-lisp" now.
+  (require-init 'init-site-lisp)
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
