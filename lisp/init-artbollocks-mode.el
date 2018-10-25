@@ -1,5 +1,5 @@
 ;; @see https://github.com/sachac/.emacs.d/blob/gh-pages/Sacha.org
-(require 'artbollocks-mode)
+(local-require 'artbollocks-mode)
 ;; Avoid these phrases
 (setq artbollocks-weasel-words-regex
           (concat "\\b" (regexp-opt

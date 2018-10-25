@@ -1,36 +1,4 @@
-;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
-;; evil 1.0.8 search word instead of symbol
-(setq evil-symbol-word-search t)
-
-;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-(defmacro adjust-major-mode-keymap-with-evil (m &optional r)
-  `(eval-after-load (quote ,(if r r m))
-     '(progn
-        (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-        ;; force update evil keymaps after git-timemachine-mode loaded
-        (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
-
-(adjust-major-mode-keymap-with-evil "git-timemachine")
-
-(require 'evil)
-
-;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
-;; Cursor is alway black because of evil.
-;; Here is the workaround
-(setq evil-default-cursor t)
-
-;; {{ multiple-cursors
-;; step 1, select thing in visual-mode (OPTIONAL)
-;; step 2, `mc/mark-all-like-dwim' or `mc/mark-all-like-this-in-defun'
-;; step 3, `ace-mc-add-multiple-cursors' to remove cursor, press RET to confirm
-;; step 4, press s or S to start replace
-;; step 5, press C-g to quit multiple-cursors
-(define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
-(define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this-dwim)
-(define-key evil-visual-state-map (kbd "md") 'mc/mark-all-like-this-in-defun)
-(define-key evil-visual-state-map (kbd "mm") 'ace-mc-add-multiple-cursors)
-(define-key evil-visual-state-map (kbd "ms") 'ace-mc-add-single-cursor)
-;; }}
+;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; enable evil-mode
 (evil-mode 1)
@@ -509,7 +477,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "tm" 'my-git-timemachine
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
        "ov" 'my-overview-of-current-buffer
-       "or" 'open-readme-in-git-root-directory
+       "or" 'open-readme-in-project
        "oo" 'compile
        "c$" 'org-archive-subtree ; `C-c $'
        ;; org-do-demote/org-do-premote support selected region
@@ -558,7 +526,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rw" 'rotate-windows
        "ru" 'undo-tree-save-state-to-register ; C-x r u
        "rU" 'undo-tree-restore-state-from-register ; C-x r U
-       "xt" 'toggle-window-split
+       "xt" 'toggle-two-split-window
        "uu" 'winner-undo
        "UU" 'winner-redo
        "to" 'toggle-web-js-offset
@@ -805,11 +773,11 @@ If the character before and after CH is space or tab, CH is NOT slash"
                                    (face-foreground 'mode-line))))
   (add-hook 'post-command-hook
             (lambda ()
-              (let ((color (cond ((minibufferp) default-color)
-                                 ((evil-insert-state-p) '("#e80000" . "#ffffff"))
-                                 ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
-                                 ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
-                                 (t default-color))))
+              (let* ((color (cond ((minibufferp) default-color)
+                                  ((evil-insert-state-p) '("#e80000" . "#ffffff"))
+                                  ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
+                                  ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
+                                  (t default-color))))
                 (set-face-background 'mode-line (car color))
                 (set-face-foreground 'mode-line (cdr color))))))
 
@@ -880,6 +848,38 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (eval-after-load "evil"
   '(progn
      (define-key global-map (kbd "C-x C-z") 'switch-to-shell-or-ansi-term)
-     (setq expand-region-contract-fast-key "z")))
+     (setq expand-region-contract-fast-key "z")
+
+     ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
+     ;; evil 1.0.8 search word instead of symbol
+     (setq evil-symbol-word-search t)
+
+     ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+     (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
+       `(eval-after-load (quote ,(if r r m))
+          '(progn
+             (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+             ;; force update evil keymaps after git-timemachine-mode loaded
+             (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
+
+     (adjust-major-mode-keymap-with-evil "git-timemachine")
+
+     ;; {{ multiple-cursors
+     ;; step 1, select thing in visual-mode (OPTIONAL)
+     ;; step 2, `mc/mark-all-like-dwim' or `mc/mark-all-like-this-in-defun'
+     ;; step 3, `ace-mc-add-multiple-cursors' to remove cursor, press RET to confirm
+     ;; step 4, press s or S to start replace
+     ;; step 5, press C-g to quit multiple-cursors
+     (define-key evil-visual-state-map (kbd "mn") 'mc/mark-next-like-this)
+     (define-key evil-visual-state-map (kbd "ma") 'mc/mark-all-like-this-dwim)
+     (define-key evil-visual-state-map (kbd "md") 'mc/mark-all-like-this-in-defun)
+     (define-key evil-visual-state-map (kbd "mm") 'ace-mc-add-multiple-cursors)
+     (define-key evil-visual-state-map (kbd "ms") 'ace-mc-add-single-cursor)
+     ;; }}
+
+     ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
+     ;; Cursor is alway black because of evil.
+     ;; Here is the workaround
+     (setq evil-default-cursor t)))
 
 (provide 'init-evil)

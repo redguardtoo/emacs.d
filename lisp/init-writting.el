@@ -1,9 +1,11 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; @see http://endlessparentheses.com/super-smart-capitalization.html
 (defun endless/convert-punctuation (rg rp)
   "Look for regexp RG around point, and replace with RP.
 Only applies to text-mode."
-  (let ((f "\\(%s\\)\\(%s\\)")
-        (space "?:[[:blank:]\n\r]*"))
+  (let* ((f "\\(%s\\)\\(%s\\)")
+         (space "?:[[:blank:]\n\r]*"))
     ;; We obviously don't want to do this in prog-mode.
     (if (and (derived-mode-p 'text-mode)
              (or (looking-at (format f space rg))
@@ -11,8 +13,7 @@ Only applies to text-mode."
         (replace-match rp nil nil nil 1))))
 
 (defun endless/call-subword-cmd (fn)
-  (unless (featurep 'subword)
-    (require 'subword))
+  (unless (featurep 'subword) (require 'subword))
   (call-interactively fn))
 
 (defun endless/capitalize ()

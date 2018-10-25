@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; may be in an arbitrary order
 (eval-when-compile (require 'cl))
 
@@ -45,7 +47,7 @@
     (imenu--generic-function javascript-common-imenu-regex-list)))
 
 (defun my-common-js-setup ()
-  (unless (featurep 'js-comint) (require 'js-comint)))
+  (local-require 'js-comint))
 
 (defun mo-js-mode-hook ()
   (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))

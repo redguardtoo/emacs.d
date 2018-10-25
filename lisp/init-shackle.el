@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; @see https://github.com/wasamasa/shackle
 (setq shackle-lighter "")
 (setq shackle-select-reused-windows nil) ; default nil

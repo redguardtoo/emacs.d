@@ -1,5 +1,6 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (require 'erlang-start)
-;; (setq flymake-log-level 3) ;; log is annoying
 
 ;; @see https://github.com/ten0s/syntaxerl
 (defun flymake-compile-script-path (path)
@@ -16,7 +17,7 @@
 (defun my-setup-erlang ()
   (interactive)
   (unless (is-buffer-file-temp)
-    (require 'cb)
+    (local-require 'cb)
     (when (file-exists-p (file-truename "~/bin/syntaxerl"))
       (add-to-list 'flymake-allowed-file-name-masks '("\\.erl\\'" flymake-syntaxerl))
       (add-to-list 'flymake-allowed-file-name-masks '("\\.hrl\\'" flymake-syntaxerl))
@@ -28,7 +29,6 @@
       (add-to-list 'flymake-allowed-file-name-masks '("\\.escript\\'" flymake-syntaxerl))
       ;; should be the last.
       (flymake-mode 1))))
-
 (add-hook 'erlang-mode-hook 'my-setup-erlang)
 
 (provide 'init-erlang)

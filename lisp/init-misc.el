@@ -1,3 +1,4 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; {{ shell and conf
 (add-to-list 'auto-mode-alist '("\\.[^b][^a][a-zA-Z]*rc$" . conf-mode))
@@ -107,6 +108,9 @@
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 ;; }}
+
+(add-to-list 'auto-mode-alist
+             '("\\.\\(bash_profile\\|bash_history\\|sh\\|bash\\|bashrc\\.local\\|zsh\\|bashrc\\)\\'" . sh-mode))
 
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
@@ -847,7 +851,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
 
 (defun vc-msg-show-code-setup ()
-  ;; use `ffip-diff-mode' from package find-file-in-project instead of `diff-mode'
+  "Use `ffip-diff-mode' instead of `diff-mode'."
   (unless (featurep 'find-file-in-project)
     (require 'find-file-in-project))
   (ffip-diff-mode))

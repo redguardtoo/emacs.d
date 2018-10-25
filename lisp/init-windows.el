@@ -1,11 +1,10 @@
-;;----------------------------------------------------------------------------
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; Navigate window layouts with "C-c <left>" and "C-c <right>"
-;;----------------------------------------------------------------------------
 (winner-mode 1)
 ;; copied from http://puntoblogspot.blogspot.com/2011/05/undo-layouts-in-emacs.html
 (global-set-key (kbd "C-x 4 u") 'winner-undo)
 (global-set-key (kbd "C-x 4 U") 'winner-redo)
-
 
 (defvar my-ratio-dict
   '((1 . 1.61803398875)
@@ -63,30 +62,30 @@ Always focus on bigger window."
   (interactive)
   (scroll-other-window '-))
 
-(defun toggle-window-split ()
+(defun toggle-two-split-window ()
   (interactive)
-  (if (= (count-windows) 2)
-      (let* ((this-win-buffer (window-buffer))
-             (next-win-buffer (window-buffer (next-window)))
-             (this-win-edges (window-edges (selected-window)))
-             (next-win-edges (window-edges (next-window)))
-             (this-win-2nd (not (and (<= (car this-win-edges)
-                                         (car next-win-edges))
-                                     (<= (cadr this-win-edges)
-                                         (cadr next-win-edges)))))
-             (splitter
-              (if (= (car this-win-edges)
-                     (car (window-edges (next-window))))
-                  'split-window-horizontally
-                'split-window-vertically)))
-        (delete-other-windows)
-        (let ((first-win (selected-window)))
-          (funcall splitter)
-          (if this-win-2nd (other-window 1))
-          (set-window-buffer (selected-window) this-win-buffer)
-          (set-window-buffer (next-window) next-win-buffer)
-          (select-window first-win)
-          (if this-win-2nd (other-window 1))))))
+  (when (= (count-windows) 2)
+    (let* ((this-win-buffer (window-buffer))
+           (next-win-buffer (window-buffer (next-window)))
+           (this-win-edges (window-edges (selected-window)))
+           (next-win-edges (window-edges (next-window)))
+           (this-win-2nd (not (and (<= (car this-win-edges)
+                                       (car next-win-edges))
+                                   (<= (cadr this-win-edges)
+                                       (cadr next-win-edges)))))
+           (splitter
+            (if (= (car this-win-edges)
+                   (car (window-edges (next-window))))
+                'split-window-horizontally
+              'split-window-vertically)))
+      (delete-other-windows)
+      (let* ((first-win (selected-window)))
+        (funcall splitter)
+        (if this-win-2nd (other-window 1))
+        (set-window-buffer (selected-window) this-win-buffer)
+        (set-window-buffer (next-window) next-win-buffer)
+        (select-window first-win)
+        (if this-win-2nd (other-window 1))))))
 
 (defun rotate-windows ()
   "Rotate windows in clock-wise direction."
@@ -112,29 +111,5 @@ Always focus on bigger window."
              (set-window-start w1 s2)
              (set-window-start w2 s1)
              (setq i (1+ i)))))))
-
-;; buffer related {{
-(defun kill-buffer-in-nth-window (&optional win-num)
-  "Kill the buffer in nth window, default to next window
-If WIN-NUM is provided (via prefix in C-u), kill the buffer in window numbered WIN-NUM
-
-Used for killing temporary/auto buffers like *help*, *manual* .etc, also useful
-in kill buffer in other window while keeping window split untouched."
-  (interactive "P")
-  (let ((tgt-win)
-        (cur-buf-name (buffer-name))
-        (cur-win (selected-window)))
-    (if win-num
-        (setq tgt-win (select-window-by-number win-num))
-      (setq tgt-win (next-window)))
-    (select-window tgt-win)
-    (if (eq cur-buf-name (buffer-name))
-        (message "Same buffer, do nothing")
-      (kill-this-buffer))
-    (select-window cur-win)))
-
-(global-set-key (kbd "C-x K") 'kill-buffer-in-nth-window)
-;; }}
-
 
 (provide 'init-windows)

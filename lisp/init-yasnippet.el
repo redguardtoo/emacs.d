@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; my private snippets, should be placed before enabling yasnippet
 (setq my-yasnippets (expand-file-name "~/my-yasnippets"))
 

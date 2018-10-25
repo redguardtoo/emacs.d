@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; Suppress GUI features
 (setq use-file-dialog nil)
 (setq use-dialog-box nil)

@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (dolist (hook '(c-mode-common-hook
                 emacs-lisp-mode-hook
                 java-mode-hook
@@ -81,7 +83,6 @@
        (save-excursion (hs-show-block)))
 
      (defadvice find-tag (after expand-after-find-tag activate compile)
-       (save-excursion (hs-show-block)))
-     ))
+       (save-excursion (hs-show-block)))))
 
 (provide 'init-hs-minor-mode)

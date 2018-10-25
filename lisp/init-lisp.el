@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defun show-scratch-buffer-message ()
   (let* ((fortune-prog (or (executable-find "fortune-zh")
                            (executable-find "fortune"))))
@@ -24,7 +26,7 @@
 (setq scheme-program-name "guile")
 (eval-after-load 'scheme-mode
   '(progn
-     (require 'quack)))
+     (local-require 'quack)))
 ;; }}
 
 ;; A quick way to jump to the definition of a function given its key binding

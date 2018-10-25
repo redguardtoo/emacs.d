@@ -1,4 +1,4 @@
-;;; init-misc-lazy.el --- misc setup loaded later
+;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (setq auto-mode-alist
       (cons '("\\.textile\\'" . textile-mode) auto-mode-alist))
@@ -42,11 +42,10 @@
   "Insert the current date. With prefix-argument, use ISO format. With
    two prefix arguments, write out the day and month name."
   (interactive "P")
-  (let ((format (cond
-                 ((not prefix) "%d.%m.%Y")
-                 ((equal prefix '(4)) "%Y-%m-%d")
-                 ((equal prefix '(16)) "%d %B %Y")))
-        )
+  (let* ((format (cond
+                  ((not prefix) "%d.%m.%Y")
+                  ((equal prefix '(4)) "%Y-%m-%d")
+                  ((equal prefix '(16)) "%d %B %Y"))))
     (insert (format-time-string format))))
 
 ;;compute the length of the marked region
@@ -60,34 +59,31 @@
 (defvar rimenu-position-pair nil "positions before and after imenu jump")
 (add-hook 'imenu-after-jump-hook
           (lambda ()
-            (let ((start-point (marker-position (car mark-ring)))
-                  (end-point (point)))
+            (let* ((start-point (marker-position (car mark-ring)))
+                   (end-point (point)))
               (setq rimenu-position-pair (list start-point end-point)))))
 
 (defun rimenu-jump ()
-  "jump to the closest before/after position of latest imenu jump"
+  "Jump to the closest before/after position of latest imenu jump."
   (interactive)
   (when rimenu-position-pair
-    (let ((p1 (car rimenu-position-pair))
-          (p2 (cadr rimenu-position-pair)))
+    (let* ((p1 (car rimenu-position-pair))
+           (p2 (cadr rimenu-position-pair)))
 
       ;; jump to the far way point of the rimenu-position-pair
       (if (< (abs (- (point) p1))
              (abs (- (point) p2)))
           (goto-char p2)
-          (goto-char p1))
-      )))
+        (goto-char p1)))))
 ;; }}
 
 ;; {{ my blog tools
 (defun open-blog-on-current-month ()
   (interactive)
-  (let (blog)
-   (setq blog (file-truename (concat "~/blog/" (format-time-string "%Y-%m") ".org")) )
-   (find-file blog)))
+  (find-file (file-truename (concat "~/blog/" (format-time-string "%Y-%m") ".org"))))
 
 (defun insert-blog-version ()
-  "insert version of my blog post"
+  "Insert version of my blog post."
   (interactive)
   (insert (format-time-string "%Y%m%d")))
 ;; }}
@@ -99,25 +95,24 @@
   (switch-to-buffer "*ASCII*")
   (erase-buffer)
   (insert (format "ASCII characters up to number %d.\n" 254))
-  (let ((i 0))
+  (let* ((i 0))
     (while (< i 254)
-           (setq i (+ i 1))
-           (insert (format "%4d %c\n" i i))))
+      (setq i (+ i 1))
+      (insert (format "%4d %c\n" i i))))
   (beginning-of-buffer))
 
 ;; {{ grep and kill-ring
 (defun grep-pattern-into-list (regexp)
-  (let ((s (buffer-string))
-        (pos 0)
-        item
-        items)
-    (while (setq pos (string-match regexp s pos))
-      (setq item (match-string-no-properties 0 s))
-      (setq pos (+ pos (length item)))
-      (if (not (member item items))
-          (add-to-list 'items item)
-        ))
-    items))
+  (let* ((s (buffer-string))
+         (pos 0)
+         item
+         items)
+        (while (setq pos (string-match regexp s pos))
+          (setq item (match-string-no-properties 0 s))
+          (setq pos (+ pos (length item)))
+          (when (not (member item items))
+            (add-to-list 'items item)))
+        items))
 
 (defun grep-pattern-into-kill-ring (regexp)
   "Find all strings matching REGEXP in current buffer.
@@ -125,11 +120,10 @@ grab matched string and insert them into kill-ring"
   (interactive
    (let* ((regexp (read-regexp "grep regex:")))
      (list regexp)))
-  (let (items rlt)
+  (let* (items rlt)
     (setq items (grep-pattern-into-list regexp))
     (dolist (i items)
-      (setq rlt (concat rlt (format "%s\n" i)))
-      )
+      (setq rlt (concat rlt (format "%s\n" i))))
     (kill-new rlt)
     (message "matched strings => kill-ring")
     rlt))
@@ -155,8 +149,7 @@ grab matched string, cssize them, and insert into kill ring"
   (interactive
    (let* ((regexp (read-regexp "grep regex:")))
      (list regexp)))
-  (let (items rlt)
-    (setq items (grep-pattern-into-list regexp))
+  (let* ((items (grep-pattern-into-list regexp)) rlt)
     (dolist (i items)
       (setq i (replace-regexp-in-string "\\(class=\\|\"\\)" "" i))
       (setq rlt (concat rlt (format ".%s {\n}\n\n" i))))
@@ -170,7 +163,7 @@ grab matched string, cssize them, and insert into kill ring"
 ;; }}
 
 (defun display-line-number ()
-  "display current line number in mini-buffer"
+  "Display current line number in mini-buffer."
   (interactive)
   (message "line number:%d" (line-number-at-pos)))
 
@@ -179,7 +172,7 @@ grab matched string, cssize them, and insert into kill ring"
   "Find duplicate lines in region START to END keeping first occurrence."
   (interactive "*r")
   (save-excursion
-    (let ((end (copy-marker end)))
+    (let* ((end (copy-marker end)))
       (while
           (progn
             (goto-char start)
@@ -193,33 +186,31 @@ grab matched string, cssize them, and insert into kill ring"
 ;; }}
 
 (defun insert-file-link-from-clipboard ()
-  "Make sure the full path of file exist in clipboard. This command will convert
-The full path into relative path insert it as a local file link in org-mode"
+  "Make sure the full path of file exist in clipboard.
+This command will convert full path into relative path.
+Then insert it as a local file link in `org-mode'."
   (interactive)
   (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
 
 (defun font-file-to-base64 (file)
-  (let ((str "")
-        (file-base (file-name-sans-extension file))
-        (file-ext (file-name-extension file)))
-
-    (if (file-exists-p file)
+  "Convert font file into base64 encoded string."
+  (let* ((str "")
+         (file-base (file-name-sans-extension file))
+         (file-ext (file-name-extension file)))
+    (when (file-exists-p file)
         (with-temp-buffer
           (shell-command (concat "cat " file "|base64") 1)
           (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
     str))
 
 (defun convert-binary-to-css-code ()
-  "Convert binary (image, font...) into css"
+  "Convert binary (image, font...) into css code."
   (interactive)
-  (let (str
-        rlt
+  (let* (str
         (file (read-file-name "The path of image:"))
-        file-ext
-        file-base)
-
-    (setq file-ext (file-name-extension file))
-    (setq file-base (file-name-sans-extension file))
+        (file-ext (file-name-extension file))
+        (file-base (file-name-sans-extension file))
+        rlt)
     (cond
      ((member file-ext '("ttf" "eot" "woff"))
       (setq rlt (concat "@font-face {\n"
@@ -246,14 +237,15 @@ The full path into relative path insert it as a local file link in org-mode"
 
 
 (defun current-font-face ()
-  "get the font face under cursor"
+  "Get the font face under cursor."
   (interactive)
-  (let ((rlt (format "%S" (get-text-property (point) 'face))))
+  (let* ((rlt (format "%S" (get-text-property (point) 'face))))
     (kill-new rlt)
     (copy-yank-str rlt)
     (message "%s => clipboard & yank ring" rlt)))
 
 (defun current-thing-at-point ()
+  "Print current thing at point."
   (interactive)
   (message "thing = %s" (thing-at-point 'symbol)))
 
@@ -267,87 +259,78 @@ The full path into relative path insert it as a local file link in org-mode"
                              (cond
                               ((eq system-type 'cygwin) "putclip")
                               ((eq system-type 'darwin) "pbcopy")
-                              (t "xsel -ib")
-                              )))
+                              (t "xsel -ib"))))
   (message "%s => clipboard" (current-kill 0)))
 ;; }}
 
-(defun open-readme-in-git-root-directory ()
+(defun open-readme-in-project ()
+  "Open READ in project root."
   (interactive)
-  (let (filename
-        (root-dir (locate-dominating-file (file-name-as-directory (file-name-directory buffer-file-name)) ".git"))
-        )
-    ;; (message "root-dir=%s" root-dir)
-    (and root-dir (file-name-as-directory root-dir))
-    (setq filename (concat root-dir "README.org"))
+  (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
+  (let* ((root-dir (ffip-project-root))
+         (filename (concat root-dir "README.org")))
     (if (not (file-exists-p filename))
-        (setq filename (concat root-dir "README.md"))
-      )
-    ;; (message "filename=%s" filename)
+        (setq filename (concat root-dir "README.md")))
     (if (file-exists-p filename)
         (switch-to-buffer (find-file-noselect filename nil nil))
-      (message "NO README.org or README.md found!"))
-    ))
+      (message "NO README.org or README.md found!"))))
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
 (defun vc-rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
   (interactive)
-  (let ((filename (buffer-file-name)))
-    (if (not (and filename (file-exists-p filename)))
-        (message "Buffer is not visiting a file!")
-      (let ((new-name (read-file-name "New name: " filename)))
+  (let* ((filename (buffer-file-name)))
+    (cond
+     ((not (and filename (file-exists-p filename)))
+      (message "Buffer is not visiting a file!"))
+     (t
+      (let* ((new-name (read-file-name "New name: " filename)))
         (cond
          ((vc-backend filename) (vc-rename-file filename new-name))
          (t
           (rename-file filename new-name t)
           (rename-buffer new-name)
           (set-visited-file-name new-name)
-          (set-buffer-modified-p nil)))))))
+          (set-buffer-modified-p nil))))))))
 
 (defun vc-copy-file-and-rename-buffer ()
-  "copy the current buffer and file it is visiting.
-if the old file is under version control, the new file is added into
-version control automatically"
+  "Copy the current buffer and file it is visiting.
+If the old file is under version control, the new file is added into
+version control automatically."
   (interactive)
-  (let ((filename (buffer-file-name)))
-    (if (not (and filename (file-exists-p filename)))
-        (message "Buffer is not visiting a file!")
-      (let ((new-name (read-file-name "New name: " filename)))
+  (let* ((filename (buffer-file-name)))
+    (cond
+     ((not (and filename (file-exists-p filename)))
+      (message "Buffer is not visiting a file!"))
+     (t
+      (let* ((new-name (read-file-name "New name: " filename)))
         (copy-file filename new-name t)
         (rename-buffer new-name)
         (set-visited-file-name new-name)
         (set-buffer-modified-p nil)
         (when (vc-backend filename)
-          (vc-register)
-          )))))
+          (vc-register)))))))
 
 (defun toggle-env-http-proxy ()
-  "set/unset the environment variable http_proxy which w3m uses"
+  "Set/unset the environment variable http_proxy used by w3m."
   (interactive)
-  (let ((proxy "http://127.0.0.1:8000"))
-    (if (string= (getenv "http_proxy") proxy)
-        ;; clear the the proxy
-        (progn
-          (setenv "http_proxy" "")
-          (message "env http_proxy is empty now")
-          )
-      ;; set the proxy
+  (let* ((proxy "http://127.0.0.1:8000"))
+    (cond
+     ((string= (getenv "http_proxy") proxy)
+      (setenv "http_proxy" "")
+      (message "env http_proxy is empty now"))
+     (t
       (setenv "http_proxy" proxy)
-      (message "env http_proxy is %s now" proxy))
-    ))
+      (message "env http_proxy is %s now" proxy)))))
 
 (defun strip-convert-lines-into-one-big-string (beg end)
-  "strip and convert selected lines into one big string which is copied into kill ring.
-When transient-mark-mode is enabled, if no region is active then only the
+  "Strip and convert selected lines into one string which is copied into `kill-ring'.
+When `transient-mark-mode' is enabled and no region is active then only the
 current line is acted upon.
-
-If the region begins or ends in the middle of a line, that entire line is
-copied, even if the region is narrowed to the middle of a line.
-
+If BEG or END is in the middle of a line, entire line is copied.
 Current position is preserved."
   (interactive "r")
-  (let (str (orig-pos (point-marker)))
+  (let* (str (orig-pos (point-marker)))
     (save-restriction
       (widen)
       (when (and transient-mark-mode (not (use-region-p)))
@@ -364,8 +347,7 @@ Current position is preserved."
       (setq str (replace-regexp-in-string "[ \t]*\n" "" (replace-regexp-in-string "^[ \t]+" "" (buffer-substring-no-properties beg end))))
       ;; (message "str=%s" str)
       (kill-new str)
-      (goto-char orig-pos)))
-  )
+      (goto-char orig-pos))))
 
 ;; Don't disable narrowing commands
 (put 'narrow-to-region 'disabled nil)
@@ -386,7 +368,7 @@ Current position is preserved."
 (move-text-default-bindings)
 
 ;; {{go-mode
-(require 'go-mode-load)
+(local-require 'go-mode-load)
 ;; }}
 
 ;; someone mentioned that blink cursor could slow Emacs24.4
@@ -396,12 +378,10 @@ Current position is preserved."
 ;; so it should not be turned off by default
 ;; (blink-cursor-mode -1)
 
-
-(defun create-scratch-buffer nil
-  "create a new scratch buffer to work in. (could be *scratch* - *scratchX*)"
+(defun create-scratch-buffer ()
+  "Create a new scratch buffer."
   (interactive)
-  (let ((n 0)
-        bufname)
+  (let* ((n 0) bufname)
     (while (progn
              (setq bufname (concat "*scratch"
                                    (if (= n 0) "" (int-to-string n))
@@ -409,8 +389,7 @@ Current position is preserved."
              (setq n (1+ n))
              (get-buffer bufname)))
     (switch-to-buffer (get-buffer-create bufname))
-    (emacs-lisp-mode)
-    ))
+    (emacs-lisp-mode)))
 
 (defun cleanup-buffer-safe ()
   "Perform a bunch of safe operations on the whitespace content of a buffer.
@@ -440,7 +419,7 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 (defadvice epg--start (around advice-epg-disable-agent disable)
-  "Make epg--start not able to find a gpg-agent"
+  "Make `epg--start' not able to find a gpg-agent."
   (let ((agent (getenv "GPG_AGENT_INFO")))
     (setenv "GPG_AGENT_INFO" nil)
     ad-do-it
@@ -453,6 +432,9 @@ Including indent-buffer, which should not be called automatically on save."
   ;; Create `~/.gnupg/gpg-agent.conf' container one line `pinentry-program /usr/bin/pinentry-curses`
   (setq epa-pinentry-mode 'loopback))
 ;; }}
+
+(add-to-list 'which-func-modes 'org-mode)
+(which-func-mode 1)
 
 (provide 'init-misc-lazy)
 ;;; init-misc-lazy.el ends here

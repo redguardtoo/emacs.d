@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (eval-after-load 'counsel
   '(progn
      ;; automatically pick up cygwin cli tools for counse
@@ -198,8 +200,7 @@ Or else, find files since 24 weeks (6 months) ago."
     (ivy-read "bookmarks:"
               collection
               :action (lambda (bookmark)
-                        (unless (featurep 'bookmark+)
-                          (require 'bookmark+))
+                        (local-require 'bookmark+)
                         (bookmark-jump bookmark)))))
 
 (defun counsel-yank-bash-history ()
@@ -255,9 +256,16 @@ If N is not nil, only list directories in current project."
 
 (defun counsel-browse-kill-ring (&optional n)
   "If N > 1, assume just yank the Nth item in `kill-ring'.
-If N is nil, use `ivy-mode' to browse the `kill-ring'."
+If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive "P")
-  (my-select-from-kill-ring my-insert-str n))
+  (my-select-from-kill-ring (lambda (s)
+                              (let* ((plain-str (my-insert-str s))
+                                     (trimmed (s-trim plain-str)))
+                                (setq kill-ring (cl-delete-if
+                                                 `(lambda (e) (string= ,trimmed (s-trim e)))
+                                                 kill-ring))
+                                (kill-new plain-str)))
+                            n))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
   (unless (featurep 'pinyinlib) (require 'pinyinlib))

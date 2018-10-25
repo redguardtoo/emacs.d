@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (setq auto-mode-alist
       (cons '("\\.\\(m[k]d\\|markdown\\)\\'" . markdown-mode) auto-mode-alist))
 
@@ -7,11 +9,11 @@
       (imenu--generic-function patterns))))
 
 (defun markdown-mode-hook-setup ()
-  ;; stolen from http://stackoverflow.com/a/26297700
+  ;; Stolen from http://stackoverflow.com/a/26297700
   ;; makes markdown tables saner via orgtbl-mode
   ;; Insert org table and it will be automatically converted
   ;; to markdown table
-  (require 'org-table)
+  (unless (featurep 'org-table) (require 'org-table))
   (defun cleanup-org-tables ()
     (save-excursion
       (goto-char (point-min))
@@ -21,13 +23,12 @@
   ;; don't wrap lines because there is table in `markdown-mode'
   (setq truncate-lines t)
   (setq imenu-create-index-function 'markdown-imenu-index))
-
 (add-hook 'markdown-mode-hook 'markdown-mode-hook-setup)
 
 (eval-after-load 'markdown-mode
   '(progn
      ;; `pandoc' is better than obsolete `markdown'
-     (if (executable-find "pandoc")
-         (setq markdown-command "pandoc -f markdown"))))
+     (when (executable-find "pandoc")
+       (setq markdown-command "pandoc -f markdown"))))
 
 (provide 'init-markdown)

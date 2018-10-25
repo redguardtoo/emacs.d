@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (setq interpreter-mode-alist
       (cons '("python" . python-mode) interpreter-mode-alist))
 

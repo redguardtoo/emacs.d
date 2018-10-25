@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; elisp version of try...catch...finally
 (defmacro safe-wrap (fn &rest clean-up)
   `(unwind-protect
@@ -132,32 +134,33 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
   (let* ((pattern (concat "^" (file-name-as-directory directory))))
     (if (string-match-p pattern file) file)))
 
+(defun my-prepare-candidate-fit-into-screen (s)
+  (let* ((w (frame-width))
+         ;; display kill ring item in one line
+         (key (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
+    ;; strip the whitespace
+    (setq key (replace-regexp-in-string "^[ \t]+" "" key))
+    ;; fit to the minibuffer width
+    (if (> (length key) w)
+        (setq key (concat (substring key 0 (- w 4)) "...")))
+    (cons key s)))
+
 (defmacro my-select-from-kill-ring (fn &optional n)
-  "If N > 1, assume just yank the Nth item in `kill-ring'.
-If N is nil, use `ivy-mode' to browse the `kill-ring'."
+  "If N > 1, yank the Nth item in `kill-ring'.
+If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive "P")
   `(let* ((candidates (cl-remove-if
                        (lambda (s)
                          (or (< (length s) 5)
-                             (string-match "\\`[\n[:blank:]]+\\'" s)))
-                       (delete-dups kill-ring))))
-     (let* ((ivy-height (/ (frame-height) 2)))
-       (ivy-read "Browse `kill-ring':"
-                 (mapcar
-                  (lambda (s)
-                    (let* ((w (frame-width))
-                           ;; display kill ring item in one line
-                           (key (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
-                      ;; strip the whitespace
-                      (setq key (replace-regexp-in-string "^[ \t]+" "" key))
-                      ;; fit to the minibuffer width
-                      (if (> (length key) w)
-                          (setq key (concat (substring key 0 (- w 4)) "...")))
-                      (cons key s)))
-                  candidates)
-                 :action #',fn))))
+                             (string-match-p "\\`[\n[:blank:]]+\\'" s)))
+                       (delete-dups kill-ring)))
+          (ivy-height (/ (frame-height) 2)))
+     (ivy-read "Browse `kill-ring':"
+               (mapcar #'my-prepare-candidate-fit-into-screen candidates)
+               :action #',fn)))
 
 (defun my-insert-str (str)
+  "Insert STR into current buffer."
   ;; ivy8 or ivy9
   (if (consp str) (setq str (cdr str)))
   ;; evil-mode?
@@ -168,7 +171,8 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
            (not (eobp)))
       (forward-char))
   ;; insert now
-  (insert str))
+  (insert str)
+  str)
 
 (defun my-line-str (&optional line-end)
   (buffer-substring-no-properties (line-beginning-position)
@@ -342,7 +346,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
 (setq simpleclip-works (test-simpleclip))
 
 (defun my-gclip ()
-  (unless (featurep 'simpleclip) (require 'simpleclip))
+  (local-require 'simpleclip)
   (cond
    (simpleclip-works
     (simpleclip-get-contents))

@@ -1,4 +1,4 @@
-;; -*- coding: utf-8 -*-
+;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (let* ((minver "24.4"))
   (when (version< emacs-version minver)
@@ -48,7 +48,14 @@
   (run-with-idle-timer 5 t #'garbage-collect))
 
 (defmacro local-require (pkg)
-  `(load (file-truename (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg))))
+  `(unless (featurep ,pkg)
+     (cond
+      ((eq ,pkg 'bookmark+)
+       (load (file-truename (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg))))
+      ((eq ,pkg 'go-mode-load)
+       (load (file-truename (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg))))
+      (t
+       (load (file-truename (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg)))))))
 
 (defmacro require-init (pkg)
   `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg))))
@@ -71,26 +78,10 @@
 
   (require-init 'init-autoload)
   (require-init 'init-modeline)
-  ;; (require 'cl-lib) ; it's built in since Emacs v24.3
-  (require-init 'init-compat)
   (require-init 'init-utils)
-
-  ;; Windows configuration, assuming that cygwin is installed at "c:/cygwin"
-  ;; (condition-case nil
-  ;;     (when *win64*
-  ;;       ;; (setq cygwin-mount-cygwin-bin-directory "c:/cygwin/bin")
-  ;;       (setq cygwin-mount-cygwin-bin-directory "c:/cygwin64/bin")
-  ;;       (require 'setup-cygwin)
-  ;;       ;; better to set HOME env in GUI
-  ;;       ;; (setenv "HOME" "c:/cygwin/home/someuser")
-  ;;       )
-  ;;   (error
-  ;;    (message "setup-cygwin failed, continue anyway")
-  ;;    ))
   (require-init 'init-elpa)
   (require-init 'init-exec-path) ;; Set up $PATH
-  ;; any file use flyspell should be initialized after init-spelling.el
-  ;; actually, I don't know which major-mode use flyspell.
+  ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling)
   (require-init 'init-gui-frames)
   (require-init 'init-uniquify)
@@ -121,7 +112,6 @@
   ;; use evil mode (vi key binding)
   (require-init 'init-evil)
   (require-init 'init-multiple-cursors)
-  (require-init 'init-sh)
   (require-init 'init-ctags)
   (require-init 'init-bbdb)
   (require-init 'init-gnus)
@@ -151,7 +141,6 @@
   (setq idle-require-symbols '(init-perforce
                                init-slime
                                init-misc-lazy
-                               init-which-func
                                init-fonts
                                init-hs-minor-mode
                                init-writting
@@ -170,10 +159,9 @@
   ;; Adding directories under "~/.emacs.d/site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
   ;; Besides, no packages from ELPA is dependent "~/.emacs.d/site-lisp" now.
-  (require-init 'init-site-lisp)
 
   ;; my personal setup, other major-mode specific setup need it.
-  ;; It's dependent on init-site-lisp.el
+  ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
   (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/

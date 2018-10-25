@@ -1,6 +1,8 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; {{ make IME compatible with evil-mode
 (defun evil-toggle-input-method ()
-  "when toggle on input method, goto evil-insert-state. "
+  "When input method is on, goto `evil-insert-state'."
   (interactive)
 
   ;; load IME when needed, less memory footprint
@@ -95,7 +97,7 @@
 (defun chinese-calender (&optional args)
   "Open Chinese Lunar calenadar."
   (interactive "P")
-  (unless (featurep 'cal-china-x) (require 'cal-china-x))
+  (local-require 'cal-china-x)
   (let* ((calendar-date-display-form
           '((cal-china-x-calendar-display-form
              (mapcar (lambda (el) (string-to-number el))

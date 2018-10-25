@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (setq pomodoro-break-time 2)
 (setq pomodoro-long-break-time 5)
 (setq pomodoro-work-time 15)

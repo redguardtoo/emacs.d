@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; ;; {{ Solution 1: disable all vc backends
 ;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 ;; (setq vc-handled-backends ())
@@ -230,7 +232,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                                     (line-number-at-pos (region-end))))
         (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
       (message cmd)
-      (require 'find-file-in-project)
+      (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
 (eval-after-load 'magit

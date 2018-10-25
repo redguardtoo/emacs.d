@@ -6,5 +6,4 @@
             (turn-on-haskell-doc-mode)
             (turn-on-haskell-indent)))
 
-
 (provide 'init-haskell)

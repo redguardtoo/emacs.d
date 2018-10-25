@@ -1,4 +1,8 @@
-(add-auto-mode 'ruby-mode "\\.rb\\'" "Rakefile\\'" "\.rake\\'" "\.rxml\\'" "\.rjs\\'" ".irbrc\\'" "\.builder\\'" "\.ru\\'" "\.gemspec\\'" "Gemfile\\'")
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
+(add-auto-mode 'ruby-mode
+               "\\.\\(rb\\|rake\\|rxml\\|rjs\\|irbrc\\|builder\\|ru\\|gemspec\\)\\'"
+               "\\(Rakefile\\|Gemfile\\)\\'")
 
 (setq ruby-use-encoding-map nil)
 

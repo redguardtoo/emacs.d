@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 ;; Since we got company-ispell and `M-x toggle-company-ispell'

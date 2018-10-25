@@ -1,5 +1,6 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; @see https://github.com/abo-abo/hydra
-(unless (featurep 'hydra) (require 'hydra))
 
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
@@ -211,7 +212,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 (defun hydra-move-splitter-left (arg)
   "Move window splitter left."
   (interactive "p")
-  (if (let ((windmove-wrap-around))
+  (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (shrink-window-horizontally arg)
     (enlarge-window-horizontally arg)))
@@ -219,7 +220,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 (defun hydra-move-splitter-right (arg)
   "Move window splitter right."
   (interactive "p")
-  (if (let ((windmove-wrap-around))
+  (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (enlarge-window-horizontally arg)
     (shrink-window-horizontally arg)))
@@ -227,7 +228,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 (defun hydra-move-splitter-up (arg)
   "Move window splitter up."
   (interactive "p")
-  (if (let ((windmove-wrap-around))
+  (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (enlarge-window arg)
     (shrink-window arg)))
@@ -235,7 +236,7 @@ _w_ whitespace-mode:   %`whitespace-mode
 (defun hydra-move-splitter-down (arg)
   "Move window splitter down."
   (interactive "p")
-  (if (let ((windmove-wrap-around))
+  (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (shrink-window arg)
     (enlarge-window arg)))

@@ -1,4 +1,6 @@
-;; do NOT start elnode-web-server by default, prefer the manual way
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
+;; Do NOT start elnode-web-server by default, prefer manual way
 
 ;; per project setup may be better
 ;; (setq httpd-root "/var/www")

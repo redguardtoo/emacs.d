@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
 
 ;; search file name only when focus is over file
@@ -13,10 +15,9 @@
 
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
-if no files marked, always operate on current line in dired-mode
-"
+If no files marked, always operate on current line in dired-mode."
   (interactive
-   (let ((files (dired-get-marked-files t current-prefix-arg)))
+   (let* ((files (dired-get-marked-files t current-prefix-arg)))
      (list
       ;; Want to give feedback whether this file or marked files are used:
       (dired-read-shell-command "git command on %s: " current-prefix-arg files)
@@ -100,15 +101,15 @@ if no files marked, always operate on current line in dired-mode
      ;; -*- lexical-binding: t -*-
      (defun ora-ediff-files ()
        (interactive)
-       (let ((files (dired-get-marked-files))
-             (wnd (current-window-configuration)))
+       (let* ((files (dired-get-marked-files))
+              (wnd (current-window-configuration)))
          (if (<= (length files) 2)
-             (let ((file1 (car files))
-                   (file2 (if (cdr files)
-                              (cadr files)
-                            (read-file-name
-                             "file: "
-                             (dired-dwim-target-directory)))))
+             (let* ((file1 (car files))
+                    (file2 (if (cdr files)
+                               (cadr files)
+                             (read-file-name
+                              "file: "
+                              (dired-dwim-target-directory)))))
                (if (file-newer-than-file-p file1 file2)
                    (ediff-files file2 file1)
                  (ediff-files file1 file2))
@@ -123,7 +124,7 @@ if no files marked, always operate on current line in dired-mode
      (define-key dired-mode-map "/" 'dired-isearch-filenames)
      (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
 
-     (require 'dired+)
+     (local-require 'dired+)
      (setq dired-recursive-deletes 'always)
      (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                      ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path

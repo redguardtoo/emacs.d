@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; {{ flyspell setup for web-mode
 (defun web-mode-flyspell-verify ()
   (let* ((f (get-text-property (- (point) 1) 'face))
@@ -42,7 +44,6 @@
 
 (eval-after-load 'flyspell
   '(progn
-     (require 'flyspell-lazy)
      (flyspell-lazy-mode 1)))
 
 ;; better performance

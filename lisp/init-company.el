@@ -1,13 +1,14 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (add-hook 'after-init-hook 'global-company-mode)
 
-(if (fboundp 'evil-declare-change-repeat)
-    (mapc #'evil-declare-change-repeat
-          '(company-complete-common
-            company-select-next
-            company-select-previous
-            company-complete-selection
-            company-complete-number
-            )))
+(when (fboundp 'evil-declare-change-repeat)
+  (mapc #'evil-declare-change-repeat
+        '(company-complete-common
+          company-select-next
+          company-select-previous
+          company-complete-selection
+          company-complete-number)))
 
 (eval-after-load 'company
   '(progn

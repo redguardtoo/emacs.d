@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defmacro set-evil-move-cursor-back (v)
   `(if (boundp 'evil-move-cursor-back)
     (setq evil-move-cursor-back ,v)))

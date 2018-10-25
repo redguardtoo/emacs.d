@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defvar p4-file-to-url '("" "")
   "(car p4-file-to-url) is the original file prefix
 (cadr p4-file-to-url) is the url prefix")
@@ -11,7 +13,7 @@
   (p4-convert-file-to-url buffer-file-name))
 
 (defun p4-convert-dir-to-url (dir)
-  "Convert directory to p4 url."
+  "Convert DIR to p4 url."
   (replace-regexp-in-string (car p4-file-to-url)
                             (cadr p4-file-to-url)
                             (concat (file-name-as-directory dir) "...")))
@@ -215,7 +217,7 @@ Turn off `read-only-mode' of opened files."
            fn-accessed)
       (narrow-to-region start end)
       (goto-char (point-min))
-      (unless (featurep 'wgrep) (require 'featurep))
+      (unless (featurep 'wgrep) (require 'wgrep))
       (while (not (eobp))
         (if (looking-at wgrep-line-file-regexp)
             (let* ((filename (match-string-no-properties 1)) buf)

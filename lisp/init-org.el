@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;; some cool org tricks
 ;; @see http://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 
@@ -16,11 +18,11 @@
 
 ;; no spell check for property
 (defun org-mode-current-line-is-property ()
-  (string-match "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str)))
+  (string-match-p "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str)))
 
 ;; Please note flyspell only use ispell-word
 (defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
-  (let ((run-spellcheck ad-return-value))
+  (let* ((run-spellcheck ad-return-value))
     (if ad-return-value
       (cond
        ((org-mode-is-code-snippet)
@@ -47,7 +49,7 @@
 
 (defun my-setup-odt-org-convert-process ()
   (interactive)
-  (let ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
+  (let* ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
     (when (and *is-a-mac* (file-exists-p cmd))
       ;; org v7
       (setq org-export-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i")))
@@ -213,26 +215,21 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
     ad-do-it))
 
 (defadvice org-publish (around org-publish-advice activate)
-  "Stop running major-mode hook when org-publish"
-  (let ((old load-user-customized-major-mode-hook))
-    (setq load-user-customized-major-mode-hook nil)
-    ad-do-it
-    (setq load-user-customized-major-mode-hook old)))
+  "Stop running `major-mode' hook when org-publish."
+  (let* ((load-user-customized-major-mode-hook nil))
+    ad-do-it))
 
 ;; {{ org2nikola set up
 (setq org2nikola-output-root-directory "~/.config/nikola")
 (setq org2nikola-use-google-code-prettify t)
-(setq org2nikola-prettify-unsupported-language
-      '(elisp "lisp"
-              emacs-lisp "lisp"))
+(setq org2nikola-prettify-unsupported-language '(elisp "lisp" emacs-lisp "lisp"))
 ;; }}
 
 (defun org-demote-or-promote (&optional is-promote)
   (interactive "P")
   (unless (region-active-p)
     (org-mark-subtree))
-  (if is-promote (org-do-promote)
-    (org-do-demote)))
+  (if is-promote (org-do-promote) (org-do-demote)))
 
 ;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 (defun org-mime-html-hook-setup ()

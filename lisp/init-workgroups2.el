@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (setq wg-use-default-session-file nil)
 ;; don't open last workgroup automatically in `wg-open-session',
 ;; I only want to check available workgroups! Nothing more.
@@ -34,7 +36,7 @@
        (unless wg-current-session
          ;; code extracted from `wg-open-session'.
          ;; open session but do NOT load any workgroup.
-         (let ((session (read (f-read-text (file-truename wg-session-file)))))
+         (let* ((session (read (f-read-text (file-truename wg-session-file)))))
            (setf (wg-session-file-name session) wg-session-file)
            (wg-reset-internal (wg-unpickel-session-parameters session))))
        ad-do-it
