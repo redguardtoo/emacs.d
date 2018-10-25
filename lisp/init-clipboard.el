@@ -44,6 +44,13 @@ If N is not nil, copy file name and line number."
     (copy-yank-str (file-truename buffer-file-name))
     (message "file full path => clipboard & yank ring")))
 
+(defun clipboard-to-kill-ring ()
+  "Copy from clipboard to `kill-ring'."
+  (interactive)
+  (let* ((warning-minimum-level :emergency))
+    (kill-new (my-gclip)))
+  (message "clipboard => kill-ring"))
+
 (defun kill-ring-to-clipboard ()
   "Copy from `kill-ring' to clipboard."
   (interactive)
