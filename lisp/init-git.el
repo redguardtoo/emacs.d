@@ -233,4 +233,8 @@ If nothing is selected, use the word under cursor as function name to look up."
       (require 'find-file-in-project)
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
+(eval-after-load 'magit
+  '(progn
+    (ivy-mode 1)))
+
 (provide 'init-git)

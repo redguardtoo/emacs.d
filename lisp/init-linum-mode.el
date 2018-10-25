@@ -5,7 +5,6 @@
                                       ffip-diff-mode
                                       dictionary-mode
                                       erc-mode
-                                      browse-kill-ring-mode
                                       dired-mode
                                       help-mode
                                       text-mode

@@ -1,18 +1,13 @@
 ;; -*- coding: utf-8 -*-
-;(defvar best-gc-cons-threshold gc-cons-threshold "Best default gc threshold value. Should't be too big.")
 
-
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-(package-initialize)
-
-(let ((minver "24.4"))
+(let* ((minver "24.4"))
   (when (version< emacs-version minver)
     (error "This config requires Emacs v%s or higher" minver)))
 
-(defvar best-gc-cons-threshold 4000000 "Best default gc threshold value. Should't be too big.")
+(defvar best-gc-cons-threshold
+  4000000
+  "Best default gc threshold value.  Should NOT be too big!")
+
 ;; don't GC during startup to save time
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -48,7 +43,7 @@
 ;; Emacs 25 does gc too frequently
 (when *emacs25*
   ;; (setq garbage-collection-messages t) ; for debug
-  (setq gc-cons-threshold (* 64 1024 1024) )
+  (setq best-gc-cons-threshold (* 64 1024 1024))
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
@@ -69,7 +64,11 @@
 ;; ("\\`/[^/|:][^/|]*:" . tramp-file-name-handler)
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
-(let ((file-name-handler-alist nil))
+(let* ((file-name-handler-alist nil))
+  ;; `package-initialize' takes 35% of startup time
+  ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
+  (package-initialize)
+
   (require-init 'init-autoload)
   (require-init 'init-modeline)
   ;; (require 'cl-lib) ; it's built in since Emacs v24.3
@@ -104,7 +103,7 @@
   (require-init 'init-javascript)
   (require-init 'init-org)
   (require-init 'init-css)
-  (require-init 'init-python-mode)
+  (require-init 'init-python)
   (require-init 'init-haskell)
   (require-init 'init-ruby-mode)
   (require-init 'init-lisp)
@@ -175,11 +174,11 @@
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on init-site-lisp.el
-  (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el")))
+  (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
 
-;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
-(setq custom-file (concat user-emacs-directory "custom-set-variables.el"))
-(load custom-file 'noerror)
+  ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
+  (setq custom-file (concat user-emacs-directory "custom-set-variables.el"))
+  (load custom-file 'noerror))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 ;;; Local Variables:

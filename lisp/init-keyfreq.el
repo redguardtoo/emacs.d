@@ -20,9 +20,6 @@
         backward-char
         backward-kill-word
         backward-word
-        browse-kill-ring-forward
-        browse-kill-ring-insert-and-quit
-        browse-kill-ring-quit
         clipboard-kill-ring-save
         comint-previous-input
         comint-send-input

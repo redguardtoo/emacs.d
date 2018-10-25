@@ -1,27 +1,35 @@
-(require 'counsel)
+(eval-after-load 'counsel
+  '(progn
+     ;; automatically pick up cygwin cli tools for counse
+     (when *win64*
+       (let* ((path (getenv "path"))
+              (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
+                           (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
+                           (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
+         (unless (string-match-p cygpath counsel-git-cmd)
+           (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
+         (unless (string-match-p cygpath counsel-git-grep-cmd-default)
+           (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
+         ;; ;; git-log does not work
+         ;; (unless (string-match-p cygpath counsel-git-log-cmd)
+         ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
+         ;;                                     cygpath
+         ;;                                     "/cat "
+         ;;                                     cygpath
+         ;;                                     "/git log --grep '%s'")))
+         (unless (string-match-p cygpath counsel-grep-base-command)
+           (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))
 
-;; {{ automatically pick up cygwin cli tools for counse
-(when *win64*
-  (let* ((path (getenv "path"))
-         (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
-                      (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
-                      (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
-    (unless (string-match-p cygpath counsel-git-cmd)
-      (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
-    (unless (string-match-p cygpath counsel-git-grep-cmd-default)
-      (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
-    ;; ;; git-log does not work
-    ;; (unless (string-match-p cygpath counsel-git-log-cmd)
-    ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
-    ;;                                     cygpath
-    ;;                                     "/cat "
-    ;;                                     cygpath
-    ;;                                     "/git log --grep '%s'")))
-    (unless (string-match-p cygpath counsel-grep-base-command)
-      (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))
-;; }}
+     ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
+     ;; press "M-o" to choose ivy action
+     (ivy-set-actions
+      'counsel-find-file
+      '(("j" find-file-other-frame "other frame")
+        ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+        ("x" counsel-find-file-extern "open externally")
+        ("d" delete-file "delete")
+        ("r" counsel-find-file-as-root "open as root")))))
 
-(ivy-mode 1) ;; magit needs this
 ;; not good experience
 ;; (setq ivy-use-virtual-buffers t)
 (global-set-key (kbd "C-c C-r") 'ivy-resume)
@@ -31,7 +39,7 @@
 
 ;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
 (defun counsel-read-keyword (hint &optional default-when-no-active-region)
-  (let (keyword)
+  (let* (keyword)
     (cond
      ((region-active-p)
       (setq keyword (counsel-unquote-regex-parens (my-selected-str)))
@@ -47,8 +55,8 @@
   "Find a file on `recentf-list'.
 If N is not nil, only list files in current project."
   (interactive "P")
-  (require 'recentf)
-  (recentf-mode)
+  (unless (featurep 'recentf) (require 'recentf))
+  (recentf-mode 1)
   (let* ((files (mapcar #'substring-no-properties recentf-list))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
     (when (and n root-dir)
@@ -67,17 +75,13 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
   `(let* ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
           (default-directory (locate-dominating-file
                               default-directory ".git"))
-          collection)
-
-     (unless ,no-keyword
-       ;; selected region contains no regular expression
-       (setq keyword (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
-
-     (setq collection
-           (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
-                                                    (format ,git-cmd keyword)))
-                         "\n"
-                         t))
+          (keyword (unless ,no-keyword
+                     ;; selected region contains no regular expression
+                     (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
+          (collection (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
+                                                               (format ,git-cmd keyword)))
+                                    "\n"
+                                    t)))
      (cond
       ((and collection (= (length collection) 1))
        (funcall ,fn (car collection)))
@@ -209,10 +213,10 @@ Or else, find files since 24 weeks (6 months) ago."
                            (buffer-string))
                          "\n"
                          t))))
-      (ivy-read (format "Bash history:") collection
-                :action (lambda (val)
-                          (kill-new val)
-                          (message "%s => kill-ring" val)))))
+    (ivy-read (format "Bash history:") collection
+              :action (lambda (val)
+                        (kill-new val)
+                        (message "%s => kill-ring" val)))))
 
 (defun counsel-recent-directory (&optional n)
   "Goto recent directories.
@@ -220,11 +224,11 @@ If N is not nil, only list directories in current project."
   (interactive "P")
   (unless recentf-mode (recentf-mode 1))
   (let* ((cands (delete-dups
-                      (append my-dired-directory-history
-                              (mapcar 'file-name-directory recentf-list)
-                              ;; fasd history
-                              (if (executable-find "fasd")
-                                  (nonempty-lines (shell-command-to-string "fasd -ld"))))))
+                 (append my-dired-directory-history
+                         (mapcar 'file-name-directory recentf-list)
+                         ;; fasd history
+                         (if (executable-find "fasd")
+                             (nonempty-lines (shell-command-to-string "fasd -ld"))))))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
     (when (and n root-dir)
       (setq cands (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) cands))))
@@ -250,8 +254,7 @@ If N is not nil, only list directories in current project."
     (counsel-git-grep))))
 
 (defun counsel-browse-kill-ring (&optional n)
-  "Use `browse-kill-ring' if it exists and N is 1.
-If N > 1, assume just yank the Nth item in `kill-ring'.
+  "If N > 1, assume just yank the Nth item in `kill-ring'.
 If N is nil, use `ivy-mode' to browse the `kill-ring'."
   (interactive "P")
   (my-select-from-kill-ring my-insert-str n))
@@ -340,22 +343,14 @@ If N is nil, use `ivy-mode' to browse the `kill-ring'."
       '((t . re-builder-pinyin)))
 ;; }}
 
-;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
-;; press "M-o" to choose ivy action
-(ivy-set-actions
- 'counsel-find-file
- '(("j" find-file-other-frame "other frame")
-   ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-   ("x" counsel-find-file-extern "open externally")
-   ("d" delete-file "delete")
-   ("r" counsel-find-file-as-root "open as root")))
-
-;; set actions when running C-x b
-;; replace "frame" with window to open in new window
-(ivy-set-actions
- 'ivy-switch-buffer-by-pinyin
- '(("j" switch-to-buffer-other-frame "other frame")
-   ("k" kill-buffer "kill")
-   ("r" ivy--rename-buffer-action "rename")))
+(eval-after-load 'ivy
+  '(progn
+     ;; set actions when running C-x b
+     ;; replace "frame" with window to open in new window
+     (ivy-set-actions
+      'ivy-switch-buffer-by-pinyin
+      '(("j" switch-to-buffer-other-frame "other frame")
+        ("k" kill-buffer "kill")
+        ("r" ivy--rename-buffer-action "rename")))))
 
 (provide 'init-ivy)
