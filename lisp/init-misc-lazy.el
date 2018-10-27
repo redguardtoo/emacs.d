@@ -433,8 +433,10 @@ Including indent-buffer, which should not be called automatically on save."
   (setq epa-pinentry-mode 'loopback))
 ;; }}
 
-(add-to-list 'which-func-modes 'org-mode)
-(which-func-mode 1)
+(eval-after-load "which-function"
+  '(progn
+     (add-to-list 'which-func-modes 'org-mode)))
+(which-function-mode 1)
 
 (provide 'init-misc-lazy)
 ;;; init-misc-lazy.el ends here
