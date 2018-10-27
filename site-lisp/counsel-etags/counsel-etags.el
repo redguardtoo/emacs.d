@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.7.0
+;; Version: 1.7.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 ;;; Commentary:
 
 ;;  Setup:
-;;   "Ctags" (Universal Ctags is recommended) and "GNU Find" should exist
-;;   so this program works out of box.
+;;   "Ctags" (Universal Ctags is recommended) should exist.
+;;   "GNU Find" is used if it's installed but it's optional.
 ;;   Or else, use `counsel-etags-update-tags-backend' to generate tags file
 ;;
 ;; Usage:
@@ -199,7 +199,8 @@ You may set it to nil to disable re-ordering for performance reason."
   :type 'boolean)
 
 (defcustom counsel-etags-max-file-size 512
-  "Ignore files bigger than `counsel-etags-max-file-size' kilobytes."
+  "Ignore files bigger than `counsel-etags-max-file-size' kilobytes.
+This option is ignore if GNU find is not installed."
   :group 'counsel-etags
   :type 'integer)
 
@@ -217,7 +218,8 @@ Default value is 300 seconds."
   :type 'integer)
 
 (defcustom counsel-etags-find-program nil
-  "GNU find program.  Program is automatically detected if it's nil."
+  "GNU find program.  Program is automatically detected if it's nil.
+On Windows program path separator IS four backward slashes by default."
   :group 'counsel-etags
   :type 'string)
 
@@ -227,12 +229,14 @@ You can setup this variable manually instead.
 If you use Emacs etags, set this variable to \"etags\".'.
 If you use Exuberant Ctags, set this variable to \"ctags -e -L\".'.
 You may add extra options to tags program.  For example, as C developer
-may set this variable to \"ctags --c-kinds=defgpstux -e -L\"."
+may set this variable to \"ctags --c-kinds=defgpstux -e -L\".
+On Windows program path separator IS four backward slashes by default."
   :group 'counsel-etags
   :type 'string)
 
 (defcustom counsel-etags-grep-program nil
-  "Grep program.  Program is automatically detected if it's nil."
+  "Grep program.  Program is automatically detected if it's nil.
+On Windows program path separator IS four backward slashes by default."
   :group 'counsel-etags
   :type 'string)
 
@@ -269,22 +273,28 @@ So we don't need project root at all.  Or you can setup `counsel-etags-project-r
 
 (defvar counsel-etags-cache nil "Cache of multiple tags files.")
 
-(defun counsel-etags-guess-program (name)
-  "Guess executable path from its NAME on Windows."
-  (let* (rlt)
-    (when (eq system-type 'windows-nt)
-      (cond
-       ((file-executable-p (setq rlt (concat "c:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "d:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "e:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "f:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "g:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "h:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "i:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "j:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       ((file-executable-p (setq rlt (concat "k:\\\\cygwin64\\\\bin\\\\" name ".exe"))))
-       (t (setq rlt nil))))
-    (if rlt rlt name)))
+(defun counsel-etags-win-path (executable-name drive)
+  "Guess EXECUTABLE-NAME's full path in Cygwin on DRIVE."
+  (let* ((path (concat drive ":\\\\cygwin64\\\\bin\\\\" executable-name ".exe")))
+    (if (file-executable-p path) path)))
+
+(defun counsel-etags-guess-program (executable-name)
+  "Guess path from its EXECUTABLE-NAME on Windows.
+Return nil if it's not found."
+  (cond
+   ((eq system-type 'windows-nt)
+    (or (counsel-etags-win-path executable-name "c")
+        (counsel-etags-win-path executable-name "d")
+        (counsel-etags-win-path executable-name "e")
+        (counsel-etags-win-path executable-name "f")
+        (counsel-etags-win-path executable-name "g")
+        (counsel-etags-win-path executable-name "h")))
+   (t
+    (if (executable-find executable-name) (executable-find executable-name)))))
+
+;;;###autoload
+(defun counsel-etags-version ()
+  (messgage "1.7.1"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -363,33 +373,88 @@ So we don't need project root at all.  Or you can setup `counsel-etags-project-r
       ;; (see `comint-inhibit-carriage-motion'),.
       (set-process-filter proc 'comint-output-filter))))
 
-(defun counsel-etags-dir-pattern (s)
-  ;; trim the '*'
-  (replace-regexp-in-string "\\`[*]*" "" (replace-regexp-in-string "[*/]*\\'" "" s)))
+(defun counsel-etags-dir-pattern (dir)
+  "Trim * from DIR."
+  (replace-regexp-in-string "\\`[*]*" "" (replace-regexp-in-string "[*/]*\\'" "" dir)))
 
-(defun counsel-etags-scan-dir (src-dir &optional force)
+
+(defun counsel-etags-emacs-bin-path ()
+  "Get Emacs binary path."
+  (let* ((emacs-executable (file-name-directory (expand-file-name invocation-name invocation-directory))))
+    (replace-regexp-in-string "/" "\\\\" emacs-executable)))
+
+(defun counsel-etags-get-scan-command (find-pg ctags-pg)
+  "Create scan command for SHELL from FIND-PG and CTAGS-PG."
+  (let* ((cmd ""))
+    (cond
+     ;; use both find and ctags
+     ((and find-pg ctags-pg)
+      (setq cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s -print | %s -e -L -"
+                        find-pg
+                        (mapconcat (lambda (p)
+                                     (format "-iwholename \"*/%s\"" (counsel-etags-dir-pattern p)) )
+                                   counsel-etags-ignore-directories " -or ")
+                        counsel-etags-max-file-size
+                        (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
+                                   counsel-etags-ignore-filenames " ")
+                        ctags-pg)))
+     ;; Use ctags only
+     (ctags-pg
+      (setq cmd (format "%s %s %s -e -R ."
+                        ctags-pg
+                        (mapconcat (lambda (p)
+                                     (format "--exclude=\"%s\"" (counsel-etags-dir-pattern p)) )
+                                   counsel-etags-ignore-directories " ")
+                        (mapconcat (lambda (p)
+                                     (format "--exclude=\"%s\"" p))
+                                   counsel-etags-ignore-filenames " "))))
+
+     ;; fall back to Emacs bundled etags
+     (t
+      ;; (setq ctags-pg (cond
+      ;;                 ((eq system-type 'windows-nt)
+      ;;                  (setq ctags-pg (concat (counsel-etags-emacs-bin-path) "etags.exe")))
+      ;;                 (t
+      ;;                  (setq ctags-pg "etags"))))
+      ;; (setq cmd (format "%s ." ctags-pg))
+      (message "You need install ctags first.")))
+    (when counsel-etags-debug (message "counsel-etags-get-scan-command called => find-pg=%s ctags-pg=%s cmd=%s" find-pg ctags-pg cmd))
+    cmd))
+
+(defun counsel-etags-scan-dir-internal (src-dir &optional force)
   "Create tags file from SRC-DIR.
 If FORCE is t, the command is executed without checking the timer."
   ;; TODO save the ctags-opts into hash
-  (let* ((find-pg (or counsel-etags-find-program (counsel-etags-guess-program "find")))
-         (ctags-pg (or counsel-etags-tags-program (format "%s -e -L" (counsel-etags-guess-program "ctags"))))
+  (let* ((find-pg (or counsel-etags-find-program
+                      (counsel-etags-guess-program "find")))
+         (ctags-pg (or counsel-etags-tags-program
+                       (counsel-etags-guess-program "ctags")))
          (default-directory src-dir)
+         ;; if both find and ctags exist, use both
+         ;; if only ctags exists, use ctags
          ;; run find&ctags to create TAGS, `-print` is important option to filter correctly
-         (cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s -print | %s -"
-                      find-pg
-                      (mapconcat (lambda (p)
-                                   (format "-iwholename \"*/%s\"" (counsel-etags-dir-pattern p)) )
-                                 counsel-etags-ignore-directories " -or ")
-                      counsel-etags-max-file-size
-                      (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
-                                 counsel-etags-ignore-filenames " ")
-                      ctags-pg))
+         (cmd (counsel-etags-get-scan-command find-pg ctags-pg))
          (tags-file (file-truename (concat (file-name-as-directory src-dir) "TAGS")))
          (doit (or force (not (file-exists-p tags-file)))))
+    (when counsel-etags-debug (message "counsel-etags-scan-dir-internal called => src-dir=%s force=%s find-pg=%s ctags-pg=%s default-directory=%s cmd=" src-dir force find-pg ctags-pg default-directory cmd))
     ;; always update cli options
     (when doit
       (message "%s at %s" (if counsel-etags-debug cmd "Scan") default-directory)
-      (counsel-etags-async-shell-command cmd tags-file))))
+      (counsel-etags-async-shell-command cmd tags-file)))
+  )
+(defun counsel-etags-scan-dir (src-dir &optional force)
+  "Create tags file from SRC-DIR.
+If FORCE is t, the command is executed without checking the timer.
+If `counsel-etags-update-tags-backend' is customized, executed it to create tags file."
+  (when counsel-etags-debug (message "counsel-etags-scan-dir called => %s %s" src-dir force))
+  (cond
+   ;; default backend
+   ((eq counsel-etags-update-tags-backend 'counsel-etags-update-tags-force)
+    (counsel-etags-scan-dir-internal src-dir force))
+
+   ;; user has customized backend
+   (t
+    (funcall counsel-etags-update-tags-backend))))
 
 ;;;###autoload
 (defun counsel-etags-directory-p (regex)
@@ -531,6 +596,7 @@ IS-STRING is t if the candidate is string."
 
 (defun counsel-etags-collect-cands (tagname fuzzy &optional dir)
   "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR."
+  (when counsel-etags-debug (message "counsel-etags-collect-cands called tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
   (let* ((force-tags-file (and dir
                                (file-exists-p (concat (file-name-as-directory dir) "TAGS"))
                                (concat (file-name-as-directory dir) "TAGS")))
@@ -758,25 +824,28 @@ Focus on TAGNAME if it's not nil."
   "Find TAGNAME using FUZZY algorithm."
   (let* ((time (current-time))
          (dir (counsel-etags-tags-file-directory)))
-    (cond
-     ((not tagname)
-      ;; ok we need use ivy-read to find candidate
-      (ivy-read "Fuzz matching tags:"
-                #'counsel-etags-list-tag-function
-                :history 'counsel-git-grep-history
-                :dynamic-collection t
-                :action `(lambda (e)
-                           (counsel-etags-open-file-api e ,dir))
-                :caller 'counsel-etags-find-tag))
+    (when counsel-etags-debug (message "counsel-etags-find-tag-api called => %s %s %s" tagname fuzzy dir))
+    ;; Dir should not be nil
+    (when dir
+      (cond
+       ((not tagname)
+        ;; ok we need use ivy-read to find candidate
+        (ivy-read "Fuzz matching tags:"
+                  #'counsel-etags-list-tag-function
+                  :history 'counsel-git-grep-history
+                  :dynamic-collection t
+                  :action `(lambda (e)
+                             (counsel-etags-open-file-api e ,dir))
+                  :caller 'counsel-etags-find-tag))
 
-     ((not (setq counsel-etags-find-tag-candidates
-                 (counsel-etags-collect-cands tagname fuzzy dir)))
-      ;; OK let's try grep if no tag found
-      (counsel-etags-grep tagname "No tag found. "))
+       ((not (setq counsel-etags-find-tag-candidates
+                   (counsel-etags-collect-cands tagname fuzzy dir)))
+        ;; OK let's try grep if no tag found
+        (counsel-etags-grep tagname "No tag found. "))
 
-     (t
-      ;; open the one selected candidate
-      (counsel-etags-open-tag-cand tagname counsel-etags-find-tag-candidates time)))))
+       (t
+        ;; open the one selected candidate
+        (counsel-etags-open-tag-cand tagname counsel-etags-find-tag-candidates time))))))
 
 ;;;###autoload
 (defun counsel-etags-list-tag ()
