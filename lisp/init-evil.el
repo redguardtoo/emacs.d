@@ -854,6 +854,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
      ;; evil 1.0.8 search word instead of symbol
      (setq evil-symbol-word-search t)
 
+     ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
+     (defalias #'forward-evil-word #'forward-evil-symbol)
+
      ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
      (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
        `(eval-after-load (quote ,(if r r m))
