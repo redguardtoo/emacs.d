@@ -120,10 +120,6 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
       (setq pos (match-end group)))
     result))
 
-(defun string-rtrim (str)
-  "Remove trailing whitespace from `STR'."
-  (replace-regexp-in-string "[ \t\n]*$" "" str))
-
 ;; Find the directory containing a given library
 (defun directory-of-library (library-name)
   "Return the directory in which the `LIBRARY-NAME' load file is found."
@@ -363,7 +359,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
            (cond
             (powershell-program
              ;; PowerLine adds extra white space character at the end of text
-             (string-trim-right
+             (s-trim-right
               (with-output-to-string
                 (with-current-buffer standard-output
                   (call-process powershell-program nil t nil "-command" "Get-Clipboard")))))
