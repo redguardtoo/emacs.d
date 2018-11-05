@@ -1,11 +1,11 @@
-;;; wucuo.el --- Spell check code with camel case words
+;;; wucuo.el --- Spell check code containing camel case words
 
 ;; Copyright (C) 2018 Chen Bin
 ;;
-;; Version: 0.0.2
-;; Keywords: spelling
+;; Version: 0.0.3
+;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
-;; URL: http://github.com/usrname/wucuo
+;; URL: http://github.com/redguardtoo/wucuo
 ;; Package-Requires: ((emacs "24.4"))
 
 ;; This file is not part of GNU Emacs.
@@ -32,6 +32,9 @@
 ;; 2. Usage
 ;; Run `wucuo-start' to setup and start `flyspell-mode'.
 ;; It spell check camel case words in code.
+;;
+;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
+;; `flyspell-prog-mode' could be replaced by "wucuo".
 ;;
 ;; OR add one line setup if you prefer running `flyspell-buffer' manually:
 ;;  (setq flyspell-generic-check-word-predicate #'wucuo-generic-check-word-predicate)
@@ -64,6 +67,7 @@
 (defcustom wucuo-font-faces-to-check
   '(font-lock-string-face
     font-lock-doc-face
+    font-lock-comment-face
     font-lock-builtin-face
     font-lock-function-name-face
     font-lock-variable-name-face
@@ -84,7 +88,7 @@
   :group 'wucuo)
 
 (defcustom wucuo-personal-font-faces-to-check
-  '(font-lock-comment-face)
+  nil
   "Similar to `wucuo-font-faces-to-check'.
 Define personal font faces to check."
   :type '(repeat sexp)
