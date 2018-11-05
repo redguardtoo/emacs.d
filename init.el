@@ -74,8 +74,6 @@
 (let* ((file-name-handler-alist nil))
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
-  (when (version< emacs-version "27.0") (package-initialize))
-
   (require-init 'init-autoload)
   (require-init 'init-modeline)
   (require-init 'init-utils)
