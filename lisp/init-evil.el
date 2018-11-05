@@ -303,7 +303,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 (define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
 
-(defun my-search-defun-from-pos (pos)
+(defun my-search-defun-from-pos (search pos)
   (evil-search search t t pos)
   ;; ignore this.f1 = this.fn.bind(this) code
   (when (and (memq major-mode '(js-mode js2-mode rjsx-mode))
@@ -347,10 +347,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
           (setq ipos (marker-position ipos)))
         ;; imenu found a position, so go there and
         ;; highlight the occurrence
-        (my-search-defun-from-pos (if (numberp ipos) ipos (point-min))))
+        (my-search-defun-from-pos search (if (numberp ipos) ipos (point-min))))
        ;; otherwise just go to first occurrence in buffer
        (t
-        (my-search-defun-from-pos (point-min)))))))
+        (my-search-defun-from-pos search (point-min)))))))
 ;; use "gt", someone might prefer original `evil-goto-definition'
 (define-key evil-motion-state-map "gt" 'my-evil-goto-definition)
 
