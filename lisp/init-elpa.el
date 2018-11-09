@@ -313,6 +313,7 @@
 (require-package 'color-theme)
 ;; emms v5.0 need seq
 (require-package 'seq)
+(require-package 'stripe-buffer)
 
 (when *emacs25*
   (require-package 'zenburn-theme)
