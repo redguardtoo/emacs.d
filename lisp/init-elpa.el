@@ -314,6 +314,7 @@
 ;; emms v5.0 need seq
 (require-package 'seq)
 (require-package 'stripe-buffer)
+(require-package 'visual-regexp) ;; Press "M-x vr-*"
 
 (when *emacs25*
   (require-package 'zenburn-theme)
