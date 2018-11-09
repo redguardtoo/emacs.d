@@ -390,7 +390,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "af" 'ace-maximize-window
        "ac" 'aya-create
        "zz" 'paste-from-x-clipboard ; used frequently
-       "cy" 'strip-convert-lines-into-one-big-string
        "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
        "es" 'goto-edge-by-comparing-font-face
        "vj" 'my-validate-json-or-js-expression
@@ -477,7 +476,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "tm" 'my-git-timemachine
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
        "ov" 'my-overview-of-current-buffer
-       "or" 'open-readme-in-project
        "oo" 'compile
        "c$" 'org-archive-subtree ; `C-c $'
        ;; org-do-demote/org-do-premote support selected region
@@ -531,8 +529,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "UU" 'winner-redo
        "to" 'toggle-web-js-offset
        "sl" 'sort-lines
-       "ulr" 'uniquify-all-lines-region
-       "ulb" 'uniquify-all-lines-buffer
        "fs" 'ffip-save-ivy-last
        "fr" 'ffip-ivy-resume
        "fc" 'cp-ffip-ivy-last
