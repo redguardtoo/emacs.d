@@ -47,14 +47,14 @@
   `(unless (featurep ,pkg)
      (cond
       ((eq ,pkg 'bookmark+)
-       (load (file-truename (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg))))
+       (load (file-truename (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg)) t t))
       ((eq ,pkg 'go-mode-load)
-       (load (file-truename (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg))))
+       (load (file-truename (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg)) t t))
       (t
-       (load (file-truename (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg)))))))
+       (load (file-truename (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg)) t t)))))
 
 (defmacro require-init (pkg)
-  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg))))
+  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg)) t t))
 
 ;; *Message* buffer should be writable in 24.4+
 (defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)

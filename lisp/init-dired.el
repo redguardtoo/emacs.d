@@ -48,7 +48,7 @@ If no files marked, always operate on current line in dired-mode."
         (add-to-list 'my-dired-directory-history file))
       ad-do-it))))
 
-(defadvice dired-do-async-shell-command (around dired-do-async-shell-command activate)
+(defadvice dired-do-async-shell-command (around dired-do-async-shell-command-hack activate)
   "Mplayer scan dvd-ripped directory in dired correctly."
   (let* ((args (ad-get-args 0))
          (first-file (file-truename (and file-list (car file-list)))))

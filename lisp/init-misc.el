@@ -869,19 +869,17 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   '(define-key grep-mode-map
      (kbd "C-c C-c") 'wgrep-finish-edit))
 
-;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el"
+;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el" or "savehist".
+;; Any global variable matching `session-globals-regexp' is saved *automatically*.
 (setq session-save-file (expand-file-name "~/.emacs.d/.session"))
 (setq session-globals-max-size 2048)
 ;; can store 8Mb string
 (setq session-globals-max-string (* 8 1024 1024))
-(setq session-globals-include '(kill-ring 
+(setq session-globals-include '(kill-ring
                                 (session-file-alist 100 t)
                                 file-name-history
                                 search-ring
                                 regexp-search-ring))
-;; (eval-after-load 'session
-;;   '(progn
-;;      ))
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
