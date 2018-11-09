@@ -5,8 +5,6 @@
 
 (transient-mark-mode t)
 
-(recentf-mode 1)
-
 (global-auto-revert-mode)
 (setq global-auto-revert-non-file-buffers t
       auto-revert-verbose nil)
@@ -23,8 +21,6 @@
 ;; But don't show trailing whitespace in SQLi, inf-ruby etc.
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
-
-(column-number-mode 1)
 
 ;; my screen is tiny, so I use minimum eshell prompt
 (setq eshell-prompt-function
