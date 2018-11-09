@@ -132,15 +132,14 @@
   (require-init 'init-hydra)
   (require-init 'init-shackle)
   (require-init 'init-dired)
+  (require-init 'init-artbollocks-mode)
 
   (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
   ;; {{ idle require other stuff
   (local-require 'idle-require)
   (setq idle-require-idle-delay 2)
   (setq idle-require-symbols '(init-perforce
-                               init-fonts
                                init-writting
-                               init-artbollocks-mode
                                init-semantic))
   (idle-require-mode 1) ;; starts loading
   ;; }}

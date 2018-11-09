@@ -7,6 +7,7 @@
   '(ace-mc
     color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
+    artbollocks-mode
     auto-package-update
     bbdb
     command-log-mode
@@ -307,6 +308,7 @@
 (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
 (require-package 'shackle)
 (require-package 'toc-org)
+(require-package 'artbollocks-mode)
 
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24*
