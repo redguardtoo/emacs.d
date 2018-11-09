@@ -133,13 +133,13 @@
   (require-init 'init-shackle)
   (require-init 'init-dired)
   (require-init 'init-artbollocks-mode)
+  (require-init 'init-writting)
 
   (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
   ;; {{ idle require other stuff
   (local-require 'idle-require)
   (setq idle-require-idle-delay 2)
   (setq idle-require-symbols '(init-perforce
-                               init-writting
                                init-semantic))
   (idle-require-mode 1) ;; starts loading
   ;; }}
