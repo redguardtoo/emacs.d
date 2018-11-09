@@ -247,8 +247,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defvar cached-normal-file-full-path nil)
 
 (defun buffer-too-big-p ()
-  (or (> (buffer-size) (* 5000 64))
-      (> (line-number-at-pos (point-max)) 5000)))
+  ;; 5000 lines
+  (> (buffer-size) (* 5000 80)))
 
 (defun file-too-big-p (file)
   (> (nth 7 (file-attributes file))
