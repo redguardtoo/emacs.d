@@ -1,53 +1,63 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; {{ flyspell setup for web-mode
-(defun web-mode-flyspell-verify ()
-  (let* ((f (get-text-property (- (point) 1) 'face))
-         rlt)
-    (cond
-     ;; Check the words with these font faces, possibly.
-     ;; This *blacklist* will be tweaked in next condition
-     ((not (memq f '(web-mode-html-attr-value-face
-                     web-mode-html-tag-face
-                     web-mode-html-attr-name-face
-                     web-mode-constant-face
-                     web-mode-doctype-face
-                     web-mode-keyword-face
-                     web-mode-comment-face ;; focus on get html label right
-                     web-mode-function-name-face
-                     web-mode-variable-name-face
-                     web-mode-css-property-name-face
-                     web-mode-css-selector-face
-                     web-mode-css-color-face
-                     web-mode-type-face
-                     web-mode-block-control-face)))
-      (setq rlt t))
-     ;; check attribute value under certain conditions
-     ((memq f '(web-mode-html-attr-value-face))
-      (save-excursion
-        (search-backward-regexp "=['\"]" (line-beginning-position) t)
-        (backward-char)
-        (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
-                                (thing-at-point 'symbol)))))
-     ;; finalize the blacklist
-     (t
-      (setq rlt nil)))
-    rlt))
-(put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
-;; }}
-
-;; {{ flyspell setup for js2-mode
-(local-require 'wucuo)
-(put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-(put 'rjsx-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-;; }}
+;; avoid spell-checking doublon (double word) in certain major modes
+(defvar flyspell-check-doublon t
+  "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
+ (make-variable-buffer-local 'flyspell-check-doublon)
 
 (eval-after-load 'flyspell
   '(progn
+     ;; {{ flyspell setup for web-mode
+     (defun web-mode-flyspell-verify ()
+       (let* ((f (get-text-property (- (point) 1) 'face))
+              rlt)
+         (cond
+          ;; Check the words with these font faces, possibly.
+          ;; This *blacklist* will be tweaked in next condition
+          ((not (memq f '(web-mode-html-attr-value-face
+                          web-mode-html-tag-face
+                          web-mode-html-attr-name-face
+                          web-mode-constant-face
+                          web-mode-doctype-face
+                          web-mode-keyword-face
+                          web-mode-comment-face ;; focus on get html label right
+                          web-mode-function-name-face
+                          web-mode-variable-name-face
+                          web-mode-css-property-name-face
+                          web-mode-css-selector-face
+                          web-mode-css-color-face
+                          web-mode-type-face
+                          web-mode-block-control-face)))
+           (setq rlt t))
+          ;; check attribute value under certain conditions
+          ((memq f '(web-mode-html-attr-value-face))
+           (save-excursion
+             (search-backward-regexp "=['\"]" (line-beginning-position) t)
+             (backward-char)
+             (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
+                                     (thing-at-point 'symbol)))))
+          ;; finalize the blacklist
+          (t
+           (setq rlt nil)))
+         rlt))
+     (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
+     ;; }}
+
+     ;; {{ flyspell setup for js2-mode
+     (local-require 'wucuo)
+     (put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
+     (put 'rjsx-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
+     ;; }}
+
+     ;; better performance
+     (setq flyspell-issue-message-flag nil)
+
+     (defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
+       (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
+           ad-do-it))
+
      (flyspell-lazy-mode 1)))
 
-;; better performance
-(setq flyspell-issue-message-flag nil)
 
 ;; if (aspell installed) { use aspell}
 ;; else if (hunspell installed) { use hunspell }
@@ -59,19 +69,19 @@
 (defun flyspell-detect-ispell-args (&optional run-together)
   "If RUN-TOGETHER is true, spell check the CamelCase words.
 Please note RUN-TOGETHER will make aspell less capable. So it should only be used in prog-mode-hook."
-  (let (args)
+  (let* (args)
     (when ispell-program-name
       (cond
-        ((string-match "aspell$" ispell-program-name)
-         ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
-         (setq args (list "--sug-mode=ultra" "--lang=en_US"))
-         ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp" . The algorithm is
-         ;; not precise .
-         ;; Run `echo tasteTableConfig | aspell --lang=en_US -C --run-together-limit=16  --encoding=utf-8 -a` in shell.
-         (if run-together
-             (setq args (append args '("--run-together" "--run-together-limit=16")))))
-        ((string-match "hunspell$" ispell-program-name)
-         (setq args nil))))
+       ((string-match "aspell$" ispell-program-name)
+        ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
+        (setq args (list "--sug-mode=ultra" "--lang=en_US"))
+        ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp" . The algorithm is
+        ;; not precise .
+        ;; Run `echo tasteTableConfig | aspell --lang=en_US -C --run-together-limit=16  --encoding=utf-8 -a` in shell.
+        (if run-together
+            (setq args (append args '("--run-together" "--run-together-limit=16")))))
+       ((string-match "hunspell$" ispell-program-name)
+        (setq args nil))))
     args))
 
 ;; Aspell Setup (recommended):
@@ -117,7 +127,7 @@ back to hunspell if aspell is not found.")
 (setq-default ispell-extra-args (flyspell-detect-ispell-args t))
 ;; (setq ispell-cmd-args (flyspell-detect-ispell-args))
 (defadvice ispell-word (around my-ispell-word activate)
-  (let ((old-ispell-extra-args ispell-extra-args))
+  (let* ((old-ispell-extra-args ispell-extra-args))
     (ispell-kill-ispell t)
     ;; use emacs original arguments
     (setq ispell-extra-args (flyspell-detect-ispell-args))
@@ -141,38 +151,17 @@ back to hunspell if aspell is not found.")
   (setq-local ispell-extra-args (flyspell-detect-ispell-args)))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
 
-;; Add auto spell-checking in comments for all programming language modes
-;; if and only if there is enough memory
-;; You can use prog-mode-hook instead.
-(defun can-enable-flyspell-mode ()
-  (and (not *no-memory*)
-           ispell-program-name
-           (executable-find ispell-program-name)))
-
 (defun enable-flyspell-mode-conditionally ()
-  (if (can-enable-flyspell-mode)
-      (flyspell-mode 1)))
+  (when (and (not *no-memory*)
+             ispell-program-name
+             (executable-find ispell-program-name))
+    ;; I don't use flyspell in text-mode because I often use Chinese.
+    ;; I'd rather manually spell check the English text
+    (flyspell-mode 1)))
 
-;; turn on flyspell-mode for programming languages
-(if (can-enable-flyspell-mode)
-    (add-hook 'prog-mode-hook 'flyspell-prog-mode))
-
-;; I don't use flyspell in text-mode because I often write Chinese.
-;; I'd rather manually spell check the English text
-
-;; you can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
+;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
 (global-set-key (kbd "C-c s") 'flyspell-auto-correct-word)
-
-;; {{ avoid spell-checking doublon (double word) in certain major modes
-(defvar flyspell-check-doublon t
-  "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
- (make-variable-buffer-local 'flyspell-check-doublon)
-
-(defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
-  (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
-      ad-do-it))
-;; }}
 
 (defun my-clean-aspell-dict ()
   "Clean ~/.aspell.pws (dictionary used by aspell)."

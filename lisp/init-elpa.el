@@ -316,7 +316,6 @@
 (require-package 'seq)
 (require-package 'stripe-buffer)
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
-(require-package 'flymake-cursor)
 (require-package 'vimrc-mode)
 
 (when *emacs25*
