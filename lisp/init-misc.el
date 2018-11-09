@@ -1278,9 +1278,20 @@ Including indent-buffer, which should not be called automatically on save."
   (setq epa-pinentry-mode 'loopback))
 ;; }}
 
+;; {{ show current function name in `mode-line'
 (eval-after-load "which-function"
   '(progn
      (add-to-list 'which-func-modes 'org-mode)))
 (which-function-mode 1)
+;; }}
+
+(eval-after-load 'pomodoro
+  '(progn
+     (setq pomodoro-break-time 2)
+     (setq pomodoro-long-break-time 5)
+     (setq pomodoro-work-time 15)
+     (setq-default mode-line-format
+              (cons '(pomodoro-mode-line-string pomodoro-mode-line-string)
+                    mode-line-format))))
 
 (provide 'init-misc)

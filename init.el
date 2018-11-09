@@ -140,7 +140,6 @@
   (setq idle-require-symbols '(init-perforce
                                init-fonts
                                init-writting
-                               init-pomodoro
                                init-artbollocks-mode
                                init-semantic))
   (idle-require-mode 1) ;; starts loading
