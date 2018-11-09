@@ -131,10 +131,6 @@
   (require-init 'init-artbollocks-mode)
   (require-init 'init-writting)
 
-  (when (require 'time-date nil t)
-    (message "Emacs startup time: %d seconds."
-             (time-to-seconds (time-since emacs-load-start-time))))
-
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "~/.emacs.d/site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
@@ -150,6 +146,11 @@
   (load custom-file 'noerror))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
+
+(when (require 'time-date nil t)
+  (message "Emacs startup time: %d seconds."
+           (time-to-seconds (time-since emacs-load-start-time))))
+
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
