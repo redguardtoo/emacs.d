@@ -54,7 +54,6 @@
     ;; company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
-    move-text
     string-edit ; looks magnars don't update stable tag frequently
     findr
     mwe-log-commands
@@ -233,7 +232,6 @@
 (require-package 'counsel-bbdb)
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
-(require-package 'move-text)
 (require-package 'command-log-mode)
 (require-package 'page-break-lines)
 (require-package 'regex-tool)

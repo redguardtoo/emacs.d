@@ -101,63 +101,6 @@
       (insert (format "%4d %c\n" i i))))
   (beginning-of-buffer))
 
-;; {{ grep and kill-ring
-(defun grep-pattern-into-list (regexp)
-  (let* ((s (buffer-string))
-         (pos 0)
-         item
-         items)
-        (while (setq pos (string-match regexp s pos))
-          (setq item (match-string-no-properties 0 s))
-          (setq pos (+ pos (length item)))
-          (when (not (member item items))
-            (add-to-list 'items item)))
-        items))
-
-(defun grep-pattern-into-kill-ring (regexp)
-  "Find all strings matching REGEXP in current buffer.
-grab matched string and insert them into kill-ring"
-  (interactive
-   (let* ((regexp (read-regexp "grep regex:")))
-     (list regexp)))
-  (let* (items rlt)
-    (setq items (grep-pattern-into-list regexp))
-    (dolist (i items)
-      (setq rlt (concat rlt (format "%s\n" i))))
-    (kill-new rlt)
-    (message "matched strings => kill-ring")
-    rlt))
-
-(defun grep-pattern-jsonize-into-kill-ring (regexp)
-  "Find all strings matching REGEXP in current buffer.
-grab matched string, jsonize them, and insert into kill ring"
-  (interactive
-   (let* ((regexp (read-regexp "grep regex:")))
-     (list regexp)))
-  (let (items rlt)
-    (setq items (grep-pattern-into-list regexp))
-    (dolist (i items)
-      (setq rlt (concat rlt (format "%s : %s ,\n" i i)))
-      )
-    (kill-new rlt)
-    (message "matched strings => json => kill-ring")
-    rlt))
-
-(defun grep-pattern-cssize-into-kill-ring (regexp)
-  "Find all strings matching REGEXP in current buffer.
-grab matched string, cssize them, and insert into kill ring"
-  (interactive
-   (let* ((regexp (read-regexp "grep regex:")))
-     (list regexp)))
-  (let* ((items (grep-pattern-into-list regexp)) rlt)
-    (dolist (i items)
-      (setq i (replace-regexp-in-string "\\(class=\\|\"\\)" "" i))
-      (setq rlt (concat rlt (format ".%s {\n}\n\n" i))))
-    (kill-new rlt)
-    (message "matched strings => json => kill-ring")
-    rlt))
-;; }}
-
 ;; {{ direx
 (global-set-key (kbd "C-x C-j") 'direx:jump-to-directory)
 ;; }}
@@ -363,9 +306,6 @@ Current position is preserved."
 (setq midnight-mode t)
 
 (add-auto-mode 'tcl-mode "Portfile\\'")
-
-;; Shift lines up and down with M-up and M-down
-(move-text-default-bindings)
 
 ;; {{go-mode
 (local-require 'go-mode-load)
