@@ -26,7 +26,6 @@
 (autoload 'buf-move-up "buffer-move" "move buffer" t)
 (autoload 'buf-move-down "buffer-move" "move buffer" t)
 (autoload 'confluence-edit-mode "confluence-edit" "enable confluence-edit-mode" t)
-(autoload 'vimrc-mode "vimrc-mode")
 (autoload 'highlight-symbol "highlight-symbol" "" t)
 (autoload 'highlight-symbol-next "highlight-symbol" "" t)
 (autoload 'highlight-symbol-prev "highlight-symbol" "" t)

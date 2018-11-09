@@ -11,6 +11,7 @@
     auto-package-update
     bbdb
     command-log-mode
+    vimrc-mode
     auto-yasnippet
     dumb-jump
     websocket ; to talk to the browser
@@ -316,6 +317,7 @@
 (require-package 'stripe-buffer)
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'flymake-cursor)
+(require-package 'vimrc-mode)
 
 (when *emacs25*
   (require-package 'zenburn-theme)
