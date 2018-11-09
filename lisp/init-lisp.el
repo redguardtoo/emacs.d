@@ -22,13 +22,6 @@
 ;; racket
 (add-to-list 'auto-mode-alist '("\\.rkt\\'" . lisp-mode))
 
-;; {{ scheme setup
-(setq scheme-program-name "guile")
-(eval-after-load 'scheme-mode
-  '(progn
-     (local-require 'quack)))
-;; }}
-
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
 
