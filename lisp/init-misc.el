@@ -333,9 +333,6 @@ See \"Reusing passwords for several connections\" from INFO.
                                    buffer-file-name))))
 ;; }}
 
-;; edit confluence wiki
-(add-to-list 'auto-mode-alist '("\\.wiki\\'" . confluence-edit-mode))
-
 (defun erase-specific-buffer (num buf-name)
   (let* ((message-buffer (get-buffer buf-name))
          (old-buffer (current-buffer)))
