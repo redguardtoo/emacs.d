@@ -1222,10 +1222,6 @@ version control automatically."
 
 (add-auto-mode 'tcl-mode "Portfile\\'")
 
-;; {{go-mode
-(local-require 'go-mode-load)
-;; }}
-
 ;; someone mentioned that blink cursor could slow Emacs24.4
 ;; I couldn't care less about cursor, so turn it off explicitly
 ;; https://github.com/redguardtoo/emacs.d/issues/208

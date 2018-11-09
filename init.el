@@ -35,10 +35,6 @@
                    (*linux* nil)
                    (t nil)))
 
-;; emacs 24.3-
-(setq *emacs24old*  (or (and (= emacs-major-version 24) (= emacs-minor-version 3))
-                        (not *emacs24*)))
-
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
 ;; Emacs 25 does gc too frequently
 (when *emacs25*
