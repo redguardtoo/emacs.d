@@ -136,12 +136,7 @@
   (require-init 'init-writting)
 
   (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
-  ;; {{ idle require other stuff
-  (local-require 'idle-require)
-  (setq idle-require-idle-delay 2)
-  (setq idle-require-symbols '(init-semantic))
-  (idle-require-mode 1) ;; starts loading
-  ;; }}
+  ;; idle-require is not necessary if my setup is clean
 
   (when (require 'time-date nil t)
     (message "Emacs startup time: %d seconds."
@@ -150,7 +145,7 @@
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "~/.emacs.d/site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
-  ;; Besides, no packages from ELPA is dependent "~/.emacs.d/site-lisp" now.
+  ;; Besides, no packages from ELPA is dependent on "~/.emacs.d/site-lisp".
   (require-init 'init-site-lisp)
 
   ;; my personal setup, other major-mode specific setup need it.
