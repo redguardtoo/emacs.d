@@ -315,6 +315,7 @@
 (require-package 'seq)
 (require-package 'stripe-buffer)
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
+(require-package 'flymake-cursor)
 
 (when *emacs25*
   (require-package 'zenburn-theme)

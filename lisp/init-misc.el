@@ -773,7 +773,10 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; flymake
-(setq flymake-gui-warnings-enabled nil)
+(eval-after-load 'flymake
+  '(progn
+     (setq flymake-gui-warnings-enabled nil)
+     (require 'flymake-cursor)))
 
 ;; {{ check attachments
 (defun my-message-current-line-cited-p ()
