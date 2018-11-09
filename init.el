@@ -139,8 +139,7 @@
   ;; {{ idle require other stuff
   (local-require 'idle-require)
   (setq idle-require-idle-delay 2)
-  (setq idle-require-symbols '(init-perforce
-                               init-semantic))
+  (setq idle-require-symbols '(init-semantic))
   (idle-require-mode 1) ;; starts loading
   ;; }}
 
