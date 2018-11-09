@@ -309,6 +309,7 @@
 (require-package 'shackle)
 (require-package 'toc-org)
 (require-package 'artbollocks-mode)
+(require-package 'elpa-mirror)
 
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (when *emacs24*
