@@ -1,18 +1,4 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-
-(add-hook 'dired-mode-hook 'turn-on-stripe-buffer-mode)
-
-;; search file name only when focus is over file
-(setq dired-isearch-filenames 'dwim)
-;; when there is two dired buffer, Emacs will select another buffer
-;; as target buffer (target for copying files, for example).
-;; It's similar to windows commander.
-(setq dired-dwim-target t)
-; Listing directory failed but access-file worked
-(when (eq system-type 'darwin)
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
-
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
 If no files marked, always operate on current line in dired-mode."
@@ -28,6 +14,88 @@ If no files marked, always operate on current line in dired-mode."
   (setq command (concat "git " command))
   (dired-do-shell-command command arg file-list)
   (message command))
+
+(defun ora-ediff-files ()
+  "@see https://oremacs.com/2017/03/18/dired-ediff/."
+  (interactive)
+  (let* ((files (dired-get-marked-files))
+         (wnd (current-window-configuration)))
+    (if (<= (length files) 2)
+        (let* ((file1 (car files))
+               (file2 (if (cdr files)
+                          (cadr files)
+                        (read-file-name
+                         "file: "
+                         (dired-dwim-target-directory)))))
+          (if (file-newer-than-file-p file1 file2)
+              (ediff-files file2 file1)
+            (ediff-files file1 file2))
+          (add-hook 'ediff-after-quit-hook-internal
+                    (lambda ()
+                      (setq ediff-after-quit-hook-internal nil)
+                      (set-window-configuration wnd))))
+      (error "no more than 2 files should be marked"))))
+
+(defun dired-mode-hook-setup ()
+  (stripe-buffer-mode 1)
+  ;; from 24.4, dired+ can show/hide dired details by press "("
+  (unless (featurep 'dired+)
+    ;; dired+ is huge. So it's loaded in `dired-mode-hook'
+    (local-require 'dired+)
+    (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
+      (when (and (stringp ad-return-value)
+                 (string-match-p "^mplayer -quiet" ad-return-value))
+        (let* ((dir (file-name-as-directory (concat default-directory
+                                                    "Subs")))
+               (files (car (ad-get-args 0)))
+               basename)
+          (cond
+           ((file-exists-p (concat dir "English.sub"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -vobsub Subs/English")))
+           ((file-exists-p (concat dir "Chinese.sub"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -vobsub Subs/Chinese")))
+           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -vobsub Subs/" basename)))
+           ((file-exists-p (concat dir "English.srt"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -sub Subs/English.srt")))
+           ((file-exists-p (concat dir "Chinese.srt"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -sub Subs/Chinesesrt")))
+           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+            (setq ad-return-value (concat ad-return-value
+                                          " -sub Subs/" basename ".srt"))))))
+      ad-return-value)
+    (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
+                    ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
+                    ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "ogm" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm" "part" "mov")
+                    ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
+                    ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
+                    ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
+                    ("djview" "djvu")
+                    ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
+      (add-to-list 'dired-guess-shell-alist-user
+                   (list (concat "\\." (regexp-opt (cdr file) t) "$")
+                         (car file))))
+
+     (local-set-key  "e" 'ora-ediff-files)
+     (local-set-key  "/" 'dired-isearch-filenames)
+     (local-set-key  "\\" 'diredext-exec-git-command-in-shell)))
+(add-hook 'dired-mode-hook 'dired-mode-hook-setup)
+
+;; search file name only when focus is over file
+(setq dired-isearch-filenames 'dwim)
+;; when there is two dired buffer, Emacs will select another buffer
+;; as target buffer (target for copying files, for example).
+;; It's similar to windows commander.
+(setq dired-dwim-target t)
+; Listing directory failed but access-file worked
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
 
 (defvar binary-file-name-regexp "\\.\\(avi\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
@@ -67,76 +135,9 @@ If no files marked, always operate on current line in dired-mode."
           (t
            ad-do-it))))
 
-     (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
-       (when (and (stringp ad-return-value)
-                  (string-match-p "^mplayer -quiet" ad-return-value))
-         (let* ((dir (file-name-as-directory (concat default-directory
-                                                     "Subs")))
-                (files (car (ad-get-args 0)))
-                basename)
-           (cond
-            ((file-exists-p (concat dir "English.sub"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -vobsub Subs/English")))
-            ((file-exists-p (concat dir "Chinese.sub"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -vobsub Subs/Chinese")))
-            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -vobsub Subs/" basename)))
-            ((file-exists-p (concat dir "English.srt"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -sub Subs/English.srt")))
-            ((file-exists-p (concat dir "Chinese.srt"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -sub Subs/Chinesesrt")))
-            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-             (setq ad-return-value (concat ad-return-value
-                                           " -sub Subs/" basename ".srt"))))))
-       ad-return-value)
-
      ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
      (setq dired-listing-switches "-laGh1v")
-     ;; {{ @see https://oremacs.com/2017/03/18/dired-ediff/
-     ;; -*- lexical-binding: t -*-
-     (defun ora-ediff-files ()
-       (interactive)
-       (let* ((files (dired-get-marked-files))
-              (wnd (current-window-configuration)))
-         (if (<= (length files) 2)
-             (let* ((file1 (car files))
-                    (file2 (if (cdr files)
-                               (cadr files)
-                             (read-file-name
-                              "file: "
-                              (dired-dwim-target-directory)))))
-               (if (file-newer-than-file-p file1 file2)
-                   (ediff-files file2 file1)
-                 (ediff-files file1 file2))
-               (add-hook 'ediff-after-quit-hook-internal
-                         (lambda ()
-                           (setq ediff-after-quit-hook-internal nil)
-                           (set-window-configuration wnd))))
-           (error "no more than 2 files should be marked"))))
-     (define-key dired-mode-map "e" 'ora-ediff-files)
-     ;; }}
-     ;; from 24.4, dired+ can show/hide dired details by press "("
-     (define-key dired-mode-map "/" 'dired-isearch-filenames)
-     (define-key dired-mode-map "\\" 'diredext-exec-git-command-in-shell)
-
-     (local-require 'dired+)
-     (setq dired-recursive-deletes 'always)
-     (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
-                     ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
-                     ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "ogm" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm" "part" "mov")
-                     ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
-                     ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
-                     ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
-                     ("djview" "djvu")
-                     ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
-       (add-to-list 'dired-guess-shell-alist-user
-                    (list (concat "\\." (regexp-opt (cdr file) t) "$")
-                          (car file))))))
+     (setq dired-recursive-deletes 'always)))
 
 ;; {{ Write backup files to own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
