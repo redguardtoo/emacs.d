@@ -58,7 +58,6 @@
 (autoload 'org-mime-org-subtree-htmlize "org-mime" nil t)
 (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
 (autoload 'run-ruby "inf-ruby" "Run an inferior Ruby process")
-(autoload 'yari "yari" "" t nil)
 (autoload 'textile-mode "textile-mode" "Mode for editing Textile documents" t)
 (autoload 'find-library-name "find-func")
 (autoload 'web-mode "web-mode")
