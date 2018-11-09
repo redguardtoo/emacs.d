@@ -265,7 +265,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
-    (unless (featurep 'js2-refactor) (require 'js2-refactor))
     (js2-refactor-mode 1)
     ;; js2-mode has its own syntax linter
     (flymake-mode -1)

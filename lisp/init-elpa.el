@@ -256,6 +256,7 @@
 (require-package 'multi-term)
 (require-package 'js-doc)
 (require-package 'js2-mode)
+(require-package 'js2-refactor)
 (require-package 'rjsx-mode)
 (require-package 's)
 ;; js2-refactor requires js2, dash, s, multiple-cursors, yasnippet
