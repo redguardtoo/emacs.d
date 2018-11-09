@@ -233,7 +233,6 @@
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
 (require-package 'command-log-mode)
-(require-package 'page-break-lines)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
 (require-package 'ruby-compilation)

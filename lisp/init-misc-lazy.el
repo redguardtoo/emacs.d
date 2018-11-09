@@ -24,11 +24,6 @@
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
 
-;;----------------------------------------------------------------------------
-;; Page break lines
-;;----------------------------------------------------------------------------
-(global-page-break-lines-mode)
-
 (column-number-mode 1)
 
 ;; my screen is tiny, so I use minimum eshell prompt
