@@ -21,7 +21,6 @@
 (autoload 'vr/replace "visual-regexp")
 (autoload 'vr/query-replace "visual-regexp")
 (autoload 'vr/mc-mark "visual-regexp")
-(autoload 'wxhelp-browse-class-or-api "wxwidgets-help" "" t)
 (autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
 (autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
 (autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
