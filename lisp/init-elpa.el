@@ -55,7 +55,6 @@
     ;; company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
-    string-edit ; looks magnars don't update stable tag frequently
     findr
     mwe-log-commands
     yaml-mode
@@ -181,7 +180,6 @@
 ;;------------------------------------------------------------------------------
 
 (require-package 'async)
-(require-package 'dash) ; required by string-edit
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'auto-compile)
 (require-package 'smex)

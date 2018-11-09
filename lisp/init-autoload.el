@@ -39,7 +39,6 @@
 (autoload 'highlight-symbol-query-replace "highlight-symbol" "" t)
 (autoload 'which-function "which-func")
 (autoload 'popup-tip "popup")
-(autoload 'string-edit-at-point "string-edit" "" t nil)
 (autoload 'srt-renumber-subtitles "subtitles" "" t)
 (autoload 'srt-offset-subtitles "subtitles" "" t)
 (autoload 'srt-mult-subtitles "subtitles" "" t)

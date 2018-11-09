@@ -577,22 +577,6 @@ If step is -1, go backward."
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
-;; {{ string-edit-mode
-(defun string-edit-at-point-hook-setup ()
-  (let* ((major-mode-list (remove major-mode '(web-mode js2-mode js-mode css-mode emacs-lisp-mode)))
-         (str (my-buffer-str)))
-    ;; (ivy-read "directories:" collection :action 'dired)
-    ;; (message "original=%s" (se/find-original))
-    ;; (message "major-mode-list=%s major-mode=%s" major-mode-list major-mode)
-    (save-excursion
-      (cond
-       ((string-match-p "<[a-zA-Z]" str)
-        (web-mode))
-       ((string-match-p "function(\\| var \\|" str)
-        (js-mode))))))
-(add-hook 'string-edit-at-point-hook 'string-edit-at-point-hook-setup)
-;; }}
-
 ;; {{ Diff two regions
 ;; Step 1: Select a region and `M-x diff-region-tag-selected-as-a'
 ;; Step 2: Select another region and `M-x diff-region-compare-with-b'
