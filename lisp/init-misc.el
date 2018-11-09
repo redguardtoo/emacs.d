@@ -303,36 +303,6 @@
   (interactive)
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
-
-;; {{ @see http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
-(defun sudo-edit (&optional arg)
-  "Edit currently visited file as root.
-With a prefix ARG prompt for a file to visit.
-Will also prompt for a file to visit if current
-buffer is not visiting a file.
-You may insert below line into ~/.authinfo.gpg to type less:
-machine 127.0.0.1 login root password ****** port sudo
-See \"Reusing passwords for several connections\" from INFO.
-"
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@127.0.0.1:"
-                         (read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo:@127.0.0.1:"
-                                 buffer-file-name))))
-
-(defadvice counsel-find-file (after find-file-sudo activate)
-  "Find file as root if necessary."
-  (if (and (not (and buffer-file-name
-                     (file-writable-p buffer-file-name)))
-           ;; sudo edit only physical file
-           buffer-file-name
-           ;; sudo edit only /etc/**/*
-           (string-match-p "^/etc/" buffer-file-name))
-      (find-alternate-file (concat "/sudo:root@127.0.0.1:"
-                                   buffer-file-name))))
-;; }}
-
 (defun erase-specific-buffer (num buf-name)
   (let* ((message-buffer (get-buffer buf-name))
          (old-buffer (current-buffer)))
