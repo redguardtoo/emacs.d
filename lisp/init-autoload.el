@@ -20,7 +20,6 @@
 (autoload 'doxygen-insert-compound-comment "doxygen" "insert comment for compound" t)
 (autoload 'markdown-mode "markdown-mode" "Mode for editing Markdown documents" t)
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
-(autoload 'direx:jump-to-directory "direx" "" t)
 (autoload 'sdcv-search-pointer "sdcv" "show word explanation in buffer" t)
 (autoload 'sdcv-search-input+ "sdcv" "show word explanation in tooltip" t)
 (autoload 'vr/replace "visual-regexp")
