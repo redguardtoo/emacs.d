@@ -273,9 +273,9 @@ See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master E
 I *avoid overriding the original setup* of third party command line program.
 
 ** Quick start
-On windows, you need install Cygwin which provides some command line tools Emacs will use. Cygwin could be installed on any hard drive but it's highly recommended don't change path of Cygwin.
+On windows, you need install Cygwin. It provides command line tools Emacs uses. Cygwin could be installed on any hard drive but it's highly recommended don't change path of Cygwin.
 
-Install Ctags (Universal Ctags is recommended, but Exuberant Ctags is fine). On Windows you could install Ctags through Cygwin.
+Install Ctags (Universal Ctags is better. But Exuberant Ctags is fine). On Windows you could install Ctags through Cygwin.
 
 Run =M-x cousnel-etags-find-ctags= from =counsel-etags= to navigate code by using tags files created by ctags. Tags file will be automatically created/update when you start using `counsel-etags`.
 
