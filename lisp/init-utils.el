@@ -320,7 +320,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
 ;; {{ simpleclip has problem on Emacs 25.1
 (defun test-simpleclip ()
   (unwind-protect
-      (let (retval)
+      (let* (retval)
         (condition-case ex
             (progn
               (simpleclip-set-contents "testsimpleclip!")
@@ -328,17 +328,8 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                     (string= "testsimpleclip!"
                              (simpleclip-get-contents))))
           ('error
-           (message (format "Please install %s to support clipboard from terminal."
-                            (cond
-                             (*unix*
-                              "xsel or xclip")
-                             ((or *cygwin* *win64*)
-                              "cygutils-extra from Cygwin")
-                             (t
-                              "CLI clipboard tools"))))
            (setq retval nil)))
         retval)))
-
 (setq simpleclip-works (test-simpleclip))
 
 (defun my-gclip ()

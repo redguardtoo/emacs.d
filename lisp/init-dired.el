@@ -34,60 +34,8 @@ If no files marked, always operate on current line in dired-mode."
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to setup than "desktop.el"
 ;; See `session-globals-regexp' in "session.el".
-;; If the variable is named like "*-history", it will be automaticlaly saved.
+;; If the variable is named like "*-history", it will be *automatically* saved.
 (defvar my-dired-directory-history nil "Recent directories accessed by dired.")
-;; avoid accidently edit huge media file in dired
-(defadvice dired-find-file (around dired-find-file-hack activate)
-  (let* ((file (dired-get-file-for-visit)))
-    (cond
-     ((string-match-p binary-file-name-regexp file)
-      ;; confirm before open big file
-      (if (yes-or-no-p "Edit binary file?") ad-do-it))
-     (t
-      (when (file-directory-p file)
-        (add-to-list 'my-dired-directory-history file))
-      ad-do-it))))
-
-(defadvice dired-do-async-shell-command (around dired-do-async-shell-command-hack activate)
-  "Mplayer scan dvd-ripped directory in dired correctly."
-  (let* ((args (ad-get-args 0))
-         (first-file (file-truename (and file-list (car file-list)))))
-    (cond
-     ((file-directory-p first-file)
-      (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
-                                   (my-guess-mplayer-path)
-                                   first-file)))
-     (t
-      ad-do-it))))
-
-(defadvice dired-guess-default (after dired-guess-default-after-hack activate)
-  (when (and (stringp ad-return-value)
-             (string-match-p "^mplayer -quiet" ad-return-value))
-    (let* ((dir (file-name-as-directory (concat default-directory
-                                                "Subs")))
-           (files (car (ad-get-args 0)))
-           basename)
-      (cond
-       ((file-exists-p (concat dir "English.sub"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -vobsub Subs/English")))
-       ((file-exists-p (concat dir "Chinese.sub"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -vobsub Subs/Chinese")))
-       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -vobsub Subs/" basename)))
-       ((file-exists-p (concat dir "English.srt"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -sub Subs/English.srt")))
-       ((file-exists-p (concat dir "Chinese.srt"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -sub Subs/Chinesesrt")))
-       ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-        (setq ad-return-value (concat ad-return-value
-                                      " -sub Subs/" basename ".srt"))))))
-  ad-return-value)
-
 ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
 ;; op open two new dired buffers side-by-side and give your new-found automagic power a whirl.
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
@@ -95,6 +43,58 @@ If no files marked, always operate on current line in dired-mode."
 
 (eval-after-load 'dired
   '(progn
+     ;; avoid accidentally edit huge media file in dired
+     (defadvice dired-find-file (around dired-find-file-hack activate)
+       (let* ((file (dired-get-file-for-visit)))
+         (cond
+          ((string-match-p binary-file-name-regexp file)
+           ;; confirm before open big file
+           (if (yes-or-no-p "Edit binary file?") ad-do-it))
+          (t
+           (when (file-directory-p file)
+             (add-to-list 'my-dired-directory-history file))
+           ad-do-it))))
+
+     (defadvice dired-do-async-shell-command (around dired-do-async-shell-command-hack activate)
+       "Mplayer scan dvd-ripped directory in dired correctly."
+       (let* ((args (ad-get-args 0))
+              (first-file (file-truename (and file-list (car file-list)))))
+         (cond
+          ((file-directory-p first-file)
+           (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
+                                        (my-guess-mplayer-path)
+                                        first-file)))
+          (t
+           ad-do-it))))
+
+     (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
+       (when (and (stringp ad-return-value)
+                  (string-match-p "^mplayer -quiet" ad-return-value))
+         (let* ((dir (file-name-as-directory (concat default-directory
+                                                     "Subs")))
+                (files (car (ad-get-args 0)))
+                basename)
+           (cond
+            ((file-exists-p (concat dir "English.sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/English")))
+            ((file-exists-p (concat dir "Chinese.sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/Chinese")))
+            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/" basename)))
+            ((file-exists-p (concat dir "English.srt"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/English.srt")))
+            ((file-exists-p (concat dir "Chinese.srt"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/Chinesesrt")))
+            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/" basename ".srt"))))))
+       ad-return-value)
+
      ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
      (setq dired-listing-switches "-laGh1v")
      ;; {{ @see https://oremacs.com/2017/03/18/dired-ediff/

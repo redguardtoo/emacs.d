@@ -2,7 +2,7 @@
 
 (let* ((minver "24.4"))
   (when (version< emacs-version minver)
-    (error "This config requires Emacs v%s or higher" minver)))
+    (error "Emacs v%s or higher is required." minver)))
 
 (defvar best-gc-cons-threshold
   4000000
@@ -130,9 +130,6 @@
   (require-init 'init-dired)
   (require-init 'init-artbollocks-mode)
   (require-init 'init-writting)
-
-  (add-to-list 'load-path (expand-file-name "~/.emacs.d/lisp"))
-  ;; idle-require is not necessary if my setup is clean
 
   (when (require 'time-date nil t)
     (message "Emacs startup time: %d seconds."
