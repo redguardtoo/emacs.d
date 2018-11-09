@@ -406,16 +406,6 @@ Including indent-buffer, which should not be called automatically on save."
   (cleanup-buffer-safe)
   (indent-region (point-min) (point-max)))
 
-;; {{ save history
-;; On Corp machines, I don't have permission to access history,
-;; so safe-wrap is used
-(safe-wrap
- (when (file-writable-p (file-truename "~/.emacs.d/history"))
-   (setq history-length 8000)
-   (setq savehist-additional-variables '(search-ring regexp-search-ring kill-ring))
-   (savehist-mode 1)))
-;; }}
-
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 (defadvice epg--start (around advice-epg-disable-agent disable)
