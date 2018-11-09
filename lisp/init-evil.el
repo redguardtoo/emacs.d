@@ -457,7 +457,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rlu" 'run-lua
        "tci" 'toggle-company-ispell
        "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
-       "it" 'issue-tracker-increment-issue-id-under-cursor
        "ls" 'highlight-symbol
        "lq" 'highlight-symbol-query-replace
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols

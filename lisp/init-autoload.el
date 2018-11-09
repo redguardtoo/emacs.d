@@ -21,8 +21,6 @@
 (autoload 'vr/replace "visual-regexp")
 (autoload 'vr/query-replace "visual-regexp")
 (autoload 'vr/mc-mark "visual-regexp")
-(autoload 'issue-tracker-increment-issue-id-under-cursor "issue-tracker" "" t)
-(autoload 'issue-tracker-insert-issue-list "issue-tracker" "" t)
 (autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
 (autoload 'org2nikola-export-subtree "org2nikola" "" t)
 (autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)
