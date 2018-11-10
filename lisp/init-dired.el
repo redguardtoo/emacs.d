@@ -119,7 +119,9 @@ If no files marked, always operate on current line in dired-mode."
            ;; confirm before open big file
            (if (yes-or-no-p "Edit binary file?") ad-do-it))
           (t
-           (when (file-directory-p file)
+           (when (and (file-directory-p file)
+                      ;; don't add directory when user pressing "^" in `dired-mode'
+                      (not (string-match-p "\\.\\." file)))
              (add-to-list 'my-dired-directory-history file))
            ad-do-it))))
 
