@@ -249,7 +249,7 @@ _h_ Left     _v_ertical      _b_uffer     _q_ X left
 _j_ Down     _x_ horizontal  _f_ind files _w_ X Down
 _k_ Top      _z_ undo        _a_ce 1      _e_ X Top
 _l_ Right    _Z_ reset       _s_wap       _r_ X Right
-_F_ollow     _D_lt Other     _S_ave       max_i_mize
+_F_ollow     _D_elete Other  _S_ave       max_i_mize
 _SPC_ cancel _o_nly this     _d_elete
 "
   ("h" windmove-left )
