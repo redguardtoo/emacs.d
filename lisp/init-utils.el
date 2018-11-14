@@ -258,14 +258,14 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun is-buffer-file-temp ()
   (interactive)
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file"
-  (let ((f (buffer-file-name))
-        org
-        (rlt t))
+  (let* ((f (buffer-file-name)) org (rlt t))
     (cond
-     ((not load-user-customized-major-mode-hook) t)
+     ((not load-user-customized-major-mode-hook)
+      (setq rlt t))
      ((not f)
       ;; file does not exist at all
-      (setq rlt t))
+      ;; org-babel edit inline code block need calling hook
+      (setq rlt nil))
      ((string= f cached-normal-file-full-path)
       (setq rlt nil))
      ((string-match (concat "^" temporary-file-directory) f)
