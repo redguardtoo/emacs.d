@@ -2,7 +2,7 @@
 - Fast. Start up in *one second*
 - Robust. Never crash after a full package upgrade. Packages could be installed without network
 - Support Windows
-- Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS
+- Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Original setup (key bindings, directories ...) are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. Works when ssh to server with [[http://www.putty.org/][PuTTY]]
 * Table of Content                                                              :noexport:TOC:
