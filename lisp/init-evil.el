@@ -816,6 +816,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-find-char-pinyin-mode 1)
 ;; }}
 
+;; {{ Port of vim-textobj-syntax. It provides evil text objects for consecutive items with same syntax highlig
+(require 'evil-textobj-syntax)
+;; }}
+
 ;; {{ evil-args
 ;; bind evil-args text objects
 (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)

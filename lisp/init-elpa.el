@@ -1,5 +1,4 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-(package-initialize)
 
 ;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
 ;; Feel free to add more packages!
@@ -10,6 +9,7 @@
     artbollocks-mode
     auto-package-update
     bbdb
+    evil-textobj-syntax
     command-log-mode
     vimrc-mode
     auto-yasnippet
@@ -300,6 +300,7 @@
 (require-package 'evil-visualstar)
 (require-package 'evil-lion)
 (require-package 'evil-args)
+(require-package 'evil-textobj-syntax)
 (require-package 'slime)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)
