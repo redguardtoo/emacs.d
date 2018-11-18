@@ -5,6 +5,9 @@
 - Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Original setup (key bindings, directories ...) are respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. Works when ssh to server with [[http://www.putty.org/][PuTTY]]
+
+[[file:demo.png]]
+
 * Table of Content                                                              :noexport:TOC:
  - [[#features][Features]]
  - [[#checklist][Checklist]]
@@ -20,6 +23,7 @@
    - [[#quick-start][Quick start]]
    - [[#key-bindings][Key bindings]]
  - [[#faq][FAQ]]
+   - [[#saveload-windows-layout][Save/Load windows layout]]
    - [[#default-terminal-shell][default terminal shell]]
    - [[#override-default-setup][Override default setup]]
    - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
@@ -300,6 +304,9 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 You can always press =C-c C-y= anywhere to bring up default hydra menu.
 * FAQ
+** Save/Load windows layout
+=SPC s s= or =M-x wg-create-workgrou= to save windows layout.
+=SPC l l= or =M-x my-wg-switch-workgroup= to load windows layout.
 ** default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
