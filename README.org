@@ -24,7 +24,7 @@
    - [[#key-bindings][Key bindings]]
  - [[#faq][FAQ]]
    - [[#saveload-windows-layout][Save/Load windows layout]]
-   - [[#default-terminal-shell][default terminal shell]]
+   - [[#default-terminal-shell][Default terminal shell]]
    - [[#override-default-setup][Override default setup]]
    - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
    - [[#color-theme][Color theme]]
@@ -60,6 +60,7 @@
    - [[#install-multiple-versions-of-emacs][Install multiple versions of Emacs]]
    - [[#change-time-locale][Change Time Locale]]
    - [[#directory-structure][Directory structure]]
+   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
  - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
    - [[#emacs-23][Emacs 23]]
    - [[#emacs-243][Emacs 24.3]]
@@ -307,7 +308,7 @@ You can always press =C-c C-y= anywhere to bring up default hydra menu.
 ** Save/Load windows layout
 =SPC s s= or =M-x wg-create-workgrou= to save windows layout.
 =SPC l l= or =M-x my-wg-switch-workgroup= to load windows layout.
-** default terminal shell
+** Default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
 Place your setup in =~/.custom.el=.
@@ -530,6 +531,10 @@ I also manually download and extract some packages into =~/.emacs.d/site-lisp/=.
 My own snippets is at =~/.emacs.d/snippets=.
 
 Other directories don't matter.
+** True colors in terminal Emacs
+- Install Emacs 26
+- Install [[https://gist.github.com/XVilka/8346728][terminals supporting true color]]. I suggest [[https://mintty.github.io/][mintty]] on Windows, [[https://gnometerminator.blogspot.com/p/introduction.html][terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS
+- [[https://www.gnu.org/software/emacs/draft/manual/html_mono/efaq.html#Colors-on-a-TTY][Setup and start Emacs]]
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
