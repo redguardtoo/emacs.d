@@ -8,10 +8,6 @@
 ;; Keywords: tools, convenience
 ;; Version: 1.7.3
 
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,11 +72,55 @@
 (require 'xref nil t)
 (require 'etags)
 (require 'cl-lib)
-(require 'counsel) ; counsel dependent on ivy
+(require 'counsel)
 
 (defgroup counsel-etags nil
   "Complete solution to use ctags."
   :group 'tools)
+
+(defcustom counsel-etags-smart-rules nil
+  "Plugins to match filter out candidates when using `counsel-etags-find-tag-at-point'."
+  :group 'counsel-etags
+  :type '(repeat 'string))
+
+(defun counsel-etags-load-smart-rules(modes rule)
+  "Load MODES's smart RULES."
+  (dolist (mode modes)
+    (setq counsel-etags-smart-rules
+          (plist-put counsel-etags-smart-rules
+                     mode
+                     (let* ((rule-filename (concat "counsel-etags-" (symbol-name rule)))
+                            (fn-prefix (concat "counsel-etags-" (symbol-name rule)))
+                            (collect-function (intern (concat fn-prefix "-collect")))
+                            (predicate-function (intern (concat fn-prefix "-predicate"))))
+                       (autoload collect-function rule-filename nil)
+                       (autoload predicate-function rule-filename nil)
+                       (cons collect-function predicate-function))))))
+
+(defun counsel-etags-setup-smart-rules ()
+  "Initialize `counsel-etags-smart-rules'."
+  (interactive)
+  (counsel-etags-load-smart-rules '(js-mode js2-mode rjsx-mode) 'javascript))
+
+(defun counsel-etags-execute-collect-function ()
+  "Return context before finding tag definition."
+  (let* ((fn (car (plist-get counsel-etags-smart-rules major-mode))))
+    (cond
+     (fn
+      (funcall fn))
+     (t
+      nil))))
+
+(defun counsel-etags-execute-predicate-function (context candidate)
+  "Use CONTEXT to test CANDIDATE.  If return nil, the CANDIDATE is excluded."
+  (let* ((m (plist-get context :major-mode))
+         (fn (cdr (plist-get counsel-etags-smart-rules m))))
+    (cond
+     (fn
+      (funcall fn context candidate))
+     (t
+      ;; If there is no predicate, candidate is included.
+      t))))
 
 (defcustom counsel-etags-ignore-directories
   '(;; VCS
@@ -649,16 +689,18 @@ IS-STRING is t if the candidate is string."
 
 (defun counsel-etags-build-cand (info)
   "Build tag candidate from INFO."
-  (let* ((path (alist-get 'path info))
-         (lnum (alist-get 'line-number info))
-         (text (alist-get 'text info))
-         (tagname (alist-get 'tagname info)))
-    (cons (format "%s:%s:%s" path lnum text)
-          (list path lnum tagname))))
+  (let* ((file (plist-get info :file))
+         (lnum (plist-get info :line-number))
+         (text (plist-get info :text))
+         (tagname (plist-get info :tagname)))
+    (cons (format "%s:%s:%s" file lnum text)
+          (list file lnum tagname))))
 
-(defun counsel-etags-collect-cands (tagname fuzzy &optional dir)
-  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR."
-  (when counsel-etags-debug (message "counsel-etags-collect-cands called tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
+(defun counsel-etags-collect-cands (tagname fuzzy &optional dir context)
+  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR.
+CONTEXT is extra information collected before find tag definition."
+  (when counsel-etags-debug
+    (message "counsel-etags-collect-cands => tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
   (let* ((force-tags-file (and dir
                                (file-exists-p (concat (file-name-as-directory dir) "TAGS"))
                                (concat (file-name-as-directory dir) "TAGS")))
@@ -708,15 +750,17 @@ IS-STRING is t if the candidate is string."
             ;; second step, more precise search
             (cond
              ((re-search-forward re (point-at-eol) t)
-              (let* ((text (match-string-no-properties 1))
-                     (lnum (match-string-no-properties 2))
-                     (path (concat root-dir (etags-file-of-tag t)))
-                     (cand (counsel-etags-build-cand (list (cons 'path path)
-                                                           (cons 'line-number lnum)
-                                                           (cons 'text text)
-                                                           (cons 'tagname tagname)))))
-                (when cand
-                  (add-to-list 'cands cand))))
+              (let* ((line-number (match-string-no-properties 2))
+                     (text (match-string-no-properties 1))
+                     ;; file must be set after above variables
+                     (file (concat root-dir (etags-file-of-tag t)))
+                     (cand (list :file file
+                                 :line-number line-number
+                                 :text text
+                                 :tagname tagname)))
+                (when (or (not context)
+                          (counsel-etags-execute-predicate-function context cand))
+                  (add-to-list 'cands (counsel-etags-build-cand cand)))))
              (t
               ;; need push cursor forward
               (end-of-line)))))))
@@ -799,7 +843,7 @@ Focus on TAGNAME if it's not nil."
   (add-to-list 'counsel-etags-tag-history (cons cand dir)))
 
 (defun counsel-etags-open-tag-cand (tagname cands time)
-  "Open CANDS.  Start open tags file at TIME."
+  "Find TAGNAME from CANDS.  Open tags file at TIME."
   ;; mark current point for `pop-tag-mark'
   (let* ((dir (counsel-etags-tags-file-directory)))
     (cond
@@ -885,8 +929,8 @@ Focus on TAGNAME if it's not nil."
       (setq counsel-etags-find-tag-candidates rlt)
       rlt))))
 
-(defun counsel-etags-find-tag-api (tagname fuzzy)
-  "Find TAGNAME using FUZZY algorithm."
+(defun counsel-etags-find-tag-api (tagname fuzzy &optional context)
+  "Find TAGNAME using FUZZY algorithm.  CONTEXT is extra information collected before finding tag definition."
   (let* ((time (current-time))
          (dir (counsel-etags-tags-file-directory)))
     (when counsel-etags-debug (message "counsel-etags-find-tag-api called => %s %s %s" tagname fuzzy dir))
@@ -894,7 +938,7 @@ Focus on TAGNAME if it's not nil."
     (when dir
       (cond
        ((not tagname)
-        ;; ok we need use ivy-read to find candidate
+        ;; OK, need use ivy-read to find candidate
         (ivy-read "Fuzz matching tags:"
                   #'counsel-etags-list-tag-function
                   :history 'counsel-git-grep-history
@@ -904,13 +948,14 @@ Focus on TAGNAME if it's not nil."
                   :caller 'counsel-etags-find-tag))
 
        ((not (setq counsel-etags-find-tag-candidates
-                   (counsel-etags-collect-cands tagname fuzzy dir)))
+                   (counsel-etags-collect-cands tagname fuzzy dir context)))
         ;; OK let's try grep if no tag found
         (counsel-etags-grep tagname "No tag found. "))
 
        (t
         ;; open the one selected candidate
         (counsel-etags-open-tag-cand tagname counsel-etags-find-tag-candidates time))))))
+
 
 ;;;###autoload
 (defun counsel-etags-list-tag ()
@@ -938,11 +983,14 @@ Step 2, user could filter tags."
   "Find tag using tagname at point."
   (interactive)
   (counsel-etags-tags-file-must-exist)
-  (let* ((tagname (counsel-etags-tagname-at-point)))
+  (let* ((tagname (counsel-etags-tagname-at-point))
+         (context (counsel-etags-execute-collect-function)))
     (cond
      (tagname
       (let* ((counsel-etags-case-sensitive t))
-        (counsel-etags-find-tag-api tagname nil)))
+        ;; TODO try to get context here from rule and pass
+        ;; into API call
+        (counsel-etags-find-tag-api tagname nil context)))
      (t
       (message "No tag at point")))))
 
@@ -968,8 +1016,9 @@ Step 2, user could filter tags."
 
 ;;;###autoload
 (defun counsel-etags-virtual-update-tags()
-  "Scan the code and create tags file again.  Please note it's only interface
-used by other hooks or commands.  The tags updating might now happen."
+  "Scan code and create tags file again.
+It's the interface used by other hooks or commands.
+the tags updating might not happen."
   (interactive)
   (let* ((dir (and buffer-file-name
                    (file-name-directory buffer-file-name)))
@@ -1153,6 +1202,9 @@ If HINT is not nil, it's used as grep hint."
 (ivy-set-occur 'counsel-etags-grep 'counsel-etags-grep-occur)
 (ivy-set-display-transformer 'counsel-etags-grep 'counsel-git-grep-transformer)
 ;; }}
+
+
+(counsel-etags-setup-smart-rules)
 
 (provide 'counsel-etags)
 ;;; counsel-etags.el ends here
