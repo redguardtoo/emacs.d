@@ -902,6 +902,14 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                   (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
      (add-to-list 'compilation-error-regexp-alist 'mocha)))
 
+(defun pickup-random-color-theme (themes)
+  "Pickup random color theme from themes."
+  (unless (featurep 'counsel) (require 'counsel))
+  (let* ((available-themes (mapcar 'symbol-name themes))
+         (theme (nth (random (length available-themes)) available-themes)))
+    (counsel-load-theme-action theme)
+    (message "Color theme [%s] loaded." theme)))
+
 ;; ;; useless and hard to debug
 ;; (defun optimize-emacs-startup ()
 ;;   "Speedup emacs startup by compiling."
@@ -918,11 +926,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (defun random-color-theme ()
   "Random color theme."
   (interactive)
-  (unless (featurep 'counsel) (require 'counsel))
-  (let* ((available-themes (mapcar 'symbol-name (custom-available-themes)))
-         (theme (nth (random (length available-themes)) available-themes)))
-    (counsel-load-theme-action theme)
-    (message "Color theme [%s] loaded." theme)))
+  (pickup-random-color-theme (custom-available-themes)))
 
 (defun switch-to-ansi-term ()
   (interactive)

@@ -27,8 +27,9 @@
 (setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs24* (and (not (featurep 'xemacs)) (or (>= emacs-major-version 24))) )
-(setq *emacs25* (and (not (featurep 'xemacs)) (or (>= emacs-major-version 25))) )
+(setq *emacs24* (>= emacs-major-version 24))
+(setq *emacs25* (>= emacs-major-version 25))
+(setq *emacs26* (>= emacs-major-version 26))
 (setq *no-memory* (cond
                    (*is-a-mac*
                     (< (string-to-number (nth 1 (split-string (shell-command-to-string "sysctl hw.physmem")))) 4000000000))
