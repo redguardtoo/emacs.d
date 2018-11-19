@@ -25,7 +25,7 @@
 ;;;###autoload
 (defun counsel-etags-javascript-collect ()
   "Get CONTEXT before finding tag definition."
-  (let* ((context (counsel-etags-sdk-collect-context)))
+  (let* ((context (counsel-etags-sdk-get-context)))
     ;; if current tags is "this.onSelect", only search in current file
     (when (string-match-p "^this\.[0-9a-zA-Z]+"
                           (counsel-etags-sdk-thing-at-point "_."))
