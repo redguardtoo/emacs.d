@@ -1,11 +1,15 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-
+;; (advice-add #'package-initialize :after #'update-load-path)
 
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
+;; (defadvice package-initialize (after my-init-load-path activate)
+;;   "Reset `load-path'."
+;;   (push (expand-file-name "~/.emacs.d/lisp") load-path))
 (package-initialize)
+(push (expand-file-name "~/.emacs.d/lisp") load-path)
 
 (let* ((minver "24.4"))
   (when (version< emacs-version minver)
@@ -53,16 +57,15 @@
 
 (defmacro local-require (pkg)
   `(unless (featurep ,pkg)
-     (cond
-      ((eq ,pkg 'bookmark+)
-       (load (file-truename (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg)) t t))
-      ((eq ,pkg 'go-mode-load)
-       (load (file-truename (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg)) t t))
-      (t
-       (load (file-truename (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg)) t t)))))
-
-(defmacro require-init (pkg)
-  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg)) t t))
+     (load (expand-file-name
+             (cond
+               ((eq ,pkg 'bookmark+)
+                (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg))
+               ((eq ,pkg 'go-mode-load)
+                (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg))
+               (t
+                 (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg))))
+           t t)))
 
 ;; *Message* buffer should be writable in 24.4+
 (defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)
@@ -78,80 +81,80 @@
 (let* ((file-name-handler-alist nil))
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
-  (require-init 'init-autoload)
-  (require-init 'init-modeline)
-  (require-init 'init-utils)
-  (require-init 'init-elpa)
-  (require-init 'init-exec-path) ;; Set up $PATH
+  (require 'init-autoload)
+  (require 'init-modeline)
+  (require 'init-utils)
+  (require 'init-elpa)
+  (require 'init-exec-path) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
-  (require-init 'init-spelling)
-  (require-init 'init-gui-frames)
-  (require-init 'init-uniquify)
-  (require-init 'init-ibuffer)
-  (require-init 'init-ivy)
-  (require-init 'init-hippie-expand)
-  (require-init 'init-windows)
-  (require-init 'init-markdown)
-  (require-init 'init-erlang)
-  (require-init 'init-javascript)
-  (require-init 'init-org)
-  (require-init 'init-css)
-  (require-init 'init-python)
-  (require-init 'init-haskell)
-  (require-init 'init-ruby-mode)
-  (require-init 'init-lisp)
-  (require-init 'init-elisp)
-  (require-init 'init-yasnippet)
+  (require 'init-spelling)
+  (require 'init-gui-frames)
+  (require 'init-uniquify)
+  (require 'init-ibuffer)
+  (require 'init-ivy)
+  (require 'init-hippie-expand)
+  (require 'init-windows)
+  (require 'init-markdown)
+  (require 'init-erlang)
+  (require 'init-javascript)
+  (require 'init-org)
+  (require 'init-css)
+  (require 'init-python)
+  (require 'init-haskell)
+  (require 'init-ruby-mode)
+  (require 'init-lisp)
+  (require 'init-elisp)
+  (require 'init-yasnippet)
   ;; Use bookmark instead
-  (require-init 'init-cc-mode)
-  (require-init 'init-gud)
-  (require-init 'init-linum-mode)
-  (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
-  ;; (require-init 'init-gist)
-  (require-init 'init-gtags)
+  (require 'init-cc-mode)
+  (require 'init-gud)
+  (require 'init-linum-mode)
+  (require 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
+  ;; (require 'init-gist)
+  (require 'init-gtags)
   ;; init-evil dependent on init-clipboard
-  (require-init 'init-clipboard)
+  (require 'init-clipboard)
   ;; use evil mode (vi key binding)
-  (require-init 'init-evil)
-  (require-init 'init-multiple-cursors)
-  (require-init 'init-ctags)
-  (require-init 'init-bbdb)
-  (require-init 'init-gnus)
-  (require-init 'init-lua-mode)
-  (require-init 'init-workgroups2)
-  (require-init 'init-term-mode)
-  (require-init 'init-web-mode)
-  (require-init 'init-company)
-  (require-init 'init-chinese) ;; cannot be idle-required
+  (require 'init-evil)
+  (require 'init-multiple-cursors)
+  (require 'init-ctags)
+  (require 'init-bbdb)
+  (require 'init-gnus)
+  (require 'init-lua-mode)
+  (require 'init-workgroups2)
+  (require 'init-term-mode)
+  (require 'init-web-mode)
+  (require 'init-company)
+  (require 'init-chinese) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
-  (require-init 'init-keyfreq)
-  (require-init 'init-httpd)
+  (require 'init-keyfreq)
+  (require 'init-httpd)
 
   ;; projectile costs 7% startup time
 
   ;; misc has some crucial tools I need immediately
-  (require-init 'init-misc)
+  (require 'init-misc)
 
-  (require-init 'init-emacs-w3m)
-  (require-init 'init-hydra)
-  (require-init 'init-shackle)
-  (require-init 'init-dired)
-  (require-init 'init-artbollocks-mode)
-  (require-init 'init-writting)
+  (require 'init-emacs-w3m)
+  (require 'init-hydra)
+  (require 'init-shackle)
+  (require 'init-dired)
+  (require 'init-artbollocks-mode)
+  (require 'init-writting)
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
-  ;; Adding directories under "~/.emacs.d/site-lisp/" to `load-path' slows
+  ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
-  ;; Besides, no packages from ELPA is dependent on "~/.emacs.d/site-lisp".
-  (require-init 'init-site-lisp)
+  ;; Neither ELPA package nor dependent on "site-lisp/".
+  (setq load-path (cdr load-path))
+  (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t t)
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
-  (if (file-exists-p "~/.custom.el") (load-file "~/.custom.el"))
+  (load (expand-file-name "~/.custom.el") t nil t)
 
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
-  (setq custom-file (concat user-emacs-directory "custom-set-variables.el"))
-  (load custom-file 'noerror))
+  (load (expand-file-name "~/.emacs.d/custom-set-variables.el") t t t))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 
