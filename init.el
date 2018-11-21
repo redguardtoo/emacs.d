@@ -147,14 +147,14 @@
   ;; down all `require' statement. So we do this at the end of startup
   ;; Neither ELPA package nor dependent on "site-lisp/".
   (setq load-path (cdr load-path))
-  (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t t)
+  (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t)
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
-  (load (expand-file-name "~/.custom.el") t nil t)
+  (load (expand-file-name "~/.custom.el") t nil)
 
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
-  (load (expand-file-name "~/.emacs.d/custom-set-variables.el") t t t))
+  (load (expand-file-name "~/.emacs.d/custom-set-variables.el") t t))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 
