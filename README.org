@@ -80,8 +80,8 @@
 Most users should follow the section "Install in normal way".
 
 You need the section "Install stable version in easiest way" *if and only if*:
-- You have never heard Unix/Linux
-- You are living in North Korea without internet access
+- You don't have network access
+- You have never used any command line program
 ** Install in normal way
 Please remove =~/.emacs.d/init.el= and =~/.emacs=. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
@@ -177,11 +177,11 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 **** sbcl (lisp environment)
 - Required by lisp =slime=
 - Install through OS package manager
-
 **** tidy
 - Required by =web-mode= for syntax check and =tidy.el= html formatting
 - Install through OS package manager
 **** csslint
+- Required by =flymake-css=
 - Install =node.js= through OS package manager, then =npm install -g csslint=
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt file when image embedded
@@ -222,9 +222,9 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Please read [[https://www.gnu.org/software/global/manual/global.html][GNU Global manual]] to understand environment variables =GTAGSLIBPATH= and =MAKEOBJDIRPREFIX=
 - Install through OS package manager
 **** LibreOffice
-- Only the executable =soffice= is used when converting odt file into doc/pdf
-- conversion happens automatically when exporting org-mode to odt
-- The conversion command is in variable =org-export-odt-convert-processes=
+- Only the executable =soffice= is used for converting odt file into doc/pdf
+- Conversion happens automatically when exporting org-mode to odt
+- The conversion command is defined in variable =org-export-odt-convert-processes=
 - Install through OS package manager
 **** js-beautify
 - Beautify javascript code
@@ -236,16 +236,15 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Required by [[https://github.com/jorgenschaefer/elpy][elpy]] which is python IDE
 - At least =pip install jedi flake8=. Check elpy website for more tips.
 **** sdcv (console version of StarDict)
-- Required by sdcv.el
+- Required by =sdcv.e=
 - Install through OS package manager
-- Run =curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
+- Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
-- Used by =M-x counsel-etags-grep= to search text in files
+- Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
 - Tweak environment variable PATH to let Emacs find ripgrep
-I will keep using =ripgrep= instead of =the-silver-searcher= from now on.
 * Tutorial (OPTIONAL)
-Basic knowledge of Linux/Unix is required. At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
+Knowledge of Linux/Unix is required. At least you should understand the words like "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
 Please read this tutorial at least for once.
 *** Step 1, learn OS basics
@@ -278,7 +277,7 @@ See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master E
 I *avoid overriding the original setup* of third party command line program.
 
 ** Quick start
-On windows, you need install Cygwin. It provides command line tools Emacs uses. Cygwin could be installed on any hard drive but it's highly recommended don't change path of Cygwin.
+On Windows, you need install Cygwin which provides command line tools Emacs uses. Cygwin could be installed on any hard drive but it's highly recommended don't change it relative path to the root driver.
 
 Install Ctags (Universal Ctags is better. But Exuberant Ctags is fine). On Windows you could install Ctags through Cygwin.
 
