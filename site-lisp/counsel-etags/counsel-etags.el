@@ -156,8 +156,6 @@
 
 (defcustom counsel-etags-ignore-filenames
   '(;; VCS
-    ;; simple text file
-    "*.json"
     ;; project misc
     "*.log"
     ;; Ctags
