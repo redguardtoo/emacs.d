@@ -22,6 +22,7 @@
   (format "p4 %s %s" opts (if in-project (p4-convert-dir-to-url (ffip-project-root))
                             (p4-covert-current-file-to-url))))
 
+;;;###autoload
 (defun p4edit ()
   "p4 edit current file."
   (interactive)
@@ -38,6 +39,7 @@
           ;; turn off read-only since we've already `p4 edit'
           (read-only-mode -1)))))
 
+;;;###autoload
 (defun p4submit (&optional file-opened)
   "p4 submit current file.
 If FILE-OPENED, current file is still opened."
@@ -52,6 +54,7 @@ If FILE-OPENED, current file is still opened."
       (message (format "%s submitted."
                        (file-name-nondirectory buffer-file-name))))))
 
+;;;###autoload
 (defun p4url ()
   "Get Perforce depot url of the file."
   (interactive)
@@ -59,6 +62,7 @@ If FILE-OPENED, current file is still opened."
     (copy-yank-str url)
     (message "%s => clipboard & yank ring" url)))
 
+;;;###autoload
 (defun p4unshelve ()
   "Unshelve files from selected change."
   (interactive)
@@ -80,12 +84,14 @@ If FILE-OPENED, current file is still opened."
   (if (string-match "^Change \\([0-9]+\\) " line)
       (match-string 1 line)))
 
+;;;###autoload
 (defun p4revert ()
   "p4 revert current file."
   (interactive)
   (shell-command (p4-generate-cmd "revert"))
   (read-only-mode 1))
 
+;;;###autoload
 (defun p4add ()
   "p4 add current file."
   (interactive)
@@ -172,6 +178,7 @@ IF IN-PROJECT is t, show changelists of current project instead current file."
     (if just-lines lines
       (delq nil (mapcar #'p4--extract-changenumber lines)))))
 
+;;;###autoload
 (defun p4diff (&optional in-project)
   "Show diff of current file like `git diff'.
 If IN-PROJECT is t, operate in project root."
@@ -179,6 +186,7 @@ If IN-PROJECT is t, operate in project root."
   (let* ((content (shell-command-to-string (p4-generate-cmd "diff -du -db" in-project))))
     (p4--create-buffer "*p4diff*" content)))
 
+;;;###autoload
 (defun p4show(&optional in-project)
   "p4 show changes of current file.
 If IN-PROJECT is t, operate in project root."
@@ -207,6 +215,7 @@ If IN-PROJECT is t, operate in project root."
           ;; turn off read-only since we've already `p4 edit'
           (read-only-mode -1)))))
 
+;;;###autoload
 (defun p4edit-in-wgrep-buffer()
   "'p4 edit' files in wgrep buffer.
 Turn off `read-only-mode' of opened files."
@@ -225,7 +234,7 @@ Turn off `read-only-mode' of opened files."
               (setq fn-accessed filename)))
         (forward-line 1)))))
 
-
+;;;###autoload
 (defun p4edit-in-diff-mode()
   "'p4 edit' files in `diff-mode'.
 Turn off `read-only-mode' of opened files."
@@ -244,6 +253,7 @@ Turn off `read-only-mode' of opened files."
        (p4--edit-file filename fn-accessed)
        (setq fn-accessed filename)))))
 
+;;;###autoload
 (defun p4history (&optional num)
   "Show history of current file like `git log -p'.
 NUM default values i 10.  Show the latest NUM changes."
@@ -257,4 +267,4 @@ NUM default values i 10.  Show the latest NUM changes."
                    "\n\n")))
     (p4--create-buffer "*p4history*" content t)))
 
-(provide 'init-perforce)
+(provide 'p4tools)

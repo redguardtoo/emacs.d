@@ -103,13 +103,12 @@
      (setq-default mode-require-final-newline nil)
      ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
-     ;; default hotkey `C-c C-s` is still valid
-     ;; give yas-dropdown-prompt in yas/prompt-functions a chance
+     ;; Use `yas-dropdown-prompt' if possible. It requires `dropdown-list'.
      (setq yas-prompt-functions '(yas-dropdown-prompt
                                   yas-ido-prompt
                                   yas-completing-prompt))
 
-     ;; use yas-completing-prompt when ONLY when `M-x yas-insert-snippet'
+     ;; use `yas-completing-prompt' when ONLY when `M-x yas-insert-snippet'
      ;; thanks to capitaomorte for providing the trick.
      (defadvice yas-insert-snippet (around use-completing-prompt activate)
        "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."

@@ -17,7 +17,6 @@
 (defun my-setup-erlang ()
   (interactive)
   (unless (is-buffer-file-temp)
-    (local-require 'cb)
     (when (file-exists-p (file-truename "~/bin/syntaxerl"))
       (add-to-list 'flymake-allowed-file-name-masks '("\\.erl\\'" flymake-syntaxerl))
       (add-to-list 'flymake-allowed-file-name-masks '("\\.hrl\\'" flymake-syntaxerl))

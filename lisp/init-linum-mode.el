@@ -15,7 +15,6 @@
                                       jabber-chat-mode
                                       inferior-js-mode
                                       inferior-python-mode
-                                      inferior-scheme-mode
                                       ivy-occur-grep-mode ; better performance
                                       ivy-occur-mode ; better performance
                                       twittering-mode

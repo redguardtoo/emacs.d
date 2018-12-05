@@ -247,8 +247,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defvar cached-normal-file-full-path nil)
 
 (defun buffer-too-big-p ()
-  (or (> (buffer-size) (* 5000 64))
-      (> (line-number-at-pos (point-max)) 5000)))
+  ;; 5000 lines
+  (> (buffer-size) (* 5000 80)))
 
 (defun file-too-big-p (file)
   (> (nth 7 (file-attributes file))
@@ -258,14 +258,14 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun is-buffer-file-temp ()
   (interactive)
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file"
-  (let ((f (buffer-file-name))
-        org
-        (rlt t))
+  (let* ((f (buffer-file-name)) org (rlt t))
     (cond
-     ((not load-user-customized-major-mode-hook) t)
+     ((not load-user-customized-major-mode-hook)
+      (setq rlt t))
      ((not f)
       ;; file does not exist at all
-      (setq rlt t))
+      ;; org-babel edit inline code block need calling hook
+      (setq rlt nil))
      ((string= f cached-normal-file-full-path)
       (setq rlt nil))
      ((string-match (concat "^" temporary-file-directory) f)
@@ -320,7 +320,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
 ;; {{ simpleclip has problem on Emacs 25.1
 (defun test-simpleclip ()
   (unwind-protect
-      (let (retval)
+      (let* (retval)
         (condition-case ex
             (progn
               (simpleclip-set-contents "testsimpleclip!")
@@ -328,17 +328,8 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                     (string= "testsimpleclip!"
                              (simpleclip-get-contents))))
           ('error
-           (message (format "Please install %s to support clipboard from terminal."
-                            (cond
-                             (*unix*
-                              "xsel or xclip")
-                             ((or *cygwin* *win64*)
-                              "cygutils-extra from Cygwin")
-                             (t
-                              "CLI clipboard tools"))))
            (setq retval nil)))
         retval)))
-
 (setq simpleclip-works (test-simpleclip))
 
 (defun my-gclip ()

@@ -260,8 +260,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (vc-log-edit-mode . emacs)
         (magit-log-edit-mode . emacs)
         (inf-ruby-mode . emacs)
-        (direx:direx-mode . emacs)
-        (yari-mode . emacs)
         (erc-mode . emacs)
         (neotree-mode . emacs)
         (w3m-mode . emacs)
@@ -303,7 +301,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 (define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
 
-(defun my-search-defun-from-pos (pos)
+(defun my-search-defun-from-pos (search pos)
   (evil-search search t t pos)
   ;; ignore this.f1 = this.fn.bind(this) code
   (when (and (memq major-mode '(js-mode js2-mode rjsx-mode))
@@ -347,10 +345,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
           (setq ipos (marker-position ipos)))
         ;; imenu found a position, so go there and
         ;; highlight the occurrence
-        (my-search-defun-from-pos (if (numberp ipos) ipos (point-min))))
+        (my-search-defun-from-pos search (if (numberp ipos) ipos (point-min))))
        ;; otherwise just go to first occurrence in buffer
        (t
-        (my-search-defun-from-pos (point-min)))))))
+        (my-search-defun-from-pos search (point-min)))))))
 ;; use "gt", someone might prefer original `evil-goto-definition'
 (define-key evil-motion-state-map "gt" 'my-evil-goto-definition)
 
@@ -373,8 +371,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ use `,` as leader key
 (nvmap :prefix ","
-       "=" 'increase-default-font-height ; GUI emacs only
-       "-" 'decrease-default-font-height ; GUI emacs only
        "bf" 'beginning-of-defun
        "bu" 'backward-up-list
        "bb" 'back-to-previous-buffer
@@ -390,7 +386,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "af" 'ace-maximize-window
        "ac" 'aya-create
        "zz" 'paste-from-x-clipboard ; used frequently
-       "cy" 'strip-convert-lines-into-one-big-string
        "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
        "es" 'goto-edge-by-comparing-font-face
        "vj" 'my-validate-json-or-js-expression
@@ -462,7 +457,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rlu" 'run-lua
        "tci" 'toggle-company-ispell
        "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
-       "it" 'issue-tracker-increment-issue-id-under-cursor
        "ls" 'highlight-symbol
        "lq" 'highlight-symbol-query-replace
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
@@ -477,7 +471,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "tm" 'my-git-timemachine
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
        "ov" 'my-overview-of-current-buffer
-       "or" 'open-readme-in-project
        "oo" 'compile
        "c$" 'org-archive-subtree ; `C-c $'
        ;; org-do-demote/org-do-premote support selected region
@@ -513,9 +506,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "si" 'evilmi-select-items
        "jb" 'js-beautify
        "jp" 'my-print-json-path
-       "sep" 'string-edit-at-point
-       "sec" 'string-edit-conclude
-       "sea" 'string-edit-abort
        "xe" 'eval-last-sexp
        "x0" 'delete-window
        "x1" 'delete-other-windows
@@ -531,8 +521,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "UU" 'winner-redo
        "to" 'toggle-web-js-offset
        "sl" 'sort-lines
-       "ulr" 'uniquify-all-lines-region
-       "ulb" 'uniquify-all-lines-buffer
        "fs" 'ffip-save-ivy-last
        "fr" 'ffip-ivy-resume
        "fc" 'cp-ffip-ivy-last
@@ -828,6 +816,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-find-char-pinyin-mode 1)
 ;; }}
 
+;; {{ Port of vim-textobj-syntax. It provides evil text objects for consecutive items with same syntax highlig
+(require 'evil-textobj-syntax)
+;; }}
+
 ;; {{ evil-args
 ;; bind evil-args text objects
 (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
@@ -855,7 +847,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
      (setq evil-symbol-word-search t)
 
      ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
-     (defalias #'forward-evil-word #'forward-evil-symbol)
+     ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
+     ;; (defalias #'forward-evil-word #'forward-evil-symbol)
 
      ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
      (defmacro adjust-major-mode-keymap-with-evil (m &optional r)

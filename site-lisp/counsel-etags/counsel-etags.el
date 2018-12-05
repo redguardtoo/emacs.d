@@ -6,12 +6,12 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.9.1"))
 ;; Keywords: tools, convenience
-;; Version: 1.7.2
+;; Version: 1.7.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -76,11 +76,55 @@
 (require 'xref nil t)
 (require 'etags)
 (require 'cl-lib)
-(require 'counsel) ; counsel dependent on ivy
+(require 'counsel)
 
 (defgroup counsel-etags nil
   "Complete solution to use ctags."
   :group 'tools)
+
+(defcustom counsel-etags-smart-rules nil
+  "Plugins to match filter out candidates when using `counsel-etags-find-tag-at-point'."
+  :group 'counsel-etags
+  :type '(repeat 'string))
+
+(defun counsel-etags-load-smart-rules(modes rule)
+  "Load MODES's smart RULES."
+  (dolist (mode modes)
+    (setq counsel-etags-smart-rules
+          (plist-put counsel-etags-smart-rules
+                     mode
+                     (let* ((rule-filename (concat "counsel-etags-" (symbol-name rule)))
+                            (fn-prefix (concat "counsel-etags-" (symbol-name rule)))
+                            (collect-function (intern (concat fn-prefix "-collect")))
+                            (predicate-function (intern (concat fn-prefix "-predicate"))))
+                       (autoload collect-function rule-filename nil)
+                       (autoload predicate-function rule-filename nil)
+                       (cons collect-function predicate-function))))))
+
+(defun counsel-etags-setup-smart-rules ()
+  "Initialize `counsel-etags-smart-rules'."
+  (interactive)
+  (counsel-etags-load-smart-rules '(js-mode js2-mode rjsx-mode) 'javascript))
+
+(defun counsel-etags-execute-collect-function ()
+  "Return context before finding tag definition."
+  (let* ((fn (car (plist-get counsel-etags-smart-rules major-mode))))
+    (cond
+     (fn
+      (funcall fn))
+     (t
+      nil))))
+
+(defun counsel-etags-execute-predicate-function (context candidate)
+  "Use CONTEXT to test CANDIDATE.  If return nil, the CANDIDATE is excluded."
+  (let* ((m (plist-get context :major-mode))
+         (fn (cdr (plist-get counsel-etags-smart-rules m))))
+    (cond
+     (fn
+      (funcall fn context candidate))
+     (t
+      ;; If there is no predicate, candidate is included.
+      t))))
 
 (defcustom counsel-etags-ignore-directories
   '(;; VCS
@@ -112,8 +156,6 @@
 
 (defcustom counsel-etags-ignore-filenames
   '(;; VCS
-    ;; simple text file
-    "*.json"
     ;; project misc
     "*.log"
     ;; Ctags
@@ -194,7 +236,15 @@ You can setup it using \".dir-locals.el\"."
 (defcustom counsel-etags-ctags-options-file "~/.ctags"
   "File to read options from, like \"~/.ctags\".
 Universal Ctags won't read options from \"~/.ctags\" by default.
-So force Universal Ctags to load \"~/.ctags\"."
+So we force Universal Ctags to load \"~/.ctags\".
+
+Exuberant Ctags actually can NOT open option file \".ctags\" through cli option.
+
+But path \"~/.ctags\" is OK because we use Emacs Lisp to load \"~.ctags\".
+
+Please use file name like \"ctags.cnf\" instead \".ctags\" when customize this variable.
+
+Universal Ctags does NOT have this bug."
   :group 'counsel-etags
   :type 'string)
 
@@ -307,7 +357,7 @@ Return nil if it's not found."
 
 ;;;###autoload
 (defun counsel-etags-version ()
-  (message "1.7.2"))
+  (message "1.7.3"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -397,73 +447,91 @@ Return nil if it's not found."
   (let* ((emacs-executable (file-name-directory (expand-file-name invocation-name invocation-directory))))
     (replace-regexp-in-string "/" "\\\\" emacs-executable)))
 
-(defun counsel-etags-ctags-options-file-cli ()
-  "Create command line for `counsel-etags-ctags-options-file'."
-  (cond
-   (counsel-etags-ctags-options-file
-    (format "--options=\"%s\""
-            (file-truename counsel-etags-ctags-options-file)))
-   (t
-    "")))
+(defun counsel-etags-is-exuberant-ctags (ctags-program)
+  "If CTAGS-PROGRAM is Exuberant Ctags."
+  (if (string-match-p "Exuberant Ctags"
+                      (shell-command-to-string (concat ctags-program " --version")))
+      t))
 
-(defun counsel-etags-get-scan-command (find-pg ctags-pg)
-  "Create scan command for SHELL from FIND-PG and CTAGS-PG."
+(defun counsel-etags-ctags-options-file-cli (ctags-program)
+  "Use CTAGS-PROGRAM to create command line for `counsel-etags-ctags-options-file'."
+  (cond
+   ;; no options file
+   ((or (not counsel-etags-ctags-options-file)
+        (string= counsel-etags-ctags-options-file ""))
+    "")
+
+   ;; If options file is "~/.ctags" and ctags program is Exuberant Ctags
+   ;; "~/.ctags" won't be loaded.
+   ;; But if options file is empty, "~/.ctags" will be loaded.
+   ;; It's a bug of Exuberant Ctags, have to work around it here.
+   ((and (counsel-etags-is-exuberant-ctags ctags-program)
+         (string= (file-truename "~/.ctags")
+                  (file-truename counsel-etags-ctags-options-file)))
+    "")
+
+   (t
+    (format "--options=\"%s\""
+            (file-truename counsel-etags-ctags-options-file)))))
+
+(defun counsel-etags-get-scan-command (find-program ctags-program)
+  "Create scan command for SHELL from FIND-PROGRAM and CTAGS-PROGRAM."
   (let* ((cmd ""))
     (cond
      ;; use both find and ctags
-     ((and find-pg ctags-pg)
+     ((and find-program ctags-program)
       (setq cmd (format "%s . \\( %s \\) -prune -o -type f -not -size +%sk %s -print | %s -e %s -L -"
-                        find-pg
+                        find-program
                         (mapconcat (lambda (p)
                                      (format "-iwholename \"*/%s\"" (counsel-etags-dir-pattern p)) )
                                    counsel-etags-ignore-directories " -or ")
                         counsel-etags-max-file-size
                         (mapconcat (lambda (n) (format "-not -name \"%s\"" n))
                                    counsel-etags-ignore-filenames " ")
-                        ctags-pg
-                        (counsel-etags-ctags-options-file-cli))))
+                        ctags-program
+                        (counsel-etags-ctags-options-file-cli ctags-program))))
      ;; Use ctags only
-     (ctags-pg
+     (ctags-program
       (setq cmd (format "%s %s %s -e %s -R ."
-                        ctags-pg
+                        ctags-program
                         (mapconcat (lambda (p)
                                      (format "--exclude=\"%s\"" (counsel-etags-dir-pattern p)) )
                                    counsel-etags-ignore-directories " ")
                         (mapconcat (lambda (p)
                                      (format "--exclude=\"%s\"" p))
                                    counsel-etags-ignore-filenames " ")
-                        (counsel-etags-ctags-options-file-cli))))
+                        (counsel-etags-ctags-options-file-cli ctags-program))))
 
      ;; fall back to Emacs bundled etags
      (t
-      ;; (setq ctags-pg (cond
+      ;; (setq ctags-program (cond
       ;;                 ((eq system-type 'windows-nt)
-      ;;                  (setq ctags-pg (concat (counsel-etags-emacs-bin-path) "etags.exe")))
+      ;;                  (setq ctags-program (concat (counsel-etags-emacs-bin-path) "etags.exe")))
       ;;                 (t
-      ;;                  (setq ctags-pg "etags"))))
-      ;; (setq cmd (format "%s ." ctags-pg))
+      ;;                  (setq ctags-program "etags"))))
+      ;; (setq cmd (format "%s ." ctags-program))
       (message "You need install ctags first.")))
-    (when counsel-etags-debug (message "counsel-etags-get-scan-command called => find-pg=%s ctags-pg=%s cmd=%s" find-pg ctags-pg cmd))
+    (when counsel-etags-debug (message "counsel-etags-get-scan-command called => find-program=%s ctags-program=%s cmd=%s" find-program ctags-program cmd))
     cmd))
 
 (defun counsel-etags-scan-dir-internal (src-dir &optional force)
   "Create tags file from SRC-DIR.
 If FORCE is t, the command is executed without checking the timer."
   ;; TODO save the ctags-opts into hash
-  (let* ((find-pg (or counsel-etags-find-program
+  (let* ((find-program (or counsel-etags-find-program
                       (counsel-etags-guess-program "find")))
-         (ctags-pg (or counsel-etags-tags-program
+         (ctags-program (or counsel-etags-tags-program
                        (counsel-etags-guess-program "ctags")))
          (default-directory src-dir)
          ;; if both find and ctags exist, use both
          ;; if only ctags exists, use ctags
          ;; run find&ctags to create TAGS, `-print` is important option to filter correctly
-         (cmd (counsel-etags-get-scan-command find-pg ctags-pg))
+         (cmd (counsel-etags-get-scan-command find-program ctags-program))
          (tags-file (file-truename (concat (file-name-as-directory src-dir) "TAGS")))
          (doit (or force (not (file-exists-p tags-file)))))
-    (unless ctags-pg
+    (unless ctags-program
       (error "Please install Ctags before running this program!"))
-    (when counsel-etags-debug (message "counsel-etags-scan-dir-internal called => src-dir=%s force=%s find-pg=%s ctags-pg=%s default-directory=%s cmd=%s" src-dir force find-pg ctags-pg default-directory cmd))
+    (when counsel-etags-debug (message "counsel-etags-scan-dir-internal called => src-dir=%s force=%s find-program=%s ctags-program=%s default-directory=%s cmd=%s" src-dir force find-program ctags-program default-directory cmd))
     ;; always update cli options
     (when doit
       (message "%s at %s" (if counsel-etags-debug cmd "Scan") default-directory)
@@ -623,16 +691,18 @@ IS-STRING is t if the candidate is string."
 
 (defun counsel-etags-build-cand (info)
   "Build tag candidate from INFO."
-  (let* ((path (alist-get 'path info))
-         (lnum (alist-get 'line-number info))
-         (text (alist-get 'text info))
-         (tagname (alist-get 'tagname info)))
-    (cons (format "%s:%s:%s" path lnum text)
-          (list path lnum tagname))))
+  (let* ((file (plist-get info :file))
+         (lnum (plist-get info :line-number))
+         (text (plist-get info :text))
+         (tagname (plist-get info :tagname)))
+    (cons (format "%s:%s:%s" file lnum text)
+          (list file lnum tagname))))
 
-(defun counsel-etags-collect-cands (tagname fuzzy &optional dir)
-  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR."
-  (when counsel-etags-debug (message "counsel-etags-collect-cands called tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
+(defun counsel-etags-collect-cands (tagname fuzzy &optional dir context)
+  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR.
+CONTEXT is extra information collected before find tag definition."
+  (when counsel-etags-debug
+    (message "counsel-etags-collect-cands => tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
   (let* ((force-tags-file (and dir
                                (file-exists-p (concat (file-name-as-directory dir) "TAGS"))
                                (concat (file-name-as-directory dir) "TAGS")))
@@ -682,15 +752,17 @@ IS-STRING is t if the candidate is string."
             ;; second step, more precise search
             (cond
              ((re-search-forward re (point-at-eol) t)
-              (let* ((text (match-string-no-properties 1))
-                     (lnum (match-string-no-properties 2))
-                     (path (concat root-dir (etags-file-of-tag t)))
-                     (cand (counsel-etags-build-cand (list (cons 'path path)
-                                                           (cons 'line-number lnum)
-                                                           (cons 'text text)
-                                                           (cons 'tagname tagname)))))
-                (when cand
-                  (add-to-list 'cands cand))))
+              (let* ((line-number (match-string-no-properties 2))
+                     (text (match-string-no-properties 1))
+                     ;; file must be set after above variables
+                     (file (concat root-dir (etags-file-of-tag t)))
+                     (cand (list :file file
+                                 :line-number line-number
+                                 :text text
+                                 :tagname tagname)))
+                (when (or (not context)
+                          (counsel-etags-execute-predicate-function context cand))
+                  (add-to-list 'cands (counsel-etags-build-cand cand)))))
              (t
               ;; need push cursor forward
               (end-of-line)))))))
@@ -773,7 +845,7 @@ Focus on TAGNAME if it's not nil."
   (add-to-list 'counsel-etags-tag-history (cons cand dir)))
 
 (defun counsel-etags-open-tag-cand (tagname cands time)
-  "Open CANDS.  Start open tags file at TIME."
+  "Find TAGNAME from CANDS.  Open tags file at TIME."
   ;; mark current point for `pop-tag-mark'
   (let* ((dir (counsel-etags-tags-file-directory)))
     (cond
@@ -859,8 +931,8 @@ Focus on TAGNAME if it's not nil."
       (setq counsel-etags-find-tag-candidates rlt)
       rlt))))
 
-(defun counsel-etags-find-tag-api (tagname fuzzy)
-  "Find TAGNAME using FUZZY algorithm."
+(defun counsel-etags-find-tag-api (tagname fuzzy &optional context)
+  "Find TAGNAME using FUZZY algorithm.  CONTEXT is extra information collected before finding tag definition."
   (let* ((time (current-time))
          (dir (counsel-etags-tags-file-directory)))
     (when counsel-etags-debug (message "counsel-etags-find-tag-api called => %s %s %s" tagname fuzzy dir))
@@ -868,7 +940,7 @@ Focus on TAGNAME if it's not nil."
     (when dir
       (cond
        ((not tagname)
-        ;; ok we need use ivy-read to find candidate
+        ;; OK, need use ivy-read to find candidate
         (ivy-read "Fuzz matching tags:"
                   #'counsel-etags-list-tag-function
                   :history 'counsel-git-grep-history
@@ -878,13 +950,14 @@ Focus on TAGNAME if it's not nil."
                   :caller 'counsel-etags-find-tag))
 
        ((not (setq counsel-etags-find-tag-candidates
-                   (counsel-etags-collect-cands tagname fuzzy dir)))
+                   (counsel-etags-collect-cands tagname fuzzy dir context)))
         ;; OK let's try grep if no tag found
         (counsel-etags-grep tagname "No tag found. "))
 
        (t
         ;; open the one selected candidate
         (counsel-etags-open-tag-cand tagname counsel-etags-find-tag-candidates time))))))
+
 
 ;;;###autoload
 (defun counsel-etags-list-tag ()
@@ -912,11 +985,14 @@ Step 2, user could filter tags."
   "Find tag using tagname at point."
   (interactive)
   (counsel-etags-tags-file-must-exist)
-  (let* ((tagname (counsel-etags-tagname-at-point)))
+  (let* ((tagname (counsel-etags-tagname-at-point))
+         (context (counsel-etags-execute-collect-function)))
     (cond
      (tagname
       (let* ((counsel-etags-case-sensitive t))
-        (counsel-etags-find-tag-api tagname nil)))
+        ;; TODO try to get context here from rule and pass
+        ;; into API call
+        (counsel-etags-find-tag-api tagname nil context)))
      (t
       (message "No tag at point")))))
 
@@ -942,8 +1018,9 @@ Step 2, user could filter tags."
 
 ;;;###autoload
 (defun counsel-etags-virtual-update-tags()
-  "Scan the code and create tags file again.  Please note it's only interface
-used by other hooks or commands.  The tags updating might now happen."
+  "Scan code and create tags file again.
+It's the interface used by other hooks or commands.
+the tags updating might not happen."
   (interactive)
   (let* ((dir (and buffer-file-name
                    (file-name-directory buffer-file-name)))
@@ -1127,6 +1204,9 @@ If HINT is not nil, it's used as grep hint."
 (ivy-set-occur 'counsel-etags-grep 'counsel-etags-grep-occur)
 (ivy-set-display-transformer 'counsel-etags-grep 'counsel-git-grep-transformer)
 ;; }}
+
+
+(counsel-etags-setup-smart-rules)
 
 (provide 'counsel-etags)
 ;;; counsel-etags.el ends here

@@ -1,14 +1,18 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; List of VISIBLE packages from melpa-unstable (http://melpa.org)
-;; Feel free to add more packages!
+;; List of visible packages from melpa-unstable (http://melpa.org).
+;; Please add the package name into `melpa-include-packages`
+;; if it's not visible after  `list-packages'.
 (defvar melpa-include-packages
   '(ace-mc
     color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
+    artbollocks-mode
     auto-package-update
     bbdb
+    evil-textobj-syntax
     command-log-mode
+    vimrc-mode
     auto-yasnippet
     dumb-jump
     websocket ; to talk to the browser
@@ -53,8 +57,6 @@
     ;; company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
-    move-text
-    string-edit ; looks magnars don't update stable tag frequently
     findr
     mwe-log-commands
     yaml-mode
@@ -94,25 +96,27 @@
 ;; I don't use any packages from GNU ELPA because I want to minimize
 ;; dependency on 3rd party web site.
 (setq package-archives
-      '(;; uncomment below line if you need use GNU ELPA
+      '(("localelpa" . "~/.emacs.d/localelpa/")
+        ;; uncomment below line if you need use GNU ELPA
         ;; ("gnu" . "https://elpa.gnu.org/packages/")
-        ("localelpa" . "~/.emacs.d/localelpa/")
+        ("melpa" . "https://melpa.org/packages/")
+        ("melpa-stable" . "https://stable.melpa.org/packages/")
 
-        ;; ;; {{ 163 repository:
+        ;; Use either 163 or tsinghua mirror repository when official melpa
+        ;; is too slow or shutdown.
+
+        ;; ;; {{ Option 1: 163 mirror repository:
+        ;; ;; ("gnu" . "https://mirrors.163.com/elpa/gnu/")
         ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
         ;; ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/")
         ;; ;; }}
 
-        ;; ;; {{ tsinghua repository (more stable than 163, recommended)
-        ;; ;;See https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
+        ;; ;; {{ Option 2: tsinghua mirror repository
+        ;; ;; @see https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
         ;; ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
         ;; ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
         ;; ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
-        ;; ;; ("org" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
         ;; }}
-
-        ("melpa" . "https://melpa.org/packages/")
-        ("melpa-stable" . "https://stable.melpa.org/packages/")
         ))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
@@ -180,7 +184,6 @@
 ;;------------------------------------------------------------------------------
 
 (require-package 'async)
-(require-package 'dash) ; required by string-edit
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'auto-compile)
 (require-package 'smex)
@@ -232,9 +235,7 @@
 (require-package 'counsel-bbdb)
 (require-package 'ibuffer-vc)
 (require-package 'less-css-mode)
-(require-package 'move-text)
 (require-package 'command-log-mode)
-(require-package 'page-break-lines)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
 (require-package 'ruby-compilation)
@@ -257,6 +258,7 @@
 (require-package 'multi-term)
 (require-package 'js-doc)
 (require-package 'js2-mode)
+(require-package 'js2-refactor)
 (require-package 'rjsx-mode)
 (require-package 's)
 ;; js2-refactor requires js2, dash, s, multiple-cursors, yasnippet
@@ -301,6 +303,7 @@
 (require-package 'evil-visualstar)
 (require-package 'evil-lion)
 (require-package 'evil-args)
+(require-package 'evil-textobj-syntax)
 (require-package 'slime)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)
@@ -309,12 +312,16 @@
 (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
 (require-package 'shackle)
 (require-package 'toc-org)
-
+(require-package 'artbollocks-mode)
+(require-package 'elpa-mirror)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
-(when *emacs24*
-  (require-package 'color-theme)
-  ;; emms v5.0 need seq
-  (require-package 'seq))
+(require-package 'color-theme)
+;; emms v5.0 need seq
+(require-package 'seq)
+(require-package 'stripe-buffer)
+(require-package 'visual-regexp) ;; Press "M-x vr-*"
+(require-package 'vimrc-mode)
+
 (when *emacs25*
   (require-package 'zenburn-theme)
   (require-package 'color-theme-sanityinc-solarized)

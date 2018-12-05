@@ -303,39 +303,6 @@
   (interactive)
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
-
-;; {{ @see http://emacsredux.com/blog/2013/04/21/edit-files-as-root/
-(defun sudo-edit (&optional arg)
-  "Edit currently visited file as root.
-With a prefix ARG prompt for a file to visit.
-Will also prompt for a file to visit if current
-buffer is not visiting a file.
-You may insert below line into ~/.authinfo.gpg to type less:
-machine 127.0.0.1 login root password ****** port sudo
-See \"Reusing passwords for several connections\" from INFO.
-"
-  (interactive "P")
-  (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@127.0.0.1:"
-                         (read-file-name "Find file(as root): ")))
-    (find-alternate-file (concat "/sudo:@127.0.0.1:"
-                                 buffer-file-name))))
-
-(defadvice counsel-find-file (after find-file-sudo activate)
-  "Find file as root if necessary."
-  (if (and (not (and buffer-file-name
-                     (file-writable-p buffer-file-name)))
-           ;; sudo edit only physical file
-           buffer-file-name
-           ;; sudo edit only /etc/**/*
-           (string-match-p "^/etc/" buffer-file-name))
-      (find-alternate-file (concat "/sudo:root@127.0.0.1:"
-                                   buffer-file-name))))
-;; }}
-
-;; edit confluence wiki
-(add-to-list 'auto-mode-alist '("\\.wiki\\'" . confluence-edit-mode))
-
 (defun erase-specific-buffer (num buf-name)
   (let* ((message-buffer (get-buffer buf-name))
          (old-buffer (current-buffer)))
@@ -577,22 +544,6 @@ If step is -1, go backward."
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
-;; {{ string-edit-mode
-(defun string-edit-at-point-hook-setup ()
-  (let* ((major-mode-list (remove major-mode '(web-mode js2-mode js-mode css-mode emacs-lisp-mode)))
-         (str (my-buffer-str)))
-    ;; (ivy-read "directories:" collection :action 'dired)
-    ;; (message "original=%s" (se/find-original))
-    ;; (message "major-mode-list=%s major-mode=%s" major-mode-list major-mode)
-    (save-excursion
-      (cond
-       ((string-match-p "<[a-zA-Z]" str)
-        (web-mode))
-       ((string-match-p "function(\\| var \\|" str)
-        (js-mode))))))
-(add-hook 'string-edit-at-point-hook 'string-edit-at-point-hook-setup)
-;; }}
-
 ;; {{ Diff two regions
 ;; Step 1: Select a region and `M-x diff-region-tag-selected-as-a'
 ;; Step 2: Select another region and `M-x diff-region-compare-with-b'
@@ -789,7 +740,9 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; flymake
-(setq flymake-gui-warnings-enabled nil)
+(eval-after-load 'flymake
+  '(progn
+     (setq flymake-gui-warnings-enabled nil)))
 
 ;; {{ check attachments
 (defun my-message-current-line-cited-p ()
@@ -915,19 +868,17 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   '(define-key grep-mode-map
      (kbd "C-c C-c") 'wgrep-finish-edit))
 
-;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el"
+;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el" or "savehist".
+;; Any global variable matching `session-globals-regexp' is saved *automatically*.
 (setq session-save-file (expand-file-name "~/.emacs.d/.session"))
 (setq session-globals-max-size 2048)
 ;; can store 8Mb string
 (setq session-globals-max-string (* 8 1024 1024))
-(setq session-globals-include '(kill-ring 
+(setq session-globals-include '(kill-ring
                                 (session-file-alist 100 t)
                                 file-name-history
                                 search-ring
                                 regexp-search-ring))
-;; (eval-after-load 'session
-;;   '(progn
-;;      ))
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
@@ -951,6 +902,14 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                   (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
      (add-to-list 'compilation-error-regexp-alist 'mocha)))
 
+(defun pickup-random-color-theme (themes)
+  "Pickup random color theme from themes."
+  (unless (featurep 'counsel) (require 'counsel))
+  (let* ((available-themes (mapcar 'symbol-name themes))
+         (theme (nth (random (length available-themes)) available-themes)))
+    (counsel-load-theme-action theme)
+    (message "Color theme [%s] loaded." theme)))
+
 ;; ;; useless and hard to debug
 ;; (defun optimize-emacs-startup ()
 ;;   "Speedup emacs startup by compiling."
@@ -967,11 +926,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (defun random-color-theme ()
   "Random color theme."
   (interactive)
-  (unless (featurep 'counsel) (require 'counsel))
-  (let* ((available-themes (mapcar 'symbol-name (custom-available-themes)))
-         (theme (nth (random (length available-themes)) available-themes)))
-    (counsel-load-theme-action theme)
-    (message "Color theme [%s] loaded." theme)))
+  (pickup-random-color-theme (custom-available-themes)))
 
 (defun switch-to-ansi-term ()
   (interactive)
@@ -1014,5 +969,280 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (unless *no-memory*
   ;; speed up font rendering for special characters
   (setq inhibit-compacting-font-caches t))
+
+(setq auto-mode-alist
+      (cons '("\\.textile\\'" . textile-mode) auto-mode-alist))
+
+(transient-mark-mode t)
+
+(global-auto-revert-mode)
+(setq global-auto-revert-non-file-buffers t
+      auto-revert-verbose nil)
+
+(add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
+
+;;----------------------------------------------------------------------------
+;; Don't disable narrowing commands
+;;----------------------------------------------------------------------------
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-defun 'disabled nil)
+
+;; But don't show trailing whitespace in SQLi, inf-ruby etc.
+(add-hook 'comint-mode-hook
+          (lambda () (setq show-trailing-whitespace nil)))
+
+;; my screen is tiny, so I use minimum eshell prompt
+(eval-after-load 'eshell
+  '(progn
+     (setq eshell-prompt-function
+           (lambda ()
+             (concat (getenv "USER") " $ ")))))
+
+;; I'm in Australia now, so I set the locale to "en_AU"
+(defun insert-date (prefix)
+  "Insert the current date. With prefix-argument, use ISO format. With
+   two prefix arguments, write out the day and month name."
+  (interactive "P")
+  (let* ((format (cond
+                  ((not prefix) "%d.%m.%Y")
+                  ((equal prefix '(4)) "%Y-%m-%d")
+                  ((equal prefix '(16)) "%d %B %Y"))))
+    (insert (format-time-string format))))
+
+;;compute the length of the marked region
+(defun region-length ()
+  "Length of a selected region."
+  (interactive)
+  (message (format "%d" (- (region-end) (region-beginning)))))
+
+;; {{ imenu tweakment
+(defvar rimenu-position-pair nil "positions before and after imenu jump")
+(add-hook 'imenu-after-jump-hook
+          (lambda ()
+            (let* ((start-point (marker-position (car mark-ring)))
+                   (end-point (point)))
+              (setq rimenu-position-pair (list start-point end-point)))))
+
+(defun rimenu-jump ()
+  "Jump to the closest before/after position of latest imenu jump."
+  (interactive)
+  (when rimenu-position-pair
+    (let* ((p1 (car rimenu-position-pair))
+           (p2 (cadr rimenu-position-pair)))
+
+      ;; jump to the far way point of the rimenu-position-pair
+      (if (< (abs (- (point) p1))
+             (abs (- (point) p2)))
+          (goto-char p2)
+        (goto-char p1)))))
+;; }}
+
+;; {{ my blog tools
+(defun open-blog-on-current-month ()
+  (interactive)
+  (find-file (file-truename (concat "~/blog/" (format-time-string "%Y-%m") ".org"))))
+
+(defun insert-blog-version ()
+  "Insert version of my blog post."
+  (interactive)
+  (insert (format-time-string "%Y%m%d")))
+;; }}
+
+;; show ascii table
+(defun ascii-table ()
+  "Print the ascii table."
+  (interactive)
+  (switch-to-buffer "*ASCII*")
+  (erase-buffer)
+  (insert (format "ASCII characters up to number %d.\n" 254))
+  (let* ((i 0))
+    (while (< i 254)
+      (setq i (+ i 1))
+      (insert (format "%4d %c\n" i i))))
+  (beginning-of-buffer))
+
+;; {{ unique lines
+(defun uniquify-all-lines-region (start end)
+  "Find duplicate lines in region START to END keeping first occurrence."
+  (interactive "*r")
+  )
+
+(defun uniq-lines ()
+  "Delete duplicate lines in region or buffer."
+  (interactive)
+  (let* ((a (region-active-p))
+         (start (if a (region-beginning) (point-min)))
+         (end (if a (region-end) (point-max))))
+    (save-excursion
+      (while
+          (progn
+            (goto-char start)
+            (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
+        (replace-match "\\1\n\\2")))))
+;; }}
+
+(defun insert-file-link-from-clipboard ()
+  "Make sure the full path of file exist in clipboard.
+This command will convert full path into relative path.
+Then insert it as a local file link in `org-mode'."
+  (interactive)
+  (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
+
+(defun font-file-to-base64 (file)
+  "Convert font file into base64 encoded string."
+  (let* ((str "")
+         (file-base (file-name-sans-extension file))
+         (file-ext (file-name-extension file)))
+    (when (file-exists-p file)
+        (with-temp-buffer
+          (shell-command (concat "cat " file "|base64") 1)
+          (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
+    str))
+
+(defun current-thing-at-point ()
+  "Print current thing at point."
+  (interactive)
+  (message "thing = %s" (thing-at-point 'symbol)))
+
+;; {{ copy the file-name/full-path in dired buffer into clipboard
+;; `w` => copy file name
+;; `C-u 0 w` => copy full path
+(defadvice dired-copy-filename-as-kill (after dired-filename-to-clipboard activate)
+  (let* ((str (current-kill 0)))
+    (my-pclip str)
+    (message "%s => clipboard" str)))
+;; }}
+
+;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
+(defun vc-rename-file-and-buffer ()
+  "Rename the current buffer and file it is visiting."
+  (interactive)
+  (let* ((filename (buffer-file-name)))
+    (cond
+     ((not (and filename (file-exists-p filename)))
+      (message "Buffer is not visiting a file!"))
+     (t
+      (let* ((new-name (read-file-name "New name: " filename)))
+        (cond
+         ((vc-backend filename) (vc-rename-file filename new-name))
+         (t
+          (rename-file filename new-name t)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil))))))))
+
+(defun vc-copy-file-and-rename-buffer ()
+  "Copy the current buffer and file it is visiting.
+If the old file is under version control, the new file is added into
+version control automatically."
+  (interactive)
+  (let* ((filename (buffer-file-name)))
+    (cond
+     ((not (and filename (file-exists-p filename)))
+      (message "Buffer is not visiting a file!"))
+     (t
+      (let* ((new-name (read-file-name "New name: " filename)))
+        (copy-file filename new-name t)
+        (rename-buffer new-name)
+        (set-visited-file-name new-name)
+        (set-buffer-modified-p nil)
+        (when (vc-backend filename)
+          (vc-register)))))))
+
+(defun toggle-env-http-proxy ()
+  "Set/unset the environment variable http_proxy used by w3m."
+  (interactive)
+  (let* ((proxy "http://127.0.0.1:8000"))
+    (cond
+     ((string= (getenv "http_proxy") proxy)
+      (setenv "http_proxy" "")
+      (message "env http_proxy is empty now"))
+     (t
+      (setenv "http_proxy" proxy)
+      (message "env http_proxy is %s now" proxy)))))
+
+;; Don't disable narrowing commands
+(put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-page 'disabled nil)
+(put 'narrow-to-defun 'disabled nil)
+
+;; Ctrl-X, u/l  to upper/lowercase regions without confirm
+(put 'downcase-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
+
+;; midnight mode purges buffers which haven't been displayed in 3 days
+(require 'midnight)
+(setq midnight-mode t)
+
+(add-auto-mode 'tcl-mode "Portfile\\'")
+
+;; someone mentioned that blink cursor could slow Emacs24.4
+;; I couldn't care less about cursor, so turn it off explicitly
+;; https://github.com/redguardtoo/emacs.d/issues/208
+;; but somebody mentioned that blink cursor is needed in dark theme
+;; so it should not be turned off by default
+;; (blink-cursor-mode -1)
+
+(defun create-scratch-buffer ()
+  "Create a new scratch buffer."
+  (interactive)
+  (let* ((n 0) bufname)
+    (while (progn
+             (setq bufname (concat "*scratch"
+                                   (if (= n 0) "" (int-to-string n))
+                                   "*"))
+             (setq n (1+ n))
+             (get-buffer bufname)))
+    (switch-to-buffer (get-buffer-create bufname))
+    (emacs-lisp-mode)))
+
+(defun cleanup-buffer-safe ()
+  "Perform a bunch of safe operations on the whitespace content of a buffer.
+Does not indent buffer, because it is used for a before-save-hook, and that
+might be bad."
+  (interactive)
+  (untabify (point-min) (point-max))
+  (delete-trailing-whitespace))
+
+(defun cleanup-buffer ()
+  "Perform a bunch of operations on the whitespace content of a buffer.
+Including indent-buffer, which should not be called automatically on save."
+  (interactive)
+  (cleanup-buffer-safe)
+  (indent-region (point-min) (point-max)))
+
+;; {{ easygpg setup
+;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
+(defadvice epg--start (around advice-epg-disable-agent disable)
+  "Make `epg--start' not able to find a gpg-agent."
+  (let ((agent (getenv "GPG_AGENT_INFO")))
+    (setenv "GPG_AGENT_INFO" nil)
+    ad-do-it
+    (setenv "GPG_AGENT_INFO" agent)))
+
+(unless (string-match-p "^gpg (GnuPG) 1.4"
+                        (shell-command-to-string (format "%s --version" epg-gpg-program)))
+
+  ;; `apt-get install pinentry-tty` if using emacs-nox
+  ;; Create `~/.gnupg/gpg-agent.conf' container one line `pinentry-program /usr/bin/pinentry-curses`
+  (setq epa-pinentry-mode 'loopback))
+;; }}
+
+;; {{ show current function name in `mode-line'
+(eval-after-load "which-function"
+  '(progn
+     (add-to-list 'which-func-modes 'org-mode)))
+(which-function-mode 1)
+;; }}
+
+(eval-after-load 'pomodoro
+  '(progn
+     (setq pomodoro-break-time 2)
+     (setq pomodoro-long-break-time 5)
+     (setq pomodoro-work-time 15)
+     (setq-default mode-line-format
+              (cons '(pomodoro-mode-line-string pomodoro-mode-line-string)
+                    mode-line-format))))
 
 (provide 'init-misc)
