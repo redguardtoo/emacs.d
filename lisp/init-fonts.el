@@ -26,7 +26,7 @@
 				 :slant 'normal
 				 :size 14.0))))
 (when *linux*
-  (set-frame-font "-unkonwn-Ubuntu Mono-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
+  (set-frame-font "-unkonwn-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
   ;; configure Chinese characters to align tables
   (dolist (charset '(kana han symbol cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font)
