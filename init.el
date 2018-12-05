@@ -88,6 +88,8 @@
   (require 'init-exec-path) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require 'init-spelling)
+  (require 'init-theme)
+  (require 'init-macos-keys)
   (require 'init-gui-frames)
   (require 'init-uniquify)
   (require 'init-ibuffer)
@@ -95,13 +97,13 @@
   (require 'init-hippie-expand)
   (require 'init-windows)
   (require 'init-markdown)
-  (require 'init-erlang)
-  (require 'init-javascript)
+  ;(require 'init-erlang)
+  ;(require 'init-javascript)
   (require 'init-org)
-  (require 'init-css)
+  ;(require 'init-css)
   (require 'init-python)
-  (require 'init-haskell)
-  (require 'init-ruby-mode)
+  ;(require 'init-haskell)
+  ;(require 'init-ruby-mode)
   (require 'init-lisp)
   (require 'init-elisp)
   (require 'init-yasnippet)
@@ -115,7 +117,7 @@
   ;; init-evil dependent on init-clipboard
   (require 'init-clipboard)
   ;; use evil mode (vi key binding)
-  (require 'init-evil)
+  ;(require 'init-evil)
   (require 'init-multiple-cursors)
   (require 'init-ctags)
   (require 'init-bbdb)
@@ -123,9 +125,9 @@
   (require 'init-lua-mode)
   (require 'init-workgroups2)
   (require 'init-term-mode)
-  (require 'init-web-mode)
+  ;(require 'init-web-mode)
   (require 'init-company)
-  (require 'init-chinese) ;; cannot be idle-required
+  ;(require 'init-chinese) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
   (require 'init-keyfreq)
   (require 'init-httpd)
@@ -141,6 +143,9 @@
   (require 'init-dired)
   (require 'init-artbollocks-mode)
   (require 'init-writting)
+
+  (require 'init-fonts)
+
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
