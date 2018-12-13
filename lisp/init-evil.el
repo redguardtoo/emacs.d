@@ -37,7 +37,6 @@
 (global-evil-visualstar-mode t)
 ;; }}
 
-
 ;; ffip-diff-mode (read only) evil setup
 (defun ffip-diff-mode-hook-setup ()
   (evil-local-set-key 'normal "K" 'diff-hunk-prev)
@@ -415,7 +414,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ci" 'evilnc-comment-or-uncomment-lines
        "cl" 'evilnc-comment-or-uncomment-to-the-line
        "cc" 'evilnc-copy-and-comment-lines
-       "cp" 'evilnc-comment-or-uncomment-paragraphs
+       "cp" 'my-evilnc-comment-or-uncomment-paragraphs
        "ct" 'evilnc-comment-or-uncomment-html-tag ; evil-nerd-commenter v3.3.0 required
        "ic" 'my-imenu-comments
        "epy" 'emmet-expand-yas
@@ -772,6 +771,23 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ evil-nerd-commenter
 (evilnc-default-hotkeys t)
+
+(defun my-evilnc-comment-or-uncomment-paragraphs (&optional num)
+  "Comment or uncomment NUM paragraphs which might contain html tags."
+  (interactive "p")
+  (unless (featurep 'evil-nerd-commenter) (require 'evil-nerd-commenter))
+  (let* ((paragraph-region (evilnc--get-one-paragraph-region))
+         (html-p (save-excursion
+                   (sgml-skip-tag-backward 1)
+                   (let* ((line (buffer-substring-no-properties (line-beginning-position)
+                                                                (line-end-position))))
+                     ;; current paragraph does contain html tag
+                     (if (and (>= (point) (car paragraph-region))
+                              (string-match-p (format "^[ \t]*\\(%s\\)?[ \t]*<[a-zA-Z]+"
+                                                      (regexp-quote evilnc-html-comment-start)) line))
+                         t)))))
+    (if html-p (evilnc-comment-or-uncomment-html-paragraphs num)
+      (evilnc-comment-or-uncomment-paragraphs num))))
 
 (defun my-imenu-comments ()
   "Imenu display comments."
