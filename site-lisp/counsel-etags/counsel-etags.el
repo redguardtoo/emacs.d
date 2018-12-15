@@ -87,6 +87,11 @@
   :group 'counsel-etags
   :type '(repeat 'string))
 
+(defcustom counsel-etags-stop-auto-update-tags nil
+  "If t, tags will not be updated automatically."
+  :group 'counsel-etags
+  :type 'boolean)
+
 (defun counsel-etags-load-smart-rules(modes rule)
   "Load MODES's smart RULES."
   (dolist (mode modes)
@@ -535,18 +540,28 @@ If FORCE is t, the command is executed without checking the timer."
     ;; always update cli options
     (when doit
       (message "%s at %s" (if counsel-etags-debug cmd "Scan") default-directory)
-      (counsel-etags-async-shell-command cmd tags-file)))
-  )
+      (counsel-etags-async-shell-command cmd tags-file))))
+
+(defun counsel-etags-toggle-auto-update-tags ()
+  "Stop/Start tags auto update."
+  (interactive)
+  (if (setq counsel-etags-stop-auto-update-tags
+            (not counsel-etags-stop-auto-update-tags))
+      (message "Tags is NOT automatically updated any more.")
+    (message "Tags will be automatically updated.")))
+
 (defun counsel-etags-scan-dir (src-dir &optional force)
   "Create tags file from SRC-DIR.
 If FORCE is t, the command is executed without checking the timer.
 If `counsel-etags-update-tags-backend' is customized, executed it to create tags file."
   (when counsel-etags-debug (message "counsel-etags-scan-dir called => %s %s" src-dir force))
   (cond
+   (counsel-etags-stop-auto-update-tags
+    ;; do nothing
+    )
    ;; default backend
    ((eq counsel-etags-update-tags-backend 'counsel-etags-update-tags-force)
     (counsel-etags-scan-dir-internal src-dir force))
-
    ;; user has customized backend
    (t
     (funcall counsel-etags-update-tags-backend))))
@@ -1204,7 +1219,6 @@ If HINT is not nil, it's used as grep hint."
 (ivy-set-occur 'counsel-etags-grep 'counsel-etags-grep-occur)
 (ivy-set-display-transformer 'counsel-etags-grep 'counsel-git-grep-transformer)
 ;; }}
-
 
 (counsel-etags-setup-smart-rules)
 
