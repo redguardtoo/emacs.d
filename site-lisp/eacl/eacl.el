@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 2.0.0
+;; Version: 2.0.1
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -361,17 +361,18 @@ Return (cons multiline-text end-line-text) or nil."
             (forward-line)
             (goto-char (line-beginning-position))
 
-            (when (not (setq end (eacl-find-multiline-end pattern)))
+            (cond
+             ((not (setq end (eacl-find-multiline-end pattern)))
               ;; no multiline candidate, quit
               (setq continue nil))
-
-            (goto-char end)
-            (setq line (eacl-current-line-text))
-            (when (and (not (eacl-match-start-bracket-p line))
-                       (not (eacl-match-html-start-tag-p line html-p)))
-              ;; candidate found!
-              (setq rlt (buffer-substring-no-properties beg end))
-              (setq continue nil))))))
+             (t
+              (goto-char end)
+              (setq line (eacl-current-line-text))
+              (when (and (not (eacl-match-start-bracket-p line))
+                         (not (eacl-match-html-start-tag-p line html-p)))
+                ;; candidate found!
+                (setq rlt (buffer-substring-no-properties beg end))
+                (setq continue nil))))))))
     (if eacl-debug (message "rlt=%s" rlt))
     rlt))
 
@@ -398,7 +399,7 @@ Whitespace in keyword could match any characters."
       (dolist (item orig-collection)
         (when (string-match "\\`\\([^:]+\\):\\([0-9]+\\):\\([^:]+\\)\\'" item)
           (let* ((strs (split-string item ":"))
-                 (file (file-truename (nth 0 strs)))
+                 (file (car strs))
                  (linenum (string-to-number (nth 1 strs)))
                  (line (nth 2 strs))
                  cand)
