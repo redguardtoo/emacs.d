@@ -120,6 +120,16 @@
         ;; }}
         ))
 
+(defvar my-ask-elpa-mirror t)
+(when (and my-ask-elpa-mirror
+           (not (file-exists-p (file-truename "~/.emacs.d/elpa")))
+           (yes-or-no-p "Switch to faster package repositories in China temporarily?
+You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use this ELPA mirror."))
+  (setq package-archives
+        '(("localelpa" . "~/.emacs.d/localelpa/")
+          ("melpa" . "https://mirrors.163.com/elpa/melpa/")
+          ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/"))))
+
 ;; Un-comment below line if you follow "Install stable version in easiest way"
 ;; (setq package-archives '(("localelpa" . "~/.emacs.d/localelpa/") ("myelpa" . "~/projs/myelpa/")))
 
@@ -131,7 +141,7 @@
 (defadvice package-generate-autoloads (after close-autoloads (name pkg-dir) activate)
   "Stop package.el from leaving open autoload files lying around."
   (let* ((path (expand-file-name (concat
-                                  ;; name is string when emacs <= 24.3.1,
+                                  ;; name is string in emacs 24.3.1,
                                   (if (symbolp name) (symbol-name name) name)
                                   "-autoloads.el") pkg-dir)))
     (with-current-buffer (find-file-existing path)
