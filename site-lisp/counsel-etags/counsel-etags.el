@@ -4,9 +4,9 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: http://github.com/redguardtoo/counsel-etags
-;; Package-Requires: ((emacs "24.4") (counsel "0.9.1"))
+;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.7.3
+;; Version: 1.7.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -31,17 +31,15 @@
 ;;
 ;; Usage:
 ;;
-;;   "M-x counsel-etags-find-tag-at-point" to navigate.  This command will also
+;;   `counsel-etags-find-tag-at-point' to navigate.  This command will also
 ;;   run `counsel-etags-scan-code' AUTOMATICALLY if tags file is not built yet.
 ;;
-;;   "M-x counsel-etags-scan-code" to create tags file
-;;   "M-x counsel-etags-grep" to grep
-;;   "M-x counsel-etags-grep-symbol-at-point" to grep the symbol at point
-;;   "M-x counsel-etags-recent-tag" to open recent tag
-;;   "M-x counsel-etags-find-tag" to two step tag matching use regular expression and filter
-;;   "M-x counsel-etags-list-tag" to list all tags
-;;
-;; That's all!
+;;   `counsel-etags-scan-code' to create tags file
+;;   `counsel-etags-grep' to grep
+;;   `counsel-etags-grep-symbol-at-point' to grep the symbol at point
+;;   `counsel-etags-recent-tag' to open recent tag
+;;   `counsel-etags-find-tag' to two step tag matching use regular expression and filter
+;;   `counsel-etags-list-tag' to list all tags
 ;;
 ;; Tips:
 ;; - Add below code into "~/.emacs" to AUTOMATICALLY update tags file:
@@ -73,9 +71,10 @@
 
 ;;; Code:
 
-(require 'xref nil t)
+(require 'xref nil t) ; xref is optional
 (require 'etags)
 (require 'cl-lib)
+(require 'ivy)
 (require 'counsel)
 
 (defgroup counsel-etags nil
@@ -362,7 +361,7 @@ Return nil if it's not found."
 
 ;;;###autoload
 (defun counsel-etags-version ()
-  (message "1.7.3"))
+  (message "1.7.4"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -927,7 +926,8 @@ Focus on TAGNAME if it's not nil."
   "Find matching tags by search STRING."
   (cond
    ((< (length string) 3)
-    (counsel-more-chars))
+    ;; new version
+    (ivy-more-chars))
    (t
     ;; I prefer build the regex by myself
     (let* ((patterns (split-string string " *!"))
@@ -1061,6 +1061,19 @@ the tags updating might not happen."
                  (- (float-time (current-time))
                     (float-time counsel-etags-timer))))))))
 
+(defun counsel-etags-unquote-regex-parens (str)
+  "Unquote regexp parentheses in STR."
+  (replace-regexp-in-string "\\\\[(){}]\\|[()]"
+                            (lambda (s)
+                              (or (cdr (assoc s '(("\\(" . "(")
+                                                  ("\\)" . ")")
+                                                  ("(" . "\\(")
+                                                  (")" . "\\)")
+                                                  ("\\{" . "{")
+                                                  ("\\}" . "}"))))
+                                  (error "Unexpected parenthesis: %S" s)))
+                            str t t))
+
 (defun counsel-etags-read-keyword (hint)
   "Read keyword with HINT."
   (let* ((str (if (region-active-p) (counsel-etags-selected-str)
@@ -1069,7 +1082,7 @@ the tags updating might not happen."
       (cond
        ((region-active-p)
         (add-to-list 'minibuffer-history str)
-        (setq counsel-etags-keyword (counsel-unquote-regex-parens str))
+        (setq counsel-etags-keyword (counsel-etags-unquote-regex-parens str))
         ;; de-select region
         (set-mark-command nil))
        (t
