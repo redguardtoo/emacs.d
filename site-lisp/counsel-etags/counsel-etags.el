@@ -434,6 +434,9 @@ Return nil if it's not found."
                                           ;; reload tags-file
                                           (when (and ,tags-file (file-exists-p ,tags-file))
                                             (message "Tags file %s was created." ,tags-file)
+                                            ;; `visit-tags-table' create buffer local variable `tags-file-name'
+                                            ;; so we need make sure current buffer is correct
+                                            (set-buffer ,buffer)
                                             (visit-tags-table ,tags-file t))))
                                        (t
                                         (message "Failed to create tags file.")))))))
