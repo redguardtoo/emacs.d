@@ -422,7 +422,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "rv" 'evilmr-replace-in-defun
        "rb" 'evilmr-replace-in-buffer
        "ts" 'evilmr-tag-selected-region ;; recommended
-       "tua" 'artbollocks-mode
        "cby" 'cb-switch-between-controller-and-view
        "cbu" 'cb-get-url-from-controller
        "ht" 'counsel-etags-find-tag-at-point ; better than find-tag C-]

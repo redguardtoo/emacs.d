@@ -15,7 +15,6 @@
   '(ace-mc
     color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
-    artbollocks-mode
     auto-package-update
     bbdb
     evil-textobj-syntax
@@ -331,7 +330,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
 (require-package 'shackle)
 (require-package 'toc-org)
-(require-package 'artbollocks-mode)
 (require-package 'elpa-mirror)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (require-package 'color-theme)
