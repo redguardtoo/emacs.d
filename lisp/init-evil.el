@@ -460,7 +460,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ls" 'highlight-symbol
        "lq" 'highlight-symbol-query-replace
        "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
-       "bm" 'pomodoro-start ;; beat myself
        "ii" 'counsel-imenu
        "ij" 'rimenu-jump
        "." 'evil-ex

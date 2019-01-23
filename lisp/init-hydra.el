@@ -5,16 +5,23 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Emms^       ^Misc^
-------------------------------------------------
-_r_andom     _t_erm             _E_nable/Disable
-_n_ext       _a_utoComplete     _V_intage/Modern
-_p_revious   _C_reate workgroup Open recent _f_ile
-_P_ause      _l_oad workgroup   Recent _d_irectory
-_O_pen       _B_ookmark         Last dired _c_ommand
-_L_ Playlist Goto book_m_ark    Dired comand _h_istory
-_S_huffle    Undo _v_isualize   _b_ack
-_q_uit
+^Misc^                ^Emms^       ^Pomodoro^
+-----------------------------------------------
+a_u_toComplete        _R_andom     _s_tart
+_C_reate workgroup    _n_ext       s_t_op
+_l_oad workgroup      _p_revious   _r_esume
+_B_ookmark            _P_ause      p_a_use
+Goto book_m_ark       _O_pen
+Undo _v_isualize      Play_L_ist
+_b_ack                _S_huffle
+_E_nable typewriter   _q_uit
+_V_intage typewriter
+recent _f_ile
+Recent _d_irectory
+Last dired _c_ommand
+Dired comand _h_istory
+
+
 "
   ("c" my-dired-redo-last-command)
   ("h" my-dired-redo-from-commands-history)
@@ -24,12 +31,15 @@ _q_uit
   ("d" counsel-recent-directory)
   ("C" wg-create-workgroup)
   ("l" my-wg-switch-workgroup)
-  ("t" ansi-term)
-  ("a" toggle-company-ispell)
+  ("u" toggle-company-ispell)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
-  ("r" emms-random)
+  ("s" pomodoro-start)
+  ("t" pomodoro-stop)
+  ("r" pomodoro-resume)
+  ("a" pomodoro-pause)
+  ("R" emms-random)
   ("n" emms-next)
   ("p" emms-previous)
   ("P" emms-pause)

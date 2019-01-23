@@ -1245,4 +1245,8 @@ Including indent-buffer, which should not be called automatically on save."
               (cons '(pomodoro-mode-line-string pomodoro-mode-line-string)
                     mode-line-format))))
 
+(unless (featurep 'pomodoro)
+  (require 'pomodoro)
+  (pomodoro-add-to-mode-line))
+
 (provide 'init-misc)
