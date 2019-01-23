@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(ivy-mode 1) ; it enables ivy UI for `kill-buffer'
+
 (eval-after-load 'counsel
   '(progn
      ;; automatically pick up cygwin cli tools for counse
