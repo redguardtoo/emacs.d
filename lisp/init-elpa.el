@@ -20,6 +20,7 @@
     evil-textobj-syntax
     command-log-mode
     vimrc-mode
+    rjsx-mode ; fixed the indent issue in jsx
     auto-yasnippet
     dumb-jump
     websocket ; to talk to the browser

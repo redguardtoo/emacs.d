@@ -336,13 +336,8 @@ INDENT-SIZE decide the indentation level.
   (js-send-buffer))
 ;; }}
 
-;; Thanks to Aaron Jensen for cleaner code
-(defadvice js-jsx-indent-line (after js-jsx-indent-line-after-hack activate)
-  "Workaround sgml-mode and follow airbnb component style."
-  (save-excursion
-    (beginning-of-line)
-    (if (looking-at-p "^ +\/?> *$")
-        (delete-char sgml-basic-offset))))
+;; Latest rjsx-mode does not have indentation issue
+;; @see https://emacs.stackexchange.com/questions/33536/how-to-edit-jsx-react-files-in-emacs
 
 (setq-default js2-additional-externs
               '("$"
