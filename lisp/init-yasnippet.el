@@ -83,7 +83,7 @@
   (let* ((top-kill-ring (my-read-n-from-kill-ring))
          rlt)
     (cond
-     ((memq major-mode '(js-mode javascript-mode js2-mode js3-mode))
+     ((memq major-mode '(js-mode javascript-mode js2-mode js3-mode rjsx-mode web-mode))
       (setq rlt (mapconcat (lambda (i) (format "'%s=', %s" (my-yas-escape-string i) i)) top-kill-ring ", ")))
      ((memq major-mode '(emacs-lisp-mode lisp-interaction-mode))
       (setq rlt (concat (mapconcat (lambda (i) (format "%s=%%s" i)) top-kill-ring ", ")
