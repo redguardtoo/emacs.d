@@ -19,7 +19,7 @@ _V_intage typewriter
 recent _f_ile
 Recent _d_irectory
 Last dired _c_ommand
-Dired comand _h_istory
+Dired command _h_istory
 
 
 "

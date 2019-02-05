@@ -64,7 +64,7 @@ If no files marked, always operate on current line in dired-mode."
                                           " -sub Subs/English.srt")))
            ((file-exists-p (concat dir "Chinese.srt"))
             (setq ad-return-value (concat ad-return-value
-                                          " -sub Subs/Chinesesrt")))
+                                          " -sub Subs/Chinese.srt")))
            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
             (setq ad-return-value (concat ad-return-value
                                           " -sub Subs/" basename ".srt"))))))
