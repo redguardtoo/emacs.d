@@ -244,7 +244,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
-(require-package 'flymake-css)
 (require-package 'flymake-jslint)
 (require-package 'flymake-ruby)
 (require-package 'ivy)
