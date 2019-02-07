@@ -485,14 +485,18 @@ If the character before and after CH is space or tab, CH is NOT slash"
                 (counsel-etags-grep))
                ((= n 1)
                 ;; grep references of current web component
-                (counsel-etags-grep (format "<%s" (file-name-base buffer-file-name))))
+                ;; component could be inside styled-component like `const c = styled(Comp1)`
+                (counsel-etags-grep (format "(<|styled\\\()%s" (file-name-base buffer-file-name))))
                ((= n 2)
                 ;; grep web component attribute name
                 (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
                                                             (read-string "Component attribute name?")))))
                ((= n 3)
-                ;; grep current file name base
-                (counsel-etags-grep (format "%s" (file-name-nondirectory buffer-file-name))))))
+                ;; grep current file name
+                (counsel-etags-grep (format "*%s" (file-name-nondirectory buffer-file-name))))
+               ((= n 4)
+                ;; grep js files which is imported
+                (counsel-etags-grep (format "from .*%s('|\\\.js');?" (file-name-base (file-name-nondirectory buffer-file-name)))))))
        "dd" 'counsel-etags-grep-symbol-at-point
        "xc" 'save-buffers-kill-terminal
        "rr" 'my-counsel-recentf
