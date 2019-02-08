@@ -493,7 +493,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                                                             (read-string "Component attribute name?")))))
                ((= n 3)
                 ;; grep current file name
-                (counsel-etags-grep (format "*%s" (file-name-nondirectory buffer-file-name))))
+                (counsel-etags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
                ((= n 4)
                 ;; grep js files which is imported
                 (counsel-etags-grep (format "from .*%s('|\\\.js');?" (file-name-base (file-name-nondirectory buffer-file-name)))))))
