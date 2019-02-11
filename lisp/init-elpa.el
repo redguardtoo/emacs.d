@@ -258,6 +258,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'groovy-mode)
 (require-package 'ruby-compilation)
 (require-package 'emmet-mode)
+(require-package 'winum)
 (require-package 'session)
 (require-package 'unfill)
 (require-package 'w3m)
