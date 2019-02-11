@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.7.4
+;; Version: 1.8.0
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -57,6 +57,9 @@
 ;;   For example, input "keyword1 !keyword2 keyword3" means:
 ;;   "(keyword1 and (not (keyword2 or keyword3))"
 ;;
+;; - `counsel-etags-extra-tags-files' conitains extra tags files to parse.
+;;   Set it like '(setq counsel-etags-extra-tags-files ("/usr/include/TAGS" "/usr/local/include/TAGS"))'
+;;   Tags files in `counsel-etags-extra-tags-files' should contain only tag with absolute path.
 ;; - You can setup `counsel-etags-ignore-directories' and `counsel-etags-ignore-filenames',
 ;;   (eval-after-load 'counsel-etags
 ;;     '(progn
@@ -83,6 +86,14 @@
 
 (defcustom counsel-etags-smart-rules nil
   "Plugins to match filter out candidates when using `counsel-etags-find-tag-at-point'."
+  :group 'counsel-etags
+  :type '(repeat 'string))
+
+
+(defcustom counsel-etags-extra-tags-files nil
+  "Other tags files to read.  They are not updated automatically.
+Path in tags file should be absolute path.  Sample CLI to create tags file:
+find /usr/include | ctags -e -L -"
   :group 'counsel-etags
   :type '(repeat 'string))
 
@@ -365,7 +376,7 @@ Return nil if it's not found."
 
 ;;;###autoload
 (defun counsel-etags-version ()
-  (message "1.7.4"))
+  (message "1.8.0"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -521,7 +532,7 @@ Return nil if it's not found."
       ;;                 (t
       ;;                  (setq ctags-program "etags"))))
       ;; (setq cmd (format "%s ." ctags-program))
-      (message "You need install ctags first.")))
+      (message "You need install Ctags at first.  Universal Ctags is highly recommended.")))
     (when counsel-etags-debug (message "counsel-etags-get-scan-command called => find-program=%s ctags-program=%s cmd=%s" find-program ctags-program cmd))
     cmd))
 
@@ -720,24 +731,16 @@ IS-STRING is t if the candidate is string."
     (cons (format "%s:%s:%s" file lnum text)
           (list file lnum tagname))))
 
-(defun counsel-etags-collect-cands (tagname fuzzy &optional dir context)
-  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR.
+(defun counsel-etags-extract-cands-from-tags-file (tags-file tagname fuzzy context)
+  "Parse one TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
 CONTEXT is extra information collected before find tag definition."
-  (when counsel-etags-debug
-    (message "counsel-etags-collect-cands => tagname=%s fuzz=%s dir=%s" tagname fuzzy dir))
-  (let* ((force-tags-file (and dir
-                               (file-exists-p (counsel-etags-get-tags-file-path dir))
-                               (counsel-etags-get-tags-file-path dir)))
-         (tags-file (or force-tags-file
-                        (counsel-etags-locate-tags-file)))
-         (root-dir (file-name-directory tags-file))
+  (let* ((root-dir (file-name-directory tags-file))
          (re (concat "\\([^\177\001\n]+\\)\177"
                      (if fuzzy "[^\177\001\n]+" tagname)
                      "\001\\([0-9]+\\),\\([0-9]+\\)"))
          cands
          file-size
          file-content)
-
     ;; ONLY when the checksum (file size) is different from the physical file size,
     ;; update cache by reading from physical file.
     ;; Not precise but acceptable algorithm.
@@ -745,7 +748,8 @@ CONTEXT is extra information collected before find tag definition."
                (file-exists-p tags-file)
                (not (string= (counsel-etags-cache-checksum tags-file)
                              (setq file-size (format "%s" (nth 7 (file-attributes tags-file)))))))
-      (if counsel-etags-debug (message "Read file .... %s %s" (counsel-etags-cache-checksum tags-file) file-size))
+      (when counsel-etags-debug
+        (message "Read file .... %s %s" (counsel-etags-cache-checksum tags-file) file-size))
       (counsel-etags-put (intern tags-file)
                          (list :content
                                (counsel-etags-read-file tags-file)
@@ -755,10 +759,7 @@ CONTEXT is extra information collected before find tag definition."
 
     ;; Get better performance by scan from beginning to end.
     (when counsel-etags-debug
-      (message "tags-file=%s" tags-file)
-      (message "counsel-etags-cache[tags-file]=%s" (plist-get counsel-etags-cache tags-file))
-      (message "force-tags-file=%s tags-file=%s" force-tags-file tags-file)
-      (message "tagname=%s" tagname))
+      (message "tags-file=%s tagname=%s counsel-etags-cache[tags-file]=%s" tags-file tagname (counsel-etags-cache-content tags-file)))
 
     (when (and tags-file
                (setq file-content (counsel-etags-cache-content tags-file)))
@@ -777,18 +778,49 @@ CONTEXT is extra information collected before find tag definition."
               (let* ((line-number (match-string-no-properties 2))
                      (text (match-string-no-properties 1))
                      ;; file must be set after above variables
-                     (file (concat root-dir (etags-file-of-tag t)))
+                     ;; (file (concat root-dir (etags-file-of-tag t)))
+                     (file (etags-file-of-tag t))
                      (cand (list :file file
                                  :line-number line-number
                                  :text text
                                  :tagname tagname)))
                 (when (or (not context)
                           (counsel-etags-execute-predicate-function context cand))
+
                   (add-to-list 'cands (counsel-etags-build-cand cand)))))
              (t
               ;; need push cursor forward
               (end-of-line)))))))
-    (mapcar 'car (counsel-etags-sort-candidates-maybe cands 3 nil))))
+    cands))
+
+(defun counsel-etags-collect-cands (tagname fuzzy &optional dir context)
+  "Parse tags file to find occurrences of TAGNAME using FUZZY algorithm in DIR.
+CONTEXT is extra information collected before find tag definition."
+  (let* (rlt
+         (force-tags-file (and dir
+                               (file-exists-p (counsel-etags-get-tags-file-path dir))
+                               (counsel-etags-get-tags-file-path dir)))
+         (tags-file (or force-tags-file
+                        (counsel-etags-locate-tags-file)))
+         (cands (counsel-etags-extract-cands-from-tags-file tags-file
+                                                            tagname
+                                                            fuzzy
+                                                            context)))
+    ;; TODO:
+    ;; - cands from project tags file need be sorted
+    ;;   cands from third party tags file will not be sorted
+    ;; - read cands from multiple files
+    (setq rlt (mapcar 'car (counsel-etags-sort-candidates-maybe cands 3 nil)))
+    (when counsel-etags-extra-tags-files
+      ;; don't sort candidate from 3rd party libraries
+      (dolist (file counsel-etags-extra-tags-files)
+        (when (setq cands (counsel-etags-extract-cands-from-tags-file file
+                                                                     tagname
+                                                                     fuzzy
+                                                                     context))
+          ;; don't bother sorting candidates from third party tags file
+          (setq rlt (append rlt (mapcar 'car cands))))))
+    rlt))
 
 (defun counsel-etags-encode(s)
   "Encode S."
