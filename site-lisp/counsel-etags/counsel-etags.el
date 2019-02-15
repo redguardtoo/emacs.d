@@ -57,8 +57,8 @@
 ;;   For example, input "keyword1 !keyword2 keyword3" means:
 ;;   "(keyword1 and (not (keyword2 or keyword3))"
 ;;
-;; - `counsel-etags-extra-tags-files' conitains extra tags files to parse.
-;;   Set it like '(setq counsel-etags-extra-tags-files ("/usr/include/TAGS" "/usr/local/include/TAGS"))'
+;; - `counsel-etags-extra-tags-files' contains extra tags files to parse.
+;;   Set it like '(setq counsel-etags-extra-tags-files '("/usr/include/TAGS" "/usr/local/include/TAGS"))'
 ;;   Tags files in `counsel-etags-extra-tags-files' should contain only tag with absolute path.
 ;; - You can setup `counsel-etags-ignore-directories' and `counsel-etags-ignore-filenames',
 ;;   (eval-after-load 'counsel-etags
@@ -1174,7 +1174,9 @@ the tags updating might not happen."
 Extended regex is used, like (pattern1|pattern2)."
   (cond
    ((counsel-etags-has-quick-grep)
-    (format "%s %s \"%s\" --"
+    ;; "--hidden" force ripgrep to search hidden files/directories, that's default
+    ;; behaviour of grep
+    (format "%s --hidden %s \"%s\" --"
             (concat (executable-find "rg")
                     ;; (if counsel-etags-debug " --debug")
                     " -n -M 512 --no-heading --color never -s --path-separator /")

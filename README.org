@@ -1,7 +1,7 @@
 * Features
 - Fast. Only *one second* to start up
 - Robust. Never crash after package upgrade. Packages could be installed without network
-- Support Windows. You can find&grep files on Window with minimum setup
+- Support Windows. You can find&grep files on Windows with minimum setup
 - Tested with Emacs 24.4, 24.5, 25.3, 26.1 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Default key bindings and  directory layout is respected
 - Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. Works when ssh to server with [[http://www.putty.org/][PuTTY]]
