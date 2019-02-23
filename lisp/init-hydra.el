@@ -5,23 +5,20 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Misc^                ^Emms^       ^Pomodoro^
------------------------------------------------
-a_u_toComplete        _R_andom     _s_tart
-_C_reate workgroup    _n_ext       s_t_op
-_l_oad workgroup      _p_revious   _r_esume
-_B_ookmark            _P_ause      p_a_use
-Goto book_m_ark       _O_pen
-Undo _v_isualize      Play_L_ist
-_b_ack                _S_huffle
-_E_nable typewriter   _q_uit
-_V_intage typewriter
-recent _f_ile
-Recent _d_irectory
-Last dired _c_ommand
-Dired command _h_istory
-
-
+^Misc^                  ^Emms^          ^Pomodoro^    ^Typewriter^
+-------------------------------------------------------------
+[_u_] CompanyIpell      [_R_] Random    [_s_] Start   [_E_] Enable
+[_C_] New workgroup     [_n_] Next      [_t_] Stop    [_V_] Vintage
+[_l_] Load workgroup    [_p_] Previous  [_r_] Resume
+[_B_] New bookmark      [_P_] Pause     [_a_] Pause
+[_m_] Goto bookmark     [_O_] Open
+[_v_] Show/Hide undo    [_L_] Playlist
+[_b_] Switch buffer     [_S_] Shuffle
+[_f_] Recent file
+[_d_] Recent directory
+[_c_] Last dired command
+[_h_] Dired CMD history
+[_q_] Quit
 "
   ("c" my-dired-redo-last-command)
   ("h" my-dired-redo-from-commands-history)
@@ -156,26 +153,38 @@ Dired command _h_istory
 ;; {{ dired
 (eval-after-load 'dired
   '(progn
+     (defun my-copy-file-info (fn)
+       (message "%s => clipboard & yank ring"
+                (copy-yank-str (funcall fn (dired-file-name-at-point)))))
      (defhydra hydra-dired (:color blue)
-       "?"
-       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
-       ("s1"
-        (let* ((video-file (dired-file-name-at-point))
-               (default-directory (file-name-directory video-file)))
-          (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file))))
-        "1 subtitle")
-       ("cc" (let* ((f (file-truename (dired-file-name-at-point))))
-               (copy-yank-str f)
-               (message "filename %s => clipboard & yank ring" f)) "Copy full path")
-       ("C" dired-do-copy "cp")
-       ("cf" find-file "Create new file")
+       "
+^File/Directory^    ^Copy Info^  ^Fetch Subtitles^
+----------------------------------------------------
+[_mv_] Move file    [_pp_] Path  [_sa_] All
+[_cf_] New file     [_nn_] Name  [_s1_] One
+[_rr_] Rename file  [_bb_] Base
+[_ff_] Find file    [_dd_] DIR
+[_mk_] New DIR
+^^                  ^^           [_q_]  Quit
+"
+       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
+       ("s1" (let* ((video-file (dired-file-name-at-point))
+                    (default-directory (file-name-directory video-file)))
+               (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file)))))
+       ("pp" (my-copy-file-info 'file-truename))
+       ("nn" (my-copy-file-info 'file-name-nondirectory))
+       ("bb" (my-copy-file-info 'file-name-base))
+       ("dd" (my-copy-file-info 'file-name-directory))
+       ("C" dired-do-copy)
+       ("mv" diredp-do-move-recursive)
+       ("cf"find-file)
+       ("rr" dired-toggle-read-only)
        ("ff" (lambda (regexp)
                (interactive "sMatching regexp: ")
-               (find-lisp-find-dired default-directory regexp))  "Filter with Regex")
-       ("xq" dired-toggle-read-only "Rename file(s)")
-       ("mv" diredp-do-move-recursive "mv")
-       ("mk" dired-create-directory "mkdir")
-       ("q" nil "Bye"))))
+               (find-lisp-find-dired default-directory regexp)))
+       ("mk" dired-create-directory)
+       ("q" nil))))
+
 (defun dired-mode-hook-hydra-setup ()
   (local-set-key (kbd "y") 'hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)

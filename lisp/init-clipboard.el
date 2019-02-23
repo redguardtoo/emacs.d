@@ -14,7 +14,8 @@
 ;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)
   (unless clipboard-only (kill-new msg))
-  (my-pclip msg))
+  (my-pclip msg)
+  msg)
 
 (defun cp-filename-of-current-buffer (&optional n)
   "Copy file name (NOT full path) into the yank ring and OS clipboard.
