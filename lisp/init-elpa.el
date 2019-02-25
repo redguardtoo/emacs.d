@@ -59,10 +59,8 @@
     challenger-deep-theme
     tao-theme
     wgrep
-    robe
     slime
     groovy-mode
-    inf-ruby
     ;; company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
@@ -215,8 +213,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
-(require-package 'robe)
-(require-package 'inf-ruby)
 (require-package 'workgroups2)
 (require-package 'paredit)
 (require-package 'findr)
@@ -240,7 +236,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
 (require-package 'flymake-jslint)
-(require-package 'flymake-ruby)
 (require-package 'ivy)
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
@@ -251,7 +246,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'command-log-mode)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
-(require-package 'ruby-compilation)
 (require-package 'emmet-mode)
 (require-package 'winum)
 (require-package 'session)

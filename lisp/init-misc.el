@@ -330,10 +330,7 @@
   "Erase the content of the *Messages* buffer in emacs.
 Keep the last num lines if argument num if given."
   (interactive "p")
-  (let* ((buf (cond
-               ((eq 'ruby-mode major-mode) "*server*")
-               (t "*Messages*"))))
-    (erase-specific-buffer num buf)))
+  (erase-specific-buffer num "*Messages*"))
 
 ;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
 (when (fboundp 'messages-buffer-mode)
@@ -1011,7 +1008,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (put 'narrow-to-page 'disabled nil)
 (put 'narrow-to-defun 'disabled nil)
 
-;; But don't show trailing whitespace in SQLi, inf-ruby etc.
+;; But don't show trailing whitespace in REPL.
 (add-hook 'comint-mode-hook
           (lambda () (setq show-trailing-whitespace nil)))
 

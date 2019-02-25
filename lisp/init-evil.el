@@ -271,7 +271,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (log-edit-mode . emacs)
         (vc-log-edit-mode . emacs)
         (magit-log-edit-mode . emacs)
-        (inf-ruby-mode . emacs)
         (erc-mode . emacs)
         (neotree-mode . emacs)
         (w3m-mode . emacs)
