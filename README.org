@@ -95,7 +95,9 @@ Ensure that =init.el= contained in this repo ends up at =~/.emacs.d/init.el=.
 
 By default, packages are installed automatically during Emacs startup.
 
-Someone reported that package default repository lik [[http://melpa.org]] is not responsive in China. No worries. So you could answer "YES" to the question "Switch to faster package repositories in China temporarily?" when firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
+Someone reported that package repository [[http://melpa.org]] is not responsive in China.
+
+No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" when firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
 ** Install stable version in easiest way (OPTIONAL)
 - Remove =~/.emacs=.
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
@@ -111,7 +113,7 @@ Now you are using local package repository =~/projs/melpa=.
 You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =~/.emacs.d/lisp/init-elpa.el=.
 ** Third party command line program (OPTIONAL)
 *** Install
-Most command line programs can be installed throug =default package manager=.
+Most command line programs can be installed through =default package manager=.
 
 =Default package manager= could be:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
@@ -145,7 +147,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 - Required by =flyspell=
 - =hunspell= is the alternative of =aspell=. You need only one of them.
 - For =aspell=, you may need its dictionary =aspell-en=
-- I force the aspell's dictionary to "en_US" in =~/.emacs./lisp/init-spelling.el=. You can modify it.
+- aspell dictionary is set "en_US" in =~/.emacs./lisp/init-spelling.el=. It can be changed.
 - I recommend =aspell= for programmers. Non-programmers find =hunspell= is better on typo correction
 
 If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
@@ -219,20 +221,19 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
 Please read this tutorial at least for once.
-*** Step 1, learn OS basics
-At minimum you need know,
+*** Step 1, learn OS basic
+At minimum you need know how Emacs interacts with other command line programs,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]] 
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
 
-The purpose it to know how Emacs interacts with other command line programs.
-*** Step 2, read official tutorial at least once
+*** Step 2, read official tutorial
 Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
-At minimum you need know:
+At minimum you need learn:
 - How to move cursor
 - =C-h v= to describe variable
 - =C-h f= to describe function
-- =C-h k= to check function key binding
+- =C-h k= to describe command key binding
 *** Step 3, know org-mode basics
 [[http://orgmode.org/][Org-mode]] is for notes-keeping and planning.
 
