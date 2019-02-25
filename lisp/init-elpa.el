@@ -92,7 +92,6 @@
     gitconfig-mode
     textile-mode
     w3m
-    erlang
     workgroups2
     zoutline
     company-c-headers
@@ -223,7 +222,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'workgroups2)
 (require-package 'yaml-mode)
 (require-package 'paredit)
-(require-package 'erlang)
 (require-package 'findr)
 (require-package 'pinyinlib)
 (require-package 'find-by-pinyin-dired)

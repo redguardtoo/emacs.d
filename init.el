@@ -90,7 +90,6 @@
   (require 'init-hippie-expand)
   (require 'init-windows)
   (require 'init-markdown)
-  (require 'init-erlang)
   (require 'init-javascript)
   (require 'init-org)
   (require 'init-css)
