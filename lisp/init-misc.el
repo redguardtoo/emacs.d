@@ -756,6 +756,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; flymake
 (eval-after-load 'flymake
   '(progn
+     (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
      (setq flymake-gui-warnings-enabled nil)))
 
 ;; {{ check attachments
