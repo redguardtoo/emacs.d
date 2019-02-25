@@ -989,9 +989,17 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (transient-mark-mode t)
 
-(global-auto-revert-mode)
-(setq global-auto-revert-non-file-buffers t
-      auto-revert-verbose nil)
+(unless (or *cygwin* *win64*)
+  ;; Takes ages to start Emacs.
+  ;; Got error `Socket /tmp/fam-cb/fam- has wrong permissions` in Cygwin ONLY!
+  ;; reproduced with Emacs 26.1 and Cygwin upgraded at 2019-02-26
+  ;;
+  ;; Although win64 is fine. It still slows down generic performance.
+  ;; @see https://stackoverflow.com/questions/3589535/why-reload-notification-slow-in-emacs-when-files-are-modified-externally
+  ;; So no auto-revert-mode on Windows/Cygwin
+  (global-auto-revert-mode)
+  (setq global-auto-revert-non-file-buffers t
+        auto-revert-verbose nil))
 
 (add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
 
