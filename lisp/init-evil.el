@@ -500,7 +500,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                 ;; grep references of current web component
                 ;; component could be inside styled-component like `const c = styled(Comp1)`
                 (let* ((fb (file-name-base buffer-file-name)))
-                  (counsel-etags-grep (format "(<%s *$|styled\\\(%s\\))" fb fb))))
+                  (counsel-etags-grep (format "(<%s( *$| [^ ])|styled\\\(%s\\))" fb fb))))
                ((= n 2)
                 ;; grep web component attribute name
                 (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
