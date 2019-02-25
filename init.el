@@ -109,7 +109,6 @@
   (require 'init-clipboard)
   ;; use evil mode (vi key binding)
   (require 'init-evil)
-  (require 'init-multiple-cursors)
   (require 'init-ctags)
   (require 'init-bbdb)
   (require 'init-gnus)

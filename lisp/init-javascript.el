@@ -265,7 +265,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
-    (js2-refactor-mode 1)
+    ;; counsel/ivy is more generic and powerful for refactoring
     ;; js2-mode has its own syntax linter
     (flymake-mode -1)
     ;; call js-doc commands through `counsel-M-x'!
