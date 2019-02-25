@@ -94,7 +94,6 @@
   (require 'init-org)
   (require 'init-css)
   (require 'init-python)
-  (require 'init-haskell)
   (require 'init-ruby-mode)
   (require 'init-lisp)
   (require 'init-elisp)

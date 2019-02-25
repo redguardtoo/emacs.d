@@ -68,7 +68,6 @@
     dsvn
     findr
     mwe-log-commands
-    yaml-mode
     counsel-gtags ; the stable version is never released
     noflet
     db
@@ -210,7 +209,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'ace-link)
 (require-package 'expand-region) ; I prefer stable version
 (require-package 'fringe-helper)
-(require-package 'haskell-mode)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
 (require-package 'gist)
@@ -220,7 +218,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'robe)
 (require-package 'inf-ruby)
 (require-package 'workgroups2)
-(require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'findr)
 (require-package 'pinyinlib)
