@@ -131,6 +131,16 @@
 ;; {{ dired
 (eval-after-load 'dired
   '(progn
+     (defun my-replace-dired-base (base)
+       "Change file name in `wdired-mode'"
+       (let* ((fp (dired-file-name-at-point))
+              (fb (file-name-nondirectory fp))
+              (ext (file-name-extension fp))
+              (dir (file-name-directory fp))
+              (nf (concat base "." ext)))
+         (when (yes-or-no-p (format "%s => %s at %s?"
+                                    fb nf dir))
+           (rename-file fp (concat dir nf)))))
      (defun my-copy-file-info (fn)
        (message "%s => clipboard & yank ring"
                 (copy-yank-str (funcall fn (dired-file-name-at-point)))))
@@ -143,6 +153,7 @@
 [_rr_] Rename file  [_bb_] Base
 [_ff_] Find file    [_dd_] DIR
 [_mk_] New DIR
+[_rb_] Replace base
 ^^                  ^^           [_q_]  Quit
 "
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
@@ -153,6 +164,7 @@
        ("nn" (my-copy-file-info 'file-name-nondirectory))
        ("bb" (my-copy-file-info 'file-name-base))
        ("dd" (my-copy-file-info 'file-name-directory))
+       ("rb" (my-replace-dired-base (car kill-ring)))
        ("C" dired-do-copy)
        ("mv" diredp-do-move-recursive)
        ("cf"find-file)
