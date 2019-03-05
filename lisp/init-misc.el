@@ -195,13 +195,17 @@
 (global-set-key (kbd "M-x") 'my-M-x)
 (global-set-key (kbd "C-x C-m") 'my-M-x)
 
+(defvar my-do-bury-compliation-buffer t
+  "Hide comliation buffer if compile successfully.")
+
 (defun compilation-finish-hide-buffer-on-success (buf str)
   "Could be reused by other major-mode after compilation."
   (if (string-match "exited abnormally" str)
       ;;there were errors
       (message "compilation errors, press C-x ` to visit")
     ;;no errors, make the compilation window go away in 0.5 seconds
-    (when (and (buffer-name buf)
+    (when (and my-do-bury-compliation-buffer
+               (buffer-name buf)
                (string-match "*compilation*" (buffer-name buf)))
       ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
       (bury-buffer "*compilation*")
