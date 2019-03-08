@@ -321,6 +321,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'stripe-buffer)
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
+(require-package 'nov) ; read epub
 
 (when *emacs25*
   (require-package 'zenburn-theme)
