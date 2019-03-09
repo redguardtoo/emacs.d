@@ -5,19 +5,22 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Misc^                  ^Emms^          ^Pomodoro^    ^Typewriter^
--------------------------------------------------------------
-[_u_] CompanyIpell      [_R_] Random    [_s_] Start   [_E_] Enable
-[_C_] New workgroup     [_n_] Next      [_t_] Stop    [_V_] Vintage
-[_l_] Load workgroup    [_p_] Previous  [_r_] Resume
-[_B_] New bookmark      [_P_] Pause     [_a_] Pause
-[_m_] Goto bookmark     [_O_] Open
-[_v_] Show/Hide undo    [_L_] Playlist
-[_b_] Switch buffer     [_S_] Shuffle
+----------------------------------------------------------
+^Misc^                    ^Audio^               ^Pomodoro^
+----------------------------------------------------------
+[_u_] CompanyIspell       [_R_] Emms Random     [_s_] Start
+[_C_] New workgroup       [_n_] Emms Next       [_t_] Stop
+[_l_] Load workgroup      [_p_] Emms Previous   [_r_] Resume
+[_B_] New bookmark        [_P_] Emms Pause      [_a_] Pause
+[_m_] Goto bookmark       [_O_] Emms Open
+[_v_] Show/Hide undo      [_L_] Emms Playlist
+[_b_] Switch buffer       [_w_] Pronounce word
 [_f_] Recent file
 [_d_] Recent directory
 [_c_] Last dired command
 [_h_] Dired CMD history
+[_E_] Enable typewriter
+[_V_] Vintage typewriter
 [_q_] Quit
 "
   ("c" my-dired-redo-last-command)
@@ -38,12 +41,12 @@
   ("a" pomodoro-pause)
   ("R" emms-random)
   ("n" emms-next)
+  ("w" my-pronounce-current-word)
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
   ("b" back-to-previous-buffer)
   ("L" emms-playlist-mode-go)
-  ("S" (progn (emms-shuffle) (emms-random)))
   ("q" nil))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey

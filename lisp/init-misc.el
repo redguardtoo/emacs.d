@@ -468,11 +468,14 @@ Keep the last num lines if argument num if given."
       (define-key map (kbd "M-7") 'winum-select-window-7)
       (define-key map (kbd "M-8") 'winum-select-window-8)
       map))
-(require 'winum)
-(setq winum-format "%s")
-(setq winum-mode-line-position 0)
-(set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
-(winum-mode)
+
+(unless (featurep 'winum) (require 'winum))
+(eval-after-load 'winum
+  '(progn
+     (setq winum-format "%s")
+     (setq winum-mode-line-position 0)
+     (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
+     (winum-mode 1)))
 ;; }}
 
 (ace-pinyin-global-mode +1)
@@ -1260,6 +1263,7 @@ Including indent-buffer, which should not be called automatically on save."
 (which-function-mode 1)
 ;; }}
 
+;; {{ pomodoro
 (eval-after-load 'pomodoro
   '(progn
      (setq pomodoro-break-time 2)
@@ -1272,5 +1276,51 @@ Including indent-buffer, which should not be called automatically on save."
 (unless (featurep 'pomodoro)
   (require 'pomodoro)
   (pomodoro-add-to-mode-line))
+;; }}
+
+;; {{ pronunciation
+(defun my-pronounce-word (&optional word)
+  (interactive "sWord: ")
+  (unless (featurep 'url) (require 'url))
+  (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
+         (cached-mp3 (file-truename (format "~/.emacs.d/misc/%s.mp3" word)))
+         (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
+         html-text
+         online-mp3)
+    (cond
+     ((file-exists-p cached-mp3)
+      (my-async-shell-command (format "%s %s" player cached-mp3)))
+     ((and (not (string-match "404" (setq html-text (with-current-buffer (url-retrieve-synchronously url) (buffer-string)))))
+           (string-match "data-src-mp3=\"\\([^\"]+\\)" html-text))
+      (setq online-mp3 (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))
+      (url-copy-file online-mp3 cached-mp3)
+      (my-async-shell-command (format "%s %s" player cached-mp3)))
+     (t
+      (message "Sorry, can't find pronunciation for \"%s\"" word)))))
+
+(defun my-pronounce-current-word ()
+  "Pronounce current word."
+  (interactive)
+  (when (memq major-mode '(nov-mode))
+    ;; go to end of word to workaround `nov-mode' bug
+    (forward-word)
+    (forward-char -1))
+  (my-pronounce-word (thing-at-point 'word)))
+;; }}
+
+;; {{ epub setup
+(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(defun nov-mode-hook-setup ()
+  (local-set-key (kbd "d") (lambda ()
+                             (interactive)
+                             (when (memq major-mode '(nov-mode))
+                               ;; go to end of word to workaround `nov-mode' bug
+                               (forward-word)
+                               (forward-char -1))
+                             (sdcv-search-input (thing-at-point 'word))))
+  (local-set-key (kbd "w") 'my-pronounce-current-word)
+  (local-set-key (kbd ";") 'avy-goto-char-2))
+(add-hook 'nov-mode-hook 'nov-mode-hook-setup)
+;; }}
 
 (provide 'init-misc)

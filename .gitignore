@@ -61,3 +61,7 @@ custom-set-variables.el
 network-security.data
 .last-package-update-day
 .dir-locals.el
+*.mp3
+*.mp4
+*.ogg
+nov-places

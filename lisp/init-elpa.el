@@ -15,6 +15,7 @@
   '(color-theme ; emacs24 need this package
     ace-window ; lastest stable is released on year 2014
     auto-package-update
+    nov
     bbdb
     evil-textobj-syntax
     command-log-mode
