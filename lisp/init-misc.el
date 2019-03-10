@@ -1282,6 +1282,7 @@ Including indent-buffer, which should not be called automatically on save."
 (defun my-pronounce-word (&optional word)
   (interactive "sWord: ")
   (unless (featurep 'url) (require 'url))
+  (if word (setq word (downcase word)))
   (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
          (cached-mp3 (file-truename (format "~/.emacs.d/misc/%s.mp3" word)))
          (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
