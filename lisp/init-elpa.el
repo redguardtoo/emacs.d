@@ -199,7 +199,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 
 (require-package 'async)
 ; color-theme 6.6.1 in elpa is buggy
-(require-package 'smex)
+(require-package 'amx)
 (require-package 'avy)
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)

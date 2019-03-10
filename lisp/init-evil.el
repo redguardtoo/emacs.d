@@ -582,7 +582,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "7" 'winum-select-window-7
        "8" 'winum-select-window-8
        "9" 'winum-select-window-9
-       "xm" 'my-M-x
+       "xm" 'counsel-M-x
        "xx" 'er/expand-region
        "xf" 'counsel-find-file
        "xb" 'ivy-switch-buffer-by-pinyin
