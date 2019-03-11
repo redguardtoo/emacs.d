@@ -16,6 +16,7 @@
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
 (autoload 'sdcv-search-pointer "sdcv" "show word explanation in buffer" t)
 (autoload 'sdcv-search-input+ "sdcv" "show word explanation in tooltip" t)
+(autoload 'sdcv-search-input "sdcv" "show word explanation in tooltip" t)
 (autoload 'elpamr-create-mirror-for-installed "elpa-mirror" "" t)
 (autoload 'org2nikola-export-subtree "org2nikola" "" t)
 (autoload 'org2nikola-rerender-published-posts "org2nikola" "" t)
