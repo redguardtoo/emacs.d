@@ -157,6 +157,7 @@
 [_ff_] Find file    [_dd_] DIR
 [_mk_] New DIR
 [_rb_] Replace base
+[_C_]  Copy file
 ^^                  ^^           [_q_]  Quit
 "
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
