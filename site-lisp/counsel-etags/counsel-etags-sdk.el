@@ -1,6 +1,6 @@
 ;;; counsel-etags-sdk.el --- counsel-etags SDK
 
-;; Copyright (C) 2018 Chen Bin
+;; Copyright (C) 2018, 2019 Chen Bin
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -23,7 +23,7 @@
   (list
    :major-mode major-mode
    :line-number (line-number-at-pos)
-   :file (buffer-file-name)
+   :fullpath (and (buffer-file-name) (file-truename (buffer-file-name)))
    :font-face (get-text-property (point) 'face)
    :line-text (buffer-substring-no-properties
                (line-beginning-position)
@@ -77,4 +77,3 @@
 
 (provide 'counsel-etags-sdk)
 ;;; counsel-etags-sdk.el ends here
-
