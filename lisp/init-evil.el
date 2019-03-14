@@ -13,19 +13,6 @@
   (push '(93 . ("[" . "]")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
 
-(defun my-find-tag-at-point ()
-  "Find tag or Emacs Lisp function definition at point."
-  (interactive)
-  (unless (featurep 'counsel-etags) (require 'counsel-etags))
-  (cond
-   ((memq major-mode '(emacs-lisp-mode lisp-interaction-mode) )
-    (let* ((fn (car (find-function-read))))
-      (when fn
-        (counsel-etags-push-marker-stack (point-marker))
-        (find-function-do-it fn nil 'switch-to-buffer))))
-   (t
-    (counsel-etags-find-tag-at-point))))
-
 (defun evil-surround-js-mode-hook-setup ()
   ;; ES6
   (push '(?1 . ("{`" . "`}")) evil-surround-pairs-alist)
@@ -306,8 +293,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map "Y" (kbd "y$"))
 ;; (define-key evil-normal-state-map (kbd "RET") 'ivy-switch-buffer-by-pinyin) ; RET key is preserved for occur buffer
 (define-key evil-normal-state-map "go" 'goto-char)
-(define-key evil-normal-state-map (kbd "C-]") 'my-find-tag-at-point)
-(define-key evil-visual-state-map (kbd "C-]") 'my-find-tag-at-point)
+(define-key evil-normal-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
 (define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 (define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
@@ -436,7 +423,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "ts" 'evilmr-tag-selected-region ;; recommended
        "cby" 'cb-switch-between-controller-and-view
        "cbu" 'cb-get-url-from-controller
-       "ht" 'my-find-tag-at-point ; better than find-tag C-]
+       "ht" 'counsel-etags-find-tag-at-point ; better than find-tag C-]
        "rt" 'counsel-etags-recent-tag
        "ft" 'counsel-etags-find-tag
        "mm" 'counsel-bookmark-goto
