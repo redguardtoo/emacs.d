@@ -154,6 +154,7 @@
         kill-sentence
         left-char
         markdown-exdent-or-delete
+        markdown-outdent-or-delete
         minibuffer-complete
         minibuffer-complete-and-exit
         minibuffer-keyboard-quit
