@@ -73,7 +73,7 @@
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download no dependency version which works out of box
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced user could under-estimate the risk of using unstable packages.
 - Emacs 24 support will be dropped on 2019. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
 * Installation
