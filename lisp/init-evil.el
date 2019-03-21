@@ -401,6 +401,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "xo" 'ace-window
        "ff" 'toggle-full-window ;; I use WIN+F in i3
        "ip" 'find-file-in-project
+       "tt" 'find-file-in-current-directory
        "jj" 'find-file-in-project-at-point
        "kk" 'find-file-in-project-by-selected
        "kn" 'find-file-with-similar-name ; ffip v5.3.1
@@ -463,7 +464,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "." 'evil-ex
        ;; @see https://github.com/pidu/git-timemachine
        ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
-       "tt" 'dumb-jump-go
+       "tg" 'dumb-jump-go
        "tb" 'dumb-jump-back
        "tm" 'my-git-timemachine
        ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
@@ -477,26 +478,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "cxi" 'org-clock-in ; `C-c C-x C-i'
        "cxo" 'org-clock-out ; `C-c C-x C-o'
        "cxr" 'org-clock-report ; `C-c C-x C-r'
-       "qq" (lambda (n)
-              (interactive "P")
-              (cond
-               ((not n)
-                (counsel-etags-grep))
-               ((= n 1)
-                ;; grep references of current web component
-                ;; component could be inside styled-component like `const c = styled(Comp1)`
-                (let* ((fb (file-name-base buffer-file-name)))
-                  (counsel-etags-grep (format "(<%s( *$| [^ ])|styled\\\(%s\\))" fb fb))))
-               ((= n 2)
-                ;; grep web component attribute name
-                (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
-                                                            (read-string "Component attribute name?")))))
-               ((= n 3)
-                ;; grep current file name
-                (counsel-etags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
-               ((= n 4)
-                ;; grep js files which is imported
-                (counsel-etags-grep (format "from .*%s('|\\\.js');?" (file-name-base (file-name-nondirectory buffer-file-name)))))))
+       "qq" 'my-multi-purpose-grep
        "dd" 'counsel-etags-grep-symbol-at-point
        "xc" 'save-buffers-kill-terminal
        "rr" 'my-counsel-recentf

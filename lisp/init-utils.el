@@ -12,6 +12,7 @@
          retval)
      ,@clean-up))
 
+
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
 (defun get-string-from-file (file)
   "Return FILE's content."
