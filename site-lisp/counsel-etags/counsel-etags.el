@@ -272,11 +272,6 @@ You may set it to nil to disable re-ordering for performance reason."
   :group 'counsel-etags
   :type 'integer)
 
-(defcustom counsel-etags-case-sensitive nil
-  "Case sensensitive search tag name if t."
-  :group 'counsel-etags
-  :type 'boolean)
-
 (defcustom counsel-etags-max-file-size 512
   "Ignore files bigger than `counsel-etags-max-file-size' kilobytes.
 This option is ignore if GNU find is not installed."
@@ -755,7 +750,7 @@ CONTEXT is extra information collected before find tag definition."
 
         (goto-char (point-min))
         ;; first step, regex should be simple to speed up search
-        (let* ((case-fold-search counsel-etags-case-sensitive))
+        (let* ((case-fold-search fuzzy))
           (while (re-search-forward tagname nil t)
             (beginning-of-line)
             ;; second step, more precise search
@@ -1011,7 +1006,7 @@ Focus on TAGNAME if it's not nil."
 
 ;;;###autoload
 (defun counsel-etags-list-tag ()
-  "List all tags."
+  "List all tags.  Tag is fuzzy and case insensitively matched."
   (interactive)
   (counsel-etags-tags-file-must-exist)
   (counsel-etags-find-tag-api nil t))
@@ -1019,10 +1014,10 @@ Focus on TAGNAME if it's not nil."
 ;;;###autoload
 (defun counsel-etags-find-tag ()
   "Find tag in two step.
-Step 1, user need input regex to fuzzy match tag.
+Step 1, user need input regex to fuzzy and case insensitively match tag.
 Any tag whose sub-string matches regex will be listed.
 
-Step 2, user could filter tags."
+Step 2, user keeps filtering tags."
   (interactive)
   (counsel-etags-tags-file-must-exist)
   (let* ((tagname (read-string "Regex to match tag: "
@@ -1041,10 +1036,9 @@ That's the known issue of Emacs Lisp.  The program itself is perfectly fine."
          (context (counsel-etags-execute-collect-function)))
     (cond
      (tagname
-      (let* ((counsel-etags-case-sensitive t))
         ;; TODO try to get context here from rule and pass
         ;; into API call
-        (counsel-etags-find-tag-api tagname nil context)))
+        (counsel-etags-find-tag-api tagname nil context))
      (t
       (message "No tag at point")))))
 
