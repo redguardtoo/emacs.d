@@ -69,7 +69,7 @@
 - [[#report-bug][Report bug]]
 
 * Checklist
-- Emacs 26.1 is strongly recommended. It has better performance and easier to setup
+- Emacs 26.1 is strongly recommended. It is faster and easier to setup
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download no dependency version which works out of box
@@ -482,7 +482,7 @@ rm -rf ~/myemacs/24.4/*;
 
 Feel free to replace 24.4 with other version number.
 ** Change Time Locale
-Insert below code into =~/.emacs= or =~/.custom.el,
+Insert below code into =~/.emacs= or =~/.custom.el=,
 #+begin_src elisp
 ;; Use en_US locale to format time.
 ;; if not set, the OS locale is used.
@@ -526,8 +526,8 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[http
 - You can run =optimize-emacs-startup= to compile "*.el" under =~/.emacs.d/lisp/=
 * Report bug
 - Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first
-- If the issue is still NOT resolved, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue
-- Send error messages to the original developer if it's third party package issue
-- If you are *sure* it's my issue, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
+- If you still can't resolve the issue, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue
+- Send error messages to the original developer if it's third party package's problem
+- If *you are sure* it's this setup's problem, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
 Bug report should include details (OS, Emacs version ...).
