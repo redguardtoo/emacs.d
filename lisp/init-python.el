@@ -8,6 +8,7 @@
      ;; run command `pip install jedi flake8 importmagic` in shell,
      ;; or just check https://github.com/jorgenschaefer/elpy
      (unless (or (is-buffer-file-temp)
+                 (not buffer-file-name)
                  ;; embed python code in org file
                  (string= (file-name-extension buffer-file-name) "org"))
        (elpy-enable))
