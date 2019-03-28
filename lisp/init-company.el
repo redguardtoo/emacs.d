@@ -87,10 +87,45 @@
 (add-hook 'org-mode-hook 'company-ispell-setup)
 ;; }}
 
+;; Wait 30  minutes to update cache from tags file
+;; assume `company-dabbrev-code' or `company-dabbrev' in the same group provides candidates
+;; @see https://github.com/company-mode/company-mode/pull/877 for tech details
+;; The purpose is to avoid rebuilding candidate too frequently because rebuilding could take
+;; too much time.
+(defvar company-etags-update-interval 1800
+  "The interval (seconds) to update candidate cache.
+Function `tags-completion-table' sets up variable `tags-completion-table'
+by parsing tags files.
+The interval stops the function being called too frequently.")
+
+(defvar company-etags-timer nil
+  "Timer to avoid calling function `tags-completion-table' too frequently.")
+
 (eval-after-load 'company-etags
   '(progn
      ;; insert major-mode not inherited from prog-mode
      ;; to make company-etags work
+     (defadvice company-etags--candidates (around company-etags--candidates-hack activate)
+       (let* ((prefix (car (ad-get-args 0)))
+              (tags-table-list (company-etags-buffer-table))
+              (tags-file-name tags-file-name)
+              (completion-ignore-case company-etags-ignore-case))
+         (and (or tags-file-name tags-table-list)
+              (fboundp 'tags-completion-table)
+              (save-excursion
+                (unless (and company-etags-timer
+                             tags-completion-table
+                             (> (length tags-completion-table) 0)
+                             (< (- (float-time (current-time)) (float-time company-etags-timer))
+                                company-etags-update-interval))
+                  (setq company-etags-timer (current-time))
+                  ;; `visit-tags-table-buffer' will check the modified time of tags file. If it's
+                  ;; changed, the tags file is reloaded.
+                  (visit-tags-table-buffer))
+                ;; In function `tags-completion-table', cached variable `tags-completion-table' is
+                ;; accessed at first. If the variable is empty, it is set by parsing tags file
+                (all-completions prefix (tags-completion-table))))))
+
      (add-to-list 'company-etags-modes 'web-mode)
      (add-to-list 'company-etags-modes 'lua-mode)))
 
