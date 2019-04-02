@@ -495,7 +495,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
        "x1" 'delete-other-windows
        "x2" 'my-split-window-vertically
        "x3" 'my-split-window-horizontally
-       "s2" 'ffip-split-window-vertically
+       "s1" 'delete-other-windows
+       "s2" 'fip-split-window-vertically
        "s3" 'ffip-split-window-horizontally
        "rw" 'rotate-windows
        "ru" 'undo-tree-save-state-to-register ; C-x r u
