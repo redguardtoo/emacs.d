@@ -319,6 +319,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
+(require-package 'org-re-reveal) ; org => ppt
 
 (when *emacs25*
   (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.

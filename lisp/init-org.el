@@ -181,6 +181,9 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
     ;; org-mode's own flycheck will be loaded
     (enable-flyspell-mode-conditionally)
 
+    (unless (featurep 'org-re-reveal)
+      (require 'org-re-reveal))
+
     ;; No auto spell check during Emacs startup
     ;; please comment out `(flyspell-mode -1)` if you prefer auto spell check
     (flyspell-mode -1)
