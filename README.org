@@ -278,7 +278,9 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 [[https://github.com/abo-abo/hydra][Hydra]] is used to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
 
-You can always press =C-c C-y= anywhere to bring up default hydra menu.
+Press =C-c C-y= anywhere to bring up default hydra menu.
+
+Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
 ** Save/Load windows layout
 =SPC s s= or =M-x wg-create-workgrou= to save windows layout.
