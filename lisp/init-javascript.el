@@ -275,8 +275,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
-(setq auto-mode-alist (cons '("\\.json$" . js-mode) auto-mode-alist))
-(setq auto-mode-alist (cons '("\\.jason$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.ja?son$" . js-mode) auto-mode-alist))
+(setq auto-mode-alist (cons '("\\.pac$" . js-mode) auto-mode-alist))
 (setq auto-mode-alist (cons '("\\.jshintrc$" . js-mode) auto-mode-alist))
 
 (cond

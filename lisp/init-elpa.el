@@ -9,7 +9,7 @@
 (initialize-package)
 
 ;; List of visible packages from melpa-unstable (http://melpa.org).
-;; Please add the package name into `melpa-include-packages`
+;; Please add the package name into `melpa-include-packages'
 ;; if it's not visible after  `list-packages'.
 (defvar melpa-include-packages
   '(color-theme ; emacs24 need this package
@@ -107,7 +107,7 @@
         ("melpa-stable" . "https://stable.melpa.org/packages/")
 
         ;; Use either 163 or tsinghua mirror repository when official melpa
-        ;; is too slow or shutdown.
+        ;; is slow or shutdown.
 
         ;; ;; {{ Option 1: 163 mirror repository:
         ;; ;; ("gnu" . "https://mirrors.163.com/elpa/gnu/")
@@ -124,7 +124,8 @@
         ))
 
 (defvar my-ask-elpa-mirror t)
-(when (and my-ask-elpa-mirror
+(when (and (not noninteractive) ; no popup in batch mode
+           my-ask-elpa-mirror
            (not (file-exists-p (file-truename "~/.emacs.d/elpa")))
            (yes-or-no-p "Switch to faster package repositories in China temporarily?
 You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use this ELPA mirror."))
@@ -136,40 +137,46 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
 ;; (setq package-archives '(("localelpa" . "~/.emacs.d/localelpa/") ("myelpa" . "~/projs/myelpa/")))
 
-;;------------------------------------------------------------------------------
+;;--------------------------------------------------------------------------
 ;; Internal implementation, newbies should NOT touch code below this line!
-;;------------------------------------------------------------------------------
-
+;;--------------------------------------------------------------------------
 ;; Patch up annoying package.el quirks
-(defadvice package-generate-autoloads (after close-autoloads (name pkg-dir) activate)
+
+(defun package-generate-autoload-path (pkg-desc pkg-dir)
+  (expand-file-name (concat
+                     ;; pkg-desc is string in emacs 24.3.1,
+                     (if (symbolp pkg-desc) (symbol-name pkg-desc) pkg-desc)
+                     "-autoloads.el")
+                    pkg-dir))
+
+(defadvice package-generate-autoloads (after package-generate-autoloads-hack activate)
   "Stop package.el from leaving open autoload files lying around."
-  (let* ((path (expand-file-name (concat
-                                  ;; name is string in emacs 24.3.1,
-                                  (if (symbolp name) (symbol-name name) name)
-                                  "-autoloads.el") pkg-dir)))
+  (let* ((original-args (ad-get-args 0))
+         (pkg-desc (nth 0 original-args))
+         (pkg-dir (nth 1 original-args))
+         (path (package-generate-autoload-path pkg-desc pkg-dir)))
+    (message "pkg-desc=%s pkg-dir=%s path=%s" pkg-desc pkg-dir path)
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
 
 (defun package-filter-function (package version archive)
   "Optional predicate function used to internally filter packages used by package.el.
-
-  The function is called with the arguments PACKAGE VERSION ARCHIVE, where
-  PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
+The function is called with the arguments PACKAGE VERSION ARCHIVE, where
+PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
   ARCHIVE is the string name of the package archive."
-  (let* (rlt)
     (cond
-      ((string= archive "melpa-stable")
-       (setq rlt (not (memq package melpa-stable-banned-packages))))
+     ((string= archive "melpa-stable")
+      (not (memq package melpa-stable-banned-packages)))
+
+      ;; We still need use some unstable packages
       ((string= archive "melpa")
-       ;; We still need use some unstable packages
-       (setq rlt (or (string-match-p (format "%s" package)
-                                     (mapconcat (lambda (s) (format "%s" s)) melpa-include-packages " "))
-                      ;; color themes are welcomed
-                      (string-match-p "-theme" (format "%s" package)))))
-      (t
-        ;; I'm not picky on other repositories
-        (setq rlt t)))
-    rlt))
+       (or (string-match-p (format "%s" package)
+                           (mapconcat (lambda (s) (format "%s" s)) melpa-include-packages " "))
+           ;; color themes are welcomed
+           (string-match-p "-theme" (format "%s" package))))
+
+      ;; I'm not picky on other repositories
+      (t t)))
 
 (defadvice package--add-to-archive-contents
   (around filter-packages (package archive) activate)
@@ -185,13 +192,14 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
   "Ask elpa to install given PACKAGE."
-  (if (package-installed-p package min-version)
-      t
-    (if (or (assoc package package-archive-contents) no-refresh)
-        (package-install package)
-      (progn
-        (package-refresh-contents)
-        (require-package package min-version t)))))
+  (cond
+   ((package-installed-p package min-version)
+    t)
+   ((or (assoc package package-archive-contents) no-refresh)
+    (package-install package))
+   (t
+    (package-refresh-contents)
+    (require-package package min-version t))))
 
 ;;------------------------------------------------------------------------------
 ;; Fire up package.el and ensure the following packages are installed.
@@ -212,6 +220,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'request)
 (require-package 'lua-mode)
 (require-package 'workgroups2)
+(require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'findr)
 (require-package 'pinyinlib)
@@ -319,7 +328,10 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
-(require-package 'org-re-reveal) ; org => ppt
+
+(when *emacs26*
+  ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
+  (require-package 'org-re-reveal))
 
 (when *emacs25*
   (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
