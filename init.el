@@ -112,7 +112,7 @@
   (require 'init-gud)
   (require 'init-linum-mode)
   (require 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
-  ;; (require 'init-gist)
+  ;;(require 'init-gist)
   (require 'init-gtags)
   ;; init-evil dependent on init-clipboard
   (require 'init-clipboard)
@@ -127,7 +127,7 @@
   (require 'init-term-mode)
   ;(require 'init-web-mode)
   (require 'init-company)
-  ;(require 'init-chinese) ;; cannot be idle-required
+;  (require 'init-chinese) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
   (require 'init-keyfreq)
   (require 'init-httpd)
@@ -146,6 +146,7 @@
 
   (require 'init-fonts)
 
+  
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows

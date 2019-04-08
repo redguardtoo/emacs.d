@@ -1,4 +1,9 @@
+;; If you want to use powerline, (require 'powerline) must be
+;; before (require 'moe-theme).
+;; (add-to-list 'load-path "~/.emacs.d/PATH/TO/powerline/")
+;(require 'powerline)
 
+;; set theme
 (require 'moe-theme)
 
 ;; Show highlighted buffer-id as decoration. (Default: nil)
@@ -11,7 +16,7 @@
 
 ;; Choose a color for mode-line.(Default: blue)
 ;; (Available colors: blue, orange, green ,magenta, yellow, purple, red, cyan, w/b.)
-    (moe-theme-set-color 'cyan)
+    (moe-theme-set-color 'green)
 
     ;; Finally, apply moe-theme now.
     ;; Choose what you like, (moe-light) or (moe-dark)

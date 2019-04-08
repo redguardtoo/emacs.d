@@ -9,7 +9,7 @@
     ;; the buffer name; the file name as a tool tip
     '(:eval (propertize "%b " 'face nil
         'help-echo (buffer-file-name)))
-
+    
     ;; line and column
     "(" ;; '%02' to set to 2 chars at least; prevents flickering
     "%02l" "," "%01c"
@@ -17,6 +17,9 @@
       ;; (propertize "%02c" 'face 'font-lock-type-face)
     ") "
 
+    ;; nyan mode
+    '(:eval (list (nyan-create)))
+    
     ;; the current major mode for the buffer.
     "["
 
@@ -50,6 +53,7 @@
     " --"
     ;; i don't want to see minor-modes; but if you want, uncomment this:
     ;; minor-mode-alist  ;; list of minor modes
+
     "%-" ;; fill with '-'
     ))
 
