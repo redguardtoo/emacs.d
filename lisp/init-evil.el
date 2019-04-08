@@ -361,6 +361,73 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-emacs-state-map (kbd "M-j") 'yas-expand)
 (global-set-key (kbd "C-r") 'undo-tree-redo)
 
+;; {{
+(defvar evil-global-markers-history nil)
+(defadvice evil-set-marker (before evil-set-marker-before-hack activate)
+  (let* ((args (ad-get-args 0))
+         (c (nth 0 args))
+         (pos (or (nth 1 args) (point))))
+    ;; only rememeber global markers
+    (when (and (>= c ?A) (<= c ?Z) buffer-file-name)
+      (setq evil-global-markers-history
+            (delq nil
+                  (mapcar `(lambda (e)
+                             (unless (string-match (format "^%s@" (char-to-string ,c)) e)
+                               e))
+                          evil-global-markers-history)))
+      (setq evil-global-markers-history
+            (add-to-list 'evil-global-markers-history
+                         (format "%s@%s:%d:%s"
+                                 (char-to-string c)
+                                 (file-truename buffer-file-name)
+                                 (line-number-at-pos pos)
+                                 (string-trim (my-line-str))))))))
+
+(defadvice evil-goto-mark-line (around evil-goto-mark-line-hack activate)
+  (let* ((args (ad-get-args 0))
+         (c (nth 0 args))
+         (orig-pos (point)))
+
+    (condition-case nil
+        ad-do-it
+      (error (progn
+               (when (and (eq orig-pos (point)) evil-global-markers-history)
+                 (let* ((markers evil-global-markers-history)
+                        (i 0)
+                        m
+                        file
+                        found)
+                   (while (and (not found) (< i (length markers)))
+                     (setq m (nth i markers))
+                     (when (string-match (format "\\`%s@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'"
+                                                 (char-to-string c))
+                                         m)
+                       (setq file (match-string-no-properties 1 m))
+                       (setq found (match-string-no-properties 2 m)))
+                     (setq i (1+ i)))
+                   (when file
+                     (find-file file)
+                     (counsel-etags-forward-line found)))))))))
+
+(defun counsel-evil-goto-global-marker ()
+  "Goto global evil marker."
+  (interactive)
+  (unless (featurep 'counsel-etags) (require 'counsel-etags))
+  (ivy-read "Goto global evil marker"
+            evil-global-markers-history
+            :action (lambda (m)
+                      (when (string-match "\\`[A-Z]@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'" m)
+                        (let* ((file (match-string-no-properties 1 m))
+                               (linenum (match-string-no-properties 2 m)))
+                          ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
+                          (counsel-etags-push-marker-stack (point-marker))
+                          ;; open file, go to certain line
+                          (find-file file)
+                          (counsel-etags-forward-line linenum))
+                        ;; flash, Emacs v25 only API
+                        (xref-pulse-momentarily)))))
+;; }}
+
 ;; My frequently used commands are listed here
 ;; For example, for line like `"ef" 'end-of-defun`
 ;;   You can either press `,ef` or `M-x end-of-defun` to execute it
@@ -854,40 +921,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 ;; }}
 
-;; {{
-(defvar evil-global-markers-history nil)
-(defadvice evil-set-marker (before evil-set-marker-before-hack activate)
-  (let* ((args (ad-get-args 0))
-         (c (nth 0 args))
-         (pos (or (nth 1 args) (point))))
-    ;; only rememeber global markers
-    (when (and (>= c ?A) (<= c ?Z) buffer-file-name)
-      (setq evil-global-markers-history
-            (add-to-list 'evil-global-markers-history
-                         (format "%s@%s:%d:%s"
-                                 (char-to-string c)
-                                 (file-truename buffer-file-name)
-                                 (line-number-at-pos pos)
-                                 (string-trim (my-line-str))))))))
-
-(defun counsel-evil-goto-global-marker ()
-  "Goto global evil marker."
-  (interactive)
-  (unless (featurep 'counsel-etags) (require 'counsel-etags))
-  (ivy-read "Goto global evil marker"
-            evil-global-markers-history
-            :action (lambda (m)
-                      (when (string-match "\\`[A-Z]@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'" m)
-                        (let* ((file (match-string-no-properties 1 m))
-                               (linenum (match-string-no-properties 2 m)))
-                          ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
-                          (counsel-etags-push-marker-stack (point-marker))
-                          ;; open file, go to certain line
-                          (find-file file)
-                          (counsel-etags-forward-line linenum))
-                        ;; flash, Emacs v25 only API
-                        (xref-pulse-momentarily)))))
-;; }}
 
 ;; press ",xx" to expand region
 ;; then press "z" to contract, "x" to expand
@@ -895,7 +928,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   '(progn
      (define-key global-map (kbd "C-x C-z") 'switch-to-shell-or-ansi-term)
      (setq expand-region-contract-fast-key "z")
-
      ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
      ;; evil 1.0.8 search word instead of symbol
      (setq evil-symbol-word-search t)
