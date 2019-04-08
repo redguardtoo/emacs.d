@@ -211,6 +211,6 @@ If no files marked, always operate on current line in dired-mode."
 
 ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
 ;; If you tramp is hanging, you can uncomment below line.
-;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+(setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
 ;; }}
 (provide 'init-dired)
