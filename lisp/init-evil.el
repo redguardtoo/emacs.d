@@ -431,8 +431,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "ht" 'counsel-etags-find-tag-at-point ; better than find-tag C-]
  "rt" 'counsel-etags-recent-tag
  "ft" 'counsel-etags-find-tag
- "mm" 'counsel-bookmark-goto
- "mk" 'bookmark-set
+ "mm" 'counsel-evil-goto-global-marker
  "yy" 'counsel-browse-kill-ring
  "cf" 'counsel-grep ; grep current buffer
  "gf" 'counsel-git ; find file
@@ -600,6 +599,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "pc" 'my-dired-redo-from-commands-history
  "pw" 'pwd
  "cc" 'my-dired-redo-last-command
+ "mm" 'counsel-bookmark-goto
+ "mk" 'bookmark-set
  "ss" 'wg-create-workgroup ; save windows layout
  "se" 'evil-iedit-state/iedit-mode ; start iedit in emacs
  "sc" 'shell-command
@@ -851,6 +852,41 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; bind evil-jump-out-args
 (define-key evil-normal-state-map "K" 'evil-jump-out-args)
+;; }}
+
+;; {{
+(defvar evil-global-markers-history nil)
+(defadvice evil-set-marker (before evil-set-marker-before-hack activate)
+  (let* ((args (ad-get-args 0))
+         (c (nth 0 args))
+         (pos (or (nth 1 args) (point))))
+    ;; only rememeber global markers
+    (when (and (>= c ?A) (<= c ?Z) buffer-file-name)
+      (setq evil-global-markers-history
+            (add-to-list 'evil-global-markers-history
+                         (format "%s@%s:%d:%s"
+                                 (char-to-string c)
+                                 (file-truename buffer-file-name)
+                                 (line-number-at-pos pos)
+                                 (string-trim (my-line-str))))))))
+
+(defun counsel-evil-goto-global-marker ()
+  "Goto global evil marker."
+  (interactive)
+  (unless (featurep 'counsel-etags) (require 'counsel-etags))
+  (ivy-read "Goto global evil marker"
+            evil-global-markers-history
+            :action (lambda (m)
+                      (when (string-match "\\`[A-Z]@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'" m)
+                        (let* ((file (match-string-no-properties 1 m))
+                               (linenum (match-string-no-properties 2 m)))
+                          ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
+                          (counsel-etags-push-marker-stack (point-marker))
+                          ;; open file, go to certain line
+                          (find-file file)
+                          (counsel-etags-forward-line linenum))
+                        ;; flash, Emacs v25 only API
+                        (xref-pulse-momentarily)))))
 ;; }}
 
 ;; press ",xx" to expand region

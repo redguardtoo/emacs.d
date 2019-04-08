@@ -262,9 +262,9 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive "P")
   (my-select-from-kill-ring (lambda (s)
                               (let* ((plain-str (my-insert-str s))
-                                     (trimmed (s-trim plain-str)))
+                                     (trimmed (string-trim plain-str)))
                                 (setq kill-ring (cl-delete-if
-                                                 `(lambda (e) (string= ,trimmed (s-trim e)))
+                                                 `(lambda (e) (string= ,trimmed (string-trim e)))
                                                  kill-ring))
                                 (kill-new plain-str)))
                             n))
