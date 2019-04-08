@@ -10,7 +10,6 @@
 (autoload 'counsel-etags-find-tag-at-point "counsel-etags" "" t nil)
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
-(autoload 'counsel-etags-grep-symbol-at-point "counsel-etags" "" t nil)
 (autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
 (autoload 'markdown-mode "markdown-mode" "Mode for editing Markdown documents" t)
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)

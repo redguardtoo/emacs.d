@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.8.1
+;; Version: 1.8.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 ;;
 ;;   `counsel-etags-scan-code' to create tags file
 ;;   `counsel-etags-grep' to grep
-;;   `counsel-etags-grep-symbol-at-point' to grep the symbol at point
+;;   `counsel-etags-grep-current-directory' to grep in current directory
 ;;   `counsel-etags-recent-tag' to open recent tag
 ;;   `counsel-etags-find-tag' to two step tag matching use regular expression and filter
 ;;   `counsel-etags-list-tag' to list all tags
@@ -373,7 +373,7 @@ Return nil if it's not found."
 
 ;;;###autoload
 (defun counsel-etags-version ()
-  (message "1.8.1"))
+  (message "1.8.3"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1108,8 +1108,17 @@ the tags updating might not happen."
 
 (defun counsel-etags-read-keyword (hint)
   "Read keyword with HINT."
-  (let* ((str (if (region-active-p) (counsel-etags-selected-str)
-                (read-string hint))))
+  (let* ((str (cond
+               ((region-active-p)
+                (setq counsel-git-grep-history (add-to-list 'counsel-git-grep-history
+                                                            (counsel-etags-selected-str)))
+                (counsel-etags-selected-str))
+               (t
+                (read-from-minibuffer hint
+                                      (thing-at-point 'symbol)
+                                      nil
+                                      nil
+                                      'counsel-git-grep-history)))))
     (when str
       (cond
        ((region-active-p)
@@ -1171,21 +1180,31 @@ Extended regex is used, like (pattern1|pattern2)."
             (counsel-etags-exclude-opts use-cache)
             keyword))))
 
+(defun counsel-etags-parent-directory (level directory)
+  "Return LEVEL up parent directory of DIRECTORY."
+  (let* ((rlt directory))
+    (while (and (> level 0) (not (string= "" rlt)))
+      (setq rlt (file-name-directory (directory-file-name rlt)))
+      (setq level (1- level)))
+    (if (string= "" rlt) (setq rlt nil))
+    rlt))
+
 ;;;###autoload
-(defun counsel-etags-grep (&optional default-keyword hint)
+(defun counsel-etags-grep (&optional default-keyword hint root)
   "Grep at project root directory or current directory.
 Try to find best grep program (ripgrep, grep...) automatically.
 Extended regex like (pattern1|pattern2) is used.
 If DEFAULT-KEYWORD is not nil, it's used as grep keyword.
-If HINT is not nil, it's used as grep hint."
+If HINT is not nil, it's used as grep hint.
+ROOT is root directory to grep."
   (interactive)
   (let* ((keyword (if default-keyword default-keyword
-                    (counsel-etags-read-keyword "Enter grep pattern: ")))
-         (default-directory (file-truename (counsel-etags-locate-project)))
+                    (counsel-etags-read-keyword "Grep pattern: ")))
+         (default-directory (file-truename (or root (counsel-etags-locate-project))))
          (time (current-time))
          (cmd (counsel-etags-grep-cli keyword nil))
          (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))
-         (dir-summary (file-name-as-directory (file-name-base (directory-file-name (counsel-etags-locate-project))))))
+         (dir-summary (file-name-as-directory (file-name-base (directory-file-name default-directory)))))
 
     (if counsel-etags-debug (message "counsel-etags-grep called => %s %s %s %s" keyword default-directory cmd cands))
     (counsel-etags-put :ignore-dirs
@@ -1211,11 +1230,12 @@ If HINT is not nil, it's used as grep hint."
               :caller 'counsel-etags-grep)))
 
 ;;;###autoload
-(defun counsel-etags-grep-symbol-at-point ()
-  "Similar to `counsel-etags-grep' but grep symbol at point."
-  (interactive)
-  (counsel-etags-grep (or (counsel-etags-selected-str)
-                          (thing-at-point 'symbol))))
+(defun counsel-etags-grep-current-directory (&optional level)
+  "Grep current directory or LEVEL up parent directory."
+  (interactive "P")
+  (unless level (setq level 0))
+  (let* ((root (counsel-etags-parent-directory level default-directory)))
+    (counsel-etags-grep nil nil root)))
 
 ;; {{ occur setup
 (defun counsel-etags-tag-occur-api (items)

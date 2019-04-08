@@ -483,7 +483,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "cxo" 'org-clock-out ; `C-c C-x C-o'
  "cxr" 'org-clock-report ; `C-c C-x C-r'
  "qq" 'my-multi-purpose-grep
- "dd" 'counsel-etags-grep-symbol-at-point
+ "dd" 'counsel-etags-grep-current-directory
  "xc" 'save-buffers-kill-terminal
  "rr" 'my-counsel-recentf
  "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
