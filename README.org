@@ -268,17 +268,13 @@ Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d
 ** Key bindings
 You don't need memorize any key binding. Try =M-x my-command= and key binding hint is displayed.
 
-Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=.
+Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=, a few key in =~/.emacs.d/lisp/init-hydra.el= which uses [[https://github.com/abo-abo/hydra][Hydra]].
 
-For example, =(nvmap :prefix "," "bu" 'backward-up-list)= means pressing ",bu" executes command =backward-up-list=.
+Press =C-c C-y= anywhere to bring up default hydra menu.
 
 The tutorials I recommended have enough information about commands.
 
 Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
-
-[[https://github.com/abo-abo/hydra][Hydra]] is used to define key bindings when evil-mode is disabled. See =~/.emacs.d/lisp/init-hydra.el= for details.
-
-Press =C-c C-y= anywhere to bring up default hydra menu.
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
@@ -288,7 +284,19 @@ Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's
 ** Default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
-Place your setup in =~/.custom.el=.
+Place your setup in =~/.custom.el= which is loaded after other "*.el".
+
+So you can use any functions defined in =~/.emacs.d=.
+
+Here is a sample to override keybindings defined in =~/.emacs.d/lisp/init-evil.el=,
+#+begin_src elisp
+(eval-after-load "evil"
+  '(progn
+     (my-space-leader-def
+       "ss" 'pwd
+       "ll" 'pwd
+       "pp" 'pwd)))
+#+end_src
 ** Code navigation and auto-completion
 It's usable out of box if Ctags is installed
 
