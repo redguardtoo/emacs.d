@@ -76,7 +76,9 @@
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)
     (flymake-mode 1)
-    (push '("\\.el$" flymake-elisp-init) flymake-allowed-file-name-masks)
+    (setq flymake-allowed-file-name-masks
+          (add-to-list 'flymake-allowed-file-name-masks
+                       '("\\.el$" flymake-elisp-init)))
     (checkdoc-minor-mode 1)))
 (add-hook 'emacs-lisp-mode-hook 'elisp-mode-hook-setup)
 
