@@ -237,6 +237,9 @@
     (write-file (file-truename keyfreq-file))))
 
 ;; And use keyfreq-show to see how many times you used a command.
-;; comment out below line if there is performance impact
-(turnon-keyfreq-mode)
+;; It's recommended to use `keyfreq-mode' (could be in "~/.custom.el").
+;; It's reported keyfreq is not compatible with `latex-mode'
+;; @see https://github.com/redguardtoo/emacs.d/issues/767
+;; (turnon-keyfreq-mode)
+
 (provide 'init-keyfreq)
