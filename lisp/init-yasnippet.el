@@ -95,7 +95,7 @@
                         (mapconcat (lambda (i) (format "%s" i)) top-kill-ring ", "))))
      (t (setq rlt "")))
     rlt))
-(add-to-list 'auto-mode-alist '("\\.yasnippet\\'" . snippet-mode))
+(add-auto-mode 'snippet-mode "\\.yasnippet\\'")
 
 (eval-after-load 'yasnippet
   '(progn

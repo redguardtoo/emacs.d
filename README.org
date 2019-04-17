@@ -345,7 +345,7 @@ I use =rjsx-mode= with Emacs v25+. It's based on =js2-mode= so it has excellent 
 
 But =web-mode= is also very popular to edit jsx files.
 
-In order to replace =rjsx-mode= with =web-mode=, you need search line =(add-to-list 'auto-mode-alist '("\\.jsx\\'" . rjsx-mode))= in =init-javascript.el= and replace =rjsx-mode= with =web-mode= on that line.
+You can add =(add-auto-mode 'rjsx-mode "\\.jsx\\'")= into =~/.custome.el= to use =web-mode= for jsx files.
 ** git-gutter
 I use modified version of =git-gutter= for now until my pull request is merged into official repository.
 

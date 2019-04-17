@@ -45,7 +45,7 @@
   "~/.eim"
   "There directory of peronsal dictionaries for pyim.")
 
-(add-to-list 'auto-mode-alist '("\\.pyim\\'" . text-mode))
+(add-auto-mode 'text-mode "\\.pyim\\'")
 
 (defun my-pyim-personal-dict (&optional dict-name)
   (file-truename (concat (file-name-as-directory my-pyim-directory)

@@ -1,4 +1,5 @@
 ;; Use cperl-mode instead of the default perl-mode
+(add-auto-mode 'cperl-mode "\\.\\([pP][Llm]\\|al\\)\\'")
 (add-to-list 'auto-mode-alist '("\\.\\([pP][Llm]\\|al\\)\\'" . cperl-mode))
 (add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
 (add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))

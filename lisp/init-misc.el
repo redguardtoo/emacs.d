@@ -1,13 +1,14 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; {{ shell and conf
-(add-to-list 'auto-mode-alist '("\\.[^b][^a][a-zA-Z]*rc$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.aspell\\.en\\.pws\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\mimeapps\\.list$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.editorconfig$" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.meta\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.?muttrc\\'" . conf-mode))
-(add-to-list 'auto-mode-alist '("\\.mailcap\\'" . conf-mode))
+(add-auto-mode 'conf-mode
+               "\\.[^b][^a][a-zA-Z]*rc$"
+               "\\.aspell\\.en\\.pws\\'"
+               "\\mimeapps\\.list$"
+               "\\.editorconfig$"
+               "\\.meta\\'"
+               "\\.?muttrc\\'"
+               "\\.mailcap\\'")
 ;; }}
 
 ;; Avoid potential lag:
@@ -17,8 +18,9 @@
 ;; Set `auto-window-vscroll' to nil to avoid triggering `format-mode-line'.
 (setq auto-window-vscroll nil)
 
-(add-to-list 'auto-mode-alist '("TAGS\\'" . text-mode))
-(add-to-list 'auto-mode-alist '("\\.ctags\\'" . text-mode))
+(add-auto-mode 'text-mode
+               "TAGS\\'"
+               "\\.ctags\\'")
 
 ;; {{ auto-yasnippet
 ;; Use C-q instead tab to complete snippet
@@ -36,10 +38,11 @@
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
 
-;; java
-(add-to-list 'auto-mode-alist '("\\.aj\\'" . java-mode))
-;; makefile
-(add-to-list 'auto-mode-alist '("\\.ninja$" . makefile-gmake-mode))
+(add-auto-mode 'java-mode
+               ;; java
+               "\\.aj\\'"
+               ;; makefile
+               "\\.ninja$" )
 
 ;; {{ support MY packages which are not included in melpa
 (setq org2nikola-use-verbose-metadata t) ; for nikola 7.7+
@@ -105,12 +108,13 @@
 ;; }}
 
 ;; {{ groovy-mode
-(add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
-(add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+(add-auto-mode 'groovy-mode
+               "\\.groovy\\'"
+               "\\.gradle\\'" )
 ;; }}
 
-(add-to-list 'auto-mode-alist
-             '("\\.\\(bash_profile\\|bash_history\\|sh\\|bash\\|bashrc\\.local\\|zsh\\|bashrc\\)\\'" . sh-mode))
+(add-auto-mode 'sh-mode
+               "\\.\\(bash_profile\\|bash_history\\|sh\\|bash\\|bashrc\\.local\\|zsh\\|bashrc\\)\\'")
 
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
@@ -123,9 +127,9 @@
 ;; }}
 
 ;; cmake
-(setq auto-mode-alist (append '(("CMakeLists\\.txt\\'" . cmake-mode))
-                              '(("\\.cmake\\'" . cmake-mode))
-                              auto-mode-alist))
+(add-auto-mode 'cmake-mode
+               "CMakeLists\\.txt\\'"
+               "\\.cmake\\'" )
 
 (defun back-to-previous-buffer ()
   (interactive)
@@ -329,7 +333,7 @@ Keep the last num lines if argument num if given."
 ;; }}
 
 ;; vimrc
-(add-to-list 'auto-mode-alist '("\\.?vim\\(rc\\)?$" . vimrc-mode))
+(add-auto-mode 'vimrc-mode "\\.?vim\\(rc\\)?$")
 
 ;; {{ show email sent by `git send-email' in gnus
 (eval-after-load 'gnus
@@ -753,7 +757,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 (autoload 'verilog-mode "verilog-mode" "Verilog mode" t )
-(add-to-list 'auto-mode-alist '("\\.[ds]?vh?\\'" . verilog-mode))
+(add-auto-mode 'verilog-mode "\\.[ds]?vh?\\'")
 
 ;; {{ xterm
 (defun run-after-make-frame-hooks (frame)
@@ -909,7 +913,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; {{
-(add-to-list 'auto-mode-alist '("\\.adoc\\'" . adoc-mode))
+(add-auto-mode 'adoc-mode "\\.adoc\\'")
 (defun adoc-imenu-index ()
   (let* ((patterns '((nil "^=\\([= ]*[^=\n\r]+\\)" 1))))
     (save-excursion
@@ -996,8 +1000,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   ;; speed up font rendering for special characters
   (setq inhibit-compacting-font-caches t))
 
-(setq auto-mode-alist
-      (cons '("\\.textile\\'" . textile-mode) auto-mode-alist))
+(add-auto-mode 'texile-mode "\\.textile\\'")
 
 (transient-mark-mode t)
 
@@ -1013,7 +1016,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (setq global-auto-revert-non-file-buffers t
         auto-revert-verbose nil))
 
-(add-to-list 'auto-mode-alist '("\\.[Cc][Ss][Vv]\\'" . csv-mode))
+(add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -1317,7 +1320,8 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ epub setup
-(add-to-list 'auto-mode-alist '("\\.epub\\'" . nov-mode))
+(add-auto-mode 'nov-mode "\\.epub\\'")
+
 (defun nov-mode-hook-setup ()
   (local-set-key (kbd "d") (lambda ()
                              (interactive)

@@ -1,7 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(setq auto-mode-alist
-      (cons '("\\.\\(m[k]d\\|markdown\\)\\'" . markdown-mode) auto-mode-alist))
+(add-auto-mode 'markdown-mode "\\.\\(m[k]d\\|markdown\\)\\'")
 
 (defun markdown-imenu-index ()
   (let* ((patterns '((nil "^#\\([# ]*[^#\n\r]+\\)" 1))))
