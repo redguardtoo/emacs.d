@@ -1093,8 +1093,9 @@ the tags updating might not happen."
                                   (error "Unexpected parenthesis: %S" s)))
                             str t t))
 
-(defun counsel-etags-read-keyword (hint)
-  "Read keyword with HINT."
+(defun counsel-etags-read-keyword (hint symbol-at-point)
+  "Read keyword with HINT.
+If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
                 (setq counsel-git-grep-history (add-to-list 'counsel-git-grep-history
@@ -1102,7 +1103,7 @@ the tags updating might not happen."
                 (counsel-etags-selected-str))
                (t
                 (read-from-minibuffer hint
-                                      (thing-at-point 'symbol)
+                                      (if symbol-at-point (thing-at-point 'symbol))
                                       nil
                                       nil
                                       'counsel-git-grep-history)))))
@@ -1186,7 +1187,7 @@ If HINT is not nil, it's used as grep hint.
 ROOT is root directory to grep."
   (interactive)
   (let* ((keyword (if default-keyword default-keyword
-                    (counsel-etags-read-keyword "Grep pattern: ")))
+                    (counsel-etags-read-keyword "Grep pattern: " nil)))
          (default-directory (file-truename (or root (counsel-etags-locate-project))))
          (time (current-time))
          (cmd (counsel-etags-grep-cli keyword nil))
