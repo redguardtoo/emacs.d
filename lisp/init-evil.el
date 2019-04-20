@@ -678,7 +678,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "yy" 'hydra-launcher/body
  "gi" 'gist-region ; only workable on my computer
  "tt" 'my-toggle-indentation
- "gg" 'magit-status
+ "ggg" 'magit-status
  "gs" 'magit-show-commit
  "gl" 'magit-log-all
  "gff" 'magit-find-file ; loading file in specific version into buffer
@@ -687,6 +687,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "gau" 'magit-stage-modified
  "gcc" 'magit-commit-popup
  "gca" 'magit-commit-amend
+ "ggt" 'git-commit-tracked
  "gja" 'magit-commit-extend
  "gtt" 'magit-stash
  "gta" 'magit-stash-apply
