@@ -209,7 +209,9 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
-  "`C-u M-x org-open-at-point` open link with `browse-url-generic-program'"
+  "\"C-u M-x org-open-at-point\" to open link with `browse-url-generic-program'.
+It's value could be customized liked \"/usr/bin/firefox\".
+\"M-x org-open-at-point\" to open the url with embedded emacs-w3m."
   (let* ((browse-url-browser-function
           (cond
            ;; open with `browse-url-generic-program'
@@ -219,7 +221,7 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
     ad-do-it))
 
 (defadvice org-publish (around org-publish-advice activate)
-  "Stop running `major-mode' hook when org-publish."
+  "Stop running `major-mode' hook when `org-publish'."
   (let* ((load-user-customized-major-mode-hook nil))
     ad-do-it))
 

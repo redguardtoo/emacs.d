@@ -41,7 +41,7 @@
   - [[#editing-lisp][Editing Lisp]]
   - [[#use-smart-mode-line-or-powerline][Use smart-mode-line or powerline?]]
   - [[#key-bindings-doesnt-work][Key bindings doesn't work?]]
-  - [[#use-org-mode][Use org-mode]]
+  - [[#org-mode][Org-mode]]
   - [[#macos-user][macOS user?]]
   - [[#locked-packages][Locked packages]]
   - [[#customize-global-variables][Customize global variables]]
@@ -390,10 +390,12 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept "M-x"]].
-** Use org-mode
+** Org-mode
 Press =M-x org-version=, then read corresponding online manual to setup.
 
-For example, =org-capture= need [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
+For example, =org-capture= requires [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
+
+Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by the embedded =emacs-w3m= is used. `C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be "/usr/bin/firefox
 ** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 
