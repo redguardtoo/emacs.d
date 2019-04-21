@@ -282,10 +282,16 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (cond
  ((not *no-memory*)
+  ;; javascript
   (add-auto-mode 'js2-mode
                  "\\.ts\\'"
-                 "\\.jsx?\\(\\.erb\\)?\\'"
-                 "components\\/.*\\.js\\'"
+                 "\\.js\\(\\.erb\\)?\\'")
+  ;; JSX
+  (add-auto-mode 'rjsx-mode
+                 "\\.jsx\\'"
+                 "components\\/.*\\.js\\'")
+  ;; mock file
+  (add-auto-mode 'js-mode
                  "\\.mock.js\\'")
   (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
  (t
