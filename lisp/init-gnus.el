@@ -1,13 +1,13 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (defun my-gnus-group-list-subscribed-groups ()
-  "List all subscribed groups with or without un-read messages"
+ "List all subscribed groups with or without un-read messages."
   (interactive)
   (gnus-group-list-all-groups 5))
 
 ;; gnus+davmail bug, so I have to use pop3 for davmail
 ;; http://permalink.gmane.org/gmane.emacs.gnus.general/83301
-;; but delete all the mails on server is scary
+;; but deleting all the mails on server is crazy
 (setq pop3-leave-mail-on-server t)
 
 (add-hook 'gnus-group-mode-hook
@@ -16,8 +16,7 @@
 
 (setq message-send-mail-function 'smtpmail-send-it
       smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587
-      smtpmail-local-domain "homepc")
+      smtpmail-smtp-service 587)
 
 ;; @see http://www.fnal.gov/docs/products/emacs/emacs/gnus_3.html#SEC60
 ;; QUOTED: If you are using an unthreaded display for some strange reason ...
@@ -32,9 +31,8 @@
 (defun message-select-forwarded-email-tags ()
   "Select the <#mml-or-what-ever> tags in message-mode"
   (interactive)
-  (let (start rlt)
+  (let (rlt)
     (when (search-forward "<#")
-      (setq start (point))
       (push-mark (point) t t)
       (goto-char (point-max))
       (search-backward ">")
@@ -50,13 +48,12 @@
      ((message-select-forwarded-email-tags)
       (copy-region-as-kill (region-beginning) (region-end))
       (message "forwarded email tags copied!"))
-     (t (message "NO forwarded email tags found!"))
-     )))
+     (t (message "NO forwarded email tags found!")))))
 
 (defun gnus-summary-extract-mail-address(regexp)
-  "Extract TO/CC/FROM fields from mails in current Gnus Summary Buffer.
+  "Extract to/cc/from fields from mails in current Gnus Summary Buffer.
 REGEXP is pattern to exclude extracted address.  For example, 'Tom|gmail' excludes Tom or gmail.
-Final result is inserted into kill-ring and returned."
+Final result is inserted into `kill-ring' and returned."
   (interactive
    (let* ((regexp (read-regexp "Regex to exclude mail address (OPTIONAL):")))
      (list regexp)))
