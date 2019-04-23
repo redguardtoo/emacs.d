@@ -6,7 +6,7 @@
 - Support Windows. You can find&grep files on Windows with minimum setup
 - Tested with Emacs 25.3, 26.1, 27 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]]. Works when ssh to server with [[http://www.putty.org/][PuTTY]]
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
 
 [[file:demo.png]]
 
@@ -74,8 +74,8 @@
 - Emacs 26.1 is strongly recommended. It is faster and easier to setup
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download no dependency version which works out of box
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced user could under-estimate the risk of using unstable packages.
+- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download full version which works out of box
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced user could under-estimate the risk of unstable packages
 - Emacs 24 support will be dropped on 2019. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
 * Installation
@@ -324,10 +324,19 @@ Or you can insert below code into end of =~/.custom.el= or =~/.emacs.d/init.el=,
 
 You can also run =M-x random-color-theme= to load random color theme.
 *** Use color theme in terminal
-Start Emacs this way,
+Use 256 colors is just one CLI without any extra setup,
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
+
+True color requires a little setup.
+
+You need install the terminal supporting true color. See [[https://gist.github.com/XVilka/8346728][this list]]. I recommend [[https://mintty.github.io/][Mintty]] on Cygwin, [[https://gnometerminator.blogspot.com/p/introduction.html][Terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS.
+
+Only Emacs 26 support true color.
+
+Follow [[https://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Emacs manual]] to setup and start Emacs.
+
 ** Grep/Replace text in project
 Many third party plugins bundled in this setup have already provided enough features. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
 
@@ -335,7 +344,7 @@ A generic grep program =counsel-etags-grep= is also provided . Since =counsel-et
 
 Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing ",qq", press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
 
-You can setup ignore regex like =!keyword1= in =ivy=. If you want to ignore multiple keywords, you *must* use syntax like =!keyword1\|!keyword2=. As I tested in counsel v0.9.1, non of its grep commands supports ignore syntax *reliably*. So I suggest using =counsel-etags-grep= instead.
+You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 ** Hydra/Swiper/Counsel/Ivy
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
