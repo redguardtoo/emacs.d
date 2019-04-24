@@ -65,7 +65,7 @@
 [_A_] Remote groups (A A) [_g_] Refresh
 [_L_] Local groups        [_\\^_] List servers
 [_c_] Mark all read       [_m_] Compose new mail
-[_G_] Search mails (G G) [_#_] Mark mail
+[_G_] Search mails (G G)  [_#_] Mark mail
 "
        ("A" gnus-group-list-active)
        ("L" gnus-group-list-all-groups)
@@ -108,7 +108,7 @@
        ("G" gnus-summary-make-nnir-group
        ("q" nil))
      ;; y is not used by default
-     (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
+     (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))))
 
 ;; gnus-article-mode
 (eval-after-load 'gnus-art
