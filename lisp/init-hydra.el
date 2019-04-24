@@ -105,10 +105,10 @@
        ("W" gnus-summary-wide-reply-with-original)
        ("w" gnus-summary-wide-reply)
        ("#" gnus-topic-mark-topic)
-       ("G" gnus-summary-make-nnir-group
+       ("G" gnus-summary-make-nnir-group)
        ("q" nil))
      ;; y is not used by default
-     (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))))
+     (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
 
 ;; gnus-article-mode
 (eval-after-load 'gnus-art
