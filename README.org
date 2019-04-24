@@ -63,6 +63,7 @@
   - [[#change-time-locale][Change Time Locale]]
   - [[#directory-structure][Directory structure]]
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
+  - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
   - [[#emacs-23][Emacs 23]]
   - [[#emacs-243][Emacs 24.3]]
@@ -522,11 +523,17 @@ I also manually download and extract some packages into =~/.emacs.d/site-lisp/=.
 
 My own snippets is at =~/.emacs.d/snippets=.
 
+The git hooks is placed in =~/.emacs.d/githooks= directory.
+
 Other directories don't matter.
 ** True colors in terminal Emacs
 - Install Emacs 26
 - Install [[https://gist.github.com/XVilka/8346728][terminals supporting true color]]. I suggest [[https://mintty.github.io/][mintty]] on Windows, [[https://gnometerminator.blogspot.com/p/introduction.html][terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS
 - [[https://www.gnu.org/software/emacs/draft/manual/html_mono/efaq.html#Colors-on-a-TTY][Setup and start Emacs]]
+** Run the unit test before git commit
+On macOS/Linux/Cygwin, run =make githooks= to install hooks into =~/.emacs.d/.git/hooks=.
+
+Then Unit test is run automatically before =git commit=.
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.

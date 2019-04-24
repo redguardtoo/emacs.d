@@ -25,10 +25,7 @@ before_script:
 script:
   - $EMACS --version
   - echo "Attempting startup..."
-  - $EMACS -nw --batch --eval '(let* ((user-emacs-directory default-directory)
-                                      (user-init-file (expand-file-name "init.el"))
-                                      (load-path (delq default-directory load-path)))
-                                 (load-file user-init-file))'
+  - make test
   - echo "Startup successful"
 
 notifications:
