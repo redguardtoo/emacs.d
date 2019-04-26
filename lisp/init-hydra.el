@@ -14,7 +14,7 @@
 [_B_] New bookmark        [_P_] Emms Pause      [_a_] Pause
 [_m_] Goto bookmark       [_O_] Emms Open
 [_v_] Show/Hide undo      [_L_] Emms Playlist
-[_b_] Switch buffer       [_w_] Pronounce word
+[_b_] Switch Gnus buffer  [_w_] Pronounce word
 [_f_] Recent file
 [_d_] Recent directory
 [_c_] Last dired command
@@ -45,7 +45,7 @@
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
-  ("b" back-to-previous-buffer)
+  ("b" my-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
   ("q" nil))
 
@@ -66,11 +66,13 @@
 [_L_] Local groups        [_\\^_] List servers
 [_c_] Mark all read       [_m_] Compose new mail
 [_G_] Search mails (G G)  [_#_] Mark mail
+[_b_] Switch Gnus buffer
 "
        ("A" gnus-group-list-active)
        ("L" gnus-group-list-all-groups)
        ("c" gnus-topic-catchup-articles)
        ("G" gnus-group-make-nnir-group)
+       ("b" my-switch-gnus-buffer)
        ("g" gnus-group-get-new-news)
        ("^" gnus-group-enter-server-mode)
        ("m" gnus-group-new-mail)
@@ -84,19 +86,21 @@
   '(progn
      (defhydra hydra-gnus-summary (:color blue)
        "
-[_s_] Show thread   [_F_] Forward (C-c C-f)
-[_h_] Hide thread   [_e_] Resend (S D e)
-[_n_] Refresh (/ N) [_r_] Reply
-[_!_] Mail -> disk  [_R_] Reply with original
-[_p_] Disk -> mail  [_w_] Reply all (S w)
-[_c_] Read all      [_W_] Reply all with original (S W)
-[_#_] Mark          [_G_] Search mails in current folder
+[_F_] Forward (C-c C-f)             [_s_] Show thread
+[_e_] Resend (S D e)                [_h_] Hide thread
+[_r_] Reply                         [_n_] Refresh (/ N)
+[_R_] Reply with original           [_!_] Mail -> disk
+[_w_] Reply all (S w)               [_p_] Disk -> mail
+[_W_] Reply all with original (S W) [_c_] Read all
+[_G_] Search current folder         [_#_] Mark
+[_b_] Switch Gnus buffer
 "
        ("s" gnus-summary-show-thread)
        ("h" gnus-summary-hide-thread)
        ("n" gnus-summary-insert-new-articles)
        ("F" gnus-summary-mail-forward)
        ("!" gnus-summary-tick-article-forward)
+       ("b" my-switch-gnus-buffer)
        ("p" gnus-summary-put-mark-as-read)
        ("c" gnus-summary-catchup-and-exit)
        ("e" gnus-summary-resend-message-edit)
@@ -120,7 +124,7 @@
 [_d_] CLI to dowloand stream [_R_] Reply with original
 [_b_] Open external browser  [_w_] Reply all (S w)
 [_f_] Click link/button      [_W_] Reply all with original (S W)
-[_g_] Focus link/button
+[_g_] Focus link/button      [_b_] Switch Gnus buffer
 "
        ("F" gnus-summary-mail-forward)
        ("r" gnus-article-reply)
@@ -133,6 +137,7 @@
        ("b" w3mext-open-link-or-image-or-url)
        ("f" w3m-lnum-follow)
        ("g" w3m-lnum-goto)
+       ("b" my-switch-gnus-buffer)
        ("q" nil))
      ;; y is not used by default
      (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))
@@ -145,10 +150,12 @@
 [_c_] Complete mail address
 [_a_] Attach file
 [_s_] Send mail (C-c C-c)
+[_b_] Switch Gnus buffer
 "
        ("c" counsel-bbdb-complete-mail)
        ("a" mml-attach-file)
        ("s" message-send-and-exit)
+       ("b" my-switch-gnus-buffer)
        ("q" nil))))
 
 (defun message-mode-hook-hydra-setup ()

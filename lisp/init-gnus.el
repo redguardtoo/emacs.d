@@ -50,6 +50,28 @@
       (message "forwarded email tags copied!"))
      (t (message "NO forwarded email tags found!")))))
 
+(defun my-switch-gnus-buffer ()
+  "Switch between Gnus *Summary Buffer* and *Group Buffer*."
+  (interactive)
+  (unless (featurep 'ivy) (require 'ivy))
+  (let* ((curbuf (buffer-name (current-buffer)))
+         (cands (internal-complete-buffer
+                 ""
+                 `(lambda (b)
+                    (let* ((bn (car b)))
+                      (unless (or (string= ,curbuf bn)
+                                  (not (string-match "^\*\\(Group\\|Summary\\|Article\\)" bn)))
+                        b)))
+                 t)))
+    (cond
+     ((and cands (> (length cands) 0))
+      (ivy-read "Switch to buffer: " cands
+                :action #'ivy--switch-buffer-action
+                :caller 'ivy-switch-buffer)
+      )
+     (t
+      (message "No other Gnus buffer.")))))
+
 (defun gnus-summary-extract-mail-address(regexp)
   "Extract to/cc/from fields from mails in current Gnus Summary Buffer.
 REGEXP is pattern to exclude extracted address.  For example, 'Tom|gmail' excludes Tom or gmail.
