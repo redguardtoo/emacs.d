@@ -328,6 +328,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
+(require-package 'rust-mode)
 
 (when *emacs26*
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)

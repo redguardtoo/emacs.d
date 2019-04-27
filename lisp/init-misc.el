@@ -603,6 +603,10 @@ If step is -1, go backward."
     (setq rlt (list b e))
     rlt))
 
+;; {{ rust
+(add-auto-mode 'rust-mode "\\.rs\\'")
+;; }}
+
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare."
   (interactive)
