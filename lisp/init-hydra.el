@@ -5,7 +5,6 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-----------------------------------------------------------
 ^Misc^                    ^Audio^               ^Pomodoro^
 ----------------------------------------------------------
 [_u_] CompanyIspell       [_R_] Emms Random     [_s_] Start
