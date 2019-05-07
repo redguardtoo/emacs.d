@@ -43,7 +43,7 @@
   (evil-local-set-key 'normal "J" 'diff-hunk-next)
   (evil-local-set-key 'normal "P" 'diff-file-prev)
   (evil-local-set-key 'normal "N" 'diff-file-next)
-  (evil-local-set-key 'normal "q" 'ffip-diff-quit)
+  (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
   (evil-local-set-key 'normal "a" 'ffip-diff-apply-hunk)
@@ -277,6 +277,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
              (compilation-mode . emacs)
              (speedbar-mode . emacs)
              (ivy-occur-mode . emacs)
+             (ffip-file-mode . emacs)
              (ivy-occur-grep-mode . normal)
              (messages-buffer-mode . normal)
              (js2-error-buffer-mode . emacs)))
