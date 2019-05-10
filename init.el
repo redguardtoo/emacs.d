@@ -136,7 +136,7 @@
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
-  ;; Neither ELPA package nor dependent on "site-lisp/".
+  ;; NO ELPA package is dependent on "site-lisp/".
   (setq load-path (cdr load-path))
   (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t)
 

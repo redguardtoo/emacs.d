@@ -1,4 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
+(autoload 'dianyou-group-make-nnir-group "dianyou" "" t)
+(autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'ivy-recentf "ivy" "" t)
 (autoload 'ivy-read "ivy")

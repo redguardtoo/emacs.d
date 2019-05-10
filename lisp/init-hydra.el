@@ -70,7 +70,7 @@
        ("A" gnus-group-list-active)
        ("L" gnus-group-list-all-groups)
        ("c" gnus-topic-catchup-articles)
-       ("G" gnus-group-make-nnir-group)
+       ("G" dianyou-group-make-nnir-group)
        ("b" my-switch-gnus-buffer)
        ("g" gnus-group-get-new-news)
        ("^" gnus-group-enter-server-mode)
