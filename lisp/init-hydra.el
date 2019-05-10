@@ -89,10 +89,10 @@
 [_e_] Resend (S D e)                [_h_] Hide thread
 [_r_] Reply                         [_n_] Refresh (/ N)
 [_R_] Reply with original           [_!_] Mail -> disk
-[_w_] Reply all (S w)               [_p_] Disk -> mail
+[_w_] Reply all (S w)               [_d_] Disk -> mail
 [_W_] Reply all with original (S W) [_c_] Read all
 [_G_] Search current folder         [_#_] Mark
-[_b_] Switch Gnus buffer
+[_b_] Switch Gnus buffer            [_A_] Show Raw article
 "
        ("s" gnus-summary-show-thread)
        ("h" gnus-summary-hide-thread)
@@ -100,7 +100,7 @@
        ("F" gnus-summary-mail-forward)
        ("!" gnus-summary-tick-article-forward)
        ("b" my-switch-gnus-buffer)
-       ("p" gnus-summary-put-mark-as-read)
+       ("d" gnus-summary-put-mark-as-read-next)
        ("c" gnus-summary-catchup-and-exit)
        ("e" gnus-summary-resend-message-edit)
        ("R" gnus-summary-reply-with-original)
@@ -108,6 +108,7 @@
        ("W" gnus-summary-wide-reply-with-original)
        ("w" gnus-summary-wide-reply)
        ("#" gnus-topic-mark-topic)
+       ("A" gnus-summary-show-raw-article)
        ("G" gnus-summary-make-nnir-group)
        ("q" nil))
      ;; y is not used by default
