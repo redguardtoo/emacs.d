@@ -32,10 +32,14 @@
 (require 'gnus-group)
 (require 'gnus-util)
 
+(defvar dianyou-debug nil "Print debug information.")
+
 (defun dianyou-read-params (x)
+  "Read parameters from X."
   (nnir-read-parms (nnir-server-to-search-engine (car x))))
 
 (defun dianyou-format-date (year month day)
+  "Format date string from YEAR, MONTH, and DAY."
   (let* ((months '("Jan"
                    "Feb"
                    "Mar"
@@ -67,10 +71,12 @@
             year)))
 
 (defun dianyou-format-dash-date (date)
+  "Format DATE in dash format."
   (let* ((a (split-string date "-")))
     (dianyou-format-date (nth 0 a) (nth 1 a) (nth 2 a))))
 
 (defun dianyou-translate-date-shortcut (str)
+  "Translate STR containing date shortcuts into IMAP format."
   (let* ((y 0) (m 0) (w 0) (d 0) seconds)
     (when (string-match "\\([0-9]\\{1,2\\}\\)y" str)
       (setq y (string-to-number (match-string 1 str))))
@@ -93,6 +99,7 @@
                                         (seconds-to-time seconds))))))
 
 (defun dianyou-translate (word)
+  "Translate WORD shortcuts."
   (cond
    ((string= word "f")
     "FROM")
@@ -103,16 +110,16 @@
    ((string= word "c")
     "CC")
    ;; 2018-09-03 or 18-09-03
-   ((string-match "[0-9]\\{2,4\\}-[0-9]\\{1,2\\}-[0-9]\\{1,2\\}" word)
+   ((string-match "^[0-9]\\{2,4\\}-[0-9]\\{1,2\\}-[0-9]\\{1,2\\}$" word)
     (dianyou-format-dash-date word))
    ;; 180903
-   ((string-match "[0-9]\\{6\\}" word)
+   ((string-match "^[0-9]\\{6\\}$" word)
     (dianyou-format-date (substring word 0 2)
                          (substring word 2 4)
                          (substring word 4 6)))
 
    ;; 20180903
-   ((string-match "[0-9]\\{8\\}" word)
+   ((string-match "^[0-9]\\{8\\}$" word)
     (dianyou-format-date (substring word 0 4)
                          (substring word 4 6)
                          (substring word 6 8)))
@@ -124,33 +131,54 @@
     word)))
 
 (defun dianyou-read-query ()
+  "Read mail searching query."
   (interactive)
   (let* ((q (read-string "Query: " nil 'nnir-search-history))
          (words (split-string q " ")))
     (string-join (mapcar 'dianyou-translate words) " ")))
 
+(defun dianyou-create-group-spec ()
+  "Create group spec for searching."
+  (cond
+   ((eq major-mode 'gnus-summary-mode)
+    (list (list
+           (gnus-group-server gnus-newsgroup-name)
+           (list gnus-newsgroup-name))))
+   ((gnus-server-server-name)
+    (list (list (gnus-server-server-name))))
+   (t
+    (nnir-categorize
+     (or gnus-group-marked
+         (if (gnus-group-group-name)
+             (list (gnus-group-group-name))
+           (cdr (assoc (gnus-group-topic-name) gnus-topic-alist))))
+     gnus-group-server))))
+
+;;;###autoload
 (defun dianyou-group-make-nnir-group ()
-  "Create an nnir group.  Prompt for a search query and determine
-the groups to search as follows: if called from the *Server*
-buffer search all groups belonging to the server on the current
-line; if called from the *Group* buffer search any marked groups,
-or the group on the current line, or all the groups under the
-current topic. Calling with a prefix-arg prompts for additional
-search-engine specific constraints."
+  "Create an nnir group.
+Prompt for search query and determine groups to search as follows:
+In *Server* buffer search all groups belonging to current server;
+In *Group* buffer search marked groups, or the current group,
+or all the groups under the current topic;
+In *Summary* buffer search the group current buffer belonging to.
+
+The IMAP search syntax supports shortcut and more date format:
+\"t\" equals \"TO\".
+\"f\" equals \"FROM\".
+\"s\" equals \"SINCE\".
+\"c\" equals \"CC\".
+\"20180905\" or \"180905\" equals \"5-Sep-2018\".
+\"2018-09-05\" or \"18-09-05\" equals \"5-Sep-2018\".
+\"1y1m1w1d\" equals the date 1 year 1 month 1 week 1 day ago."
   (interactive)
-  (let* ((group-spec (if (gnus-server-server-name)
-                         (list (list (gnus-server-server-name)))
-                       (nnir-categorize
-                        (or gnus-group-marked
-                            (if (gnus-group-group-name)
-                                (list (gnus-group-group-name))
-                              (cdr (assoc (gnus-group-topic-name) gnus-topic-alist))))
-                        gnus-group-server)))
+  (let* ((group-spec (dianyou-create-group-spec))
          (query-spec (apply
                       'append
                       (list (cons 'query
                                   (dianyou-read-query)))
                       (mapcar #'dianyou-read-params group-spec))))
+    (if dianyou-debug (message "group-spec=%s" group-spec))
     (gnus-group-read-ephemeral-group
      (concat "nnir-" (message-unique-id))
      (list 'nnir "nnir")

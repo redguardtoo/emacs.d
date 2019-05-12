@@ -109,7 +109,7 @@
        ("w" gnus-summary-wide-reply)
        ("#" gnus-topic-mark-topic)
        ("A" gnus-summary-show-raw-article)
-       ("G" gnus-summary-make-nnir-group)
+       ("G" dianyou-group-make-nnir-group)
        ("q" nil))
      ;; y is not used by default
      (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
