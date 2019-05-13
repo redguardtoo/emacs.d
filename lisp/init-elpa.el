@@ -331,6 +331,14 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'rust-mode)
 (require-package 'benchmark-init)
 
+;; {{ Fixed expiring GNU ELPA keys
+;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
+;; update key or else users can't install packages from GNU ELPA.
+;; @see https://www.reddit.com/r/emacs/comments/bn6k1y/updating_gnu_elpa_keys/
+;; BTW, this setup uses MELPA only. So GNU ELPA GPG key is not used.
+(require-package 'gnu-elpa-keyring-update)
+;; }}
+
 (when *emacs26*
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
   (require-package 'org-re-reveal))
