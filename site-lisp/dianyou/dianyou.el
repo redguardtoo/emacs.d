@@ -105,8 +105,16 @@
     "FROM")
    ((string= word "t")
     "TO")
+   ((string= word "e")
+    "TEXT")
+   ((string= word "u")
+    "SUBJECT")
+   ((string= word "o")
+    "OR")
    ((string= word "s")
     "SINCE")
+   ((string= word "b")
+    "BEFORE")
    ((string= word "c")
     "CC")
    ;; 2018-09-03 or 18-09-03
@@ -134,8 +142,10 @@
   "Read mail searching query."
   (interactive)
   (let* ((q (read-string "Query: " nil 'nnir-search-history))
-         (words (split-string q " ")))
-    (string-join (mapcar 'dianyou-translate words) " ")))
+         (words (split-string q " "))
+         (query (string-join (mapcar 'dianyou-translate words) " ")))
+    (if dianyou-debug (message "query=%s" query))
+    query))
 
 (defun dianyou-create-group-spec ()
   "Create group spec for searching."
@@ -165,12 +175,17 @@ In *Summary* buffer search the group current buffer belonging to.
 
 The IMAP search syntax supports shortcut and more date format:
 \"t\" equals \"TO\".
+\"b\" equals \"BEFORE\".
+\"e\" equals \"TEXT\".
+\"u\" equals \"SUBJECT\".
+\"o\" equals \"OR\".
+\"c\" equals \"CC\".
 \"f\" equals \"FROM\".
 \"s\" equals \"SINCE\".
-\"c\" equals \"CC\".
 \"20180905\" or \"180905\" equals \"5-Sep-2018\".
 \"2018-09-05\" or \"18-09-05\" equals \"5-Sep-2018\".
-\"1y1m1w1d\" equals the date 1 year 1 month 1 week 1 day ago."
+\"1y1m1w1d\" equals the date 1 year 1 month 1 week 1 day ago.
+See https://tools.ietf.org/html/rfc3501#section-6.4.4 for IMAP SEARCH spec."
   (interactive)
   (let* ((group-spec (dianyou-create-group-spec))
          (query-spec (apply

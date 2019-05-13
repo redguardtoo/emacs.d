@@ -533,7 +533,7 @@ Other directories don't matter.
 ** Run the unit test before git commit
 On macOS/Linux/Cygwin, run =make githooks= to install hooks into =~/.emacs.d/.git/hooks=.
 
-Then Unit test is run automatically before =git commit=.
+Then unit test is run automatically before =git commit=.
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
