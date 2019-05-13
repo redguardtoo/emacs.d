@@ -74,12 +74,20 @@
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
+  (require 'init-elpa)
+
+  ;; ;; {{
+  ;; (require 'benchmark-init-modes)
+  ;; (require 'benchmark-init)
+  ;; (benchmark-init/activate)
+  ;; ;; `benchmark-init/show-durations-tree' to show benchmark result
+  ;; ;; }}
+
+  (require 'init-autoload)
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
-  (require 'init-autoload)
   (require 'init-modeline)
   (require 'init-utils)
-  (require 'init-elpa)
   (require 'init-exec-path) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require 'init-spelling)

@@ -155,7 +155,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
          (pkg-desc (nth 0 original-args))
          (pkg-dir (nth 1 original-args))
          (path (package-generate-autoload-path pkg-desc pkg-dir)))
-    (message "pkg-desc=%s pkg-dir=%s path=%s" pkg-desc pkg-dir path)
+    ;; (message "pkg-desc=%s pkg-dir=%s path=%s" pkg-desc pkg-dir path)
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
 
@@ -329,6 +329,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
+(require-package 'benchmark-init)
 
 (when *emacs26*
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
