@@ -1,5 +1,6 @@
 (1
  (undo-tree . [(20170706 246) nil "Treat undo history as a tree" tar])
  (let-alist . [(1 0 5) nil "Easily let-bind values of an assoc-list by their names" single])
+ (gnu-elpa-keyring-update . [(2019 3) nil "Update Emacs's GPG keyring for GNU ELPA " tar])
  (seq . [(2 20) nil "Sequence manipulation functions" tar])
 )
