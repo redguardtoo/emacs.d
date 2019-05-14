@@ -489,7 +489,7 @@ Keep the last num lines if argument num if given."
      (winum-mode 1)))
 ;; }}
 
-(ace-pinyin-global-mode +1)
+;; (ace-pinyin-global-mode +1)
 
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
