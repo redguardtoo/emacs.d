@@ -850,12 +850,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
   (interactive "p")
   (unless (featurep 'evil-nerd-commenter) (require 'evil-nerd-commenter))
   (let* ((paragraph-region (evilnc--get-one-paragraph-region))
-         (html-p (or (save-excursion
-                       (sgml-skip-tag-backward 1)
-                       (my-current-line-html-p paragraph-region))
-                     (save-excursion
-                       (sgml-skip-tag-forward 1)
-                       (my-current-line-html-p paragraph-region)))))
+         (html-p (ignore-errors
+                   (or (save-excursion
+                         (sgml-skip-tag-backward 1)
+                         (my-current-line-html-p paragraph-region))
+                       (save-excursion
+                         (sgml-skip-tag-forward 1)
+                         (my-current-line-html-p paragraph-region))))))
     (if html-p (evilnc-comment-or-uncomment-html-paragraphs num)
       (evilnc-comment-or-uncomment-paragraphs num))))
 
