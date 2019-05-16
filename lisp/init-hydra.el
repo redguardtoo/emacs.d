@@ -131,7 +131,7 @@
        ("R" gnus-article-reply-with-original)
        ("w" gnus-article-wide-reply)
        ("W" gnus-article-wide-reply-with-original)
-       ("o" gnus-mime-save-part)
+       ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
        ("v" w3mext-open-with-mplayer)
        ("d" w3mext-download-rss-stream)
        ("b" w3mext-open-link-or-image-or-url)
