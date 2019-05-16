@@ -30,6 +30,7 @@
 
 ;;; Code:
 (require 'gnus-group)
+(require 'gnus-sum)
 (require 'gnus-util)
 
 (defvar dianyou-debug nil "Print debug information.")
@@ -205,6 +206,70 @@ See https://tools.ietf.org/html/rfc3501#section-6.4.4 for IMAP SEARCH spec."
       (cons 'nnir-specs (list (cons 'nnir-query-spec query-spec)
                               (cons 'nnir-group-spec group-spec)))
       (cons 'nnir-artlist nil)))))
+
+(defun dianyou-test-two-email-address (x y)
+  "Test if email address X equals Y."
+  (let* (x1 y1)
+    ;; Tom W <tom.w@gmail.com> | tom.w@gmail.com (Tom W)
+    (if (string-match "^[^<]*<\\([^ ]*\\)> *$" x)
+        (setq x1 (match-string 1 x))
+      (setq x1 (replace-regexp-in-string " *([^()]*) *" "" (if x x ""))))
+    (if (string-match "^[^<]*<\\([^ ]*\\)> *$" y)
+        (setq y1 (match-string 1 y))
+      (setq y1 (replace-regexp-in-string " *([^ ]*) *" "" (if y y ""))))
+    (string= x1 y1)))
+
+;;;#autoload
+(defun dianyou-summary-extract-mail-address(regexp)
+  "Extract email address from email to/cc/from field in *Summary* buffer.
+REGEXP is pattern to exclude email address.
+For example, 'Tom|gmail' excludes address containing \"Tom\" or \"gmail\".
+Final result is inserted into `kill-ring' and returned."
+  (interactive
+   (let* ((regexp (read-regexp "Regex to exclude mail address (OPTIONAL):")))
+     (list regexp)))
+
+  (let* ((rlt "") (i 0) header cc-to)
+    (dolist (d gnus-newsgroup-data)
+      (setq header (gnus-data-header d))
+      (setq i (+ 1 i))
+      (if (= (mod i 100) 0) (message "%s mails scanned ..." i))
+      (when (vectorp header)
+        (if (setq cc-to (mail-header-extra header))
+            ;; (message "cc-to=%s cc=%s" cc-to (assoc 'Cc cc-to))
+            (setq rlt (concat rlt
+                              (cdr (assoc 'To cc-to))
+                              ", "
+                              (cdr (assoc 'Cc cc-to))
+                              ", ")))
+        (setq rlt (concat rlt (if (string= "" rlt) "" ", ")
+                          (mail-header-from header) ", "))))
+    ;; trim trailing ", "
+    (setq rlt (split-string (replace-regexp-in-string (rx (* (any ", ")) eos)
+                                                      ""
+                                                      rlt) ", *"))
+
+    ;; remove empty strings
+    (setq rlt (delq nil (remove-if (lambda (s) (or (not s) (string= "" s)))
+                                   rlt)))
+    ;; remove actually duplicated mails
+    (setq rlt (delq nil (remove-duplicates rlt
+                                           :test 'dianyou-test-two-email-address
+                                           :from-end t)))
+    ;; exclude mails
+    (when (and regexp (not (string= regexp "")))
+      (setq rlt (delq nil (remove-if `(lambda (s)
+                                        (string-match (concat "\\("
+                                                              (replace-regexp-in-string "|" "\\\\|" ,regexp)
+                                                              "\\)") s))
+                                     rlt))))
+    (cond
+     ((> (length rlt) 0)
+      (kill-new (mapconcat 'identity rlt ", "))
+      (message "%d mail address => kill-ring" (length rlt)))
+     (t
+      (message "NO email address is found.")))
+    rlt))
 
 (provide 'dianyou)
 ;;; dianyou.el ends here

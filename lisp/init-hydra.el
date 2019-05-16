@@ -65,7 +65,7 @@
 [_L_] Local groups        [_\\^_] List servers
 [_c_] Mark all read       [_m_] Compose new mail
 [_G_] Search mails (G G)  [_#_] Mark mail
-[_b_] Switch Gnus buffer
+[_b_] Switch Gnus buffer  [_E_] Extract email address
 "
        ("A" gnus-group-list-active)
        ("L" gnus-group-list-all-groups)
@@ -76,6 +76,7 @@
        ("^" gnus-group-enter-server-mode)
        ("m" gnus-group-new-mail)
        ("#" gnus-topic-mark-topic)
+       ("E" dianyou-summary-extract-mail-address)
        ("q" nil))
      ;; y is not used by default
      (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
