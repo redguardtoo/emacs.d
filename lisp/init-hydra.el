@@ -76,7 +76,7 @@
        ("^" gnus-group-enter-server-mode)
        ("m" gnus-group-new-mail)
        ("#" gnus-topic-mark-topic)
-       ("E" dianyou-summary-extract-mail-address)
+       ("E" dianyou-summary-extract-email-address)
        ("q" nil))
      ;; y is not used by default
      (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))

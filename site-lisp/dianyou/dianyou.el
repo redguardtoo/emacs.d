@@ -220,7 +220,7 @@ See https://tools.ietf.org/html/rfc3501#section-6.4.4 for IMAP SEARCH spec."
     (string= x1 y1)))
 
 ;;;#autoload
-(defun dianyou-summary-extract-mail-address(regexp)
+(defun dianyou-summary-extract-email-address(regexp)
   "Extract email address from email to/cc/from field in *Summary* buffer.
 REGEXP is pattern to exclude email address.
 For example, 'Tom|gmail' excludes address containing \"Tom\" or \"gmail\".
