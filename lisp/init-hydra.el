@@ -152,11 +152,13 @@
 [_a_] Attach file
 [_s_] Send mail (C-c C-c)
 [_b_] Switch Gnus buffer
+[_i_] Insert email address
 "
        ("c" counsel-bbdb-complete-mail)
        ("a" mml-attach-file)
        ("s" message-send-and-exit)
        ("b" my-switch-gnus-buffer)
+       ("i" dianyou-insert-email-address-from-received-mails)
        ("q" nil))))
 
 (defun message-mode-hook-hydra-setup ()
