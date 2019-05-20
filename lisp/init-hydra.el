@@ -240,12 +240,14 @@ _d_ debug-on-error:    %`debug-on-error
 _f_ auto-fill-mode:    %`auto-fill-function
 _t_ truncate-lines:    %`truncate-lines
 _w_ whitespace-mode:   %`whitespace-mode
+_i_ indent-tabs-mode:   %`indent-tabs-mode
 "
   ("a" abbrev-mode nil)
   ("d" toggle-debug-on-error nil)
   ("f" auto-fill-mode nil)
   ("t" toggle-truncate-lines nil)
   ("w" whitespace-mode nil)
+  ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
 (global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
