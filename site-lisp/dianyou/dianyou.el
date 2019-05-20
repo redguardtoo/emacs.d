@@ -33,6 +33,8 @@
 (require 'gnus-group)
 (require 'gnus-sum)
 (require 'gnus-util)
+(require 'nnir)
+(require 'gnus-srvr)
 (require 'cl-lib)
 
 (defvar dianyou-email-address-history nil "Email address history.")
@@ -225,7 +227,7 @@ See https://tools.ietf.org/html/rfc3501#section-6.4.4 for IMAP SEARCH spec."
 
 (defun dianyou-add-address (address list regexp)
   "Add ADDRESS into LIST and return it.
-The emal address should not match REGEXP."
+The email address should not match REGEXP."
   (cond
    ((or (not address)
         ; No empty strings
@@ -240,7 +242,7 @@ The emal address should not match REGEXP."
 (defun dianyou-all-email-address (&optional exclude-regexp quiet)
   "Return all email address extracted from received mails.
 Email address matching EXCLUDE-REGEXP is excluded from final result.
-If QUIET is t, show no progess report when extracting emal address."
+If QUIET is t, show no progress report when extracting email address."
   (let* (str (i 0) header cc-to cands)
     (dolist (d gnus-newsgroup-data)
       (setq header (gnus-data-header d))
