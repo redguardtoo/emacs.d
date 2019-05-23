@@ -238,7 +238,7 @@ The email address should not match REGEXP."
    (t
     (setq list (add-to-list 'list address)))))
 
-;;;#autoload
+;;;###autoload
 (defun dianyou-all-email-address (&optional exclude-regexp quiet)
   "Return all email address extracted from received mails.
 Email address matching EXCLUDE-REGEXP is excluded from final result.
@@ -274,7 +274,7 @@ If QUIET is t, show no progress report when extracting email address."
                                              :from-end t)))
     cands))
 
-;;;#autoload
+;;;###autoload
 (defun dianyou-summary-extract-email-address(regexp)
   "Extract email address from email to/cc/from field in *Summary* buffer.
 REGEXP is pattern to exclude email address.
@@ -299,17 +299,18 @@ Final result is inserted into `kill-ring' and returned."
       (message "NO email address is found.")))
     rlt))
 
+;;;###autoload
 (defun dianyou-get-all-email-addresses ()
   "Get all email addresses in received mails and update history."
   (let* ((all-addresses (dianyou-all-email-address))
          (cands (cond
                  ((and dianyou-email-address-history all-addresses)
-                  (append 'dianyou-email-address-history
+                  (append dianyou-email-address-history
                           all-addresses))
                  (dianyou-email-address-history
                   dianyou-email-address-history)
                  (t
-                  all-addresses))))
+                  (setq dianyou-email-address-history all-addresses)))))
     (cond
      ((and cands (> (length cands) 0))
       (setq dianyou-email-address-history
@@ -319,11 +320,11 @@ Final result is inserted into `kill-ring' and returned."
      (t
       nil))))
 
-;;;#autoload
+;;;###autoload
 (defun dianyou-insert-email-address-from-received-mails()
   "Insert email address from received mails."
   (interactive)
-  (ivy-read "Insert email address"
+  (ivy-read "Insert email address: "
             (dianyou-get-all-email-addresses)
             :action (lambda (e) (insert e))))
 
