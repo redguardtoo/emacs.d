@@ -314,47 +314,23 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
 (setq ivy-use-selectable-prompt t)
 
-;; {{ input ":" at first to start pinyin search in any ivy-related packages
-(defvar ivy-pinyin-search-trigger-key ":")
-;; @see https://emacs-china.org/t/topic/2432/3
-(defun my-pinyinlib-build-regexp-string (str)
-  (cond
-   ((string= str ".*")
-    ".*")
-   (t
-    (pinyinlib-build-regexp-string str t))))
-
-(defun my-pinyin-regexp-helper (str)
-  (cond
-   ((string= str " ")
-    ".*")
-   ((string= str "")
-    nil)
-   (;; t
-    str)))
-
-(defun pinyin-to-utf8 (str)
-  (when (and (> (length str) 0)
-             (string= (substring str 0 1) ":"))
-    (let* ((collection (split-string (replace-regexp-in-string ivy-pinyin-search-trigger-key
-                                                               ""
-                                                               str) "")))
-      (unless (featurep 'pinyinlib) (require 'pinyinlib))
-      (mapconcat 'my-pinyinlib-build-regexp-string
-                 (delq nil (mapcar 'my-pinyin-regexp-helper
-                                   collection))
-                 ""))))
+;; {{
+(defvar ivy-pinyin-search-trigger-key ":"
+  "If the first charater of input in ivy is `ivy-pinyin-search-trigger-key',
+remaining input is converted into Chinese pinyin regex.")
 
 (defun re-builder-pinyin (str)
-  (or (pinyin-to-utf8 str)
-      (ivy--regex-plus str)))
-
-(setq ivy-re-builders-alist
-      '((t . re-builder-pinyin)))
+  (let* ((len (length str)))
+    (when (and (> (length str) 0)
+               (string= (substring str 0 1) ivy-pinyin-search-trigger-key))
+      (setq str (pinyinlib-build-regexp-string (substring str 1 len) t)))
+    (ivy--regex-plus str)))
 ;; }}
 
 (eval-after-load 'ivy
   '(progn
+     (setq ivy-re-builders-alist
+           '((t . re-builder-pinyin)))
      ;; set actions when running C-x b
      ;; replace "frame" with window to open in new window
      (ivy-set-actions

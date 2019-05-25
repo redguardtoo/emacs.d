@@ -300,7 +300,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'emms)
 (require-package 'package-lint) ; lint package before submit it to MELPA
 (require-package 'iedit)
-;; (require-package 'ace-pinyin) ; advice old avy API, make avy v5.0 broken
 (require-package 'bash-completion)
 (require-package 'websocket) ; for debug debugging of browsers
 (require-package 'jss)

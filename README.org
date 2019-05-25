@@ -349,7 +349,7 @@ You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 ** Hydra/Swiper/Counsel/Ivy
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
-You can input =:my-pinyin-blah-blah= in ivy UI to search by Chinese Pinyin.
+You can input =:pinyin1 pinyin2 !pinyin3 pinyin4= in ivy UI to search by Chinese Pinyin. The key point is to make sure the first character of input is ":".
 ** React and JSX
 I use =rjsx-mode= with Emacs v25+. It's based on =js2-mode= so it has excellent imenu support.
 
