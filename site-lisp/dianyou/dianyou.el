@@ -6,7 +6,7 @@
 ;; Keywords: mail
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/usrname/dianyou
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "24.4") (ivy "0.11.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -30,12 +30,12 @@
 ;; `dianyou-insert-email-address-from-received-mails' to insert email address.
 
 ;;; Code:
-(require 'gnus-group)
+(require 'gnus-topic)
 (require 'gnus-sum)
-(require 'gnus-util)
 (require 'nnir)
 (require 'gnus-srvr)
 (require 'cl-lib)
+(require 'ivy)
 
 (defvar dianyou-email-address-history nil "Email address history.")
 
@@ -175,12 +175,12 @@
 (defun dianyou-group-make-nnir-group ()
   "Search emails like `gnus-group-make-nnir-group'.
 Prompt for search query and determine groups to search as follows:
-In *Server* buffer search all groups belonging to current server;
-In *Group* buffer search marked groups, or the current group,
+In *Server* buffer, search all groups belonging to current server;
+In *Group* buffer, search marked groups, or the current group,
 or all the groups under the current topic;
-In *Summary* buffer search the group current buffer belonging to.
+In *Summary* buffer, search the group current buffer belonging to.
 
-The IMAP search syntax supports shortcut and more date format:
+IMAP search syntax supports shortcut and more date format:
 \"t\" equals \"TO\".
 \"b\" equals \"BEFORE\".
 \"e\" equals \"TEXT\".
@@ -263,7 +263,7 @@ If QUIET is t, show no progress report when extracting email address."
     (unless str (setq str ""))
 
     ;; filter some address
-    (dolist (r (split-string (replace-regexp-in-string (rx (* (any ", ")) eos)
+    (dolist (r (split-string (replace-regexp-in-string "[ ,]*\\'"
                                                        ""
                                                        str) ", *"))
       (setq cands (dianyou-add-address r cands exclude-regexp)))
