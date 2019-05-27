@@ -492,7 +492,7 @@ Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumash
 
 If your *personal* dictionary =~/.eim/personal.pyim= exists, it will be used.
 
-You can =M-x my-pyim-export-dictionary= to export your personal words into =personal.pyim=. Check =init-chinese-pyim.el= for more information.
+You can =M-x my-pyim-export-dictionary= to export your personal words into =personal.pyim=. Check =init-chinese.el= for more information.
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash

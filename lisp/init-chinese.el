@@ -6,10 +6,9 @@
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (unless (featurep 'pyim)
-    (require 'pyim))
+  (unless (featurep 'pyim) (require 'pyim))
 
-  ;; some guy don't use evil-mode at all
+  ;; some guys don't use evil-mode at all
   (cond
    ((and (boundp 'evil-mode) evil-mode)
     ;; evil-mode
@@ -41,8 +40,7 @@
 ;; }}
 
 ;; {{ pyim
-(defvar my-pyim-directory
-  "~/.eim"
+(defvar my-pyim-directory "~/.eim"
   "There directory of peronsal dictionaries for pyim.")
 
 (add-auto-mode 'text-mode "\\.pyim\\'")
@@ -81,9 +79,9 @@
      (setq pyim-isearch-enable-pinyin-search t)
      (setq default-input-method "pyim")
      ;; use personal dictionary
-     (if (and my-pyim-directory
-              (file-exists-p (my-pyim-personal-dict)))
-         (add-to-list 'pyim-dicts (list :name "personal" :file (my-pyim-personal-dict))))
+     (when (and my-pyim-directory
+                (file-exists-p (my-pyim-personal-dict)))
+       (add-to-list 'pyim-dicts (list :name "personal" :file (my-pyim-personal-dict))))
 
      ;; You can also set up the great dictionary (80M) the same way as peronsal dictionary
      ;; great dictionary can be downloaded this way:
