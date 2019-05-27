@@ -6,7 +6,7 @@
 ;; Keywords: mail
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/usrname/dianyou
-;; Package-Requires: ((emacs "24.4") (ivy "0.11.0"))
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -35,7 +35,6 @@
 (require 'nnir)
 (require 'gnus-srvr)
 (require 'cl-lib)
-(require 'ivy)
 
 (defvar dianyou-email-address-history nil "Email address history.")
 
@@ -150,7 +149,7 @@
   (interactive)
   (let* ((q (read-string "Query: " nil 'nnir-search-history))
          (words (split-string q " "))
-         (query (string-join (mapcar 'dianyou-translate words) " ")))
+         (query (mapconcat 'identity (mapcar 'dianyou-translate words) " ")))
     (if dianyou-debug (message "query=%s" query))
     query))
 
@@ -324,9 +323,9 @@ Final result is inserted into `kill-ring' and returned."
 (defun dianyou-insert-email-address-from-received-mails()
   "Insert email address from received mails."
   (interactive)
-  (ivy-read "Insert email address: "
-            (dianyou-get-all-email-addresses)
-            :action (lambda (e) (insert e))))
+  (let* ((email-address (completing-read "Insert email address: "
+                                         (dianyou-get-all-email-addresses))))
+    (if email-address (insert email-address))))
 
 (provide 'dianyou)
 ;;; dianyou.el ends here
