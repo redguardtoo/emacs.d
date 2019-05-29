@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.8.3
+;; Version: 1.8.4
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -58,8 +58,11 @@
 ;;   "(keyword1 and (not (or keyword2 keyword3)))"
 ;;
 ;; - `counsel-etags-extra-tags-files' contains extra tags files to parse.
-;;   Set it like '(setq counsel-etags-extra-tags-files '("./TAGS" "/usr/include/TAGS" "$PROJ1/include/TAGS"))'
-;;   Files in `counsel-etags-extra-tags-files' should contain only symbol with absolute path.
+;;   Set it like,
+;;     (setq counsel-etags-extra-tags-files
+;;           '("./TAGS" "/usr/include/TAGS" "$PROJ1/include/TAGS"))
+;;
+;;   Files in `counsel-etags-extra-tags-files' have only symbol with absolute path.
 ;;
 ;; - You can setup `counsel-etags-ignore-directories' and `counsel-etags-ignore-filenames',
 ;;   (eval-after-load 'counsel-etags
@@ -75,6 +78,16 @@
 ;;  in root directory. The content of .dir-locals.el" is as below,
 ;;   ((nil . ((counsel-etags-update-tags-backend . (lambda (src-dir) (shell-command "rusty-tags emacs")))
 ;;            (counsel-etags-tags-file-name . "rusty-tags.emacs"))))
+;;
+;;  - User could use `counsel-etags-convert-grep-keyword' to customize grep keyword.
+;;    Below setup enable `counsel-etags-grep' to search Chinese using pinyinlib,
+;;
+;;    (unless (featurep 'pinyinlib) (require 'pinyinlib))
+;;    (setq counsel-etags-convert-grep-keyword
+;;      (lambda (keyword)
+;;        (if (and keyword (> (length keyword) 0))
+;;            (pinyinlib-build-regexp-string keyword t)
+;;          keyword)))
 ;;
 ;; See https://github.com/redguardtoo/counsel-etags/ for more tips.
 
@@ -93,7 +106,6 @@
   "Plugins to match filter out candidates when using `counsel-etags-find-tag-at-point'."
   :group 'counsel-etags
   :type '(repeat 'string))
-
 
 (defcustom counsel-etags-extra-tags-files nil
   "List of extra tags files to load.  They are not updated automatically.
@@ -119,6 +131,22 @@ A CLI to create tags file:
   "If t, tags will not be updated automatically."
   :group 'counsel-etags
   :type 'boolean)
+
+(defcustom counsel-etags-convert-grep-keyword 'identity
+  "Convert keyword to grep to new regex to feed into grep program.
+
+Here is code to enable grepping Chinese using pinyinlib,
+
+  (unless (featurep 'pinyinlib) (require 'pinyinlib))
+  (setq counsel-etags-convert-grep-keyword
+         (lambda (keyword)
+           (if (and keyword (> (length keyword) 0))
+               (pinyinlib-build-regexp-string keyword t)
+             keyword)))
+
+"
+  :group 'counsel-etags
+  :type 'function)
 
 (defcustom counsel-etags-can-skip-project-root nil
   "If t, scanning project root is optional."
@@ -405,7 +433,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.8.3"))
+  (message "1.8.4"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1144,13 +1172,14 @@ the tags updating might not happen."
                                   (error "Unexpected parenthesis: %S" s)))
                             str t t))
 
-(defun counsel-etags-read-keyword (hint symbol-at-point)
+(defun counsel-etags-read-keyword (hint &optional symbol-at-point)
   "Read keyword with HINT.
 If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
-                (setq counsel-git-grep-history (add-to-list 'counsel-git-grep-history
-                                                            (counsel-etags-selected-str)))
+                (setq counsel-git-grep-history
+                      (add-to-list 'counsel-git-grep-history
+                                   (counsel-etags-selected-str)))
                 (counsel-etags-selected-str))
                (t
                 (read-from-minibuffer hint
@@ -1209,7 +1238,7 @@ Extended regex is used, like (pattern1|pattern2)."
     (format "%s --hidden %s \"%s\" --"
             (concat (executable-find "rg")
                     ;; (if counsel-etags-debug " --debug")
-                    " -n -M 512 --no-heading --color never -s --path-separator /")
+                    " -n -M 1024 --no-heading --color never -s --path-separator /")
             (counsel-etags-exclude-opts use-cache)
             keyword))
    (t
@@ -1228,6 +1257,10 @@ Extended regex is used, like (pattern1|pattern2)."
     (if (string= "" rlt) (setq rlt nil))
     rlt))
 
+(defun counsel-etags-dirname (directory)
+  "Get DIRECTORY name without parent."
+  (file-name-as-directory (file-name-base (directory-file-name directory))))
+
 ;;;###autoload
 (defun counsel-etags-grep (&optional default-keyword hint root)
   "Grep at project root directory or current directory.
@@ -1237,15 +1270,18 @@ If DEFAULT-KEYWORD is not nil, it's used as grep keyword.
 If HINT is not nil, it's used as grep hint.
 ROOT is root directory to grep."
   (interactive)
-  (let* ((keyword (if default-keyword default-keyword
-                    (counsel-etags-read-keyword "Grep pattern: " nil)))
-         (default-directory (file-truename (or root (counsel-etags-locate-project))))
+  (let* ((text (if default-keyword default-keyword
+                  (counsel-etags-read-keyword "Grep pattern: ")))
+         (keyword (funcall counsel-etags-convert-grep-keyword text))
+         (default-directory (file-truename (or root
+                                               (counsel-etags-locate-project))))
          (time (current-time))
          (cmd (counsel-etags-grep-cli keyword nil))
          (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))
-         (dir-summary (file-name-as-directory (file-name-base (directory-file-name default-directory)))))
+         (dir-summary (counsel-etags-dirname default-directory)))
 
-    (if counsel-etags-debug (message "counsel-etags-grep called => %s %s %s %s" keyword default-directory cmd cands))
+    (if counsel-etags-debug (message "counsel-etags-grep called => %s %s %s %s"
+                                     keyword default-directory cmd cands))
     (counsel-etags-put :ignore-dirs
                        counsel-etags-ignore-directories
                        counsel-etags-opts-cache)
@@ -1256,7 +1292,7 @@ ROOT is root directory to grep."
 
     ;; Slow down grep 10 times
     (ivy-read (concat hint (format "Grep \"%s\" at %s (%s): "
-                                   keyword
+                                   text
                                    dir-summary
                                    (counsel-etags--time-cost time)))
               cands

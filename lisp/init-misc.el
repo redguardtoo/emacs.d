@@ -365,7 +365,18 @@ Keep the last num lines if argument num if given."
     (counsel-etags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
    ((= n 4)
     ;; grep js files which is imported
-    (counsel-etags-grep (format "from .*%s('|\\\.js');?" (file-name-base (file-name-nondirectory buffer-file-name)))))))
+    (counsel-etags-grep (format "from .*%s('|\\\.js');?"
+                                (file-name-base (file-name-nondirectory buffer-file-name)))))
+   ((= n 5)
+    ;; grep Chinese using pinyinlib.
+    ;; In ivy filter, trigger key must be pressed before filter chinese
+    (unless (featurep 'pinyinlib) (require 'pinyinlib))
+    (let* ((counsel-etags-convert-grep-keyword
+            (lambda (keyword)
+              (if (and keyword (> (length keyword) 0))
+                  (pinyinlib-build-regexp-string keyword t)
+                keyword))))
+      (counsel-etags-grep)))))
 
 (defun toggle-full-window()
   "Toggle the full view of selected window"
