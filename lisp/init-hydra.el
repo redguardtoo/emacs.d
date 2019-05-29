@@ -408,7 +408,7 @@ _q_ cancel
   ("h" w3mext-hacker-search)
   ("m" lookup-doc-in-man)
 
-  (";" avy-goto-char-2 )
+  (";" ace-pinyin-jump-char-2)
   ("w" avy-goto-word-or-subword-1 )
   ("a" avy-goto-char-timer )
 
