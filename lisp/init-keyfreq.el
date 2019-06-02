@@ -36,6 +36,7 @@
         dired-find-file
         diredp-next-line
         diredp-previous-line
+        electric-pair-delete-pair
         erase-message-buffer
         eval-buffer
         evil-a-WORD
@@ -139,11 +140,15 @@
         isearch-ring-retreat
         ispell-minor-check
         ivy-backward-delete-char
+        ivy-backward-kill-word
         ivy-done
         ivy-next-line
+        ivy-occur
         ivy-occur-next-line
+        ivy-occur-press-and-switch
         ivy-occur-previous-line
         ivy-previous-line
+        ivy-wgrep-change-to-wgrep-mode
         js-mode
         js2-line-break
         keyboard-escape-quit
@@ -190,6 +195,8 @@
         pwd
         quit-window
         right-char
+        rjsx-electric-gt
+        rjsx-electric-lt
         save-buffer
         save-buffers-kill-terminal
         scroll-down-command
@@ -225,6 +232,8 @@
         web-mode-surround
         web-mode-tag-beginning
         web-mode-test
+        wgrep-finish-edit
+        xterm-paste
         yank
         yas-compile-directory
         yas-expand

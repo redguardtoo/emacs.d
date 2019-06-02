@@ -495,7 +495,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "ts" 'evilmr-tag-selected-region ;; recommended
  "cby" 'cb-switch-between-controller-and-view
  "cbu" 'cb-get-url-from-controller
- "ht" 'counsel-etags-find-tag-at-point ; better than find-tag C-]
  "rt" 'counsel-etags-recent-tag
  "ft" 'counsel-etags-find-tag
  "mm" 'counsel-evil-goto-global-marker
@@ -575,7 +574,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "uu" 'winner-undo
  "UU" 'winner-redo
  "to" 'toggle-web-js-offset
- "sl" 'sort-lines
  "fs" 'ffip-save-ivy-last
  "fr" 'ffip-ivy-resume
  "fc" 'cp-ffip-ivy-last
