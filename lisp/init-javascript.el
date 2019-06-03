@@ -285,7 +285,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
  ((not *no-memory*)
   ;; javascript
   (add-auto-mode 'js2-mode
-                 "\\.ts\\'"
                  "\\.js\\(\\.erb\\)?\\'")
   ;; JSX
   (add-auto-mode 'rjsx-mode
@@ -298,8 +297,10 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
  (t
   (add-auto-mode 'js-mode
                  "\\.js\\(\\.erb\\)?\\'"
-                 "\\.ts\\'"
                  "\\.babelrc\\'")))
+
+(add-auto-mode 'typescript-mode
+               "\\.ts$")
 
 ;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
 (eval-after-load 'rjsx-mode
