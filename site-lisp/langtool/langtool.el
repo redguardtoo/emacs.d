@@ -334,6 +334,11 @@ Call just before POST with `application/x-www-form-urlencoded'."
 ;;
 ;; local variables
 ;;
+(defvar langtool-generic-check-predicate nil
+  "Function providing per-mode customization over which regions are checked.
+The \"start\" and \"end\" is passed as parameters of predicate.
+Returns t to continue checking, nil otherwise.")
+(make-variable-buffer-local 'langtool-generic-check-predicate)
 
 (defvar langtool-local-disabled-rules nil)
 (make-variable-buffer-local 'langtool-local-disabled-rules)
@@ -475,13 +480,15 @@ Call just before POST with `application/x-www-form-urlencoded'."
 (defun langtool--create-overlay (version check)
   (cl-destructuring-bind (start . end)
       (langtool--compute-start&end version check)
-    (let ((ov (make-overlay start end)))
-      (overlay-put ov 'langtool-simple-message (nth 4 check))
-      (overlay-put ov 'langtool-message (nth 5 check))
-      (overlay-put ov 'langtool-suggestions (nth 3 check))
-      (overlay-put ov 'langtool-rule-id (nth 6 check))
-      (overlay-put ov 'priority 1)
-      (overlay-put ov 'face 'langtool-errline))))
+    (unless (and langtool-generic-check-predicate
+                 (not (funcall langtool-generic-check-predicate start end)))
+      (let ((ov (make-overlay start end)))
+        (overlay-put ov 'langtool-simple-message (nth 4 check))
+        (overlay-put ov 'langtool-message (nth 5 check))
+        (overlay-put ov 'langtool-suggestions (nth 3 check))
+        (overlay-put ov 'langtool-rule-id (nth 6 check))
+        (overlay-put ov 'priority 1)
+        (overlay-put ov 'face 'langtool-errline)))))
 
 (defun langtool--clear-buffer-overlays ()
   (mapc

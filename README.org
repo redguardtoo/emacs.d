@@ -15,7 +15,7 @@
 - [[#checklist][Checklist]]
 - [[#installation][Installation]]
   - [[#install-in-normal-way][Install in normal way]]
-  - [[#install-stable-version-in-easiest-way-optional][Install stable version in easiest way (OPTIONAL)]]
+  - [[#install-stable-version-optional][Install stable version (OPTIONAL)]]
   - [[#third-party-command-line-program-optional][Third party command line program (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
   - [[#basic-tutorial][Basic tutorial]]
@@ -45,7 +45,7 @@
   - [[#macos-user][macOS user?]]
   - [[#locked-packages][Locked packages]]
   - [[#customize-global-variables][Customize global variables]]
-  - [[#opensave-file-with-counselivy][Open/Save file with Counsel/Ivy]]
+  - [[#opensave-files-with-counselivy][Open/Save files with Counsel/Ivy]]
   - [[#windows][Windows]]
   - [[#yasnippet][Yasnippet]]
   - [[#non-english-users][Non-English users]]
@@ -72,7 +72,7 @@
 - [[#report-bug][Report bug]]
 
 * Checklist
-- Emacs 26.1 is strongly recommended. It is faster and easier to setup
+- Emacs 26.1 is strongly recommended. It is faster and easier to set up
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download full version which works out of box
@@ -82,7 +82,7 @@
 * Installation
 Most users should follow the section "Install in normal way".
 
-You need the section "Install stable version in easiest way" *if and only if*:
+You need the section "Install stable version" *if and only if*,
 - You don't have network access
 - You have never used any command line program
 ** Install in normal way
@@ -101,7 +101,7 @@ By default, packages are installed automatically during Emacs startup.
 Someone reported that package repository [[http://melpa.org]] is not responsive in China.
 
 No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" when firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
-** Install stable version in easiest way (OPTIONAL)
+** Install stable version (OPTIONAL)
 - Remove =~/.emacs=.
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
 - Extract its content into empty directory =~/.emacs.d=
@@ -159,7 +159,7 @@ You can set =force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell
 
 This setup use [[https://github.com/redguardtoo/wucuo][wucuo]] to spell check camel case words. It supports both aspell and hunspell.  Run =M-x wucuo-start= and =M-x flyspell-buffer= to check camel case words. 
 
-Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. It's content is like:
+Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. Its content is like:
 #+begin_src conf
 personal_ws-1.1 en 4
 ABN
@@ -186,7 +186,7 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Please use [[http://www.cmake.org/Wiki/CMake_FAQ][out-of-source build tree]] when using CMake
 **** [[http://clang.llvm.org][Clang]]
 - Required by =cpputils-cmake=, =company-clang= from [[https://github.com/company-mode/company-mode][company-mode]]
-- If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You don't need read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
+- If you use =cpputils-cmake= and =cmake=, =cpputils-cmake= will do all the setup for you. You need not read next item! But please spend *a few minutes to learn the basics of cmake*! There is a one minute step-by-step-guide in [[https://github.com/redguardtoo/cpputils-cmake][README of cpputils-cmake]] to teach you how to use cmake.
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into ~/.emacs.d/init.el
 **** Pandoc
 - Required by =markdown-preview= from =markdown-mode=
@@ -220,6 +220,10 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
 - Tweak environment variable PATH so Emacs find ripgrep
+**** LanguageTool
+It's Grammar, Style and Spell Checker
+- Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
+- Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
@@ -232,7 +236,7 @@ At minimum you need know how Emacs interacts with other command line programs,
 *** Step 2, read official tutorial
 Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
 
-At minimum you need learn:
+At minimum, you need learn:
 - How to move cursor
 - =C-h v= to describe variable
 - =C-h f= to describe function
@@ -255,7 +259,7 @@ I *avoid overriding the original setup* of third party command line program.
 ** Quick start
 On Windows, you need install Cygwin which provides command line programs to Emacs. Cygwin could be installed on any hard drive but it's highly recommended don't change it relative path to the root driver.
 
-Install Ctags (Universal Ctags is better. Exuberant Ctags is fine). On Windows you could install Ctags through Cygwin.
+Install Ctags (Universal Ctags is better. Exuberant Ctags is fine). On Windows, you could install Ctags through Cygwin.
 
 Run =M-x counsel-etags-find-ctags= from =counsel-etags= to navigate code. It uses tags files created by ctags. Tags file will be automatically created/update when you start using `counsel-etags`.
 
@@ -267,7 +271,7 @@ Code auto-completion works out of box by using tags file created by Ctags. You n
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Key bindings
-You don't need memorize any key binding. Try =M-x my-command= and key binding hint is displayed.
+Don't memorize any key binding. Try =M-x my-command= and key binding hint is displayed.
 
 Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=, a few key in =~/.emacs.d/lisp/init-hydra.el= which uses [[https://github.com/abo-abo/hydra][Hydra]].
 
@@ -336,14 +340,14 @@ You need install the terminal supporting true color. See [[https://gist.github.c
 
 Only Emacs 26 support true color.
 
-Follow [[https://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Emacs manual]] to setup and start Emacs.
+Follow [[https://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Emacs manual]] to set up and start Emacs.
 
 ** Grep/Replace text in project
 Many third party plugins bundled in this setup have already provided enough features. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
 
-A generic grep program =counsel-etags-grep= is also provided . Since =counsel-etags-grep= is based on =counsel/ivy=, it also supports a magic called "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
+A generic grep program =counsel-etags-grep= is also provided. Since =counsel-etags-grep= is based on =counsel/ivy=, it also supports a magic called "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
 
-Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing ",qq", press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
+Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing =,qq=, press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
 
 You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 ** Hydra/Swiper/Counsel/Ivy
@@ -401,11 +405,11 @@ Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
 Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept "M-x"]].
 ** Org-mode
-Press =M-x org-version=, then read corresponding online manual to setup.
+Press =M-x org-version=, then read corresponding online manual to set up.
 
 For example, =org-capture= requires [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 
-Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by the embedded =emacs-w3m= is used. `C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be "/usr/bin/firefox
+Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by the embedded =emacs-w3m= is used. `C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
 ** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 
@@ -425,19 +429,19 @@ Here are the steps to change their values:
 - You will find =~/.emacs.d/lisp/init-company.el= and modify =company-clang-insert-argument=
 
 BTW, please *read my comments* above the code at first.
-** Open/Save file with Counsel/Ivy
+** Open/Save files with Counsel/Ivy
 Keep pressing =C-M-j= to ignore candidates and open/save files using current input.
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native windows version is fine if it knows how to find the third party command line programs which could be install through Cygwin. Please add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native Windows version is fine if it knows how to find the third party command line programs which could be installed through Cygwin. Please add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
 
 By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
-- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you need always to run it when new snippets is added. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
+- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
 - You can add your snippets into =~/.emacs.d/snippets/=.
-- Run =grep -rns  --exclude='.yas*' 'key:' *= in =~/.emacs.d/snippets= to see my own snippets
+- Run =grep -rns --exclude='.yas*' 'key:' *= in =~/.emacs.d/snippets= to see my own snippets
 ** Non-English users
 Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
 ** Behind corporate firewall
