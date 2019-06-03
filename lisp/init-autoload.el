@@ -1,4 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
+(autoload 'langtool-check "langtool" "" t)
+(autoload 'langtool-check-buffer "langtool" "" t)
 (autoload 'dianyou-group-make-nnir-group "dianyou" "" t)
 (autoload 'dianyou-summary-extract-email-address "dianyou" "" t)
 (autoload 'dianyou-insert-email-address-from-received-mails "dianyou" "" t)
