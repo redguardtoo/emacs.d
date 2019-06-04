@@ -10,8 +10,6 @@
 ;; kill-ring and clipboard are same? No, it's annoying!
 (setq save-interprogram-paste-before-kill nil)
 
-;; you need install xsel under Linux
-;; xclip has some problem when copying under Linux
 (defun copy-yank-str (msg &optional clipboard-only)
   (unless clipboard-only (kill-new msg))
   (my-pclip msg)

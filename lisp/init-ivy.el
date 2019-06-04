@@ -266,8 +266,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
                                 (setq kill-ring (cl-delete-if
                                                  `(lambda (e) (string= ,trimmed (string-trim e)))
                                                  kill-ring))
-                                (kill-new plain-str)))
-                            n))
+                                (kill-new plain-str)))))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
   (unless (featurep 'pinyinlib) (require 'pinyinlib))

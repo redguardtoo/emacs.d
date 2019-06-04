@@ -635,8 +635,7 @@ If step is -1, go backward."
 
 (defun diff-region-compare-with-b ()
   "Compare current region with region selected by `diff-region-tag-selected-as-a'.
-If no region is selected. You will be asked to use `kill-ring' or clipboard instead.
-`simpleclip' need be installed to read clipboard."
+If no region is selected. You will be asked to use `kill-ring' or clipboard instead."
   (interactive)
   (let* (rlt-buf
          diff-output

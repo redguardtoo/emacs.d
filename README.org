@@ -179,7 +179,7 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Install =node.js= through OS package manager, then =npm install -g jshint=
 - Required by js-mode
 - I use js2-mode which does NOT need jshint
-**** xsel
+**** xsel or xclip
 - Required by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
 **** [[http://www.cmake.org][CMake]]
 - Required by =cpputils-cmake=
