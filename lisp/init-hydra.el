@@ -149,7 +149,7 @@
      (defhydra hydra-message (:color blue)
   "
 [_c_] Complete mail address [_H_] convert to html mail
-[_a_] Attach file
+[_a_] Attach file           [_p_] Paste image from clipboard
 [_s_] Send mail (C-c C-c)
 [_b_] Switch Gnus buffer
 [_i_] Insert email address
@@ -160,6 +160,7 @@
        ("b" dianyou-switch-gnus-buffer)
        ("i" dianyou-insert-email-address-from-received-mails)
        ("H" org-mime-htmlize)
+       ("p" dianyou-paste-image-from-clipboard)
        ("q" nil))))
 
 (defun message-mode-hook-hydra-setup ()

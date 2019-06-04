@@ -28,6 +28,8 @@
 
 ;; `dianyou-group-make-nnir-group' to search mails.
 ;; `dianyou-insert-email-address-from-received-mails' to insert email address.
+;; `dianyou-switch-gnus-buffer' to switch between gnus buffers
+;; `dianyou-paste-image-from-clipboard' to paste image from clipboard
 
 ;;; Code:
 (require 'gnus-topic)
@@ -346,6 +348,25 @@ Final result is inserted into `kill-ring' and returned."
       (switch-to-buffer buf))
      (t
       (message "No other Gnus buffer.")))))
+
+;;;###autoload
+(defun dianyou-paste-image-from-clipboard ()
+  "Paste image from clipboard.  CLI program xclip is required."
+  (interactive)
+  (let* ((temp-name (format "dianyou-%s.png" (format-time-string "%Y-%m-%dT%T")))
+         (file-path (expand-file-name temp-name temporary-file-directory))
+         (disposition (completing-read "Dispostion (default attachment): "
+                                       '("attachment" "inline"))))
+    (cond
+     ((executable-find "xclip")
+      ;; Execute "xclip -selection clipboard  -t image/png -o > test.png"
+      (shell-command (format "xclip -selection clipboard -t image/png -o > %s" file-path))
+      (when (file-exists-p file-path)
+        (insert (format "<#part type=\"image/png\" filename=\"%s\" disposition=%s><#/part>"
+                        file-path
+                        (if (string= disposition "") "attachment" disposition)))))
+     (t
+      (message "CLI program xclip should be installed at first.")))))
 
 (provide 'dianyou)
 ;;; dianyou.el ends here
