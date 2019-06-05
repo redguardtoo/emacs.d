@@ -592,6 +592,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "fb" 'flyspell-buffer
  "fe" 'flyspell-goto-next-error
  "fa" 'flyspell-auto-correct-word
+ "lb" 'langtool-check-buffer
+ "ll" 'langtool-goto-next-error
  "pe" 'flymake-goto-prev-error
  "ne" 'flymake-goto-next-error
  "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
