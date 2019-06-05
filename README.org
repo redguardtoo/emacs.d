@@ -170,7 +170,7 @@ ACT
 
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 **** tidy
-- Required by =web-mode= for syntax check and =tidy.el= html formatting
+- Required by =web-mode= for syntax check. It's also required by =tidy.el= for html formatting
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
@@ -338,7 +338,7 @@ True color requires a little setup.
 
 You need install the terminal supporting true color. See [[https://gist.github.com/XVilka/8346728][this list]]. I recommend [[https://mintty.github.io/][Mintty]] on Cygwin, [[https://gnometerminator.blogspot.com/p/introduction.html][Terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS.
 
-Only Emacs 26 support true color.
+Only Emacs 26 supports true color.
 
 Follow [[https://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Emacs manual]] to set up and start Emacs.
 
