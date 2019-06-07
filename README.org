@@ -29,6 +29,7 @@
   - [[#default-terminal-shell][Default terminal shell]]
   - [[#override-default-setup][Override default setup]]
   - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
+  - [[#use-m-key-for-evil-matchit][Use "m" key for "evil-matchit"]]
   - [[#color-theme][Color theme]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
@@ -312,6 +313,18 @@ To enable code auto-completion, =M-x counsel-etags-scan-code= at least once.
 Optionally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
 
 No further setup is required.
+** Use "m" key for "evil-matchit"
+The default keybinding of =evil-matchit= is =%=. Its evil text object name is also =%=.
+
+You can use =m= instead of =%= as new keybinding and the text object name from =evil-matchit=.
+
+It's just one liner in =~/.custom.el=,
+#+begin_src javascript
+;; evil-matchit 2.3.0 is required
+(setq my-use-m-for-matchit t)
+#+end_src
+
+Use =,m= for =evil-set-marker= whose original keybinding is =m=.
 ** Color theme
 *** Preview color theme
 Check [[https://emacsthemes.com/]].

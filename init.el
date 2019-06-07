@@ -152,6 +152,12 @@
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
   (load (expand-file-name "~/.custom.el") t nil)
 
+  ;; {{ `evil-matchit' could use setup in".custom.el"
+  (when my-use-m-for-matchit
+    (setq evilmi-shortcut "m"))
+  (global-evil-matchit-mode 1)
+  ;; }}
+
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
   ;; See `custom-file' for details.
   (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t))
