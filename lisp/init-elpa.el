@@ -31,7 +31,6 @@
     load-relative
     loc-changes
     test-simple
-    realgud
     ;; }}
     counsel-css
     iedit
@@ -335,7 +334,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
 (require-package 'benchmark-init)
-(require-package 'realgud)
 (require-package 'langtool) ; check grammer
 (require-package 'typescript-mode)
 
