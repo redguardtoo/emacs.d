@@ -483,7 +483,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "ti" 'fastdef-insert
  "th" 'fastdef-insert-from-history
  "ci" 'evilnc-comment-or-uncomment-lines
- "cl" 'evilnc-comment-or-uncomment-to-the-line
+ "cl" 'evilnc-quick-comment-or-uncomment-to-the-line
  "cc" 'evilnc-copy-and-comment-lines
  "cp" 'my-evilnc-comment-or-uncomment-paragraphs
  "ct" 'evilnc-comment-or-uncomment-html-tag ; evil-nerd-commenter v3.3.0 required
