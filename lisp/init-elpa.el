@@ -293,7 +293,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'neotree)
 (require-package 'hydra)
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
-(require-package 'pyim)
+(require-package 'pyim-basedict) ; it's default pyim dictionary
 (require-package 'web-mode)
 (require-package 'dumb-jump)
 (require-package 'emms)

@@ -1,12 +1,15 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;; use memory efficient pyim engine
+(setq pyim-mapping-file-engine-p t)
+
 ;; {{ make IME compatible with evil-mode
 (defun evil-toggle-input-method ()
   "When input method is on, goto `evil-insert-state'."
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (unless (featurep 'pyim) (require 'pyim))
+  (unless (featurep 'pyim) (local-require 'pyim))
 
   ;; some guys don't use evil-mode at all
   (cond
@@ -41,7 +44,8 @@
 
 ;; {{ pyim
 (defvar my-pyim-directory "~/.eim"
-  "There directory of peronsal dictionaries for pyim.")
+  "The directory containing pyim dictionaries.
+Bigger (>2M) dictionaries in this directory will replace basedict.")
 
 (add-auto-mode 'text-mode "\\.pyim\\'")
 
@@ -71,17 +75,26 @@
 
 (eval-after-load 'pyim
   '(progn
-     ;; I'm OK with a smaller dictionary
-     (pyim-basedict-enable)
      ;; use western punctuation (ban jiao fu hao)
      (setq pyim-punctuation-dict nil)
      ;; always input English when isearch
      (setq pyim-isearch-enable-pinyin-search t)
      (setq default-input-method "pyim")
-     ;; use personal dictionary
-     (when (and my-pyim-directory
-                (file-exists-p (my-pyim-personal-dict)))
-       (add-to-list 'pyim-dicts (list :name "personal" :file (my-pyim-personal-dict))))
+
+     ;; I'm OK with a smaller dictionary
+     (let* ((files (directory-files-and-attributes my-pyim-directory t "\.pyim$") )
+            bigdict-p)
+       (cond
+        ((> (length files) 0)
+         (setq pyim-dicts
+               (mapcar (lambda (f)
+                         (when (> (file-attribute-size (cdr f)) (* 2 1024 1024))
+                           (setq bigdict-p t))
+                         (list :name (file-name-base (car f))
+                               :file (car f)))
+                       files)))
+        ((not bigdict-p)
+         (pyim-basedict-enable))))
 
      ;; You can also set up the great dictionary (80M) the same way as peronsal dictionary
      ;; great dictionary can be downloaded this way:
