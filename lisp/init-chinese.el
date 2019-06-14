@@ -44,8 +44,7 @@
 
 ;; {{ pyim
 (defvar my-pyim-directory "~/.eim"
-  "The directory containing pyim dictionaries.
-Bigger (>2M) dictionaries in this directory will replace basedict.")
+  "The directory containing pyim dictionaries.")
 
 (add-auto-mode 'text-mode "\\.pyim\\'")
 
@@ -84,17 +83,20 @@ Bigger (>2M) dictionaries in this directory will replace basedict.")
      ;; I'm OK with a smaller dictionary
      (let* ((files (directory-files-and-attributes my-pyim-directory t "\.pyim$") )
             bigdict-p)
-       (cond
-        ((> (length files) 0)
+        (when (> (length files) 0)
          (setq pyim-dicts
                (mapcar (lambda (f)
-                         (when (> (file-attribute-size (cdr f)) (* 2 1024 1024))
+                         (when (> (file-attribute-size (cdr f)) 1 ;; (* 2 1024 1024)
+                                  )
                            (setq bigdict-p t))
                          (list :name (file-name-base (car f))
                                :file (car f)))
-                       files)))
-        ((not bigdict-p)
-         (pyim-basedict-enable))))
+                       files))))
+     (pyim-basedict-enable)
+
+     (setq pyim-fuzzy-pinyin-alist
+           '(("en" "eng")
+             ("in" "ing")))
 
      ;; You can also set up the great dictionary (80M) the same way as peronsal dictionary
      ;; great dictionary can be downloaded this way:

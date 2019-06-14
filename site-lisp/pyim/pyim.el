@@ -1105,9 +1105,10 @@ Only useful when use posframe."
 注意：当使用 minibuffer 为选词框时，这个选项才有用处。"
   :group 'pyim)
 
-(defvar pyim-mapping-file-engine-p t)
-(defvar pyim-mapping-file-cache nil)
-(defvar pyim-mapping-file-icode2word nil)
+(defvar pyim-dregcache-engine-p t)
+(defvar pyim-dregcache-dicts-md5 nil)
+(defvar pyim-dregcache-cache nil)
+(defvar pyim-dregcache-icode2word nil)
 (defvar pyim-debug nil)
 (defvar pyim-title "灵通" "Pyim 在 mode-line 中显示的名称.")
 (defvar pyim-extra-dicts nil "与 `pyim-dicts' 类似, 用于和 elpa 格式的词库包集成。.")
@@ -1504,21 +1505,62 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   (and pyim-dcache-prefer-emacs-thread
        (>= emacs-major-version 26)))
 
-(defun pyim-mapping-file-load-dictionary-file (dict-file)
+(defun pyim-dregcache-create-cache-content (raw-content)
+  (let* (rlt)
+    (cond
+     ;; file size is less then 1 M
+     ((< (length raw-content) 10 ;; (* 1 1024 1024)
+         )
+      (setq rlt (list :content raw-content)))
+     (t
+      (let* ((chars "bcdefghjklmnopqrstwxyz")
+             pattern
+             (i 0)
+             (dict-sorted t)
+             (content-segments '())
+             (start 0)
+             end)
+        ;; separate dictionary content into multiple segments
+        (while (and dict-sorted (< i (length chars)))
+          (setq pattern (concat "^" (string (elt chars i))))
+          (setq end (string-match pattern raw-content start))
+          (cond
+           (end
+            (setq content-segments
+                  (add-to-list 'content-segments
+                               (substring-no-properties raw-content start end)
+                               t)))
+           (t
+            (setq dict-sorted nil)))
+          (setq start end)
+          (setq i (1+ i)))
+
+        (cond
+         ;; attach segments
+         (dict-sorted
+          (setq content-segments
+                (add-to-list 'content-segments
+                             (substring-no-properties raw-content start)
+                             t))
+          (setq rlt (list :content content-segments)))
+         (t
+          (setq rlt (list :content raw-content)))))))
+    rlt))
+
+(defun pyim-dregcache-load-dictionary-file (dict-file)
   "READ from DICT-FILE."
   (let* ((raw-content (with-temp-buffer
                         (insert-file-contents file)
                         (buffer-string))))
     (message "dict-file=%s" dict-file)
-    (setq pyim-mapping-file-cache
+    (setq pyim-dregcache-cache
           ;; use string type as key, so have to use `lax-plist-put'
           ;; @see https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#Plist-Access
-          (lax-plist-put pyim-mapping-file-cache
+          (lax-plist-put pyim-dregcache-cache
                      (file-truename dict-file)
-                     (list :content raw-content
-                           :content-size (length raw-content))))))
+                     (pyim-dregcache-create-cache-content raw-content)))))
 
-(defun pyim-mapping-file-update:code2word (dict-files dicts-md5 &optional force)
+(defun pyim-dregcache-update:code2word (dict-files dicts-md5 &optional force)
   "读取并加载词库.
 
 读取 `pyim-dicts' 和 `pyim-extra-dicts' 里面的词库文件，生成对应的
@@ -1526,13 +1568,11 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
 
 如果 FORCE 为真，强制加载。"
   (interactive)
-  ;; TODO on md5
-  (let* ((code2word-md5-file (pyim-dcache-get-path 'pyim-dcache-code2word-md5)))
-    (setq force t) ; debug
-    (when (or force (not (equal dicts-md5 (pyim-dcache-get-value-from-file code2word-md5-file))))
-      ;; no hashtable
-      (dolist (file dict-files)
-        (pyim-mapping-file-load-dictionary-file file)))))
+  (when (or force (not (equal dicts-md5 pyim-dregcache-dicts-md5)))
+    ;; no hashtable i file mapping algorithm
+    (dolist (file dict-files)
+      (pyim-dregcache-load-dictionary-file file))
+    (setq pyim-dregcache-dicts-md5 dicts-md5)))
 
 (defun pyim-dcache-update:code2word-internal (dict-files dicts-md5 &optional force)
   "读取并加载词库.
@@ -1568,6 +1608,14 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
             (pyim-dcache-set-variable 'pyim-dcache-code2word t)
             (pyim-dcache-set-variable 'pyim-dcache-word2code t)))))))
 
+(defun pyim-create-dicts-md5 (dict-files)
+  (let* ((version "v1") ;当需要强制更新 dict 缓存时，更改这个字符串。
+         (dicts-md5 (md5 (prin1-to-string
+                          (mapcar #'(lambda (file)
+                                      (list version file (nth 5 (file-attributes file 'string))))
+                                  dict-files)))))
+    dicts-md5))
+
 (defun pyim-dcache-update:code2word (&optional force)
   "读取并加载词库.
 
@@ -1575,27 +1623,23 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
 词库缓冲文件，然后加载词库缓存。
 
 如果 FORCE 为真，强制加载。"
-  (let* ((version "v1") ;当需要强制更新 dict 缓存时，更改这个字符串。
-         (dict-files (mapcar #'(lambda (x)
+  (let* ((dict-files (mapcar #'(lambda (x)
                                  (unless (plist-get x :disable)
                                    (plist-get x :file)))
                              `(,@pyim-dicts ,@pyim-extra-dicts)))
-         (dicts-md5 (md5 (prin1-to-string
-                          (mapcar #'(lambda (file)
-                                      (list version file (nth 5 (file-attributes file 'string))))
-                                  dict-files)))))
+         (dicts-md5 (pyim-create-dicts-md5 dict-files)))
     (cond
-     (pyim-mapping-file-engine-p
-      (pyim-mapping-file-update:code2word dict-files dicts-md5 force))
+     (pyim-dregcache-engine-p
+      (pyim-dregcache-update:code2word dict-files dicts-md5 force))
      (t
       (pyim-dcache-update:code2word-internal dict-files dicts-md5 force)))))
 
 (defun pyim-dcache-update:ishortcode2word (&optional force)
   "读取 ‘pyim-dcache-icode2word’ 中的词库，创建 *简拼* 缓存，然后加载这个缓存.
-如果 `pyim-mapping-file-engine-p' 为真, 此函数不需要调用.
+如果 `pyim-dregcache-engine-p' 为真, 此函数不需要调用.
 如果 FORCE 为真，强制加载缓存。"
   (interactive)
-  (when (and (not pyim-mapping-file-engine-p)
+  (when (and (not pyim-dregcache-engine-p)
              (or force (not pyim-dcache-update:ishortcode2word)))
     (if (pyim-dcache-use-emacs-thread-p)
         (make-thread
@@ -1651,8 +1695,8 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
           (setq pyim-dcache-update:ishortcode2word t)
           (pyim-dcache-set-variable 'pyim-dcache-ishortcode2word t))))))
 
-(defun pyim-mapping-file-sort-icode2word ()
-  (sort pyim-mapping-file-icode2word
+(defun pyim-dregcache-sort-icode2word ()
+  (sort pyim-dregcache-icode2word
         #'(lambda (a b)
             (let* ((a (cdr a))
                    (b (cdr b)))
@@ -1670,9 +1714,9 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
         (make-thread
          `(lambda ()
             (cond
-             (pyim-mapping-file-engine-p
-              (pyim-mapping-file-sort-icode2word)
-              (pyim-dcache-save-variable 'pyim-mapping-file-icode2word))
+             (pyim-dregcache-engine-p
+              (pyim-dregcache-sort-icode2word)
+              (pyim-dcache-save-variable 'pyim-dregcache-icode2word))
              (t
               (maphash
                #'(lambda (key value)
@@ -1689,11 +1733,11 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
           ,(async-inject-variables "^pyim-.+?directory$")
           (require 'pyim)
           (cond
-           (pyim-mapping-file-engine-p
-            (pyim-dcache-save-variable 'pyim-mapping-file-icode2word)
+           (pyim-dregcache-engine-p
+            (pyim-dcache-save-variable 'pyim-dregcache-icode2word)
             (pyim-dcache-set-variable 'pyim-dcache-iword2count)
-            (pyim-mapping-file-sort-icode2word)
-            (pyim-dcache-save-variable 'pyim-mapping-file-icode2word))
+            (pyim-dregcache-sort-icode2word)
+            (pyim-dcache-save-variable 'pyim-dregcache-icode2word))
            (t
             (pyim-dcache-set-variable 'pyim-dcache-icode2word)
             (pyim-dcache-set-variable 'pyim-dcache-iword2count)
@@ -1706,11 +1750,8 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
           nil)
        `(lambda (result)
           (setq pyim-update:icode2word-p t)
-          (cond
-           (pyim-mapping-file-engine-p
-            (pyim-dcache-set-variable 'pyim-mapping-file-icode2word t))
-           (t
-            (pyim-dcache-set-variable 'pyim-dcache-icode2word t))))))))
+           (unless pyim-dregcache-engine-p
+             (pyim-dcache-set-variable 'pyim-dcache-icode2word t)))))))
 
 (defun pyim-dcache-update:shortcode2word (&optional force)
   "使用 `pyim-dcache-code2word' 中的词条，创建简写 code 词库缓存并加载.
@@ -1946,8 +1987,8 @@ DCACHE 是一个 code -> words 的 hashtable.
   (interactive)
   ;; 用户选择过的词
   (cond
-   (pyim-mapping-file-engine-p
-    (pyim-dcache-save-variable 'pyim-mapping-file-icode2word))
+   (pyim-dregcache-engine-p
+    (pyim-dcache-save-variable 'pyim-dregcache-icode2word))
    (t
     (pyim-dcache-save-variable 'pyim-dcache-icode2word)))
   ;; 词频
@@ -1955,13 +1996,13 @@ DCACHE 是一个 code -> words 的 hashtable.
   t)
 
 (defun pyim-dcache-export (file &optional confirm)
-  "将 `pyim-mapping-file-icode2word' 导出为文件 FILE.
+  "将 `pyim-dregcache-icode2word' 导出为文件 FILE.
 
 如果 CONFIRM 为 non-nil，文件存在时将会提示用户是否覆盖，
 默认为覆盖模式"
   (with-temp-buffer
     (insert ";;; -*- coding: utf-8-unix -*-\n")
-    (dolist (elem pyim-mapping-file-icode2word)
+    (dolist (elem pyim-dregcache-icode2word)
       (insert (format "%s %s\n" (car elem) (cdr-elem))))
     (pyim--write-file file confirm)))
 
@@ -1975,8 +2016,8 @@ DCACHE 是一个 code -> words 的 hashtable.
 `pyim-import' 和 `pyim-export' ."
   (interactive "F将个人缓存中的词条导出到文件：")
   (cond
-   (pyim-mapping-file-engine-p
-    (pyim-mapping-file-export file confirm))
+   (pyim-dregcache-engine-p
+    (pyim-dregcache-export file confirm))
    (t
     (pyim-dcache-export pyim-dcache-icode2word file confirm))))
 
@@ -2014,8 +2055,8 @@ DCACHE 是一个 code -> words 的 hashtable.
     ;; 使用了特殊的方式给用户选择过的词生成的缓存中添加了
     ;; 词条，那么就需要将这些词条也导出，且设置词频为 0
     (cond
-     (pyim-mapping-file-engine-p
-      (dolist (elem pyim-mapping-file-icode2word)
+     (pyim-dregcache-engine-p
+      (dolist (elem pyim-dregcache-icode2word)
         ;; elem => (pinyin . word)
         (let* ((word (cdr elem)))
           (unless (gethash word pyim-dcache-iword2count)
@@ -2063,12 +2104,12 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
     (pyim-dcache-save-caches))
   ;; 更新相关的 dcache
   (pyim-update:icode2word t)
-  (unless pyim-mapping-file-engine-p
+  (unless pyim-dregcache-engine-p
     (pyim-dcache-update:ishortcode2word t))
 
   (message "pyim: 词条相关信息导入完成！"))
 
-(defun pyim-dcache-get-internal (code dcache-list)
+(defun pyim-dhashcache-get (code dcache-list)
   "从 DCACHE-LIST 包含的所有 dcache 中搜索 CODE, 得到对应的词条.
 
 当词库文件加载完成后，pyim 就可以用这个函数从词库缓存中搜索某个
@@ -2083,24 +2124,24 @@ code 对应的中文词条了。
           (setq result (append result value)))))
     `(,@result ,@(pyim-pinyin2cchar-get code t t))))
 
-(defmacro pyim-mapping-file-is-shenmu (code)
+(defmacro pyim-dregcache-is-shenmu (code)
   "判断CODE 是否是一个声母."
   `(and (eq (length ,code) 1)
-        (not (string-match ,code "aeiouv"))))
+        (not (string-match ,code "aeo"))))
 
-(defmacro pyim-mapping-file-shenmu2regexp (char)
+(defmacro pyim-dregcache-shenmu2regexp (char)
 "将声母 CHAR 转换为通用正则表达式匹配所有以该声母开头的汉字."
   `(concat ,char "[a-z]*"))
 
-(defun pyim-mapping-file-code2regexp (code)
+(defun pyim-dregcache-code2regexp (code)
   "将 CODE 转换成正则表达式用来搜索辞典缓存中的匹配项目.
 单个声母会匹配所有以此生母开头的单个汉字."
   (let* (arr)
     (cond
-     ((pyim-mapping-file-is-shenmu code)
+     ((pyim-dregcache-is-shenmu code)
       ;; 用户输入单个声母如 "w", "y", 将该声母转换为
       ;; 通用正则表达式匹配所有以该声母开头的汉字
-      (pyim-mapping-file-shenmu2regexp code))
+      (pyim-dregcache-shenmu2regexp code))
 
      ((eq (length (setq arr (split-string code "-"))) 1)
       ;; 用户输入单个汉字的声母和韵母如 "wan", "dan", 不做任何处理
@@ -2109,33 +2150,54 @@ code 对应的中文词条了。
      (t
       ;; 用户输入多字词的code,如果某个字只提供了首个声母,将该声母转换为
       ;; 通用正则表达式匹配所有以该声母开头的汉字
-      (mapconcat 'identity (mapcar (lambda (e) (if (pyim-mapping-file-is-shenmu e)
-                                                   (pyim-mapping-file-shenmu2regexp e)
-                                                 e))
-                                   arr) "-")))))
+      (mapconcat (lambda (e)
+                   (if (pyim-dregcache-is-shenmu e)
+                       (pyim-dregcache-shenmu2regexp e)
+                     e))
+                 arr
+                 "-")))))
 
-(defun pyim-mapping-file-all-dict-files ()
+(defun pyim-dregcache-all-dict-files ()
   "所有词典文件."
   (let* (rlt)
-    (dolist (item pyim-mapping-file-cache)
+    (dolist (item pyim-dregcache-cache)
       (when (stringp item)
         (push item rlt)))
     rlt))
 
-(defun pyim-mapping-file-dcache-get (code dcache-list)
-  "从 `pyim-mapping-file-cache' 搜索 CODE, 得到对应的词条.
-DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
-  (when pyim-mapping-file-cache
-    (let* ((pattern (concat "^" (pyim-mapping-file-code2regexp code) " \\(.+\\)"))
-           (dict-files (pyim-mapping-file-all-dict-files))
-           result)
+(defun pyim-dregcache-get-content (file-info code)
+  (let* ((rlt (plist-get file-info :content))
+         idx
+         (ch (elt code 0)))
+    (when (listp rlt)
+      (cond
+       ((<= ch ?h)
+        (setq idx (- ch ?a)))
+       ((<= ch ?t)
+        ;; 'i' could not be first character of pinyin code
+        (setq idx (- ch ?a 1)))
+       (t
+        ;; 'i', 'u', 'v' could not be first character of pinyin code
+        (setq idx (- ch ?a 3))))
+      ;; fetch segment using the first character of pinyin code
+      (setq rlt (nth idx rlt)))
+    rlt))
 
+(defun pyim-dregcache-dcache-get (code dcache-list)
+  "从 `pyim-dregcache-cache' 搜索 CODE, 得到对应的词条.
+DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
+  (when pyim-dregcache-cache
+    (let* ((pattern (concat "^" (pyim-dregcache-code2regexp code) " \\(.+\\)"))
+           (dict-files (pyim-dregcache-all-dict-files))
+           result)
       (dolist (file dict-files)
-        (let* ((start 0)
-               (file-info (lax-plist-get pyim-mapping-file-cache file))
-               (content (plist-get file-info :content))
-               (content-size (plist-get file-info :content-size))
+        (let* ((case-fold-search t)
+               (start 0)
+               (file-info (lax-plist-get pyim-dregcache-cache file))
+               (content (pyim-dregcache-get-content file-info code))
+               (content-size (length content))
                word)
+          (message "====pattern=%s" pattern)
           (while (and (< start content-size) (setq start (string-match pattern content start)))
             ;; 提取词
             (setq word (match-string-no-properties 1 content))
@@ -2164,10 +2226,10 @@ code 对应的中文词条了。
                                              (list dcache-list)))
                           (list pyim-dcache-icode2word pyim-dcache-code2word))))
     (cond
-     (pyim-mapping-file-engine-p
-      (pyim-mapping-file-dcache-get code dcache-list))
+     (pyim-dregcache-engine-p
+      (pyim-dregcache-dcache-get code dcache-list))
      (t
-      (pyim-dcache-get-internal code dcache-list)))))
+      (pyim-dhashcache-get code dcache-list)))))
 
 (defun pyim-string-match-p (regexp string &optional start)
   "与 `string-match-p' 类似，如果 REGEXP 和 STRING 是非字符串时，
@@ -2213,9 +2275,9 @@ code 对应的中文词条了。
 (defun pyim-insert-word-into-icode2word (word pinyin prepend)
   (message "pyim-dcache-put called => %s %s" word pinyin)
   (cond
-   (pyim-mapping-file-engine-p
-    (setq pyim-mapping-file-icode2word
-          (add-to-list 'pyim-mapping-file-icode2word
+   (pyim-dregcache-engine-p
+    (setq pyim-dregcache-icode2word
+          (add-to-list 'pyim-dregcache-icode2word
                        (cons pinyin word) ; (pinyin . word)
                        (not prepend))))
    (t
