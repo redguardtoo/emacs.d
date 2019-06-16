@@ -16,13 +16,11 @@
 [_b_] Switch Gnus buffer  [_w_] Pronounce word
 [_f_] Recent file
 [_d_] Recent directory
-[_c_] Last dired command
 [_h_] Dired CMD history
 [_E_] Enable typewriter
 [_V_] Vintage typewriter
 [_q_] Quit
 "
-  ("c" my-dired-redo-last-command)
   ("h" my-dired-redo-from-commands-history)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
@@ -181,21 +179,60 @@
          (when (yes-or-no-p (format "%s => %s at %s?"
                                     fb nf dir))
            (rename-file fp (concat dir nf)))))
+     (defun my-extract-mp3-from-video ()
+       "Extract mp3 from current video file using ffmpeg."
+       (interactive)
+       (let* ((video-file (file-name-nondirectory (dired-file-name-at-point)))
+              (params (split-string (string-trim (read-string "start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\"): "))
+                                    " +"))
+              (start (car params))
+              (total (if (eq (length params) 1) "5" (nth 1 params)))
+              cmd)
+         (unless (string= start "")
+           (setq cmd (format "ffmpeg -i \"%s\" -vn -ss %s -t %s -acodec copy \"%s\""
+                                  video-file
+                                  start
+                                  total
+                                  (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))
+           (shell-command (concat cmd " &")))))
+     (defun my-record-wav-by-mp3 ()
+       "Record a wav using meta data from current mp3 file."
+       (interactive)
+       (let* ((mp3-file (file-name-nondirectory (dired-file-name-at-point)))
+              (base (file-name-base mp3-file))
+              (params (split-string base  "-"))
+              (output-file (concat base ".wav"))
+              (total (nth (1- (length params)) params))
+              cmd)
+         (when (string-match "^[0-9]+$" total)
+           (setq cmd (format "arecord -fdat -d %s \"%s\""
+                             total
+                             output-file))
+           (message "Start recording %s seconds wav ..." total)
+           (shell-command (concat cmd " &")))))
+     (defun my-play-both-mp3-and-wav ()
+       "Play wav and mp3."
+       (interactive)
+       (let* ((audio-file (file-name-nondirectory (dired-file-name-at-point)))
+              (base (file-name-base audio-file))
+              (ext (file-name-extension audio-file) )
+              (cmd (format "mplayer -quiet \"%s\" \"%s\""
+                           audio-file
+                           (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
+         (shell-command (concat cmd " &"))))
      (defun my-copy-file-info (fn)
        (message "%s => clipboard & yank ring"
                 (copy-yank-str (funcall fn (dired-file-name-at-point)))))
      (defhydra hydra-dired (:color blue)
        "
-^File/Directory^    ^Copy Info^  ^Fetch Subtitles^
-----------------------------------------------------
-[_mv_] Move file    [_pp_] Path  [_sa_] All
-[_cf_] New file     [_nn_] Name  [_s1_] One
-[_rr_] Rename file  [_bb_] Base
-[_ff_] Find file    [_dd_] DIR
-[_mk_] New DIR
-[_rb_] Replace base
-[_C_]  Copy file
-^^                  ^^           [_q_]  Quit
+^File^             ^Misc^                      ^Copy Info^
+----------------------------------------------------------------
+[_mv_] Move        [_vv_] video2mp3            [_pp_] Path
+[_cf_] New         [_aa_] Record by mp         [_nn_] Name
+[_rr_] Rename      [_zz_] Play wav&mp3         [_bb_] Base
+[_ff_] Find        [_cc_] Last command         [_dd_] directory
+[_C_]  Copy        [_sa_] Fetch all subtitles
+[_rb_] Change base [_s1_] Fetch on subtitle
 "
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
        ("s1" (let* ((video-file (dired-file-name-at-point))
@@ -206,6 +243,10 @@
        ("bb" (my-copy-file-info 'file-name-base))
        ("dd" (my-copy-file-info 'file-name-directory))
        ("rb" (my-replace-dired-base (car kill-ring)))
+       ("vv" my-extract-mp3-from-video)
+       ("aa" my-record-wav-by-mp3)
+       ("cc" my-dired-redo-last-command)
+       ("zz" my-play-both-mp3-and-wav)
        ("C" dired-do-copy)
        ("mv" diredp-do-move-recursive)
        ("cf"find-file)
