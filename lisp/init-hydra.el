@@ -202,14 +202,15 @@
               (base (file-name-base mp3-file))
               (params (split-string base  "-"))
               (output-file (concat base ".wav"))
-              (total (nth (1- (length params)) params))
+              (total (string-to-number (nth (1- (length params)) params)))
               cmd)
+         (if (= total 0) (setq total 4))
          (when (string-match "^[0-9]+$" total)
            (setq cmd (format "arecord -fdat -d %s \"%s\""
                              total
                              output-file))
            (message "Start recording %s seconds wav ..." total)
-           (shell-command (concat cmd " &")))))
+           (my-async-shell-command cmd))))
      (defun my-play-both-mp3-and-wav ()
        "Play wav and mp3."
        (interactive)
@@ -219,7 +220,7 @@
               (cmd (format "mplayer -quiet \"%s\" \"%s\""
                            audio-file
                            (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
-         (shell-command (concat cmd " &"))))
+         (my-async-shell-command cmd)))
      (defun my-copy-file-info (fn)
        (message "%s => clipboard & yank ring"
                 (copy-yank-str (funcall fn (dired-file-name-at-point)))))
