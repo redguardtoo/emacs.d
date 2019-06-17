@@ -112,7 +112,7 @@ If no files marked, always operate on current line in dired-mode."
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil))
 
-(defvar binary-file-name-regexp "\\.\\(avi\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to setup than "desktop.el"
