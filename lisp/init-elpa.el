@@ -328,7 +328,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'color-theme)
 ;; emms v5.0 need seq
 (require-package 'seq)
-(require-package 'stripe-buffer)
 (require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
