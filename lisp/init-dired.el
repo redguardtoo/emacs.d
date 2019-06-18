@@ -99,6 +99,7 @@ If no files marked, always operate on current line in dired-mode."
 
 (eval-after-load 'dired
   '(progn
+     (require 'dired-x)
      (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
        (when (and (stringp ad-return-value)
                   (string-match-p "^mplayer -quiet" ad-return-value))
