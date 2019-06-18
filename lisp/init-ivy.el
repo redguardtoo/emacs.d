@@ -176,35 +176,29 @@ Or else, find files since 24 weeks (6 months) ago."
     (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
 ;; }}
 
-(defun counsel--build-bookmark-candidate (bookmark)
-  (let (key)
+(defun my-build-bookmark-candidate (bookmark)
+  (let* ((key (cond
+               ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
+                (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark))))
+               ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
+                (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark))))
+               (t
+                (car bookmark)))))
     ;; build key which will be displayed
-    (cond
-     ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
-      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark)))))
-     ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
-      ;; bmkp-jump-w3m is from bookmark+
-      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark)))))
-     (t
-      (setq key (car bookmark))))
-    ;; re-shape the data so full bookmark be passed to ivy-read:action
+    ;; re-shape the data so full bookmark be passed to ivy-read
     (cons key bookmark)))
 
 (defun counsel-bookmark-goto ()
-  "Open ANY bookmark.  Requires bookmark+"
+  "Open ANY bookmark."
   (interactive)
   (unless (featurep 'bookmark) (require 'bookmark))
   (bookmark-maybe-load-default-file)
-
-  (let* ((bookmarks (and (boundp 'bookmark-alist) bookmark-alist))
-         (collection (delq nil (mapcar #'counsel--build-bookmark-candidate
-                                       bookmarks))))
-    ;; do the real thing
-    (ivy-read "bookmarks:"
-              collection
-              :action (lambda (bookmark)
-                        (local-require 'bookmark+)
-                        (bookmark-jump bookmark)))))
+  ;; do the real thing
+  (ivy-read "bookmarks:"
+            (delq nil (mapcar #'my-build-bookmark-candidate
+                              (and (boundp 'bookmark-alist)
+                                   bookmark-alist)))
+            :action #'bookmark-jump))
 
 (defun counsel-yank-bash-history ()
   "Yank the bash history."
