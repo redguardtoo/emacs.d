@@ -328,4 +328,15 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                                     (when (memq status '(exit signal))
                                       (unless (string= (substring signal 0 -1) "finished")
                                         (message "Failed to run \"%s\"." ,command))))))))
+
+(defvar f-count nil)
+(defun f-incf (&optional first incr repeat)
+  (let* ((index (floor (/ (cl-incf f-count incr) (or repeat 1)))))
+    (+ (or first 1) (* (or incr 1) index))))
+
+(defun f-each (ls &optional repeat)
+  (let ((index (floor (/ (cl-incf f-count 0) (or repeat 1)))))
+    (if (< index (length ls)) (elt ls index)
+      (keyboard-quit))))
+
 (provide 'init-utils)
