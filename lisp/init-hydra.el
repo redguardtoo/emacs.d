@@ -5,14 +5,14 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Misc^                    ^Audio^               ^Pomodoro^
-----------------------------------------------------------
-[_u_] CompanyIspell       [_R_] Emms Random     [_s_] Start
-[_C_] New workgroup       [_n_] Emms Next       [_t_] Stop
-[_l_] Load workgroup      [_p_] Emms Previous   [_r_] Resume
-[_B_] New bookmark        [_P_] Emms Pause      [_a_] Pause
-[_m_] Goto bookmark       [_O_] Emms Open
-[_v_] Show/Hide undo      [_L_] Emms Playlist
+^Misc^                    ^Audio^               ^Move^                          ^Pomodoro^
+----------------------------------------------------------------------------------------------
+[_u_] CompanyIspell       [_R_] Emms Random     [_sa_] Backward Sentence (M-a)  [_ss_] Start
+[_ss_] Save workgroup     [_n_] Emms Next       [_se_] Forward Sentence (M-e)   [_st_] Stop
+[_ll_] Load workgroup     [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
+[_B_] New bookmark        [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
+[_m_] Goto bookmark       [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
+[_v_] Show/Hide undo      [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
 [_b_] Switch Gnus buffer  [_w_] Pronounce word
 [_f_] Recent file
 [_d_] Recent directory
@@ -26,16 +26,22 @@
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" counsel-recent-directory)
-  ("C" wg-create-workgroup)
-  ("l" my-wg-switch-workgroup)
+  ("ss" wg-create-workgroup)
+  ("ll" my-wg-switch-workgroup)
   ("u" toggle-company-ispell)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
-  ("s" pomodoro-start)
-  ("t" pomodoro-stop)
-  ("r" pomodoro-resume)
-  ("a" pomodoro-pause)
+  ("ss" pomodoro-start)
+  ("st" pomodoro-stop)
+  ("sr" pomodoro-resume)
+  ("sp" pomodoro-pause)
+  ("sa" backward-sentence)
+  ("se" forward-sentence)
+  ("la" backward-up-list)
+  ("le" forward-list)
+  ("pa" backward-paragraph)
+  ("pe" forward-paragraph)
   ("R" emms-random)
   ("n" emms-next)
   ("w" my-pronounce-current-word)
