@@ -576,7 +576,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "fs" 'ffip-save-ivy-last
  "fr" 'ffip-ivy-resume
  "fc" 'cp-ffip-ivy-last
- "ss" 'swiper-the-thing ; http://oremacs.com/2015/03/25/swiper-0.2.0/ for guide
+ "ss" 'counsel-grep-or-swiper ; better performance, got Cygwin grep installed on Windows always
  "hst" 'hs-toggle-fold
  "hsa" 'hs-toggle-fold-all
  "hsh" 'hs-hide-block

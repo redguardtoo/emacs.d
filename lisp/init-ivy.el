@@ -288,12 +288,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
      (setq ivy-display-style 'fancy)))
 
 ;; {{ swiper&ivy-mode
-(defun swiper-the-thing ()
-  (interactive)
-  ;; better performance on large files than swiper
-  (counsel-grep-or-swiper (my-use-selected-string-or-ask "")))
-
-(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-s") 'counsel-grep-or-swiper)
 ;; }}
 
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
