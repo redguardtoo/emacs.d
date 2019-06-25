@@ -1214,8 +1214,6 @@ If you don't like this funciton, set the variable to nil")
 (defvar pyim-cchar2pinyin-cache nil
   "汉字转拼音功能需要的变量.")
 
-(defvar pyim-update:icode2word-p nil)
-
 (defvar pyim-auto-update t
   "是否自动创建和更新词库对应的 cache 文件.
 
@@ -1425,10 +1423,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   (pyim-init-variables)
 
   (when pyim-auto-update
-    ;; 使用 pyim-iword2count 中的信息对 personal 缓存中的词频进行调整。
-    (pyim-update:icode2word restart)
-    ;; 创建简拼缓存， 比如 "ni-hao" -> "n-h"
-    (pyim-dcache-update:ishortcode2word restart))
+    (funcall (pyim-backend-api "update-personal-words") restart))
 
   (pyim-cchar2pinyin-cache-create)
   (pyim-pinyin2cchar-cache-create)
@@ -1438,7 +1433,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
     ;; 如果 `pyim-dicts' 有变化，重新生成 `pyim-dcache-code2word' 缓存。
     (pyim-update:code2word refresh-common-cache)
     ;; 这个命令 *当前* 主要用于五笔输入法。
-    (pyim-dcache-update:shortcode2word restart))
+    (funcall (pyim-backend-api "update:shortcode2word") restart))
 
   (unless (member 'pyim-save-caches kill-emacs-hook)
     (add-to-list 'kill-emacs-hook 'pyim-save-caches))
@@ -1501,7 +1496,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   "Get backend API from API-NAME."
   ;; make sure the backend is load
   (unless (featurep pyim-backend) (require pyim-backend))
-  (intern (concat (symbol-name pyim-backend) api-name)))
+  (intern (concat (symbol-name pyim-backend) "-" api-name)))
 
 (defun pyim-update:code2word (&optional force)
   "读取并加载词库.
@@ -1514,65 +1509,8 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
                                  (unless (plist-get x :disable)
                                    (plist-get x :file)))
                              `(,@pyim-dicts ,@pyim-extra-dicts)))
-         (dicts-md5 (pyim-create-dicts-md5 dict-files))
-         (fn (pyim-backend-api "-update:code2word")))
-    (cond
-     ((string= pyim-backend "pyim-dregcache")
-      (message "====hello")
-      (funcall fn dict-files dicts-md5 force))
-     (t
-      (pyim-dcache-update:code2word dict-files dicts-md5 force)))))
-
-(defun pyim-update:icode2word (&optional force)
-  "对 personal 缓存中的词条进行排序，加载排序后的结果.
-
-在这个过程中使用了 `pyim-dcache-iword2count' 中记录的词频信息。
-如果 FORCE 为真，强制排序。"
-  (interactive)
-  (when (or force (not pyim-update:icode2word-p))
-    (if (pyim-use-emacs-thread-p)
-        (make-thread
-         `(lambda ()
-            (cond
-             ((eq pyim-backend 'pyim-dregcache)
-              (pyim-dregcache-sort-icode2word)
-              (pyim-dcache-save-variable 'pyim-dregcache-icode2word))
-             (t
-              (maphash
-               #'(lambda (key value)
-                   (puthash key (pyim-dcache-sort-words value)
-                            pyim-dcache-icode2word))
-               pyim-dcache-icode2word)
-              (pyim-dcache-save-variable 'pyim-dcache-icode2word)))
-
-            (setq pyim-update:icode2word-p t)))
-      (async-start
-       `(lambda ()
-          ,(async-inject-variables "^load-path$")
-          ,(async-inject-variables "^exec-path$")
-          ,(async-inject-variables "^pyim-.+?directory$")
-          (require 'pyim)
-          (cond
-           ((eq pyim-backend 'pyim-dregcache)
-
-            (pyim-dcache-save-variable 'pyim-dregcache-icode2word)
-            (pyim-hashtable-set-variable 'pyim-iword2count)
-            (pyim-dregcache-sort-icode2word)
-            (pyim-dcache-save-variable 'pyim-dregcache-icode2word))
-           (t
-            (pyim-hashtable-set-variable 'pyim-dcache-icode2word)
-            (pyim-hashtable-set-variable 'pyim-iword2count)
-            (maphash
-             #'(lambda (key value)
-                 (puthash key (pyim-dcache-sort-words value)
-                          pyim-dcache-icode2word))
-             pyim-dcache-icode2word)
-            (pyim-dcache-save-variable 'pyim-dcache-icode2word)))
-          nil)
-       `(lambda (result)
-          (setq pyim-update:icode2word-p t)
-           (unless (eq pyim-backend 'pyim-dregcache)
-             (pyim-hashtable-set-variable 'pyim-dcache-icode2word t)))))))
+         (dicts-md5 (pyim-create-dicts-md5 dict-files)))
+    (funcall (pyim-backend-api "update:code2word") dict-files dicts-md5 force)))
 
 (defun pyim-init-variables ()
   "初始化 dcache 缓存相关变量."
@@ -1690,9 +1628,8 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
   ;; 不存在此问题。
   (unless pyim-prefer-emacs-thread
     (pyim-save-caches))
-  ;; 更新相关的 dcache
-  (pyim-update:icode2word t)
-  (pyim-dcache-update:ishortcode2word t)
+  ;; 更新相关的 cache
+  (funcall (pyim-backend-api "update-personal-words") t)
 
   (message "pyim: 词条相关信息导入完成！"))
 

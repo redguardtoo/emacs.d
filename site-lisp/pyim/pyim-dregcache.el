@@ -1,3 +1,4 @@
+(require 'pyim-sdk)
 (defvar pyim-dregcache-cache nil)
 (defvar pyim-dregcache-icode2word nil)
 (defvar pyim-dregcache-dicts-md5 nil)
@@ -169,6 +170,13 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
             (setq start (+ start 2 (length code) (length word))))))
       `(,@result ,@(pyim-pinyin2cchar-get code t t)))))
 
+(defun pyim-dregcache-update-personal-words (&optional force)
+  "Could update iword2count. TODO!"
+  )
+
+(defun pyim-dregcache-update:shortcode2word (&optional restart)
+  "Dummy function."
+  )
 (provide 'pyim-dregcache)
 ;;; pyim-dregcache.el ends here
 

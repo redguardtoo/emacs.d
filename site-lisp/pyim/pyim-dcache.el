@@ -9,7 +9,7 @@
 (defvar pyim-dcache-ishortcode2word nil)
 (defvar pyim-dcache-update:shortcode2word nil)
 (defvar pyim-dcache-update:ishortcode2word nil)
-
+(defvar pyim-dcache-update:icode2word-p nil)
 
 (defun pyim-dcache-get-value-from-file (file)
   "读取保存到 FILE 里面的 value."
@@ -340,6 +340,47 @@ code 对应的中文词条了。
         (when value
           (setq result (append result value)))))
     `(,@result ,@(pyim-pinyin2cchar-get code t t))))
+
+(defun pyim-dcache-update:icode2word (&optional force)
+  "对 personal 缓存中的词条进行排序，加载排序后的结果.
+
+在这个过程中使用了 `pyim-dcache-iword2count' 中记录的词频信息。
+如果 FORCE 为真，强制排序。"
+  (interactive)
+  (when (or force (not pyim-dcache-update:icode2word-p))
+    (if (pyim-use-emacs-thread-p)
+        (make-thread
+         `(lambda ()
+            (maphash
+             #'(lambda (key value)
+                 (puthash key (pyim-dcache-sort-words value)
+                          pyim-dcache-icode2word))
+             pyim-dcache-icode2word)
+              (pyim-dcache-save-variable 'pyim-dcache-icode2word)
+            (setq pyim-dcache-update:icode2word-p t)))
+      (async-start
+       `(lambda ()
+          ,(async-inject-variables "^load-path$")
+          ,(async-inject-variables "^exec-path$")
+          ,(async-inject-variables "^pyim-.+?directory$")
+          (require 'pyim)
+          (pyim-hashtable-set-variable 'pyim-dcache-icode2word)
+          (pyim-hashtable-set-variable 'pyim-iword2count)
+          (maphash
+           #'(lambda (key value)
+               (puthash key (pyim-dcache-sort-words value)
+                        pyim-dcache-icode2word))
+           pyim-dcache-icode2word)
+          (pyim-dcache-save-variable 'pyim-dcache-icode2word)
+          nil)
+       `(lambda (result)
+          (setq pyim-dcache-update:icode2word-p t)
+           (unless (eq pyim-backend 'pyim-dregcache)
+             (pyim-hashtable-set-variable 'pyim-dcache-icode2word t)))))))
+
+(defun pyim-dcache-update-personal-words (&optional force)
+  (pyim-dcache-update:icode2word force)
+  (pyim-dcache-update:ishortcode2word force))
 
 (provide 'pyim-dcache)
 ;;; pyim-dcache.el ends here
