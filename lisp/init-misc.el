@@ -622,7 +622,7 @@ If step is -1, go backward."
 
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare."
-  (interactive)
+  (interactive "P")
   (when (region-active-p)
     (let* (tmp buf)
       ;; select lines

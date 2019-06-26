@@ -33,13 +33,6 @@
       (let ((save-silently t))
         (pyim--write-file file)))))
 
-(defun pyim-dcache-save-variable (variable)
-  "将 VARIABLE 变量的取值保存到 `pyim-hashtable-directory' 中对应文件中."
-  (let ((file (concat (file-name-as-directory pyim-hashtable-directory)
-                      (symbol-name variable)))
-        (value (symbol-value variable)))
-    (pyim-dcache-save-value-to-file value file)))
-
 (defun pyim-dcache-sort-words (words-list)
   "对 WORDS-LIST 排序，词频大的排在前面.
 
@@ -381,6 +374,50 @@ code 对应的中文词条了。
 (defun pyim-dcache-update-personal-words (&optional force)
   (pyim-dcache-update:icode2word force)
   (pyim-dcache-update:ishortcode2word force))
+
+(defun pyim-dcache-init-variables ()
+  "初始化 dcache 缓存相关变量."
+  (pyim-hashtable-set-variable 'pyim-dcache-code2word)
+  (pyim-hashtable-set-variable 'pyim-dcache-word2code)
+  (pyim-hashtable-set-variable 'pyim-dcache-shortcode2word)
+  (pyim-hashtable-set-variable 'pyim-dcache-icode2word)
+  (pyim-hashtable-set-variable 'pyim-dcache-ishortcode2word))
+
+(defun pyim-dcache-save-personal-cache-to-file ()
+  ;; 用户选择过的词
+  (pyim-dcache-save-variable 'pyim-dregcache-icode2word)
+  ;; 词频
+  (pyim-dcache-save-variable 'pyim-iword2count))
+
+(defun pyim-dcache-insert-export-content ()
+  (maphash
+   #'(lambda (key value)
+       (insert (format "%s %s\n" key value)))
+   pyim-iword2count)
+    ;; 在默认情况下，用户选择过的词生成的缓存中存在的词条，
+    ;; `pyim-iword2count' 中也一定存在，但如果用户
+    ;; 使用了特殊的方式给用户选择过的词生成的缓存中添加了
+    ;; 词条，那么就需要将这些词条也导出，且设置词频为 0
+  (maphash
+   #'(lambda (_ words)
+       (dolist (word words)
+         (unless (gethash word pyim-iword2count)
+           (insert (format "%s %s\n" word 0)))))
+   pyim-dcache-icode2word))
+
+(defmacro pyim-dcache-put (cache code &rest body)
+  "这个用于保存词条，删除词条以及调整词条位置."
+  (declare (indent 0))
+  (let ((key (make-symbol "key"))
+        (table (make-symbol "table"))
+        (new-value (make-symbol "new-value")))
+    `(let* ((,key ,code)
+            (,table ,cache)
+            (orig-value (gethash ,key ,table))
+            ,new-value)
+       (setq ,new-value (progn ,@body))
+       (unless (equal orig-value ,new-value)
+         (puthash ,key ,new-value ,table)))))
 
 (provide 'pyim-dcache)
 ;;; pyim-dcache.el ends here

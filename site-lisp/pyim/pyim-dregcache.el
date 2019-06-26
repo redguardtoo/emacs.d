@@ -177,6 +177,29 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-update:shortcode2word (&optional restart)
   "Dummy function."
   )
+
+(defun pyim-dregcache-init-variables ()
+  "初始化 cache 缓存相关变量."
+  )
+
+(defun pyim-dregcache-save-personal-cache-to-file ()
+  ;; 用户选择过的词
+  (pyim-dcache-save-variable 'pyim-dcache-icode2word)
+  ;; 词频
+  (pyim-dcache-save-variable 'pyim-iword2count))
+
+(defun pyim-dregcache-insert-export-content ()
+  "TODO"
+  )
+
+(defmacro pyim-dregcache-put (cache code &rest body)
+  "TODO."
+  ;; (setq pyim-dregcache-icode2word
+  ;;       (add-to-list 'pyim-dregcache-icode2word
+  ;;                    (cons code word) ; (pinyin . word)
+  ;;                    t))
+  )
+
 (provide 'pyim-dregcache)
 ;;; pyim-dregcache.el ends here
 

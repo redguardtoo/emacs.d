@@ -18,6 +18,13 @@ VARIABLE 变量，FORCE-RESTORE 设置为 t 时，强制恢复，变量原来的
                         fallback-value
                         (make-hash-table :test #'equal))))))
 
+(defun pyim-dcache-save-variable (variable)
+  "将 VARIABLE 变量的取值保存到 `pyim-hashtable-directory' 中对应文件中."
+  (let ((file (concat (file-name-as-directory pyim-hashtable-directory)
+                      (symbol-name variable)))
+        (value (symbol-value variable)))
+    (pyim-dcache-save-value-to-file value file)))
+
 (provide 'pyim-sdk)
 ;;; pyim-sdk.el ends here
 
