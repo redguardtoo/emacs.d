@@ -1783,14 +1783,14 @@ FILE 的格式与 `pyim-export' 生成的文件格式相同，
   (message "pyim: 批量删词完成！"))
 
 (defun pyim-delete-last-word ()
-  "从 `pyim-dcache-icode2word' 中删除最新创建的词条。"
+  "从个人词库中删除最新创建的词条。"
   (interactive)
   (when pyim-last-created-word
     (pyim-delete-word-1 pyim-last-created-word)
     (message "pyim: 从个人词库中删除词条 “%s” !" pyim-last-created-word)))
 
 (defun pyim-delete-word ()
-  "将高亮选择的词条从 `pyim-dcache-icode2word' 中删除。"
+  "将高亮选择的词条从个人词库中删除。"
   (interactive)
   (if mark-active
       (let ((string (buffer-substring-no-properties
@@ -1802,25 +1802,8 @@ FILE 的格式与 `pyim-export' 生成的文件格式相同，
     (message "请首先高亮选择需要删除的词条。")))
 
 (defun pyim-delete-word-1 (word)
-  "将中文词条 WORD 从 `pyim-dcache-icode2word' 中删除"
-  (let* ((pinyins (pyim-hanzi2pinyin word nil "-" t))
-         (pinyins-szm (mapcar
-                       #'(lambda (pinyin)
-                           (mapconcat #'(lambda (x)
-                                          (substring x 0 1))
-                                      (split-string pinyin "-") "-"))
-                       pinyins)))
-    (dolist (pinyin pinyins)
-      (unless (pyim-string-match-p "[^ a-z-]" pinyin)
-        (pyim-cache-put
-          pyim-dcache-icode2word pinyin
-          (remove word orig-value))))
-    (dolist (pinyin pinyins-szm)
-      (unless (pyim-string-match-p "[^ a-z-]" pinyin)
-        (pyim-cache-put
-          pyim-dcache-icode2word pinyin
-          (remove word orig-value))))
-    (remhash word pyim-iword2count)))
+  "将中文词条 WORD 从个人词库中删除"
+  (funcall (pyim-backend-api "delete-word-1") word))
 
 ;; ** 处理用户输入字符的相关函数
 (defun pyim-input-method (key)

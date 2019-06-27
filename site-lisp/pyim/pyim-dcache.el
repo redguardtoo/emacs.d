@@ -419,5 +419,26 @@ code 对应的中文词条了。
        (unless (equal orig-value ,new-value)
          (puthash ,key ,new-value ,table)))))
 
+(defun pyim-dcache-delete-word-1 (word)
+  "将中文词条 WORD 从个人词库中删除"
+  (let* ((pinyins (pyim-hanzi2pinyin word nil "-" t))
+         (pinyins-szm (mapcar
+                       #'(lambda (pinyin)
+                           (mapconcat #'(lambda (x)
+                                          (substring x 0 1))
+                                      (split-string pinyin "-") "-"))
+                       pinyins)))
+    (dolist (pinyin pinyins)
+      (unless (pyim-string-match-p "[^ a-z-]" pinyin)
+        (pyim-cache-put
+          pyim-dcache-icode2word pinyin
+          (remove word orig-value))))
+    (dolist (pinyin pinyins-szm)
+      (unless (pyim-string-match-p "[^ a-z-]" pinyin)
+        (pyim-cache-put
+          pyim-dcache-icode2word pinyin
+          (remove word orig-value))))
+    (remhash word pyim-iword2count)))
+
 (provide 'pyim-dcache)
 ;;; pyim-dcache.el ends here
