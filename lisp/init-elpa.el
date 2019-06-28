@@ -90,6 +90,7 @@
     regex-tool
     legalese
     htmlize
+    pyim-basedict
     scratch
     session
     flymake-lua
