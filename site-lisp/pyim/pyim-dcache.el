@@ -319,7 +319,7 @@ DCACHE 是一个 code -> words 的 hashtable.
      dcache)
     (pyim--write-file file confirm)))
 
-(defun pyim-dcache-get (code dcache-list)
+(defun pyim-dcache-get (code &optional dcache-list)
   "从 DCACHE-LIST 包含的所有 dcache 中搜索 CODE, 得到对应的词条.
 
 当词库文件加载完成后，pyim 就可以用这个函数从词库缓存中搜索某个
@@ -327,7 +327,11 @@ code 对应的中文词条了。
 
 如果 DCACHE-LIST 为 nil, 则默认搜索 `pyim-dcache-icode2word' 和
 `pyim-dcache-code2word' 两个 dcache."
-  (let (result)
+  (let* ((dcache-list (or (and dcache-list (if (listp dcache-list)
+                                               dcache-list
+                                             (list dcache-list)))
+                          (list pyim-dcache-icode2word pyim-dcache-code2word)))
+         result)
     (dolist (cache dcache-list)
       (let ((value (and cache (gethash code cache))))
         (when value
@@ -439,6 +443,12 @@ code 对应的中文词条了。
           pyim-dcache-icode2word pinyin
           (remove word orig-value))))
     (remhash word pyim-iword2count)))
+
+(defun pyim-dcache-insert-word-into-icode2word (word pinyin prepend)
+  (pyim-cache-put pyim-dcache-icode2word
+                  pinyin
+                  (if prepend (pyim-list-merge word orig-value)
+                    (pyim-list-merge orig-value word))))
 
 (provide 'pyim-dcache)
 ;;; pyim-dcache.el ends here

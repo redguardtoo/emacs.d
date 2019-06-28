@@ -203,6 +203,10 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-delete-word-1 (word)
   "TODO"
   )
+
+(defun pyim-dregcache-insert-word-into-icode2word (word pinyin prepend)
+  "TODO"
+  )
 (provide 'pyim-dregcache)
 ;;; pyim-dregcache.el ends here
 

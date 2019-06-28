@@ -1599,16 +1599,12 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
   (message "pyim: 词条相关信息导入完成！"))
 
 ;; ** 从词库中搜索中文词条
-(defun pyim-cache-get (code &optional dcache-list)
-  "从 DCACHE-LIST 包含的所有 dcache 中搜索 CODE, 得到对应的词条.
+(defun pyim-cache-get (code &optional cache-list)
+  "从 CACHE-LIST 包含的所有 cache 中搜索 CODE, 得到对应的词条.
 
 当词库文件加载完成后，pyim 就可以用这个函数从词库缓存中搜索某个
 code 对应的中文词条了."
-  (let* ((dcache-list (or (and dcache-list (if (listp dcache-list)
-                                               dcache-list
-                                             (list dcache-list)))
-                          (list pyim-dcache-icode2word pyim-dcache-code2word))))
-    (funcall (pyim-backend-api "get") code dcache-list)))
+    (funcall (pyim-backend-api "get") code cache-list))
 
 (defun pyim-string-match-p (regexp string &optional start)
   "与 `string-match-p' 类似，如果 REGEXP 和 STRING 是非字符串时，
@@ -1643,10 +1639,7 @@ code 对应的中文词条了."
     `(,api ,cache ,code ,@body)))
 
 (defun pyim-insert-word-into-icode2word (word pinyin prepend)
-  (pyim-cache-put pyim-dcache-icode2word
-                  pinyin
-                  (if prepend (pyim-list-merge word orig-value)
-                    (pyim-list-merge orig-value word))))
+  (funcall (pyim-backend-api "insert-word-into-icode2word")))
 
 (defun pyim-create-word (word &optional prepend wordcount-handler)
   "将中文词条 WORD 添加拼音后，保存到用户选择过的词生成的缓存中。
