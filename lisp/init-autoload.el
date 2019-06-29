@@ -7,6 +7,7 @@
 (autoload 'dianyou-summary-extract-email-address "dianyou" "" t)
 (autoload 'dianyou-switch-gnus-buffer "dianyou" "" t)
 (autoload 'dianyou-insert-email-address-from-received-mails "dianyou" "" t)
+(autoload 'dianyou-paste-image-from-clipboard "dianyou" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'ivy-recentf "ivy" "" t)
