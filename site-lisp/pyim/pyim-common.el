@@ -1,3 +1,17 @@
+;;; pyim-common.el --- common utilities for pyim
+
+;; * Header
+;; This file has common utilities used by pyim
+
+;;; Commentary:
+
+;; * 说明文档                                                              :doc:
+;; 这个模块包含了被其它文件使用的公用函数. 注意尽量使其最小化因为它
+;; 被其他模块多次重复载入
+
+;;; Code:
+;; * 代码                                                                 :code:
+
 (defvar pyim-debug nil)
 (defvar pyim-iword2count nil "个人词的频率统计.")
 
@@ -15,7 +29,6 @@ pyim 总是使用 emacs-async 包来生成 dcache.
   "一个目录，用于保存 pyim 词库对应的 cache 文件."
   :type 'directory
   :group 'pyim)
-
 
 (defun pyim-get-value-from-file (file)
   "读取保存到 FILE 里面的 value."
@@ -97,6 +110,8 @@ VARIABLE 变量，FORCE-RESTORE 设置为 t 时，强制恢复，变量原来的
                  seperaters)))
     items))
 
+;; * Footer
 (provide 'pyim-common)
+
 ;;; pyim-common.el ends here
 

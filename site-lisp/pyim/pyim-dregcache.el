@@ -1,3 +1,18 @@
+;;; pyim-dregcache --- map dictionary to plain cache and use regular expression to search
+
+;; * Header
+;; This file maps the dictionary plain memory and use regular expression to search dictionary.
+
+;;; Commentary:
+
+;; * 说明文档                                                              :doc:
+;; 这个文件将词典直接映射到内存.使用正则表达式(Regular Expression)搜索词库.
+;; 搜索速度较快,消耗内存极少.
+;;
+;; 可以 (setq pyim-dcache-backend 'pyim-dregcache) 然后重启输入法启用此引擎
+
+;;; Code:
+;; * 代码                                                                 :code:
 (require 'pyim-common)
 (defvar pyim-dregcache-cache nil)
 (defvar pyim-dregcache-icode2word nil)
@@ -242,6 +257,8 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-export-personal-words (file &optional confirm)
   ;; todo => extend export
   )
+
+;; * Footer
 
 (provide 'pyim-dregcache)
 ;;; pyim-dregcache.el ends here
