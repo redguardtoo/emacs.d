@@ -211,12 +211,11 @@
               (total (string-to-number (nth (1- (length params)) params)))
               cmd)
          (if (= total 0) (setq total 4))
-         (when (string-match "^[0-9]+$" total)
-           (setq cmd (format "arecord -fdat -d %s \"%s\""
-                             total
-                             output-file))
+         (setq cmd (format "arecord -fdat -d %s \"%s\""
+                           total
+                           output-file))
            (message "Start recording %s seconds wav ..." total)
-           (my-async-shell-command cmd))))
+           (my-async-shell-command cmd)))
      (defun my-play-both-mp3-and-wav ()
        "Play wav and mp3."
        (interactive)
@@ -235,7 +234,7 @@
 ^File^             ^Misc^                      ^Copy Info^
 ----------------------------------------------------------------
 [_mv_] Move        [_vv_] video2mp3            [_pp_] Path
-[_cf_] New         [_aa_] Record by mp         [_nn_] Name
+[_cf_] New         [_aa_] Record by mp3        [_nn_] Name
 [_rr_] Rename      [_zz_] Play wav&mp3         [_bb_] Base
 [_ff_] Find        [_cc_] Last command         [_dd_] directory
 [_C_]  Copy        [_sa_] Fetch all subtitles
