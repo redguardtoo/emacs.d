@@ -300,7 +300,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
   ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
-(global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
+(global-set-key (kbd "C-c C-h") 'hydra-toggle/body)
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
