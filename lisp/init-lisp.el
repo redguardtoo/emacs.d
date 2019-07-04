@@ -52,6 +52,13 @@
     (transpose-sexps 1)
     (backward-sexp)))
 
+;; @see https://github.com/slime/slime
+(eval-after-load 'slime
+  '(progn
+     ;; Please install sbcl at first
+     (setq inferior-lisp-program "sbcl")
+     (setq slime-contribs '(slime-fancy))))
+
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes
 ;; ----------------------------------------------------------------------------

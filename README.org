@@ -221,6 +221,8 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
 - Tweak environment variable PATH so Emacs find ripgrep
+**** [[http://www.sbcl.org/][sbcl]]
+- Required by [[https://common-lisp.net/project/slime/][SLIME: The Superior Lisp Interaction Mode for Emacs]]
 **** LanguageTool
 It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
