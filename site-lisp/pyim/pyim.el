@@ -1100,7 +1100,7 @@ Only useful when use posframe."
 注意：当使用 minibuffer 为选词框时，这个选项才有用处。"
   :group 'pyim)
 
-(defvar pyim-dcache-backend 'pyim-dhashcache
+(defvar pyim-dcache-backend 'pyim-dregcache
   "词库后端引擎.负责缓冲词库并提供搜索词的算法.
 可选项为 `pyim-dhashcache' 或 `pyim-dregcache'.
 前者搜索单词速度很快,消耗内存多. 后者搜索单词速度较快,消耗内存少.")
