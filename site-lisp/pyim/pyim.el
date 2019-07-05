@@ -986,6 +986,12 @@ pyim 使用函数 `pyim-translate' 来处理特殊功能触发字符。当待输
   :group 'pyim
   :type 'character)
 
+(defcustom pyim-exhibit-delay-ms 100
+  "输入或者删除拼音字符后等待多少毫秒后才显示可选词
+当用户快速输入连续的拼音时可提升用户体验."
+  :group 'pyim
+  :type 'integer)
+
 (defcustom pyim-fuzzy-pinyin-alist
   '(("en" "eng")
     ("in" "ing")
@@ -1281,6 +1287,8 @@ cache 文件的方法让 pyim 正常工作。")
     pyim-punctuation-escape-list)
   "A list of buffer local variable.")
 
+(defvar pyim--exhibit-timer nil)
+
 (dolist (var pyim-local-variable-list)
   (make-variable-buffer-local var)
   (put var 'permanent-local t))
@@ -1573,7 +1581,7 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
 
 当词库文件加载完成后，pyim 就可以用这个函数从词库缓存中搜索某个
 code 对应的中文词条了."
-    (funcall (pyim-dcache-backend-api "get") code cache-list))
+  (funcall (pyim-dcache-backend-api "get") code cache-list))
 
 (defun pyim-pinyin-build-regexp (pinyin &optional match-beginning first-equal all-equal)
   "从 PINYIN 构建一个 regexp，用于搜索联想词，
@@ -1924,20 +1932,24 @@ Return the input string.
 1. 查询拼音字符串 ENTERED 得到被选词列表 `pyim-candidates'
 2. 设置 `pyim-entered' 变量的取值。
 3. 显示备选词等待用户选择。"
-  (let* ((scheme-name (pyim-scheme-name))
-         (class (pyim-scheme-get-option scheme-name :class))
-         (n (pyim-scheme-get-option scheme-name :code-split-length)))
     (setq pyim-entered entered)
     (when (and entered
                (stringp entered)
                (> (length entered) 0))
-      (setq pyim-imobjs (pyim-imobjs-create entered scheme-name))
-      (setq pyim-candidates
-            (or (delete-dups (pyim-candidates-create pyim-imobjs scheme-name))
-                (list pyim-entered)))
-      (setq pyim-candidate-position 1)
-      (pyim-preview-refresh)
-      (pyim-page-refresh))))
+      (when pyim--exhibit-timer (cancel-timer pyim--exhibit-timer))
+      (setq pyim--exhibit-timer
+            (run-with-timer
+             (/ pyim-exhibit-delay-ms 1000.0)
+             nil
+             `(lambda ()
+                (let* ((scheme-name (pyim-scheme-name)))
+                  (setq pyim-imobjs (pyim-imobjs-create pyim-entered scheme-name))
+                  (setq pyim-candidates
+                        (or (delete-dups (pyim-candidates-create pyim-imobjs scheme-name))
+                            (list pyim-entered)))
+                  (setq pyim-candidate-position 1)
+                  (pyim-preview-refresh)
+                  (pyim-page-refresh)))))))
 
 (defun pyim-terminate-translation ()
   "Terminate the translation of the current key."

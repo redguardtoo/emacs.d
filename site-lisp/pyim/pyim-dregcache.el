@@ -162,6 +162,7 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     (let* ((pattern (pyim-dregcache-match-line code))
            (dict-files (pyim-dregcache-all-dict-files))
            result)
+      (if pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s dict-files=%s" code pattern dict-files))
       (dolist (file dict-files)
         (let* ((case-fold-search t)
                (start 0)
@@ -169,7 +170,6 @@ CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
                (content (pyim-dregcache-get-content file-info code))
                (content-size (length content))
                word)
-          (if pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s" code pattern))
           (while (and (< start content-size) (setq start (string-match pattern content start)))
             ;; 提取词
             (setq word (match-string-no-properties 1 content))
