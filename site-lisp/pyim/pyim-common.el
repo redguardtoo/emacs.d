@@ -13,7 +13,7 @@
 ;; * 代码                                                                 :code:
 
 (defvar pyim-debug nil)
-(defvar pyim-iword2count nil "个人词的频率统计.")
+(defvar pyim-dcache-iword2count nil "个人词的频率统计.")
 
 (defvar pyim-prefer-emacs-thread nil
   "是否优先使用 emacs thread 功能来生成 dcache.
@@ -25,28 +25,28 @@ pyim 总是使用 emacs-async 包来生成 dcache.
 不过这个选项开启之后，会显著的减慢词库加载速度，特别是
 五笔等形码输入法。")
 
-(defcustom pyim-hashtable-directory (locate-user-emacs-file "pyim/dcache/")
+(defcustom pyim-dcache-directory (locate-user-emacs-file "pyim/dcache/")
   "一个目录，用于保存 pyim 词库对应的 cache 文件."
   :type 'directory
   :group 'pyim)
 
-(defun pyim-get-value-from-file (file)
+(defun pyim-dcache-get-value-from-file (file)
   "读取保存到 FILE 里面的 value."
   (when (file-exists-p file)
     (with-temp-buffer
       (insert-file-contents file)
       (eval (read (current-buffer))))))
 
-(defun pyim-hashtable-set-variable (variable &optional force-restore fallback-value)
+(defun pyim-dcache-set-variable (variable &optional force-restore fallback-value)
   "设置变量.
 
-如果 VARIABLE 的值为 nil, 则使用 ‘pyim-hashtable-directory’ 中对应文件的内容来设置
+如果 VARIABLE 的值为 nil, 则使用 ‘pyim-dcache-directory’ 中对应文件的内容来设置
 VARIABLE 变量，FORCE-RESTORE 设置为 t 时，强制恢复，变量原来的值将丢失。
 如果获取的变量值为 nil 时，将 VARIABLE 的值设置为 FALLBACK-VALUE ."
   (when (or force-restore (not (symbol-value variable)))
-    (let ((file (concat (file-name-as-directory pyim-hashtable-directory)
+    (let ((file (concat (file-name-as-directory pyim-dcache-directory)
                         (symbol-name variable))))
-      (set variable (or (pyim-get-value-from-file file)
+      (set variable (or (pyim-dcache-get-value-from-file file)
                         fallback-value
                         (make-hash-table :test #'equal))))))
 
@@ -63,12 +63,12 @@ VARIABLE 变量，FORCE-RESTORE 设置为 t 时，强制恢复，变量原来的
       (insert ";; End:")
       (make-directory (file-name-directory file) t)
       (let ((save-silently t))
-        (pyim--write-file file)))))
+        (pyim-dcache-write-file file)))))
 
 
 (defun pyim-dcache-save-variable (variable)
-  "将 VARIABLE 变量的取值保存到 `pyim-hashtable-directory' 中对应文件中."
-  (let ((file (concat (file-name-as-directory pyim-hashtable-directory)
+  "将 VARIABLE 变量的取值保存到 `pyim-dcache-directory' 中对应文件中."
+  (let ((file (concat (file-name-as-directory pyim-dcache-directory)
                       (symbol-name variable)))
         (value (symbol-value variable)))
     (pyim-dcache-save-value-to-file value file)))
@@ -79,7 +79,7 @@ VARIABLE 变量，FORCE-RESTORE 设置为 t 时，强制恢复，变量原来的
   (and pyim-prefer-emacs-thread
        (>= emacs-major-version 26)))
 
-(defun pyim--write-file (filename &optional confirm)
+(defun pyim-dcache-write-file (filename &optional confirm)
   "A helper function to write dcache files."
   (let ((coding-system-for-write 'utf-8-unix))
     (when (and confirm

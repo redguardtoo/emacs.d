@@ -986,9 +986,10 @@ pyim 使用函数 `pyim-translate' 来处理特殊功能触发字符。当待输
   :group 'pyim
   :type 'character)
 
-(defcustom pyim-exhibit-delay-ms 100
+(defcustom pyim-exhibit-delay-ms 150
   "输入或者删除拼音字符后等待多少毫秒后才显示可选词
-当用户快速输入连续的拼音时可提升用户体验."
+当用户快速输入连续的拼音时可提升用户体验.
+如果为 0 或者 nil, 则不等待立刻显示可选词."
   :group 'pyim
   :type 'integer)
 
@@ -1395,8 +1396,8 @@ pyim 是使用 `pyim-start' 来启动输入法，这个命令主要做如下工�
 1. 重置 `pyim-local-variable-list' 中所有的 local 变量。
 2. 使用 `pyim-cchar2pinyin-create-cache' 创建汉字到拼音的 hash table 对应表。
 3. 运行hook： `pyim-load-hook'。
-4. 将 `pyim-save-caches' 命令添加到 `kill-emacs-hook' , emacs 关闭
-之前将用户选择过的词生成的缓存和 `pyim-iword2count'
+4. 将 `pyim-dcache-save-caches' 命令添加到 `kill-emacs-hook' , emacs 关闭
+之前将用户选择过的词生成的缓存和 `pyim-dcache-iword2count'
 保存到文件，供以后使用。
 5. 设定变量：
 1. `input-method-function'
@@ -1414,7 +1415,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   (mapc 'kill-local-variable pyim-local-variable-list)
   (mapc 'make-local-variable pyim-local-variable-list)
   (when (and restart save-personal-cache)
-    (pyim-save-caches))
+    (pyim-dcache-save-caches))
 
   (pyim-init-variables)
 
@@ -1430,8 +1431,8 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
     ;; 这个命令 *当前* 主要用于五笔输入法。
     (funcall (pyim-dcache-backend-api "update:shortcode2word") restart))
 
-  (unless (member 'pyim-save-caches kill-emacs-hook)
-    (add-to-list 'kill-emacs-hook 'pyim-save-caches))
+  (unless (member 'pyim-dcache-save-caches kill-emacs-hook)
+    (add-to-list 'kill-emacs-hook 'pyim-dcache-save-caches))
   (setq input-method-function 'pyim-input-method)
   (setq deactivate-current-input-method-function 'pyim-inactivate)
   ;; (setq describe-current-input-method-function 'pyim-help)
@@ -1503,13 +1504,13 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
 
 (defun pyim-init-variables ()
   "初始化 dcache 缓存相关变量."
-  (pyim-hashtable-set-variable 'pyim-iword2count) ; used by both dcache and dregcache
+  (pyim-dcache-set-variable 'pyim-dcache-iword2count) ; used by both dcache and dregcache
   (funcall (pyim-dcache-backend-api "init-variables")))
 
-(defun pyim-save-caches ()
+(defun pyim-dcache-save-caches ()
   "保存 dcache.
 
-将用户选择过的词生成的缓存和 `pyim-iword2count' 取值
+将用户选择过的词生成的缓存和 `pyim-dcache-iword2count' 取值
 保存到它们对应的文件中.
 
 这个函数默认作为 `kill-emacs-hook' 使用。"
@@ -1526,7 +1527,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   (with-temp-buffer
     (insert ";;; -*- coding: utf-8-unix -*-\n")
     (funcall (pyim-dcache-backend-api "insert-export-content"))
-    (pyim--write-file file confirm)))
+    (pyim-dcache-write-file file confirm)))
 
 (defun pyim-export-personal-words (file &optional confirm)
   "将用户选择过的词生成的缓存导出为 pyim 词库文件.
@@ -1543,7 +1544,7 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   "从 FILE 中导入词条以及词条对应的词频信息。
 
 MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
-词条在 `pyim-iword2count' 中的词频和待导入文件中的词频，
+词条在 `pyim-dcache-iword2count' 中的词频和待导入文件中的词频，
 函数返回值做为合并后的词频使用，默认方式是：取两个词频的最大值。"
   (interactive "F导入词条相关信息文件: ")
   (with-temp-buffer
@@ -1563,13 +1564,13 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
                     (or x 0)
                     count))))
       (forward-line 1)))
-  ;; 保存一下用户选择过的词生成的缓存和 `pyim-iword2count'
+  ;; 保存一下用户选择过的词生成的缓存和 `pyim-dcache-iword2count'
   ;; 两个缓存，因为使用 async 机制更新 dcache 时，需要从 dcache 文件
   ;; 中读取变量值, 然后再对用户选择过的词生成的缓存排序，如果没
   ;; 有这一步骤，导入的词条就会被覆盖，使用 emacs-thread 机制来更新 dcache
   ;; 不存在此问题。
   (unless pyim-prefer-emacs-thread
-    (pyim-save-caches))
+    (pyim-dcache-save-caches))
   ;; 更新相关的 cache
   (funcall (pyim-dcache-backend-api "update-personal-words") t)
 
@@ -1925,6 +1926,18 @@ Return the input string.
       (pyim-outcome-handle 'last-char)
       (pyim-terminate-translation)))))
 
+
+(defun pyim-refresh-ui-with-latest-candidates()
+  "查询拼音字符串 `pyim-enterned', 显示备选词等待用户选择."
+  (let* ((scheme-name (pyim-scheme-name)))
+    (setq pyim-imobjs (pyim-imobjs-create pyim-entered scheme-name))
+    (setq pyim-candidates
+          (or (delete-dups (pyim-candidates-create pyim-imobjs scheme-name))
+              (list pyim-entered)))
+    (setq pyim-candidate-position 1)
+    (pyim-preview-refresh)
+    (pyim-page-refresh)))
+
 (defun pyim-entered-handle (entered)
   "处理用户输入的字符串 ENTERED 的核心函数.
 
@@ -1937,19 +1950,14 @@ Return the input string.
                (stringp entered)
                (> (length entered) 0))
       (when pyim--exhibit-timer (cancel-timer pyim--exhibit-timer))
-      (setq pyim--exhibit-timer
-            (run-with-timer
-             (/ pyim-exhibit-delay-ms 1000.0)
-             nil
-             `(lambda ()
-                (let* ((scheme-name (pyim-scheme-name)))
-                  (setq pyim-imobjs (pyim-imobjs-create pyim-entered scheme-name))
-                  (setq pyim-candidates
-                        (or (delete-dups (pyim-candidates-create pyim-imobjs scheme-name))
-                            (list pyim-entered)))
-                  (setq pyim-candidate-position 1)
-                  (pyim-preview-refresh)
-                  (pyim-page-refresh)))))))
+      (cond
+       ((or (not pyim-exhibit-delay-ms) (eq pyim-exhibit-delay-ms 0))
+        (pyim-refresh-ui-with-latest-candidates))
+       (t
+        (setq pyim--exhibit-timer
+              (run-with-timer (/ pyim-exhibit-delay-ms 1000.0)
+                              nil
+                              #'pyim-refresh-ui-with-latest-candidates))))))
 
 (defun pyim-terminate-translation ()
   "Terminate the translation of the current key."

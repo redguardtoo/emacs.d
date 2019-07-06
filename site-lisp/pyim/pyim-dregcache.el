@@ -23,8 +23,8 @@
   "对个人词库排序."
   (sort pyim-dregcache-icode2word
         #'(lambda (a b)
-            (> (or (gethash (nth 1 (split-string a " ")) pyim-iword2count) 0)
-               (or (gethash (nth 1 (split-string b " ")) pyim-iword2count) 0)))))
+            (> (or (gethash (nth 1 (split-string a " ")) pyim-dcache-iword2count) 0)
+               (or (gethash (nth 1 (split-string b " ")) pyim-dcache-iword2count) 0)))))
 
 (defun pyim-dregcache-create-cache-content (raw-content)
   (let* (rlt)
