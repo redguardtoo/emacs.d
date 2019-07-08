@@ -50,6 +50,9 @@
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
+(defmacro require-init (pkg)
+  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg)) t t))
+
 (defmacro local-require (pkg)
   `(unless (featurep ,pkg)
      (load (expand-file-name
@@ -72,7 +75,6 @@
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
-  (require 'init-elpa)
 
   ;; ;; {{
   ;; (require 'benchmark-init-modes)
@@ -81,62 +83,63 @@
   ;; ;; `benchmark-init/show-durations-tree' to show benchmark result
   ;; ;; }}
 
-  (require 'init-autoload)
+  (require-init 'init-autoload)
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
-  (require 'init-modeline)
-  (require 'init-utils)
-  (require 'init-exec-path) ;; Set up $PATH
+  (require-init 'init-modeline)
+  (require-init 'init-utils)
+  (require-init 'init-elpa)
+  (require-init 'init-exec-path) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
-  (require 'init-spelling)
-  (require 'init-gui-frames)
-  (require 'init-uniquify)
-  (require 'init-ibuffer)
-  (require 'init-ivy)
-  (require 'init-hippie-expand)
-  (require 'init-windows)
-  (require 'init-markdown)
-  (require 'init-javascript)
-  (require 'init-org)
-  (require 'init-css)
-  (require 'init-python)
-  (require 'init-ruby-mode)
-  (require 'init-lisp)
-  (require 'init-elisp)
-  (require 'init-yasnippet)
-  (require 'init-cc-mode)
-  (require 'init-gud)
-  (require 'init-linum-mode)
-  (require 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
-  ;; (require 'init-gist)
-  (require 'init-gtags)
+  (require-init 'init-spelling)
+  (require-init 'init-gui-frames)
+  (require-init 'init-uniquify)
+  (require-init 'init-ibuffer)
+  (require-init 'init-ivy)
+  (require-init 'init-hippie-expand)
+  (require-init 'init-windows)
+  (require-init 'init-markdown)
+  (require-init 'init-javascript)
+  (require-init 'init-org)
+  (require-init 'init-css)
+  (require-init 'init-python)
+  (require-init 'init-ruby-mode)
+  (require-init 'init-lisp)
+  (require-init 'init-elisp)
+  (require-init 'init-yasnippet)
+  (require-init 'init-cc-mode)
+  (require-init 'init-gud)
+  (require-init 'init-linum-mode)
+  (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
+  ;; (require-init 'init-gist)
+  (require-init 'init-gtags)
   ;; init-evil dependent on init-clipboard
-  (require 'init-clipboard)
+  (require-init 'init-clipboard)
   ;; use evil mode (vi key binding)
-  (require 'init-evil)
-  (require 'init-ctags)
-  (require 'init-bbdb)
-  (require 'init-gnus)
-  (require 'init-lua-mode)
-  (require 'init-workgroups2)
-  (require 'init-term-mode)
-  (require 'init-web-mode)
-  (require 'init-company)
-  (require 'init-chinese) ;; cannot be idle-required
+  (require-init 'init-evil)
+  (require-init 'init-ctags)
+  (require-init 'init-bbdb)
+  (require-init 'init-gnus)
+  (require-init 'init-lua-mode)
+  (require-init 'init-workgroups2)
+  (require-init 'init-term-mode)
+  (require-init 'init-web-mode)
+  (require-init 'init-company)
+  (require-init 'init-chinese) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
-  (require 'init-keyfreq)
-  (require 'init-httpd)
+  (require-init 'init-keyfreq)
+  (require-init 'init-httpd)
 
   ;; projectile costs 7% startup time
 
   ;; misc has some crucial tools I need immediately
-  (require 'init-misc)
+  (require-init 'init-misc)
 
-  (require 'init-emacs-w3m)
-  (require 'init-hydra)
-  (require 'init-shackle)
-  (require 'init-dired)
-  (require 'init-writting)
+  (require-init 'init-emacs-w3m)
+  (require-init 'init-hydra)
+  (require-init 'init-shackle)
+  (require-init 'init-dired)
+  (require-init 'init-writting)
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
@@ -150,7 +153,7 @@
   (load (expand-file-name "~/.custom.el") t nil)
 
   ;; {{ `evil-matchit' could use setup in".custom.el"
-  (when my-use-m-for-matchit
+  (when (and (boundp 'my-use-m-for-matchit) my-use-m-for-matchit)
     (setq evilmi-shortcut "m"))
   (global-evil-matchit-mode 1)
   ;; }}
