@@ -1,7 +1,11 @@
 ;;; pyim-dregcache --- map dictionary to plain cache and use regular expression to search
 
 ;; * Header
-;; This file maps the dictionary plain memory and use regular expression to search dictionary.
+;; Copyright 2019 Chen Bin
+
+;; Author: Chen Bin <chenbin.sh@gmail.com>
+
+;; This file maps dictionary into plain memory. Regular expression is used to find words.
 
 ;;; Commentary:
 
@@ -19,12 +23,33 @@
 (defvar pyim-dregcache-dicts-md5 nil)
 (defvar pyim-dregcache-cache nil)
 
+(defun pyim-dregcache-variable-file (variable)
+  (concat (file-name-as-directory pyim-dcache-directory)
+          (symbol-name variable)))
+
+(defun pyim-dregcache-save-variable (variable value)
+  (let* ((file (pyim-dregcache-variable-file variable))
+         (save-silently t))
+    (make-directory (file-name-directory file) t)
+    (with-temp-buffer
+      (insert value)
+      (pyim-dcache-write-file file))))
+
+(defun pyim-dregcache-load-variable (variable)
+  "载入 VARIABLE 对应的文件内容."
+  (with-temp-buffer
+    (insert-file-contents (pyim-dregcache-variable-file variable))
+    (buffer-string)))
+
 (defun pyim-dregcache-sort-icode2word ()
   "对个人词库排序."
-  (sort pyim-dregcache-icode2word
-        #'(lambda (a b)
-            (> (or (gethash (nth 1 (split-string a " ")) pyim-dcache-iword2count) 0)
-               (or (gethash (nth 1 (split-string b " ")) pyim-dcache-iword2count) 0)))))
+  (setq pyim-dregcache-icode2word
+        (sort pyim-dregcache-icode2word
+              #'(lambda (a b)
+                  (> (or (gethash (nth 1 (split-string a " "))
+                                  pyim-dcache-iword2count) 0)
+                     (or (gethash (nth 1 (split-string b " "))
+                                  pyim-dcache-iword2count) 0))))))
 
 (defun pyim-dregcache-create-cache-content (raw-content)
   (let* (rlt)
@@ -170,7 +195,8 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
                (content (pyim-dregcache-get-content file-info code))
                (content-size (length content))
                word)
-          (while (and (< start content-size) (setq start (string-match pattern content start)))
+          (while (and (< start content-size)
+                      (setq start (string-match pattern content start)))
             ;; 提取词
             (setq word (match-string-no-properties 1 content))
             (cond
@@ -185,8 +211,18 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
       `(,@result ,@(pyim-pinyin2cchar-get code t t)))))
 
 (defun pyim-dregcache-update-personal-words (&optional force)
-  "Could update iword2count. TODO!"
-  )
+  "载入 `pyim-dregcache-icode2word' . 加载排序后的结果.
+
+在这个过程中使用了 `pyim-dcache-iword2count' 中记录的词频信息。
+如果 FORCE 为真，强制排序"
+  (let* ((content (pyim-dregcache-load-variable 'pyim-dregcache-icode2word))
+         (lines (split-string content "\n") ))
+    (when (and lines (> (length lines) 0))
+      (setq pyim-dregcache-icode2word
+            ;; unique list
+            (delq nil (delete-dups (append pyim-dregcache-icode2word lines)))))
+    (when (and force pyim-dregcache-icode2word)
+      (pyim-dregcache-sort-icode2word))))
 
 (defun pyim-dregcache-update:shortcode2word (&optional restart)
   "Dummy function."
@@ -194,12 +230,21 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 
 (defun pyim-dregcache-init-variables ()
   "初始化 cache 缓存相关变量."
+  ;; (pyim-dcache-set-variable 'pyim-dregcache-icode2word)
   )
 
+(defun pyim-dregcache-icode2word-formatted ()
+  "个人词库格式化以便存入文件."
+  (mapconcat 'identity pyim-dregcache-icode2word "\n"))
+
 (defun pyim-dregcache-save-personal-dcache-to-file ()
-  ;; todo => 用户选择过的词
-  ;; todo => 词频
-  )
+  "保存缓存内容到默认目录."
+  (if pyim-debug (message "pyim-dregcache-save-personal-dcache-to-file called"))
+  ;; 用户选择过的词存为标准辞典格式保存
+  (pyim-dregcache-save-variable 'pyim-dregcache-icode2word
+                                (pyim-dregcache-icode2word-formatted))
+  ;; 词频
+  (pyim-dcache-save-variable 'pyim-dcache-iword2count))
 
 (defun pyim-dregcache-insert-export-content ()
   "TODO"
@@ -207,8 +252,16 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 
 (defun pyim-dregcache-put-iword2count (word &optional prepend wordcount-handler)
   "保存词频到缓存."
-  ;; TODO
-  )
+  (if pyim-debug (message "pyim-dregcache-put-iword2count. word=%s" word))
+  (let* ((orig-value (gethash word pyim-dcache-iword2count))
+         (new-value (cond
+                     ((functionp wordcount-handler)
+                      (funcall wordcount-handler orig-value))
+                     ((numberp wordcount-handler)
+                      wordcount-handler)
+                     (t (+ (or orig-value 0) 1)))))
+    (unless (equal orig-value new-value)
+      (puthash word new-value pyim-dcache-iword2count))))
 
 (defun pyim-dregcache-delete-word-1 (word)
   "TODO"
@@ -221,11 +274,12 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
              word
              code
              prepend))
-  (setq pyim-dregcache-icode2word
-        (add-to-list 'pyim-dregcache-icode2word
-                     ;; 和其他词库缓存一行的格式一样以共享正则搜索算法
-                     (format "%s %s" code word)
-                     (not prepend))))
+  (let* ((cand (format "%s %s" code word)))
+    (unless (member cand pyim-dregcache-icode2word)
+      (add-to-list 'pyim-dregcache-icode2word
+                   ;; 和其他词库缓存一行的格式一样以共享正则搜索算法
+                   cand
+                   (not prepend)))))
 
 (defun pyim-dregcache-search-word-code (string)
   "TODO"
@@ -255,11 +309,12 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     rlt))
 
 (defun pyim-dregcache-export-personal-words (file &optional confirm)
-  ;; todo => extend export
-  )
+  "将个人词库存入 FILE."
+  (with-temp-buffer
+    (insert (pyim-dregcache-icode2word-formatted))
+    (pyim-dcache-write-file file confirm)))
 
 ;; * Footer
 
 (provide 'pyim-dregcache)
 ;;; pyim-dregcache.el ends here
-
