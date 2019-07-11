@@ -510,8 +510,6 @@ You can also complete line by =M-x eacl-complete-line= and complete multi-lines 
 Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
 Dictionnaries with ".pyim" extension under  =~/.eim/= are automatically loaded.
-
-You can =M-x my-pyim-export-dictionary= to export to personal dictionary.
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash

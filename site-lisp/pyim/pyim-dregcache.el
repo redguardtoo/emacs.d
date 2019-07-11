@@ -155,9 +155,9 @@
       (setq rlt (nth idx rlt)))
     rlt))
 
-(defun pyim-dregcache-get (code &optional cache-list)
+(defun pyim-dregcache-get (code &optional dcache-list)
   "从 `pyim-dregcache-cache' 搜索 CODE, 得到对应的词条.
-CACHE-LIST 只是符号而已,并不代表真实的缓存数据."
+DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
   (when pyim-dregcache-cache
     (let* ((pattern (pyim-dregcache-match-line code))
            (dict-files (pyim-dregcache-all-dict-files))
