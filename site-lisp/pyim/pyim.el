@@ -408,6 +408,12 @@
 
 ;; ** Tips
 
+;; *** 关闭输入联想词功能 (默认开启)
+
+;; #+BEGIN_EXAMPLE
+;; (setq pyim-enable-shortcode nil)
+;; #+END_EXAMPLE
+
 ;; *** 如何将个人词条相关信息导入和导出？
 
 ;; 1. 导入使用命令： pyim-import
@@ -613,6 +619,11 @@ plist 来表示，比如：
 用于和 elpa 格式的词库包集成。"
   :group 'pyim
   :type 'list)
+
+(defcustom pyim-enable-shortcode t
+  "启用输入联想词功能."
+  :group 'pyim
+  :type 'boolean)
 
 (defcustom pyim-punctuation-dict
   '(("'" "‘" "’")
@@ -2331,11 +2342,11 @@ IMOBJS 获得候选词条。"
          ;; 搜索首字母得到的联想词太多，这里限制联想词要大于两个汉字并且只搜索
          ;; 个人文件。
          (jianpin-words
-          (when (> (length (car imobjs)) 1)
+          (when (and (> (length (car imobjs)) 1) pyim-enable-shortcode)
             (funcall (pyim-dcache-backend-api "get-ishortcode2word")
-             (mapconcat #'identity
-                        (pyim-codes-create (car imobjs) scheme-name 1)
-                        "-"))))
+                     (mapconcat #'identity
+                                (pyim-codes-create (car imobjs) scheme-name 1)
+                                "-"))))
          znabc-words
          pinyin-chars
          personal-words
@@ -2355,13 +2366,17 @@ IMOBJS 获得候选词条。"
     (dolist (imobj imobjs)
       (setq personal-words
             (append personal-words
-                    (funcall (pyim-dcache-backend-api "get-icode2word-ishortcode2word")
+                    (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
+                                                          "get-icode2word-ishortcode2word"
+                                                        "get-icode2word"))
                              (mapconcat #'identity
                                         (pyim-codes-create imobj scheme-name)
                                         "-"))))
       (setq common-words
             (append common-words
-                    (funcall (pyim-dcache-backend-api "get-code2word-shortcode2word")
+                    (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
+                                                          "get-code2word-shortcode2word"
+                                                        "get-code2word"))
                      (mapconcat #'identity
                                 (pyim-codes-create imobj scheme-name)
                                 "-"))))
@@ -2982,7 +2997,7 @@ pyim 的 translate-trigger-char 要占用一个键位，为了防止用户
          (prefer-trigger-chars (pyim-scheme-get-option
                                 (pyim-scheme-name)
                                 :prefer-trigger-chars)))
-    (if (pyim-string-match-p user-trigger-char first-char)
+    (if (pyim-string-match-p (regexp-quote user-trigger-char) first-char)
         (progn
           ;; (message "注意：pyim-translate-trigger-char 设置和当前输入法冲突，使用推荐设置：\"%s\""
           ;;          prefer-trigger-chars)

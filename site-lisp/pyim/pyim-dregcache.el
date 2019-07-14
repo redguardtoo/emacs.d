@@ -24,10 +24,12 @@
 (defvar pyim-dregcache-cache nil)
 
 (defun pyim-dregcache-variable-file (variable)
+  "Get VARIABLE dcache file path."
   (concat (file-name-as-directory pyim-dcache-directory)
           (symbol-name variable)))
 
 (defun pyim-dregcache-save-variable (variable value)
+  "Save VARIABLE with its VALUE."
   (let* ((file (pyim-dregcache-variable-file variable))
          (save-silently t))
     (make-directory (file-name-directory file) t)
@@ -37,9 +39,11 @@
 
 (defun pyim-dregcache-load-variable (variable)
   "载入 VARIABLE 对应的文件内容."
-  (with-temp-buffer
-    (insert-file-contents (pyim-dregcache-variable-file variable))
-    (buffer-string)))
+  (let* ((file (pyim-dregcache-variable-file variable)))
+    (when (and file (file-exists-p file))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (buffer-string)))))
 
 (defun pyim-dregcache-sort-icode2word ()
   "对个人词库排序."
@@ -52,6 +56,7 @@
                                   pyim-dcache-iword2count) 0))))))
 
 (defun pyim-dregcache-create-cache-content (raw-content)
+  "将 RAW-CONTENT 划分成可以更高效搜索的缓冲区."
   (let* (rlt)
     (cond
      ;; 小于1M的词库不用划分"子搜索区域"
@@ -110,6 +115,8 @@
 读取 `pyim-dicts' 和 `pyim-extra-dicts' 里面的词库文件，生成对应的
 词库缓冲文件，然后加载词库缓存。
 
+DICT-FILES 是词库文件列表. DICTS-MD5 是词库的MD5校验码.
+
 如果 FORCE 为真，强制加载。"
   (interactive)
   (when (or force (not (equal dicts-md5 pyim-dregcache-dicts-md5)))
@@ -162,7 +169,8 @@
         (push item rlt)))
     rlt))
 
-(defun pyim-dregcache-get-content (file-info code)
+(defun pyim-dregcache-get-content (code file-info)
+  "找到 CODE 对应的字典子缓冲区.  FILE-INFO 是字典文件的所有信息."
   (let* ((rlt (plist-get file-info :content))
          idx
          (ch (elt code 0)))
@@ -187,12 +195,12 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     (let* ((pattern (pyim-dregcache-match-line code))
            (dict-files (pyim-dregcache-all-dict-files))
            result)
-      (if pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s dict-files=%s" code pattern dict-files))
+      (when pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s dict-files=%s" code pattern dict-files))
       (dolist (file dict-files)
         (let* ((case-fold-search t)
                (start 0)
                (file-info (lax-plist-get pyim-dregcache-cache file))
-               (content (pyim-dregcache-get-content file-info code))
+               (content (pyim-dregcache-get-content code file-info))
                (content-size (length content))
                word)
           (while (and (< start content-size)
@@ -216,7 +224,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 在这个过程中使用了 `pyim-dcache-iword2count' 中记录的词频信息。
 如果 FORCE 为真，强制排序"
   (let* ((content (pyim-dregcache-load-variable 'pyim-dregcache-icode2word))
-         (lines (split-string content "\n") ))
+         (lines (and content (split-string content "\n"))))
     (when (and lines (> (length lines) 0))
       (setq pyim-dregcache-icode2word
             ;; unique list
@@ -239,7 +247,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 
 (defun pyim-dregcache-save-personal-dcache-to-file ()
   "保存缓存内容到默认目录."
-  (if pyim-debug (message "pyim-dregcache-save-personal-dcache-to-file called"))
+  (when pyim-debug (message "pyim-dregcache-save-personal-dcache-to-file called"))
   ;; 用户选择过的词存为标准辞典格式保存
   (pyim-dregcache-save-variable 'pyim-dregcache-icode2word
                                 (pyim-dregcache-icode2word-formatted))
@@ -252,7 +260,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 
 (defun pyim-dregcache-put-iword2count (word &optional prepend wordcount-handler)
   "保存词频到缓存."
-  (if pyim-debug (message "pyim-dregcache-put-iword2count. word=%s" word))
+  (when pyim-debug (message "pyim-dregcache-put-iword2count. word=%s" word))
   (let* ((orig-value (gethash word pyim-dcache-iword2count))
          (new-value (cond
                      ((functionp wordcount-handler)
@@ -287,18 +295,17 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 
 (defun pyim-dregcache-get-code2word-shortcode2word (code)
   "以 CODE 搜索词和联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-code2word-shortcode2word called => %s" code))
   (pyim-dregcache-get code))
 
 (defun pyim-dregcache-get-code2word (code)
   "以 CODE 现有词库搜索词."
-  (pyim-dregcache-get code))
-
-(defun pyim-dregcache-get-ishortcode2word (code)
-  "以 CODE 搜索个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-code2word called => %s" code))
   (pyim-dregcache-get code))
 
 (defun pyim-dregcache-get-icode2word-ishortcode2word (code)
   "以 CODE 搜索个人词和个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-icode2word-ishortcode2word called => %s" code))
   (let* ((pattern (pyim-dregcache-match-line code))
          rlt)
     ;; pattern already matches BOTH code and shortcode
@@ -307,6 +314,16 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
         (when (string-match pattern line)
           (push (nth 1 (split-string line " ")) rlt))))
     rlt))
+
+(defun pyim-dregcache-get-icode2word (code)
+  "以 CODE 搜索个人词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-icode2word called => %s" code))
+  (pyim-dregcache-get-icode2word-ishortcode2word code))
+
+(defun pyim-dregcache-get-ishortcode2word (code)
+  "以 CODE 搜索个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-ishortcode2word called => %s" code))
+  (pyim-dregcache-get-icode2word-ishortcode2word code))
 
 (defun pyim-dregcache-export-personal-words (file &optional confirm)
   "将个人词库存入 FILE."

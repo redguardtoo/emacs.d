@@ -53,6 +53,8 @@
   '(progn
      ;; use memory efficient pyim engine
      (setq pyim-dcache-backend 'pyim-dregcache)
+     ;; don's use shortcode2word
+     (setq pyim-enable-shortcode nil)
 
      ;; use western punctuation (ban jiao fu hao)
      (setq pyim-punctuation-dict nil)
