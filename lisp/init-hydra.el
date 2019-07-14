@@ -231,14 +231,15 @@
                 (copy-yank-str (funcall fn (dired-file-name-at-point)))))
      (defhydra hydra-dired (:color blue)
        "
-^File^             ^Misc^                      ^Copy Info^
+^Misc^                      ^File^             ^Copy Info^
 ----------------------------------------------------------------
-[_mv_] Move        [_vv_] video2mp3            [_pp_] Path
-[_cf_] New         [_aa_] Record by mp3        [_nn_] Name
-[_rr_] Rename      [_zz_] Play wav&mp3         [_bb_] Base
-[_ff_] Find        [_cc_] Last command         [_dd_] directory
-[_C_]  Copy        [_sa_] Fetch all subtitles
-[_rb_] Change base [_s1_] Fetch on subtitle
+[_vv_] video2mp3            [_R_] Move         [_pp_] Path
+[_aa_] Record by mp3        [_cf_] New         [_nn_] Name
+[_zz_] Play wav&mp3         [_rr_] Rename      [_bb_] Base
+[_cc_] Last command         [_ff_] Find        [_dd_] directory
+[_sa_] Fetch all subtitles  [_C_]  Copy
+[_s1_] Fetch on subtitle    [_rb_] Change base
+[_+_] Create directory
 "
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
        ("s1" (let* ((video-file (dired-file-name-at-point))
@@ -254,13 +255,13 @@
        ("cc" my-dired-redo-last-command)
        ("zz" my-play-both-mp3-and-wav)
        ("C" dired-do-copy)
-       ("mv" diredp-do-move-recursive)
+       ("R" dired-rename-file)
        ("cf"find-file)
        ("rr" dired-toggle-read-only)
        ("ff" (lambda (regexp)
                (interactive "sMatching regexp: ")
                (find-lisp-find-dired default-directory regexp)))
-       ("mk" dired-create-directory)
+       ("+" dired-create-directory)
        ("q" nil))))
 
 (defun dired-mode-hook-hydra-setup ()
