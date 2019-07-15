@@ -20,6 +20,7 @@
 (require 'pyim-common)
 (defvar pyim-dregcache-cache nil)
 (defvar pyim-dregcache-icode2word nil)
+(defvar pyim-dregcache-iword2count nil)
 (defvar pyim-dregcache-dicts-md5 nil)
 (defvar pyim-dregcache-cache nil)
 
@@ -51,9 +52,9 @@
         (sort pyim-dregcache-icode2word
               #'(lambda (a b)
                   (> (or (gethash (nth 1 (split-string a " "))
-                                  pyim-dcache-iword2count) 0)
+                                  pyim-dregcache-iword2count) 0)
                      (or (gethash (nth 1 (split-string b " "))
-                                  pyim-dcache-iword2count) 0))))))
+                                  pyim-dregcache-iword2count) 0))))))
 
 (defun pyim-dregcache-create-cache-content (raw-content)
   "将 RAW-CONTENT 划分成可以更高效搜索的缓冲区."
@@ -106,8 +107,8 @@
           ;; use string type as key, so have to use `lax-plist-put'
           ;; @see https://www.gnu.org/software/emacs/manual/html_node/elisp/Plist-Access.html#Plist-Access
           (lax-plist-put pyim-dregcache-cache
-                     (file-truename dict-file)
-                     (pyim-dregcache-create-cache-content raw-content)))))
+                         (file-truename dict-file)
+                         (pyim-dregcache-create-cache-content raw-content)))))
 
 (defun pyim-dregcache-update:code2word (dict-files dicts-md5 &optional force)
   "读取并加载词库.
@@ -126,7 +127,7 @@ DICT-FILES 是词库文件列表. DICTS-MD5 是词库的MD5校验码.
     (setq pyim-dregcache-dicts-md5 dicts-md5)))
 
 (defmacro pyim-dregcache-shenmu2regexp (char)
-"将声母 CHAR 转换为通用正则表达式匹配所有以该声母开头的汉字."
+  "将声母 CHAR 转换为通用正则表达式匹配所有以该声母开头的汉字."
   `(concat ,char "[a-z]*"))
 
 (defmacro pyim-dregcache-is-shenmu (code)
@@ -221,7 +222,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-update-personal-words (&optional force)
   "载入 `pyim-dregcache-icode2word' . 加载排序后的结果.
 
-在这个过程中使用了 `pyim-dcache-iword2count' 中记录的词频信息。
+在这个过程中使用了 `pyim-dregcache-iword2count' 中记录的词频信息。
 如果 FORCE 为真，强制排序"
   (let* ((content (pyim-dregcache-load-variable 'pyim-dregcache-icode2word))
          (lines (and content (split-string content "\n"))))
@@ -239,7 +240,15 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-init-variables ()
   "初始化 cache 缓存相关变量."
   ;; (pyim-dcache-set-variable 'pyim-dregcache-icode2word)
-  )
+  (pyim-dcache-set-variable
+   'pyim-dregcache-iword2count
+   nil
+   ;; dregcache 引擎也需要词频信息，第一次使用 dregcache 引擎的时候，
+   ;; 自动导入 dhashcache 引擎的词频信息，以后两个引擎的词频信息就
+   ;; 完全分开了。
+   (let ((file (concat (file-name-as-directory pyim-dcache-directory)
+                       "pyim-dhashcache-iword2count")))
+     (pyim-dcache-get-value-from-file file))))
 
 (defun pyim-dregcache-icode2word-formatted ()
   "个人词库格式化以便存入文件."
@@ -252,7 +261,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
   (pyim-dregcache-save-variable 'pyim-dregcache-icode2word
                                 (pyim-dregcache-icode2word-formatted))
   ;; 词频
-  (pyim-dcache-save-variable 'pyim-dcache-iword2count))
+  (pyim-dcache-save-variable 'pyim-dregcache-iword2count))
 
 (defun pyim-dregcache-insert-export-content ()
   "TODO"
@@ -261,7 +270,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-put-iword2count (word &optional prepend wordcount-handler)
   "保存词频到缓存."
   (when pyim-debug (message "pyim-dregcache-put-iword2count. word=%s" word))
-  (let* ((orig-value (gethash word pyim-dcache-iword2count))
+  (let* ((orig-value (gethash word pyim-dregcache-iword2count))
          (new-value (cond
                      ((functionp wordcount-handler)
                       (funcall wordcount-handler orig-value))
@@ -269,7 +278,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
                       wordcount-handler)
                      (t (+ (or orig-value 0) 1)))))
     (unless (equal orig-value new-value)
-      (puthash word new-value pyim-dcache-iword2count))))
+      (puthash word new-value pyim-dregcache-iword2count))))
 
 (defun pyim-dregcache-delete-word-1 (word)
   "TODO"

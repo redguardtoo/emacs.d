@@ -13,7 +13,6 @@
 ;; * 代码                                                                 :code:
 
 (defvar pyim-debug nil)
-(defvar pyim-dcache-iword2count nil "个人词的频率统计.")
 
 (defvar pyim-prefer-emacs-thread nil
   "是否优先使用 emacs thread 功能来生成 dcache.

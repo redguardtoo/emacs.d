@@ -1239,6 +1239,12 @@ dcache 文件的方法让 pyim 正常工作。")
 (defvar pyim-page-tooltip-posframe-buffer " *pyim-page-tooltip-posframe-buffer*"
   "这个变量用来保存做为 page tooltip 的 posframe 的 buffer.")
 
+(defconst pyim-shuangpin-invalid-pinyin-regexp
+  "^\\([qtghklzcsdn]o\\|[rypfbmw]uo\\|[qj]ong\\|[rtysdghklzxcn]iong\\|[qtypdjlxbnm]uai\\|[ghk]ing?\\|[qjklxn]uang\\|[dgh]iang\\|[qjlxg]ia\\|[hk]ia\\|[rtsdghkzc]v\\|[jl]ui\\)$"
+  "双拼可能自动产生的无效拼音. 例如输入 kk 得到有效拼音 kuai .
+但同时产生了无效拼音 king .  用户手动输入的无效拼音无需考虑.
+因为用户有即时界面反馈,不可能连续输入无效拼音.")
+
 (defvar pyim-rime-limit 50
   "当 pyim 使用 `liberime-search' 来获取词条时，这个变量用来限制
 `liberime-search' 返回词条的数量。")
@@ -1411,8 +1417,7 @@ pyim 是使用 `pyim-start' 来启动输入法，这个命令主要做如下工�
 2. 使用 `pyim-cchar2pinyin-create-cache' 创建汉字到拼音的 hash table 对应表。
 3. 运行hook： `pyim-load-hook'。
 4. 将 `pyim-dcache-save-caches' 命令添加到 `kill-emacs-hook' , emacs 关闭
-之前将用户选择过的词生成的缓存和 `pyim-dcache-iword2count'
-保存到文件，供以后使用。
+之前将用户选择过的词生成的缓存和词频缓存保存到文件，供以后使用。
 5. 设定变量：
 1. `input-method-function'
 2. `deactivate-current-input-method-function'
@@ -1539,13 +1544,12 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
 
 (defun pyim-dcache-init-variables ()
   "初始化 dcache 缓存相关变量."
-  (pyim-dcache-set-variable 'pyim-dcache-iword2count) ; used by both dcache and dregcache
   (funcall (pyim-dcache-backend-api "init-variables")))
 
 (defun pyim-dcache-save-caches ()
   "保存 dcache.
 
-将用户选择过的词生成的缓存和 `pyim-dcache-iword2count' 取值
+将用户选择过的词生成的缓存和词频缓存的取值
 保存到它们对应的文件中.
 
 这个函数默认作为 `kill-emacs-hook' 使用。"
@@ -1579,8 +1583,8 @@ pyim 使用函数 `pyim-start' 启动输入法的时候，会将变量
   "从 FILE 中导入词条以及词条对应的词频信息。
 
 MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
-词条在 `pyim-dcache-iword2count' 中的词频和待导入文件中的词频，
-函数返回值做为合并后的词频使用，默认方式是：取两个词频的最大值。"
+词条在词频缓存中的词频和待导入文件中的词频，函数返回值做为合并后的词频使用，
+默认方式是：取两个词频的最大值。"
   (interactive "F导入词条相关信息文件: ")
   (with-temp-buffer
     (let ((coding-system-for-read 'utf-8-unix))
@@ -1599,8 +1603,8 @@ MERGE-METHOD 是一个函数，这个函数需要两个数字参数，代表
                     (or x 0)
                     count))))
       (forward-line 1)))
-  ;; 保存一下用户选择过的词生成的缓存和 `pyim-dcache-iword2count'
-  ;; 两个缓存，因为使用 async 机制更新 dcache 时，需要从 dcache 文件
+  ;; 保存一下用户选择过的词生成的缓存和词频缓存，
+  ;; 因为使用 async 机制更新 dcache 时，需要从 dcache 文件
   ;; 中读取变量值, 然后再对用户选择过的词生成的缓存排序，如果没
   ;; 有这一步骤，导入的词条就会被覆盖，使用 emacs-thread 机制来更新 dcache
   ;; 不存在此问题。
@@ -1980,19 +1984,19 @@ Return the input string.
 1. 查询拼音字符串 ENTERED 得到被选词列表 `pyim-candidates'
 2. 设置 `pyim-entered' 变量的取值。
 3. 显示备选词等待用户选择。"
-    (setq pyim-entered entered)
-    (when (and entered
-               (stringp entered)
-               (> (length entered) 0))
-      (when pyim--exhibit-timer (cancel-timer pyim--exhibit-timer))
-      (cond
-       ((or (not pyim-exhibit-delay-ms) (eq pyim-exhibit-delay-ms 0))
-        (pyim-refresh-ui-with-latest-candidates))
-       (t
-        (setq pyim--exhibit-timer
-              (run-with-timer (/ pyim-exhibit-delay-ms 1000.0)
-                              nil
-                              #'pyim-refresh-ui-with-latest-candidates))))))
+  (setq pyim-entered entered)
+  (when (and entered
+             (stringp entered)
+             (> (length entered) 0))
+    (when pyim--exhibit-timer (cancel-timer pyim--exhibit-timer))
+    (cond
+     ((or (not pyim-exhibit-delay-ms) (eq pyim-exhibit-delay-ms 0))
+      (pyim-refresh-ui-with-latest-candidates))
+     (t
+      (setq pyim--exhibit-timer
+            (run-with-timer (/ pyim-exhibit-delay-ms 1000.0)
+                            nil
+                            #'pyim-refresh-ui-with-latest-candidates))))))
 
 (defun pyim-terminate-translation ()
   "Terminate the translation of the current key."
@@ -2169,14 +2173,19 @@ Return the input string.
              (sp-sm (when sp-sm (char-to-string sp-sm)))
              (sp-ym (when sp-ym (char-to-string sp-ym)))
              (sm (nth 1 (assoc sp-sm keymaps)))
-             (ym (cdr (cdr (assoc sp-ym keymaps)))))
-        (push (mapcar
-               #'(lambda (x)
-                   (let* ((y (concat sp-sm (or sp-ym " ")))
-                          (z (cadr (assoc y keymaps))))
-                     (if z (cons "" z) (cons sm x))))
-               (or ym (list "")))
-              results)))
+             (ym (or (cdr (cdr (assoc sp-ym keymaps))) (list "")))
+             one-word-pinyins)
+
+        (dolist (x ym)
+          (let* ((y (concat sp-sm (or sp-ym " ")))
+                 (z (cadr (assoc y keymaps)))
+                 (py (if z (cons "" z) (cons sm x))))
+            (unless (string-match-p pyim-shuangpin-invalid-pinyin-regexp
+                                    (concat (car py) (cdr py)))
+              (push py one-word-pinyins))))
+
+        (when (and one-word-pinyins (> (length one-word-pinyins) 0))
+          (push one-word-pinyins results))))
     (pyim-imobjs-find-fuzzy:quanpin
      (pyim-permutate-list (nreverse results)))))
 
@@ -2317,7 +2326,7 @@ IMOBJS 获得候选词条。"
               (remove "" (or (mapcar #'(lambda (x)
                                          (concat str x))
                                      (funcall (pyim-dcache-backend-api "get-code2word-shortcode2word")
-                                      output1))
+                                              output1))
                              (list str))))
         (setq result (append result output3))))
     (when (car result)
@@ -2377,9 +2386,9 @@ IMOBJS 获得候选词条。"
                     (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
                                                           "get-code2word-shortcode2word"
                                                         "get-code2word"))
-                     (mapconcat #'identity
-                                (pyim-codes-create imobj scheme-name)
-                                "-"))))
+                             (mapconcat #'identity
+                                        (pyim-codes-create imobj scheme-name)
+                                        "-"))))
       (setq pinyin-chars
             (append pinyin-chars
                     (pyim-dcache-get
