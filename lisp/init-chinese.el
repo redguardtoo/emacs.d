@@ -61,12 +61,12 @@
      (setq default-input-method "pyim")
 
      ;; automatically load all "*.pyim" under "~/.eim/"
-     (let* ((files (directory-files-and-attributes my-pyim-directory t "\.pyim$")))
+     ;; `directory-files-recursively' requires Emacs 25
+     (let* ((files (directory-files-recursively my-pyim-directory "\.pyim$")))
        (when (> (length files) 0)
          (setq pyim-dicts
                (mapcar (lambda (f)
-                         (list :name (file-name-base (car f))
-                               :file (car f)))
+                         (list :name (file-name-base f) :file f))
                        files))))
      (pyim-basedict-enable)
 
