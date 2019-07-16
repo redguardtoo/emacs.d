@@ -1240,7 +1240,7 @@ dcache 文件的方法让 pyim 正常工作。")
   "这个变量用来保存做为 page tooltip 的 posframe 的 buffer.")
 
 (defconst pyim-shuangpin-invalid-pinyin-regexp
-  "^\\([qtghklzcsdn]o\\|[rypfbmw]uo\\|[qj]ong\\|[rtysdghklzxcn]iong\\|[qtypdjlxbnm]uai\\|[ghk]ing?\\|[qjklxn]uang\\|[dgh]iang\\|[qjlxg]ia\\|[hk]ia\\|[rtsdghkzc]v\\|[jl]ui\\)$"
+  "^\\([qtghklzcsdn]o\\|[rypfbmw]uo\\|[qj]ong\\|[rtysdghklzxcn]iong\\|[qtypdjlxbnm]uai\\|[ghk]ing?\\|[qjklxn]uang\\|[dgh]iang\\|[qjlx]ua\\|[hkg]ia\\|[rtsdghkzc]v\\|[jl]ui\\)$"
   "双拼可能自动产生的无效拼音. 例如输入 kk 得到有效拼音 kuai .
 但同时产生了无效拼音 king .  用户手动输入的无效拼音无需考虑.
 因为用户有即时界面反馈,不可能连续输入无效拼音.")
@@ -2072,7 +2072,8 @@ Return the input string.
 
 这个过程通过循环的调用 `pyim-pinyin-get-charpy' 来实现，整个过程
 类似用菜刀切黄瓜片，将一个拼音字符串逐渐切开。"
-  (let (charpy spinyin)
+  (let ((py pinyin)
+        charpy spinyin)
     (while (when (string< "" pinyin)
              (setq charpy (pyim-pinyin-get-charpy pinyin))
              (if (equal (car charpy) '("" . ""))
@@ -2081,7 +2082,12 @@ Return the input string.
                    (setq pinyin ""))
                (setq spinyin (append spinyin (list (car charpy))))
                (setq pinyin (cdr charpy)))))
-    spinyin))
+    (or spinyin
+        ;; 如果无法按照拼音的规则来分解字符串，
+        ;; 就将字符串简单的包装一下，然后返回。
+        ;; 目前这个功能用于： 以u或者i开头的词库 #226
+        ;; https://github.com/tumashu/pyim/issues/226
+        (list (cons "" py)))))
 
 (defun pyim-scheme-get (scheme-name)
   "获取名称为 SCHEME-NAME 的输入法方案。"
@@ -2345,6 +2351,40 @@ IMOBJS 获得候选词条。"
              (candidates (alist-get 'candidates menu)))
         candidates))))
 
+(defun pyim-quanpin-add-common-words (common-words imobj scheme-name)
+  "COMMON-WORDS 和以音标 IMOBJ 找到的新词合并产生候选词.
+SCHEME-NAME 是输入法名字."
+  (let* ((cands (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
+                                                      "get-code2word-shortcode2word"
+                                                    "get-code2word"))
+                         (mapconcat #'identity
+                                    (pyim-codes-create imobj scheme-name)
+                                    "-")))
+         rlt)
+    (cond
+     ((and (or (eq 1 (length imobj))
+               (eq 2 (length imobj)))
+           (> (length cands) 0)
+           (> (length common-words) 0))
+      (setq common-words (delete-dups common-words))
+      ;; 两个单字或者两字词序列合并,确保常用字词在前面
+      (let* ((size (min (length cands) (length common-words)))
+             (i 0))
+        (while (< i size)
+          (setq rlt (add-to-list 'rlt (nth i cands) t))
+          (setq rlt (add-to-list 'rlt (nth i common-words) t))
+          (setq i (1+ i)))
+        (while (< i (length cands))
+          (setq rlt (add-to-list 'rlt (nth i cands) t))
+          (setq i (1+ i)))
+        (setq i size)
+        (while (< i (length common-words))
+          (setq rlt (add-to-list 'rlt (nth i common-words) t))
+          (setq i (1+ i)))))
+     (t
+      (setq rlt (append common-words cands))))
+    rlt))
+
 (defun pyim-candidates-create:quanpin (imobjs scheme-name)
   "`pyim-candidates-create' 处理全拼输入法的函数."
   (let* (;; 如果输入 "ni-hao" ，搜索 code 为 "n-h" 的词条做为联想词。
@@ -2382,13 +2422,8 @@ IMOBJS 获得候选词条。"
                                         (pyim-codes-create imobj scheme-name)
                                         "-"))))
       (setq common-words
-            (append common-words
-                    (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
-                                                          "get-code2word-shortcode2word"
-                                                        "get-code2word"))
-                             (mapconcat #'identity
-                                        (pyim-codes-create imobj scheme-name)
-                                        "-"))))
+            (pyim-quanpin-add-common-words common-words imobj scheme-name))
+
       (setq pinyin-chars
             (append pinyin-chars
                     (pyim-dcache-get
