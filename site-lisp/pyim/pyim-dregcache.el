@@ -152,12 +152,26 @@ DICT-FILES 是词库文件列表. DICTS-MD5 是词库的MD5校验码.
      (t
       ;; 用户输入多字词的code,如果某个字只提供了首个声母,将该声母转换为
       ;; 通用正则表达式匹配所有以该声母开头的汉字
-      (mapconcat (lambda (e)
-                   (if (pyim-dregcache-is-shenmu e)
-                       (pyim-dregcache-shenmu2regexp e)
-                     e))
-                 arr
-                 "-")))))
+      (let* ((s (mapconcat (lambda (e)
+                             (if (pyim-dregcache-is-shenmu e)
+                                 (pyim-dregcache-shenmu2regexp e)
+                               e))
+                           arr
+                           "-")))
+        ;; 当输入3字拼音时,也搜索前3字包含此拼音的更长的词.
+        ;; 三字词很少(可 grep -rEsoh "^[a-z]+(-[a-z]+){2}( [^ ]+){2,6}" 验证)
+        ;; 用户通常输入4字或更多字的词.
+        ;; 例如符合 bei-jin-tian 的词很少, "北京天安门"是更可能匹配的词
+        ;; `pyim-dregcache' 搜索算法可以保证更长的词在靠后的位置
+        (cond
+         ((< (length arr) 3)
+          s)
+         ((eq ?* (elt s (1- (length s))))
+          ;; 简化正则表达式, tian-an-m[a-z]* => tian-an-m[a-z]?[a-z-]*
+          (concat (substring s 0 (1- (length s))) "?[a-z-]*"))
+         (t
+          ;; tian-an-men => tian-an-men[a-z-]*
+          (concat s "[a-z-]*"))))))))
 
 (defmacro pyim-dregcache-match-line (code)
   `(concat "^" (pyim-dregcache-code2regexp ,code) " \\(.+\\)"))

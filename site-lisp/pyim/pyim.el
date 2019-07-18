@@ -2963,7 +2963,15 @@ minibuffer 原来显示的信息和 pyim 选词框整合在一起显示
                     pyim-candidate-position 1)
               (pyim-preview-refresh)
               (pyim-page-refresh))
-          (unless (member pyim-outcome pyim-candidates)
+          ;; pyim 词频调整策略：
+          ;; 1. 如果一个词条是用户在输入过程中，自己新建的词条，那么就将这个词条
+          ;;    添加到个人词库的后面（不放置前面是为了减少误输词条的影响）。
+          ;; 2. 如果输入的词条，先前已经在候选词列表中，就自动将其放到第一位。
+          ;;    这样的话，一个新词要输入两遍之后才可能出现在第一位。
+          ;; 3. pyim 在启动的时候，会使用词频信息，对个人词库作一次排序。
+          ;;    用作 pyim 下一次使用。
+          (if (member pyim-outcome pyim-candidates)
+              (pyim-create-word pyim-outcome t)
             (pyim-create-word pyim-outcome))
           (pyim-terminate-translation)
           ;; pyim 使用这个 hook 来处理联想词。
