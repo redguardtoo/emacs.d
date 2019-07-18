@@ -2351,40 +2351,6 @@ IMOBJS 获得候选词条。"
              (candidates (alist-get 'candidates menu)))
         candidates))))
 
-(defun pyim-quanpin-add-common-words (common-words imobj scheme-name)
-  "COMMON-WORDS 和以音标 IMOBJ 找到的新词合并产生候选词.
-SCHEME-NAME 是输入法名字."
-  (let* ((cands (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
-                                                      "get-code2word-shortcode2word"
-                                                    "get-code2word"))
-                         (mapconcat #'identity
-                                    (pyim-codes-create imobj scheme-name)
-                                    "-")))
-         rlt)
-    (cond
-     ((and (or (eq 1 (length imobj))
-               (eq 2 (length imobj)))
-           (> (length cands) 0)
-           (> (length common-words) 0))
-      (setq common-words (delete-dups common-words))
-      ;; 两个单字或者两字词序列合并,确保常用字词在前面
-      (let* ((size (min (length cands) (length common-words)))
-             (i 0))
-        (while (< i size)
-          (setq rlt (add-to-list 'rlt (nth i cands) t))
-          (setq rlt (add-to-list 'rlt (nth i common-words) t))
-          (setq i (1+ i)))
-        (while (< i (length cands))
-          (setq rlt (add-to-list 'rlt (nth i cands) t))
-          (setq i (1+ i)))
-        (setq i size)
-        (while (< i (length common-words))
-          (setq rlt (add-to-list 'rlt (nth i common-words) t))
-          (setq i (1+ i)))))
-     (t
-      (setq rlt (append common-words cands))))
-    rlt))
-
 (defun pyim-candidates-create:quanpin (imobjs scheme-name)
   "`pyim-candidates-create' 处理全拼输入法的函数."
   (let* (;; 如果输入 "ni-hao" ，搜索 code 为 "n-h" 的词条做为联想词。
@@ -2421,8 +2387,38 @@ SCHEME-NAME 是输入法名字."
                              (mapconcat #'identity
                                         (pyim-codes-create imobj scheme-name)
                                         "-"))))
+
+      (setq common-words (delete-dups common-words))
       (setq common-words
-            (pyim-quanpin-add-common-words common-words imobj scheme-name))
+            (let* ((cands (funcall (pyim-dcache-backend-api (if pyim-enable-shortcode
+                                                                "get-code2word-shortcode2word"
+                                                              "get-code2word"))
+                                   (mapconcat #'identity
+                                              (pyim-codes-create imobj scheme-name)
+                                              "-"))))
+              (cond
+               ((and (> (length cands) 0)
+                     (> (length common-words) 0)
+                     (or (eq 1 (length imobj))
+                         (eq 2 (length imobj))))
+                ;; 两个单字或者两字词序列合并,确保常用字词在前面
+                (let* ((size (min (length cands) (length common-words)))
+                       new-common-words
+                       (i 0))
+                  ;; 两个序列轮流取出一个元素输入新序列
+                  (while (< i size)
+                    (push (nth i common-words) new-common-words)
+                    (push (nth i cands) new-common-words)
+                    (setq i (1+ i)))
+                  ;; 较长序列的剩余元素加入新序列
+                  (append (nreverse new-common-words)
+                          (nthcdr size (cond
+                                        ((< size (length cands))
+                                         cands)
+                                        ((< size (length common-words))
+                                         common-words))))))
+               (t
+                (append common-words cands)))))
 
       (setq pinyin-chars
             (append pinyin-chars
