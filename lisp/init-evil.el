@@ -12,28 +12,22 @@ And \"%\" key is also retored to `evil-jump-item'.")
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (global-evil-surround-mode 1)
 (defun evil-surround-prog-mode-hook-setup ()
-  (push '(47 . ("/" . "/")) evil-surround-pairs-alist)
-  (push '(40 . ("(" . ")")) evil-surround-pairs-alist)
-  (push '(41 . ("(" . ")")) evil-surround-pairs-alist)
-  (push '(91 . ("[" . "]")) evil-surround-pairs-alist)
-  (push '(93 . ("[" . "]")) evil-surround-pairs-alist))
+  (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)
+  (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
 (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
 
 (defun evil-surround-js-mode-hook-setup ()
   ;; ES6
-  (push '(?1 . ("{`" . "`}")) evil-surround-pairs-alist)
-  (push '(?2 . ("${" . "}")) evil-surround-pairs-alist)
-  (push '(?4 . ("(e) => " . "(e)")) evil-surround-pairs-alist)
-  ;; ReactJS
-  (push '(?3 . ("classNames(" . ")")) evil-surround-pairs-alist))
+  (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
 (add-hook 'js-mode-hook 'evil-surround-js-mode-hook-setup)
 
 (defun evil-surround-emacs-lisp-mode-hook-setup ()
+  (push '(?( . ("( " . ")")) evil-surround-pairs-alist)
   (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 (add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
+
 (defun evil-surround-org-mode-hook-setup ()
-  (push '(91 . ("[" . "]")) evil-surround-pairs-alist)
-  (push '(93 . ("[" . "]")) evil-surround-pairs-alist)
+  (push '(93 . ("[[" . "]]")) evil-surround-pairs-alist) ; ]
   (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
 (add-hook 'org-mode-hook 'evil-surround-org-mode-hook-setup)
 ;; }}
@@ -45,10 +39,6 @@ And \"%\" key is also retored to `evil-jump-item'.")
 
 ;; ffip-diff-mode (read only) evil setup
 (defun ffip-diff-mode-hook-setup ()
-  (evil-local-set-key 'normal "K" 'diff-hunk-prev)
-  (evil-local-set-key 'normal "J" 'diff-hunk-next)
-  (evil-local-set-key 'normal "P" 'diff-file-prev)
-  (evil-local-set-key 'normal "N" 'diff-file-next)
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
