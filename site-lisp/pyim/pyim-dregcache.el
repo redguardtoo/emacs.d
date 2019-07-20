@@ -22,7 +22,6 @@
 (defvar pyim-dregcache-icode2word nil)
 (defvar pyim-dregcache-iword2count nil)
 (defvar pyim-dregcache-dicts-md5 nil)
-(defvar pyim-dregcache-cache nil)
 
 (defun pyim-dregcache-variable-file (variable)
   "Get VARIABLE dcache file path."
@@ -335,8 +334,8 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     (when pyim-dregcache-icode2word
       (dolist (line pyim-dregcache-icode2word)
         (when (string-match pattern line)
-          (push (nth 1 (split-string line " ")) rlt))))
-    (nreverse rlt)))
+          (add-to-list 'rlt (nth 1 (split-string line " ")) t))))
+    rlt))
 
 (defun pyim-dregcache-get-icode2word (code)
   "以 CODE 搜索个人词.  正则表达式搜索词库,不需要为联想词开单独缓存."
