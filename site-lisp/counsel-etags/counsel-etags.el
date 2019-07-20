@@ -215,6 +215,8 @@ Here is code to enable grepping Chinese using pinyinlib,
     "bower_components"
     ;; python
     ".tox"
+    ;; vscode
+    ".vscode"
     ;; emacs
     ".cask")
   "Ignore directory names."
@@ -263,6 +265,7 @@ Here is code to enable grepping Chinese using pinyinlib,
     "*.pdf"
     "*.odt"
     ;; C/C++
+    ".clang-format"
     "*.obj"
     "*.so"
     "*.o"
