@@ -202,8 +202,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
       (when (string= "json" (file-name-extension buffer-file-name))
         (setq str (format "var a=%s;" str))
         (setq cur-pos (+ cur-pos (length "var a="))))
-      (unless (featurep 'js2-mode)
-        (require 'js2-mode))
+      (unless (featurep 'js2-mode) (require 'js2-mode))
       (with-temp-buffer
         (insert str)
         (js2-init-scanner)
