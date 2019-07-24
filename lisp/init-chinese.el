@@ -45,10 +45,6 @@
 
 (add-auto-mode 'text-mode "\\.pyim\\'")
 
-(defun my-pyim-personal-dict (&optional dict-name)
-  (file-truename (concat (file-name-as-directory my-pyim-directory)
-                         (or dict-name "personal.pyim"))))
-
 (eval-after-load 'pyim
   '(progn
      ;; use memory efficient pyim engine
@@ -56,7 +52,7 @@
      ;; don's use shortcode2word
      (setq pyim-enable-shortcode nil)
 
-     ;; use western punctuation (ban jiao fu hao)
+     ;; use western punctuation
      (setq pyim-punctuation-dict nil)
      (setq default-input-method "pyim")
 
@@ -89,8 +85,8 @@
 ;; }}
 
 ;; {{ cal-china-x setup
-(defun chinese-calender (&optional args)
-  "Open Chinese Lunar calenadar."
+(defun chinese-calendar (&optional args)
+  "Open Chinese Lunar calendar."
   (interactive "P")
   (local-require 'cal-china-x)
   (let* ((calendar-date-display-form
