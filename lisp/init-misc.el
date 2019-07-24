@@ -1399,4 +1399,7 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
         (t (error "Please select a region to narrow to"))))
 ;; }}
 
+;; {{ octave
+(add-auto-mode 'octave-mode "\\.m$")
+;; }}
 (provide 'init-misc)
