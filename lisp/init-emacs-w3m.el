@@ -43,18 +43,12 @@
       '(("g" "http://www.google.com.au/search?q=%s" utf-8)
         ;; stackoverflow search
         ("q" "http://www.google.com.au/search?q=%s+site:stackoverflow.com" utf-8)
-        ;; elisp code search
-        ("s" "http://www.google.com.au/search?q=%s+filetype:el"  utf-8)
         ;; wikipedia
         ("w" "http://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8)
         ;; online dictionary
         ("d" "http://dictionary.reference.com/search?q=%s" utf-8)
-        ;; java google search
-        ("java" "https://www.google.com.au/search?q=java+%s" utf-8)
         ;; financial dictionary
-        ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)
-        ;; javascript search on mozilla.org
-        ("j" "http://www.google.com.au/search?q=%s+site:developer.mozilla.org" utf-8)))
+        ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)))
 
 (defun w3m-set-url-from-search-engine-alist (k l url)
     (if (listp l)
@@ -82,41 +76,15 @@
   (interactive)
   (w3m-customized-search-api "q"))
 
-(defun w3m-java-search ()
-  (interactive)
-  (w3m-customized-search-api "java"))
-
 (defun w3m-google-search ()
   "Google search keyword"
   (interactive)
   (w3m-customized-search-api "g"))
 
-(defun w3m-google-by-filetype ()
-  "Google search 'keyword filetype:file-extension'"
-  (interactive)
-  (unless (featurep 'w3m) (require 'w3m))
-  (let ((old-url (w3m-get-url-from-search-engine-alist "s" w3m-search-engine-alist))
-        new-url)
-    ;; change the url to search current file type
-    (when buffer-file-name
-      (setq new-url (replace-regexp-in-string
-                     "filetype:.*"
-                     (concat "filetype:" (file-name-extension buffer-file-name))
-                     old-url))
-      (w3m-set-url-from-search-engine-alist "s" w3m-search-engine-alist new-url))
-    (w3m-customized-search-api "s")
-    ;; restore the default url
-    (w3m-set-url-from-search-engine-alist "s" w3m-search-engine-alist old-url)))
-
 (defun w3m-search-financial-dictionary ()
   "Search financial dictionary"
   (interactive)
   (w3m-customized-search-api "f" t))
-
-(defun w3m-search-js-api-mdn ()
-  "Search at Mozilla Developer Network (MDN)"
-  (interactive)
-  (w3m-customized-search-api "j"))
 
 (defun w3m-mode-hook-setup ()
   (w3m-lnum-mode 1))
@@ -157,12 +125,7 @@
     ;; stackoverflow.com
     (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q="
                                 keyword
-                                "+site:stackoverflow.com" ))
-    ;; koders.com
-    (browse-url-generic (concat "http://code.ohloh.net/search?s=\""
-                                keyword
-                                "\"&browser=Default&mp=1&ml=1&me=1&md=1&filterChecked=true" ))
-    ))
+                                "+site:stackoverflow.com" ))))
 ;; }}
 
 (defun w3mext-open-link-or-image-or-url ()

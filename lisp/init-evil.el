@@ -776,9 +776,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "dd" 'my-lookup-dict-org
  "mm" 'lookup-doc-in-man
  "gg" 'w3m-google-search
- "gf" 'w3m-google-by-filetype
  "gd" 'w3m-search-financial-dictionary
- "gj" 'w3m-search-js-api-mdn
  "ga" 'w3m-java-search
  "gh" 'w3mext-hacker-search ; code search in all engines with firefox
  "gq" 'w3m-stackoverflow-search)

@@ -421,41 +421,24 @@ Git gutter:
 
 (defhydra hydra-search ()
   "
-Dictionary^^         ^Search text^
----------------------------------
-_b_ sdcv at point    _;_ 2 chars
-_t_ sdcv input       _w_ (sub)word
-_d_ dict.org         _a_ any chars
-_g_ Google
-_c_ current file ext
-_f_ Finance
-_q_ StackOverflow
-_j_ Javascript API
-_a_ Java
+ ^Search^         ^Dictionary^
+-----------------------------------------
+_g_ Google        _b_ English => English
+_f_ Finance       _t_ English => Chinese
+_s_ StackOverflow _d_ dict.org
 _h_ Code
 _m_ Man
-_q_ cancel
 "
-  ("b" sdcv-search-pointer)
+  ("b" sdcv-search-input)
   ("t" sdcv-search-input+)
   ("d" my-lookup-dict-org)
   ("g" w3m-google-search)
-  ("c" w3m-google-by-filetype)
   ("f" w3m-search-financial-dictionary)
-  ("q" w3m-stackoverflow-search)
-  ("j" w3m-search-js-api-mdn)
-  ("a" w3m-java-search)
+  ("s" w3m-stackoverflow-search)
   ("h" w3mext-hacker-search)
   ("m" lookup-doc-in-man)
-
-  (";" ace-pinyin-jump-char-2)
-  ("w" avy-goto-word-or-subword-1 )
-  ("a" avy-goto-char-timer )
-
   ("q" nil))
 (global-set-key (kbd "C-c C-s") 'hydra-search/body)
-;; (global-set-key (kbd "C-c ; b") 'sdcv-search-pointer)
-;; (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 
 (defhydra hydra-describe (:color blue :hint nil)
   "

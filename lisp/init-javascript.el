@@ -249,6 +249,14 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (eval-after-load 'js2-mode
   '(progn
+     ;; {{ I hate the hotkeys to hide things
+     (define-key js2-mode-map (kbd "C-c C-e") nil)
+     (define-key js2-mode-map (kbd "C-c C-s") nil)
+     (define-key js2-mode-map (kbd "C-c C-f") nil)
+     (define-key js2-mode-map (kbd "C-c C-t") nil)
+     (define-key js2-mode-map (kbd "C-c C-o") nil)
+     (define-key js2-mode-map (kbd "C-c C-w") nil)
+     ;; }}
      (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
        (let (rlt extra-rlt)
          ad-do-it

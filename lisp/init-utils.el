@@ -126,10 +126,10 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun my-selected-str ()
   (buffer-substring-no-properties (region-beginning) (region-end)))
 
-(defun my-use-selected-string-or-ask (hint)
+(defun my-use-selected-string-or-ask (&optional hint)
   "Use selected region or ask user input for string."
   (if (region-active-p) (my-selected-str)
-    (if (string= "" hint) (thing-at-point 'symbol)
+    (if (or (not hint) (string= "" hint)) (thing-at-point 'symbol)
       (read-string hint))))
 
 ;; Delete the current file
