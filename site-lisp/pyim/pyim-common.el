@@ -36,6 +36,12 @@ pyim 总是使用 emacs-async 包来生成 dcache.
       (insert-file-contents file)
       (eval (read (current-buffer))))))
 
+(defun pyim-dcache-get-variable (variable)
+  "从 `pyim-dcache-directory' 中读取与 VARIABLE 对应的文件中保存的值."
+  (let ((file (concat (file-name-as-directory pyim-dcache-directory)
+                      (symbol-name variable))))
+    (pyim-dcache-get-value-from-file file)))
+
 (defun pyim-dcache-set-variable (variable &optional force-restore fallback-value)
   "设置变量.
 
