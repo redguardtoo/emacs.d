@@ -857,6 +857,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (counsel-imenu))))
 ;; }}
 
+;; {{ `evil-matchit'
+(global-evil-matchit-mode 1)
+;; }}
+
 ;; {{ evil-exchange
 ;; press gx twice to exchange, gX to cancel
 ;; change default key bindings (if you want) HERE

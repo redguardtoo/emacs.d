@@ -146,17 +146,11 @@
   ;; down all `require' statement. So we do this at the end of startup
   ;; NO ELPA package is dependent on "site-lisp/".
   (setq load-path (cdr load-path))
-  (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t)
+  (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
   (load (expand-file-name "~/.custom.el") t nil)
-
-  ;; {{ `evil-matchit' could use setup in".custom.el"
-  (when (and (boundp 'my-use-m-for-matchit) my-use-m-for-matchit)
-    (setq evilmi-shortcut "m"))
-  (global-evil-matchit-mode 1)
-  ;; }}
 
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
   ;; See `custom-file' for details.

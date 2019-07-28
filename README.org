@@ -1,5 +1,3 @@
-[[https://travis-ci.org/redguardtoo/emacs.d][https://travis-ci.org/redguardtoo/emacs.d.svg?branch=master]]
-
 * A fast and robust Emacs setup
 - Fast. Only *one second* to start up
 - Robust. Never crash after package upgrade. Packages could be installed without network

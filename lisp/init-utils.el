@@ -12,6 +12,17 @@
          retval)
      ,@clean-up))
 
+(defun my-add-subdirs-to-load-path (my-lisp-dir)
+  "Add sub-directories under MY-LISP-DIR into `load-path'."
+  (let* ((default-directory my-lisp-dir))
+    (setq load-path
+          (append
+           (delq nil
+                 (mapcar (lambda (dir)
+                           (unless (string-match-p "^\\." dir)
+                             (expand-file-name dir)))
+                         (directory-files "~/.emacs.d/site-lisp/")))
+           load-path))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
 (defun get-string-from-file (file)
