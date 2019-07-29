@@ -1262,6 +1262,7 @@ dcache 文件的方法让 pyim 正常工作。")
     (dolist (i (number-sequence ?1 ?9))
       (define-key map (char-to-string i) 'pyim-page-select-word-by-number))
     (define-key map " " 'pyim-page-select-word)
+    (define-key map (kbd "C-SPC") 'pyim-page-select-word-simple)
     (define-key map [backspace] 'pyim-delete-last-char)
     (define-key map [delete] 'pyim-delete-last-char)
     (define-key map [M-backspace] 'pyim-backward-kill-cchar)
@@ -1759,6 +1760,15 @@ FILE 的格式与 `pyim-export' 生成的文件格式相同，
   (when pyim-last-created-word
     (pyim-delete-word-1 pyim-last-created-word)
     (message "pyim: 从个人词库中删除词条 “%s” !" pyim-last-created-word)))
+
+(defun pyim-delete-word-at-point (&optional number silent)
+  "将光标前字符数为 NUMBER 的中文字符串从个人词库中删除
+当 SILENT 设置为 t 是，不显示提醒信息。"
+  (let* ((string (pyim-cstring-at-point (or number 2))))
+    (when string
+      (pyim-delete-word-1 string)
+      (unless silent
+        (message "词条: \"%s\" 已经从个人词库缓冲中删除。" string)))))
 
 (defun pyim-delete-word ()
   "将高亮选择的词条从个人词库中删除。"
@@ -2932,6 +2942,19 @@ minibuffer 原来显示的信息和 pyim 选词框整合在一起显示
          (setq pyim-outcome pyim-entered))
         (t (error "Pyim: invalid pyim-outcome"))))
 
+(defun pyim-page-select-word-simple ()
+  "从选词框中选择当前词条.
+这个函数与 `pyim-page-select-word' 的区别是：
+这个函数不会将选择的词条加入个人词库，主要的使用场景是：
+当用户需要输入一个生僻字时，输入包含该字的一个词条，
+然后再删除不需要的字，由于这个词条不是常用词条，所以
+不需要保存到个人词库。"
+  (interactive)
+  (if (null pyim-candidates)
+      (pyim-outcome-handle 'last-char)
+    (pyim-outcome-handle 'candidate))
+  (pyim-terminate-translation))
+
 (defun pyim-page-select-word ()
   "从选词框中选择当前词条。"
   (interactive)
@@ -3073,6 +3096,17 @@ alist 列表。"
      ;; 空格之前的字符什么也不输入。
      ((< char ? ) "")
 
+     ;; 这个部份与标点符号处理无关，主要用来快速删除用户自定义词条。
+     ;; 比如：在一个中文字符串后输入 2-v，可以将光标前两个中文字符
+     ;; 组成的字符串，从个人词库删除。
+     ((and (eq (char-before) ?-)
+           (pyim-string-match-p "[0-9]" str-before-2)
+           (pyim-string-match-p "\\cc" str-before-3)
+           (equal str trigger-str))
+      (delete-char -2)
+      (pyim-delete-word-at-point
+       (string-to-number str-before-2))
+      "")
      ;; 这个部份与标点符号处理无关，主要用来快速保存用户自定义词条。
      ;; 比如：在一个中文字符串后输入 2v，可以将光标前两个中文字符
      ;; 组成的字符串，保存到个人词库。
