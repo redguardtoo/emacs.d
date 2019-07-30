@@ -745,7 +745,7 @@ HASH store the previous distance."
   "Sort CANDS if `counsel-etags-candidates-optimize-limit' is t.
 STRIP-COUNT strips the string before calculating distance.
 IS-STRING is t if the candidate is string.
-CURRENT-FILE is use comparting candidate path"
+CURRENT-FILE is used to compare with candidate path."
   (let* ((ref (and current-file (counsel-etags--strip-path current-file strip-count))))
     (cond
      ;; don't sort candidates
@@ -778,10 +778,10 @@ CURRENT-FILE is use comparting candidate path"
   (let* ((info (plist-get counsel-etags-cache (intern tags-file))))
     (plist-get info :content)))
 
-(defun counsel-etags-cache-checksum (tags-file)
+(defun counsel-etags-cache-filesize (tags-file)
   "Read cache using TAGS-FILE as key."
   (let* ((info (plist-get counsel-etags-cache (intern tags-file))))
-    (plist-get info :size)))
+    (or (plist-get info :filesize) 0)))
 
 (defmacro counsel-etags-put (key value dictionary)
   "Add KEY VALUE pair into DICTIONARY."
@@ -811,14 +811,16 @@ CONTEXT is extra information collected before find tag definition."
     ;; Not precise but acceptable algorithm.
     (when (and tags-file
                (file-exists-p tags-file)
-               (not (string= (counsel-etags-cache-checksum tags-file)
-                             (setq file-size (format "%s" (nth 7 (file-attributes tags-file)))))))
+               ;; TAGS file is smaller when being created.
+               ;; Do NOT load incomplete tags file
+               (< (counsel-etags-cache-filesize tags-file)
+                  (setq file-size (nth 7 (file-attributes tags-file)))))
       (when counsel-etags-debug
-        (message "Read file .... %s %s" (counsel-etags-cache-checksum tags-file) file-size))
+        (message "Read file .... %s %s" (counsel-etags-cache-filesize tags-file) file-size))
       (counsel-etags-put (intern tags-file)
                          (list :content
                                (counsel-etags-read-file tags-file)
-                               :size
+                               :filesize
                                file-size)
                          counsel-etags-cache))
 
