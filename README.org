@@ -63,6 +63,7 @@
   - [[#directory-structure][Directory structure]]
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
+  - [[#python-environment][Python environment]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
   - [[#emacs-23][Emacs 23]]
   - [[#emacs-243][Emacs 24.3]]
@@ -507,7 +508,7 @@ You can also complete line by =M-x eacl-complete-line= and complete multi-lines 
 ** Chinese Input Method Editor
 Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
-Dictionnaries with ".pyim" extension under  =~/.eim/= are automatically loaded.
+Dictionaries with ".pyim" extension under  =~/.eim/= are automatically loaded.
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash
@@ -549,6 +550,16 @@ Other directories don't matter.
 On macOS/Linux/Cygwin, run =make githooks= to install hooks into =~/.emacs.d/.git/hooks=.
 
 Then unit test is run automatically before =git commit=.
+** Python environment
+This setup used [[https://github.com/jorgenschaefer/elpy][elpy (Emacs Python Development Environment)]]. The setup for python development is minimum, as you can see in =init-python.el=.
+
+If elpy warns you that the python environment is corrupt, you have two solutions.
+
+Solution 1, ignore the warning and turn off elpy by comment out =(elpy-enable)= in =init-python.el=. Then you won't have those python IDE things.
+
+Solution 2, fix your python environment. For example, if elpy gives the the error message =ImportError: No module named pkg_resources= on Ubuntu, a quick search will lead to [[https://askubuntu.com/questions/1006201/importerror-no-module-named-pkg-resources][this link.]] So a simple shell command =sudo apt install --reinstall python-pkg-resources python-setuptools= solves the problem.
+
+Solution 2 might be better because you couldn't do any serious coding anyway if the python environment is broken, .
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
