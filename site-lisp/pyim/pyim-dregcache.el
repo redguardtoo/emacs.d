@@ -235,12 +235,15 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
             (cond
              ((string-match "^[^ ]+$" word)
               ;; 单个词
-              (add-to-list 'result word t))
+              (push word result))
              (t
               ;; 多个字
-              (setq result (append result (split-string word " +")))))
+              (setq result (append (nreverse (split-string word " +")) result))))
             ;; 继续搜索
             (setq start (+ start 2 (length code) (length word))))))
+      ;; `push' plus `nreverse' is more efficient than `add-to-list'
+      ;; Many examples exist in Emacs' own code
+      (setq result (nreverse result))
       `(,@result ,@(pyim-pinyin2cchar-get code t t)))))
 
 (defun pyim-dregcache-update-personal-words (&optional force)
@@ -350,8 +353,9 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     (when pyim-dregcache-icode2word
       (dolist (line pyim-dregcache-icode2word)
         (when (string-match pattern line)
-          (add-to-list 'rlt (nth 1 (split-string line " ")) t))))
-    rlt))
+          (push (nth 1 (split-string line " ")) rlt))))
+    ;; `push' plus `nreverse' is more efficient than `add-to-list'
+    (nreverse rlt)))
 
 (defun pyim-dregcache-get-icode2word (code)
   "以 CODE 搜索个人词.  正则表达式搜索词库,不需要为联想词开单独缓存."
