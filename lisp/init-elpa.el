@@ -16,6 +16,7 @@
     auto-package-update
     nov
     bbdb
+    js2-mode ; need new features
     evil-textobj-syntax
     command-log-mode
     vimrc-mode
