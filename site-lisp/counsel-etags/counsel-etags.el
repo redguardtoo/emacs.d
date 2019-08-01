@@ -158,7 +158,7 @@ Here is code to enable grepping Chinese using pinyinlib,
   :group 'counsel-etags
   :type 'boolean)
 
-(defcustom counsel-etags-find-tag-name-function 'find-tag-default
+(defcustom counsel-etags-find-tag-name-function nil
   "The function to use to find tag name at point.
 It should be a function that takes no arguments and returns an string.
 If it returns nil, the `find-tag-default' is used.
@@ -916,11 +916,12 @@ So we need *encode* the string."
       (counsel-etags-encode (buffer-substring-no-properties (region-beginning)
                                                             (region-end)))))
 
-(defun counsel-etags-tagname-at-point ()
+(defmacro counsel-etags-tagname-at-point ()
   "Get tag name at point."
-  (or (counsel-etags-selected-str)
-      (funcall counsel-etags-find-tag-name-function)
-      (find-tag-default)))
+  `(or (counsel-etags-selected-str)
+       (and counsel-etags-find-tag-name-function
+            (funcall counsel-etags-find-tag-name-function))
+       (find-tag-default)))
 
 (defun counsel-etags-forward-line (lnum)
   "Forward LNUM lines."
