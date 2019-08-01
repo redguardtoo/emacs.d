@@ -440,6 +440,9 @@ The file is also used by tags file auto-update process.")
   "Guess path from its EXECUTABLE-NAME on Windows.
 Return nil if it's not found."
   (cond
+   ((file-remote-p default-directory)
+    ;; Assume remote server has already added EXE into $PATH!
+    executable-name)
    ((eq system-type 'windows-nt)
     (or (counsel-etags-win-path executable-name "c")
         (counsel-etags-win-path executable-name "d")
