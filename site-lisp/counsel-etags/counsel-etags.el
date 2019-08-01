@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.8.7
+;; Version: 1.8.8
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -189,7 +189,7 @@ The definition of word is customized by the user.
 (defun counsel-etags-setup-smart-rules ()
   "Initialize `counsel-etags-smart-rules'."
   (interactive)
-  (counsel-etags-load-smart-rules '(js-mode js2-mode rjsx-mode) 'javascript))
+  (counsel-etags-load-smart-rules '(js-mode js2-mode rjsx-mode js2-jsx-mode) 'javascript))
 
 (defun counsel-etags-execute-collect-function ()
   "Return context before finding tag definition."
@@ -453,7 +453,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.8.7"))
+  (message "1.8.8"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
