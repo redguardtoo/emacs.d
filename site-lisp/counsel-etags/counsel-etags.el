@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.8.8
+;; Version: 1.8.9
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -456,7 +456,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.8.8"))
+  (message "1.8.9"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -943,6 +943,9 @@ Focus on TAGNAME if it's not nil."
            ;; always calculate path relative to TAGS
            (default-directory dir))
 
+      (when counsel-etags-debug
+        (message "counsel-etags-open-file-api called => dir=%s, linenum=%s, file=%s" dir linenum file))
+
       ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
       (counsel-etags-push-marker-stack (point-marker))
       ;; open file, go to certain line
@@ -950,10 +953,12 @@ Focus on TAGNAME if it's not nil."
       (counsel-etags-forward-line linenum))
 
     ;; move focus to the tagname
-    (when tagname
-      ;; highlight the tag
-      (beginning-of-line)
-      (re-search-forward tagname)
+    (beginning-of-line)
+    ;; search tagname in current line might fail
+    ;; maybe tags files is updated yet
+    (when (and tagname
+               ;; focus on the tag if possible
+               (re-search-forward tagname (line-end-position) t))
       (goto-char (match-beginning 0)))
 
     ;; flash, Emacs v25 only API
