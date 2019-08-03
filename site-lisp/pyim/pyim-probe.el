@@ -121,9 +121,9 @@
                       ;; 查找前一个非空格字符。
                       (if (re-search-backward "[^[:space:]\n]" nil t)
                           (char-to-string (char-after (point))))))
-                   (> (length pyim-entered) 0)))
+                   (> (length (pyim-entered-get)) 0)))
         (not (or (pyim-string-match-p "\\cc" non-digit-str-before-1)
-                 (> (length pyim-entered) 0)))))))
+                 (> (length (pyim-entered-get)) 0)))))))
 
 (defun pyim-probe-auto-english ()
   "激活这个 pyim 探针函数后，使用下面的规则自动切换中英文输入：
@@ -142,7 +142,7 @@
           (or (if (pyim-string-match-p " " str-before-1)
                   (pyim-string-match-p "\\cc" str-before-2)
                 (and (not (pyim-string-match-p "\\cc" str-before-1))
-                     (= (length pyim-entered) 0))))))))
+                     (= (length (pyim-entered-get)) 0))))))))
 
 (defun pyim-probe-evil-normal-mode ()
   "判断是否是evil的normal模式，如果是则返回true.

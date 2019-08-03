@@ -120,7 +120,7 @@
                          (file-truename dict-file)
                          (pyim-dregcache-create-cache-content raw-content)))))
 
-(defun pyim-dregcache-update:code2word (dict-files dicts-md5 &optional force)
+(defun pyim-dregcache-update-code2word (dict-files dicts-md5 &optional force)
   "读取并加载词库.
 
 读取 `pyim-dicts' 和 `pyim-extra-dicts' 里面的词库文件，生成对应的
@@ -213,38 +213,53 @@ DICT-FILES 是词库文件列表. DICTS-MD5 是词库的MD5校验码.
       (setq rlt (nth idx rlt)))
     rlt))
 
-(defun pyim-dregcache-get (code &optional dcache-list)
-  "从 `pyim-dregcache-cache' 搜索 CODE, 得到对应的词条.
-DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
-  (when pyim-dregcache-cache
-    (let* ((pattern (pyim-dregcache-match-line code))
-           (dict-files (pyim-dregcache-all-dict-files))
-           result)
-      (when pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s dict-files=%s" code pattern dict-files))
-      (dolist (file dict-files)
-        (let* ((case-fold-search t)
-               (start 0)
-               (file-info (lax-plist-get pyim-dregcache-cache file))
-               (content (pyim-dregcache-get-content code file-info))
-               (content-size (length content))
-               word)
-          (while (and (< start content-size)
-                      (setq start (string-match pattern content start)))
-            ;; 提取词
-            (setq word (match-string-no-properties 1 content))
-            (cond
-             ((string-match "^[^ ]+$" word)
-              ;; 单个词
-              (push word result))
-             (t
-              ;; 多个字
-              (setq result (append (nreverse (split-string word " +")) result))))
-            ;; 继续搜索
-            (setq start (+ start 2 (length code) (length word))))))
-      ;; `push' plus `nreverse' is more efficient than `add-to-list'
-      ;; Many examples exist in Emacs' own code
-      (setq result (nreverse result))
-      `(,@result ,@(pyim-pinyin2cchar-get code t t)))))
+(defun pyim-dregcache-get (code &optional from)
+  "从 `pyim-dregcache-cache' 搜索 CODE, 得到对应的词条."
+  (if (or (memq 'icode2word from)
+          (memq 'ishortcode2word from))
+      (pyim-dregcache-get-icode2word-ishortcode2word code)
+    (when pyim-dregcache-cache
+      (let* ((pattern (pyim-dregcache-match-line code))
+             (dict-files (pyim-dregcache-all-dict-files))
+             result)
+        (when pyim-debug (message "pyim-dregcache-get is called. code=%s pattern=%s dict-files=%s" code pattern dict-files))
+        (dolist (file dict-files)
+          (let* ((case-fold-search t)
+                 (start 0)
+                 (file-info (lax-plist-get pyim-dregcache-cache file))
+                 (content (pyim-dregcache-get-content code file-info))
+                 (content-size (length content))
+                 word)
+            (while (and (< start content-size)
+                        (setq start (string-match pattern content start)))
+              ;; 提取词
+              (setq word (match-string-no-properties 1 content))
+              (cond
+               ((string-match "^[^ ]+$" word)
+                ;; 单个词
+                (push word result))
+               (t
+                ;; 多个字
+                (setq result (append (nreverse (split-string word " +")) result))))
+              ;; 继续搜索
+              (setq start (+ start 2 (length code) (length word))))))
+        ;; `push' plus `nreverse' is more efficient than `add-to-list'
+        ;; Many examples exist in Emacs' own code
+        (setq result (nreverse result))
+        `(,@result ,@(pyim-pinyin2cchar-get code t t))))))
+
+(defun pyim-dregcache-get-icode2word-ishortcode2word (code)
+  "以 CODE 搜索个人词和个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
+  (when pyim-debug (message "pyim-dregcache-get-icode2word-ishortcode2word called => %s" code))
+  (let* ((pattern (pyim-dregcache-match-line code))
+         rlt)
+    ;; pattern already matches BOTH code and shortcode
+    (when pyim-dregcache-icode2word
+      (dolist (line pyim-dregcache-icode2word)
+        (when (string-match pattern line)
+          (push (nth 1 (split-string line " ")) rlt))))
+    ;; `push' plus `nreverse' is more efficient than `add-to-list'
+    (nreverse rlt)))
 
 (defun pyim-dregcache-update-personal-words (&optional force)
   "载入 `pyim-dregcache-icode2word' . 加载排序后的结果.
@@ -259,10 +274,6 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
             (delq nil (delete-dups (append pyim-dregcache-icode2word lines)))))
     (when (and force pyim-dregcache-icode2word)
       (pyim-dregcache-sort-icode2word))))
-
-(defun pyim-dregcache-update:shortcode2word (&optional restart)
-  "Dummy function."
-  )
 
 (defun pyim-dregcache-init-variables ()
   "初始化 cache 缓存相关变量."
@@ -292,9 +303,9 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
   "TODO"
   )
 
-(defun pyim-dregcache-put-iword2count (word &optional prepend wordcount-handler)
+(defun pyim-dregcache-update-iword2count (word &optional prepend wordcount-handler)
   "保存词频到缓存."
-  (when pyim-debug (message "pyim-dregcache-put-iword2count. word=%s" word))
+  (when pyim-debug (message "pyim-dregcache-update-iword2count. word=%s" word))
   (let* ((orig-value (gethash word pyim-dregcache-iword2count))
          (new-value (cond
                      ((functionp wordcount-handler)
@@ -305,7 +316,7 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
     (unless (equal orig-value new-value)
       (puthash word new-value pyim-dregcache-iword2count))))
 
-(defun pyim-dregcache-delete-word-1 (word)
+(defun pyim-dregcache-delete-word (word)
   "将中文词条 WORD 从个人词库中删除."
   (let* ((pinyins (pyim-hanzi2pinyin word nil "-" t nil t))) ;使用了多音字校正
     ;; 从个人缓存删除词条
@@ -333,39 +344,6 @@ DCACHE-LIST 只是符号而已,并不代表真实的缓存数据."
 (defun pyim-dregcache-search-word-code (string)
   "TODO"
   )
-
-(defun pyim-dregcache-get-code2word-shortcode2word (code)
-  "以 CODE 搜索词和联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
-  (when pyim-debug (message "pyim-dregcache-get-code2word-shortcode2word called => %s" code))
-  (pyim-dregcache-get code))
-
-(defun pyim-dregcache-get-code2word (code)
-  "以 CODE 现有词库搜索词."
-  (when pyim-debug (message "pyim-dregcache-get-code2word called => %s" code))
-  (pyim-dregcache-get code))
-
-(defun pyim-dregcache-get-icode2word-ishortcode2word (code)
-  "以 CODE 搜索个人词和个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
-  (when pyim-debug (message "pyim-dregcache-get-icode2word-ishortcode2word called => %s" code))
-  (let* ((pattern (pyim-dregcache-match-line code))
-         rlt)
-    ;; pattern already matches BOTH code and shortcode
-    (when pyim-dregcache-icode2word
-      (dolist (line pyim-dregcache-icode2word)
-        (when (string-match pattern line)
-          (push (nth 1 (split-string line " ")) rlt))))
-    ;; `push' plus `nreverse' is more efficient than `add-to-list'
-    (nreverse rlt)))
-
-(defun pyim-dregcache-get-icode2word (code)
-  "以 CODE 搜索个人词.  正则表达式搜索词库,不需要为联想词开单独缓存."
-  (when pyim-debug (message "pyim-dregcache-get-icode2word called => %s" code))
-  (pyim-dregcache-get-icode2word-ishortcode2word code))
-
-(defun pyim-dregcache-get-ishortcode2word (code)
-  "以 CODE 搜索个人联想词.  正则表达式搜索词库,不需要为联想词开单独缓存."
-  (when pyim-debug (message "pyim-dregcache-get-ishortcode2word called => %s" code))
-  (pyim-dregcache-get-icode2word-ishortcode2word code))
 
 (defun pyim-dregcache-export-personal-words (file &optional confirm)
   "将个人词库存入 FILE."
