@@ -185,7 +185,14 @@ back to hunspell if aspell is not found.")
               (let* ((begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
                      (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
                      (case-fold-search t)
-                     (ignored-font-faces '(org-verbatim org-block-begin-line org-meta-line org-tag org-link org-level-1 org-document-info))
+                     (ignored-font-faces '(org-verbatim
+                                           org-block-begin-line
+                                           org-meta-line
+                                           org-tag
+                                           org-link
+                                           org-table
+                                           org-level-1
+                                           org-document-info))
                      (rlt t)
                      ff
                      th
