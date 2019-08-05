@@ -22,7 +22,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
 (add-hook 'js-mode-hook 'evil-surround-js-mode-hook-setup)
 
 (defun evil-surround-emacs-lisp-mode-hook-setup ()
-  (push '(?( . ("( " . ")")) evil-surround-pairs-alist)
+  (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
   (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 (add-hook 'emacs-lisp-mode-hook 'evil-surround-emacs-lisp-mode-hook-setup)
 
