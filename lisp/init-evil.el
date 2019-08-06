@@ -326,8 +326,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (cond
        ((and (derived-mode-p 'js2-mode)
              (or (null (get-text-property (point) 'face))
-                 (font-belongs-to (point) '(rjsx-tag
-                                            js2-function-call))))
+                 (font-belongs-to (point) '(rjsx-tag))))
         (js2-jump-to-definition))
        ((fboundp 'imenu--make-index-alist)
         (condition-case nil
