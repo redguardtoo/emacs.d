@@ -66,7 +66,7 @@
 (setq js2-imenu-extra-generic-expression javascript-common-imenu-regex-list)
 
 (defvar js2-imenu-original-item-lines nil
-  "List of line infomration of original imenu items.")
+  "List of line information of original imenu items.")
 
 (defun js2-imenu--get-line-start-end (pos)
   (let* (b e)
