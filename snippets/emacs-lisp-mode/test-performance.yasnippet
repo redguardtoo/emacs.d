@@ -6,6 +6,6 @@
 (let* ((gc-cons-threshold most-positive-fixnum))
   (message "%S vs %S"
            (benchmark-run-compiled 100
-             ($0)
+             (message "test1"))
            (benchmark-run-compiled 100
              (message "test 2"))))
