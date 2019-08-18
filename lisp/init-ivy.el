@@ -303,11 +303,12 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 
      ;; If the first charater of input in ivy is ":",
      ;; remaining input is converted into Chinese pinyin regex.
+     ;; For example, input "/ic" match "isController" or "isCollapsed"
      ((string= (substring str 0 1) ":")
       (setq str (pinyinlib-build-regexp-string (substring str 1 len) t)))
 
      ;; If the first charater of input in ivy is "/",
-     ;; remaining input is converted to pattrn to search camel case word
+     ;; remaining input is converted to pattern to search camel case word
      ((string= (substring str 0 1) "/")
       (let* ((rlt "")
              (i 0)
@@ -339,8 +340,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
      ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
      (setq ivy-use-selectable-prompt t)
 
-     (setq ivy-re-builders-alist
-           '((t . re-builder-extended-pattern)))
+     (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
      ;; set actions when running C-x b
      ;; replace "frame" with window to open in new window
      (ivy-set-actions
