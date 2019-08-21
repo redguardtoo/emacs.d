@@ -1408,4 +1408,12 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
             (if (eq window-system 'x)
                 (font-lock-mode 1))))
 ;; }}
+
+;; {{ wgrep setup
+(eval-after-load 'wgrep
+  '(progn
+     ;; save the change after wgrep finishes the job
+     (setq wgrep-auto-save-buffer t)
+     (setq wgrep-too-many-file-length 2024)))
+;; }}
 (provide 'init-misc)
