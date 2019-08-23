@@ -1355,15 +1355,24 @@ Including indent-buffer, which should not be called automatically on save."
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
 ;; }}
 
+(defun line-number-at-position (pos)
+  "Returns the line number for position `POS'."
+  (save-restriction
+    (widen)
+    (save-excursion
+      (goto-char pos)
+      (+ 1 (count-lines (point-min) (line-beginning-position 1))))))
+
 (defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
   "Indirect buffer could multiple widen on same file."
   (if (region-active-p) (deactivate-mark))
   (if use-indirect-buffer
       (with-current-buffer (clone-indirect-buffer
                             (generate-new-buffer-name
-                             (concat (buffer-name) "-indirect-"
-                                     (number-to-string start) "-"
-                                     (number-to-string end)))
+                             (format "%s-indirect-:%s-:%s"
+                                     (buffer-name)
+                                     (line-number-at-position start)
+                                     (line-number-at-position end)))
                             'display)
         (narrow-to-region start end)
         (goto-char (point-min)))
