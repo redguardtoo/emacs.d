@@ -58,7 +58,8 @@
 
      ;; automatically load all "*.pyim" under "~/.eim/"
      ;; `directory-files-recursively' requires Emacs 25
-     (let* ((files (directory-files-recursively my-pyim-directory "\.pyim$"))
+     (let* ((files (and (file-exists-p my-pyim-directory)
+                        (directory-files-recursively my-pyim-directory "\.pyim$")))
             disable-basedict)
        (when (and files (> (length files) 0))
          (setq pyim-dicts

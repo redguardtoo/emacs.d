@@ -506,9 +506,13 @@ For languages GNU Global doesn't support, you can fall back to =company-etags= a
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
+Please note pyim is already built into this setup. You don't need install it through ELPA.
+
 Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
-Dictionaries with ".pyim" extension under  =~/.eim/= are automatically loaded.
+Dictionaries with ".pyim" extension under the directory  =~/.eim/= are automatically loaded.
+
+Please =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim= to install dictionary for pyim. 
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash
