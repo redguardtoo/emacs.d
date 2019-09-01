@@ -59,10 +59,12 @@
      (flyspell-lazy-mode 1)))
 
 
-;; if (aspell installed) { use aspell}
+;; The logic is:
+;; If (aspell installed) { use aspell}
 ;; else if (hunspell installed) { use hunspell }
-;; whatever spell checker I use, I always use English dictionary
-;; I prefer use aspell because:
+;; English dictionary is used.
+;;
+;; I prefer aspell because:
 ;; 1. aspell is older
 ;; 2. looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
@@ -72,14 +74,28 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
   (let* (args)
     (when ispell-program-name
       (cond
+       ;; use aspell
        ((string-match "aspell$" ispell-program-name)
         ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
         (setq args (list "--sug-mode=ultra" "--lang=en_US"))
-        ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp" . The algorithm is
-        ;; not precise .
+        ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp".
+        ;; The algorithm is not precise.
         ;; Run `echo tasteTableConfig | aspell --lang=en_US -C --run-together-limit=16  --encoding=utf-8 -a` in shell.
-        (if run-together
-            (setq args (append args '("--run-together" "--run-together-limit=16")))))
+        (when run-together
+          (cond
+           ;; Kevin Atkinson said now aspell supports camel case directly
+           ;; https://github.com/redguardtoo/emacs.d/issues/796
+           ((string-match-p "--camel-case"
+                            (shell-command-to-string (concat ispell-program-name " --help")))
+            (setq args (append args '("--camel-case"))))
+
+           ;; old aspell uses "--run-together". Please note we are not dependent on this option
+           ;; to check camel case word. wucuo is the final solution. This aspell options is just
+           ;; some extra check to speed up the whole process.
+           (t
+            (setq args (append args '("--run-together" "--run-together-limit=16")))))))
+
+       ;; use hunsepll
        ((string-match "hunspell$" ispell-program-name)
         (setq args nil))))
     args))
