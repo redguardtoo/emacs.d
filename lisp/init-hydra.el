@@ -178,18 +178,25 @@
        "Extract mp3 from current video file using ffmpeg."
        (interactive)
        (let* ((video-file (file-name-nondirectory (dired-file-name-at-point)))
-              (params (split-string (string-trim (read-string "start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\"): "))
+              (params (split-string (string-trim (read-string "Please input start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\") or just press enter: "))
                                     " +"))
               (start (car params))
               (total (if (eq (length params) 1) "5" (nth 1 params)))
               cmd)
-         (unless (string= start "")
+         (cond
+          ((string= start "")
+           ;; extract audio to MP3 with sample rate 44.1Khz (CD quality), stereo, and 2 channels
+           (setq cmd (format "ffmpeg -i \"%s\" -vn -ar 44100 -ac 2 -ab 192 -f mp3 \"%s\""
+                             video-file
+                             (concat (file-name-base video-file) ".mp3"))))
+          (t
            (setq cmd (format "ffmpeg -i \"%s\" -vn -ss %s -t %s -acodec copy \"%s\""
-                                  video-file
-                                  start
-                                  total
-                                  (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))
-           (shell-command (concat cmd " &")))))
+                             video-file
+                             start
+                             total
+                             (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
+           (shell-command (concat cmd " &"))))
+
      (defun my-record-wav-by-mp3 ()
        "Record a wav using meta data from current mp3 file."
        (interactive)

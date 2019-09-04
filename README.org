@@ -222,6 +222,8 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Tweak environment variable PATH so Emacs find ripgrep
 **** [[http://www.sbcl.org/][sbcl]]
 - Required by [[https://common-lisp.net/project/slime/][SLIME: The Superior Lisp Interaction Mode for Emacs]]
+**** ffmpeg
+- Some dired commands use ffmpeg to process video/audio
 **** LanguageTool
 It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
