@@ -86,14 +86,9 @@
   (setq-default save-place t)))
 
 ;; {{ find-file-in-project (ffip)
-(defun my-git-versions ()
-  (let* ((git-cmd (concat "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an' "
-                          buffer-file-name)))
-    (nconc (nonempty-lines (shell-command-to-string "git branch --no-color --all"))
-           (nonempty-lines (shell-command-to-string git-cmd)))))
-
-
-(setq ffip-match-path-instead-of-filename t)
+(eval-after-load 'find-file-in-project
+  '(progn
+     (setq ffip-match-path-instead-of-filename t)))
 
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
@@ -345,6 +340,7 @@ Keep the last num lines if argument num if given."
 ;; }}
 
 (defun my-multi-purpose-grep (n)
+  "Run different grep from N."
   (interactive "P")
   (cond
    ((not n)
@@ -852,8 +848,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (defun vc-msg-show-code-setup ()
   "Use `ffip-diff-mode' instead of `diff-mode'."
-  (unless (featurep 'find-file-in-project)
-    (require 'find-file-in-project))
+  (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
   (ffip-diff-mode))
 
 (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
