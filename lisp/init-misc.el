@@ -1415,4 +1415,14 @@ If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen conte
      (setq wgrep-auto-save-buffer t)
      (setq wgrep-too-many-file-length 2024)))
 ;; }}
+
+;; {{ edit-server
+(defun edit-server-start-hook-setup ()
+  (when (string-match-p "\\(github\\|zhihu\\).com" (buffer-name))
+    (markdown-mode)))
+(add-hook 'edit-server-start-hook 'edit-server-start-hook-setup)
+(when (require 'edit-server nil t)
+  (setq edit-server-new-frame nil)
+  (edit-server-start))
+;; }}
 (provide 'init-misc)

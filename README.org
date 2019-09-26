@@ -14,7 +14,7 @@
 - [[#installation][Installation]]
   - [[#install-in-normal-way][Install in normal way]]
   - [[#install-stable-version-optional][Install stable version (OPTIONAL)]]
-  - [[#third-party-command-line-program-optional][Third party command line program (OPTIONAL)]]
+  - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
   - [[#basic-tutorial][Basic tutorial]]
   - [[#evil-mode-tutorial][Evil-mode tutorial]]
@@ -114,7 +114,7 @@ No worries. You could answer "YES" to the question "Switch to faster package rep
 Now you are using local package repository =~/projs/melpa=.
 
 You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =~/.emacs.d/lisp/init-elpa.el=.
-** Third party command line program (OPTIONAL)
+** Third party programs (OPTIONAL)
 *** Install
 Most command line programs can be installed through =default package manager=.
 
@@ -124,7 +124,7 @@ Most command line programs can be installed through =default package manager=.
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
 Some package managers allow you to install the program for current user. For example, python package manager =pip= has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
-*** List of command line programs
+*** List of programs
 These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
@@ -228,6 +228,8 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
+**** [[https://github.com/stsquad/emacs_chrome][edit browser's text area with Emacs]]
+Please install corresponding Chrome/Firefox addons.
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial

@@ -19,6 +19,7 @@
     js2-mode ; need new features
     evil-textobj-syntax
     command-log-mode
+    edit-server ; use Emacs to edit textarea in browser, need browser addon
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
     auto-yasnippet
