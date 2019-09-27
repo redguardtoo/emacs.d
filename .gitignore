@@ -65,3 +65,4 @@ network-security.data
 *.mp4
 *.ogg
 nov-places
+transient/
