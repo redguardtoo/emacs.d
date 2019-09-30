@@ -1,14 +1,14 @@
-;;; company-ctags.el --- Fastest company-mode completion backend for ctags
+;;; company-ctags.el --- Fastest company-mode completion backend for ctags  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2019 Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
-;; URL: http://github.com/redguardtoo/company-ctags
+;; URL: https://github.com/redguardtoo/company-ctags
 ;; Version: 0.0.1
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.3") (company "0.9.0"))
 
-;; This file is part of GNU Emacs.
+;; This file is NOT part of GNU Emacs.
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
-
+;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -33,9 +32,15 @@
 ;; After initial loading, this library will always respond immediately
 ;; even when new tags file is created.
 ;;
-;; Usage,
-;;   (require 'company-ctags)
-;;   (company-ctags-auto-setup)
+;; Usage:
+;;   Step 1, insert below code into Emacs setup,
+;;
+;;   (eval-after-load 'company
+;;     '(progn
+;;        (require 'company-ctags)
+;;        (company-ctags-auto-setup)))
+;;
+;;   Step 2, Create tags file using Ctags and enjoy.
 ;;
 ;; You can also turn on `company-ctags-support-etags' to support tags
 ;; file created by etags.  But it will increase initial loading time.
@@ -348,7 +353,7 @@ Execute COMMAND with ARG and IGNORED."
 (defun company-ctags-replace-backend (backends)
   "Replace `company-etags' with `company-ctags' in BACKENDS."
   (let* (rlt)
-    (dolist (b company-backends)
+    (dolist (b backends)
       (cond
        ((eq b 'company-etags)
         (push 'company-ctags rlt))
