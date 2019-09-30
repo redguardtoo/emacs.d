@@ -1,4 +1,4 @@
-;;; counsel-etags.el ---  Fast and complete Ctags/Etags solution using ivy
+;;; counsel-etags.el ---  Fast and complete Ctags/Etags solution using ivy  -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018, 2019 Chen Bin
 
@@ -33,6 +33,8 @@
 ;;
 ;;   `counsel-etags-find-tag-at-point' to navigate.  This command will also
 ;;   run `counsel-etags-scan-code' AUTOMATICALLY if tags file is not built yet.
+;;
+;;   Run `counsel-etags-list-tag-in-current-file' to list tags in current file.
 ;;
 ;;   `counsel-etags-scan-code' to create tags file
 ;;   `counsel-etags-grep' to grep
@@ -92,10 +94,10 @@
 ;;          keyword)))
 ;;
 ;;  - `counsel-etags-find-tag-name-function' finds tag name at point.  If it returns nil,
-;;    `find-tag-default' is used. `counsel-etags-word-at-point' gets word at point.
+;;    `find-tag-default' is used.  `counsel-etags-word-at-point' gets word at point.
 ;;
 ;;  - User could append the extra content into tags file in `counsel-etags-after-update-tags-hook'.
-;;    The parameter of hook is full path of the tags file. `counsel-etags-tags-line' is a tool function
+;;    The parameter of hook is full path of the tags file.  `counsel-etags-tags-line' is a tool function
 ;;    to help user
 
 ;; See https://github.com/redguardtoo/counsel-etags/ for more tips.
@@ -105,6 +107,7 @@
 (require 'xref nil t) ; xref is optional
 (require 'etags)
 (require 'cl-lib)
+(require 'find-file)
 (require 'counsel nil t) ; counsel => swiper => ivy
 
 (defgroup counsel-etags nil
@@ -164,8 +167,7 @@ It should be a function that takes no arguments and returns an string.
 If it returns nil, the `find-tag-default' is used.
 
 The function `counsel-etags-word-at-point' could be used find word at point.
-The definition of word is customized by the user.
-"
+The definition of word is customized by the user."
   :group 'counsel-etags
   :type 'function)
 
@@ -488,11 +490,11 @@ Return nil if it's not found."
 (defun counsel-etags-locate-project ()
   "Return the root of the project."
   (let* ((tags-dir (if (listp counsel-etags-project-file)
-                        (cl-some (apply-partially 'locate-dominating-file
-                                                  default-directory)
-                                 counsel-etags-project-file)
-                      (locate-dominating-file default-directory
-                                              counsel-etags-project-file)))
+                       (cl-some (apply-partially 'locate-dominating-file
+                                                 default-directory)
+                                counsel-etags-project-file)
+                     (locate-dominating-file default-directory
+                                             counsel-etags-project-file)))
          (project-root (or counsel-etags-project-root
                            (and tags-dir (file-name-as-directory tags-dir)))))
     (or project-root
@@ -609,9 +611,9 @@ Return nil if it's not found."
   "Create tags file from SRC-DIR."
   ;; TODO save the ctags-opts into hash
   (let* ((find-program (or counsel-etags-find-program
-                      (counsel-etags-guess-program "find")))
+                           (counsel-etags-guess-program "find")))
          (ctags-program (or counsel-etags-tags-program
-                       (counsel-etags-guess-program "ctags")))
+                            (counsel-etags-guess-program "ctags")))
          (default-directory src-dir)
          ;; if both find and ctags exist, use both
          ;; if only ctags exists, use ctags
@@ -737,12 +739,12 @@ HASH store the previous distance."
   "Strip PATH with STRIP-COUNT."
   (let* ((i (1- (length path))))
     (while (and (> strip-count 0)
-            (> i 0))
+                (> i 0))
       (when (= (aref path i) ?/)
         (setq strip-count (1- strip-count)))
       (setq i (1- i)))
     (if (= 0 strip-count) (substring path (+ 1 i))
-        path)))
+      path)))
 
 (defun counsel-etags-sort-candidates-maybe (cands strip-count is-string current-file)
   "Sort CANDS if `counsel-etags-candidates-optimize-limit' is t.
@@ -799,13 +801,38 @@ CURRENT-FILE is used to compare with candidate path."
     (cons (format "%s:%s:%s" file lnum text)
           (list file lnum tagname))))
 
-(defun counsel-etags-extract-cands-from-tags-file (tags-file tagname fuzzy context)
-  "Parse one TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
-CONTEXT is extra information collected before find tag definition."
+(defmacro counsel-etags-push-one-candidate (cands tagname-re bound root-dir context)
+  "Push new candidate into CANDS.
+Use TAGNAME-RE to search in current buffer with BOUND in ROOT-DIR.
+CONTEXT is extra information."
+    `(cond
+      ((re-search-forward ,tagname-re ,bound t)
+       (let* ((line-number (match-string-no-properties 3))
+              (text (match-string-no-properties 1))
+              ;; file must be set after above variables
+              (file (etags-file-of-tag t))
+              (cand (list :file file ; relative path
+                          :fullpath (if (file-name-absolute-p file) file (concat ,root-dir file)) ; absolute path
+                          :line-number line-number
+                          :text text
+                          :tagname (match-string-no-properties 2))))
+         (when (or (not ,context)
+                   (counsel-etags-execute-predicate-function context cand))
+           (push (counsel-etags-build-cand cand) ,cands)))
+       t)
+      (t
+       ;; need push cursor forward
+       (end-of-line)
+       nil)))
+
+(defun counsel-etags-extract-cands (tags-file tagname fuzzy context &optional match-file)
+  "Parse TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
+CONTEXT is extra information collected before find tag definition.
+If MATCH-FILE is a file path, only tag names in it is extracted."
   (let* ((root-dir (file-name-directory tags-file))
-         (tagname-re (concat "\\([^\177\001\n]+\\)\177"
-                     (if fuzzy "[^\177\001\n]+" tagname)
-                     "\001\\([0-9]+\\),\\([0-9]+\\)"))
+         (tagname-re (concat "\\([^\177\001\n]+\\)\177\\("
+                             (if fuzzy "[^\177\001\n]+" tagname)
+                             "\\)\001\\([0-9]+\\),\\([0-9]+\\)"))
          cands
          file-size
          file-content)
@@ -840,57 +867,60 @@ CONTEXT is extra information collected before find tag definition."
         (goto-char (point-min))
         ;; first step, regex should be simple to speed up search
         (let* ((case-fold-search fuzzy))
-          (while (re-search-forward tagname nil t)
-            (beginning-of-line)
-            ;; second step, more precise search
-            (cond
-             ((re-search-forward tagname-re (point-at-eol) t)
-              (let* ((line-number (match-string-no-properties 2))
-                     (text (match-string-no-properties 1))
-                     ;; file must be set after above variables
-                     ;; (file (concat root-dir (etags-file-of-tag t)))
-                     (file (etags-file-of-tag t))
-                     (cand (list :file file ; relative path
-                                 :fullpath (if (file-name-absolute-p file) file (concat root-dir file)) ; absolute path
-                                 :line-number line-number
-                                 :text text
-                                 :tagname tagname)))
-                (when (or (not context)
-                          (counsel-etags-execute-predicate-function context cand))
-                  (add-to-list 'cands (counsel-etags-build-cand cand)))))
-             (t
-              ;; need push cursor forward
-              (end-of-line)))))))
-    cands))
+          (cond
+           (match-file
+            ;; List tag name in current file or files whose path matching the pattern (use tagname)
+            ;; Tags file may contain relative path only.
+            (let* ((file-name (file-relative-name match-file
+                                                  (file-name-directory tags-file)))
+                   (b (re-search-forward  (concat "^" file-name ",") nil t))
+                   e
+                   str)
+              (when (and b
+                         (setq e (or (re-search-forward "\014?[\r\n]+[^\001\177,]+,[0-9]+")
+                                     (point-max)))
+                         (< b e))
+                (goto-char b)
+                (while (counsel-etags-push-one-candidate cands
+                                                         tagname-re
+                                                         e
+                                                         root-dir
+                                                         context)))))
+           (t
+            ;; normal tag search algorithm
+            (while (re-search-forward tagname nil t)
+              (beginning-of-line)
+              ;; second step, more precise search
+              (counsel-etags-push-one-candidate cands
+                                                tagname-re
+                                                (point-at-eol)
+                                                root-dir
+                                                context)))))))
+    (and cands (nreverse cands))))
 
 (defun counsel-etags-collect-cands (tagname fuzzy current-file &optional dir context)
-  "Parse tags file to search TAGNAME using FUZZY algorithm from CURRENT-FILE in DIR.
-CONTEXT is extra information collected before find tag definition.
-CURRENT-FILE is used to calculated string distance."
+  "Find TAGNAME using FUZZY algorithm in CURRENT-FILE of DIR.
+CONTEXT is extra information collected before find tag definition."
   (let* (rlt
          (force-tags-file (and dir
                                (file-exists-p (counsel-etags-get-tags-file-path dir))
                                (counsel-etags-get-tags-file-path dir)))
          (tags-file (or force-tags-file
                         (counsel-etags-locate-tags-file)))
-         (cands (and tags-file (counsel-etags-extract-cands-from-tags-file tags-file
-                                                                           tagname
-                                                                           fuzzy
-                                                                           context))))
+         (cands (and tags-file (counsel-etags-extract-cands tags-file
+                                                            tagname
+                                                            fuzzy
+                                                            context))))
 
-    ;; TODO:
-    ;; - cands from project tags file need be sorted
-    ;;   cands from third party tags file will not be sorted
-    ;; - read cands from multiple files
+    ;; current-file is used to calculated string distance.
     (setq rlt (mapcar 'car (counsel-etags-sort-candidates-maybe cands 3 nil current-file)))
     (when counsel-etags-extra-tags-files
       ;; don't sort candidate from 3rd party libraries
-      (unless (featurep 'find-file) (require 'find-file))
       (dolist (file (ff-list-replace-env-vars counsel-etags-extra-tags-files))
-        (when (setq cands (counsel-etags-extract-cands-from-tags-file file
-                                                                     tagname
-                                                                     fuzzy
-                                                                     context))
+        (when (setq cands (counsel-etags-extract-cands file
+                                                       tagname
+                                                       fuzzy
+                                                       context))
           ;; don't bother sorting candidates from third party tags file
           (setq rlt (append rlt (mapcar 'car cands))))))
     rlt))
@@ -1039,8 +1069,7 @@ For example, get a word when dot character is part of word,
                                   (or (= c ?.)
                                       (and (>= c ?0) (<= c ?9))
                                       (and (>= c ?A) (<= c ?Z))
-                                      (and (>= c ?a) (<= c ?z)))))
-"
+                                      (and (>= c ?a) (<= c ?z)))))"
   (let* ((rlt (char-to-string (following-char)))
          (b (line-beginning-position))
          (e (line-end-position)))
@@ -1120,11 +1149,15 @@ Tags might be sorted by comparing tag's path with CURRENT-FILE."
 (defun counsel-etags-find-tag-api (tagname fuzzy current-file &optional context)
   "Find TAGNAME using FUZZY algorithm from CURRENT-FILE.
 CONTEXT is extra information collected before finding tag definition."
-  (when counsel-etags-debug
-    (message "counsel-etags-find-tag-api called => %s %s %s" tagname fuzzy current-file))
   (let* ((time (current-time))
          (dir (counsel-etags-tags-file-directory)))
-    (when counsel-etags-debug (message "counsel-etags-find-tag-api called => %s %s %s" tagname fuzzy dir))
+    (when counsel-etags-debug
+      (message "counsel-etags-find-tag-api called => tagname=%s fuzzy=%s dir%s current-file=%s context=%s"
+               tagname
+               fuzzy
+               dir
+               current-file
+               context))
     ;; Dir could be nil. User could use `counsel-etags-extra-tags-files' instead
     (cond
      ((not tagname)
@@ -1154,6 +1187,32 @@ CONTEXT is extra information collected before finding tag definition."
   (interactive)
   (counsel-etags-tags-file-must-exist)
   (counsel-etags-find-tag-api nil t buffer-file-name))
+
+
+;;;###autoload
+(defun counsel-etags-list-tag-in-current-file()
+  "List tags in current file."
+  (interactive)
+  (counsel-etags-tags-file-must-exist)
+  (let* ((dir (counsel-etags-tags-file-directory))
+         (force-tags-file (and dir
+                               (file-exists-p (counsel-etags-get-tags-file-path dir))
+                               (counsel-etags-get-tags-file-path dir)))
+         (tags-file (or force-tags-file
+                        (counsel-etags-locate-tags-file)))
+         (cands (and tags-file
+                     buffer-file-name
+                     (counsel-etags-extract-cands tags-file
+                                                  nil
+                                                  t
+                                                  nil
+                                                  buffer-file-name))))
+
+    (ivy-read "Tags in current file:"
+              cands
+              :action `(lambda (e)
+                         (if (consp e) (setq e (car e)))
+                         (counsel-etags-open-file-api e ,dir)))))
 
 ;;;###autoload
 (defun counsel-etags-find-tag ()
@@ -1391,7 +1450,8 @@ ROOT is root directory to grep."
 
 ;;;###autoload
 (defun counsel-etags-update-tags-force (&optional forced-tags-file)
-  "Update current tags file now using default implementation."
+  "Update current tags file using default implementation.
+If FORCED-TAGS-FILE is nil, the updating process might now happen."
   (interactive)
   (let* ((tags-file (or forced-tags-file
                         (counsel-etags-locate-tags-file))))

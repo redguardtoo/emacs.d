@@ -330,6 +330,19 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
     (ivy--regex-plus str)))
 ;; }}
 
+(defun my-imenu-or-list-tag-in-current-file ()
+  "Combine the power of counsel-etags and imenu."
+  (interactive)
+  (cond
+   ((and (locate-dominating-file default-directory "TAGS")
+         (not (memq major-mode '(js2-mode
+                                 rjsx-mode
+                                 diff-mode
+                                 emacs-lisp-mode))))
+    (counsel-etags-list-tag-in-current-file))
+   (t
+    (counsel-imenu))))
+
 (eval-after-load 'ivy
   '(progn
      ;; better performance on everything (especially windows), ivy-0.10.0 required
