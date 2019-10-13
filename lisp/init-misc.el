@@ -532,20 +532,26 @@ Keep the last num lines if argument num if given."
 
 ;; @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
 (defun font-face-is-similar (f1 f2)
-  (let* (rlt)
-    ;; (message "f1=%s f2=%s" f1 f2)
-    ;; in emacs-lisp-mode, the '^' from "^abde" has list of faces:
-    ;;   (font-lock-negation-char-face font-lock-string-face)
-    (if (listp f1) (setq f1 (nth 1 f1)))
-    (if (listp f2) (setq f2 (nth 1 f2)))
+  "Font face F1 and F2 are similar or same."
+  ;; (message "f1=%s f2=%s" f1 f2)
+  ;; in emacs-lisp-mode, the '^' from "^abde" has list of faces:
+  ;;   (font-lock-negation-char-face font-lock-string-face)
+  (if (listp f1) (setq f1 (nth 1 f1)))
+  (if (listp f2) (setq f2 (nth 1 f2)))
 
-    (if (eq f1 f2) (setq rlt t)
+  (or (eq f1 f2)
       ;; C++ comment has different font face for limit and content
       ;; f1 or f2 could be a function object because of rainbow mode
-      (if (and (string-match "-comment-" (format "%s" f1)) (string-match "-comment-" (format "%s" f2)))
-          (setq rlt t)))
-    rlt))
+      (and (string-match "-comment-" (format "%s" f1))
+           (string-match "-comment-" (format "%s" f2)))))
 
+(defun font-face-at-point-similar-p (font-face-list)
+  "Test if font face at point is similar to any font in FONT-FACE-LIST."
+  (let* ((f (get-text-property (point) 'face))
+         rlt)
+    (dolist (ff font-face-list)
+      (if (font-face-is-similar f ff) (setq rlt t)))
+    rlt))
 
 ;; {{
 (defun goto-edge-by-comparing-font-face (&optional step)
