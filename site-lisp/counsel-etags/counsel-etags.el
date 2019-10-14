@@ -792,19 +792,26 @@ CURRENT-FILE is used to compare with candidate path."
   "Add KEY VALUE pair into DICTIONARY."
   `(setq ,dictionary (plist-put ,dictionary ,key ,value)))
 
-(defun counsel-etags-build-cand (info)
-  "Build tag candidate from INFO."
+(defun counsel-etags-build-cand (info &optional show-only-text)
+  "Build tag candidate from INFO.
+If SHOW-ONLY-TEXT is t, the candidate shows only text."
   (let* ((file (plist-get info :file))
          (lnum (plist-get info :line-number))
          (text (plist-get info :text))
-         (tagname (plist-get info :tagname)))
-    (cons (format "%s:%s:%s" file lnum text)
+         (tagname (plist-get info :tagname))
+         (head (cond
+                (show-only-text
+                 (string-trim text))
+                (t
+                 (format "%s:%s:%s" file lnum text)))))
+    (cons head
           (list file lnum tagname))))
 
-(defmacro counsel-etags-push-one-candidate (cands tagname-re bound root-dir context)
+(defmacro counsel-etags-push-one-candidate (cands tagname-re bound root-dir context &optional show-only-text)
   "Push new candidate into CANDS.
 Use TAGNAME-RE to search in current buffer with BOUND in ROOT-DIR.
-CONTEXT is extra information."
+CONTEXT is extra information.
+If SHOW-ONLY-TEXT is t, the candidate shows only text."
     `(cond
       ((re-search-forward ,tagname-re ,bound t)
        (let* ((line-number (match-string-no-properties 3))
@@ -818,17 +825,18 @@ CONTEXT is extra information."
                           :tagname (match-string-no-properties 2))))
          (when (or (not ,context)
                    (counsel-etags-execute-predicate-function context cand))
-           (push (counsel-etags-build-cand cand) ,cands)))
+           (push (counsel-etags-build-cand cand show-only-text) ,cands)))
        t)
       (t
        ;; need push cursor forward
        (end-of-line)
        nil)))
 
-(defun counsel-etags-extract-cands (tags-file tagname fuzzy context &optional match-file)
+(defun counsel-etags-extract-cands (tags-file tagname fuzzy context &optional match-file show-only-text)
   "Parse TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
 CONTEXT is extra information collected before find tag definition.
-If MATCH-FILE is a file path, only tag names in it is extracted."
+If MATCH-FILE is a file path, only tag names in it is extracted.
+If SHOW-ONLY-TEXT is t, the candidate shows only text."
   (let* ((root-dir (file-name-directory tags-file))
          (tagname-re (concat "\\([^\177\001\n]+\\)\177\\("
                              (if fuzzy "[^\177\001\n]+" tagname)
@@ -885,7 +893,8 @@ If MATCH-FILE is a file path, only tag names in it is extracted."
                                                          tagname-re
                                                          e
                                                          root-dir
-                                                         context)))))
+                                                         context
+                                                         show-only-text)))))
            (t
             ;; normal tag search algorithm
             (while (re-search-forward tagname nil t)
@@ -895,7 +904,8 @@ If MATCH-FILE is a file path, only tag names in it is extracted."
                                                 tagname-re
                                                 (point-at-eol)
                                                 root-dir
-                                                context)))))))
+                                                context
+                                                show-only-text)))))))
     (and cands (nreverse cands))))
 
 (defun counsel-etags-collect-cands (tagname fuzzy current-file &optional dir context)
@@ -967,33 +977,37 @@ So we need *encode* the string."
   "Open ITEM while `default-directory' is DIR.
 Focus on TAGNAME if it's not nil."
   ;; jump
-  (when (string-match "\\`\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'" item)
-    (let* ((file (match-string-no-properties 1 item))
-           (linenum (match-string-no-properties 2 item))
-           ;; always calculate path relative to TAGS
-           (default-directory dir))
+  (let* ((is-str (and (stringp item)
+                      (string-match "\\`\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'"
+                                    item)))
+         (file (if is-str (match-string-no-properties 1 item)
+                 (nth 0 item)))
+         (linenum (if is-str (match-string-no-properties 2 item)
+                    (nth 1 item)))
+         ;; always calculate path relative to TAGS
+         (default-directory dir))
 
-      (when counsel-etags-debug
-        (message "counsel-etags-open-file-api called => dir=%s, linenum=%s, file=%s" dir linenum file))
+    (when counsel-etags-debug
+      (message "counsel-etags-open-file-api called => dir=%s, linenum=%s, file=%s" dir linenum file))
 
-      ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
-      (counsel-etags-push-marker-stack (point-marker))
-      ;; open file, go to certain line
-      (find-file file)
-      (counsel-etags-forward-line linenum))
+    ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
+    (counsel-etags-push-marker-stack (point-marker))
+    ;; open file, go to certain line
+    (find-file file)
+    (counsel-etags-forward-line linenum))
 
-    ;; move focus to the tagname
-    (beginning-of-line)
-    ;; search tagname in current line might fail
-    ;; maybe tags files is updated yet
-    (when (and tagname
-               ;; focus on the tag if possible
-               (re-search-forward tagname (line-end-position) t))
-      (goto-char (match-beginning 0)))
+  ;; move focus to the tagname
+  (beginning-of-line)
+  ;; search tagname in current line might fail
+  ;; maybe tags files is updated yet
+  (when (and tagname
+             ;; focus on the tag if possible
+             (re-search-forward tagname (line-end-position) t))
+    (goto-char (match-beginning 0)))
 
-    ;; flash, Emacs v25 only API
-    (when (fboundp 'xref-pulse-momentarily)
-      (xref-pulse-momentarily))))
+  ;; flash, Emacs v25 only API
+  (when (fboundp 'xref-pulse-momentarily)
+    (xref-pulse-momentarily)))
 
 (defun counsel-etags-push-marker-stack (mark)
   "Save current MARK (position)."
@@ -1190,8 +1204,8 @@ CONTEXT is extra information collected before finding tag definition."
 
 
 ;;;###autoload
-(defun counsel-etags-list-tag-in-current-file()
-  "List tags in current file."
+(defun counsel-etags-list-tag-in-current-file(&optional show-list-only)
+  "List tags in current file.  If SHOW-LIST-ONLY is t, return the list of tags only."
   (interactive)
   (counsel-etags-tags-file-must-exist)
   (let* ((dir (counsel-etags-tags-file-directory))
@@ -1206,13 +1220,17 @@ CONTEXT is extra information collected before finding tag definition."
                                                   nil
                                                   t
                                                   nil
-                                                  buffer-file-name))))
-
-    (ivy-read "Tags in current file:"
-              cands
-              :action `(lambda (e)
-                         (if (consp e) (setq e (car e)))
-                         (counsel-etags-open-file-api e ,dir)))))
+                                                  buffer-file-name
+                                                  t))))
+    (cond
+     (show-list-only
+      cands)
+     (t
+      (ivy-read "Tags in current file:"
+                cands
+                :action `(lambda (e)
+                           (if (consp e) (setq e (cdr e)))
+                           (counsel-etags-open-file-api e ,dir)))))))
 
 ;;;###autoload
 (defun counsel-etags-find-tag ()
