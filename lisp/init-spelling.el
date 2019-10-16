@@ -43,12 +43,6 @@
      (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
      ;; }}
 
-     ;; {{ flyspell setup for js2-mode
-     (local-require 'wucuo)
-     (put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-     (put 'rjsx-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-     ;; }}
-
      ;; better performance
      (setq flyspell-issue-message-flag nil)
 

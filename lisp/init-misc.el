@@ -212,6 +212,11 @@
 
   (unless (is-buffer-file-temp)
 
+    ;; {{ spell check camel-case word
+    (unless (featurep 'wucuo) (local-require 'wucuo))
+    (wucuo-start)
+    ;; }}
+
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
     (setq compilation-finish-functions
           '(compilation-finish-hide-buffer-on-success))
