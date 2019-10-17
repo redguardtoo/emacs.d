@@ -27,6 +27,6 @@
 (add-hook 'artbollocks-mode-hook 'artbollocks-mode-hook-setup)
 
 ;; might slow down `org-mode'.
-(add-hook 'text-mode-hook 'artbollocks-mode)
+;(add-hook 'text-mode-hook 'artbollocks-mode)
 
 (provide 'init-artbollocks-mode)

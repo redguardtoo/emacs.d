@@ -17,6 +17,7 @@
 ;;; Default font setting for different OS
 (when *is-a-mac*
   (set-frame-font "-*-Monaco-normal-normal-normal-*-12.5-*-*-*-m-0-iso10646-1" )
+ ; (set-frame-font "-*-Monaco-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1" )
   ;; configure Chinese characters to align tables
   (dolist (charset '(kana han symbol cjk-misc bopomofo))
     (set-fontset-font (frame-parameter nil 'font)
@@ -24,7 +25,9 @@
 		      (font-spec :name "-*-HanziPen TC-normal-normal-normal-*-*-*-*-*-p-0-iso10646-1"
 				 :weight 'normal
 				 :slant 'normal
-				 :size 14.0))))
+				 :size 14.0
+            ;     :size 18.0
+                 ))))
 (when *linux*
   (set-frame-font "-unkonwn-Inconsolata-normal-normal-normal-*-16-*-*-*-m-0-iso10646-1")
   ;; configure Chinese characters to align tables
