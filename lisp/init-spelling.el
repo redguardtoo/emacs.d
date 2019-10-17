@@ -46,11 +46,12 @@
      ;; better performance
      (setq flyspell-issue-message-flag nil)
 
+     ;; flyspell-lazy is outdated and conflicts with latest flyspell
+     ;; It only improves the performance of flyspell so it's not essential.
+
      (defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
        (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
-           ad-do-it))
-
-     (flyspell-lazy-mode 1)))
+           ad-do-it))))
 
 
 ;; The logic is:

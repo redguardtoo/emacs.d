@@ -279,7 +279,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'ace-window)
 (require-package 'cmake-mode)
 (require-package 'cpputils-cmake)
-(require-package 'flyspell-lazy)
 (require-package 'bbdb)
 (require-package 'pomodoro)
 (require-package 'flymake-lua)
