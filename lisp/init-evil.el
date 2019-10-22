@@ -523,7 +523,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "ls" 'highlight-symbol
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
-  "ii" 'my-imenu-or-list-tag-in-current-file
+  "ii" 'counsel-imenu
   "ij" 'rimenu-jump
   "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
