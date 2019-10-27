@@ -1,6 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (ivy-mode 1) ; it enables ivy UI for `kill-buffer'
+(defvar test 1)
 
 (eval-after-load 'counsel
   '(progn
@@ -333,18 +334,19 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun my-imenu-or-list-tag-in-current-file ()
   "Combine the power of counsel-etags and imenu."
   (interactive)
-  (let* (cands)
-    (cond
-     ((and (locate-dominating-file default-directory "TAGS")
-           (not (memq major-mode '(js2-mode
-                                   rjsx-mode
-                                   diff-mode
-                                   emacs-lisp-mode)))
-           (setq cands (counsel-etags-list-tag-in-current-file t))
-           (> (length cands) 0))
-      (counsel-etags-list-tag-in-current-file))
-     (t
-      (counsel-imenu)))))
+  (cond
+   ((and (locate-dominating-file default-directory "TAGS")
+         (not (memq major-mode '(js2-mode
+                                 rjsx-mode
+                                 markdown-mode
+                                 org-mode
+                                 emacs-lisp-mode
+                                 diff-mode))))
+    (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
+      (message "====3")
+      (counsel-imenu)))
+   (t
+    (counsel-imenu))))
 
 (eval-after-load 'ivy
   '(progn
