@@ -262,9 +262,6 @@
 
 (setq history-delete-duplicates t)
 
-;;----------------------------------------------------------------------------
-(fset 'yes-or-no-p 'y-or-n-p)
-
 ;; NO automatic new line when scrolling down at buffer bottom
 (setq next-line-add-newlines nil)
 
@@ -379,15 +376,6 @@ Keep the last num lines if argument num if given."
                 keyword))))
       (counsel-etags-grep)))))
 
-(defun toggle-full-window()
-  "Toggle the full view of selected window"
-  (interactive)
-  ;; @see http://www.gnu.org/software/emacs/manual/html_node/elisp/Splitting-Windows.html
-  (if (window-parent)
-      (delete-other-windows)
-    (winner-undo)
-    ))
-
 (defun add-pwd-into-load-path ()
   "add current directory into load-path, useful for elisp developers"
   (interactive)
@@ -473,33 +461,6 @@ Keep the last num lines if argument num if given."
       (switch-to-buffer (create-file-buffer "Lyrics"))
       (insert song)
       (goto-line 0))))
-;; }}
-
-;; https://github.com/abo-abo/ace-window
-;; `M-x ace-window ENTER m` to swap window
-(global-set-key (kbd "C-x o") 'ace-window)
-
-;; {{ move focus between sub-windows
-(setq winum-keymap
-    (let ((map (make-sparse-keymap)))
-      (define-key map (kbd "M-0") 'winum-select-window-0-or-10)
-      (define-key map (kbd "M-1") 'winum-select-window-1)
-      (define-key map (kbd "M-2") 'winum-select-window-2)
-      (define-key map (kbd "M-3") 'winum-select-window-3)
-      (define-key map (kbd "M-4") 'winum-select-window-4)
-      (define-key map (kbd "M-5") 'winum-select-window-5)
-      (define-key map (kbd "M-6") 'winum-select-window-6)
-      (define-key map (kbd "M-7") 'winum-select-window-7)
-      (define-key map (kbd "M-8") 'winum-select-window-8)
-      map))
-
-(unless (featurep 'winum) (require 'winum))
-(eval-after-load 'winum
-  '(progn
-     (setq winum-format "%s")
-     (setq winum-mode-line-position 0)
-     (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
-     (winum-mode 1)))
 ;; }}
 
 (local-require 'ace-pinyin)
@@ -625,6 +586,34 @@ If step is -1, go backward."
 
 ;; {{ rust
 (add-auto-mode 'rust-mode "\\.rs\\'")
+;; }}
+
+;; {{ diff region SDK
+(defun diff-region-exit-from-certain-buffer (buffer-name)
+  (bury-buffer buffer-name)
+  (winner-undo))
+
+(defmacro diff-region-open-diff-output (content buffer-name)
+  `(let ((rlt-buf (get-buffer-create ,buffer-name)))
+    (save-current-buffer
+      (switch-to-buffer-other-window rlt-buf)
+      (set-buffer rlt-buf)
+      (erase-buffer)
+      (insert ,content)
+      ;; `ffip-diff-mode' is more powerful than `diff-mode'
+      (ffip-diff-mode)
+      (goto-char (point-min))
+      ;; Evil keybinding
+      (if (fboundp 'evil-local-set-key)
+          (evil-local-set-key 'normal "q"
+                              (lambda ()
+                                (interactive)
+                                (diff-region-exit-from-certain-buffer ,buffer-name))))
+      ;; Emacs key binding
+      (local-set-key (kbd "C-c C-c")
+                     (lambda ()
+                       (interactive)
+                       (diff-region-exit-from-certain-buffer ,buffer-name))))))
 ;; }}
 
 (defun diff-region-tag-selected-as-a ()

@@ -251,7 +251,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
     rlt))
 
 (defun my-guess-image-viewer-path (file &optional is-stream)
-  (let ((rlt "mplayer"))
+  (let* ((rlt "mplayer"))
     (cond
      (*is-a-mac*
       (setq rlt
@@ -266,7 +266,6 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                     (getenv "SystemRoot")
                     file))))
     rlt))
-
 
 (defun my-gclip ()
   (let* ((powershell-program (executable-find "powershell.exe")))
@@ -291,39 +290,6 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (xclip-set-selection 'clipboard str-val)))))
 ;; }}
 
-(defun make-concated-string-from-clipboard (concat-char)
-  (let* ((str (replace-regexp-in-string "'" "" (upcase (my-gclip))))
-         (rlt (replace-regexp-in-string "[ ,-:]+" concat-char str)))
-    rlt))
-
-;; {{ diff region SDK
-(defun diff-region-exit-from-certain-buffer (buffer-name)
-  (bury-buffer buffer-name)
-  (winner-undo))
-
-(defmacro diff-region-open-diff-output (content buffer-name)
-  `(let ((rlt-buf (get-buffer-create ,buffer-name)))
-    (save-current-buffer
-      (switch-to-buffer-other-window rlt-buf)
-      (set-buffer rlt-buf)
-      (erase-buffer)
-      (insert ,content)
-      ;; `ffip-diff-mode' is more powerful than `diff-mode'
-      (ffip-diff-mode)
-      (goto-char (point-min))
-      ;; Evil keybinding
-      (if (fboundp 'evil-local-set-key)
-          (evil-local-set-key 'normal "q"
-                              (lambda ()
-                                (interactive)
-                                (diff-region-exit-from-certain-buffer ,buffer-name))))
-      ;; Emacs key binding
-      (local-set-key (kbd "C-c C-c")
-                     (lambda ()
-                       (interactive)
-                       (diff-region-exit-from-certain-buffer ,buffer-name))))))
-;; }}
-
 (defun should-use-minimum-resource ()
   (and buffer-file-name
        (string-match-p "\.\\(mock\\|min\\)\.js" buffer-file-name)))
@@ -340,14 +306,7 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                                       (unless (string= (substring signal 0 -1) "finished")
                                         (message "Failed to run \"%s\"." ,command))))))))
 
-(defvar f-count nil)
-(defun f-incf (&optional first incr repeat)
-  (let* ((index (floor (/ (cl-incf f-count incr) (or repeat 1)))))
-    (+ (or first 1) (* (or incr 1) index))))
-
-(defun f-each (ls &optional repeat)
-  (let ((index (floor (/ (cl-incf f-count 0) (or repeat 1)))))
-    (if (< index (length ls)) (elt ls index)
-      (keyboard-quit))))
+;; reply y/n instead of yes/no
+(fset 'yes-or-no-p 'y-or-n-p)
 
 (provide 'init-utils)
