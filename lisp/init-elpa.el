@@ -23,6 +23,7 @@
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
     auto-yasnippet
+    typescript-mode ; the stable version lacks important feature (highlight function names)
     dumb-jump
     websocket ; to talk to the browser
     evil-exchange
