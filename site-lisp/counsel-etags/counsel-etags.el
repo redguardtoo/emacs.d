@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "24.4") (counsel "0.10.0") (ivy "0.10.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.0
+;; Version: 1.9.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -468,7 +468,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.0"))
+  (message "1.9.1"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1535,24 +1535,36 @@ If FORCED-TAGS-FILE is nil, the updating process might now happen."
   "Open occur buffer for `counsel-etags-recent-tag'."
   (counsel-etags-tag-occur-api counsel-etags-tag-history))
 
+(defun counsel-etags-occur-insert-lines (cands)
+  "A alternative of `swiper--occur-insert-lines'."
+  (cond
+   ((fboundp 'swiper--occur-insert-lines)
+    (swiper--occur-insert-lines cands))
+   (t
+    ;; below code could be delete when new stable version of swiper/ivy is released
+    (let ((inhibit-read-only t))
+      (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
+                      default-directory))
+      (insert (format "%d candidates:\n" (length cands)))
+      (ivy--occur-insert-lines cands)
+      (goto-char (point-min))
+      (forward-line 4)))))
+
 (defun counsel-etags-find-tag-occur ()
   "Open occur buffer for `counsel-etags-find-tag' and `counsel-etagslist-tag'."
   (counsel-etags-tag-occur-api counsel-etags-find-tag-candidates))
 
-(defun counsel-etags-grep-occur ()
+(defun counsel-etags-grep-occur (&optional _cands)
   "Open occur buffer for `counsel-etags-grep'."
   (unless (eq major-mode 'ivy-occur-grep-mode)
-    (ivy-occur-grep-mode))
+    (ivy-occur-grep-mode)
+    (font-lock-mode -1))
   ;; useless to set `default-directory', it's already correct
   ;; we use regex in elisp, don't unquote regex
   (let* ((cands (ivy--filter ivy-text
                              (split-string (shell-command-to-string (counsel-etags-grep-cli counsel-etags-keyword t))
                                            "[\r\n]+" t))))
-    ;; Need precise number of header lines for `wgrep' to work.
-    (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
-                    default-directory))
-    (insert (format "%d candidates:\n" (length cands)))
-    (ivy--occur-insert-lines
+    (counsel-etags-occur-insert-lines
      (mapcar
       (lambda (cand) (concat "./" cand))
       cands))))
