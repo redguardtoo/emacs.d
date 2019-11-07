@@ -247,7 +247,8 @@ If N is not nil, only list directories in current project."
   (interactive)
   (cond
    ((region-active-p)
-    (counsel-git-grep counsel-git-grep-cmd-default (my-selected-str)))
+    ;; since 0.12.0, counsel change the api
+    (counsel-git-grep (my-selected-str) default-directory counsel-git-grep-cmd-default ))
    (t
     (counsel-git-grep))))
 

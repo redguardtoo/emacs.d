@@ -39,8 +39,8 @@
     undo-tree
     js-doc
     jss ; remote debugger of browser
-    ;; {{ since stable v0.9.1 released, we go back to stable version
-    ivy ; stable counsel dependent unstable ivy
+    ;; {{ since stable v0.13.0 released, we go back to stable version
+    ;; ivy
     ;; counsel
     ;; swiper
     ;; }}
@@ -264,7 +264,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'flymake-jslint)
 (require-package 'ivy)
 (require-package 'swiper)
-(require-package 'counsel) ; counsel => swiper => ivy
+(require-package 'counsel '(0 13 0)) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
 (require-package 'ibuffer-vc)
