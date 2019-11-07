@@ -253,6 +253,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'connection)
 (require-package 'dictionary) ; dictionary requires 'link and 'connection
 (require-package 'htmlize)
+(require-package 'jade-mode)
 (require-package 'diminish)
 (require-package 'scratch)
 (require-package 'rainbow-delimiters)
