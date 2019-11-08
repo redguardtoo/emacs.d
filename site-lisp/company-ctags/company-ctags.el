@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.3") (company "0.9.0"))
 
@@ -26,24 +26,26 @@
 ;;; Commentary:
 
 ;; This library completes code using tags file created by Ctags.
-;; It uses a new algorithm optimized for ctags.  So it's much faster.
-;; For example, it needs 9 seconds to load about 300M tags file which
-;; is created by scanning the Linux Kernel code v5.3.1.
-;; After initial loading, this library will always respond immediately
-;; even when new tags file is created.
+;; It uses a much faster algorithm optimized for ctags.
+;; It takes only 9 seconds to load 300M tags file which is created by
+;; scanning the Linux Kernel code v5.3.1.
+;; After initial loading, this library will respond immediately
+;; when new tags file is created.
 ;;
 ;; Usage:
-;;   Step 1, insert below code into Emacs setup,
+;;   Step 1, insert below code into your configuration,
 ;;
 ;;   (eval-after-load 'company
 ;;     '(progn
-;;        (require 'company-ctags)
 ;;        (company-ctags-auto-setup)))
 ;;
-;;   Step 2, Create tags file using Ctags and enjoy.
+;;   Step 2, Use Ctags to create tags file and enjoy.
 ;;
 ;; You can also turn on `company-ctags-support-etags' to support tags
 ;; file created by etags.  But it will increase initial loading time.
+;;
+;; Make sure `diff-command' is executable on Windows.  You might need install GNU Diff.
+;; It optional but highly recommended. It can speed up tags file updating.
 
 ;;; Code:
 
@@ -252,7 +254,8 @@ This function return t if any tag file is reloaded."
       (setq reloaded t)
       (message "Loading %s ..." file)
       (cond
-       (use-diff
+       ;; (use-diff
+       (nil
         ;; actually don't change raw-content attached to file-info
         (setq raw-content (plist-get file-info :raw-content))
 
