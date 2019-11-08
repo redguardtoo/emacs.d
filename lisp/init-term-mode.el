@@ -11,11 +11,13 @@
 (ad-activate 'term-sentinel)
 
 ;; always use bash
+
 ;; try to use zsh
 (defvar my-term-program "/bin/zsh")
-(defadvice ansi-term (before force-bash)
-  (interactive (list my-term-program)))
-(ad-activate 'ansi-term)
+;; (defadvice ansi-term (before force-bash)
+;;   (interactive (list my-term-program))
+;;   )
+;; (ad-activate 'ansi-term)
 
 ;; utf8
 (defun my-term-use-utf8 ()
