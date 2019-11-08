@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.3") (company "0.9.0"))
 
@@ -45,11 +45,11 @@
 ;; file created by etags.  But it will increase initial loading time.
 ;;
 ;; Make sure `diff-command' is executable on Windows.  You might need install GNU Diff.
-;; It optional but highly recommended. It can speed up tags file updating.
+;; It optional but highly recommended.  It can speed up tags file updating.
 
 ;;; Code:
 
-(require 'company)
+(require 'company nil t)
 (require 'cl-lib)
 
 (defgroup company-ctags nil
@@ -158,36 +158,42 @@ It's like (prefix . candidates).")
      (t
       (push ,tagname (gethash ?' ,tagname-dict))))))
 
-(defun company-ctags-extract-tagnames (text)
-  "Extract tag names from TEXT."
-  (let* ((start 0)
-         (tagname-dict (make-hash-table))
-         (i 0))
-
+(defun company-ctags-init-tagname-dict ()
+  "Initialize tagname dict."
+  (let* ((i 0)
+         (dict (make-hash-table)))
     ;; initialize hashtable whose key is from a...z and A...Z
     (while (< i 26)
       ;; make sure the hash value is not nil
-      (puthash (+ ?a i) '() tagname-dict)
-      (puthash (+ ?A i) '() tagname-dict)
+      (puthash (+ ?a i) '() dict)
+      (puthash (+ ?A i) '() dict)
       (setq i (1+ i)))
 
     ;; initialize hashtable whose key is from 0...9
     (setq i 0)
     (while (< i 10)
       ;; make sure the hash value is not nil
-      (puthash (+ ?0 i) '() tagname-dict)
+      (puthash (+ ?0 i) '() dict)
       (setq i (1+ i)))
     ;; other key used as the first character of variable name
-    (puthash ?$ '() tagname-dict)
-    (puthash ?_ '() tagname-dict)
-    (puthash ?# '() tagname-dict)
-    (puthash ?& '() tagname-dict)
-    (puthash ?@ '() tagname-dict)
-    (puthash ?! '() tagname-dict)
-    (puthash ?* '() tagname-dict)
-    (puthash ?% '() tagname-dict)
+    (puthash ?$ '() dict)
+    (puthash ?_ '() dict)
+    (puthash ?# '() dict)
+    (puthash ?& '() dict)
+    (puthash ?@ '() dict)
+    (puthash ?! '() dict)
+    (puthash ?* '() dict)
+    (puthash ?% '() dict)
     ;; rubbish bin
-    (puthash ?' '() tagname-dict)
+    (puthash ?' '() dict)
+    dict))
+
+(defun company-ctags-parse-tags (text &optional dict)
+  "Extract tag names from TEXT.
+DICT is the existing lookup dictionary contains tag names.
+If it's nil, return a dictionary, or else return the existing dictionary."
+  (let* ((start 0))
+    (unless dict (setq dict (company-ctags-init-tagname-dict)))
 
     ;; Code inside the loop should be optimized.
     ;; Please avoid calling lisp function inside the loop.
@@ -199,26 +205,21 @@ It's like (prefix . candidates).")
          ((match-beginning 2)
           ;; There is an explicit tag name.
           (company-ctags-push-tagname (substring text (match-beginning 2) (match-end 2))
-                                      tagname-dict))
+                                      dict))
          (t
           ;; No explicit tag name.  Backtrack a little,
           ;; and look for the implicit one.
           (company-ctags-push-tagname (substring text (match-beginning 1) (match-end 1))
-                                      tagname-dict)))
+                                      dict)))
         (setq start (+ 4 (match-end 0)))))
      (t
       ;; fast algorithm, support explicit tags name only
       (while (string-match company-ctags-fast-pattern text start)
         (company-ctags-push-tagname (substring text (match-beginning 1) (match-end 1))
-                                    tagname-dict)
+                                    dict)
         (setq start (+ 4 (match-end 0))))))
 
-    tagname-dict))
-
-(defun company-ctags-append-new-tagname-dict (new-tagnames file-info)
-  "Append NEW-TAGNAMES to FILE-INFO."
-  (dolist (tagname new-tagnames)
-    (company-ctags-push-tagname tagname (plist-get file-info :tagname-dict))))
+    dict))
 
 (defun company-ctags-all-completions (prefix tagname-dict)
   "Search for partial match to PREFIX in TAGNAME-DICT."
@@ -226,11 +227,12 @@ It's like (prefix . candidates).")
          (arr (gethash c tagname-dict (gethash ?' tagname-dict))))
     (all-completions prefix arr)))
 
-(defun company-ctags-load-tags-file (file &optional force no-diff-prog)
+(defun company-ctags-load-tags-file (file &optional force no-diff-prog quiet)
   "Load tags from FILE.
 If FORCE is t, tags file is read without `company-ctags-tags-file-caches'.
 If NO-DIFF-PROG is t, do NOT use diff on tags file.
-This function return t if any tag file is reloaded."
+This function return t if any tag file is reloaded.
+If QUIET is t, don not output any message."
   (let* (raw-content
          (file-info (and company-ctags-tags-file-caches
                          (gethash file company-ctags-tags-file-caches)))
@@ -252,10 +254,9 @@ This function return t if any tag file is reloaded."
 
       ;; Read file content
       (setq reloaded t)
-      (message "Loading %s ..." file)
+      (unless quiet (message "Loading %s ..." file))
       (cond
-       ;; (use-diff
-       (nil
+       (use-diff
         ;; actually don't change raw-content attached to file-info
         (setq raw-content (plist-get file-info :raw-content))
 
@@ -268,8 +269,9 @@ This function return t if any tag file is reloaded."
             (write-region (point-min) (point-max) tmp-file nil :silent))
           ;; compare old and new tags file, extract tag names from diff output which
           ;; should be merged with old tag names
-          (setq tagname-dict (company-ctags-append-new-tagname-dict (company-ctags-extract-tagnames (shell-command-to-string cmd))
-                                                      file-info))
+          (setq tagname-dict
+                (company-ctags-parse-tags (shell-command-to-string cmd)
+                                          (plist-get file-info :tagname-dict)))
           ;; clean up
           (delete-file tmp-file)))
        (t
@@ -277,7 +279,7 @@ This function return t if any tag file is reloaded."
                             (insert-file-contents file)
                             (buffer-string)))
         ;; collect all tag names
-        (setq tagname-dict (company-ctags-extract-tagnames raw-content))))
+        (setq tagname-dict (company-ctags-parse-tags raw-content))))
 
       ;; initialize hash table if needed
       (unless company-ctags-tags-file-caches
@@ -290,7 +292,7 @@ This function return t if any tag file is reloaded."
                      :timestamp (float-time (current-time))
                      :filesize (nth 7 (file-attributes file)))
                company-ctags-tags-file-caches)
-      (message "%s is loaded." file))
+      (unless quiet (message "%s is loaded." file)))
     reloaded))
 
 (defun company-ctags--candidates (prefix)
