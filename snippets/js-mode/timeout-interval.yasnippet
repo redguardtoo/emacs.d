@@ -4,8 +4,8 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 if(!${1:timer}) {
-  ${1:$(yas/substr yas-text "[^ ]*")} = setTimeout(() => {
-    ${1:$(yas/substr yas-text "[^ ]*")} = null;
+  ${1:$(yas/substr yas-text "[^:=, ]*")} = setTimeout(() => {
+    ${1:$(yas/substr yas-text "[^:=, ]*")} = null;
     // do something here
   }, 250);
 }

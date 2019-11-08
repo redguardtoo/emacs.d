@@ -4,5 +4,5 @@
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 ${1:var }${2:name} = function($0) {
-  console.log('${2:$(yas/substr yas-text "[^ ]*")} called');
+  console.log('${2:$(yas/substr yas-text "[^:=, ]*")} called');
 };

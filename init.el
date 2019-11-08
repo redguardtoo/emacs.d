@@ -50,18 +50,20 @@
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
-(defmacro require-init (pkg)
-  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg)) t t))
+(defun require-init (pkg &optional maybe-disabled)
+  "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
+  (when (or (not maybe-disabled) (not (boundp 'startup-now)))
+    (load (file-truename (format "~/.emacs.d/lisp/%s" pkg)) t t)))
 
-(defmacro local-require (pkg)
-  `(unless (featurep ,pkg)
-     (load (expand-file-name
-             (cond
-               ((eq ,pkg 'go-mode-load)
-                (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg))
-               (t
-                 (format "~/.emacs.d/site-lisp/%s/%s" ,pkg ,pkg))))
-           t t)))
+(defun local-require (pkg)
+  (unless (featurep pkg)
+    (load (expand-file-name
+           (cond
+            ((eq pkg 'go-mode-load)
+             (format "~/.emacs.d/site-lisp/go-mode/%s" pkg))
+            (t
+             (format "~/.emacs.d/site-lisp/%s/%s" pkg pkg))))
+          t t)))
 
 ;; *Message* buffer should be writable in 24.4+
 (defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)
@@ -89,70 +91,63 @@
   (require-init 'init-modeline)
   (require-init 'init-utils)
   (require-init 'init-elpa)
-  (require-init 'init-exec-path) ;; Set up $PATH
+  (require-init 'init-exec-path t) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
-  (require 'init-spelling)
-  (require 'init-theme)
-  (require 'init-macos-keys)
-  (require 'init-gui-frames)
-  (require 'init-uniquify)
-  (require 'init-ibuffer)
-  (require 'init-ivy)
-  (require 'init-hippie-expand)
-  (require 'init-windows)
-  (require 'init-markdown)
-  ;(require 'init-erlang)
-  ;(require 'init-javascript)
-  (require 'init-org)
-  ;(require 'init-css)
-  (require 'init-python)
-  ;(require 'init-haskell)
-  ;(require 'init-ruby-mode)
-  (require 'init-lisp)
-  (require 'init-elisp)
-  (require 'init-yasnippet)
-  ;; Use bookmark instead
-  (require 'init-cc-mode)
-  (require 'init-gud)
-  (require 'init-linum-mode)
-  (require 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
-  ;;(require 'init-gist)
-  (require 'init-gtags)
-
+  (require-init 'init-spelling t)
+  (require-init 'init-theme t)
+  (require-init 'init-macos-keys t)
+  (require-init 'init-gui-frames t)
+  (require-init 'init-uniquify t)
+  (require-init 'init-ibuffer t)
+  (require-init 'init-ivy)
+  (require-init 'init-hippie-expand)
+  (require-init 'init-windows)
+  (require-init 'init-markdown t)
+  ;(require-init 'init-javascript t)
+  (require-init 'init-org t)
+  (require-init 'init-css t)
+  (require-init 'init-python t)
+  (require-init 'init-ruby-mode t)
+  (require-init 'init-lisp t)
+  (require-init 'init-elisp t)
+  (require-init 'init-yasnippet t)
+  (require-init 'init-cc-mode t)
+  (require-init 'init-gud t)
+  (require-init 'init-linum-mode)
+  (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
+  ;; (require-init 'init-gist)
+  (require-init 'init-gtags t)
   ;; init-evil dependent on init-clipboard
   (require-init 'init-clipboard)
   ;; use evil mode (vi key binding)
-  ;(require 'init-evil)
-;  (require 'init-multiple-cursors)
-  (require 'init-ctags)
-  (require 'init-bbdb)
-  (require 'init-gnus)
-  (require 'init-lua-mode)
-  (require 'init-workgroups2)
-  (require 'init-term-mode)
-  ;(require 'init-web-mode)
-  (require 'init-company)
-;  (require 'init-chinese) ;; cannot be idle-required
-
-
+  ;(require-init 'init-evil )
+  (require-init 'init-ctags t)
+  (require-init 'init-bbdb t)
+  (require-init 'init-gnus t)
+  (require-init 'init-lua-mode t)
+  (require-init 'init-workgroups2)
+  (require-init 'init-term-mode t)
+  (require-init 'init-web-mode t)
+  (require-init 'init-company t)
+  ;(require-init 'init-chinese t) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
-  (require-init 'init-keyfreq)
-  (require-init 'init-httpd)
+  (require-init 'init-keyfreq t)
+  (require-init 'init-httpd t)
+
 
   ;; projectile costs 7% startup time
 
   ;; misc has some crucial tools I need immediately
-  (require-init 'init-misc)
 
-  (require-init 'init-emacs-w3m)
-  (require-init 'init-hydra)
-  (require-init 'init-shackle)
-  (require-init 'init-dired)
-  (require-init 'init-writting)
+  (require-init 'init-misc t)
 
-  (require 'init-fonts)
+  (require-init 'init-emacs-w3m t)
+  (require-init 'init-hydra t)
+  (require-init 'init-shackle t)
+  (require-init 'init-dired t)
+  (require-init 'init-writting t)
 
-  
+  (require-init 'init-fonts t)
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
@@ -163,7 +158,8 @@
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
-  (load (expand-file-name "~/.custom.el") t nil)
+  (unless (boundp 'startup-now)
+    (load (expand-file-name "~/.custom.el") t nil))
 
   ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
   ;; See `custom-file' for details.

@@ -11,6 +11,7 @@
                  (not buffer-file-name)
                  ;; embed python code in org file
                  (string= (file-name-extension buffer-file-name) "org"))
+
        (elpy-enable)
 
        ;; Use IPython for REPL
@@ -29,6 +30,7 @@
        (require 'py-autopep8)
        (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save)
        )
+
      ;; http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
      ;; emacs 24.4 only
      (setq electric-indent-chars (delq ?: electric-indent-chars))))
