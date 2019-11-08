@@ -43,12 +43,6 @@
      (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
      ;; }}
 
-     ;; {{ flyspell setup for js2-mode
-     (local-require 'wucuo)
-     (put 'js2-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-     (put 'rjsx-mode 'flyspell-mode-predicate 'wucuo-generic-check-word-predicate)
-     ;; }}
-
      ;; better performance
      (setq flyspell-issue-message-flag nil)
 
@@ -59,10 +53,12 @@
      (flyspell-lazy-mode 1)))
 
 
-;; if (aspell installed) { use aspell}
+;; The logic is:
+;; If (aspell installed) { use aspell}
 ;; else if (hunspell installed) { use hunspell }
-;; whatever spell checker I use, I always use English dictionary
-;; I prefer use aspell because:
+;; English dictionary is used.
+;;
+;; I prefer aspell because:
 ;; 1. aspell is older
 ;; 2. looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
@@ -72,14 +68,28 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
   (let* (args)
     (when ispell-program-name
       (cond
+       ;; use aspell
        ((string-match "aspell$" ispell-program-name)
         ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
         (setq args (list "--sug-mode=ultra" "--lang=en_US"))
-        ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp" . The algorithm is
-        ;; not precise .
+        ;; "--run-together-min" could not be 3, see `check` in "speller_impl.cpp".
+        ;; The algorithm is not precise.
         ;; Run `echo tasteTableConfig | aspell --lang=en_US -C --run-together-limit=16  --encoding=utf-8 -a` in shell.
-        (if run-together
-            (setq args (append args '("--run-together" "--run-together-limit=16")))))
+        (when run-together
+          (cond
+           ;; Kevin Atkinson said now aspell supports camel case directly
+           ;; https://github.com/redguardtoo/emacs.d/issues/796
+           ((string-match-p "--camel-case"
+                            (shell-command-to-string (concat ispell-program-name " --help")))
+            (setq args (append args '("--camel-case"))))
+
+           ;; old aspell uses "--run-together". Please note we are not dependent on this option
+           ;; to check camel case word. wucuo is the final solution. This aspell options is just
+           ;; some extra check to speed up the whole process.
+           (t
+            (setq args (append args '("--run-together" "--run-together-limit=16")))))))
+
+       ;; use hunsepll
        ((string-match "hunspell$" ispell-program-name)
         (setq args nil))))
     args))
@@ -176,4 +186,59 @@ back to hunspell if aspell is not found.")
                         (length aspell-words)
                         (mapconcat 'identity aspell-words "\n"))))))
 
+;; {{ langtool setup
+(eval-after-load 'langtool
+  '(progn
+     (setq langtool-generic-check-predicate
+           '(lambda (start end)
+              ;; set up for `org-mode'
+              (let* ((begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
+                     (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
+                     (case-fold-search t)
+                     (ignored-font-faces '(org-verbatim
+                                           org-block-begin-line
+                                           org-meta-line
+                                           org-tag
+                                           org-link
+                                           org-table
+                                           org-level-1
+                                           org-document-info))
+                     (rlt t)
+                     ff
+                     th
+                     b e)
+                (save-excursion
+                  (goto-char start)
+
+                  ;; get current font face
+                  (setq ff (get-text-property start 'face))
+                  (if (listp ff) (setq ff (car ff)))
+
+                  ;; ignore certain errors by set rlt to nil
+                  (cond
+                   ((memq ff ignored-font-faces)
+                    ;; check current font face
+                    (setq rlt nil))
+                   ((or (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ start 2)))
+                        (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ end 2))))
+                    ;; dash character of " - list item 1"
+                    (setq rlt nil))
+
+                   ((and (setq th (thing-at-point 'evil-WORD))
+                         (or (string-match "^=[^=]*=[,.]?$" th)
+                             (string-match "^\\[\\[" th)
+                             (string-match "^=(" th)
+                             (string-match ")=$" th)
+                             (string= "w3m" th)))
+                    ;; embedded cde like =w3m= or org-link [[http://google.com][google]] or [[www.google.com]]
+                    ;; langtool could finish checking before major mode prepare font face for all texts
+                    (setq rlt nil))
+                   (t
+                    ;; inside source block?
+                    (setq b (re-search-backward begin-regexp nil t))
+                    (if b (setq e (re-search-forward end-regexp nil t)))
+                    (if (and b e (< start e)) (setq rlt nil)))))
+                ;; (if rlt (message "start=%s end=%s ff=%s" start end ff))
+                rlt)))))
+;; }}
 (provide 'init-spelling)

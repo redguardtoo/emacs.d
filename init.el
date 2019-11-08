@@ -1,14 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 ;; (advice-add #'package-initialize :after #'update-load-path)
 
-;; Added by Package.el.  This must come before configurations of
-;; installed packages.  Don't delete this line.  If you don't want it,
-;; just comment it out by adding a semicolon to the start of the line.
-;; You may delete these explanatory comments.
-;; (defadvice package-initialize (after my-init-load-path activate)
-;;   "Reset `load-path'."
-;;   (push (expand-file-name "~/.emacs.d/lisp") load-path))
-(package-initialize)
+;; Without this comment emacs25 adds (package-initialize) here
+;; (package-initialize)
+
 (push (expand-file-name "~/.emacs.d/lisp") load-path)
 
 (let* ((minver "24.4"))
@@ -55,12 +50,13 @@
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
+(defmacro require-init (pkg)
+  `(load (file-truename (format "~/.emacs.d/lisp/%s" ,pkg)) t t))
+
 (defmacro local-require (pkg)
   `(unless (featurep ,pkg)
      (load (expand-file-name
              (cond
-               ((eq ,pkg 'bookmark+)
-                (format "~/.emacs.d/site-lisp/bookmark-plus/%s" ,pkg))
                ((eq ,pkg 'go-mode-load)
                 (format "~/.emacs.d/site-lisp/go-mode/%s" ,pkg))
                (t
@@ -79,13 +75,21 @@
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
+
+  ;; ;; {{
+  ;; (require 'benchmark-init-modes)
+  ;; (require 'benchmark-init)
+  ;; (benchmark-init/activate)
+  ;; ;; `benchmark-init/show-durations-tree' to show benchmark result
+  ;; ;; }}
+
+  (require-init 'init-autoload)
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
-  (require 'init-autoload)
-  (require 'init-modeline)
-  (require 'init-utils)
-  (require 'init-elpa)
-  (require 'init-exec-path) ;; Set up $PATH
+  (require-init 'init-modeline)
+  (require-init 'init-utils)
+  (require-init 'init-elpa)
+  (require-init 'init-exec-path) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require 'init-spelling)
   (require 'init-theme)
@@ -114,11 +118,12 @@
   (require 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
   ;;(require 'init-gist)
   (require 'init-gtags)
+
   ;; init-evil dependent on init-clipboard
-  (require 'init-clipboard)
+  (require-init 'init-clipboard)
   ;; use evil mode (vi key binding)
   ;(require 'init-evil)
-  (require 'init-multiple-cursors)
+;  (require 'init-multiple-cursors)
   (require 'init-ctags)
   (require 'init-bbdb)
   (require 'init-gnus)
@@ -128,21 +133,22 @@
   ;(require 'init-web-mode)
   (require 'init-company)
 ;  (require 'init-chinese) ;; cannot be idle-required
+
+
   ;; need statistics of keyfreq asap
-  (require 'init-keyfreq)
-  (require 'init-httpd)
+  (require-init 'init-keyfreq)
+  (require-init 'init-httpd)
 
   ;; projectile costs 7% startup time
 
   ;; misc has some crucial tools I need immediately
-  (require 'init-misc)
+  (require-init 'init-misc)
 
-  (require 'init-emacs-w3m)
-  (require 'init-hydra)
-  (require 'init-shackle)
-  (require 'init-dired)
-  (require 'init-artbollocks-mode)
-  (require 'init-writting)
+  (require-init 'init-emacs-w3m)
+  (require-init 'init-hydra)
+  (require-init 'init-shackle)
+  (require-init 'init-dired)
+  (require-init 'init-writting)
 
   (require 'init-fonts)
 
@@ -151,9 +157,9 @@
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
-  ;; Neither ELPA package nor dependent on "site-lisp/".
+  ;; NO ELPA package is dependent on "site-lisp/".
   (setq load-path (cdr load-path))
-  (load (expand-file-name "~/.emacs.d/lisp/init-site-lisp") t t)
+  (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
   ;; my personal setup, other major-mode specific setup need it.
   ;; It's dependent on "~/.emacs.d/site-lisp/*.el"

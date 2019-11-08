@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(ivy-mode 1) ; it enables ivy UI for `kill-buffer'
+
 (eval-after-load 'counsel
   '(progn
      ;; automatically pick up cygwin cli tools for counse
@@ -174,35 +176,29 @@ Or else, find files since 24 weeks (6 months) ago."
     (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
 ;; }}
 
-(defun counsel--build-bookmark-candidate (bookmark)
-  (let (key)
+(defun my-build-bookmark-candidate (bookmark)
+  (let* ((key (cond
+               ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
+                (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark))))
+               ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
+                (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark))))
+               (t
+                (car bookmark)))))
     ;; build key which will be displayed
-    (cond
-     ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
-      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark)))))
-     ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
-      ;; bmkp-jump-w3m is from bookmark+
-      (setq key (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark)))))
-     (t
-      (setq key (car bookmark))))
-    ;; re-shape the data so full bookmark be passed to ivy-read:action
+    ;; re-shape the data so full bookmark be passed to ivy-read
     (cons key bookmark)))
 
 (defun counsel-bookmark-goto ()
-  "Open ANY bookmark.  Requires bookmark+"
+  "Open ANY bookmark."
   (interactive)
   (unless (featurep 'bookmark) (require 'bookmark))
   (bookmark-maybe-load-default-file)
-
-  (let* ((bookmarks (and (boundp 'bookmark-alist) bookmark-alist))
-         (collection (delq nil (mapcar #'counsel--build-bookmark-candidate
-                                       bookmarks))))
-    ;; do the real thing
-    (ivy-read "bookmarks:"
-              collection
-              :action (lambda (bookmark)
-                        (local-require 'bookmark+)
-                        (bookmark-jump bookmark)))))
+  ;; do the real thing
+  (ivy-read "bookmarks:"
+            (delq nil (mapcar #'my-build-bookmark-candidate
+                              (and (boundp 'bookmark-alist)
+                                   bookmark-alist)))
+            :action #'bookmark-jump))
 
 (defun counsel-yank-bash-history ()
   "Yank the bash history."
@@ -260,12 +256,11 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive "P")
   (my-select-from-kill-ring (lambda (s)
                               (let* ((plain-str (my-insert-str s))
-                                     (trimmed (s-trim plain-str)))
+                                     (trimmed (string-trim plain-str)))
                                 (setq kill-ring (cl-delete-if
-                                                 `(lambda (e) (string= ,trimmed (s-trim e)))
+                                                 `(lambda (e) (string= ,trimmed (string-trim e)))
                                                  kill-ring))
-                                (kill-new plain-str)))
-                            n))
+                                (kill-new plain-str)))))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
   (unless (featurep 'pinyinlib) (require 'pinyinlib))
@@ -293,66 +288,75 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
      (setq ivy-display-style 'fancy)))
 
 ;; {{ swiper&ivy-mode
-(defun swiper-the-thing ()
-  (interactive)
-  ;; better performance on large files than swiper
-  (counsel-grep-or-swiper (my-use-selected-string-or-ask "")))
-
-(global-set-key (kbd "C-s") 'swiper)
+(global-set-key (kbd "C-s") 'counsel-grep-or-swiper)
 ;; }}
 
 (global-set-key (kbd "C-h v") 'counsel-describe-variable)
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 
-;; better performance on everything (especially windows), ivy-0.10.0 required
-;; @see https://github.com/abo-abo/swiper/issues/1218
-(setq ivy-dynamic-exhibit-delay-ms 250)
+;; {{  C-o f to toggle case sensitive, @see https://github.com/abo-abo/swiper/issues/1104
+(defun re-builder-extended-pattern (str)
+  (let* ((len (length str)))
+    (cond
+     ;; do nothing
+     ((<= (length str) 0))
 
-;; Press C-p and Enter to select current input as candidate
-;; https://oremacs.com/2017/11/30/ivy-0.10.0/
-(setq ivy-use-selectable-prompt t)
+     ;; If the first charater of input in ivy is ":",
+     ;; remaining input is converted into Chinese pinyin regex.
+     ;; For example, input "/ic" match "isController" or "isCollapsed"
+     ((string= (substring str 0 1) ":")
+      (setq str (pinyinlib-build-regexp-string (substring str 1 len) t)))
 
-;; {{ input ":" at first to start pinyin search in any ivy-related packages
-(defvar ivy-pinyin-search-trigger-key ":")
-;; @see https://emacs-china.org/t/topic/2432/3
-(defun my-pinyinlib-build-regexp-string (str)
-  (cond
-   ((string= str ".*")
-    ".*")
-   (t
-    (pinyinlib-build-regexp-string str t))))
-
-(defun my-pinyin-regexp-helper (str)
-  (cond
-   ((string= str " ")
-    ".*")
-   ((string= str "")
-    nil)
-   (;; t
-    str)))
-
-(defun pinyin-to-utf8 (str)
-  (when (and (> (length str) 0)
-             (string= (substring str 0 1) ":"))
-    (let* ((collection (split-string (replace-regexp-in-string ivy-pinyin-search-trigger-key
-                                                               ""
-                                                               str) "")))
-      (unless (featurep 'pinyinlib) (require 'pinyinlib))
-      (mapconcat 'my-pinyinlib-build-regexp-string
-                 (delq nil (mapcar 'my-pinyin-regexp-helper
-                                   collection))
-                 ""))))
-
-(defun re-builder-pinyin (str)
-  (or (pinyin-to-utf8 str)
-      (ivy--regex-plus str)))
-
-(setq ivy-re-builders-alist
-      '((t . re-builder-pinyin)))
+     ;; If the first charater of input in ivy is "/",
+     ;; remaining input is converted to pattern to search camel case word
+     ((string= (substring str 0 1) "/")
+      (let* ((rlt "")
+             (i 0)
+             (subs (substring str 1 len))
+             c)
+        (when (> len 2)
+          (setq subs (upcase subs))
+          (while (< i (length subs))
+            (setq c (elt subs i))
+            (setq rlt (concat rlt (cond
+                                   ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
+                                    (format "%c" c))
+                                   (t
+                                    (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
+                                              (format "%c" c))
+                                            "[a-z]+")))))
+            (setq i (1+ i))))
+        (setq str rlt))))
+    (ivy--regex-plus str)))
 ;; }}
+
+(defun my-imenu-or-list-tag-in-current-file ()
+  "Combine the power of counsel-etags and imenu."
+  (interactive)
+  (let* (cands)
+    (cond
+     ((and (locate-dominating-file default-directory "TAGS")
+           (not (memq major-mode '(js2-mode
+                                   rjsx-mode
+                                   diff-mode
+                                   emacs-lisp-mode)))
+           (setq cands (counsel-etags-list-tag-in-current-file t))
+           (> (length cands) 0))
+      (counsel-etags-list-tag-in-current-file))
+     (t
+      (counsel-imenu)))))
 
 (eval-after-load 'ivy
   '(progn
+     ;; better performance on everything (especially windows), ivy-0.10.0 required
+     ;; @see https://github.com/abo-abo/swiper/issues/1218
+     (setq ivy-dynamic-exhibit-delay-ms 250)
+
+     ;; Press C-p and Enter to select current input as candidate
+     ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
+     (setq ivy-use-selectable-prompt t)
+
+     (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
      ;; set actions when running C-x b
      ;; replace "frame" with window to open in new window
      (ivy-set-actions

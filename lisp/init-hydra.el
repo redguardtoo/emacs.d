@@ -5,106 +5,106 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Emms^       ^Misc^
-------------------------------------------------
-_r_andom     _t_erm             _E_nable/Disable
-_n_ext       _a_utoComplete     _V_intage/Modern
-_p_revious   _C_reate workgroup Open recent _f_ile
-_P_ause      _l_oad workgroup   Recent _d_irectory
-_O_pen       _B_ookmark         Last dired _c_ommand
-_L_ Playlist Goto book_m_ark    Dired comand _h_istory
-_S_huffle    Undo _v_isualize   _b_ack
-_q_uit
+^Misc^                    ^Audio^               ^Move^                          ^Pomodoro^
+----------------------------------------------------------------------------------------------
+[_ss_] Save workgroup     [_R_] Emms Random     [_sa_] Backward Sentence (M-a)  [_ss_] Start
+[_ll_] Load workgroup     [_n_] Emms Next       [_se_] Forward Sentence (M-e)   [_st_] Stop
+[_B_] New bookmark        [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
+[_m_] Goto bookmark       [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
+[_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
+[_b_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
+[_f_] Recent file         [_w_] Pronounce word
+[_d_] Recent directory
+[_h_] Dired CMD history
+[_E_] Enable typewriter
+[_V_] Vintage typewriter
+[_q_] Quit
 "
-  ("c" my-dired-redo-last-command)
   ("h" my-dired-redo-from-commands-history)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" counsel-recent-directory)
-  ("C" wg-create-workgroup)
-  ("l" my-wg-switch-workgroup)
-  ("t" ansi-term)
-  ("a" toggle-company-ispell)
+  ("ss" wg-create-workgroup)
+  ("ll" my-wg-switch-workgroup)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
-  ("r" emms-random)
+  ("ss" pomodoro-start)
+  ("st" pomodoro-stop)
+  ("sr" pomodoro-resume)
+  ("sp" pomodoro-pause)
+  ("sa" backward-sentence)
+  ("se" forward-sentence)
+  ("la" backward-up-list)
+  ("le" forward-list)
+  ("pa" backward-paragraph)
+  ("pe" forward-paragraph)
+  ("R" emms-random)
   ("n" emms-next)
+  ("w" my-pronounce-current-word)
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
-  ("b" back-to-previous-buffer)
+  ("b" dianyou-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
-  ("S" (progn (emms-shuffle) (emms-random)))
-  ("q" nil))
-
-(defhydra multiple-cursors-hydra (:color green :hint nil)
-  "
-^Up^            ^Down^          ^Other^
-----------------------------------------------
-[_p_]   Next    [_n_]   Next    [_l_] Edit lines
-[_P_]   Skip    [_N_]   Skip    [_a_] Mark all
-[_M-p_] Unmark  [_M-n_] Unmark  [_r_] Mark by regexp
-^ ^             ^ ^             [_q_] Quit
-"
-  ("l" mc/edit-lines :exit t)
-  ("a" mc/mark-all-like-this :exit t)
-  ("n" mc/mark-next-like-this)
-  ("N" mc/skip-to-next-like-this)
-  ("M-n" mc/unmark-next-like-this)
-  ("p" mc/mark-previous-like-this)
-  ("P" mc/skip-to-previous-like-this)
-  ("M-p" mc/unmark-previous-like-this)
-  ("r" mc/mark-all-in-region-regexp :exit t)
   ("q" nil))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
-(global-set-key (kbd "C-c C-h") 'multiple-cursors-hydra/body)
 (defun org-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
-  (local-set-key (kbd "C-c C-h") 'multiple-cursors-hydra/body))
+  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
-;; {{ mail
-;; @see https://github.com/redguardtoo/mastering-emacs-in-one-year-guide/blob/master/gnus-guide-en.org
-;; gnus-group-mode
-(eval-after-load 'gnus-group
+(eval-after-load 'find-file-in-project
   '(progn
-     (defhydra hydra-gnus-group (:color blue)
-       "?"
-       ("a" gnus-group-list-active "REMOTE groups A A")
-       ("l" gnus-group-list-all-groups "LOCAL groups L")
-       ("c" gnus-topic-catchup-articles "Rd all c")
-       ("G" gnus-group-make-nnir-group "Srch server G G")
-       ("g" gnus-group-get-new-news "Refresh g")
-       ("s" gnus-group-enter-server-mode "Servers")
-       ("m" gnus-group-new-mail "Compose m OR C-x m")
-       ("#" gnus-topic-mark-topic "mark #")
-       ("q" nil "Bye"))
-     ;; y is not used by default
-     (define-key gnus-group-mode-map "y" 'hydra-gnus-group/body)))
+     (defhydra hydra-ffip-diff-group (:color blue)
+       "
+[_k_] Previous hunk
+[_j_] Next hunk
+[_p_] Previous file
+[_n_] Next file
+"
+       ("k" diff-hunk-prev)
+       ("j" diff-hunk-next)
+       ("p" diff-file-prev)
+       ("n" diff-file-next)
+       ("q" nil))))
+(defun ffip-diff-mode-hook-hydra-setup ()
+  (local-set-key (kbd "C-c C-y") 'hydra-ffip-diff-group/body))
+(add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
 ;; gnus-summary-mode
 (eval-after-load 'gnus-sum
   '(progn
      (defhydra hydra-gnus-summary (:color blue)
-       "?"
-       ("s" gnus-summary-show-thread "Show thread")
-       ("h" gnus-summary-hide-thread "Hide thread")
-       ("n" gnus-summary-insert-new-articles "Refresh / N")
-       ("f" gnus-summary-mail-forward "Fwd C-c C-f")
-       ("!" gnus-summary-tick-article-forward "Mail -> disk !")
-       ("p" gnus-summary-put-mark-as-read "Mail <- disk")
-       ("c" gnus-summary-catchup-and-exit "Rd all c")
-       ("e" gnus-summary-resend-message-edit "Resend S D e")
-       ("R" gnus-summary-reply-with-original "Re with orig R")
-       ("r" gnus-summary-reply "Re r")
-       ("W" gnus-summary-wide-reply-with-original "Re all with orig S W")
-       ("w" gnus-summary-wide-reply "Re all S w")
-       ("#" gnus-topic-mark-topic "Mark #")
-       ("q" nil "Bye"))
+       "
+[_F_] Forward (C-c C-f)             [_s_] Show thread
+[_e_] Resend (S D e)                [_h_] Hide thread
+[_r_] Reply                         [_n_] Refresh (/ N)
+[_R_] Reply with original           [_!_] Mail -> disk
+[_w_] Reply all (S w)               [_d_] Disk -> mail
+[_W_] Reply all with original (S W) [_c_] Read all
+[_G_] Search current folder         [_#_] Mark
+[_b_] Switch Gnus buffer            [_A_] Show Raw article
+"
+       ("s" gnus-summary-show-thread)
+       ("h" gnus-summary-hide-thread)
+       ("n" gnus-summary-insert-new-articles)
+       ("F" gnus-summary-mail-forward)
+       ("!" gnus-summary-tick-article-forward)
+       ("b" dianyou-switch-gnus-buffer)
+       ("d" gnus-summary-put-mark-as-read-next)
+       ("c" gnus-summary-catchup-and-exit)
+       ("e" gnus-summary-resend-message-edit)
+       ("R" gnus-summary-reply-with-original)
+       ("r" gnus-summary-reply)
+       ("W" gnus-summary-wide-reply-with-original)
+       ("w" gnus-summary-wide-reply)
+       ("#" gnus-topic-mark-topic)
+       ("A" gnus-summary-show-raw-article)
+       ("G" dianyou-group-make-nnir-group)
+       ("q" nil))
      ;; y is not used by default
      (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
 
@@ -112,19 +112,27 @@ _q_uit
 (eval-after-load 'gnus-art
   '(progn
      (defhydra hydra-gnus-article (:color blue)
-       "?"
-       ("f" gnus-summary-mail-forward "Fwd")
-       ("R" gnus-article-reply-with-original "Re with orig R")
-       ("r" gnus-article-reply "Re r")
-       ("W" gnus-article-wide-reply-with-original "Re all with orig S W")
-       ("o" gnus-mime-save-part "Save attachment at point o")
-       ("w" gnus-article-wide-reply "Re all S w")
-       ("v" w3mext-open-with-mplayer "Video/audio at point")
-       ("d" w3mext-download-rss-stream "CLI to download stream")
-       ("b" w3mext-open-link-or-image-or-url "Link under cursor or page URL with external browser")
-       ("f" w3m-lnum-follow "Click link/button/input")
-       ("F" w3m-lnum-goto "Move focus to link/button/input")
-       ("q" nil "Bye"))
+       "
+[_o_] Save attachment        [_F_] Forward
+[_v_] Play video/audio       [_r_] Reply
+[_d_] CLI to download stream [_R_] Reply with original
+[_b_] Open external browser  [_w_] Reply all (S w)
+[_f_] Click link/button      [_W_] Reply all with original (S W)
+[_g_] Focus link/button      [_b_] Switch Gnus buffer
+"
+       ("F" gnus-summary-mail-forward)
+       ("r" gnus-article-reply)
+       ("R" gnus-article-reply-with-original)
+       ("w" gnus-article-wide-reply)
+       ("W" gnus-article-wide-reply-with-original)
+       ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
+       ("v" w3mext-open-with-mplayer)
+       ("d" w3mext-download-rss-stream)
+       ("b" w3mext-open-link-or-image-or-url)
+       ("f" w3m-lnum-follow)
+       ("g" w3m-lnum-goto)
+       ("b" dianyou-switch-gnus-buffer)
+       ("q" nil))
      ;; y is not used by default
      (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))
 
@@ -132,11 +140,21 @@ _q_uit
 (eval-after-load 'message
   '(progn
      (defhydra hydra-message (:color blue)
-       "?"
-       ("a" counsel-bbdb-complete-mail "Mail address")
-       ("ca" mml-attach-file "Attach C-c C-a")
-       ("cc" message-send-and-exit "Send C-c C-c")
-       ("q" nil "Bye"))))
+  "
+[_c_] Complete mail address [_H_] convert to html mail
+[_a_] Attach file           [_p_] Paste image from clipboard
+[_s_] Send mail (C-c C-c)
+[_b_] Switch Gnus buffer
+[_i_] Insert email address
+"
+       ("c" counsel-bbdb-complete-mail)
+       ("a" mml-attach-file)
+       ("s" message-send-and-exit)
+       ("b" dianyou-switch-gnus-buffer)
+       ("i" dianyou-insert-email-address-from-received-mails)
+       ("H" org-mime-htmlize)
+       ("p" dianyou-paste-image-from-clipboard)
+       ("q" nil))))
 
 (defun message-mode-hook-hydra-setup ()
   (local-set-key (kbd "C-c C-y") 'hydra-message/body))
@@ -146,26 +164,102 @@ _q_uit
 ;; {{ dired
 (eval-after-load 'dired
   '(progn
+     (defun my-replace-dired-base (base)
+       "Change file name in `wdired-mode'"
+       (let* ((fp (dired-file-name-at-point))
+              (fb (file-name-nondirectory fp))
+              (ext (file-name-extension fp))
+              (dir (file-name-directory fp))
+              (nf (concat base "." ext)))
+         (when (yes-or-no-p (format "%s => %s at %s?"
+                                    fb nf dir))
+           (rename-file fp (concat dir nf)))))
+     (defun my-extract-mp3-from-video ()
+       "Extract mp3 from current video file using ffmpeg."
+       (interactive)
+       (let* ((video-file (file-name-nondirectory (dired-file-name-at-point)))
+              (params (split-string (string-trim (read-string "Please input start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\") or just press enter: "))
+                                    " +"))
+              (start (car params))
+              (total (if (eq (length params) 1) "5" (nth 1 params)))
+              cmd)
+         (cond
+          ((string= start "")
+           ;; extract audio to MP3 with sample rate 44.1Khz (CD quality), stereo, and 2 channels
+           (setq cmd (format "ffmpeg -i \"%s\" -vn -ar 44100 -ac 2 -ab 192 -f mp3 \"%s\""
+                             video-file
+                             (concat (file-name-base video-file) ".mp3"))))
+          (t
+           (setq cmd (format "ffmpeg -i \"%s\" -vn -ss %s -t %s -acodec copy \"%s\""
+                             video-file
+                             start
+                             total
+                             (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
+           (shell-command (concat cmd " &"))))
+
+     (defun my-record-wav-by-mp3 ()
+       "Record a wav using meta data from current mp3 file."
+       (interactive)
+       (let* ((mp3-file (file-name-nondirectory (dired-file-name-at-point)))
+              (base (file-name-base mp3-file))
+              (params (split-string base  "-"))
+              (output-file (concat base ".wav"))
+              (total (string-to-number (nth (1- (length params)) params)))
+              cmd)
+         (if (= total 0) (setq total 4))
+         (setq cmd (format "arecord -fdat -d %s \"%s\""
+                           total
+                           output-file))
+           (message "Start recording %s seconds wav ..." total)
+           (my-async-shell-command cmd)))
+     (defun my-play-both-mp3-and-wav ()
+       "Play wav and mp3."
+       (interactive)
+       (let* ((audio-file (file-name-nondirectory (dired-file-name-at-point)))
+              (base (file-name-base audio-file))
+              (ext (file-name-extension audio-file) )
+              (cmd (format "mplayer -quiet \"%s\" \"%s\""
+                           audio-file
+                           (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
+         (my-async-shell-command cmd)))
+     (defun my-copy-file-info (fn)
+       (message "%s => clipboard & yank ring"
+                (copy-yank-str (funcall fn (dired-file-name-at-point)))))
      (defhydra hydra-dired (:color blue)
-       "?"
-       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &") "All subtitles")
-       ("s1"
-        (let* ((video-file (dired-file-name-at-point))
-               (default-directory (file-name-directory video-file)))
-          (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file))))
-        "1 subtitle")
-       ("cc" (let* ((f (file-truename (dired-file-name-at-point))))
-               (copy-yank-str f)
-               (message "filename %s => clipboard & yank ring" f)) "Copy full path")
-       ("C" dired-do-copy "cp")
-       ("cf" find-file "Create new file")
+       "
+^Misc^                      ^File^             ^Copy Info^
+----------------------------------------------------------------
+[_vv_] video2mp3            [_R_] Move         [_pp_] Path
+[_aa_] Record by mp3        [_cf_] New         [_nn_] Name
+[_zz_] Play wav&mp3         [_rr_] Rename      [_bb_] Base
+[_cc_] Last command         [_ff_] Find        [_dd_] directory
+[_sa_] Fetch all subtitles  [_C_]  Copy
+[_s1_] Fetch on subtitle    [_rb_] Change base
+[_+_] Create directory
+"
+       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
+       ("s1" (let* ((video-file (dired-file-name-at-point))
+                    (default-directory (file-name-directory video-file)))
+               (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file)))))
+       ("pp" (my-copy-file-info 'file-truename))
+       ("nn" (my-copy-file-info 'file-name-nondirectory))
+       ("bb" (my-copy-file-info 'file-name-base))
+       ("dd" (my-copy-file-info 'file-name-directory))
+       ("rb" (my-replace-dired-base (car kill-ring)))
+       ("vv" my-extract-mp3-from-video)
+       ("aa" my-record-wav-by-mp3)
+       ("cc" my-dired-redo-last-command)
+       ("zz" my-play-both-mp3-and-wav)
+       ("C" dired-do-copy)
+       ("R" dired-rename-file)
+       ("cf"find-file)
+       ("rr" dired-toggle-read-only)
        ("ff" (lambda (regexp)
                (interactive "sMatching regexp: ")
-               (find-lisp-find-dired default-directory regexp))  "Filter with Regex")
-       ("xq" dired-toggle-read-only "Rename file(s)")
-       ("mv" diredp-do-move-recursive "mv")
-       ("mk" dired-create-directory "mkdir")
-       ("q" nil "Bye"))))
+               (find-lisp-find-dired default-directory regexp)))
+       ("+" dired-create-directory)
+       ("q" nil))))
+
 (defun dired-mode-hook-hydra-setup ()
   (local-set-key (kbd "y") 'hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
@@ -187,20 +281,24 @@ _q_uit
 ;; {{ @see https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
 (defhydra hydra-toggle (:color pink)
   "
+_u_ company-ispell     %(if (memq 'company-ispell company-backends) t)
 _a_ abbrev-mode:       %`abbrev-mode
 _d_ debug-on-error:    %`debug-on-error
 _f_ auto-fill-mode:    %`auto-fill-function
 _t_ truncate-lines:    %`truncate-lines
 _w_ whitespace-mode:   %`whitespace-mode
+_i_ indent-tabs-mode:   %`indent-tabs-mode
 "
+  ("u" toggle-company-ispell nil)
   ("a" abbrev-mode nil)
   ("d" toggle-debug-on-error nil)
   ("f" auto-fill-mode nil)
   ("t" toggle-truncate-lines nil)
   ("w" whitespace-mode nil)
+  ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
-(global-set-key (kbd "C-c C-v") 'hydra-toggle/body)
+(global-set-key (kbd "C-c C-h") 'hydra-toggle/body)
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
@@ -330,41 +428,24 @@ Git gutter:
 
 (defhydra hydra-search ()
   "
-Dictionary^^         ^Search text^
----------------------------------
-_b_ sdcv at point    _;_ 2 chars
-_t_ sdcv input       _w_ (sub)word
-_d_ dict.org         _a_ any chars
-_g_ Google
-_c_ current file ext
-_f_ Finance
-_q_ StackOverflow
-_j_ Javascript API
-_a_ Java
+ ^Search^         ^Dictionary^
+-----------------------------------------
+_g_ Google        _b_ English => English
+_f_ Finance       _t_ English => Chinese
+_s_ StackOverflow _d_ dict.org
 _h_ Code
 _m_ Man
-_q_ cancel
 "
-  ("b" sdcv-search-pointer)
+  ("b" sdcv-search-input)
   ("t" sdcv-search-input+)
   ("d" my-lookup-dict-org)
   ("g" w3m-google-search)
-  ("c" w3m-google-by-filetype)
   ("f" w3m-search-financial-dictionary)
-  ("q" w3m-stackoverflow-search)
-  ("j" w3m-search-js-api-mdn)
-  ("a" w3m-java-search)
+  ("s" w3m-stackoverflow-search)
   ("h" w3mext-hacker-search)
   ("m" lookup-doc-in-man)
-
-  (";" avy-goto-char-2 )
-  ("w" avy-goto-word-or-subword-1 )
-  ("a" avy-goto-char-timer )
-
   ("q" nil))
 (global-set-key (kbd "C-c C-s") 'hydra-search/body)
-;; (global-set-key (kbd "C-c ; b") 'sdcv-search-pointer)
-;; (global-set-key (kbd "C-c ; t") 'sdcv-search-input+)
 
 (defhydra hydra-describe (:color blue :hint nil)
   "

@@ -19,6 +19,11 @@
      (add-to-list 'company-backends 'company-c-headers)
      ;; can't work with TRAMP
      (setq company-backends (delete 'company-ropemacs company-backends))
+
+     ;; company-ctags is faster than company-etags
+     (require 'company-ctags)
+     (company-ctags-auto-setup)
+
      ;; (setq company-backends (delete 'company-capf company-backends))
 
      ;; I don't like the downcase word in company-dabbrev!
@@ -87,11 +92,18 @@
 (add-hook 'org-mode-hook 'company-ispell-setup)
 ;; }}
 
-(eval-after-load 'company-etags
-  '(progn
-     ;; insert major-mode not inherited from prog-mode
-     ;; to make company-etags work
-     (add-to-list 'company-etags-modes 'web-mode)
-     (add-to-list 'company-etags-modes 'lua-mode)))
+;; Wait 30  minutes to update cache from tags file
+;; assume `company-dabbrev-code' or `company-dabbrev' in the same group provides candidates
+;; @see https://github.com/company-mode/company-mode/pull/877 for tech details
+;; The purpose is to avoid rebuilding candidate too frequently because rebuilding could take
+;; too much time.
+(defvar company-etags-update-interval 1800
+  "The interval (seconds) to update candidate cache.
+Function `tags-completion-table' sets up variable `tags-completion-table'
+by parsing tags files.
+The interval stops the function being called too frequently.")
+
+(defvar company-etags-timer nil
+  "Timer to avoid calling function `tags-completion-table' too frequently.")
 
 (provide 'init-company)

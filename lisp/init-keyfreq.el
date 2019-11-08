@@ -36,6 +36,7 @@
         dired-find-file
         diredp-next-line
         diredp-previous-line
+        electric-pair-delete-pair
         erase-message-buffer
         eval-buffer
         evil-a-WORD
@@ -139,11 +140,15 @@
         isearch-ring-retreat
         ispell-minor-check
         ivy-backward-delete-char
+        ivy-backward-kill-word
         ivy-done
         ivy-next-line
+        ivy-occur
         ivy-occur-next-line
+        ivy-occur-press-and-switch
         ivy-occur-previous-line
         ivy-previous-line
+        ivy-wgrep-change-to-wgrep-mode
         js-mode
         js2-line-break
         keyboard-escape-quit
@@ -154,6 +159,7 @@
         kill-sentence
         left-char
         markdown-exdent-or-delete
+        markdown-outdent-or-delete
         minibuffer-complete
         minibuffer-complete-and-exit
         minibuffer-keyboard-quit
@@ -189,6 +195,8 @@
         pwd
         quit-window
         right-char
+        rjsx-electric-gt
+        rjsx-electric-lt
         save-buffer
         save-buffers-kill-terminal
         scroll-down-command
@@ -224,6 +232,8 @@
         web-mode-surround
         web-mode-tag-beginning
         web-mode-test
+        wgrep-finish-edit
+        xterm-paste
         yank
         yas-compile-directory
         yas-expand
@@ -236,6 +246,9 @@
     (write-file (file-truename keyfreq-file))))
 
 ;; And use keyfreq-show to see how many times you used a command.
-;; comment out below line if there is performance impact
-(turnon-keyfreq-mode)
+;; It's recommended to use `keyfreq-mode' (could be in "~/.custom.el").
+;; It's reported keyfreq is not compatible with `latex-mode'
+;; @see https://github.com/redguardtoo/emacs.d/issues/767
+;; (turnon-keyfreq-mode)
+
 (provide 'init-keyfreq)

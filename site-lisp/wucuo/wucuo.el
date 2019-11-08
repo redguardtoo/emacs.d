@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018 Chen Bin
 ;;
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -32,6 +32,7 @@
 ;; 2. Usage
 ;; Run `wucuo-start' to setup and start `flyspell-mode'.
 ;; It spell check camel case words in code.
+;; Or just add "(wucuo-start)" into "~/.emacs".
 ;;
 ;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
 ;; `flyspell-prog-mode' could be replaced by "wucuo".
@@ -48,6 +49,11 @@
 (defgroup wucuo nil
   "Code spell checker."
   :group 'flyspell)
+
+(defcustom wucuo-debug nil
+  "Output debug information when it's not nil."
+  :type 'boolean
+  :group 'wucuo)
 
 (defcustom wucuo-check-nil-font-face nil
   "If nil, ignore text without font face."
@@ -190,6 +196,7 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
                            shell-command-switch
                            cmd)
       (setq rlt (buffer-substring-no-properties (point-min) (point-max))))
+    (when wucuo-debug (message "wucuo-spell-checker-to-string => cmd=%s rlt=%s" cmd rlt))
     rlt))
 
 ;;;###autoload
@@ -223,6 +230,8 @@ property of the major mode name."
          subwords
          word
          (rlt t))
+
+    (when wucuo-debug (message "font-matched=%s, current-font-face=%s" font-matched current-font-face))
     (cond
      ;; only check word with certain fonts
      ((not font-matched)
@@ -240,6 +249,7 @@ property of the major mode name."
      ;; `wucuo-extra-predicate' actually do nothing by default
      (t
       (setq rlt (funcall wucuo-extra-predicate word))))
+    (when wucuo-debug (message "wucuo-generic-check-word-predicate => word=%s rlt=%s wucuo-extra-predicate=%s" word rlt wucuo-extra-predicate))
     rlt))
 
 ;;;###autoload
@@ -261,6 +271,11 @@ property of the major mode name."
       (insert "abcd\ndefg\n")
       (write-file file)
       (message "%s created." file))))
+
+;;;###autoload
+(defun wucuo-version ()
+  "Output version."
+  (message "0.0.4"))
 
 ;;;###autoload
 (defun wucuo-start ()

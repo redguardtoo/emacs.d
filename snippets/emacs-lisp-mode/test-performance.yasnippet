@@ -1,0 +1,11 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: test performance
+# key: test
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(let* ((gc-cons-threshold most-positive-fixnum))
+  (message "%S vs %S"
+           (benchmark-run-compiled 100
+             (message "test1"))
+           (benchmark-run-compiled 100
+             (message "test 2"))))

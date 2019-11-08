@@ -41,8 +41,7 @@
   (fix-c-indent-offset-according-to-syntax-context 'func-decl-cont 0))
 
 (defun my-c-mode-setup ()
-  "C/C++ only setup"
-  (message "my-c-mode-setup called (buffer-file-name)=%s" (buffer-file-name))
+  "C/C++ only setup."
   ;; @see http://stackoverflow.com/questions/3509919/ \
   ;; emacs-c-opening-corresponding-header-file
   (local-set-key (kbd "C-x C-o") 'ff-find-other-file)
@@ -50,21 +49,23 @@
   (setq cc-search-directories '("." "/usr/include" "/usr/local/include/*" "../*/include" "$WXWIN/include"))
 
   ;; {{ @see https://github.com/redguardtoo/cpputils-cmake
-  ;; Make sure your project use cmake!
-  ;; Or else, you need comment out below code
   ;; In theory, you can write your own Makefile for `flyamke-mode' without cmake.
-  ;; Nobody actually does this in real world. So if you don't use cmake, don't turn
-  ;; on `flymake-mode'
-  (flymake-mode 1)
-  (when (and (executable-find "cmake")
-             (not (string-match-p "^\\(/usr/local/include\\|/usr/src/linux/include\\)/.*"
-                                  buffer-file-name)))
-    (cppcm-reload-all))
+  ;; Nobody actually does it in real world.
+  ;; So make sure cmake is used before uncomment below code.
+
+  ;; (when buffer-file-name
+  ;;   (flymake-mode 1)
+  ;;   (when (and (executable-find "cmake")
+  ;;              (not (string-match-p "^\\(/usr/local/include\\|/usr/src/linux/include\\)/.*"
+  ;;                                   buffer-file-name)))
+  ;;     (cppcm-reload-all)))
+
   ;; }}
 
   ;; wxWidgets setup
   (c-set-offset 'topmost-intro-cont 'c-wx-lineup-topmost-intro-cont)
 
+  ;; debugging Emacs c code
   (add-to-list 'imenu-generic-expression '(nil "^DEFUN *(\"\\([a-zA-Z0-9-]+\\)" 1))
 
   ;; make a #define be left-aligned

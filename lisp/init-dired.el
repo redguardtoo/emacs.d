@@ -36,54 +36,42 @@ If no files marked, always operate on current line in dired-mode."
                       (set-window-configuration wnd))))
       (error "no more than 2 files should be marked"))))
 
-(defun dired-mode-hook-setup ()
-  (stripe-buffer-mode 1)
-  ;; from 24.4, dired+ can show/hide dired details by press "("
-  (unless (featurep 'dired+)
-    ;; dired+ is huge. So it's loaded in `dired-mode-hook'
-    (local-require 'dired+)
-    (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
-      (when (and (stringp ad-return-value)
-                 (string-match-p "^mplayer -quiet" ad-return-value))
-        (let* ((dir (file-name-as-directory (concat default-directory
-                                                    "Subs")))
-               (files (car (ad-get-args 0)))
-               basename)
-          (cond
-           ((file-exists-p (concat dir "English.sub"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -vobsub Subs/English")))
-           ((file-exists-p (concat dir "Chinese.sub"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -vobsub Subs/Chinese")))
-           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -vobsub Subs/" basename)))
-           ((file-exists-p (concat dir "English.srt"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -sub Subs/English.srt")))
-           ((file-exists-p (concat dir "Chinese.srt"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -sub Subs/Chinesesrt")))
-           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-            (setq ad-return-value (concat ad-return-value
-                                          " -sub Subs/" basename ".srt"))))))
-      ad-return-value)
-    (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
-                    ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
-                    ((if (not *is-a-mac*) (my-guess-mplayer-path) "open")  "ogm" "avi" "mpg" "rmvb" "rm" "flv" "wmv" "mkv" "mp4" "m4v" "webm" "part" "mov")
-                    ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
-                    ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
-                    ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
-                    ("djview" "djvu")
-                    ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
-      (add-to-list 'dired-guess-shell-alist-user
-                   (list (concat "\\." (regexp-opt (cdr file) t) "$")
-                         (car file))))
 
-     (local-set-key  "e" 'ora-ediff-files)
-     (local-set-key  "/" 'dired-isearch-filenames)
-     (local-set-key  "\\" 'diredext-exec-git-command-in-shell)))
+(eval-after-load 'dired-x
+  '(progn
+     (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
+                     ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
+                     ((if (not *is-a-mac*) (my-guess-mplayer-path) "open") "ogm"
+                      "avi"
+                      "mpg"
+                      "rmvb"
+                      "rm"
+                      "flv"
+                      "wmv"
+                      "mkv"
+                      "mp4"
+                      "m4v"
+                      "wav"
+                      "webm"
+                      "part"
+                      "mov"
+                      "3gp"
+                      "crdownload"
+                      "mp3")
+                     ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
+                     ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
+                     ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
+                     ("djview" "djvu")
+                     ("firefox" "xml" "xhtml" "html" "htm" "mht" "epub")))
+       (add-to-list 'dired-guess-shell-alist-user
+                    (list (concat "\\." (regexp-opt (cdr file) t) "$")
+                          (car file))))))
+
+(defun dired-mode-hook-setup ()
+  (dired-hide-details-mode 1)
+  (local-set-key  "e" 'ora-ediff-files)
+  (local-set-key  "/" 'dired-isearch-filenames)
+  (local-set-key  "\\" 'diredext-exec-git-command-in-shell))
 (add-hook 'dired-mode-hook 'dired-mode-hook-setup)
 
 ;; search file name only when focus is over file
@@ -97,7 +85,7 @@ If no files marked, always operate on current line in dired-mode."
   (require 'ls-lisp)
   (setq ls-lisp-use-insert-directory-program nil))
 
-(defvar binary-file-name-regexp "\\.\\(avi\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to setup than "desktop.el"
@@ -111,6 +99,35 @@ If no files marked, always operate on current line in dired-mode."
 
 (eval-after-load 'dired
   '(progn
+     (require 'dired-x)
+     (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
+       (when (and (stringp ad-return-value)
+                  (string-match-p "^mplayer -quiet" ad-return-value))
+         (let* ((dir (file-name-as-directory (concat default-directory
+                                                     "Subs")))
+                (files (car (ad-get-args 0)))
+                basename)
+           (cond
+            ((file-exists-p (concat dir "English.sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/English")))
+            ((file-exists-p (concat dir "Chinese.sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/Chinese")))
+            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -vobsub Subs/" basename)))
+            ((file-exists-p (concat dir "English.srt"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/English.srt")))
+            ((file-exists-p (concat dir "Chinese.srt"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/Chinese.srt")))
+            ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
+             (setq ad-return-value (concat ad-return-value
+                                           " -sub Subs/" basename ".srt"))))))
+       ad-return-value)
+
      ;; avoid accidentally edit huge media file in dired
      (defadvice dired-find-file (around dired-find-file-hack activate)
        (let* ((file (dired-get-file-for-visit)))

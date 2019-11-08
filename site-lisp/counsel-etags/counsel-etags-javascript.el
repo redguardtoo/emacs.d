@@ -1,6 +1,6 @@
 ;;; counsel-etags-javascript.el --- rules to filter tags for javascript
 
-;; Copyright (C) 2018 Chen Bin
+;; Copyright (C) 2018, 2019 Chen Bin
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 
@@ -17,6 +17,9 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+;;; Commentary:
 
 ;;; Code:
 
@@ -37,8 +40,9 @@
   "Use CONTEXT to test CANDIDATE.  If return nil, the CANDIDATE is excluded."
   (cond
    ((plist-get context :local-only)
-    (let* ((src-file (plist-get context :file))
-           (def-file (plist-get candidate :file)))
+    (let* ((src-file (plist-get context :fullpath))
+           (def-file (plist-get candidate :fullpath)))
+      ;; (message "src-file=%s def-file=%s rlt=%s" src-file def-file (string= src-file def-file))
       (string= src-file def-file)))
    (t
     t)))

@@ -20,7 +20,7 @@
 (setq-default initial-scratch-message (show-scratch-buffer-message))
 
 ;; racket
-(add-to-list 'auto-mode-alist '("\\.rkt\\'" . lisp-mode))
+(add-auto-mode 'lisp-mode "\\.rkt\\'")
 
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
@@ -51,6 +51,13 @@
         (goto-char (+ (point) 1)))))
     (transpose-sexps 1)
     (backward-sexp)))
+
+;; @see https://github.com/slime/slime
+(eval-after-load 'slime
+  '(progn
+     ;; Please install sbcl at first
+     (setq inferior-lisp-program "sbcl")
+     (setq slime-contribs '(slime-fancy))))
 
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes
