@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((counsel "0.13.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.2
+;; Version: 1.9.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -75,11 +75,11 @@
 ;;   (eval-after-load 'counsel-etags
 ;;     '(progn
 ;;        ;; counsel-etags-ignore-directories does NOT support wildcast
-;;        (add-to-list 'counsel-etags-ignore-directories "build_clang")
-;;        (add-to-list 'counsel-etags-ignore-directories "build_clang")
+;;        (push "build_clang" counsel-etags-ignore-directories)
+;;        (push "build_clang" counsel-etags-ignore-directories)
 ;;        ;; counsel-etags-ignore-filenames supports wildcast
-;;        (add-to-list 'counsel-etags-ignore-filenames "TAGS")
-;;        (add-to-list 'counsel-etags-ignore-filenames "*.json")))
+;;        (push "TAGS" counsel-etags-ignore-filenames)
+;;        (push "*.json" counsel-etags-ignore-filenames)))
 ;;
 ;;  - Rust programming language is supported.
 ;;    The easiest setup is to use ".dir-locals.el".
@@ -468,7 +468,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.2"))
+  (message "1.9.3"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -560,6 +560,7 @@ Return nil if it's not found."
 
 (defun counsel-etags-ctags-options-file-cli (ctags-program)
   "Use CTAGS-PROGRAM to create command line for `counsel-etags-ctags-options-file'."
+
   (cond
    ;; no options file
    ((or (not counsel-etags-ctags-options-file)
@@ -601,7 +602,9 @@ If CODE-FILE is a real file, the command scans it and output to stdout."
       (setq cmd (format "%s %s %s -e %s %s -R %s"
                         ctags-program
                         (mapconcat (lambda (p)
-                                     (format "--exclude=\"%s\"" (counsel-etags-dir-pattern p)) )
+                                     (format "--exclude=\"*/%s/*\" --exclude=\"%s/*\""
+                                             (counsel-etags-dir-pattern p)
+                                             (counsel-etags-dir-pattern p)))
                                    counsel-etags-ignore-directories " ")
                         (mapconcat (lambda (p)
                                      (format "--exclude=\"%s\"" p))

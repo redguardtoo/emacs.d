@@ -344,7 +344,6 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
                                  emacs-lisp-mode
                                  diff-mode))))
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
-      (message "====3")
       (counsel-imenu)))
    (t
     (counsel-imenu))))
