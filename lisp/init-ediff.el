@@ -34,9 +34,10 @@
     "p" (my-ediff-command 'ediff-previous-difference)
     "r" (my-ediff-command 'ediff-restore-diff-in-merge-buffer)
     "x" (lambda () (interactive) (save-buffers-kill-terminal t))
+    ;; use 1 3 as hotkey to be consistent with vim
     "1" (my-ediff-command 'ediff-copy-A-to-C)
-    "2" (my-ediff-command 'ediff-copy-A-to-C)
-    "3" (my-ediff-command 'ediff-copy-both-to-C))
+    "3" (my-ediff-command 'ediff-copy-A-to-C)
+    "b" (my-ediff-command 'ediff-copy-both-to-C))
 
   (defun ediff-startup-hook-setup ()
     ;; hide control panel if it's current buffer
