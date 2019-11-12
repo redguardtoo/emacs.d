@@ -142,6 +142,9 @@
   (require-init 'init-shackle t)
   (require-init 'init-dired t)
   (require-init 'init-writting t)
+
+  ;; ediff configuration should be last so it can override
+  ;; the key bindings in previous configuration
   (require-init 'init-ediff)
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ

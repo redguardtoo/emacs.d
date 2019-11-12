@@ -306,6 +306,52 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
                                       (unless (string= (substring signal 0 -1) "finished")
                                         (message "Failed to run \"%s\"." ,command))))))))
 
+;; {{ narrow region
+(defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
+  "Indirect buffer could multiple widen on same file."
+  (if (region-active-p) (deactivate-mark))
+  (if use-indirect-buffer
+      (with-current-buffer (clone-indirect-buffer
+                            (generate-new-buffer-name
+                             (format "%s-indirect-:%s-:%s"
+                                     (buffer-name)
+                                     (line-number-at-pos start)
+                                     (line-number-at-pos end)))
+                            'display)
+        (narrow-to-region start end)
+        (goto-char (point-min)))
+      (narrow-to-region start end)))
+
+;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
+(defun narrow-or-widen-dwim (&optional use-indirect-buffer)
+  "If the buffer is narrowed, it widens.
+ Otherwise, it narrows to region, or Org subtree.
+If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen content."
+  (interactive "P")
+  (cond ((buffer-narrowed-p) (widen))
+        ((region-active-p)
+         (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                                 (region-end)
+                                                 use-indirect-buffer))
+        ((equal major-mode 'org-mode)
+         (org-narrow-to-subtree))
+        ((derived-mode-p 'diff-mode)
+         (let* (b e)
+           (save-excursion
+             ;; If the (point) is already beginning or end of file diff,
+             ;; the `diff-beginning-of-file' and `diff-end-of-file' return nil
+             (setq b (progn (diff-beginning-of-file) (point)))
+             (setq e (progn (diff-end-of-file) (point))))
+           (when (and b e (< b e))
+             (narrow-to-region-indirect-buffer-maybe b e use-indirect-buffer))))
+        ((derived-mode-p 'prog-mode)
+         (mark-defun)
+         (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                                 (region-end)
+                                                 use-indirect-buffer))
+        (t (error "Please select a region to narrow to"))))
+;; }}
+
 ;; reply y/n instead of yes/no
 (fset 'yes-or-no-p 'y-or-n-p)
 

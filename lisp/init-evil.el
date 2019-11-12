@@ -433,7 +433,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (my-comma-leader-def
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
-  "bb" 'back-to-previous-buffer
+  "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
   "ef" 'end-of-defun
   "m" 'evil-set-marker
   "em" 'erase-message-buffer
