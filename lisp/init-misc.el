@@ -992,6 +992,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
       (ansi-term my-term-program)))))
 
 (defun switch-to-shell-or-ansi-term ()
+  "Switch to shell or terminal."
   (interactive)
   (if (display-graphic-p) (switch-to-ansi-term)
     (suspend-frame)))

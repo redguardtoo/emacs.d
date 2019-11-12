@@ -633,7 +633,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xz" 'switch-to-shell-or-ansi-term
+  "xz" 'my-switch-to-shell-or-ansi-term
   "vm" 'vc-rename-file-and-buffer
   "vc" 'vc-copy-file-and-rename-buffer
   "xvv" 'vc-next-action ; 'C-x v v' in original
@@ -928,11 +928,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; }}
 
 
+(defun my-switch-to-shell-or-ansi-term ()
+  "Switch to shell or terminal."
+  (interactive)
+  (cond
+   ((fboundp 'switch-to-shell-or-ansi-term)
+    (switch-to-shell-or-ansi-term))
+   (t
+    (suspend-frame))))
+
 ;; press ",xx" to expand region
 ;; then press "z" to contract, "x" to expand
 (eval-after-load "evil"
   '(progn
-     (define-key global-map (kbd "C-x C-z") 'switch-to-shell-or-ansi-term)
+     (define-key global-map (kbd "C-x C-z") 'my-switch-to-shell-or-ansi-term)
      (setq expand-region-contract-fast-key "z")
      ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
      ;; evil 1.0.8 search word instead of symbol
