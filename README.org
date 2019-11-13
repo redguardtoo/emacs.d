@@ -24,6 +24,7 @@
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
   - [[#saveload-windows-layout][Save/Load windows layout]]
+  - [[#use-this-configuration-as-merge-tool-for-git][Use this configuration as merge tool for Git]]
   - [[#default-terminal-shell][Default terminal shell]]
   - [[#override-default-setup][Override default setup]]
   - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
@@ -292,6 +293,18 @@ Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's
 ** Save/Load windows layout
 =SPC s s= or =M-x wg-create-workgrou= to save windows layout.
 =SPC l l= or =M-x my-wg-switch-workgroup= to load windows layout.
+** Use this configuration as merge tool for Git
+This configuration might be the most efficient and most powerful merge tool for VCS.
+Insert below configuration into =~/.gitconfig=,
+#+begin_src javascript
+[mergetool.ediff]
+# use git mergetool ediff to resolve conflicts
+cmd = emacs -nw -Q --eval \"(setq startup-now t)\" -l \"~/.emacs.d/init.el\" --eval \"(progn (setq ediff-quit-hook 'kill-emacs) (if (file-readable-p \\\"$BASE\\\") (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\") (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
+#+end_src
+
+Then run =git mergetool -t ediff=  to resolve conflicts.
+
+Here is [[https://gist.github.com/redguardtoo/d4ecd51f785bd117a6a0][my ~/.gitconfig]]. You can use [[https://github.com/redguardtoo/test-git-mergetool]] to practice.
 ** Default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
