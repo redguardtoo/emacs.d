@@ -123,7 +123,7 @@
   (require-init 'init-bbdb t)
   (require-init 'init-gnus t)
   (require-init 'init-lua-mode t)
-  (require-init 'init-workgroups2)
+  (require-init 'init-workgroups2 t) ; use native API in lightweight mode
   (require-init 'init-term-mode t)
   (require-init 'init-web-mode t)
   (require-init 'init-company t)
@@ -154,14 +154,14 @@
   (setq load-path (cdr load-path))
   (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
-  ;; my personal setup, other major-mode specific setup need it.
-  ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
   (unless (boundp 'startup-now)
-    (load (expand-file-name "~/.custom.el") t nil))
+    ;; my personal setup, other major-mode specific setup need it.
+    ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
+    (load (expand-file-name "~/.custom.el") t nil)
 
-  ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
-  ;; See `custom-file' for details.
-  (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t))
+    ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
+    ;; See `custom-file' for details.
+    (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t)))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 
