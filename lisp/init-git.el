@@ -211,7 +211,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                              (t
                               (format "%s,%s"
                                       (line-number-at-pos (region-beginning))
-                                      (line-number-at-pos (region-end))))))
+                                      (line-number-at-pos (1- (region-end)))))))
                            (t
                             (format ":%s" (thing-at-point 'symbol)))))
            (cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name)))
@@ -223,7 +223,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                                     (line-number-at-pos (region-beginning))
                                     (line-number-at-pos (region-end))))
         (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
-      (message cmd)
+      ;; (message cmd)
       (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
