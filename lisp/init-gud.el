@@ -71,10 +71,6 @@
         (comint-send-input)
         (recenter-top-bottom)
         (select-window old-window))
-       (t (error "GUD buffer doesn't exist!"))
-       ))
-    ))
-
-(global-set-key "\C-x\C-a\C-g" 'gud-run)
+       (t (error "GUD buffer doesn't exist!"))))))
 
 (provide 'init-gud)
