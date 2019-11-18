@@ -37,7 +37,7 @@
     "x" (lambda () (interactive) (save-buffers-kill-terminal t))
     ;; use 1 3 as hotkey to be consistent with vim
     "1" (my-ediff-command 'ediff-copy-A-to-C)
-    "3" (my-ediff-command 'ediff-copy-A-to-C)
+    "3" (my-ediff-command 'ediff-copy-B-to-C)
     "b" (my-ediff-command 'ediff-copy-both-to-C))
 
   (defun ediff-startup-hook-setup ()
