@@ -12,6 +12,14 @@
          retval)
      ,@clean-up))
 
+(defun run-cmd-and-replace-region (cmd)
+  "Run CMD in shell on selected region or whole buffer and replace it with cli output."
+  (let* ((orig-point (point))
+         (b (if (region-active-p) (region-beginning) (point-min)))
+         (e (if (region-active-p) (region-end) (point-max))))
+    (shell-command-on-region b e cmd nil t)
+    (goto-char orig-point)))
+
 (defun my-add-subdirs-to-load-path (my-lisp-dir)
   "Add sub-directories under MY-LISP-DIR into `load-path'."
   (let* ((default-directory my-lisp-dir))

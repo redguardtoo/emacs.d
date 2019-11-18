@@ -326,10 +326,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 INDENT-SIZE decide the indentation level.
 `sudo pip install jsbeautifier` to install js-beautify.'"
   (interactive "P")
-  (let* ((orig-point (point))
-         (b (if (region-active-p) (region-beginning) (point-min)))
-         (e (if (region-active-p) (region-end) (point-max)))
-         (js-beautify (if (executable-find "js-beautify") "js-beautify"
+  (let* ((js-beautify (if (executable-find "js-beautify") "js-beautify"
                         "jsbeautify")))
     ;; detect indentation level
     (unless indent-size
@@ -341,13 +338,10 @@ INDENT-SIZE decide the indentation level.
                          (t
                           js2-basic-offset))))
     ;; do it!
-    (shell-command-on-region b e
-                             (concat "js-beautify"
-                                     " --stdin "
-                                     " --jslint-happy --brace-style=end-expand --keep-array-indentation "
-                                     (format " --indent-size=%d " indent-size))
-                             nil t)
-    (goto-char orig-point)))
+    (run-cmd-and-replace-region (concat "js-beautify"
+                                        " --stdin "
+                                        " --jslint-happy --brace-style=end-expand --keep-array-indentation "
+                                        (format " --indent-size=%d " indent-size)))))
 ;; }}
 
 ;; {{ js-comint
