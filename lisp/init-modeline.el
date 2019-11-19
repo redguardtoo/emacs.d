@@ -48,7 +48,7 @@
     (propertize "%M" 'face nil)
 
     " --"
-    ;; i don't want to see minor-modes; but if you want, uncomment this:
+    ;; Don't show `minor-mode'
     ;; minor-mode-alist  ;; list of minor modes
     "%-" ;; fill with '-'
     ))
