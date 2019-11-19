@@ -34,7 +34,7 @@
     "p" (my-ediff-command 'ediff-previous-difference)
     "r" (my-ediff-command 'ediff-restore-diff-in-merge-buffer)
     "R" (my-ediff-command 'ediff-revert-buffers-then-recompute-diffs) ; press "1-space-R" to revert without confirmation
-    "x" (lambda () (interactive) (save-buffers-kill-terminal t))
+    "xc" (lambda () (interactive) (save-buffers-kill-terminal t)) ; same keybinding as default setup
     ;; use 1 3 as hotkey to be consistent with vim
     "1" (my-ediff-command 'ediff-copy-A-to-C)
     "3" (my-ediff-command 'ediff-copy-B-to-C)
