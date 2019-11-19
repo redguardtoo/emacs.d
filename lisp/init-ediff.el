@@ -37,6 +37,7 @@
 
   (my-space-leader-def
     "a" (lambda () (interactive) (jump-to-register ?a))
+    "t" (my-ediff-command 'ediff-toggle-show-clashes-only t)
     "n" (my-ediff-command (lambda (arg)
                             (cond
                              ((< ediff-current-difference (1- ediff-number-of-differences))
