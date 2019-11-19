@@ -37,8 +37,18 @@
 
   (my-space-leader-def
     "a" (lambda () (interactive) (jump-to-register ?a))
-    "n" (my-ediff-command 'ediff-next-difference)
-    "p" (my-ediff-command 'ediff-previous-difference)
+    "n" (my-ediff-command (lambda (arg)
+                            (cond
+                             ((< ediff-current-difference (1- ediff-number-of-differences))
+                              (ediff-next-difference arg))
+                             (t
+                              (message "This is last difference!")))))
+    "p" (my-ediff-command (lambda (arg)
+                            (cond
+                             ((> ediff-current-difference 0)
+                              (ediff-previous-difference arg))
+                             (t
+                              (message "This is first difference!")))))
     "r" (my-ediff-command 'ediff-restore-diff-in-merge-buffer)
     "R" (my-ediff-command 'ediff-revert-buffers-then-recompute-diffs) ; press "1-space-R" to revert without confirmation
     "xa" (lambda () (interactive) (save-buffers-kill-terminal t)) ; similar to vim
