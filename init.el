@@ -135,6 +135,7 @@
   ;; projectile costs 7% startup time
 
   ;; misc has some crucial tools I need immediately
+  (require-init 'init-essential)
   (require-init 'init-misc t)
 
   (require-init 'init-emacs-w3m t)

@@ -164,13 +164,6 @@
 (setq comint-password-prompt-regexp (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
 (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
 
-;; {{ which-key-mode
-(local-require 'which-key)
-(setq which-key-allow-imprecise-window-fit t) ; performance
-(setq which-key-separator ":")
-(which-key-mode 1)
-;; }}
-
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
@@ -244,13 +237,12 @@
 ;; (add-hook 'org-mode-hook 'truncate-lines-setup)
 ;; }}
 
-;; turns on auto-fill-mode, don't use text-mode-hook because for some
+;; turn on auto-fill-mode, don't use `text-mode-hook' because for some
 ;; mode (org-mode for example), this will make the exported document
 ;; ugly!
 ;; (add-hook 'markdown-mode-hook 'turn-on-auto-fill)
 (add-hook 'change-log-mode-hook 'turn-on-auto-fill)
 (add-hook 'cc-mode-hook 'turn-on-auto-fill)
-(global-set-key (kbd "C-c q") 'auto-fill-mode)
 
 ;; some project prefer tab, so be it
 ;; @see http://stackoverflow.com/questions/69934/set-4-space-indent-in-emacs-in-text-mode
@@ -1305,4 +1297,17 @@ Including indent-buffer, which should not be called automatically on save."
   (setq edit-server-new-frame nil)
   (edit-server-start))
 ;; }}
+
+(defun browse-current-file ()
+  "Open the current file as a URL using `browse-url'."
+  (interactive)
+  (browse-url-generic (concat "file://" (buffer-file-name))))
+
+;; {{ which-key-mode
+(local-require 'which-key)
+(setq which-key-allow-imprecise-window-fit t) ; performance
+(setq which-key-separator ":")
+(which-key-mode 1)
+;; }}
+
 (provide 'init-misc)
