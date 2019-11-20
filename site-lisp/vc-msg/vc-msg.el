@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2017 Chen Bin
 ;;
-;; Version: 0.0.4
+;; Version: 1.0.0
 ;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
-;; Package-Requires: ((emacs "24.3") (popup "0.5.0"))
+;; Package-Requires: ((emacs "24.4") (popup "0.5.0"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -265,7 +265,9 @@ and is a blackbox to 'vc-msg.el'."
 
 ;;;###autoload
 (defun vc-msg-show ()
-  "Show commit message of current line."
+  "Show commit message of current line.
+If Git is used and some text inside the line is selected,
+the correct commit which submits the selected text is displayed."
   (interactive)
   (let* (finish
          (current-vcs-type (vc-msg-detect-vcs-type))
