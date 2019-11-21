@@ -684,6 +684,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "tt" 'my-toggle-indentation
   "ggg" 'magit-status
   "gs" 'magit-show-commit
+  "gb" 'magit-show-refs-popup ; git branches, select lines and press "k" to delete branches
   "gl" 'magit-log-all
   "gff" 'magit-find-file ; loading file in specific version into buffer
   "gdd" 'magit-diff-dwim
