@@ -61,6 +61,7 @@ to URL."
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
   ;; convert file to perforce url
+  (setq file (file-name-nondirectory file))
   (if (and vc-msg-p4-file-to-url (listp vc-msg-p4-file-to-url))
       (setq file (replace-regexp-in-string (car vc-msg-p4-file-to-url)
                                            (cadr vc-msg-p4-file-to-url)
