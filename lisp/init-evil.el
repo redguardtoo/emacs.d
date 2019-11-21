@@ -484,8 +484,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "wk" 'evil-window-up
   "wj" 'evil-window-down
   ;; }}
-  "epy" 'emmet-expand-yas
-  "epl" 'emmet-expand-line
   "rv" 'evilmr-replace-in-defun
   "rb" 'evilmr-replace-in-buffer
   "ts" 'evilmr-tag-selected-region ;; recommended
@@ -509,16 +507,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
            (ffip-show-diff 0)))
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "gl" 'my-git-log-trace-definition ; find history of a function or range
-  "sf" 'counsel-git-show-file
   "sh" 'my-select-from-search-text-history
-  "df" 'counsel-git-diff-file
   "rjs" 'run-js
   "jsr" 'js-send-region
   "jsb" 'js-clear-send-buffer
-  "rmz" 'run-mozilla
-  "rpy" 'run-python
-  "rlu" 'run-lua
-  "tci" 'toggle-company-ispell
   "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
   "ls" 'highlight-symbol
   "lq" 'highlight-symbol-query-replace
@@ -581,10 +573,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
          (interactive)
          ;; better performance, got Cygwin grep installed on Windows always
          (counsel-grep-or-swiper (if (region-active-p) (my-selected-str))))
-  "hst" 'hs-toggle-fold
-  "hsa" 'hs-toggle-fold-all
-  "hsh" 'hs-hide-block
-  "hss" 'hs-show-block
   "hd" 'describe-function
   "hf" 'find-function
   "hk" 'describe-key
@@ -599,7 +587,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "ll" 'langtool-goto-next-error
   "pe" 'flymake-goto-prev-error
   "ne" 'flymake-goto-next-error
-  "bc" '(lambda () (interactive) (wxhelp-browse-class-or-api (thing-at-point 'symbol)))
   "og" 'org-agenda
   "otl" 'org-toggle-link-display
   "oa" '(lambda ()
@@ -633,15 +620,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xk" 'kill-buffer
   "xs" 'save-buffer
   "xc" 'my-switch-to-shell-or-ansi-term
-  "vm" 'vc-rename-file-and-buffer
+  "xz" 'my-switch-to-shell-or-ansi-term
+  "vf" 'vc-rename-file-and-buffer
   "vc" 'vc-copy-file-and-rename-buffer
-  "xvv" 'vc-next-action ; 'C-x v v' in original
+  "xv" 'vc-next-action ; 'C-x v v' in original
   "va" 'git-add-current-file
   "vk" 'git-checkout-current-file
   "vg" 'vc-annotate ; 'C-x v g' in original
-  "vs" 'git-gutter:stage-hunk
-  "vr" 'git-gutter:revert-hunk
-  "vl" 'vc-print-log
   "vv" 'vc-msg-show
   "v=" 'git-gutter:popup-hunk
   "hh" 'cliphist-paste-item
@@ -649,9 +634,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "ih" 'my-goto-git-gutter ; use ivy-mode
   "ir" 'ivy-resume
   "ww" 'narrow-or-widen-dwim
-  "xnw" 'widen
-  "xnd" 'narrow-to-defun
-  "xnr" 'narrow-to-region
   "ycr" 'my-yas-reload-all
   "wf" 'popup-which-function)
 ;; }}

@@ -110,23 +110,6 @@ Yank the file name at the same time.  FILTER is function to filter the collectio
 
 ;; grep by author is bad idea because it's too slow
 
-(defun counsel-git-show-file ()
-  "Find file in HEAD commit or whose commit hash is selected region."
-  (interactive)
-  (counsel-git-grep-or-find-api 'find-file
-                                (format "git --no-pager diff-tree --no-commit-id --name-only -r %s"
-                                        (counsel-read-keyword nil "HEAD"))
-                                "files from `git-show' "
-                                t))
-
-(defun counsel-git-diff-file ()
-  "Find file in `git diff'."
-  (interactive)
-  (counsel-git-grep-or-find-api 'find-file
-                                "git --no-pager diff --name-only"
-                                "files from `git-diff' "
-                                t))
-
 (defun counsel-insert-grepped-line (val)
   (let ((lst (split-string val ":")) text-line)
     ;; the actual text line could contain ":"
