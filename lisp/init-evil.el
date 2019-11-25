@@ -924,7 +924,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; then press "c" to contract, "x" to expand
 (eval-after-load "evil"
   '(progn
-     (define-key global-map (kbd "C-x C-a") 'my-switch-to-shell-or-ansi-term)
      (setq expand-region-contract-fast-key "c")
      ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
      ;; evil 1.0.8 search word instead of symbol
