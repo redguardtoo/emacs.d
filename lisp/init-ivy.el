@@ -320,12 +320,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive)
   (cond
    ((and (locate-dominating-file default-directory "TAGS")
-         (not (memq major-mode '(js2-mode
-                                 rjsx-mode
-                                 markdown-mode
-                                 org-mode
-                                 emacs-lisp-mode
-                                 diff-mode))))
+         (memq major-mode '(typescript-mode
+                            js-mode)))
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
       (counsel-imenu)))
    (t
