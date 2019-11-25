@@ -37,6 +37,10 @@
   "Git root directory."
   (locate-dominating-file default-directory ".git"))
 
+(defun vc-msg-sdk-get-current-file ()
+  "Get current file path."
+  buffer-file-name)
+
 (defun vc-msg-sdk-format-timezone (timezone)
   "Format TIMEZONE and show city as extra information."
   (concat timezone

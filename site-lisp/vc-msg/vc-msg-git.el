@@ -31,6 +31,12 @@
   :type 'string
   :group 'vc-msg)
 
+(defcustom vc-msg-git-show-commit-function nil
+  "The function to show git commit.  Revision is the parameter of the function.
+It can be set the value like `magit-show-commit'."
+  :type 'function
+  :group 'vc-msg)
+
 (defun vc-msg-git-shell-output (cmd)
   "Generate clean output by running CMD in shell."
   (let* ((default-directory (vc-msg-sdk-git-rootdir)))
@@ -172,11 +178,15 @@ Parse the command execution output and return a plist:
 (defun vc-msg-git-show-code ()
   "Show code."
   (let* ((info vc-msg-previous-commit-info)
-         (cmd (vc-msg-git-generate-cmd (format "show %s" (plist-get info :id)))))
-    ;; show one commit information
-    (vc-msg-sdk-get-or-create-buffer
-     "vs-msg"
-     (vc-msg-git-shell-output cmd))))
+         (id (plist-get info :id)))
+    (cond
+     (vc-msg-git-show-commit-function
+      (funcall vc-msg-git-show-commit-function id))
+     (t
+      ;; show one commit information
+      (vc-msg-sdk-get-or-create-buffer
+       "vs-msg"
+       (vc-msg-git-shell-output (vc-msg-git-generate-cmd (format "show %s" id))))))))
 
 (defcustom vc-msg-git-extra
   '(("c" "[c]ode" vc-msg-git-show-code))
