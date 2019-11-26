@@ -1,4 +1,4 @@
-;;; eacl.el --- Auto-complete line(s) by grepping project
+;;; eacl.el --- Auto-complete lines by grepping project
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
@@ -75,7 +75,7 @@
 
 
 ;;; Code:
-(require 'ivy)
+(require 'ivy nil t)
 (require 'grep)
 (require 'cl-lib)
 
@@ -123,6 +123,13 @@ The callback is expected to return the path of project root."
 (defun eacl-get-project-root ()
   "Get project root."
   (or eacl-project-root
+      ;; use projectile to find project root
+      (and (fboundp 'projectile-find-file)
+           (if (featurep 'projectile) t (require 'projectile))
+           (projectile-project-root))
+      ;; use find-file-in-project to find project root
+      (and (fboundp 'ffip-project-root) (ffip-project-root))
+      ;; find project root manually
       (cl-some (apply-partially 'locate-dominating-file
                                 default-directory)
                eacl-project-file)))
@@ -327,8 +334,9 @@ Whitespace in the keyword could match any characters."
      (if rlt (line-end-position))))
 
 (defun eacl-html-p ()
-  (or (memq major-mode '(web-mode rjsx-mode xml-mode))
-      (derived-mode-p '(sgml-mode))))
+  "Is html related mode."
+  (or (memq major-mode '(web-mode rjsx-mode xml-mode js2-jsx-mode))
+      (derived-mode-p 'sgml-mode)))
 
 (defmacro eacl-match-html-start-tag-p (line html-p)
   "LINE is like '>'."
