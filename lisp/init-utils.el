@@ -8,6 +8,15 @@
     (shell-command-on-region b e cmd nil t)
     (goto-char orig-point)))
 
+(defun my-use-tags-as-imenu-function-p ()
+  "Can use tags file to build imenu function"
+  (unless (featurep 'counsel-etags) (require 'counsel-etags))
+  (and (locate-dominating-file default-directory "TAGS")
+       ;; ctags needs extra setup to extract typescript tags
+       (file-exists-p counsel-etags-ctags-options-file)
+       (memq major-mode '(typescript-mode
+                          js-mode))))
+
 (defun my-add-subdirs-to-load-path (my-lisp-dir)
   "Add sub-directories under MY-LISP-DIR into `load-path'."
   (let* ((default-directory my-lisp-dir))

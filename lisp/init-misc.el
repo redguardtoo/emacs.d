@@ -344,9 +344,14 @@
 (defun my-which-function ()
   "Return current function name."
   ;; clean the imenu cache
+  (which-function)
   ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
-  (setq imenu--index-alist nil)
-  (which-function))
+  ;; (let* ((imenu-create-index-function (if (my-use-tags-as-imenu-function-p)
+  ;;                                         'counsel-etags-imenu-default-create-index-function
+  ;;                                       imenu-create-index-function)))
+  ;;   (setq imenu--index-alist nil)
+  ;;   (which-function))
+  )
 
 (defun popup-which-function ()
   (interactive)

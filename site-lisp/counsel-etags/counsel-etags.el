@@ -565,7 +565,7 @@ Return nil if it's not found."
    ;; no options file
    ((or (not counsel-etags-ctags-options-file)
         ;; ~/.ctags might be missing
-        (not (file-executable-p counsel-etags-ctags-options-file))
+        (not (file-exists-p counsel-etags-ctags-options-file))
         (string= counsel-etags-ctags-options-file ""))
     "")
 

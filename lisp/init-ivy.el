@@ -319,9 +319,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   "Combine the power of counsel-etags and imenu."
   (interactive)
   (cond
-   ((and (locate-dominating-file default-directory "TAGS")
-         (memq major-mode '(typescript-mode
-                            js-mode)))
+   ((my-use-tags-as-imenu-function-p)
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
       (counsel-imenu)))
    (t
