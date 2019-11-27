@@ -955,10 +955,10 @@ So we need *encode* the string."
       (counsel-etags-encode (buffer-substring-no-properties (region-beginning)
                                                             (region-end)))))
 
-(defmacro counsel-etags-tagname-at-point ()
+(defun counsel-etags-tagname-at-point ()
   "Get tag name at point."
-  `(or (counsel-etags-selected-str)
-       (funcall counsel-etags-find-tag-name-function)))
+  (or (counsel-etags-selected-str)
+      (funcall counsel-etags-find-tag-name-function)))
 
 (defun counsel-etags-forward-line (lnum)
   "Forward LNUM lines."
