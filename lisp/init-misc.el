@@ -892,6 +892,19 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (interactive)
   (pickup-random-color-theme (custom-available-themes)))
 
+(defun random-healthy-color-theme (join-dark-side)
+  "Random healthy color theme.
+When join-dark-side is t, pick up dark theme only."
+  (interactive "P")
+  (let* (themes
+         (hour (string-to-number (format-time-string "%H" (current-time))))
+         (prefer-light-p (and (not join-dark-side) (>= hour 9) (<= hour 19)) ))
+    (dolist (theme (custom-available-themes))
+      (let* ((light-theme-p (string-match-p "light" (symbol-name theme))))
+        (when (if prefer-light-p light-theme-p (not light-theme-p))
+          (push theme themes))))
+  (pickup-random-color-theme themes)))
+
 (defun switch-to-ansi-term ()
   (interactive)
   (let* ((buf-name (if *win64* "*shell*" "*ansi-term"))
