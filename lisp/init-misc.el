@@ -161,8 +161,10 @@
 
 ;; Don't echo passwords when communicating with interactive programs:
 ;; Github prompt is like "Password for 'https://user@github.com/':"
-(setq comint-password-prompt-regexp (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
-(add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)
+(eval-after-load 'comint
+  '(progn
+     (setq comint-password-prompt-regexp (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
+     (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)))
 
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
