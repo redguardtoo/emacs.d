@@ -47,7 +47,7 @@
 ;;   (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
 ;;
 ;; Hook `vc-msg-show-code-hook' is hook after code of certain commit
-;; is displayed. Here is sample code:
+;; is displayed.  Here is sample code:
 ;;   (defun vc-msg-show-code-setup ()
 ;;     ;; use `ffip-diff-mode' from package find-file-in-project instead of `diff-mode'
 ;;     (ffip-diff-mode))
@@ -93,7 +93,11 @@ A string like 'git' or 'svn' to lookup `vc-msg-plugins'."
   :type 'function)
 
 (defcustom vc-msg-get-line-num-function 'line-number-at-pos
-  "Get current line number"
+  "Get current line number."
+  :type 'function)
+
+(defcustom vc-msg-get-version-function 'vc-msg-sdk-get-version
+  "Get version of current file/buffer."
   :type 'function)
 
 (defcustom vc-msg-known-vcs
@@ -208,7 +212,7 @@ and is a blackbox to 'vc-msg.el'."
 (defun vc-msg-find-plugin ()
   "Find plugin automatically using `vc-msg-plugins'."
   (let* ((plugin (cl-some (lambda (e)
-                            (if (string= (plist-get e :type) current-vcs-type) e))
+                            (if (string= (plist-get e :type) (vc-msg-detect-vcs-type)) e))
                           vc-msg-plugins)))
     (if plugin
         ;; load the plugin in run time
@@ -290,7 +294,6 @@ If Git is used and some text inside the line is selected,
 the correct commit which submits the selected text is displayed."
   (interactive)
   (let* (finish
-         (current-vcs-type (vc-msg-detect-vcs-type))
          (plugin (vc-msg-find-plugin))
          (current-file (funcall vc-msg-get-current-file-function)))
     (if plugin
@@ -299,7 +302,8 @@ the correct commit which submits the selected text is displayed."
              (commit-info (and current-file
                                (funcall executer
                                         current-file
-                                        (funcall vc-msg-get-line-num-function))))
+                                        (funcall vc-msg-get-line-num-function)
+                                        (funcall vc-msg-get-version-function))))
              message
              (extra-commands (symbol-value (plist-get plugin :extra))))
 
@@ -338,7 +342,7 @@ the correct commit which submits the selected text is displayed."
                           t))
                 (popup-delete menu))))
 
-          (run-hook-with-args 'vc-msg-hook current-vcs-type commit-info))
+          (run-hook-with-args 'vc-msg-hook (vc-msg-detect-vcs-type) commit-info))
 
          ((stringp commit-info)
           ;; Failed. Show the reason.

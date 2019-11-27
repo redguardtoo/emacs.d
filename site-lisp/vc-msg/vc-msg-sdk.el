@@ -37,9 +37,39 @@
   "Git root directory."
   (locate-dominating-file default-directory ".git"))
 
+(defun vc-msg-sdk-buffer-file-name-p ()
+  "The `buffer-file-name' exists."
+  (let* ((file buffer-file-name))
+    (and file (file-exists-p file))))
+
 (defun vc-msg-sdk-get-current-file ()
   "Get current file path."
-  buffer-file-name)
+  (let* (rlt)
+    (cond
+     ((vc-msg-sdk-buffer-file-name-p)
+      (setq rlt buffer-file-name))
+     ((string-match "^\\([^ ]+\\)\.~\\([a-z0-9]\\)+~$" (buffer-name))
+      ;; in `magit-blame-mode', there is no real file me
+      ;; so we guess file path from buffer name
+      (setq rlt (concat (vc-msg-sdk-git-rootdir)
+                        (match-string 1 (buffer-name)))))
+     (t
+      (setq rlt nil)))
+    rlt))
+
+(defun vc-msg-sdk-get-version ()
+  "Get version of current file/buffer."
+  (let* (rlt)
+    (cond
+     ((vc-msg-sdk-buffer-file-name-p)
+      (setq rlt ""))
+     ((string-match "^\\([^ ]+\\)\.~\\([a-z0-9]+\\)~$" (buffer-name))
+      ;; in `magit-blame-mode', there is no real file me
+      ;; so we guess file path from buffer name
+      (setq rlt (match-string 2 (buffer-name))))
+     (t
+      (setq rlt "")))
+    rlt))
 
 (defun vc-msg-sdk-format-timezone (timezone)
   "Format TIMEZONE and show city as extra information."

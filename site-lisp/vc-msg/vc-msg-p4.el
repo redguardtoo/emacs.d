@@ -56,8 +56,8 @@ to URL."
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-p4-execute (file line-num)
-  "Use FILE and LINE-NUM to produce p4 command.
+(defun vc-msg-p4-execute (file line-num version)
+  "Use FILE, LINE-NUM and VERSION to produce p4 command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
   ;; convert file to perforce url

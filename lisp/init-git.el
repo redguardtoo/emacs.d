@@ -231,4 +231,14 @@ If nothing is selected, use the word under cursor as function name to look up."
   '(progn
     (ivy-mode 1)))
 
+(eval-after-load 'vc-msg-git
+  '(progn
+     (push '("m" "[m]agit-find-file"
+             (lambda ()
+               (let* ((info vc-msg-previous-commit-info))
+                 (magit-find-file-other-window (plist-get info :id )
+                                               (concat (vc-msg-sdk-git-rootdir)
+                                                       (plist-get info :filename))))))
+           vc-msg-git-extra)))
+
 (provide 'init-git)

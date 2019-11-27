@@ -45,8 +45,8 @@
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-svn-execute (file line-num)
-  "Use FILE and LINE-NUM to produce svn command.
+(defun vc-msg-svn-execute (file line-num version)
+  "Use FILE, LINE-NUM and VERSION to produce svn command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
   (setq file (file-name-nondirectory file))

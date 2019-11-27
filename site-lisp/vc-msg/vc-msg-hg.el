@@ -45,8 +45,8 @@
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-hg-execute (file line-num)
-  "Use FILE and LINE-NUM to produce hg command.
+(defun vc-msg-hg-execute (file line-num version)
+  "Use FILE, LINE-NUM and VERSION to produce hg command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
   ;; there is no one command to get the commit information for current line

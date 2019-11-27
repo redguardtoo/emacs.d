@@ -17,6 +17,7 @@
     nov
     bbdb
     js2-mode ; need new features
+    git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
     command-log-mode
     edit-server ; use Emacs to edit textarea in browser, need browser addon
