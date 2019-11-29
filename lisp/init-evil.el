@@ -559,7 +559,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "rU" 'undo-tree-restore-state-from-register ; C-x r U
   "xt" 'toggle-two-split-window
   "uu" 'winner-undo
-  "UU" 'winner-redo
+  "ur" 'winner-redo
   "to" 'toggle-web-js-offset
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
