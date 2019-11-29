@@ -450,11 +450,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "es" 'goto-edge-by-comparing-font-face
   "vj" 'my-validate-json-or-js-expression
   "kc" 'kill-ring-to-clipboard
-  "ntt" 'neotree-toggle
-  "ntf" 'neotree-find ; open file in current buffer in neotree
-  "ntd" 'neotree-project-dir
-  "nth" 'neotree-hide
-  "nts" 'neotree-show
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
