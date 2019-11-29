@@ -491,15 +491,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "gf" 'counsel-git ; find file
   "gg" 'counsel-git-grep-by-selected ; quickest grep should be easy to press
   "gm" 'counsel-git-find-my-file
-  "gs" (lambda ()
-         (interactive)
-         (let* ((ffip-diff-backends
-                 '(("Show git commit" . (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
-                                               (collection (nonempty-lines (shell-command-to-string git-cmd)))
-                                               (item (ffip-completing-read "git log:" collection)))
-                                          (when item
-                                            (shell-command-to-string (format "git show %s" (car (split-string item "|" t))))))))))
-           (ffip-show-diff 0)))
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
@@ -657,25 +648,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "jj" 'scroll-other-window-up
   "rt" 'random-healthy-color-theme
   "yy" 'hydra-launcher/body
-  "gi" 'gist-region ; only workable on my computer
   "tt" 'my-toggle-indentation
-  "ggg" 'magit-status
-  "gs" 'magit-show-commit
-  "gb" 'magit-show-refs-popup ; git branches, select lines and press "k" to delete branches
-  "gl" 'magit-log-all
-  "gff" 'magit-find-file ; loading file in specific version into buffer
-  "gdd" 'magit-diff-dwim
-  "gdc" 'magit-diff-staged
-  "gau" 'magit-stage-modified
-  "gcc" 'magit-commit-popup
-  "gca" 'magit-commit-amend
-  "ggt" 'git-commit-tracked
-  "gja" 'magit-commit-extend
-  "gtt" 'magit-stash
-  "gta" 'magit-stash-apply
-  "gv" 'git-gutter:set-start-revision
-  "gh" 'git-gutter-reset-to-head-parent
-  "gr" 'git-gutter-reset-to-default
+  "g" 'hydra-git/body
   "ps" 'profiler-start
   "pr" 'profiler-report
   "ud" 'my-gud-gdb

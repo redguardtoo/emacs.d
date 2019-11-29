@@ -1,6 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; @see https://github.com/abo-abo/hydra
+;; color could: red, blue, amaranth, pink, teal
 
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
@@ -48,7 +49,7 @@
   ("O" emms-play-playlist)
   ("b" dianyou-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
-  ("q" nil))
+  ("q" nil :color red))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
@@ -397,33 +398,36 @@ _SPC_ cancel _o_nly this     _d_elete
 ;; }}
 
 ;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
-(defhydra hydra-git-gutter (:body-pre (git-gutter-mode 1)
-                                      :hint nil)
+(defhydra hydra-git (:body-pre (git-gutter-mode 1) :color blue)
   "
-Git gutter:
-  _j_: next hunk     _s_tage hunk   _q_uit
-  _k_: previous hunk _r_evert hunk  _Q_uit and deactivate git-gutter
-  _h_: first hunk    _p_opup hunk
-  _l_: last hunk     set _R_evision
+Git:
+[_i_] Gist selected      [_dd_] Diff
+[_s_] Show commit        [_dc_] Diff staged
+[_r_] Reset gutter       [_dr_] Diff range
+[_h_] Gutter => HEAD     [_au_] Add modified
+[_l_] Log selected/file  [_cc_] Commit
+[_b_] Branches           [_ca_] Amend
+[_q_] Quit               [_tt_] Stash
+[_Q_] Quit gutter        [_ta_] Apply Stash
 "
-  ("j" git-gutter:next-hunk)
-  ("k" git-gutter:previous-hunk)
-  ("h" (progn (goto-char (point-min))
-              (git-gutter:next-hunk 1)))
-  ("l" (progn (goto-char (point-min))
-              (git-gutter:previous-hunk 1)))
-  ("s" git-gutter:stage-hunk)
-  ("r" git-gutter:revert-hunk)
-  ("p" git-gutter:popup-hunk)
-  ("R" git-gutter:set-start-revision)
-  ("q" nil :color blue)
-  ("Q" (progn (git-gutter-mode -1)
-              ;; git-gutter-fringe doesn't seem to
-              ;; clear the markup right away
-              (sit-for 0.1)
-              (git-gutter:clear))
-   :color blue))
-(global-set-key (kbd "C-c C-g") 'hydra-git-gutter/body)
+  ("i" gist-region)
+  ("r" git-gutter-reset-to-default)
+  ("s" my-git-show-commit)
+  ("l" magit-log-buffer-file)
+  ("b" magit-show-refs-popup)
+  ("h" git-gutter-reset-to-head-parent)
+  ("g" magit-status)
+  ("ta" magit-stash-apply)
+  ("tt" magit-stash)
+  ("dd" magit-diff-dwim)
+  ("dc" magit-diff-staged)
+  ("dr" (progn (magit-diff-range (my-git-commit-id))))
+  ("cc" magit-commit-popup)
+  ("ca" magit-commit-amend)
+  ("au" magit-stage-modified)
+  ("Q" git-gutter-toggle)
+  ("q" nil))
+(global-set-key (kbd "C-c C-g") 'hydra-git/body)
 ;; }}
 
 (defhydra hydra-search ()

@@ -112,13 +112,10 @@
   (require-init 'init-cc-mode t)
   (require-init 'init-gud t)
   (require-init 'init-linum-mode)
-  (require-init 'init-git) ;; git-gutter should be enabled after `display-line-numbers-mode' turned on
+  (require-init 'init-git t)
   ;; (require-init 'init-gist)
   (require-init 'init-gtags t)
-  ;; init-evil dependent on init-clipboard
   (require-init 'init-clipboard)
-  ;; use evil mode (vi key binding)
-  (require-init 'init-evil)
   (require-init 'init-ctags t)
   (require-init 'init-bbdb t)
   (require-init 'init-gnus t)
@@ -139,10 +136,12 @@
   (require-init 'init-misc t)
 
   (require-init 'init-emacs-w3m t)
-  (require-init 'init-hydra t)
   (require-init 'init-shackle t)
   (require-init 'init-dired t)
   (require-init 'init-writting t)
+  (require-init 'init-hydra) ; hotkey is required everywhere
+  ;; use evil mode (vi key binding)
+  (require-init 'init-evil) ; init-evil dependent on init-clipboard
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
