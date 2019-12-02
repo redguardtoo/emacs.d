@@ -439,7 +439,7 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
-Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept "M-x"]].
+Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][it's reported QQ on windows 8 can intercept "M-x"]].
 ** Org-mode
 Press =M-x org-version=, then read corresponding online manual to set up.
 
