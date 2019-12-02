@@ -1209,9 +1209,9 @@ CONTEXT is extra information collected before finding tag definition."
   "Create an index alist for the definitions in the current buffer."
   (let* ((ctags-program (or counsel-etags-tags-program
                             (counsel-etags-guess-program "ctags")))
-         (code-file
-          (make-temp-file (expand-file-name "coet"
-                                            temporary-file-directory)))
+         (ext (if buffer-file-name (file-name-extension buffer-file-name) ""))
+         ;; ctags needs file extension
+         (code-file (make-temp-file "coet" nil (concat "." ext)))
          (tagname-re (concat "\\([^\177\001\n]+\\)\177\\("
                              "[^\177\001\n]+"
                              "\\)\001\\([0-9]+\\),\\([0-9]+\\)"))
