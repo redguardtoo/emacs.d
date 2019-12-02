@@ -315,15 +315,42 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
     (ivy--regex-plus str)))
 ;; }}
 
+(defun my-counsel-imenu ()
+  "Jump to a buffer position indexed by imenu."
+  (interactive)
+  (unless (featurep 'counsel) (require 'counsel))
+  (let* ((cands (counsel--imenu-candidates))
+         (pre-selected (thing-at-point 'symbol))
+         (pos (point))
+         closest)
+    (dolist (c cands)
+      (let* ((item (cdr c))
+             (m (cdr item)))
+        (when (<= (marker-position m) pos)
+          (cond
+           ((not closest)
+            (setq closest item))
+           ((< (- pos (marker-position m))
+               (- pos (marker-position (cdr closest))))
+            (setq closest item))))))
+    (if closest (setq pre-selected (car closest)))
+    (ivy-read "imenu items: " cands
+              :preselect pre-selected
+              :require-match t
+              :action #'counsel-imenu-action
+              :keymap counsel-imenu-map
+              :history 'counsel-imenu-history
+              :caller 'counsel-imenu)))
+
 (defun my-imenu-or-list-tag-in-current-file ()
   "Combine the power of counsel-etags and imenu."
   (interactive)
   (cond
    ((my-use-tags-as-imenu-function-p)
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
-      (counsel-imenu)))
+      (my-counsel-imenu)))
    (t
-    (counsel-imenu))))
+    (my-counsel-imenu))))
 
 (eval-after-load 'ivy
   '(progn

@@ -350,21 +350,24 @@ This function can be re-used by other major modes after compilation."
 
 (defun my-which-function ()
   "Return current function name."
-  ;; clean the imenu cache
-  (which-function)
+
+  (unless (featurep 'imenu) (require 'imenu))
   ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
-  ;; (let* ((imenu-create-index-function (if (my-use-tags-as-imenu-function-p)
-  ;;                                         'counsel-etags-imenu-default-create-index-function
-  ;;                                       imenu-create-index-function)))
-  ;;   (setq imenu--index-alist nil)
-  ;;   (which-function))
-  )
+  (let* ((imenu-create-index-function (if (my-use-tags-as-imenu-function-p)
+                                          'counsel-etags-imenu-default-create-index-function
+                                        imenu-create-index-function)))
+    ;; clean the imenu cache
+    (setq imenu--index-alist nil)
+    (imenu--make-index-alist t)
+    (which-function)))
 
 (defun popup-which-function ()
+  "Popup which function message."
   (interactive)
   (let* ((msg (my-which-function)))
-    (popup-tip msg)
-    (copy-yank-str msg)))
+    (when msg
+      (popup-tip msg)
+      (copy-yank-str msg))))
 ;; }}
 
 ;; {{ music
