@@ -196,7 +196,7 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Required by =flymake=
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
-- Required by many tags related packages (=xref=, =counsel-etags=, =company-etags= from =company-mode=, etc)
+- Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]] and =company-gtags= from =company-mode=
@@ -275,7 +275,7 @@ Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is a
 
 Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. Project root is automatically detected. You can also add one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=. 
 
-Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-etags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
+Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Key bindings
@@ -524,7 +524,7 @@ You can use other backends instead of =clang=. For example, you can use =company
 ** Auto-completion for other languages
 It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
 
-For languages GNU Global doesn't support, you can fall back to =company-etags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
+For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
