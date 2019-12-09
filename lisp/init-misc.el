@@ -949,7 +949,7 @@ When join-dark-side is t, pick up dark theme only."
                               emms-player-mplayer
                               emms-player-mpg321
                               emms-player-ogg123
-                              lemms-player-vlc
+                              emms-player-vlc
                               emms-player-vlc-playlist))))
 ;; }}
 
