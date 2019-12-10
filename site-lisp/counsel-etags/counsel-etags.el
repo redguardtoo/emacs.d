@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((counsel "0.13.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.4
+;; Version: 1.9.6
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -352,7 +352,10 @@ But path \"~/.ctags\" is OK because we use Emacs Lisp to load \"~.ctags\".
 
 Please use file name like \"ctags.cnf\" instead \".ctags\" when customize this variable.
 
-Universal Ctags does NOT have this bug."
+Universal Ctags does NOT have this bug.
+
+Please do NOT exclude system temporary folder in ctags configuration because imenu
+related functions need create and scan files in this folder."
   :group 'counsel-etags
   :type 'string)
 
@@ -468,7 +471,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.4"))
+  (message "1.9.6"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -539,13 +542,15 @@ Return nil if it's not found."
                   (run-hook-with-args 'counsel-etags-after-update-tags-hook ,tags-file)
                   (message "Tags file %s was created." ,tags-file))))
              (t
-              (message "Failed to create tags file.")))))))))
+              (message "Failed to create tags file.\nerror=%s\ncommand=%s"
+                       signal
+                       ,command)))))))))
 
 (defun counsel-etags-dir-pattern (dir)
   "Trim * from DIR."
   (setq dir (replace-regexp-in-string "[*/]*\\'" "" dir))
   (setq dir (replace-regexp-in-string "\\`[*]*" "" dir))
-  (regexp-quote dir))
+  dir)
 
 
 (defun counsel-etags-emacs-bin-path ()
@@ -582,7 +587,7 @@ Return nil if it's not found."
 
    (t
     (format "--options=\"%s\""
-            (regexp-quote (file-truename counsel-etags-ctags-options-file))))))
+            (file-truename counsel-etags-ctags-options-file)))))
 
 (defun counsel-etags-get-scan-command (find-program ctags-program &optional code-file)
   "Create scan command for SHELL from FIND-PROGRAM and CTAGS-PROGRAM.
@@ -855,6 +860,22 @@ CONTEXT is extra information."
        (end-of-line)
        nil)))
 
+(defmacro counsel-etags-scan-string (str tagname-re case-sensitive &rest body)
+  "Scan STR using TAGNAME-RE and CASE-SENSITIVE.
+Then call FN to push found tag names."
+  `(with-temp-buffer
+    (insert ,str)
+    ;; Not sure why `modify-syntax-entry' is used
+    ;; Code is from https://www.emacswiki.org/emacs/etags-select.el
+    (modify-syntax-entry ?_ "w")
+    (goto-char (point-min))
+    (let* ((case-fold-search ,case-sensitive))
+      ;; normal tag search algorithm
+      (while (re-search-forward ,tagname-re nil t)
+        ,@body))
+    ;; clean up, copied from "etags-select.el"
+    (modify-syntax-entry ?_ "_")))
+
 (defun counsel-etags-extract-cands (tags-file tagname fuzzy context)
   "Parse TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
 CONTEXT is extra information collected before find tag definition."
@@ -889,21 +910,16 @@ CONTEXT is extra information collected before find tag definition."
 
     (when (and tags-file
                (setq file-content (counsel-etags-cache-content tags-file)))
-      (with-temp-buffer
-        (insert file-content)
-        (modify-syntax-entry ?_ "w")
-        (goto-char (point-min))
-        ;; first step, regex should be simple to speed up search
-        (let* ((case-fold-search fuzzy))
-            ;; normal tag search algorithm
-          (while (re-search-forward tagname nil t)
-            (beginning-of-line)
-            ;; second step, more precise search
-            (counsel-etags-push-one-candidate cands
-                                              tagname-re
-                                              (point-at-eol)
-                                              root-dir
-                                              context)))))
+      (counsel-etags-scan-string file-content
+                                 tagname
+                                 fuzzy
+                                 (progn
+                                   (beginning-of-line)
+                                   (counsel-etags-push-one-candidate cands
+                                                                     tagname-re
+                                                                     (point-at-eol)
+                                                                     root-dir
+                                                                     context))))
     (and cands (nreverse cands))))
 
 (defun counsel-etags-collect-cands (tagname fuzzy current-file &optional dir context)
@@ -1235,17 +1251,12 @@ CONTEXT is extra information collected before finding tag definition."
       ;; create one item for imenu list
       ;; (cons name
       ;;       (if imenu-use-markers (point-marker) (point)))
-      (with-temp-buffer
-        (insert (shell-command-to-string cmd))
-        (modify-syntax-entry ?_ "w")
-        (goto-char (point-min))
-        (let* ((case-fold-search nil))
-          ;; normal tag search algorithm
-          (while (re-search-forward tagname-re (point-max) t)
-            ;; push (name . line)
-            (push (cons (match-string-no-properties 2)
-                        (match-string-no-properties 3))
-                  cands))))
+      (counsel-etags-scan-string (shell-command-to-string cmd)
+                                 tagname-re
+                                 nil
+                                 (push (cons (match-string-no-properties 2)
+                                             (match-string-no-properties 3))
+                                       cands))
 
       ;; now cands is just name and line number
       ;; we need convert it into imenu items (name . marker)
@@ -1257,7 +1268,10 @@ CONTEXT is extra information collected before finding tag definition."
             (search-forward name (point-at-eol))
             (forward-char (- (length name)))
             (push (cons name (point-marker)) imenu-items))))
-      (delete-file code-file))
+
+      ;; clean up tmp file
+      (unless counsel-etags-debug (delete-file code-file)))
+
     imenu-items))
 
 ;;;###autoload
@@ -1266,7 +1280,7 @@ CONTEXT is extra information collected before finding tag definition."
   (interactive)
   (let* ((imenu-items (counsel-etags-imenu-default-create-index-function)))
     (when imenu-items
-      (ivy-read "Recent tag names:"
+      (ivy-read "Tag names in current file: "
                 imenu-items
                 :action (lambda (e)
                           (goto-char (cdr e)))))))
