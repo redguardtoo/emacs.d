@@ -230,6 +230,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'avy)
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)
+(require-package 'csv-mode)
 (require-package 'expand-region) ; I prefer stable version
 (require-package 'fringe-helper)
 (require-package 'gitignore-mode)
