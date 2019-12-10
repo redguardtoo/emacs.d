@@ -872,6 +872,12 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (eval-after-load 'compile
   '(progn
+     (defadvice compile (around compile-hack activate)
+       (cond
+        ((member major-mode '(octave-mode))
+         (octave-send-buffer))
+        (t
+         ad-do-it)))
      (add-to-list 'compilation-error-regexp-alist-alist
                   (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
      (add-to-list 'compilation-error-regexp-alist 'mocha)))

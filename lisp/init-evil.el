@@ -511,13 +511,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "tm" 'my-git-timemachine
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
   "ov" 'my-overview-of-current-buffer
-  "oo" '(lambda ()
-          (interactive)
-          (cond
-           ((member major-mode '(octave-mode))
-            (octave-send-buffer))
-           (t
-            (compile))))
+  "oo" 'compile
   "c$" 'org-archive-subtree ; `C-c $'
   ;; org-do-demote/org-do-premote support selected region
   "c<" 'org-do-promote ; `C-c C-<'
