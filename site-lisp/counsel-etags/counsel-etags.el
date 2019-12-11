@@ -516,13 +516,13 @@ Return nil if it's not found."
 
 (defun counsel-etags-add-tags-file-to-history (tags-file)
   "Add TAGS-FILE to the top of `counsel-etags-tags-file-history'."
-  (let* ((file (file-truename tags-file))
-         (rlt (delq nil (mapcar
-                         (lambda (s)
-                           (unless (string= file (file-truename s)) s))
-                         counsel-etags-tags-file-history))))
-    (add-to-list 'rlt tags-file)
-    (setq counsel-etags-tags-file-history rlt)))
+  (let* ((file (file-truename tags-file)))
+    (setq counsel-etags-tags-file-history
+          (delq nil (mapcar
+                     (lambda (s)
+                       (unless (string= file (file-truename s)) s))
+                     counsel-etags-tags-file-history)))
+    (push tags-file counsel-etags-tags-file-history)))
 
 ;;;###autoload
 (defun counsel-etags-async-shell-command (command tags-file)
@@ -1036,7 +1036,7 @@ Focus on TAGNAME if it's not nil."
   (setq counsel-etags-tag-history
         (cl-remove-if `(lambda (s) (string= ,cand (car s)))
                       counsel-etags-tag-history))
-  (add-to-list 'counsel-etags-tag-history (cons cand dir)))
+  (push (cons cand dir) counsel-etags-tag-history))
 
 (defun counsel-etags--time-cost (start-time)
   "Show time cost since START-TIME."
@@ -1384,9 +1384,7 @@ The tags updating might not happen."
 If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
-                (setq counsel-git-grep-history
-                      (add-to-list 'counsel-git-grep-history
-                                   (counsel-etags-selected-str)))
+                (push (counsel-etags-selected-str) counsel-git-grep-history)
                 (counsel-etags-selected-str))
                (t
                 (read-from-minibuffer hint
@@ -1397,7 +1395,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
     (when str
       (cond
        ((region-active-p)
-        (add-to-list 'minibuffer-history str)
+        (push str minibuffer-history)
         (setq counsel-etags-keyword (counsel-etags-unquote-regex-parens str))
         ;; de-select region
         (set-mark-command nil))
