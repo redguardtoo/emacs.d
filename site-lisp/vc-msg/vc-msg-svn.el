@@ -45,17 +45,18 @@
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-svn-execute (file line-num)
-  "Use FILE and LINE-NUM to produce svn command.
+(defun vc-msg-svn-execute (file line-num version)
+  "Use FILE, LINE-NUM and VERSION to produce svn command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
-  ;; there is no one comamnd to get the commit information for current line
+  (setq file (file-name-nondirectory file))
+  ;; there is no command to get the commit information for current line
   (let* ((cmd (vc-msg-svn-generate-cmd (format "blame %s" file)))
          (output (vc-msg-svn-blame-output cmd))
          id)
     ;; I prefer simpler code:
     ;; if output doesn't match certain text pattern
-    ;; we assum the command fail
+    ;; we assume the command fail
     (cond
      ((setq id (vc-msg-sdk-extract-id-from-output line-num
                                                   "^[ \t]+\\\([0-9]+\\)[ \t]+"

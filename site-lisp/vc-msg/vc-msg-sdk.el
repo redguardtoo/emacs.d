@@ -33,6 +33,44 @@
   "Format SECONDS to date and time."
   (current-time-string (seconds-to-time (string-to-number seconds))))
 
+(defun vc-msg-sdk-git-rootdir ()
+  "Git root directory."
+  (locate-dominating-file default-directory ".git"))
+
+(defun vc-msg-sdk-buffer-file-name-p ()
+  "The `buffer-file-name' exists."
+  (let* ((file buffer-file-name))
+    (and file (file-exists-p file))))
+
+(defun vc-msg-sdk-get-current-file ()
+  "Get current file path."
+  (let* (rlt)
+    (cond
+     ((vc-msg-sdk-buffer-file-name-p)
+      (setq rlt buffer-file-name))
+     ((string-match "^\\([^ ]+\\)\.~\\([a-z0-9]\\)+~$" (buffer-name))
+      ;; in `magit-blame-mode', there is no real file me
+      ;; so we guess file path from buffer name
+      (setq rlt (concat (vc-msg-sdk-git-rootdir)
+                        (match-string 1 (buffer-name)))))
+     (t
+      (setq rlt nil)))
+    rlt))
+
+(defun vc-msg-sdk-get-version ()
+  "Get version of current file/buffer."
+  (let* (rlt)
+    (cond
+     ((vc-msg-sdk-buffer-file-name-p)
+      (setq rlt ""))
+     ((string-match "^\\([^ ]+\\)\.~\\([a-z0-9]+\\)~$" (buffer-name))
+      ;; in `magit-blame-mode', there is no real file me
+      ;; so we guess file path from buffer name
+      (setq rlt (match-string 2 (buffer-name))))
+     (t
+      (setq rlt "")))
+    rlt))
+
 (defun vc-msg-sdk-format-timezone (timezone)
   "Format TIMEZONE and show city as extra information."
   (concat timezone
@@ -112,6 +150,21 @@ Return either id or nil."
   "Quit window."
   (interactive)
   (quit-window t))
+
+(defun vc-msg-sdk-selected-string ()
+  "Return selected string in current line."
+  (let* (b e rlt)
+    (when (region-active-p)
+      ;; set b e
+      (setq b (region-beginning))
+      (setq e (region-end))
+      ;; swap b,e
+      (if (> b e) (setq e  (prog1 b (setq b  e))))
+      (when (and (< b e)
+                 (>= b (line-beginning-position))
+                 (<= e (line-end-position)))
+        (setq rlt (buffer-substring-no-properties b e))))
+    rlt))
 
 (defun vc-msg-sdk-get-or-create-buffer (buf-name content)
   "Get or create buffer with BUF-NAME.

@@ -10,6 +10,14 @@ b\\)\\'")
                       (file-name-directory buffer-file-name))))
     (list "tidy" (list local-file))))
 
+
+(defun my-tidy-html()
+  "Use tidy to format html."
+  (interactive)
+  (let* ((err-file (make-temp-file "tidy-tmp")))
+    (run-cmd-and-replace-region (format "tidy -f %s -q -i -c" err-file))
+    (delete-file err-file)))
+
 (defun flymake-html-load ()
   (interactive)
   (when (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))

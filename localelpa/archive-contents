@@ -1,4 +1,5 @@
 (1
+ (csv-mode . [(1 10) nil "" single])
  (undo-tree . [(20170706 246) nil "Treat undo history as a tree" tar])
  (let-alist . [(1 0 6) nil "Easily let-bind values of an assoc-list by their names" single])
  (gnu-elpa-keyring-update . [(2019 3) nil "Update Emacs's GPG keyring for GNU ELPA " tar])

@@ -17,6 +17,7 @@
     nov
     bbdb
     js2-mode ; need new features
+    git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
     command-log-mode
     edit-server ; use Emacs to edit textarea in browser, need browser addon
@@ -229,6 +230,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'avy)
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)
+(require-package 'csv-mode)
 (require-package 'expand-region) ; I prefer stable version
 (require-package 'fringe-helper)
 (require-package 'gitignore-mode)

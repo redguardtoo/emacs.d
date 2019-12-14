@@ -23,7 +23,9 @@
   - [[#quick-start][Quick start]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#git-blame-current-line][git blame current line]]
   - [[#saveload-windows-layout][Save/Load windows layout]]
+  - [[#use-this-configuration-as-merge-tool-for-git][Use this configuration as merge tool for Git]]
   - [[#default-terminal-shell][Default terminal shell]]
   - [[#override-default-setup][Override default setup]]
   - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
@@ -170,7 +172,7 @@ ACT
 
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 **** tidy
-- Required by =web-mode= for syntax check. It's also required by =tidy.el= for html formatting
+- Required by =web-mode= for syntax check. It's also required by the command =my-tidy-html= for html formatting
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
@@ -194,7 +196,7 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 - Required by =flymake=
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
-- Required by many tags related packages (=xref=, =counsel-etags=, =company-etags= from =company-mode=, etc)
+- Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
 - See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]] and =company-gtags= from =company-mode=
@@ -273,7 +275,7 @@ Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is a
 
 Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. Project root is automatically detected. You can also add one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=. 
 
-Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-etags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
+Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Key bindings
@@ -289,9 +291,25 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** git blame current line
+Run =vc-msg-show=.
+
+If you select a region inside current line, the *correct commit which submits the selected snippet* is displayed instead of the latest commit touch the whole line.
 ** Save/Load windows layout
 =SPC s s= or =M-x wg-create-workgrou= to save windows layout.
 =SPC l l= or =M-x my-wg-switch-workgroup= to load windows layout.
+** Use this configuration as merge tool for Git
+This configuration might be the most efficient and most powerful merge tool for VCS.
+Insert below configuration into =~/.gitconfig=,
+#+begin_src javascript
+[mergetool.ediff]
+# use git mergetool ediff to resolve conflicts
+cmd = emacs -nw -Q --eval \"(setq startup-now t)\" -l \"~/.emacs.d/init.el\" --eval \"(progn (setq ediff-quit-hook 'kill-emacs) (if (file-readable-p \\\"$BASE\\\") (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\") (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
+#+end_src
+
+Then run =git mergetool -t ediff=  to resolve conflicts.
+
+Here is [[https://gist.github.com/redguardtoo/d4ecd51f785bd117a6a0][my ~/.gitconfig]]. You can use [[https://github.com/redguardtoo/test-git-mergetool]] to practice.
 ** Default terminal shell
 You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
 ** Override default setup
@@ -421,7 +439,7 @@ Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
 Comment out =(require 'init-modeline)= in init.el at first.
 ** Key bindings doesn't work?
-Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][reported QQ on windows 8 can intercept "M-x"]].
+Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][it's reported QQ on windows 8 can intercept "M-x"]].
 ** Org-mode
 Press =M-x org-version=, then read corresponding online manual to set up.
 
@@ -506,7 +524,7 @@ You can use other backends instead of =clang=. For example, you can use =company
 ** Auto-completion for other languages
 It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
 
-For languages GNU Global doesn't support, you can fall back to =company-etags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
+For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
