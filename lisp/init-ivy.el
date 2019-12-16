@@ -326,7 +326,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
     (dolist (c cands)
       (let* ((item (cdr c))
              (m (cdr item)))
-        (when (<= (marker-position m) pos)
+        (when (and m (<= (marker-position m) pos))
           (cond
            ((not closest)
             (setq closest item))
