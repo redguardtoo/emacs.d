@@ -307,7 +307,7 @@ Insert below configuration into =~/.gitconfig=,
 cmd = emacs -nw -Q --eval \"(setq startup-now t)\" -l \"~/.emacs.d/init.el\" --eval \"(progn (setq ediff-quit-hook 'kill-emacs) (if (file-readable-p \\\"$BASE\\\") (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\") (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
 #+end_src
 
-Then run =git mergetool -t ediff=  to resolve conflicts.
+Then run =git mergetool -t ediff= to resolve conflicts.
 
 Here is [[https://gist.github.com/redguardtoo/d4ecd51f785bd117a6a0][my ~/.gitconfig]]. You can use [[https://github.com/redguardtoo/test-git-mergetool]] to practice.
 ** Default terminal shell
@@ -470,7 +470,7 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native Windows version is fine if it knows how to find the third party command line programs which could be installed through Cygwin. Please add =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
 
 By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
@@ -528,11 +528,11 @@ For languages GNU Global doesn't support, you can fall back to =company-ctags= a
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
-Please note pyim is already built into this setup. You don't need install it through ELPA.
+Please note pyim is already built into this setup. You need not install it through ELPA.
 
 Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
 
-Dictionaries with ".pyim" extension under the directory  =~/.eim/= are automatically loaded.
+Dictionaries with ".pyim" extension under the directory =~/.eim/= are automatically loaded.
 
 Please =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim= to install dictionary for pyim. 
 ** Install multiple versions of Emacs
@@ -583,9 +583,9 @@ If elpy warns you that the python environment is corrupt, you have two solutions
 
 Solution 1, ignore the warning and turn off elpy by comment out =(elpy-enable)= in =init-python.el=. Then you won't have those python IDE things.
 
-Solution 2, fix your python environment. For example, if elpy gives the the error message =ImportError: No module named pkg_resources= on Ubuntu, a quick search will lead to [[https://askubuntu.com/questions/1006201/importerror-no-module-named-pkg-resources][this link.]] So a simple shell command =sudo apt install --reinstall python-pkg-resources python-setuptools= solves the problem.
+Solution 2, fix your python environment. For example, if elpy gives the error message =ImportError: No module named pkg_resources= on Ubuntu, a quick search will lead to [[https://askubuntu.com/questions/1006201/importerror-no-module-named-pkg-resources][this link.]] So a simple shell command =sudo apt install --reinstall python-pkg-resources python-setuptools= solves the problem.
 
-Solution 2 might be better because you couldn't do any serious coding anyway if the python environment is broken, .
+Solution 2 might be better because you couldn't do any serious coding anyway if the python environment is broken.
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
@@ -606,7 +606,6 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[http
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 - You can run =optimize-emacs-startup= to compile "*.el" under =~/.emacs.d/lisp/=
-- Run =emacs --no-splash --eval "(setq startup-now t)" -l "$HOME/.emacs.d/init.el"= to start up Emacs as fast as possible. But it has less features
 * Report bug
 - Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first
 - If you still can't resolve the issue, restart Emacs with option =---debug-init=, run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue
