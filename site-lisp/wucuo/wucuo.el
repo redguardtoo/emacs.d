@@ -90,6 +90,11 @@
     js2-object-property
     js2-object-property-access
 
+    ;; css
+    font-lock-builtin-face
+    css-selector
+    css-property
+
     ;; ReactJS
     rjsx-text
     rjsx-tag
