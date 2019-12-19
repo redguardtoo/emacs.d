@@ -242,4 +242,10 @@ back to hunspell if aspell is not found.")
                 ;; (if rlt (message "start=%s end=%s ff=%s" start end ff))
                 rlt)))))
 ;; }}
+
+(eval-after-load 'wucuo
+  '(progn
+     ;; do NOT turn on flyspell-mode automatically when running `wucuo-start'
+     (setq wucuo-auto-turn-on-flyspell nil)))
+
 (provide 'init-spelling)

@@ -60,6 +60,11 @@
   :type 'boolean
   :group 'wucuo)
 
+(defcustom wucuo-auto-turn-on-flyspell t
+  "Turn on `flyspell-mode' automatically after running `wucuo-start'."
+  :type 'boolean
+  :group 'wucuo)
+
 (defcustom wucuo-check-nil-font-face nil
   "If nil, ignore text without font face."
   :type 'sexp
@@ -326,7 +331,8 @@ If FORCE is t, the major mode's own predicate setup."
   (setq flyspell-generic-check-word-predicate
         #'wucuo-generic-check-word-predicate)
 
-  (flyspell-mode 1))
+  (when wucuo-auto-turn-on-flyspell
+    (flyspell-mode 1)))
 
 (provide 'wucuo)
 ;;; wucuo.el ends here
