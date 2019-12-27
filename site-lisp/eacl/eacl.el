@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 2.0.1
+;; Version: 2.0.2
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -71,7 +71,10 @@
 ;;                                   "*.log"))
 ;;                        (add-to-list 'grep-find-ignored-files v)))))))
 ;;
-;; "git grep" is automatically detected for single line completion.
+;; "git grep" is automatically used for grepping in git repository.
+;; Please note "git grep" does NOT use `grep-find-ignored-directories' OR
+;; `grep-find-ignored-files'. You could set `eacl-git-grep-untracked' to tell
+;; git whether untracked files should be grepped in the repository.
 
 
 ;;; Code:
@@ -86,6 +89,11 @@
 (defcustom eacl-grep-program "grep"
   "GNU Grep program."
   :type 'string
+  :group 'eacl)
+
+(defcustom eacl-git-grep-untracked t
+  "Grep untracked files in Git repository."
+  :type 'boolean
   :group 'eacl)
 
 (defcustom eacl-project-root nil
@@ -260,25 +268,29 @@ Candidates same as KEYWORD in current file is excluded."
   "Return a shell command searching for SEARCH-REGEX.
 If MULTILINE-P is t, command is for multiline matching."
   (let* ((git-p (and (buffer-file-name)
-                     (eacl-git-p (buffer-file-name)))))
+                     (eacl-git-p (buffer-file-name))))
+         (git-grep-opts (concat "-I --no-color"
+                                (if eacl-git-grep-untracked " --untracked"))))
     ;; (setq git-p nil) ; debug
     (cond
      (multiline-p
       (cond
        (git-p
-        (format "git grep -nI --untracked \"%s\"" search-regex))
+        (format "git grep -n %s \"%s\"" git-grep-opts search-regex))
        (t
         (format "%s -rsnI %s -- \"%s\" ."
                 eacl-grep-program
                 (eacl-grep-exclude-opts)
                 search-regex))))
+
      ;; git-grep does not support multiline searches.
      ((and (buffer-file-name) (eacl-git-p (buffer-file-name)))
-      (format "git grep -h --untracked \"%s\"" search-regex))
+      (format "git grep -h %s \"%s\"" git-grep-opts search-regex))
+
      (t
       (cond
        (git-p
-        (format "git grep -h --untracked \"%s\"" search-regex))
+        (format "git grep -h %s \"%s\"" git-grep-opts search-regex))
        (t
         (format "%s -rshI %s -- \"%s\" ."
                 eacl-grep-program
@@ -296,6 +308,8 @@ EXTRA is optional information to filter candidates."
                                        (eacl-clean-candidates orig-collection))))
          (line-end (line-end-position))
          (time (current-time)))
+
+    (if eacl-debug (message "cmd=%s" cmd))
 
     (cond
      ((or (not collection) (= 0 (length collection)))
