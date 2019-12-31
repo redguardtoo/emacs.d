@@ -363,65 +363,160 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
   (require-package 'org-re-reveal))
 
+(defun my-install-popular-themes (popular-themes)
+  "Install POPULAR-THEMES from melpa."
+  (dolist (theme popular-themes)
+    (require-package theme)))
+
 (when *emacs25*
   (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
-  ;; Most popular thems from https://emacsthemes.com/popular/index.html
-  (require-package 'zenburn-theme)
-  (require-package 'solarized-theme)
-  (require-package 'spacemacs-theme)
-  (require-package 'color-theme-sanityinc-tomorrow)
-  (require-package 'monokai-theme)
-  (require-package 'leuven-theme)
-  (require-package 'color-theme-sanityinc-solarized)
-  (require-package 'material-theme)
-  (require-package 'gruvbox-theme)
-  (require-package 'moe-theme)
-  (require-package 'cyberpunk-theme) ; recommended
-  (require-package 'ample-theme)
-  (require-package 'dracula-theme) ; recommended
-  (require-package 'alect-themes)
-  (require-package 'sublime-themes)
-  (require-package 'darktooth-theme)
-  (require-package 'anti-zenburn-theme)
-  (require-package 'gotham-theme)
-  (require-package 'apropospriate-theme)
-  (require-package 'tao-theme)
-  (require-package 'ujelly-theme)
-  (require-package 'molokai-theme) ; recommended
-  (require-package 'grandshell-theme)
-  (require-package 'tangotango-theme)
-  (require-package 'afternoon-theme)
-  (require-package 'gruber-darker-theme)
-  (require-package 'ample-zen-theme)
-  (require-package 'doom-themes)
-  (require-package 'noctilux-theme)
-  (require-package 'flatland-theme)
-  (require-package 'organic-green-theme)
-  (require-package 'inkpot-theme)
-  (require-package 'flatui-theme)
-  (require-package 'hc-zenburn-theme)
-  (require-package 'clues-theme)
-  (require-package 'darkburn-theme) ; recommended
-  (require-package 'soothe-theme)
-  (require-package 'subatomic-theme)
-  (require-package 'naquadah-theme)
-  (require-package 'seti-theme)
-  (require-package 'spacegray-theme)
-  (require-package 'jazz-theme)
-  (require-package 'dakrone-theme)
-  (require-package 'espresso-theme)
-  (require-package 'phoenix-dark-pink-theme)
-  (require-package 'tango-plus-theme)
-  (require-package 'busybee-theme)
-  (require-package 'twilight-theme)
-  (require-package 'minimal-theme)
-  (require-package 'bubbleberry-theme)
-  (require-package 'cherry-blossom-theme)
-  (require-package 'heroku-theme)
-  (require-package 'hemisu-theme)
-  (require-package 'badger-theme)
-  (require-package 'distinguished-theme)
-  (require-package 'challenger-deep-theme))
+  (my-install-popular-themes
+   '(
+     abyss-theme
+     afternoon-theme
+     ahungry-theme
+     airline-themes
+     alect-themes
+     ample-theme
+     ample-zen-theme
+     anti-zenburn-theme
+     apropospriate-theme
+     arjen-grey-theme
+     atom-dark-theme
+     atom-one-dark-theme
+     autothemer
+     autumn-light-theme
+     avk-emacs-themes
+     badger-theme
+     badwolf-theme
+     base16-theme
+     basic-theme
+     birds-of-paradise-plus-theme
+     bliss-theme
+     borland-blue-theme
+     boron-theme
+     bubbleberry-theme
+     busybee-theme
+     calmer-forest-theme
+     challenger-deep-theme
+     cherry-blossom-theme
+     chocolate-theme
+     clues-theme
+     color-theme-modern
+     color-theme-sanityinc-solarized
+     color-theme-sanityinc-tomorrow
+     cyberpunk-theme
+     dakrone-theme
+     danneskjold-theme
+     darcula-theme
+     dark-krystal-theme
+     dark-mint-theme
+     darkburn-theme
+     darkmine-theme
+     darkokai-theme
+     darktooth-theme
+     distinguished-theme
+     django-theme
+     doom-themes
+     dracula-theme
+     eclipse-theme
+     eink-theme
+     espresso-theme
+     exotica-theme
+     eziam-theme
+     faff-theme
+     farmhouse-theme
+     firecode-theme
+     flatland-black-theme
+     flatland-theme
+     flatui-theme
+     gandalf-theme
+     github-theme
+     gotham-theme
+     grandshell-theme
+     green-phosphor-theme
+     gruber-darker-theme
+     gruvbox-theme
+     hc-zenburn-theme
+     hemisu-theme
+     heroku-theme
+     idea-darkula-theme
+     inkpot-theme
+     ir-black-theme
+     jazz-theme
+     jbeans-theme
+     kaolin-themes
+     labburn-theme
+     lenlen-theme
+     leuven-theme
+     light-soap-theme
+     load-theme-buffer-local
+     lush-theme
+     madhat2r-theme
+     majapahit-theme
+     material-theme
+     minimal-theme
+     moe-theme
+     molokai-theme
+     monochrome-theme
+     monokai-alt-theme
+     monokai-theme
+     mustang-theme
+     naquadah-theme
+     nimbus-theme
+     noctilux-theme
+     nord-theme
+     ns-auto-titlebar
+     obsidian-theme
+     occidental-theme
+     oldlace-theme
+     omtose-phellack-theme
+     org-beautify-theme
+     organic-green-theme
+     paper-theme
+     phoenix-dark-mono-theme
+     phoenix-dark-pink-theme
+     plan9-theme
+     planet-theme
+     poet-theme
+     professional-theme
+     purple-haze-theme
+     railscasts-theme
+     rebecca-theme
+     reverse-theme
+     seti-theme
+     smyx-theme
+     soft-charcoal-theme
+     soft-morning-theme
+     soft-stone-theme
+     solarized-theme
+     soothe-theme
+     spacegray-theme
+     spaceline-all-the-icons
+     spacemacs-theme
+     subatomic-theme
+     subatomic256-theme
+     sublime-themes
+     sunny-day-theme
+     suscolors-theme
+     tango-2-theme
+     tango-plus-theme
+     tangotango-theme
+     tao-theme
+     toxi-theme
+     twilight-anti-bright-theme
+     twilight-bright-theme
+     twilight-theme
+     ubuntu-theme
+     ujelly-theme
+     underwater-theme
+     warm-night-theme
+     white-sand-theme
+     xresources-theme
+     zen-and-art-theme
+     zenburn-theme
+     zerodark-theme
+     )))
 ;; }}
 
 ;; kill buffer without my confirmation
