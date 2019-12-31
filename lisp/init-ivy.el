@@ -38,9 +38,7 @@
         ("d" delete-file "delete")
         ("r" counsel-find-file-as-root "open as root")))))
 
-;; not good experience
-;; (setq ivy-use-virtual-buffers t)
-(global-set-key (kbd "C-c C-r") 'ivy-resume)
+;; (setq ivy-use-virtual-buffers t) ; not good experience
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)

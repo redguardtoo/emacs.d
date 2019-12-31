@@ -305,9 +305,6 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
 
 ;; helpers from https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
-(unless (featurep 'windmove)
-  (require 'windmove))
-
 (defun hydra-move-splitter-left (arg)
   "Move window splitter left."
   (interactive "p")
@@ -398,8 +395,13 @@ _SPC_ cancel _o_nly this     _d_elete
 ;; }}
 
 ;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
-(defhydra hydra-git (:body-pre (git-gutter-mode 1) :color blue)
-  "
+(defhydra hydra-git (:body-pre
+                     (progn
+                       (git-gutter-mode 1)
+                       (setq git-link-use-commit t))
+                     :after-exit (setq git-link-use-commit nil)
+                     :color blue)
+"
 Git:
 [_i_] Gist selected      [_dd_] Diff
 [_s_] Show commit        [_dc_] Diff staged
@@ -407,7 +409,7 @@ Git:
 [_h_] Gutter => HEAD     [_au_] Add modified
 [_l_] Log selected/file  [_cc_] Commit
 [_b_] Branches           [_ca_] Amend
-[_q_] Quit               [_tt_] Stash
+[_k_] Git commit link    [_tt_] Stash
 [_Q_] Quit gutter        [_ta_] Apply Stash
 "
   ("i" gist-region)
@@ -416,6 +418,7 @@ Git:
   ("l" magit-log-buffer-file)
   ("b" magit-show-refs-popup)
   ("h" git-gutter-reset-to-head-parent)
+  ("k" git-link)
   ("g" magit-status)
   ("ta" magit-stash-apply)
   ("tt" magit-stash)
