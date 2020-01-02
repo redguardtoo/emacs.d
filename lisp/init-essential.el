@@ -105,7 +105,10 @@ If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen conte
    ((and (not use-indirect-buffer) (buffer-narrowed-p))
     (widen))
 
-   ((and (not use-indirect-buffer) (org-src-edit-buffer-p))
+   ((and (not use-indirect-buffer)
+         (eq major-mode 'org-mode)
+         (fboundp 'org-src-edit-buffer-p)
+         (org-src-edit-buffer-p))
     (org-edit-src-exit))
 
    ;; narrow to region
