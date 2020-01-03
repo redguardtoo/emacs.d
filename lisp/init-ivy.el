@@ -5,8 +5,16 @@
 
 (eval-after-load 'counsel
   '(progn
-     ;; automatically pick up cygwin cli tools for counse
-     (when *win64*
+     ;; automatically pick up cygwin cli tools for counsel
+     (cond
+      ((executable-find "rg")
+       ;; ripgrep says that "-n" is enabled actually not,
+       ;; so we manually add it
+       (setq counsel-grep-base-command
+             (concat (executable-find "rg")
+                     " -n -M 512 --no-heading --color never -i \"%s\" %s")))
+
+      (*win64*
        (let* ((path (getenv "path"))
               (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
                            (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
@@ -14,8 +22,8 @@
          ;; `cygpath' could be nil on Windows
          (when cygpath
            (unless (string-match-p cygpath counsel-git-cmd)
-
              (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
+
            (unless (string-match-p cygpath counsel-git-grep-cmd-default)
              (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
            ;; ;; git-log does not work
@@ -26,7 +34,7 @@
            ;;                                     cygpath
            ;;                                     "/git log --grep '%s'")))
            (unless (string-match-p cygpath counsel-grep-base-command)
-             (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command))))))
+             (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))))
 
      ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
      ;; press "M-o" to choose ivy action
@@ -42,20 +50,6 @@
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-
-;; {{ @see http://oremacs.com/2015/04/19/git-grep-ivy/
-(defun counsel-read-keyword (hint &optional default-when-no-active-region)
-  (let* (keyword)
-    (cond
-     ((region-active-p)
-      (setq keyword (counsel-unquote-regex-parens (my-selected-str)))
-      ;; de-select region
-      (set-mark-command nil))
-     (t
-      (setq keyword (if default-when-no-active-region
-                        default-when-no-active-region
-                      (read-string hint)))))
-    keyword))
 
 (defun my-counsel-recentf (&optional n)
   "Find a file on `recentf-list'.
@@ -75,90 +69,10 @@ If N is not nil, only list files in current project."
                           (find-file f)))
               :caller 'counsel-recentf)))
 
-(defmacro counsel-git-grep-or-find-api (fn git-cmd hint no-keyword)
-  "Apply FN on the output lines of GIT-CMD.  HINT is hint when user input.
-Yank the file name at the same time.  FILTER is function to filter the collection."
-  `(let* ((str (if (buffer-file-name) (file-name-base (buffer-file-name)) ""))
-          (default-directory (locate-dominating-file
-                              default-directory ".git"))
-          (keyword (unless ,no-keyword
-                     ;; selected region contains no regular expression
-                     (counsel-read-keyword (concat "Enter " ,hint " pattern:" ))))
-          (collection (split-string (shell-command-to-string (if ,no-keyword ,git-cmd
-                                                               (format ,git-cmd keyword)))
-                                    "\n"
-                                    t)))
-     (cond
-      ((and collection (= (length collection) 1))
-       (funcall ,fn (car collection)))
-      (t
-       (ivy-read (if ,no-keyword ,hint (format "matching \"%s\":" keyword))
-                 collection
-                 :action ,fn)))))
-
-(defun counsel--open-file (val)
-  (let* ((lst (split-string val ":"))
-         (linenum (string-to-number (cadr lst))))
-    ;; open file
-    (find-file (car lst))
-    ;; goto line if line number exists
-    (when (and linenum (> linenum 0))
-      (goto-char (point-min))
-      (forward-line (1- linenum)))))
-
-;; grep by author is bad idea because it's too slow
-
-(defun counsel-insert-grepped-line (val)
-  (let ((lst (split-string val ":")) text-line)
-    ;; the actual text line could contain ":"
-    (setq text-line (replace-regexp-in-string (format "^%s:%s:" (car lst) (nth 1 lst)) "" val))
-    ;; trim the text line
-    (setq text-line (replace-regexp-in-string (rx (* (any " \t\n")) eos) "" text-line))
-    (kill-new text-line)
-    (if insert-line (insert text-line))
-    (message "line from %s:%s => kill-ring" (car lst) (nth 1 lst))))
-
-(defun counsel--replace-current-line (leading-spaces content)
-  (beginning-of-line)
-  (kill-line)
-  (insert (concat leading-spaces content))
-  (end-of-line))
-
-(defvar counsel-complete-line-use-git t)
-
-(defun counsel-has-quick-grep ()
-  (executable-find "rg"))
-
-(defun counsel-find-quick-grep (&optional for-swiper)
-  ;; ripgrep says that "-n" is enabled actually not,
-  ;; so we manually add it
-  (concat (executable-find "rg")
-          " -n -M 128 --no-heading --color never "
-          (if for-swiper "-i '%s' %s" "-s")))
-
-(if (counsel-has-quick-grep)
-    (setq counsel-grep-base-command (counsel-find-quick-grep t)))
-
-(defvar counsel-my-name-regex ""
-  "My name used by `counsel-git-find-my-file', support regex like '[Tt]om [Cc]hen'.")
-
-(defun counsel-git-find-my-file (&optional num)
-  "Find my files in the current git repository.
-If NUM is not nil, find files since NUM weeks ago.
-Or else, find files since 24 weeks (6 months) ago."
-  (interactive"P")
-  (unless (and num (> num 0))
-    (setq num 24))
-  (let* ((cmd (concat "git log --pretty=format: --name-only --since=\""
-                      (number-to-string num)
-                      " weeks ago\" --author=\""
-                      counsel-my-name-regex
-                      "\" | grep \"%s\" | sort | uniq")))
-    ;; (message "cmd=%s" cmd)
-    (counsel-git-grep-or-find-api 'find-file cmd "file" nil)))
-;; }}
+;; grep by author is bad idea. Too slow
 
 (defun my-build-bookmark-candidate (bookmark)
+  "Re-shape BOOKMARK."
   (let* ((key (cond
                ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
                 (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark))))
@@ -166,14 +80,14 @@ Or else, find files since 24 weeks (6 months) ago."
                 (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark))))
                (t
                 (car bookmark)))))
-    ;; build key which will be displayed
+    ;; key will be displayed
     ;; re-shape the data so full bookmark be passed to ivy-read
     (cons key bookmark)))
 
 (defun counsel-bookmark-goto ()
   "Open ANY bookmark."
   (interactive)
-  (unless (featurep 'bookmark) (require 'bookmark))
+  (autoload 'bookmark-maybe-load-default-file "bookmark" "" t)
   (bookmark-maybe-load-default-file)
   ;; do the real thing
   (ivy-read "bookmarks:"
@@ -215,6 +129,7 @@ If N is not nil, only list directories in current project."
     (ivy-read "directories:" cands :action 'dired)))
 
 (defun ivy-occur-grep-mode-hook-setup ()
+  "Set up ivy occur grep mode."
   ;; no syntax highlight, I only care performance when searching/replacing
   (font-lock-mode -1)
   ;; @see https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
@@ -224,14 +139,11 @@ If N is not nil, only list directories in current project."
   (local-set-key (kbd "RET") #'ivy-occur-press-and-switch))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
-(defun counsel-git-grep-by-selected ()
-  (interactive)
-  (cond
-   ((region-active-p)
-    ;; since 0.12.0, counsel change the api
-    (counsel-git-grep (my-selected-str) default-directory counsel-git-grep-cmd-default ))
-   (t
-    (counsel-git-grep))))
+(defun counsel-git-grep-by-selected (&optional level)
+  "Git grep in project.  If LEVEL is not nil, grep in parent commit files."
+  (interactive "P")
+  (let* ((str (if (region-active-p) (my-selected-str))))
+    (counsel-git-grep str)))
 
 (defun counsel-browse-kill-ring (&optional n)
   "If N > 1, assume just yank the Nth item in `kill-ring'.
