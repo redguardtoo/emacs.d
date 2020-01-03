@@ -139,11 +139,30 @@ If N is not nil, only list directories in current project."
   (local-set-key (kbd "RET") #'ivy-occur-press-and-switch))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
-(defun counsel-git-grep-by-selected (&optional level)
-  "Git grep in project.  If LEVEL is not nil, grep in parent commit files."
+(defun my-counsel-git-grep (&optional level)
+  "Git grep in project.  If LEVEL is not nil, grep files in parent commit."
   (interactive "P")
   (let* ((str (if (region-active-p) (my-selected-str))))
-    (counsel-git-grep str)))
+    (cond
+     (level
+      (unless str
+        (setq str (my-use-selected-string-or-ask "Grep keyword: ")))
+      (when str
+        (let* ((default-directory (locate-dominating-file default-directory ".git"))
+               (cmd-opts (concat "git diff-tree --no-commit-id --name-only -r HEAD"
+                                 (make-string (1- level) ?^)
+                                 " | xargs -I{} "
+                                 "git --no-pager grep -n --no-color -I -e \"%s\" -- {}"))
+               (cmd (format cmd-opts str))
+               (output (string-trim (shell-command-to-string cmd)))
+               (cands (split-string output "[\r\n]+")))
+          (ivy-read "git grep in commit: "
+                    cands
+                    :caller 'counsel-etags-grep
+                    :history 'counsel-git-grep-history
+                    :action #'counsel-git-grep-action))))
+     (t
+      (counsel-git-grep str)))))
 
 (defun counsel-browse-kill-ring (&optional n)
   "If N > 1, assume just yank the Nth item in `kill-ring'.

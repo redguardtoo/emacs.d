@@ -489,7 +489,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "yy" 'counsel-browse-kill-ring
   "cf" 'counsel-grep ; grep current buffer
   "gf" 'counsel-git ; find file
-  "gg" 'counsel-git-grep-by-selected ; quickest grep should be easy to press
+  "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
