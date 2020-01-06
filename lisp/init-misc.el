@@ -923,13 +923,17 @@ When join-dark-side is t, pick up dark theme only."
           (push theme themes))))
   (pickup-random-color-theme themes)))
 
-(defun switch-to-ansi-term ()
+(defun switch-to-builtin-shell ()
+  "Switch to builtin shell.
+If the shell is already opend in some buffer, open that buffer."
   (interactive)
   (let* ((buf-name (if *win64* "*shell*" "*ansi-term"))
          (buf (get-buffer buf-name))
          (wins (window-list))
          current-frame-p)
+
     (cond
+     ;; A shell buffer is already opened
      ((buffer-live-p buf)
       (dolist (win wins)
         (when (string= (buffer-name (window-buffer win)) buf-name)
@@ -938,16 +942,12 @@ When join-dark-side is t, pick up dark theme only."
             (select-window win))))
       (unless current-frame-p
         (switch-to-buffer buf)))
+     ;; Windows
      (*win64*
       (shell))
+     ;; Linux
      (t
       (ansi-term my-term-program)))))
-
-(defun switch-to-shell-or-ansi-term ()
-  "Switch to shell or terminal."
-  (interactive)
-  (if (display-graphic-p) (switch-to-ansi-term)
-    (suspend-frame)))
 
 ;; {{ emms
 (eval-after-load 'emms

@@ -1,5 +1,18 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
+;; enable auto-completion in `shell'.
+;; Since we already got a dropdown for auto-completion, so don't bother with
+;; `company-mode' backend set up
+(eval-after-load 'shell
+  '(progn
+     (setq explicit-bash-args
+           (delete "--noediting" explicit-bash-args))))
+
+(advice-add 'comint-term-environment
+            :filter-return (lambda (env) (cons "INSIDE_EMACS" env)))
+;; }}
+
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
 ;; kill the buffer when terminal is exited
 (defadvice term-sentinel (around my-advice-term-sentinel (proc msg))

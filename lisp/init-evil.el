@@ -598,8 +598,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xc" 'my-switch-to-shell-or-ansi-term
-  "xz" 'my-switch-to-shell-or-ansi-term
+  "xc" 'my-switch-to-shell
+  "xz" 'my-switch-to-shell
   "vf" 'vc-rename-file-and-buffer
   "vc" 'vc-copy-file-and-rename-buffer
   "xv" 'vc-next-action ; 'C-x v v' in original
@@ -873,12 +873,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; }}
 
 
-(defun my-switch-to-shell-or-ansi-term ()
-  "Switch to shell or terminal."
+(defun my-switch-to-shell ()
+  "Switch to built in or 3rd party shell."
   (interactive)
   (cond
-   ((fboundp 'switch-to-shell-or-ansi-term)
-    (switch-to-shell-or-ansi-term))
+   ((display-graphic-p)
+    (switch-to-builtin-shell))
    (t
     (suspend-frame))))
 
