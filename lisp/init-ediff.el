@@ -64,6 +64,8 @@
                           "\*Ediff Control Panel.*\*")
       ;; load color theme for merge
       (load-theme 'deeper-blue t)
+      ;; show only clashed area
+      (ediff-toggle-show-clashes-only)
       ;; move to the first difference
       (ediff-next-difference)
       ;; move to the merged buffer window
