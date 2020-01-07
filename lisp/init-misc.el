@@ -961,11 +961,6 @@ If the shell is already opend in some buffer, open that buffer."
                               emms-player-vlc-playlist))))
 ;; }}
 
-;; @see https://www.reddit.com/r/emacs/comments/988paa/emacs_on_windows_seems_lagging/
-(unless *no-memory*
-  ;; speed up font rendering for special characters
-  (setq inhibit-compacting-font-caches t))
-
 (add-auto-mode 'texile-mode "\\.textile\\'")
 
 (transient-mark-mode t)
