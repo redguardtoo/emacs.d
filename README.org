@@ -23,7 +23,9 @@
   - [[#quick-start][Quick start]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
-  - [[#git-blame-current-line][git blame current line]]
+  - [[#locked-packages][Locked packages]]
+  - [[#how-to-install-new-packages][How to install new packages?]]
+  - [[#git-blame-current-line][Git blame current line]]
   - [[#saveload-windows-layout][Save/Load windows layout]]
   - [[#use-this-configuration-as-merge-tool-for-git][Use this configuration as merge tool for Git]]
   - [[#default-terminal-shell][Default terminal shell]]
@@ -44,7 +46,6 @@
   - [[#key-bindings-doesnt-work][Key bindings doesn't work?]]
   - [[#org-mode][Org-mode]]
   - [[#macos-user][macOS user?]]
-  - [[#locked-packages][Locked packages]]
   - [[#customize-global-variables][Customize global variables]]
   - [[#opensave-files-with-counselivy][Open/Save files with Counsel/Ivy]]
   - [[#windows][Windows]]
@@ -291,7 +292,30 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
-** git blame current line
+** Locked packages
+Some packages are so important to my workflow that they are locked.
+
+Those packages are placed at =~/.emacs.d/site-lisp=.
+
+They will not be upgraded by ELPA.emacs.d/site-lisp= at first.
+** How to install new packages?
+I only use two package repositories,
+- [[https://stable.melpa.org]] (holding stable packages)
+- [[https://melpa.org]] (holding latest but unstable packages)
+
+If a package named =MY-PKG= exists in the stable repository, you only need one line setup,
+#+begin_src elisp
+(require-package 'MY-PKG)
+#+end_src
+
+This line could be placed in =~/.emacs.d/lisp/init-elpa.el= or =~/.custom.el=.
+
+You'd better place everything related to =MY-PKG= into =~/.custom.el= so the main stream change won't impact your own configuration.
+
+If the package does not exist in the stable repository, modify =melpa-include-packages= in =~/.emacs.d/lisp/init-elpa.el= first.
+
+I encourage you to read =init-elpa.el= to understand how packages are managed if you are good at Emacs Lisp, 
+** Git blame current line
 Run =vc-msg-show=.
 
 If you select a region inside current line, the *correct commit which submits the selected snippet* is displayed instead of the latest commit touch the whole line.
@@ -450,12 +474,6 @@ Run =M-x org-open-at-point= to open link under cursor. Http link will be opened 
 Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
-** Locked packages
-Some packages are so important to my workflow that they are locked.
-
-Those packages are placed at =~/.emacs.d/site-lisp=.
-
-They will not be upgraded by ELPA.emacs.d/site-lisp= at first.
 ** Customize global variables
 Some variables are hard coded so you cannot =M-x customize= to modify them.
 
