@@ -63,6 +63,17 @@
              eshell-mode comint-mode erc-mode gud-mode rcirc-mode
              minibuffer-inactive-mode))))
 
+(eval-after-load 'company-ispell
+  '(progn
+     ;; use company-ispell in comment and string when programming
+     (defadvice company-ispell-available (around company-ispell-available-hack activate)
+       (cond
+        ((and (derived-mode-p 'prog-mode)
+              (not (company-in-string-or-comment)))
+         (setq ad-return-value nil))
+        (t
+         ad-do-it)))))
+
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
   (interactive)
