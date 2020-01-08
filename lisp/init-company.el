@@ -14,9 +14,8 @@
   '(progn
      ;; @see https://github.com/company-mode/company-mode/issues/348
      (company-statistics-mode)
-
-     (add-to-list 'company-backends 'company-cmake)
-     (add-to-list 'company-backends 'company-c-headers)
+     (push 'company-cmake company-backends)
+     (push 'company-c-headers company-backends)
      ;; can't work with TRAMP
      (setq company-backends (delete 'company-ropemacs company-backends))
 
@@ -74,23 +73,30 @@
         (t
          ad-do-it)))))
 
+
+(defun my-add-ispell-to-company-backends ()
+  "Add ispell to the last of `company-backends'."
+  (setq company-backends
+        (add-to-list 'company-backends 'company-ispell)))
+
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
+  "Toggle company-ispell."
   (interactive)
   (cond
    ((memq 'company-ispell company-backends)
     (setq company-backends (delete 'company-ispell company-backends))
     (message "company-ispell disabled"))
    (t
-    (add-to-list 'company-backends 'company-ispell)
+    (my-add-ispell-to-company-backends)
     (message "company-ispell enabled!"))))
 
 (defun company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
-    (add-to-list 'company-backends 'company-ispell)
-    ;; https://github.com/redguardtoo/emacs.d/issues/473
+    (my-add-ispell-to-company-backends)
+    ;; @see https://github.com/redguardtoo/emacs.d/issues/473
     (cond
      ((and (boundp 'ispell-alternate-dictionary)
            ispell-alternate-dictionary)
