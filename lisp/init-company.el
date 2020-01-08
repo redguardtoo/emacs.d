@@ -63,11 +63,12 @@
 
 (eval-after-load 'company-ispell
   '(progn
-     ;; use company-ispell in comment and string when programming
      (defadvice company-ispell-available (around company-ispell-available-hack activate)
        (cond
         ((and (derived-mode-p 'prog-mode)
-              (not (company-in-string-or-comment)))
+              (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
+                  (not (evilnc--in-comment-p (point))))) ; auto-complete in comment only
+         ;; only use company-ispell in comment when coding
          (setq ad-return-value nil))
         (t
          ad-do-it)))))

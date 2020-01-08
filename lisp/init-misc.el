@@ -206,6 +206,8 @@ This function can be re-used by other major modes after compilation."
     (when (should-use-minimum-resource)
       (font-lock-mode -1)))
 
+  (company-ispell-setup)
+
   (unless (is-buffer-file-temp)
 
     ;; {{ spell check camel-case word
