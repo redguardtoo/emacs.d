@@ -64,10 +64,12 @@
 (eval-after-load 'company-ispell
   '(progn
      (defadvice company-ispell-available (around company-ispell-available-hack activate)
+       ;; in case evil is disabled
+       (unless (featurep 'evil-nerd-commenter) (require 'evil-nerd-commenter))
        (cond
         ((and (derived-mode-p 'prog-mode)
               (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
-                  (not (evilnc--in-comment-p (point))))) ; auto-complete in comment only
+                  (not (evilnc-is-pure-comment (point))))) ; auto-complete in comment only
          ;; only use company-ispell in comment when coding
          (setq ad-return-value nil))
         (t
