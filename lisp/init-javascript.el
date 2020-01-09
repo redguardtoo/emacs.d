@@ -238,21 +238,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
-;; {{ print json path, will be removed when latest STABLE js2-mode released
-(defun js2-get-element-index-from-array-node (elem array-node &optional hardcoded-array-index)
-  "Get index of ELEM from ARRAY-NODE or 0 and return it as string."
-  (let* ((idx 0) elems (rlt hardcoded-array-index))
-    (setq elems (js2-array-node-elems array-node))
-    (if (and elem (not hardcoded-array-index))
-        (setq rlt (catch 'nth-elt
-                    (dolist (x elems)
-                      ;; We know the ELEM does belong to ARRAY-NODE,
-                      (if (eq elem x) (throw 'nth-elt idx))
-                      (setq idx (1+ idx)))
-                    0)))
-    (format "[%s]" rlt)))
-;; }}
-
 (eval-after-load 'js2-mode
   '(progn
      ;; {{ I hate the hotkeys to hide things
