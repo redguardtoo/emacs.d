@@ -67,6 +67,7 @@
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
   - [[#python-environment][Python environment]]
+  - [[#set-up-lsp-mode][Set up lsp-mode]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
   - [[#emacs-23][Emacs 23]]
   - [[#emacs-243][Emacs 24.3]]
@@ -604,6 +605,29 @@ Solution 1, ignore the warning and turn off elpy by comment out =(elpy-enable)= 
 Solution 2, fix your python environment. For example, if elpy gives the error message =ImportError: No module named pkg_resources= on Ubuntu, a quick search will lead to [[https://askubuntu.com/questions/1006201/importerror-no-module-named-pkg-resources][this link.]] So a simple shell command =sudo apt install --reinstall python-pkg-resources python-setuptools= solves the problem.
 
 Solution 2 might be better because you couldn't do any serious coding anyway if the python environment is broken.
+** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
+You could insert below code into =~/.custom.el=,
+#+begin_src elisp
+(eval-after-load 'lsp-mode
+  '(progn
+     ;; enable log only for debug
+     (setq lsp-log-io nil)
+     ;; use `evil-matchit' instead
+     (setq lsp-enable-folding nil)
+     ;; handle yasnippet by myself
+     (setq lsp-enable-snippet nil)
+     ;; use `company-ctags' only.
+     ;; Please `company-lsp' is automatically enabled if installed
+     (setq lsp-enable-completion-at-point nil)
+     ;; turn off for better performance
+     (setq lsp-enable-symbol-highlighting nil)
+     ;; use ffip instead
+     (setq lsp-enable-links nil)
+     ;; don't scan 3rd party javascript libraries
+     (push "[/\\\\]\\node_modules$" lsp-file-watch-ignored)))
+#+end_src
+
+Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
