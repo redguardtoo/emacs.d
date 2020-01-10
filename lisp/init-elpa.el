@@ -301,6 +301,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'company)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
+(require-package 'lsp-mode)
 (require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
