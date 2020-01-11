@@ -10,8 +10,8 @@
 ;; by default, the sessions are saved in "~/.emacs_workgroups"
 (defun my-wg-switch-workgroup ()
   (interactive)
-  (unless (featurep 'workgroups2) (require 'workgroups2))
-  (unless (featurep 'ivy) (require 'ivy))
+  (my-ensure 'workgroups2)
+  (my-ensure 'ivy)
   (let* ((group-names (mapcar (lambda (group)
                                 ;; re-shape list for the ivy-read
                                 (cons (wg-workgroup-name group) group))

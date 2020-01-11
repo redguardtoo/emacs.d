@@ -81,17 +81,17 @@
 
 (eval-after-load 'org
   '(progn
-     (unless (featurep 'org-clock) (require 'org-clock))
+     (my-ensure 'org-clock)
 
      ;; org-re-reveal requires org 8.3 while Emacs 25 uses org 8.2
-     (when (and *emacs26* (not (featurep 'org-re-reveal)))
-       (require 'org-re-reveal))
+     (when *emacs26*
+       (my-ensure 'org-re-reveal))
 
      ;; odt export
      (add-to-list 'org-export-backends 'odt)
 
      ;; markdown export
-     (unless (featurep 'ox-md) (require 'ox-md))
+     (my-ensure 'ox-md)
      (add-to-list 'org-export-backends 'md)
 
      (defun org-agenda-show-agenda-and-todo (&optional arg)

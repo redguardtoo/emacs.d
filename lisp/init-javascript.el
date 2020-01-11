@@ -178,8 +178,7 @@ If NOT-JSON-P is not nil, validate as Javascript expression instead of JSON."
       (setq json-exp (format "var a=%s;"  json-exp)))
     (with-temp-buffer
       (insert json-exp)
-      (unless (featurep 'js2-mode)
-        (require 'js2-mode))
+      (my-ensure 'js2-mode)
       (js2-parse)
       (setq errs (js2-errors))
       (cond
@@ -208,7 +207,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
       (when (string= "json" (file-name-extension buffer-file-name))
         (setq str (format "var a=%s;" str))
         (setq cur-pos (+ cur-pos (length "var a="))))
-      (unless (featurep 'js2-mode) (require 'js2-mode))
+      (my-ensure 'js2-mode)
       (with-temp-buffer
         (insert str)
         (js2-init-scanner)

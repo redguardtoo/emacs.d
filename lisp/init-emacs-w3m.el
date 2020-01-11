@@ -60,7 +60,7 @@
   "`w3m-display-hook' must search current buffer with this keyword twice if not nil")
 
 (defun w3m-guess-keyword (&optional encode-space-with-plus)
-  (unless (featurep 'w3m) (require 'w3m))
+  (my-ensure 'w3m)
   (let* ((keyword (my-use-selected-string-or-ask "Enter keyword:"))
          (encoded-keyword (w3m-url-encode-string (setq w3m-global-keyword keyword))))
     ;; some search requires plus sign to replace space
@@ -69,7 +69,7 @@
       encoded-keyword)))
 
 (defun w3m-customized-search-api (search-engine &optional encode-space-with-plus)
-  (unless (featurep 'w3m) (require 'w3m))
+  (my-ensure 'w3m)
   (w3m-search search-engine (w3m-guess-keyword encode-space-with-plus)))
 
 (defun w3m-stackoverflow-search ()

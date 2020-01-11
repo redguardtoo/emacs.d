@@ -65,7 +65,7 @@
   '(progn
      (defadvice company-ispell-available (around company-ispell-available-hack activate)
        ;; in case evil is disabled
-       (unless (featurep 'evil-nerd-commenter) (require 'evil-nerd-commenter))
+       (my-ensure 'evil-nerd-commenter)
        (cond
         ((and (derived-mode-p 'prog-mode)
               (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'

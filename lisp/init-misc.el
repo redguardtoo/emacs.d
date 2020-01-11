@@ -211,7 +211,7 @@ This function can be re-used by other major modes after compilation."
   (unless (is-buffer-file-temp)
 
     ;; {{ spell check camel-case word
-    (unless (featurep 'wucuo) (local-require 'wucuo))
+    (my-ensure 'wucuo)
     (wucuo-start t)
     ;; }}
 
@@ -353,7 +353,7 @@ This function can be re-used by other major modes after compilation."
 (defun my-which-function ()
   "Return current function name."
 
-  (unless (featurep 'imenu) (require 'imenu))
+  (my-ensure 'imenu)
   ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
   (let* ((imenu-create-index-function (if (my-use-tags-as-imenu-function-p)
                                           'counsel-etags-imenu-default-create-index-function
@@ -781,7 +781,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (defun vc-msg-show-code-setup ()
   "Use `ffip-diff-mode' instead of `diff-mode'."
-  (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
+  (my-ensure 'find-file-in-project)
   (ffip-diff-mode))
 
 (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
@@ -888,7 +888,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 
 (defun pickup-random-color-theme (themes)
   "Pickup random color theme from themes."
-  (unless (featurep 'counsel) (require 'counsel))
+  (my-ensure 'counsel)
   (let* ((available-themes (mapcar 'symbol-name themes))
          (theme (nth (random (length available-themes)) available-themes)))
     (counsel-load-theme-action theme)
@@ -1241,10 +1241,7 @@ Including indent-buffer, which should not be called automatically on save."
   '(progn
      (setq pomodoro-break-time 2)
      (setq pomodoro-long-break-time 5)
-     (setq pomodoro-work-time 15)
-     (setq-default mode-line-format
-              (cons '(pomodoro-mode-line-string pomodoro-mode-line-string)
-                    mode-line-format))))
+     (setq pomodoro-work-time 15)))
 
 (unless (featurep 'pomodoro)
   (require 'pomodoro)
@@ -1254,7 +1251,7 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ pronunciation
 (defun my-pronounce-word (&optional word)
   (interactive "sWord: ")
-  (unless (featurep 'url) (require 'url))
+  (my-ensure 'url)
   (if word (setq word (downcase word)))
   (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
          (cached-mp3 (file-truename (format "~/.emacs.d/misc/%s.mp3" word)))

@@ -119,8 +119,7 @@
 (defun my-git-timemachine ()
   "Open git snapshot with the selected version."
   (interactive)
-  (unless (featurep 'git-timemachine)
-    (require 'git-timemachine))
+  (my-ensure 'git-timemachine)
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 ;; }}
 
@@ -255,7 +254,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                                     (line-number-at-pos (1- (region-end)))))
         (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
       ;; (message cmd)
-      (unless (featurep 'find-file-in-project) (require 'find-file-in-project))
+      (my-ensure 'find-file-in-project)
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
 (eval-after-load 'magit

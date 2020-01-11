@@ -6,7 +6,7 @@
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (unless (featurep 'pyim) (local-require 'pyim))
+  (my-ensure 'pyim)
 
   ;; some guys don't use evil-mode at all
   (cond

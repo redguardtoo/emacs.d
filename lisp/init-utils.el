@@ -1,5 +1,12 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defmacro my-ensure (feature)
+  "Make sure FEATURE is required."
+  `(unless (featurep ,feature)
+     (condition-case nil
+         (require ,feature)
+       (error nil))))
+
 (defun run-cmd-and-replace-region (cmd)
   "Run CMD in shell on selected region or whole buffer and replace it with cli output."
   (let* ((orig-point (point))
@@ -10,7 +17,7 @@
 
 (defun my-use-tags-as-imenu-function-p ()
   "Can use tags file to build imenu function"
-  (unless (featurep 'counsel-etags) (require 'counsel-etags))
+  (my-ensure 'counsel-etags)
   (and (locate-dominating-file default-directory "TAGS")
        ;; ctags needs extra setup to extract typescript tags
        (file-exists-p counsel-etags-ctags-options-file)

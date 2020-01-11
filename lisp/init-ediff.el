@@ -24,7 +24,7 @@
          ;; back to original window
          (select-window w))))
 
-  (unless (featurep 'ediff) (require 'ediff))
+  (my-ensure 'ediff)
 
   ;; @see https://stackoverflow.com/a/29757750/245363
   (defun ediff-copy-both-to-C (&optional arg)

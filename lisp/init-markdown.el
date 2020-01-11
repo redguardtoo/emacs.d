@@ -12,7 +12,7 @@
   ;; makes markdown tables saner via orgtbl-mode
   ;; Insert org table and it will be automatically converted
   ;; to markdown table
-  (unless (featurep 'org-table) (require 'org-table))
+  (my-ensure 'org-table)
   (defun cleanup-org-tables ()
     (save-excursion
       (goto-char (point-min))

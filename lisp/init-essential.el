@@ -29,7 +29,7 @@
    ((= n 5)
     ;; grep Chinese using pinyinlib.
     ;; In ivy filter, trigger key must be pressed before filter chinese
-    (unless (featurep 'pinyinlib) (require 'pinyinlib))
+    (my-ensure 'pinyinlib)
     (let* ((counsel-etags-convert-grep-keyword
             (lambda (keyword)
               (if (and keyword (> (length keyword) 0))

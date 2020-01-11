@@ -28,8 +28,7 @@ If N is not nil, copy file name and line number."
 (defun cp-ffip-ivy-last ()
   "Copy visible keys of `ivy-last' into `kill-ring' and clipboard."
   (interactive)
-  (unless (featurep 'find-file-in-project)
-    (require 'find-file-in-project))
+  (my-ensure 'find-file-in-project)
   (when ffip-ivy-last-saved
     (copy-yank-str
      (mapconcat (lambda (e)

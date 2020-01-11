@@ -55,7 +55,7 @@
   "Find a file on `recentf-list'.
 If N is not nil, only list files in current project."
   (interactive "P")
-  (unless (featurep 'recentf) (require 'recentf))
+  (my-ensure 'recentf)
   (recentf-mode 1)
   (let* ((files (mapcar #'substring-no-properties recentf-list))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
@@ -177,7 +177,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
                                 (kill-new plain-str)))))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
-  (unless (featurep 'pinyinlib) (require 'pinyinlib))
+  (my-ensure 'pinyinlib)
   (let* ((pys (split-string regexp "[ \t]+"))
          (regexp (format ".*%s.*"
                          (mapconcat 'pinyinlib-build-regexp-string pys ".*"))))
@@ -186,8 +186,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun ivy-switch-buffer-by-pinyin ()
   "Switch to another buffer."
   (interactive)
-  (unless (featurep 'ivy) (require 'ivy))
-  (let ((this-command 'ivy-switch-buffer))
+  (my-ensure 'ivy)
+  (let* ((this-command 'ivy-switch-buffer))
     (ivy-read "Switch to buffer: " 'internal-complete-buffer
               :matcher #'ivy-switch-buffer-matcher-pinyin
               :preselect (buffer-name (other-buffer (current-buffer)))
@@ -247,7 +247,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun my-counsel-imenu ()
   "Jump to a buffer position indexed by imenu."
   (interactive)
-  (unless (featurep 'counsel) (require 'counsel))
+  (my-ensure 'counsel)
   (let* ((cands (counsel--imenu-candidates))
          (pre-selected (thing-at-point 'symbol))
          (pos (point))
