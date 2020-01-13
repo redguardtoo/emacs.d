@@ -130,6 +130,7 @@ Always focus on bigger window."
       (define-key map (kbd "M-8") 'winum-select-window-8)
       map))
 
+(my-ensure 'winum)
 (eval-after-load 'winum
   '(progn
      (setq winum-format "%s")
