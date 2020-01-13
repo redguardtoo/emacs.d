@@ -140,6 +140,10 @@ It's value could be customized liked \"/usr/bin/firefox\".
            (cond
             ((org-mode-is-code-snippet)
              (setq run-spellcheck nil))
+
+            ((font-belongs-to (point) '(org-verbatim org-code))
+             (setq run-spellcheck nil))
+
             ((org-mode-current-line-is-property)
              (setq run-spellcheck nil))))
          (setq ad-return-value run-spellcheck)))
