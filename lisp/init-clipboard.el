@@ -114,6 +114,13 @@ If N is 4, rectangle paste. "
       ;; turn off syntax highlight
       (font-lock-mode -1))
 
+    ;; past a big string, stop lsp temporarily
+    (when (and (> (length str) 1024)
+               (boundp 'lsp-mode)
+               lsp-mode)
+      (lsp-disconnect)
+      (run-at-time 300 nil  #'lsp-deferred))
+
     ;; paste after the cursor in evil normal state
     (cond
      ((not n)) ; do nothing
