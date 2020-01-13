@@ -884,6 +884,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; then press "c" to contract, "x" to expand
 (eval-after-load "evil"
   '(progn
+     ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
+     ;; Restore "M-." to original binding command
+     (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
      (setq expand-region-contract-fast-key "c")
      ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
      ;; evil 1.0.8 search word instead of symbol
