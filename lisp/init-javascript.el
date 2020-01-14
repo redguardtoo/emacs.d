@@ -317,10 +317,15 @@ INDENT-SIZE decide the indentation level.
       (setq indent-size (cond
                          ((memq major-mode '(js-mode javascript-mode))
                           js-indent-level)
+
                          ((memq major-mode '(web-mode))
                           web-mode-code-indent-offset)
+
+                         ((memq major-mode '(typescript-mode))
+                          typescript-indent-level)
+
                          (t
-                          js2-basic-offset))))
+                          2))))
     ;; do it!
     (run-cmd-and-replace-region (concat "js-beautify"
                                         " --stdin "
