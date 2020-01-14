@@ -138,14 +138,16 @@ It's value could be customized liked \"/usr/bin/firefox\".
        (let* ((run-spellcheck ad-return-value))
          (when run-spellcheck
            (cond
-            ((org-mode-is-code-snippet)
-             (setq run-spellcheck nil))
-
             ((font-belongs-to (point) '(org-verbatim org-code))
              (setq run-spellcheck nil))
 
             ((org-mode-current-line-is-property)
+             (setq run-spellcheck nil))
+
+            ;; slow test should be placed at last
+            ((org-mode-is-code-snippet)
              (setq run-spellcheck nil))))
+
          (setq ad-return-value run-spellcheck)))
      ;; }}
 
