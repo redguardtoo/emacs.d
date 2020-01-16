@@ -159,7 +159,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 
 If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
 
-You can set =force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
+You can set =my-force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
 
 This setup use [[https://github.com/redguardtoo/wucuo][wucuo]] to spell check camel case words. It supports both aspell and hunspell.  Run =M-x wucuo-start= and =M-x flyspell-buffer= to check camel case words. 
 

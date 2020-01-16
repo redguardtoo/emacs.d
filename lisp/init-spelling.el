@@ -54,14 +54,14 @@
            ad-do-it))))
 
 
-;; The logic is:
-;; If (aspell installed) { use aspell}
-;; else if (hunspell installed) { use hunspell }
+;; Logic:
+;; If (aspell is installed) { use aspell}
+;; else if (hunspell is installed) { use hunspell }
 ;; English dictionary is used.
 ;;
 ;; I prefer aspell because:
-;; 1. aspell is older
-;; 2. looks Kevin Atkinson still get some road map for aspell:
+;; - aspell is older
+;; - looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
 (defun flyspell-detect-ispell-args (&optional run-together)
   "If RUN-TOGETHER is true, spell check the CamelCase words.
@@ -90,37 +90,35 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
            (t
             (setq args (append args '("--run-together" "--run-together-limit=16")))))))
 
-       ;; use hunsepll
+       ;; use hunspell
        ((string-match "hunspell$" ispell-program-name)
         (setq args nil))))
     args))
 
 ;; Aspell Setup (recommended):
-;; Skipped because it's easy.
+;; It's easy to set up aspell. So the details are skipped.
 ;;
 ;; Hunspell Setup:
 ;; 1. Install hunspell from http://hunspell.sourceforge.net/
 ;; 2. Download openoffice dictionary extension from
 ;; http://extensions.openoffice.org/en/project/english-dictionaries-apache-openoffice
-;; 3. That is download `dict-en.oxt'. Rename that to `dict-en.zip' and unzip
+;; 3. Say `dict-en.oxt' is downloaded. Rename it to `dict-en.zip' and unzip
 ;; the contents to a temporary folder.
-;; 4. Copy `en_US.dic' and `en_US.aff' files from there to a folder where you
-;; save dictionary files; I saved it to `~/usr_local/share/hunspell/'
-;; 5. Add that path to shell env variable `DICPATH':
-;; setenv DICPATH $MYLOCAL/share/hunspell
-;; 6. Restart emacs so that when hunspell is run by ispell/flyspell, that env
+;; 4. Copy `en_US.dic' and `en_US.aff' from there to a folder where you
+;; save dictionary files. I use "~/usr_local/share/hunspell/".
+;; 5. Add that folder to shell environment variable `DICPATH'
+;; 6. Restart emacs so when hunspell is run by ispell/flyspell, that env
 ;; variable is effective.
 ;;
-;; hunspell will search for a dictionary called `en_US' in the path specified by
-;; `$DICPATH'
+;; hunspell searches a dictionary named `en_US' in the path specified by
+;; `$DICPATH' by default.
 
-(defvar force-to-use-hunspell nil
-  "If t, force to use hunspell.  Or else, search aspell at first and fall
-back to hunspell if aspell is not found.")
+(defvar my-force-to-use-hunspell nil
+  "Force to use hunspell.  If nil, try to detect aspell&hunspell.")
 
 (cond
  ;; use aspell
- ((and (not force-to-use-hunspell) (executable-find "aspell"))
+ ((and (not my-force-to-use-hunspell) (executable-find "aspell"))
   (setq ispell-program-name "aspell"))
 
  ;; use hunspell
