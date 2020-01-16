@@ -156,10 +156,9 @@ It's value could be customized liked \"/usr/bin/firefox\".
        (interactive)
        (let* ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
          (when (and *is-a-mac* (file-exists-p cmd))
-           ;; org v7
-           (setq org-export-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i")))
            ;; org v8
-           (setq org-odt-convert-processes '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))))
+           (setq org-odt-convert-processes
+                 '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))))
      (my-setup-odt-org-convert-process)
      ;; }}
 
@@ -173,11 +172,10 @@ It's value could be customized liked \"/usr/bin/firefox\".
      ;; and you need install texlive-xetex on different platforms
      ;; To install texlive-xetex:
      ;;    `sudo USE="cjk" emerge texlive-xetex` on Gentoo Linux
-     (setq org-latex-to-pdf-process ;; org v7
+     (setq org-latex-pdf-process
            '("xelatex -interaction nonstopmode -output-directory %o %f"
              "xelatex -interaction nonstopmode -output-directory %o %f"
-             "xelatex -interaction nonstopmode -output-directory %o %f"))
-     (setq org-latex-pdf-process org-latex-to-pdf-process) ;; org v8
+             "xelatex -interaction nonstopmode -output-directory %o %f")) ;; org v8
      ;; }}
 
      ;; misc
@@ -197,8 +195,6 @@ It's value could be customized liked \"/usr/bin/firefox\".
            org-agenda-inhibit-startup t ;; ~50x speedup
            org-agenda-use-tag-inheritance nil ;; 3-4x speedup
            ;; }}
-           ;; org v7
-           org-export-odt-preferred-output-format "doc"
            ;; org v8
            org-odt-preferred-output-format "doc"
            org-tags-column 80
