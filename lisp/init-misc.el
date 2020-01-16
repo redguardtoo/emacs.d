@@ -88,6 +88,11 @@
 ;; {{ find-file-in-project (ffip)
 (eval-after-load 'find-file-in-project
   '(progn
+     (defun my-search-git-reflog-code ()
+       (let* ((default-directory (locate-dominating-file default-directory ".git")))
+         (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
+                                               (read-string "Regex: ")))))
+     (push 'my-search-git-reflog-code ffip-diff-backends)
      (setq ffip-match-path-instead-of-filename t)))
 
 (defun neotree-project-dir ()
