@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018 Chen Bin
 ;;
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -305,7 +305,7 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.0.6"))
+  (message "0.0.7"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
@@ -330,6 +330,10 @@ If FORCE is t, the major mode's own predicate setup."
   ;; to be honest, no other major mode can do better than this program
   (setq flyspell-generic-check-word-predicate
         #'wucuo-generic-check-word-predicate)
+
+  ;; work around issue when calling `flyspell-small-region'
+  ;; can't show the overlay of error but can't delete overlay
+  (setq flyspell-large-region 1)
 
   (when wucuo-auto-turn-on-flyspell
     (flyspell-mode 1)))
