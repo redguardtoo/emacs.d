@@ -371,87 +371,55 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 
 (when *emacs25*
   (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
+  ;; most popular 100 themes
   (my-install-popular-themes
    '(
-     abyss-theme
      afternoon-theme
-     ahungry-theme
-     airline-themes
      alect-themes
      ample-theme
      ample-zen-theme
      anti-zenburn-theme
      apropospriate-theme
-     arjen-grey-theme
-     atom-dark-theme
      atom-one-dark-theme
-     autothemer
-     autumn-light-theme
-     avk-emacs-themes
-     badger-theme
      badwolf-theme
      base16-theme
-     basic-theme
      birds-of-paradise-plus-theme
-     bliss-theme
-     borland-blue-theme
-     boron-theme
      bubbleberry-theme
      busybee-theme
-     calmer-forest-theme
-     challenger-deep-theme
      cherry-blossom-theme
-     chocolate-theme
      clues-theme
-     color-theme-modern
      color-theme-sanityinc-solarized
      color-theme-sanityinc-tomorrow
      cyberpunk-theme
      dakrone-theme
-     danneskjold-theme
-     darcula-theme
-     dark-krystal-theme
-     dark-mint-theme
      darkburn-theme
      darkmine-theme
      darkokai-theme
      darktooth-theme
-     distinguished-theme
      django-theme
      doom-themes
      dracula-theme
-     eclipse-theme
-     eink-theme
      espresso-theme
      exotica-theme
      eziam-theme
-     faff-theme
      farmhouse-theme
-     firecode-theme
-     flatland-black-theme
      flatland-theme
      flatui-theme
      gandalf-theme
-     github-theme
      gotham-theme
      grandshell-theme
-     green-phosphor-theme
      gruber-darker-theme
      gruvbox-theme
      hc-zenburn-theme
      hemisu-theme
      heroku-theme
-     idea-darkula-theme
      inkpot-theme
      ir-black-theme
      jazz-theme
      jbeans-theme
      kaolin-themes
-     labburn-theme
-     lenlen-theme
      leuven-theme
      light-soap-theme
-     load-theme-buffer-local
      lush-theme
      madhat2r-theme
      majapahit-theme
@@ -460,26 +428,18 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      moe-theme
      molokai-theme
      monochrome-theme
-     monokai-alt-theme
      monokai-theme
      mustang-theme
      naquadah-theme
-     nimbus-theme
      noctilux-theme
-     nord-theme
-     ns-auto-titlebar
      obsidian-theme
      occidental-theme
      oldlace-theme
      omtose-phellack-theme
-     org-beautify-theme
      organic-green-theme
-     paper-theme
      phoenix-dark-mono-theme
      phoenix-dark-pink-theme
-     plan9-theme
      planet-theme
-     poet-theme
      professional-theme
      purple-haze-theme
      railscasts-theme
@@ -493,13 +453,11 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      solarized-theme
      soothe-theme
      spacegray-theme
-     spaceline-all-the-icons
      spacemacs-theme
      subatomic-theme
      subatomic256-theme
      sublime-themes
      sunny-day-theme
-     suscolors-theme
      tango-2-theme
      tango-plus-theme
      tangotango-theme
@@ -508,14 +466,13 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      twilight-anti-bright-theme
      twilight-bright-theme
      twilight-theme
-     ubuntu-theme
      ujelly-theme
      underwater-theme
-     warm-night-theme
      white-sand-theme
-     xresources-theme
      zen-and-art-theme
      zenburn-theme
+     atom-dark-theme
+     nord-theme
      zerodark-theme
      )))
 ;; }}
