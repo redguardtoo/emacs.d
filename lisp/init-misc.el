@@ -917,23 +917,55 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (interactive)
   (pickup-random-color-theme (custom-available-themes)))
 
-(defun random-healthy-color-theme (join-dark-side)
-  "Random healthy color theme.
-When join-dark-side is t, pick up dark theme only."
+(defun random-healthy-color-theme (&optional join-dark-side)
+  "Random healthy color theme.  If JOIN-DARK-SIDE is t, use dark theme only."
   (interactive "P")
   (let* (themes
          (hour (string-to-number (format-time-string "%H" (current-time))))
          (prefer-light-p (and (not join-dark-side) (>= hour 9) (<= hour 19)) ))
     (dolist (theme (custom-available-themes))
-      (let* ((light-theme-p (or (string-match-p "-light" (symbol-name theme))
-                                (member theme '(leuven)))))
+      (let* ((light-theme-p (or (string-match-p "light\\|bright\\|white" (symbol-name theme))
+                                (member theme '(leuven
+                                                tao-yang
+                                                black-on-gray
+                                                greiner
+                                                tango-plus
+                                                mccarthy
+                                                soft-stone
+                                                blippblopp
+                                                jb-simple
+                                                whateveryouwant
+                                                sitaramv-nt
+                                                oldlace
+                                                wheat
+                                                xemacs
+                                                vim-colors
+                                                high-contrast
+                                                montz
+                                                marquardt
+                                                fischmeister
+                                                gtk-ide
+                                                kaolin-breeze
+                                                tango
+                                                snowish
+                                                scintilla
+                                                occidental
+                                                katester
+                                                github
+                                                emacs-21
+                                                bharadwaj
+                                                adwaita
+                                                aliceblue
+                                                xp
+                                                standard
+                                                emacs-nw)))))
         (when (if prefer-light-p light-theme-p (not light-theme-p))
           (push theme themes))))
   (pickup-random-color-theme themes)))
 
 (defun switch-to-builtin-shell ()
   "Switch to builtin shell.
-If the shell is already opend in some buffer, open that buffer."
+If the shell is already opened in some buffer, switch to that buffer."
   (interactive)
   (let* ((buf-name (if *win64* "*shell*" "*ansi-term"))
          (buf (get-buffer buf-name))
