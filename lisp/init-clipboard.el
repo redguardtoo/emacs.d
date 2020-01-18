@@ -92,7 +92,7 @@ If NUM equals 4, indent 4 spaces."
       (message "thing => clipboard!"))))
 
 (defun paste-from-x-clipboard(&optional n)
-  "Paste string clipboard.
+  "Remove selected text and paste string clipboard.
 If N is 1, we paste diff hunk whose leading char should be removed.
 If N is 2, paste into `kill-ring' too.
 If N is 3, converted dashed to camelcased then paste.
@@ -120,6 +120,9 @@ If N is 4, rectangle paste. "
                lsp-mode)
       (lsp-disconnect)
       (run-at-time 300 nil  #'lsp-deferred))
+
+    ;; delete selected text before paste
+    (if (region-active-p) (delete-region (region-beginning) (region-end)))
 
     ;; paste after the cursor in evil normal state
     (cond
