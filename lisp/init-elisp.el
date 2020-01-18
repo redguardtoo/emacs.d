@@ -69,10 +69,8 @@
 
 (defun elisp-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-    (when (require 'eldoc nil t)
-      (setq eldoc-idle-delay 0.2)
-      (setq eldoc-echo-area-use-multiline-p t)
-      (turn-on-eldoc-mode))
+    (my-ensure 'eldoc)
+    (turn-on-eldoc-mode)
     (enable-paredit-mode)
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)

@@ -1375,4 +1375,12 @@ Including indent-buffer, which should not be called automatically on save."
 (which-key-mode 1)
 ;; }}
 
+;; {{ eldoc
+(eval-after-load 'eldoc
+  '(progn
+     ;; multi-line message should not display too soon
+     (setq eldoc-idle-delay 1)
+     (setq eldoc-echo-area-use-multiline-p t)))
+;;}}
+
 (provide 'init-misc)
