@@ -924,7 +924,11 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
          (hour (string-to-number (format-time-string "%H" (current-time))))
          (prefer-light-p (and (not join-dark-side) (>= hour 9) (<= hour 19)) ))
     (dolist (theme (custom-available-themes))
-      (let* ((light-theme-p (or (string-match-p "light\\|bright\\|white" (symbol-name theme))
+      (let* ((light-theme-p (or (and (string-match-p "light\\|bright\\|white" (symbol-name theme))
+                                     (not (string-match-p "^base16-\\|^airline-\\|^doom=\\|^alect-" (symbol-name theme)))
+                                     (not (member theme '(twilight
+                                                          avk-darkblue-white
+                                                          sanityinc-tomorrow-bright))))
                                 (member theme '(leuven
                                                 tao-yang
                                                 black-on-gray
