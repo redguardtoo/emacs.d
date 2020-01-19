@@ -148,4 +148,10 @@ If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen conte
    (t (error "Please select a region to narrow to"))))
 ;; }}
 
+(eval-after-load 'cliphist
+  '(progn
+     (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
+       ;; delete selected text before paste
+       (if (region-active-p) (delete-region (region-beginning) (region-end))))))
+
 (provide 'init-essential)

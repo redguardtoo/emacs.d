@@ -129,6 +129,10 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
            (not (eolp))
            (not (eobp)))
       (forward-char))
+
+  ;; delete selected text before paste
+  (if (region-active-p) (delete-region (region-beginning) (region-end)))
+
   ;; insert now
   (insert str)
   str)
