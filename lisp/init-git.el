@@ -263,12 +263,31 @@ If nothing is selected, use the word under cursor as function name to look up."
 
 (eval-after-load 'vc-msg-git
   '(progn
+     ;; open file of certain revision
      (push '("m" "[m]agit-find-file"
              (lambda ()
                (let* ((info vc-msg-previous-commit-info))
                  (magit-find-file (plist-get info :id )
                                   (concat (vc-msg-sdk-git-rootdir)
                                           (plist-get info :filename))))))
+           vc-msg-git-extra)
+
+     ;; copy commit hash
+     (push '("h" "[h]ash"
+             (lambda ()
+               (let* ((info vc-msg-previous-commit-info)
+                      (id (plist-get info :id)))
+                 (kill-new id)
+                 (message "%s => kill-ring" id))))
+           vc-msg-git-extra)
+
+     ;; copy commit hash
+     (push '("a" "[a]uthor"
+             (lambda ()
+               (let* ((info vc-msg-previous-commit-info)
+                      (author (plist-get info :author)))
+                 (kill-new author)
+                 (message "%s => kill-ring" author))))
            vc-msg-git-extra)))
 
 (provide 'init-git)
