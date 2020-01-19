@@ -63,7 +63,7 @@
     (when (string-match-p (setq my-ediff-panel-name (buffer-name))
                           "\*Ediff Control Panel.*\*")
       ;; load color theme for merge
-      (load-theme 'deeper-blue t)
+      (load-theme 'tao-yang t)
       ;; show only clashed area
       (ediff-toggle-show-clashes-only)
       ;; move to the first difference
