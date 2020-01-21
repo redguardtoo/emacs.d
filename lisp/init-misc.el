@@ -929,40 +929,41 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                                      (not (member theme '(twilight
                                                           avk-darkblue-white
                                                           sanityinc-tomorrow-bright))))
-                                (member theme '(leuven
-                                                tao-yang
+                                (member theme '(adwaita
+                                                aliceblue
+                                                bharadwaj
                                                 black-on-gray
-                                                greiner
-                                                tango-plus
-                                                mccarthy
-                                                soft-stone
                                                 blippblopp
+                                                emacs-21
+                                                emacs-nw
+                                                fischmeister
+                                                github
+                                                greiner
+                                                gtk-ide
+                                                high-contrast
                                                 jb-simple
-                                                whateveryouwant
-                                                sitaramv-nt
+                                                kaolin-breeze
+                                                katester
+                                                leuven
+                                                marquardt
+                                                mccarthy
+                                                montz
+                                                occidental
                                                 oldlace
+                                                scintilla
+                                                sitaramv-nt
+                                                snowish
+                                                soft-stone
+                                                standard
+                                                tango
+                                                tango-plus
+                                                tangotango
+                                                tao-yang
+                                                vim-colors
+                                                whateveryouwant
                                                 wheat
                                                 xemacs
-                                                vim-colors
-                                                high-contrast
-                                                montz
-                                                marquardt
-                                                fischmeister
-                                                gtk-ide
-                                                kaolin-breeze
-                                                tango
-                                                snowish
-                                                scintilla
-                                                occidental
-                                                katester
-                                                github
-                                                emacs-21
-                                                bharadwaj
-                                                adwaita
-                                                aliceblue
-                                                xp
-                                                standard
-                                                emacs-nw)))))
+                                                xp)))))
         (when (if prefer-light-p light-theme-p (not light-theme-p))
           (push theme themes))))
   (pickup-random-color-theme themes)))
