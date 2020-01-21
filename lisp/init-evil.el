@@ -546,10 +546,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
-  "ss" (lambda ()
-         (interactive)
-         ;; better performance, got Cygwin grep installed on Windows always
-         (counsel-grep-or-swiper (if (region-active-p) (my-selected-str))))
+  "ss" 'my-counsel-grep-or-swiper
   "hd" 'describe-function
   "hf" 'find-function
   "hk" 'describe-key
