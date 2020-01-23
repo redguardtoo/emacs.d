@@ -134,8 +134,13 @@
 
   ;; projectile costs 7% startup time
 
+  ;; don't play with color-theme in light weight mode
+  ;; color themes are already installed in `init-elpa.el'
+  (require-init 'init-theme t)
+
   ;; misc has some crucial tools I need immediately
   (require-init 'init-essential)
+  ;; handy tools though not must have
   (require-init 'init-misc t)
 
   (require-init 'init-emacs-w3m t)
