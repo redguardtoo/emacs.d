@@ -72,5 +72,44 @@
           (push theme themes))))
   (pickup-random-color-theme themes)))
 
+(defun my-theme-packages(packages)
+  "Get themes from PACKAGES."
+  (let* ((sorted-packages (sort packages
+                                (lambda (a b)
+                                  (> (cdr a) (cdr b)))))
+         rlt
+         (topNum 110)
+         (i 0))
+    (dolist (p sorted-packages)
+      (let* ((name (symbol-name (car p))))
+        (when (and (< i topNum)
+                   (string-match-p "-themes?$" name)
+                   (not (member '("color-theme"
+                                  "smart-mode-line-powerline-theme"))))
+          (push name rlt)
+          (setq i (1+ i)))))
+    rlt))
+
+(defun my-insert-popular-theme-name ()
+  "Insert names of popular theme."
+  (interactive)
+  (let* (pkgs
+         (old-names (if (region-active-p) (mapcar 'string-trim
+                                                  (split-string (my-selected-str) "\n"))))
+         names)
+    (with-current-buffer
+        (url-retrieve-synchronously "http://melpa.org/download_counts.json" t t 30)
+      (goto-char (point-min))
+      (search-forward "{")
+      (backward-char) ; move cursor just before the "{"
+      (setq pkgs (json-read)))
+    (when (and pkgs
+               (setq names (nconc (my-theme-packages pkgs) old-names)))
+      (setq names (delete-dups (sort names 'string<)))
+      (when (region-active-p)
+        (delete-region (region-beginning) (region-end)))
+      ;; insert theme package names
+      (insert (mapconcat 'identity names "\n")))))
+
 (provide 'init-theme)
 ;;; init-theme.el ends here
