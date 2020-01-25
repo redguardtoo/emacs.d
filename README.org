@@ -259,8 +259,8 @@ Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's ta
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
 ** Evil-mode tutorial
 Required for vim user,
-- Finish [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
-- Read [[https://github.com/emacs-evil/evil/blob/master/doc/evil.pdf]]
+- Must read [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
+- Optionally read [[https://evil.readthedocs.io/en/latest/index.html]]
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * Usage
