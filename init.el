@@ -1,10 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-;; (advice-add #'package-initialize :after #'update-load-path)
 
 ;; Without this comment emacs25 adds (package-initialize) here
 ;; (package-initialize)
-
-(push (expand-file-name "~/.emacs.d/lisp") load-path)
 
 (let* ((minver "24.4"))
   (when (version< emacs-version minver)

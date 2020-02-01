@@ -891,20 +891,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
                   (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
      (add-to-list 'compilation-error-regexp-alist 'mocha)))
 
-;; ;; useless and hard to debug
-;; (defun optimize-emacs-startup ()
-;;   "Speedup emacs startup by compiling."
-;;   (interactive)
-;;   (let* ((dir (file-truename "~/.emacs.d/lisp/"))
-;;          (files (directory-files dir)))
-;;     (load (file-truename "~/.emacs.d/init.el"))
-;;     (dolist (f files)
-;;       (when (string-match-p ".*\.el$" f)
-;;         (let* ((default-directory dir))
-;;           (byte-compile-file (file-truename f) t))))))
-
-
-
 (defun switch-to-builtin-shell ()
   "Switch to builtin shell.
 If the shell is already opened in some buffer, switch to that buffer."
