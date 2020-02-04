@@ -1,6 +1,6 @@
 ;;; company-ctags.el --- Fastest company-mode completion backend for ctags  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2019 Chen Bin
+;; Copyright (C) 2019,2020 Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
@@ -41,11 +41,19 @@
 ;;
 ;;   Step 2, Use Ctags to create tags file and enjoy.
 ;;
-;; You can also turn on `company-ctags-support-etags' to support tags
+;; Tips:
+;;
+;; - Turn on `company-ctags-support-etags' to support tags
 ;; file created by etags.  But it will increase initial loading time.
 ;;
-;; Make sure `diff-command' is executable on Windows.  You might need install GNU Diff.
-;; It optional but highly recommended.  It can speed up tags file updating.
+;; - Set `company-ctags-extra-tags-files' to load extra tags files,
+;;
+;;   (setq company-ctags-extra-tags-files '("$HOME/TAGS" "/usr/include/TAGS"))
+;;
+;; - Make sure CLI program diff is executable on Windows.
+;; It's optional but highly recommended.  It can speed up tags file updating.
+;; This package uses diff through variable `diff-command'.
+;;
 
 ;;; Code:
 
@@ -68,6 +76,22 @@ buffer automatically."
   :type 'boolean
   :package-version '(company . "0.7.3"))
 
+(defcustom company-ctags-extra-tags-files nil
+  "List of extra tags files which are loaded only once.
+
+A typical format is,
+
+    (\"./TAGS\" \"/usr/include/TAGS\" \"$PROJECT/*/include/TAGS\")
+
+Environment variables can be inserted between slashes (`/').
+They will be replaced by their definitions.  If a variable does
+not exist, it is replaced (silently) with an empty string."
+  :type '(repeat 'string))
+
+(defcustom company-ctags-quiet t
+  "Be quiet and do not notify user tags file status."
+  :type 'boolean)
+
 (defcustom company-ctags-support-etags nil
   "Support tags file created by etags.
 If t, it increases the loading time."
@@ -86,7 +110,6 @@ Set it to t or to a list of major modes."
   "The interval (seconds) to check tags file.
 Default value is 30 seconds."
   :type 'integer)
-
 
 (defcustom company-ctags-tags-file-name "TAGS"
   "The name of tags file."
@@ -227,8 +250,9 @@ If it's nil, return a dictionary, or else return the existing dictionary."
          (arr (gethash c tagname-dict (gethash ?' tagname-dict))))
     (all-completions prefix arr)))
 
-(defun company-ctags-load-tags-file (file &optional force no-diff-prog quiet)
+(defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog quiet)
   "Load tags from FILE.
+If STATIC-P is t, the corresponding tags file is read only once.
 If FORCE is t, tags file is read without `company-ctags-tags-file-caches'.
 If NO-DIFF-PROG is t, do NOT use diff on tags file.
 This function return t if any tag file is reloaded.
@@ -236,12 +260,19 @@ If QUIET is t, don not output any message."
   (let* (raw-content
          (file-info (and company-ctags-tags-file-caches
                          (gethash file company-ctags-tags-file-caches)))
-         (use-diff (and (not no-diff-prog) file-info (executable-find diff-command)))
+         (use-diff (and (not no-diff-prog)
+                        file-info
+                        (plist-get file-info :raw-content)
+                        (executable-find diff-command)))
          tagname-dict
          reloaded)
+
     (when (or force
               (not file-info)
               (and
+               ;; the tags file is static and is already read into cache
+               ;; so don't read it again
+               ;; (not (plist-get file-info :static-p))
                ;; time to expire cache from tags file
                (> (- (float-time (current-time))
                      (plist-get file-info :timestamp))
@@ -287,8 +318,12 @@ If QUIET is t, don not output any message."
 
       ;; finalize tags file info
       (puthash file
-               (list :raw-content raw-content
+               ;; if the tags file is read only once, it will never be updated
+               ;; by `diff-command', so don't need store original raw content
+               ;; of tags file in order to save memory.
+               (list :raw-content (unless static-p raw-content)
                      :tagname-dict tagname-dict
+                     :static-p static-p
                      :timestamp (float-time (current-time))
                      :filesize (nth 7 (file-attributes file)))
                company-ctags-tags-file-caches)
@@ -304,14 +339,30 @@ If QUIET is t, don not output any message."
                                      (file-truename f))
                                    (delete-dups (append (if file (list file))
                                                         (company-ctags-buffer-table)))))
+           (extra-tags-files (ff-list-replace-env-vars company-ctags-extra-tags-files))
            rlt)
 
       ;; load tags files, maybe
       (dolist (f all-tags-files)
         (when (and f (file-exists-p f))
-          (when (company-ctags-load-tags-file f)
+          (when (company-ctags-load-tags-file f
+                                              nil ; primary tags file, not static
+                                              nil
+                                              nil ; only for debug
+                                              company-ctags-quiet)
             ;; clear cached candidates if any tags file is reloaded
             (setq company-ctags-cached-candidates nil))))
+
+      (when extra-tags-files
+        (dolist (f extra-tags-files)
+          (when (and f (file-exists-p f))
+            ;; tags file in `company-ctags-extra-tags-files' is read only once.
+            ;; so don't update cache unless `company-ctags-cached-candidates' is empty
+            (company-ctags-load-tags-file f
+                                          t ; static tags file, read only once
+                                          (not company-ctags-cached-candidates)
+                                          nil ; only for debug
+                                          company-ctags-quiet))))
 
       (cond
        ;; re-use cached candidates
@@ -323,7 +374,7 @@ If QUIET is t, don not output any message."
 
        ;; search candidates through tags files
        (t
-        (dolist (f all-tags-files)
+        (dolist (f (nconc all-tags-files extra-tags-files))
           (let* ((cache (gethash f company-ctags-tags-file-caches))
                  (tagname-dict (plist-get cache :tagname-dict)))
             (when tagname-dict
