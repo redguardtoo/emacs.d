@@ -35,7 +35,6 @@
     loc-changes
     test-simple
     ;; }}
-    counsel-css
     iedit
     undo-tree
     js-doc
@@ -84,7 +83,6 @@
     dsvn
     findr
     mwe-log-commands
-    counsel-gtags ; the stable version is never released
     noflet
     db
     package-lint
@@ -266,7 +264,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'flymake-jslint)
 (require-package 'ivy)
 (require-package 'swiper)
-(require-package 'counsel '(0 13 0)) ; counsel => swiper => ivy
+(require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
 (require-package 'ibuffer-vc)
