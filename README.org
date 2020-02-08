@@ -33,6 +33,7 @@
   - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
   - [[#use-m-key-for-evil-matchit][Use "m" key for "evil-matchit"]]
   - [[#color-theme][Color theme]]
+  - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
   - [[#react-and-jsx][React and JSX]]
@@ -64,7 +65,6 @@
   - [[#install-multiple-versions-of-emacs][Install multiple versions of Emacs]]
   - [[#change-time-locale][Change Time Locale]]
   - [[#directory-structure][Directory structure]]
-  - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
   - [[#python-environment][Python environment]]
   - [[#set-up-lsp-mode][Set up lsp-mode]]
@@ -394,15 +394,10 @@ Use 256 colors is just one CLI without any extra setup,
 #+BEGIN_SRC sh
 TERM=xterm-256color emacs -nw
 #+END_SRC
-
-True color requires a little setup.
-
-You need install the terminal supporting true color. See [[https://gist.github.com/XVilka/8346728][this list]]. I recommend [[https://mintty.github.io/][Mintty]] on Cygwin, [[https://gnometerminator.blogspot.com/p/introduction.html][Terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS.
-
-Only Emacs 26 supports true color.
-
-Follow [[https://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Emacs manual]] to set up and start Emacs.
-
+** True colors in terminal Emacs
+- Install Emacs 26
+- Install [[https://gist.github.com/XVilka/8346728][terminals supporting true color]]. I suggest [[https://mintty.github.io/][mintty]] on Windows, [[https://gnometerminator.blogspot.com/p/introduction.html][terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS
+- [[http://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Set up and start Emacs]]
 ** Grep/Replace text in project
 Many third party plugins bundled in this setup have already provided enough features. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
 
@@ -587,10 +582,6 @@ My own snippets is at =~/.emacs.d/snippets=.
 The git hooks is placed in =~/.emacs.d/githooks= directory.
 
 Other directories don't matter.
-** True colors in terminal Emacs
-- Install Emacs 26
-- Install [[https://gist.github.com/XVilka/8346728][terminals supporting true color]]. I suggest [[https://mintty.github.io/][mintty]] on Windows, [[https://gnometerminator.blogspot.com/p/introduction.html][terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS
-- [[https://www.gnu.org/software/emacs/draft/manual/html_mono/efaq.html#Colors-on-a-TTY][Setup and start Emacs]]
 ** Run the unit test before git commit
 On macOS/Linux/Cygwin, run =make githooks= to install hooks into =~/.emacs.d/.git/hooks=.
 
