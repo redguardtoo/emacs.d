@@ -281,7 +281,7 @@ Code auto-completion works out of box by using tags file created by Ctags. You n
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Key bindings
-Don't memorize any key binding. Try =M-x my-command= and key binding hint is displayed.
+Don't memorize any key binding. Try =M-x any-command-in-emacs and key binding hint is displayed.
 
 Most key bindings are defined in =~/.emacs.d/lisp/init-evil.el=, a few key in =~/.emacs.d/lisp/init-hydra.el= which uses [[https://github.com/abo-abo/hydra][Hydra]].
 
