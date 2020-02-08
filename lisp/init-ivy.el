@@ -305,4 +305,12 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
         ("k" kill-buffer "kill")
         ("r" ivy--rename-buffer-action "rename")))))
 
+(defun my-counsel-company ()
+  "Input code from company backend using fuzzy matching."
+  (interactive)
+  (company-abort)
+  (let* ((company-backends '(company-ctags))
+         (company-ctags-fuzzy-match-p t))
+    (counsel-company)))
+
 (provide 'init-ivy)
