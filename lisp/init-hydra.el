@@ -403,14 +403,15 @@ _SPC_ cancel _o_nly this     _d_elete
                      :color blue)
 "
 Git:
-[_i_] Gist selected      [_dd_] Diff
-[_s_] Show commit        [_dc_] Diff staged
-[_r_] Reset gutter       [_dr_] Diff range
-[_h_] Gutter => HEAD     [_au_] Add modified
-[_l_] Log selected/file  [_cc_] Commit
-[_b_] Branches           [_ca_] Amend
-[_k_] Git commit link    [_tt_] Stash
-[_Q_] Quit gutter        [_ta_] Apply Stash
+[_dd_] Diff         [_i_] Gist selected
+[_dc_] Diff staged  [_s_] Show commit
+[_dr_] Diff range   [_r_] Reset gutter
+[_au_] Add modified [_h_] Gutter => HEAD
+[_cc_] Commit       [_l_] Log selected/file
+[_ca_] Amend        [_b_] Branches
+[_ja_] Amend silent [_k_] Git commit link
+[_tt_] Stash        [_Q_] Quit gutter
+[_ta_] Apply Stash
 "
   ("i" gist-region)
   ("r" git-gutter-reset-to-default)
@@ -427,6 +428,7 @@ Git:
   ("dr" (progn (magit-diff-range (my-git-commit-id))))
   ("cc" magit-commit-popup)
   ("ca" magit-commit-amend)
+  ("ja" (magit-commit-amend "--reuse-message=HEAD"))
   ("au" magit-stage-modified)
   ("Q" git-gutter-toggle)
   ("q" nil))
