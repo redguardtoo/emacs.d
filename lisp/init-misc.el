@@ -409,6 +409,7 @@ This function can be re-used by other major modes after compilation."
 ;; dired
 (eval-after-load "dired"
   '(progn
+     (diredfl-global-mode 1)
      (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1)))
 ;; }}
 

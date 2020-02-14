@@ -240,6 +240,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'findr)
+(require-package 'diredfl) ; font lock for `dired-mode'
 (require-package 'pinyinlib)
 (require-package 'find-by-pinyin-dired)
 (require-package 'jump)
