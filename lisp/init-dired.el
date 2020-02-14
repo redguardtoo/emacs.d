@@ -15,26 +15,28 @@ If no files marked, always operate on current line in dired-mode."
   (dired-do-shell-command command arg file-list)
   (message command))
 
-(defun ora-ediff-files ()
+(defun my-ediff-files ()
   "@see https://oremacs.com/2017/03/18/dired-ediff/."
   (interactive)
   (let* ((files (dired-get-marked-files))
          (wnd (current-window-configuration)))
-    (if (<= (length files) 2)
-        (let* ((file1 (car files))
-               (file2 (if (cdr files)
-                          (cadr files)
-                        (read-file-name
-                         "file: "
-                         (dired-dwim-target-directory)))))
-          (if (file-newer-than-file-p file1 file2)
-              (ediff-files file2 file1)
-            (ediff-files file1 file2))
-          (add-hook 'ediff-after-quit-hook-internal
-                    (lambda ()
-                      (setq ediff-after-quit-hook-internal nil)
-                      (set-window-configuration wnd))))
-      (error "no more than 2 files should be marked"))))
+    (cond
+     ((<= (length files) 2)
+      (let* ((file1 (car files))
+             (file2 (if (cdr files)
+                        (cadr files)
+                      (read-file-name
+                       "file: "
+                       (dired-dwim-target-directory)))))
+        (if (file-newer-than-file-p file1 file2)
+            (ediff-files file2 file1)
+          (ediff-files file1 file2))
+        (add-hook 'ediff-after-quit-hook-internal
+                  (lambda ()
+                    (setq ediff-after-quit-hook-internal nil)
+                    (set-window-configuration wnd)))))
+     (t
+      (error "no more than 2 files should be marked")))))
 
 
 (eval-after-load 'dired-x
@@ -69,7 +71,7 @@ If no files marked, always operate on current line in dired-mode."
 
 (defun dired-mode-hook-setup ()
   (dired-hide-details-mode 1)
-  (local-set-key  "e" 'ora-ediff-files)
+  (local-set-key  "e" 'my-ediff-files)
   (local-set-key  "/" 'dired-isearch-filenames)
   (local-set-key  "\\" 'diredext-exec-git-command-in-shell))
 (add-hook 'dired-mode-hook 'dired-mode-hook-setup)
@@ -100,6 +102,7 @@ If no files marked, always operate on current line in dired-mode."
 (eval-after-load 'dired
   '(progn
      (require 'dired-x)
+     (require 'dired-aux) ; for `dired-dwim-target-directory'
      (defadvice dired-guess-default (after dired-guess-default-after-hack activate)
        (when (and (stringp ad-return-value)
                   (string-match-p "^mplayer -quiet" ad-return-value))

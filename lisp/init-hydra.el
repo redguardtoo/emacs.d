@@ -228,15 +228,15 @@
                 (copy-yank-str (funcall fn (dired-file-name-at-point)))))
      (defhydra hydra-dired (:color blue)
        "
-^Misc^                      ^File^             ^Copy Info^
-----------------------------------------------------------------
-[_vv_] video2mp3            [_R_] Move         [_pp_] Path
-[_aa_] Record by mp3        [_cf_] New         [_nn_] Name
-[_zz_] Play wav&mp3         [_rr_] Rename      [_bb_] Base
-[_cc_] Last command         [_ff_] Find        [_dd_] directory
+^Misc^                      ^File^              ^Copy Info^
+-----------------------------------------------------------------
+[_vv_] video2mp3            [_R_] Move          [_pp_] Path
+[_aa_] Record by mp3        [_cf_] New          [_nn_] Name
+[_zz_] Play wav&mp3         [_rr_] Rename       [_bb_] Base
+[_cc_] Last command         [_ff_] Find         [_dd_] directory
 [_sa_] Fetch all subtitles  [_C_]  Copy
 [_s1_] Fetch on subtitle    [_rb_] Change base
-[_+_] Create directory
+[_+_] Create directory      [_dd_] Diff 2 files
 "
        ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
        ("s1" (let* ((video-file (dired-file-name-at-point))
@@ -253,7 +253,8 @@
        ("zz" my-play-both-mp3-and-wav)
        ("C" dired-do-copy)
        ("R" dired-rename-file)
-       ("cf"find-file)
+       ("cf" find-file)
+       ("dd" my-ediff-files)
        ("rr" dired-toggle-read-only)
        ("ff" (lambda (regexp)
                (interactive "sMatching regexp: ")
