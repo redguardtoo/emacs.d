@@ -34,7 +34,15 @@ pyim 总是使用 emacs-async 包来生成 dcache.
   (when (file-exists-p file)
     (with-temp-buffer
       (insert-file-contents file)
-      (eval (read (current-buffer))))))
+      (let ((output
+             (condition-case nil
+                 (eval (read (current-buffer)))
+               (error nil))))
+        (unless output
+          ;; 有时候词库缓存会发生错误，这时候，就将词库缓存转存到一个
+          ;; 带时间戳的文件中，方便用户手动修复。
+          (write-file (concat file "-dump-" (format-time-string "%Y%m%d%H%M%S"))))
+        output))))
 
 (defun pyim-dcache-get-variable (variable)
   "从 `pyim-dcache-directory' 中读取与 VARIABLE 对应的文件中保存的值."
