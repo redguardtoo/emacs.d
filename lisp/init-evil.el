@@ -305,7 +305,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (forward-line 1)
     (evil-search search t t (point))))
 
-;; the original "gd" or `evil-goto-definition' now try `imenu', `xref', search string to `point-min'
+;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
+;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
 (evil-define-motion my-evil-goto-definition ()
   "Go to definition or first occurrence of symbol under point in current buffer."
@@ -773,6 +774,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ evil-nerd-commenter
 (evilnc-default-hotkeys t)
+(define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
