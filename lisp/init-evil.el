@@ -896,6 +896,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
      ;; evil 1.0.8 search word instead of symbol
      (setq evil-symbol-word-search t)
 
+     ;; don't add replaced text to `kill-ring'
+     (setq evil-kill-on-visual-paste nil)
+
      ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
      ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
      ;; (defalias #'forward-evil-word #'forward-evil-symbol)
