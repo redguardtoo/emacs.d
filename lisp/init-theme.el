@@ -106,8 +106,7 @@
     (when (and pkgs
                (setq names (nconc (my-theme-packages pkgs) old-names)))
       (setq names (delete-dups (sort names 'string<)))
-      (when (region-active-p)
-        (delete-region (region-beginning) (region-end)))
+      (my-delete-selected-region)
       ;; insert theme package names
       (insert (mapconcat 'identity names "\n")))))
 

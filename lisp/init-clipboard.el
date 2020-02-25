@@ -121,8 +121,7 @@ If N is 4, rectangle paste. "
       (lsp-disconnect)
       (run-at-time 300 nil  #'lsp-deferred))
 
-    ;; delete selected text before paste
-    (if (region-active-p) (delete-region (region-beginning) (region-end)))
+    (my-delete-selected-region)
 
     ;; paste after the cursor in evil normal state
     (cond

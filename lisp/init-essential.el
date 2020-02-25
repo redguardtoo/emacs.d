@@ -167,7 +167,6 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (eval-after-load 'cliphist
   '(progn
      (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
-       ;; delete selected text before paste
-       (if (region-active-p) (delete-region (region-beginning) (region-end))))))
+       (my-delete-selected-region))))
 
 (provide 'init-essential)

@@ -118,6 +118,11 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
                (mapcar #'my-prepare-candidate-fit-into-screen candidates)
                :action fn)))
 
+(defun my-delete-selected-region ()
+  "Delete selected region."
+  (when (region-active-p)
+    (delete-region (region-beginning) (region-end))))
+
 (defun my-insert-str (str)
   "Insert STR into current buffer."
   ;; ivy8 or ivy9
@@ -130,8 +135,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
            (not (eobp)))
       (forward-char))
 
-  ;; delete selected text before paste
-  (if (region-active-p) (delete-region (region-beginning) (region-end)))
+  (my-delete-selected-region)
 
   ;; insert now
   (insert str)
