@@ -483,6 +483,7 @@ If step is -1, go backward."
 (defun my-minibuffer-setup-hook ()
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
   (local-set-key (kbd "C-k") 'kill-line)
+  (subword-mode 1) ; enable subword movement in minibuffer
   (setq gc-cons-threshold most-positive-fixnum))
 
 (defun my-minibuffer-exit-hook ()
