@@ -1,7 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (ivy-mode 1) ; it enables ivy UI for `kill-buffer'
-(defvar test 1)
 
 (eval-after-load 'counsel
   '(progn
