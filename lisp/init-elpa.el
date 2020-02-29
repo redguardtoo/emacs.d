@@ -78,7 +78,7 @@
     ;; }}
     slime
     groovy-mode
-    ;; company ; I won't wait another 2 years for stable
+    company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
     findr
