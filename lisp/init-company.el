@@ -20,7 +20,7 @@
      (setq company-backends (delete 'company-ropemacs company-backends))
 
      ;; company-ctags is much faster out of box. No further optimiation needed
-     (require 'company-ctags)
+     (unless (featurep 'company-ctags) (local-require 'company-ctags))
      (company-ctags-auto-setup)
 
      ;; (setq company-backends (delete 'company-capf company-backends))
