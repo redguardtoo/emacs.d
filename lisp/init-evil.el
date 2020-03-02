@@ -869,11 +869,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 ;; }}
 
-;; In insert mode, press "rr" in 0.2 second to trigger my-counsel-company
-(general-imap "r"
+;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company
+;; Run "grep fg ~/.emacs.d/misc/english-words.txt", got "afghan".
+;; "afgan" is rarely used when programming
+(general-imap "f"
   (general-key-dispatch 'self-insert-command
-    :timeout 0.2
-    "r" 'my-counsel-company))
+    :timeout 0.3
+    "g" 'my-counsel-company))
 
 (defun my-switch-to-shell ()
   "Switch to built in or 3rd party shell."
