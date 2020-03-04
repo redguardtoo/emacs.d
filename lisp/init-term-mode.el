@@ -1,5 +1,10 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defun my-kill-process-buffer-when-exit (proc)
+  "Kill buffer of process PROC when it's terminated."
+  (when (memq (process-status proc) '(signal exit))
+    (kill-buffer (process-buffer proc))))
+
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
 ;; enable auto-completion in `shell'.
 ;; Since we already got a dropdown for auto-completion, so don't bother with
@@ -11,17 +16,29 @@
 
 (advice-add 'comint-term-environment
             :filter-return (lambda (env) (cons "INSIDE_EMACS" env)))
+
+
+(defun my-exit-shell-process (process event)
+  "Called when the shell PROCESS is stopped.  EVENT is ignored."
+  (my-kill-process-buffer-when-exit process))
+
+(defun shell-mode-hook-setup ()
+  "Set up `shell-mode'."
+  ;; try to kill buffer when exit shell
+  (let* ((proc (get-buffer-process (current-buffer)))
+         (shell (file-name-nondirectory (car (process-command proc)))))
+    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
+    (unless (string-match shell-dumb-shell-regexp shell)
+      (set-process-sentinel proc #'my-exit-shell-process)))
+
+  ;; look up shell command history
+  (local-set-key (kbd "M-n") 'counsel-shell-history))
+(add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-;; kill the buffer when terminal is exited
-(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
-  (if (memq (process-status proc) '(signal exit))
-      (let* ((buffer (process-buffer proc)))
-        ad-do-it
-        (kill-buffer buffer))
-    ad-do-it))
-(ad-activate 'term-sentinel)
+(defadvice term-sentinel (after term-sentinel-after-hack activate)
+  (my-kill-process-buffer-when-exit (nth 0 (ad-get-args 0))))
 
 ;; always use bash
 (defvar my-term-program "/bin/bash")
