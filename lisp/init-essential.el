@@ -38,35 +38,40 @@
       (counsel-etags-grep)))))
 
 ;; {{ message buffer things
-(defun erase-specific-buffer (num buf-name)
+(defun erase-specific-buffer (buf-name &optional n)
   "Erase the content of the buffer with BUF-NAME.
-Keep the last NUM lines if argument num if given."
-  (let* ((message-buffer (get-buffer buf-name))
+Keep the last N lines if argument num if given."
+  (let* ((buf (get-buffer buf-name))
          (old-buffer (current-buffer)))
     (save-excursion
-      (if (buffer-live-p message-buffer)
-          (progn
-            (switch-to-buffer message-buffer)
-            (if (not (null num))
-                (progn
-                  (end-of-buffer)
-                  (dotimes (i num)
-                    (previous-line))
-                  (set-register t (buffer-substring (point) (point-max)))
-                  (erase-buffer)
-                  (insert (get-register t))
-                  (switch-to-buffer old-buffer))
-              (progn
-                (erase-buffer)
-                (switch-to-buffer old-buffer))))
-        (error "Message buffer doesn't exists!")))))
+      (cond
+       ((buffer-live-p buf)
+        (switch-to-buffer buf)
+        (cond
+         ((null n)
+          (erase-buffer)
+          (switch-to-buffer old-buffer))
+         (t
+          (end-of-buffer)
+          (dotimes (i n)
+            (previous-line))
+          (set-register t (buffer-substring (point) (point-max)))
+          (erase-buffer)
+          (insert (get-register t))
+          (switch-to-buffer old-buffer))))
+       (t
+        (error "Message buffer doesn't exists!"))))))
 
 
-(defun erase-message-buffer (&optional num)
+(defun erase-message-buffer (&optional n)
   "Erase the content of the *Messages* buffer.
-Keep the last NUM lines if argument num if given."
+N specifies the buffer to erase."
   (interactive "p")
-  (erase-specific-buffer num "*Messages*"))
+  (cond
+   ((null n)
+    (erase-specific-buffer "*Messages*"))
+   (t
+    (erase-specific-buffer "*shell*"))))
 
 ;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
 (when (fboundp 'messages-buffer-mode)

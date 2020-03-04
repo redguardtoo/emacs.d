@@ -15,6 +15,7 @@
 [_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
 [_b_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
 [_f_] Recent file         [_w_] Pronounce word
+[_e_] Erase buffer
 [_d_] Recent directory
 [_h_] Dired CMD history
 [_E_] Enable typewriter
@@ -28,6 +29,7 @@
   ("d" counsel-recent-directory)
   ("ss" wg-create-workgroup)
   ("ll" my-wg-switch-workgroup)
+  ("e" erase-message-buffer)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
