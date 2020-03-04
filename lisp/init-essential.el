@@ -70,8 +70,10 @@ N specifies the buffer to erase."
   (cond
    ((null n)
     (erase-specific-buffer "*Messages*"))
-   (t
-    (erase-specific-buffer "*shell*"))))
+   ((eq 1 n)
+    (erase-specific-buffer "*shell*"))
+   ((eq 2 n)
+    (erase-specific-buffer "*Javascript REPL*"))))
 
 ;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
 (when (fboundp 'messages-buffer-mode)
