@@ -66,10 +66,10 @@ Keep the last N lines if argument num if given."
 (defun erase-message-buffer (&optional n)
   "Erase the content of the *Messages* buffer.
 N specifies the buffer to erase."
-  (interactive "p")
+  (interactive "P")
   (cond
    ((null n)
-    (erase-specific-buffer "*Messages*"))
+    (erase-specific-buffer "*Messages*") )
    ((eq 1 n)
     (erase-specific-buffer "*shell*"))
    ((eq 2 n)
