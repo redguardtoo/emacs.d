@@ -9,20 +9,23 @@
   ;; associate simpler major mode with org file instead
   (add-auto-mode 'outline-mode "\\.org\\(_archive\\)?$")
 
-
   (defmacro my-ediff-command (cmd &optional no-arg)
     `(lambda (&optional arg)
        (interactive "P")
-       (let* ((w (get-buffer-window)))
+       (let* ((w (get-buffer-window))
+              (p (get-buffer-window my-ediff-panel-name)))
+
          ;; go to panel window
-         (select-window (get-buffer-window my-ediff-panel-name))
-         ;; execute ediff command, ignore any error
-         (condition-case e
-             (if ,no-arg (funcall ,cmd) (funcall ,cmd arg))
-           (error
-            (message "%s" (error-message-string e))))
-         ;; back to original window
-         (select-window w))))
+         (when p
+           (select-window p)
+           ;; execute ediff command, ignore any error
+           (condition-case e
+               (if ,no-arg (funcall ,cmd) (funcall ,cmd arg))
+             (error
+              (message "%s" (error-message-string e))))
+
+           ;; back to original window
+           (select-window w)))))
 
   (my-ensure 'ediff)
 
