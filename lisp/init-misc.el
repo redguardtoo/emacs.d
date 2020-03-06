@@ -897,7 +897,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   "Switch to builtin shell.
 If the shell is already opened in some buffer, switch to that buffer."
   (interactive)
-  (let* ((buf-name (if *win64* "*shell*" "*ansi-term"))
+  (let* ((buf-name (if *win64* "*shell*" "*ansi-term*"))
          (buf (get-buffer buf-name))
          (wins (window-list))
          current-frame-p)
