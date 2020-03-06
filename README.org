@@ -174,7 +174,7 @@ ACT
 
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 **** tidy
-- Required by =web-mode= for syntax check. It's also required by the command =my-tidy-html= for html formatting
+- Required by =web-mode= for syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
