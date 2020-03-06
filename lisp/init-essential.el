@@ -38,50 +38,35 @@
       (counsel-etags-grep)))))
 
 ;; {{ message buffer things
-(defun erase-specific-buffer (buf-name &optional n)
-  "Erase the content of the buffer with BUF-NAME.
-Keep the last N lines if argument num if given."
-  (let* ((buf (get-buffer buf-name))
-         (old-buffer (current-buffer)))
-    (save-excursion
-      (cond
-       ((buffer-live-p buf)
-        (switch-to-buffer buf)
-        (cond
-         ((null n)
-          (erase-buffer)
-          (switch-to-buffer old-buffer))
-         (t
-          (end-of-buffer)
-          (dotimes (i n)
-            (previous-line))
-          (set-register t (buffer-substring (point) (point-max)))
-          (erase-buffer)
-          (insert (get-register t))
-          (switch-to-buffer old-buffer))))
-       (t
-        (error "Message buffer doesn't exists!"))))))
+(defun erase-one-visible-buffer (buf-name)
+  "Erase the content of visible buffer with BUF-NAME."
+  (let* ((original-window (get-buffer-window))
+         (target-window (get-buffer-window buf-name)))
+    (cond
+     ((not target-window)
+      (message "Buffer %s is not visible!" buf-name))
+     (t
+      (select-window target-window)
+      (let ((inhibit-read-only t))
+        (erase-buffer))
+      (select-window original-window)))))
 
-
-(defun erase-message-buffer (&optional n)
+(defun erase-visible-buffer (&optional n)
   "Erase the content of the *Messages* buffer.
 N specifies the buffer to erase."
   (interactive "P")
   (cond
    ((null n)
-    (erase-specific-buffer "*Messages*") )
+    (erase-one-visible-buffer "*Messages*") )
+
    ((eq 1 n)
-    (erase-specific-buffer "*shell*"))
+    (erase-one-visible-buffer "*shell*"))
+
    ((eq 2 n)
-    (erase-specific-buffer "*Javascript REPL*"))))
+    (erase-one-visible-buffer "*Javascript REPL*"))
 
-;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
-(when (fboundp 'messages-buffer-mode)
-  (defun messages-buffer-mode-hook-setup ()
-    (message "messages-buffer-mode-hook-setup called")
-    (read-only-mode -1))
-  (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
-
+   ((eq 3 n)
+    (erase-one-visible-buffer "*eshell*"))))
 ;; }}
 
 ;; {{ narrow region

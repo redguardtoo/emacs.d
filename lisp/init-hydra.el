@@ -29,7 +29,7 @@
   ("d" counsel-recent-directory)
   ("ss" wg-create-workgroup)
   ("ll" my-wg-switch-workgroup)
-  ("e" erase-message-buffer)
+  ("e" erase-visible-buffer)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("v" undo-tree-visualize)
