@@ -20,6 +20,7 @@
     git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
     command-log-mode
+    lsp-mode ; stable version has performance issue
     edit-server ; use Emacs to edit textarea in browser, need browser addon
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
