@@ -5,7 +5,6 @@
 ;; (setq vc-handled-backends ())
 ;; }}
 
-
 ;; {{ Solution 2: if NO network mounted drive involved
 (setq vc-handled-backends '(Git SVN Hg))
 ;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
@@ -77,6 +76,8 @@
   (git-gutter:clear))
 
 (defun git-gutter-reset-to-default ()
+  "Restore git gutter to its original status.
+Show the diff between current working code and git head."
   (interactive)
   (git-gutter:set-start-revision nil)
   (message "git-gutter reset"))
@@ -85,6 +86,7 @@
 
 ;; nobody use bzr
 ;; I could be forced to use subversion or hg which has higher priority
+;; Please note my $HOME directory is under git control
 (custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
 
 (unless (fboundp 'global-display-line-numbers-mode)
@@ -153,7 +155,7 @@
      ((and msg (> (length msg) 3))
       (shell-command "git add -u")
       (shell-command (format "git commit -m \"%s\"" msg))
-      (message "Tracked files is commited."))
+      (message "Tracked files is committed."))
      (t
       (message "Do nothing!")))))
 
@@ -281,7 +283,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                  (message "%s => kill-ring" id))))
            vc-msg-git-extra)
 
-     ;; copy commit hash
+     ;; copy author
      (push '("a" "[a]uthor"
              (lambda ()
                (let* ((info vc-msg-previous-commit-info)
