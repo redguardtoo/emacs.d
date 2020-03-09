@@ -154,7 +154,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 - Required by =flyspell=
 - =hunspell= is the alternative of =aspell=. You need only one of them.
 - For =aspell=, you may need its dictionary =aspell-en=
-- aspell dictionary is set "en_US" in =~/.emacs./lisp/init-spelling.el=. It can be changed.
+- aspell dictionary is set "en_US" in =~/.emacs.d/lisp/init-spelling.el=. It can be changed.
 - I recommend =aspell= for programmers. Non-programmers find =hunspell= is better on typo correction
 
 If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
