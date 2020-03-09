@@ -3,20 +3,13 @@
 b\\)\\'")
 
 (defun flymake-html-init ()
+  "Lint html."
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
                      'flymake-create-temp-inplace))
          (local-file (file-relative-name
                       temp-file
                       (file-name-directory buffer-file-name))))
     (list "tidy" (list local-file))))
-
-
-(defun my-tidy-html()
-  "Use tidy to format html."
-  (interactive)
-  (let* ((err-file (make-temp-file "tidy-tmp")))
-    (run-cmd-and-replace-region (format "tidy -f %s -q -i -c" err-file))
-    (delete-file err-file)))
 
 (defun flymake-html-load ()
   (interactive)

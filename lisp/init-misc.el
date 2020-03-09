@@ -702,12 +702,17 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; @see https://github.com/rooney/zencoding for original tutorial
 ;; @see https://github.com/smihica/emmet for new tutorial
 ;; C-j or C-return to expand the line
-(add-hook 'html-mode-hook 'emmet-mode)
-(add-hook 'sgml-mode-hook 'emmet-mode)
+(add-hook 'sgml-mode-hook 'emmet-mode) ; `sgml-mode` is parent of `html-mode'
 (add-hook 'web-mode-hook 'emmet-mode)
 (add-hook 'css-mode-hook  'emmet-mode)
 (add-hook 'rjsx-mode-hook  'emmet-mode)
 ;; }}
+
+(defun sgml-mode-hook-setup ()
+  "sgml/html mode setup."
+  ;; let web-mode handle indentation by itself since it does not derive from `sgml-mode'
+  (setq-local indent-region-function 'sgml-pretty-print))
+(add-hook 'sgml-mode-hook 'sgml-mode-hook-setup)
 
 (autoload 'verilog-mode "verilog-mode" "Verilog mode" t )
 (add-auto-mode 'verilog-mode "\\.[ds]?vh?\\'")
@@ -1278,8 +1283,22 @@ Including indent-buffer, which should not be called automatically on save."
 
 ;; {{ edit-server
 (defun edit-server-start-hook-setup ()
-  (when (string-match-p "\\(github\\|zhihu\\).com" (buffer-name))
-    (markdown-mode)))
+  "Some web sites actually pass html to edit server."
+  (let* ((url (buffer-name)))
+    (cond
+     ((string-match "github.com" url)
+      (markdown-mode))
+     ((string-match "zhihu.com" url)
+      ;; `web-mode' plus `sgml-pretty-print' get best result
+      (web-mode)
+      ;; format html
+      (my-ensure 'sgml)
+      (sgml-pretty-print (point-min) (point-max))
+      (goto-char (point-min))
+      ;; insert text after removing br tag, that's required by zhihu.com
+      ;; unfortunately, after submit comment once, page need be refreshed.
+      (replace-regexp "<br data-text=\"true\">" "")))))
+
 (add-hook 'edit-server-start-hook 'edit-server-start-hook-setup)
 (when (require 'edit-server nil t)
   (setq edit-server-new-frame nil)
