@@ -59,6 +59,10 @@
   (dolist (pattern patterns)
     (add-to-list 'auto-mode-alist (cons pattern mode))))
 
+(defun add-interpreter-mode (mode &rest patterns)
+  "Add entries to `interpreter-mode-alist' to use `MODE' for all given file `PATTERNS'."
+  (dolist (pattern patterns)
+    (add-to-list 'interpreter-mode-alist (cons pattern mode))))
 
 (defun font-belongs-to (pos fonts)
   "Current font at POS belongs to FONTS."

@@ -273,32 +273,6 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
-(add-auto-mode 'js-mode
-               "\\.ja?son$"
-               "\\.pac$"
-               "\\.jshintrc$")
-
-(cond
- ((not *no-memory*)
-  ;; javascript
-  (add-auto-mode 'js2-mode
-                 "\\.js\\(\\.erb\\)?\\'")
-  ;; JSX
-  (add-auto-mode 'rjsx-mode
-                 "\\.jsx\\'"
-                 "components\\/.*\\.js\\'")
-  ;; mock file
-  (add-auto-mode 'js-mode
-                 "\\.mock.js\\'")
-  (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
- (t
-  (add-auto-mode 'js-mode
-                 "\\.js\\(\\.erb\\)?\\'"
-                 "\\.babelrc\\'")))
-
-(add-auto-mode 'typescript-mode
-               "\\.ts$")
-
 ;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
 (eval-after-load 'rjsx-mode
   '(progn

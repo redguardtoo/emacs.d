@@ -90,6 +90,7 @@
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
   (require-init 'init-modeline)
   (require-init 'init-utils)
+  (require-init 'init-file-type)
   (require-init 'init-elpa)
   (require-init 'init-exec-path t) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
@@ -105,7 +106,6 @@
   (require-init 'init-org t)
   (require-init 'init-css t)
   (require-init 'init-python t)
-  (require-init 'init-ruby-mode t)
   (require-init 'init-lisp t)
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)

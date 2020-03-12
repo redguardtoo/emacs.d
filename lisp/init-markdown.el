@@ -1,7 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(add-auto-mode 'markdown-mode "\\.\\(m[k]d\\|markdown\\)\\'")
-
 (defun markdown-imenu-index ()
   (let* ((patterns '((nil "^#\\([# ]*[^#\n\r]+\\)" 1))))
     (save-excursion

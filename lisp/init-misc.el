@@ -1,26 +1,11 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; {{ shell and conf
-(add-auto-mode 'conf-mode
-               "\\.[^b][^a][a-zA-Z]*rc$"
-               "\\.aspell\\.en\\.pws\\'"
-               "\\mimeapps\\.list$"
-               "\\.editorconfig$"
-               "\\.meta\\'"
-               "\\.?muttrc\\'"
-               "\\.mailcap\\'")
-;; }}
-
 ;; Avoid potential lag:
 ;; https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746
 ;; `next-line' triggers the `format-mode-line' which triggers `projectile-project-name'
 ;; I use find-file-in-project instead of projectile. So I don't have this issue at all.
 ;; Set `auto-window-vscroll' to nil to avoid triggering `format-mode-line'.
 (setq auto-window-vscroll nil)
-
-(add-auto-mode 'text-mode
-               "TAGS\\'"
-               "\\.ctags\\'")
 
 ;; {{ auto-yasnippet
 ;; Use C-q instead tab to complete snippet
@@ -37,12 +22,6 @@
 
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
-
-(add-auto-mode 'java-mode
-               ;; java
-               "\\.aj\\'"
-               ;; makefile
-               "\\.ninja$" )
 
 ;; {{ support MY packages which are not included in melpa
 (setq org2nikola-use-verbose-metadata t) ; for nikola 7.7+
@@ -107,14 +86,6 @@
       (message "Could not find git project root."))))
 ;; }}
 
-;; {{ groovy-mode
-(add-auto-mode 'groovy-mode
-               "\\.groovy\\'"
-               "\\.gradle\\'" )
-;; }}
-
-(add-auto-mode 'sh-mode
-               "\\.\\(bash_profile\\|bash_history\\|sh\\|bash\\|bashrc\\.local\\|zsh\\|bashrc\\)\\'")
 
 ;; {{ gradle
 (defun my-run-gradle-in-shell (cmd)
@@ -125,11 +96,6 @@
         (let* ((default-directory root-dir))
           (shell-command (concat "gradle " cmd "&"))))))
 ;; }}
-
-;; cmake
-(add-auto-mode 'cmake-mode
-               "CMakeLists\\.txt\\'"
-               "\\.cmake\\'" )
 
 ;; {{ dictionary setup
 (defun my-lookup-dict-org ()
@@ -293,9 +259,6 @@ This function can be re-used by other major modes after compilation."
 (defun my-download-subtitles ()
   (interactive)
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
-
-;; vimrc
-(add-auto-mode 'vimrc-mode "\\.?vim\\(rc\\)?$")
 
 ;; {{ show email sent by `git send-email' in gnus
 (eval-after-load 'gnus
@@ -524,10 +487,6 @@ If step is -1, go backward."
     (setq rlt (list b e))
     rlt))
 
-;; {{ rust
-(add-auto-mode 'rust-mode "\\.rs\\'")
-;; }}
-
 ;; {{ diff region SDK
 (defun diff-region-exit-from-certain-buffer (buffer-name)
   (bury-buffer buffer-name)
@@ -669,7 +628,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; {{ csv
-(add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 (setq csv-separators '("," ";" "|" " "))
 ;; }}
 
@@ -714,8 +672,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
   (setq-local indent-region-function 'sgml-pretty-print))
 (add-hook 'sgml-mode-hook 'sgml-mode-hook-setup)
 
-(autoload 'verilog-mode "verilog-mode" "Verilog mode" t )
-(add-auto-mode 'verilog-mode "\\.[ds]?vh?\\'")
 
 ;; {{ xterm
 (defun run-after-make-frame-hooks (frame)
@@ -873,7 +829,6 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; {{
-(add-auto-mode 'adoc-mode "\\.adoc\\'")
 (defun adoc-imenu-index ()
   (let* ((patterns '((nil "^=\\([= ]*[^=\n\r]+\\)" 1))))
     (save-excursion
@@ -936,8 +891,6 @@ If the shell is already opened in some buffer, switch to that buffer."
                               emms-player-vlc-playlist))))
 ;; }}
 
-(add-auto-mode 'texile-mode "\\.textile\\'")
-
 (transient-mark-mode t)
 
 (unless (or *cygwin* *win64*)
@@ -951,8 +904,6 @@ If the shell is already opened in some buffer, switch to that buffer."
   (global-auto-revert-mode)
   (setq global-auto-revert-non-file-buffers t
         auto-revert-verbose nil))
-
-(add-auto-mode 'csv-mode "\\.[Cc][Ss][Vv]\\'")
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -1144,8 +1095,6 @@ version control automatically."
 (require 'midnight)
 (setq midnight-mode t)
 
-(add-auto-mode 'tcl-mode "Portfile\\'")
-
 (defun create-scratch-buffer ()
   "Create a new scratch buffer."
   (interactive)
@@ -1248,8 +1197,6 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ epub setup
-(add-auto-mode 'nov-mode "\\.epub\\'")
-
 (defun nov-mode-hook-setup ()
   (local-set-key (kbd "d") (lambda ()
                              (interactive)
@@ -1264,7 +1211,6 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ octave
-(add-auto-mode 'octave-mode "\\.m$")
 (add-hook 'octave-mode-hook
           (lambda ()
             (abbrev-mode 1)

@@ -19,9 +19,6 @@
 
 (setq-default initial-scratch-message (show-scratch-buffer-message))
 
-;; racket
-(add-auto-mode 'lisp-mode "\\.rkt\\'")
-
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
 

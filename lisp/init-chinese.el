@@ -43,8 +43,6 @@
 (defvar my-pyim-directory "~/.eim"
   "The directory containing pyim dictionaries.")
 
-(add-auto-mode 'text-mode "\\.pyim\\'")
-
 (eval-after-load 'pyim
   '(progn
      ;; use memory efficient pyim engine

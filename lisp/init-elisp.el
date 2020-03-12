@@ -1,9 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(add-auto-mode 'emacs-lisp-mode
-               "\\.emacs-project\\'"
-               "archive-contents\\'"
-               "\\.emacs\\.bmk\\'" )
 
 ;; @see http://blog.urth.org/2011/06/02/flymake-versus-the-catalyst-restarter/
 (defun flymake-create-temp-intemp (file-name prefix)

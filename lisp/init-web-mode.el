@@ -1,7 +1,3 @@
-(add-auto-mode 'web-mode
-               "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|er
-b\\)\\'")
-
 (defun flymake-html-init ()
   "Lint html."
   (let* ((temp-file (flymake-init-create-temp-buffer-copy
