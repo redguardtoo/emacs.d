@@ -321,7 +321,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'evil-escape)
 (require-package 'evil-exchange)
 (require-package 'evil-find-char-pinyin)
-(require-package 'evil-iedit-state)
 (require-package 'evil-mark-replace)
 (require-package 'evil-matchit)
 (require-package 'evil-nerd-commenter)
