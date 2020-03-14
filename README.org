@@ -429,7 +429,7 @@ If you use Zsh instead of Bash, please modify =init-term-mode.el=.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
-Chinese can use c[[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
+Chinese can use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
 
 They are not included in this setup. You need install them manually.
 ** Synchronize setup with Git
