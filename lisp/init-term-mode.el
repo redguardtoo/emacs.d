@@ -36,6 +36,13 @@
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
+
+(defun eshell-mode-hook-setup ()
+  "Set up `eshell-mode'."
+  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+  (local-set-key (kbd "M-n") 'counsel-esh-history))
+(add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
+
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
 (defadvice term-sentinel (after term-sentinel-after-hack activate)
   (my-kill-process-buffer-when-exit (nth 0 (ad-get-args 0))))
