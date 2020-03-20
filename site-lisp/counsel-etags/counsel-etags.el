@@ -181,6 +181,12 @@ The definition of word is customized by the user."
   :group 'counsel-etags
   :type 'function)
 
+(defcustom counsel-etags-maximum-candidates-to-clean 1024
+  "Maximum candidates to clean up before displaying to users.
+If candidates number is bigger than this value, show raw candidates without cleanup."
+  :group 'counsel-etags
+  :type 'integer)
+
 ;; (defvar counsel-etags-unit-test-p nil
 ;;   "Running unit test.  This is internal variable.")
 
@@ -861,8 +867,7 @@ CONTEXT is extra information."
        nil)))
 
 (defmacro counsel-etags-scan-string (str tagname-re case-sensitive &rest body)
-  "Scan STR using TAGNAME-RE and CASE-SENSITIVE.
-Then call FN to push found tag names."
+  "Scan STR using TAGNAME-RE and CASE-SENSITIVE and call BODY to push results."
   `(with-temp-buffer
     (insert ,str)
     ;; Not sure why `modify-syntax-entry' is used
@@ -876,13 +881,18 @@ Then call FN to push found tag names."
     ;; clean up, copied from "etags-select.el"
     (modify-syntax-entry ?_ "_")))
 
+
+(defun counsel-etags-search-regex (tagname)
+  "Get regex to search TAGNAME which could be nil."
+  (concat "\\([^\177\001\n]+\\)\177\\("
+          (or tagname "[^\177\001\n]+")
+          "\\)\001\\([0-9]+\\),\\([0-9]+\\)"))
+
 (defun counsel-etags-extract-cands (tags-file tagname fuzzy context)
   "Parse TAGS-FILE to find occurrences of TAGNAME using FUZZY algorithm.
 CONTEXT is extra information collected before find tag definition."
   (let* ((root-dir (file-name-directory tags-file))
-         (tagname-re (concat "\\([^\177\001\n]+\\)\177\\("
-                             (if fuzzy "[^\177\001\n]+" tagname)
-                             "\\)\001\\([0-9]+\\),\\([0-9]+\\)"))
+         (tagname-re (counsel-etags-search-regex (unless fuzzy tagname)))
          cands
          file-size
          file-content)
@@ -947,6 +957,8 @@ CONTEXT is extra information collected before find tag definition."
                                                        context))
           ;; don't bother sorting candidates from third party tags file
           (setq rlt (append rlt (mapcar 'car cands))))))
+    (unless (> (length rlt) counsel-etags-maximum-candidates-to-clean)
+      (setq rlt (delq nil (delete-dups rlt))))
     rlt))
 
 (defun counsel-etags-encode(s)
@@ -1228,9 +1240,7 @@ CONTEXT is extra information collected before finding tag definition."
          (ext (if buffer-file-name (file-name-extension buffer-file-name) ""))
          ;; ctags needs file extension
          (code-file (make-temp-file "coet" nil (concat "." ext)))
-         (tagname-re (concat "\\([^\177\001\n]+\\)\177\\("
-                             "[^\177\001\n]+"
-                             "\\)\001\\([0-9]+\\),\\([0-9]+\\)"))
+         (tagname-re (counsel-etags-search-regex nil))
          cmd
          imenu-items
          cands)
@@ -1310,8 +1320,6 @@ That's the known issue of Emacs Lisp.  The program itself is perfectly fine."
          (context (counsel-etags-execute-collect-function)))
     (cond
      (tagname
-        ;; TODO try to get context here from rule and pass
-        ;; into API call
         (counsel-etags-find-tag-api tagname nil buffer-file-name context))
      (t
       (message "No tag at point")))))
