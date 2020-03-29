@@ -1144,6 +1144,10 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ show current function name in `mode-line'
+(defadvice which-func-update (around which-func-update-hack activate)
+  ;; `which-function-mode' scanning makes Emacs unresponsive in big buffer
+  (unless (buffer-too-big-p)
+    ad-do-it))
 (eval-after-load "which-function"
   '(progn
      (add-to-list 'which-func-modes 'org-mode)))
