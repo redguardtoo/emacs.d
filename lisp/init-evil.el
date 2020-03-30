@@ -434,6 +434,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :states '(normal visual))
 
 (my-comma-leader-def
+  "," 'evilnc-comment-operator
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
