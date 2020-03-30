@@ -2,7 +2,7 @@
  (csv-mode . [(1 10) nil "" single])
  (spinner . [(1 7 3) nil "" single])
  (xr . [(1 14) nil "" single])
- (undo-tree . [(20170706 246) nil "Treat undo history as a tree" tar])
+ (undo-tree . [(0 7 4) nil "Treat undo history as a tree" single])
  (let-alist . [(1 0 6) nil "Easily let-bind values of an assoc-list by their names" single])
  (gnu-elpa-keyring-update . [(2019 3) nil "Update Emacs's GPG keyring for GNU ELPA " tar])
  (seq . [(2 20) nil "Sequence manipulation functions" tar])
