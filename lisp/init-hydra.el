@@ -256,7 +256,7 @@
        ("C" dired-do-copy)
        ("R" dired-rename-file)
        ("cf" find-file)
-       ("dd" my-ediff-files)
+       ("df" my-ediff-files)
        ("rr" dired-toggle-read-only)
        ("ff" (lambda (regexp)
                (interactive "sMatching regexp: ")
