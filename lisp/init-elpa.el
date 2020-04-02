@@ -378,6 +378,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      ample-zen-theme
      anti-zenburn-theme
      apropospriate-theme
+     atom-dark-theme
      atom-one-dark-theme
      badwolf-theme
      base16-theme
@@ -430,6 +431,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      mustang-theme
      naquadah-theme
      noctilux-theme
+     nord-theme
      obsidian-theme
      occidental-theme
      oldlace-theme
@@ -452,6 +454,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      soothe-theme
      spacegray-theme
      spacemacs-theme
+     srcery-theme
      subatomic-theme
      subatomic256-theme
      sublime-themes
@@ -469,8 +472,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      white-sand-theme
      zen-and-art-theme
      zenburn-theme
-     atom-dark-theme
-     nord-theme
      zerodark-theme
      )))
 ;; }}
