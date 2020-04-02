@@ -1267,6 +1267,28 @@ Including indent-buffer, which should not be called automatically on save."
 (which-key-mode 1)
 ;; }}
 
+;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
+(defvar my-default-yes-no-answers nil
+    "Usage: (setq my-default-yes-no-answers '((t . \"question1\") (t . \"question2\")))).")
+(defadvice y-or-n-p (around y-or-n-p-hack activate)
+  (let* ((prompt (car (ad-get-args 0))))
+    (cond
+     ((and my-default-yes-no-answers
+           (listp my-default-yes-no-answers))
+      (let* ((i 0)
+             found
+             cand)
+        (while (and (setq cand (nth i my-default-yes-no-answers))
+                    (not found))
+          (when (string-match-p (cdr cand) prompt)
+            (setq found t)
+            (setq ad-return-value (car cand)))
+          (setq i (1+ i)))
+        (unless found ad-do-it)))
+     (t
+      ad-do-it))))
+;; }}
+
 ;; {{ eldoc
 (eval-after-load 'eldoc
   '(progn
