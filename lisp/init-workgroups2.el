@@ -17,7 +17,7 @@
                                 (cons (wg-workgroup-name group) group))
                               (wg-session-workgroup-list (read (f-read-text (file-truename wg-session-file)))))))
 
-    (ivy-read "work groups"
+    (ivy-read "Select work group: "
               group-names
               :action (lambda (e)
                         (wg-find-session-file wg-default-session-file)
