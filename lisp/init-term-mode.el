@@ -29,10 +29,7 @@
          (shell (file-name-nondirectory (car (process-command proc)))))
     ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
     (unless (string-match shell-dumb-shell-regexp shell)
-      (set-process-sentinel proc #'my-exit-shell-process)))
-
-  ;; look up shell command history
-  (local-set-key (kbd "M-n") 'counsel-shell-history))
+      (set-process-sentinel proc #'my-exit-shell-process))))
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
