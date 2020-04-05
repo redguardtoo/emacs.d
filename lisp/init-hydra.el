@@ -254,7 +254,7 @@
        ("cc" my-dired-redo-last-command)
        ("zz" my-play-both-mp3-and-wav)
        ("C" dired-do-copy)
-       ("R" dired-rename-file)
+       ("R" dired-do-rename)
        ("cf" find-file)
        ("df" my-ediff-files)
        ("rr" dired-toggle-read-only)
