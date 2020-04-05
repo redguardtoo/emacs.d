@@ -1,12 +1,14 @@
 ;;; {{ shell and conf
 (add-auto-mode 'conf-mode
                "\\.[^b][^a][a-zA-Z]*rc$"
-               "\\.aspell\\.en\\.pws\\'"
+               "\\.aspell\\.en\\.pws$"
+               "\\.i3/config-base$"
+               "\\mimeapps\\.list$"
                "\\mimeapps\\.list$"
                "\\.editorconfig$"
-               "\\.meta\\'"
-               "\\.?muttrc\\'"
-               "\\.mailcap\\'")
+               "\\.meta$"
+               "\\.?muttrc$"
+               "\\.mailcap$")
 ;; }}
 
 
