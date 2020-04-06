@@ -32,8 +32,6 @@
 
 ;; {{ org2nikola set up
 (setq org2nikola-output-root-directory "~/.config/nikola")
-(setq org2nikola-use-google-code-prettify t)
-(setq org2nikola-prettify-unsupported-language '(elisp "lisp" emacs-lisp "lisp"))
 ;; }}
 
 (defun org-demote-or-promote (&optional is-promote)
