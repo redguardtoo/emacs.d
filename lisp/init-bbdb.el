@@ -39,8 +39,7 @@
 
 (add-hook 'bbdb-initialize-hook 'bbdb-initialize-hook-setup)
 
-(eval-after-load 'gmail2bbdb
-  '(progn
-     (setq gmail2bbdb-exclude-people-without-name t)))
+(with-eval-after-load "gmail2bbdb"
+  (setq gmail2bbdb-exclude-people-without-name t))
 
 (provide 'init-bbdb)

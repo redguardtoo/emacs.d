@@ -59,29 +59,27 @@
   (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
-(eval-after-load 'find-file-in-project
-  '(progn
-     (defhydra hydra-ffip-diff-group (:color blue)
-       "
+(with-eval-after-load "find-file-in-project"
+  (defhydra hydra-ffip-diff-group (:color blue)
+    "
 [_k_] Previous hunk
 [_j_] Next hunk
 [_p_] Previous file
 [_n_] Next file
 "
-       ("k" diff-hunk-prev)
-       ("j" diff-hunk-next)
-       ("p" diff-file-prev)
-       ("n" diff-file-next)
-       ("q" nil))))
+    ("k" diff-hunk-prev)
+    ("j" diff-hunk-next)
+    ("p" diff-file-prev)
+    ("n" diff-file-next)
+    ("q" nil)))
 (defun ffip-diff-mode-hook-hydra-setup ()
   (local-set-key (kbd "C-c C-y") 'hydra-ffip-diff-group/body))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
 ;; gnus-summary-mode
-(eval-after-load 'gnus-sum
-  '(progn
-     (defhydra hydra-gnus-summary (:color blue)
-       "
+(with-eval-after-load "gnus-sum"
+  (defhydra hydra-gnus-summary (:color blue)
+    "
 [_F_] Forward (C-c C-f)             [_s_] Show thread
 [_e_] Resend (S D e)                [_h_] Hide thread
 [_r_] Reply                         [_n_] Refresh (/ N)
@@ -91,31 +89,30 @@
 [_G_] Search current folder         [_#_] Mark
 [_b_] Switch Gnus buffer            [_A_] Show Raw article
 "
-       ("s" gnus-summary-show-thread)
-       ("h" gnus-summary-hide-thread)
-       ("n" gnus-summary-insert-new-articles)
-       ("F" gnus-summary-mail-forward)
-       ("!" gnus-summary-tick-article-forward)
-       ("b" dianyou-switch-gnus-buffer)
-       ("d" gnus-summary-put-mark-as-read-next)
-       ("c" gnus-summary-catchup-and-exit)
-       ("e" gnus-summary-resend-message-edit)
-       ("R" gnus-summary-reply-with-original)
-       ("r" gnus-summary-reply)
-       ("W" gnus-summary-wide-reply-with-original)
-       ("w" gnus-summary-wide-reply)
-       ("#" gnus-topic-mark-topic)
-       ("A" gnus-summary-show-raw-article)
-       ("G" dianyou-group-make-nnir-group)
-       ("q" nil))
-     ;; y is not used by default
-     (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body)))
+    ("s" gnus-summary-show-thread)
+    ("h" gnus-summary-hide-thread)
+    ("n" gnus-summary-insert-new-articles)
+    ("F" gnus-summary-mail-forward)
+    ("!" gnus-summary-tick-article-forward)
+    ("b" dianyou-switch-gnus-buffer)
+    ("d" gnus-summary-put-mark-as-read-next)
+    ("c" gnus-summary-catchup-and-exit)
+    ("e" gnus-summary-resend-message-edit)
+    ("R" gnus-summary-reply-with-original)
+    ("r" gnus-summary-reply)
+    ("W" gnus-summary-wide-reply-with-original)
+    ("w" gnus-summary-wide-reply)
+    ("#" gnus-topic-mark-topic)
+    ("A" gnus-summary-show-raw-article)
+    ("G" dianyou-group-make-nnir-group)
+    ("q" nil))
+  ;; y is not used by default
+  (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))
 
 ;; gnus-article-mode
-(eval-after-load 'gnus-art
-  '(progn
-     (defhydra hydra-gnus-article (:color blue)
-       "
+(with-eval-after-load "gnus-art"
+  (defhydra hydra-gnus-article (:color blue)
+    "
 [_o_] Save attachment        [_F_] Forward
 [_v_] Play video/audio       [_r_] Reply
 [_d_] CLI to download stream [_R_] Reply with original
@@ -123,41 +120,40 @@
 [_f_] Click link/button      [_W_] Reply all with original (S W)
 [_g_] Focus link/button      [_b_] Switch Gnus buffer
 "
-       ("F" gnus-summary-mail-forward)
-       ("r" gnus-article-reply)
-       ("R" gnus-article-reply-with-original)
-       ("w" gnus-article-wide-reply)
-       ("W" gnus-article-wide-reply-with-original)
-       ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
-       ("v" w3mext-open-with-mplayer)
-       ("d" w3mext-download-rss-stream)
-       ("b" w3mext-open-link-or-image-or-url)
-       ("f" w3m-lnum-follow)
-       ("g" w3m-lnum-goto)
-       ("b" dianyou-switch-gnus-buffer)
-       ("q" nil))
-     ;; y is not used by default
-     (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body)))
+    ("F" gnus-summary-mail-forward)
+    ("r" gnus-article-reply)
+    ("R" gnus-article-reply-with-original)
+    ("w" gnus-article-wide-reply)
+    ("W" gnus-article-wide-reply-with-original)
+    ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
+    ("v" w3mext-open-with-mplayer)
+    ("d" w3mext-download-rss-stream)
+    ("b" w3mext-open-link-or-image-or-url)
+    ("f" w3m-lnum-follow)
+    ("g" w3m-lnum-goto)
+    ("b" dianyou-switch-gnus-buffer)
+    ("q" nil))
+  ;; y is not used by default
+  (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body))
 
 ;; message-mode
-(eval-after-load 'message
-  '(progn
-     (defhydra hydra-message (:color blue)
-  "
+(with-eval-after-load "message"
+  (defhydra hydra-message (:color blue)
+    "
 [_c_] Complete mail address [_H_] convert to html mail
 [_a_] Attach file           [_p_] Paste image from clipboard
 [_s_] Send mail (C-c C-c)
 [_b_] Switch Gnus buffer
 [_i_] Insert email address
 "
-       ("c" counsel-bbdb-complete-mail)
-       ("a" mml-attach-file)
-       ("s" message-send-and-exit)
-       ("b" dianyou-switch-gnus-buffer)
-       ("i" dianyou-insert-email-address-from-received-mails)
-       ("H" org-mime-htmlize)
-       ("p" dianyou-paste-image-from-clipboard)
-       ("q" nil))))
+    ("c" counsel-bbdb-complete-mail)
+    ("a" mml-attach-file)
+    ("s" message-send-and-exit)
+    ("b" dianyou-switch-gnus-buffer)
+    ("i" dianyou-insert-email-address-from-received-mails)
+    ("H" org-mime-htmlize)
+    ("p" dianyou-paste-image-from-clipboard)
+    ("q" nil)))
 
 (defun message-mode-hook-hydra-setup ()
   (local-set-key (kbd "C-c C-y") 'hydra-message/body))
@@ -165,71 +161,70 @@
 ;; }}
 
 ;; {{ dired
-(eval-after-load 'dired
-  '(progn
-     (defun my-replace-dired-base (base)
-       "Change file name in `wdired-mode'"
-       (let* ((fp (dired-file-name-at-point))
-              (fb (file-name-nondirectory fp))
-              (ext (file-name-extension fp))
-              (dir (file-name-directory fp))
-              (nf (concat base "." ext)))
-         (when (yes-or-no-p (format "%s => %s at %s?"
-                                    fb nf dir))
-           (rename-file fp (concat dir nf)))))
-     (defun my-extract-mp3-from-video ()
-       "Extract mp3 from current video file using ffmpeg."
-       (interactive)
-       (let* ((video-file (file-name-nondirectory (dired-file-name-at-point)))
-              (params (split-string (string-trim (read-string "Please input start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\") or just press enter: "))
-                                    " +"))
-              (start (car params))
-              (total (if (eq (length params) 1) "5" (nth 1 params)))
-              cmd)
-         (cond
-          ((string= start "")
-           ;; extract audio to MP3 with sample rate 44.1Khz (CD quality), stereo, and 2 channels
-           (setq cmd (format "ffmpeg -i \"%s\" -vn -ar 44100 -ac 2 -ab 192 -f mp3 \"%s\""
-                             video-file
-                             (concat (file-name-base video-file) ".mp3"))))
-          (t
-           (setq cmd (format "ffmpeg -i \"%s\" -vn -ss %s -t %s -acodec copy \"%s\""
-                             video-file
-                             start
-                             total
-                             (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
-           (shell-command (concat cmd " &"))))
+(with-eval-after-load "dired"
+  (defun my-replace-dired-base (base)
+    "Change file name in `wdired-mode'"
+    (let* ((fp (dired-file-name-at-point))
+           (fb (file-name-nondirectory fp))
+           (ext (file-name-extension fp))
+           (dir (file-name-directory fp))
+           (nf (concat base "." ext)))
+      (when (yes-or-no-p (format "%s => %s at %s?"
+                                 fb nf dir))
+        (rename-file fp (concat dir nf)))))
+  (defun my-extract-mp3-from-video ()
+    "Extract mp3 from current video file using ffmpeg."
+    (interactive)
+    (let* ((video-file (file-name-nondirectory (dired-file-name-at-point)))
+           (params (split-string (string-trim (read-string "Please input start-second [total seconds] (e.g, \"6 10\" or \"05:30 5\") or just press enter: "))
+                                 " +"))
+           (start (car params))
+           (total (if (eq (length params) 1) "5" (nth 1 params)))
+           cmd)
+      (cond
+       ((string= start "")
+        ;; extract audio to MP3 with sample rate 44.1Khz (CD quality), stereo, and 2 channels
+        (setq cmd (format "ffmpeg -i \"%s\" -vn -ar 44100 -ac 2 -ab 192 -f mp3 \"%s\""
+                          video-file
+                          (concat (file-name-base video-file) ".mp3"))))
+       (t
+        (setq cmd (format "ffmpeg -i \"%s\" -vn -ss %s -t %s -acodec copy \"%s\""
+                          video-file
+                          start
+                          total
+                          (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
+      (shell-command (concat cmd " &"))))
 
-     (defun my-record-wav-by-mp3 ()
-       "Record a wav using meta data from current mp3 file."
-       (interactive)
-       (let* ((mp3-file (file-name-nondirectory (dired-file-name-at-point)))
-              (base (file-name-base mp3-file))
-              (params (split-string base  "-"))
-              (output-file (concat base ".wav"))
-              (total (string-to-number (nth (1- (length params)) params)))
-              cmd)
-         (if (= total 0) (setq total 4))
-         (setq cmd (format "arecord -fdat -d %s \"%s\""
-                           total
-                           output-file))
-           (message "Start recording %s seconds wav ..." total)
-           (my-async-shell-command cmd)))
-     (defun my-play-both-mp3-and-wav ()
-       "Play wav and mp3."
-       (interactive)
-       (let* ((audio-file (file-name-nondirectory (dired-file-name-at-point)))
-              (base (file-name-base audio-file))
-              (ext (file-name-extension audio-file) )
-              (cmd (format "mplayer -quiet \"%s\" \"%s\""
-                           audio-file
-                           (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
-         (my-async-shell-command cmd)))
-     (defun my-copy-file-info (fn)
-       (message "%s => clipboard & yank ring"
-                (copy-yank-str (funcall fn (dired-file-name-at-point)))))
-     (defhydra hydra-dired (:color blue)
-       "
+  (defun my-record-wav-by-mp3 ()
+    "Record a wav using meta data from current mp3 file."
+    (interactive)
+    (let* ((mp3-file (file-name-nondirectory (dired-file-name-at-point)))
+           (base (file-name-base mp3-file))
+           (params (split-string base  "-"))
+           (output-file (concat base ".wav"))
+           (total (string-to-number (nth (1- (length params)) params)))
+           cmd)
+      (if (= total 0) (setq total 4))
+      (setq cmd (format "arecord -fdat -d %s \"%s\""
+                        total
+                        output-file))
+      (message "Start recording %s seconds wav ..." total)
+      (my-async-shell-command cmd)))
+  (defun my-play-both-mp3-and-wav ()
+    "Play wav and mp3."
+    (interactive)
+    (let* ((audio-file (file-name-nondirectory (dired-file-name-at-point)))
+           (base (file-name-base audio-file))
+           (ext (file-name-extension audio-file) )
+           (cmd (format "mplayer -quiet \"%s\" \"%s\""
+                        audio-file
+                        (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
+      (my-async-shell-command cmd)))
+  (defun my-copy-file-info (fn)
+    (message "%s => clipboard & yank ring"
+             (copy-yank-str (funcall fn (dired-file-name-at-point)))))
+  (defhydra hydra-dired (:color blue)
+    "
 ^Misc^                      ^File^              ^Copy Info^
 -----------------------------------------------------------------
 [_vv_] video2mp3            [_R_] Move          [_pp_] Path
@@ -240,29 +235,29 @@
 [_s1_] Fetch on subtitle    [_rb_] Change base
 [_+_] Create directory      [_dd_] Diff 2 files
 "
-       ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
-       ("s1" (let* ((video-file (dired-file-name-at-point))
-                    (default-directory (file-name-directory video-file)))
-               (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file)))))
-       ("pp" (my-copy-file-info 'file-truename))
-       ("nn" (my-copy-file-info 'file-name-nondirectory))
-       ("bb" (my-copy-file-info 'file-name-base))
-       ("dd" (my-copy-file-info 'file-name-directory))
-       ("rb" (my-replace-dired-base (car kill-ring)))
-       ("vv" my-extract-mp3-from-video)
-       ("aa" my-record-wav-by-mp3)
-       ("cc" my-dired-redo-last-command)
-       ("zz" my-play-both-mp3-and-wav)
-       ("C" dired-do-copy)
-       ("R" dired-do-rename)
-       ("cf" find-file)
-       ("df" my-ediff-files)
-       ("rr" dired-toggle-read-only)
-       ("ff" (lambda (regexp)
-               (interactive "sMatching regexp: ")
-               (find-lisp-find-dired default-directory regexp)))
-       ("+" dired-create-directory)
-       ("q" nil))))
+    ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
+    ("s1" (let* ((video-file (dired-file-name-at-point))
+                 (default-directory (file-name-directory video-file)))
+            (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file)))))
+    ("pp" (my-copy-file-info 'file-truename))
+    ("nn" (my-copy-file-info 'file-name-nondirectory))
+    ("bb" (my-copy-file-info 'file-name-base))
+    ("dd" (my-copy-file-info 'file-name-directory))
+    ("rb" (my-replace-dired-base (car kill-ring)))
+    ("vv" my-extract-mp3-from-video)
+    ("aa" my-record-wav-by-mp3)
+    ("cc" my-dired-redo-last-command)
+    ("zz" my-play-both-mp3-and-wav)
+    ("C" dired-do-copy)
+    ("R" dired-do-rename)
+    ("cf" find-file)
+    ("df" my-ediff-files)
+    ("rr" dired-toggle-read-only)
+    ("ff" (lambda (regexp)
+            (interactive "sMatching regexp: ")
+            (find-lisp-find-dired default-directory regexp)))
+    ("+" dired-create-directory)
+    ("q" nil)))
 
 (defun dired-mode-hook-hydra-setup ()
   (local-set-key (kbd "y") 'hydra-dired/body))

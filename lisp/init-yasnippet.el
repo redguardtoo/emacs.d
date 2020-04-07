@@ -96,28 +96,27 @@
      (t (setq rlt "")))
     rlt))
 
-(eval-after-load 'yasnippet
-  '(progn
-     ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
-     (setq-default mode-require-final-newline nil)
-     ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
+(with-eval-after-load "yasnippet"
+  ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
+  (setq-default mode-require-final-newline nil)
+  ;; (message "yas-snippet-dirs=%s" (mapconcat 'identity yas-snippet-dirs ":"))
 
-     ;; Use `yas-dropdown-prompt' if possible. It requires `dropdown-list'.
-     (setq yas-prompt-functions '(yas-dropdown-prompt
-                                  yas-ido-prompt
-                                  yas-completing-prompt))
+  ;; Use `yas-dropdown-prompt' if possible. It requires `dropdown-list'.
+  (setq yas-prompt-functions '(yas-dropdown-prompt
+                               yas-ido-prompt
+                               yas-completing-prompt))
 
-     ;; use `yas-completing-prompt' when ONLY when `M-x yas-insert-snippet'
-     ;; thanks to capitaomorte for providing the trick.
-     (defadvice yas-insert-snippet (around use-completing-prompt activate)
-       "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
-       (let* ((yas-prompt-functions '(yas-completing-prompt)))
-         ad-do-it))
+  ;; use `yas-completing-prompt' when ONLY when `M-x yas-insert-snippet'
+  ;; thanks to capitaomorte for providing the trick.
+  (defadvice yas-insert-snippet (around use-completing-prompt activate)
+    "Use `yas-completing-prompt' for `yas-prompt-functions' but only here..."
+    (let* ((yas-prompt-functions '(yas-completing-prompt)))
+      ad-do-it))
 
-     (when (and  (file-exists-p my-yasnippets)
-                 (not (member my-yasnippets yas-snippet-dirs)))
-       (add-to-list 'yas-snippet-dirs my-yasnippets))
+  (when (and  (file-exists-p my-yasnippets)
+              (not (member my-yasnippets yas-snippet-dirs)))
+    (add-to-list 'yas-snippet-dirs my-yasnippets))
 
-     (yas-reload-all)))
+  (yas-reload-all))
 
 (provide 'init-yasnippet)

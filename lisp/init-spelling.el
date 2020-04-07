@@ -5,53 +5,52 @@
   "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
  (make-variable-buffer-local 'flyspell-check-doublon)
 
-(eval-after-load 'flyspell
-  '(progn
-     ;; {{ flyspell setup for web-mode
-     (defun web-mode-flyspell-verify ()
-       (let* ((f (get-text-property (- (point) 1) 'face))
-              rlt)
-         (cond
-          ;; Check the words with these font faces, possibly.
-          ;; This *blacklist* will be tweaked in next condition
-          ((not (memq f '(web-mode-html-attr-value-face
-                          web-mode-html-tag-face
-                          web-mode-html-attr-name-face
-                          web-mode-constant-face
-                          web-mode-doctype-face
-                          web-mode-keyword-face
-                          web-mode-comment-face ;; focus on get html label right
-                          web-mode-function-name-face
-                          web-mode-variable-name-face
-                          web-mode-css-property-name-face
-                          web-mode-css-selector-face
-                          web-mode-css-color-face
-                          web-mode-type-face
-                          web-mode-block-control-face)))
-           (setq rlt t))
-          ;; check attribute value under certain conditions
-          ((memq f '(web-mode-html-attr-value-face))
-           (save-excursion
-             (search-backward-regexp "=['\"]" (line-beginning-position) t)
-             (backward-char)
-             (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
-                                     (thing-at-point 'symbol)))))
-          ;; finalize the blacklist
-          (t
-           (setq rlt nil)))
-         rlt))
-     (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
-     ;; }}
+(with-eval-after-load "flyspell"
+  ;; {{ flyspell setup for web-mode
+  (defun web-mode-flyspell-verify ()
+    (let* ((f (get-text-property (- (point) 1) 'face))
+           rlt)
+      (cond
+       ;; Check the words with these font faces, possibly.
+       ;; This *blacklist* will be tweaked in next condition
+       ((not (memq f '(web-mode-html-attr-value-face
+                       web-mode-html-tag-face
+                       web-mode-html-attr-name-face
+                       web-mode-constant-face
+                       web-mode-doctype-face
+                       web-mode-keyword-face
+                       web-mode-comment-face ;; focus on get html label right
+                       web-mode-function-name-face
+                       web-mode-variable-name-face
+                       web-mode-css-property-name-face
+                       web-mode-css-selector-face
+                       web-mode-css-color-face
+                       web-mode-type-face
+                       web-mode-block-control-face)))
+        (setq rlt t))
+       ;; check attribute value under certain conditions
+       ((memq f '(web-mode-html-attr-value-face))
+        (save-excursion
+          (search-backward-regexp "=['\"]" (line-beginning-position) t)
+          (backward-char)
+          (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
+                                  (thing-at-point 'symbol)))))
+       ;; finalize the blacklist
+       (t
+        (setq rlt nil)))
+      rlt))
+  (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
+  ;; }}
 
-     ;; better performance
-     (setq flyspell-issue-message-flag nil)
+  ;; better performance
+  (setq flyspell-issue-message-flag nil)
 
-     ;; flyspell-lazy is outdated and conflicts with latest flyspell
-     ;; It only improves the performance of flyspell so it's not essential.
+  ;; flyspell-lazy is outdated and conflicts with latest flyspell
+  ;; It only improves the performance of flyspell so it's not essential.
 
-     (defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
-       (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
-           ad-do-it))))
+  (defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
+    (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
+        ad-do-it)))
 
 
 ;; Logic:
@@ -186,64 +185,62 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
                         (mapconcat 'identity aspell-words "\n"))))))
 
 ;; {{ langtool setup
-(eval-after-load 'langtool
-  '(progn
-     (setq langtool-generic-check-predicate
-           '(lambda (start end)
-              ;; set up for `org-mode'
-              (let* ((begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
-                     (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
-                     (case-fold-search t)
-                     (ignored-font-faces '(org-verbatim
-                                           org-block-begin-line
-                                           org-meta-line
-                                           org-tag
-                                           org-link
-                                           org-table
-                                           org-level-1
-                                           org-document-info))
-                     (rlt t)
-                     ff
-                     th
-                     b e)
-                (save-excursion
-                  (goto-char start)
+(with-eval-after-load "langtool"
+  (setq langtool-generic-check-predicate
+        '(lambda (start end)
+           ;; set up for `org-mode'
+           (let* ((begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
+                  (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
+                  (case-fold-search t)
+                  (ignored-font-faces '(org-verbatim
+                                        org-block-begin-line
+                                        org-meta-line
+                                        org-tag
+                                        org-link
+                                        org-table
+                                        org-level-1
+                                        org-document-info))
+                  (rlt t)
+                  ff
+                  th
+                  b e)
+             (save-excursion
+               (goto-char start)
 
-                  ;; get current font face
-                  (setq ff (get-text-property start 'face))
-                  (if (listp ff) (setq ff (car ff)))
+               ;; get current font face
+               (setq ff (get-text-property start 'face))
+               (if (listp ff) (setq ff (car ff)))
 
-                  ;; ignore certain errors by set rlt to nil
-                  (cond
-                   ((memq ff ignored-font-faces)
-                    ;; check current font face
-                    (setq rlt nil))
-                   ((or (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ start 2)))
-                        (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ end 2))))
-                    ;; dash character of " - list item 1"
-                    (setq rlt nil))
+               ;; ignore certain errors by set rlt to nil
+               (cond
+                ((memq ff ignored-font-faces)
+                 ;; check current font face
+                 (setq rlt nil))
+                ((or (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ start 2)))
+                     (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ end 2))))
+                 ;; dash character of " - list item 1"
+                 (setq rlt nil))
 
-                   ((and (setq th (thing-at-point 'evil-WORD))
-                         (or (string-match "^=[^=]*=[,.]?$" th)
-                             (string-match "^\\[\\[" th)
-                             (string-match "^=(" th)
-                             (string-match ")=$" th)
-                             (string= "w3m" th)))
-                    ;; embedded cde like =w3m= or org-link [[http://google.com][google]] or [[www.google.com]]
-                    ;; langtool could finish checking before major mode prepare font face for all texts
-                    (setq rlt nil))
-                   (t
-                    ;; inside source block?
-                    (setq b (re-search-backward begin-regexp nil t))
-                    (if b (setq e (re-search-forward end-regexp nil t)))
-                    (if (and b e (< start e)) (setq rlt nil)))))
-                ;; (if rlt (message "start=%s end=%s ff=%s" start end ff))
-                rlt)))))
+                ((and (setq th (thing-at-point 'evil-WORD))
+                      (or (string-match "^=[^=]*=[,.]?$" th)
+                          (string-match "^\\[\\[" th)
+                          (string-match "^=(" th)
+                          (string-match ")=$" th)
+                          (string= "w3m" th)))
+                 ;; embedded cde like =w3m= or org-link [[http://google.com][google]] or [[www.google.com]]
+                 ;; langtool could finish checking before major mode prepare font face for all texts
+                 (setq rlt nil))
+                (t
+                 ;; inside source block?
+                 (setq b (re-search-backward begin-regexp nil t))
+                 (if b (setq e (re-search-forward end-regexp nil t)))
+                 (if (and b e (< start e)) (setq rlt nil)))))
+             ;; (if rlt (message "start=%s end=%s ff=%s" start end ff))
+             rlt))))
 ;; }}
 
-(eval-after-load 'wucuo
-  '(progn
-     ;; do NOT turn on flyspell-mode automatically when running `wucuo-start'
-     (setq wucuo-auto-turn-on-flyspell nil)))
+(with-eval-after-load "wucuo"
+  ;; do NOT turn on flyspell-mode automatically when running `wucuo-start'
+  (setq wucuo-auto-turn-on-flyspell nil))
 
 (provide 'init-spelling)

@@ -8,7 +8,6 @@
     (list "tidy" (list local-file))))
 
 (defun flymake-html-load ()
-  (interactive)
   (when (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
     (set (make-local-variable 'flymake-allowed-file-name-masks)
          '(("\\.html\\|\\.ctp\\|\\.ftl\\|\\.jsp\\|\\.php\\|\\.erb\\|\\.rhtm\\|\\.vue" flymake-html-init))
@@ -30,19 +29,18 @@
 
 (add-hook 'web-mode-hook 'web-mode-hook-setup)
 
-(eval-after-load 'web-mode
-  '(progn
-     ;; make org-mode export fail, I use evil and evil-matchit
-     ;; to select text, so expand-region.el is not used
-     (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
-     (setq web-mode-enable-auto-closing t) ; enable auto close tag in text-mode
-     (setq web-mode-enable-auto-pairing t)
-     (setq web-mode-enable-css-colorization t)
-     (setq web-mode-imenu-regexp-list
-           '(("<\\(h[1-9]\\)\\([^>]*\\)>\\([^<]*\\)" 1 3 ">" nil)
-             ("^[ \t]*<\\([@a-z]+\\)[^>]*>? *$" 1 " id=\"\\([a-zA-Z0-9_]+\\)\"" "#" ">")
-             ("^[ \t]*<\\(@[a-z.]+\\)[^>]*>? *$" 1 " contentId=\"\\([a-zA-Z0-9_]+\\)\"" "=" ">")
-             ;; angular imenu
-             (" \\(ng-[a-z]*\\)=\"\\([^\"]+\\)" 1 2 "=")))))
+(with-eval-after-load "web-mode"
+  ;; make org-mode export fail, I use evil and evil-matchit
+  ;; to select text, so expand-region.el is not used
+  (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
+  (setq web-mode-enable-auto-closing t) ; enable auto close tag in text-mode
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-enable-css-colorization t)
+  (setq web-mode-imenu-regexp-list
+        '(("<\\(h[1-9]\\)\\([^>]*\\)>\\([^<]*\\)" 1 3 ">" nil)
+          ("^[ \t]*<\\([@a-z]+\\)[^>]*>? *$" 1 " id=\"\\([a-zA-Z0-9_]+\\)\"" "#" ">")
+          ("^[ \t]*<\\(@[a-z.]+\\)[^>]*>? *$" 1 " contentId=\"\\([a-zA-Z0-9_]+\\)\"" "=" ">")
+          ;; angular imenu
+          (" \\(ng-[a-z]*\\)=\"\\([^\"]+\\)" 1 2 "="))))
 
 (provide 'init-web-mode)

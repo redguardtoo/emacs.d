@@ -63,10 +63,9 @@
     (flymake-mode 1)))
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
-(eval-after-load 'js-mode
-  '(progn
-     ;; '$' is part of variable name like '$item'
-     (modify-syntax-entry ?$ "w" js-mode-syntax-table)))
+(with-eval-after-load "js-mode"
+  ;; '$' is part of variable name like '$item'
+  (modify-syntax-entry ?$ "w" js-mode-syntax-table))
 
 ;; {{ patching imenu in js2-mode
 (setq js2-imenu-extra-generic-expression javascript-common-imenu-regex-list)
@@ -237,24 +236,23 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
-(eval-after-load 'js2-mode
-  '(progn
-     ;; {{ I hate the hotkeys to hide things
-     (define-key js2-mode-map (kbd "C-c C-e") nil)
-     (define-key js2-mode-map (kbd "C-c C-s") nil)
-     (define-key js2-mode-map (kbd "C-c C-f") nil)
-     (define-key js2-mode-map (kbd "C-c C-t") nil)
-     (define-key js2-mode-map (kbd "C-c C-o") nil)
-     (define-key js2-mode-map (kbd "C-c C-w") nil)
-     ;; }}
-     (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
-       (let (rlt extra-rlt)
-         ad-do-it
-         (setq extra-rlt
-               (save-excursion
-                 (imenu--generic-function js2-imenu-extra-generic-expression)))
-         (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
-         ad-return-value))))
+(with-eval-after-load "js2-mode"
+  ;; {{ I hate the hotkeys to hide things
+  (define-key js2-mode-map (kbd "C-c C-e") nil)
+  (define-key js2-mode-map (kbd "C-c C-s") nil)
+  (define-key js2-mode-map (kbd "C-c C-f") nil)
+  (define-key js2-mode-map (kbd "C-c C-t") nil)
+  (define-key js2-mode-map (kbd "C-c C-o") nil)
+  (define-key js2-mode-map (kbd "C-c C-w") nil)
+  ;; }}
+  (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
+    (let (rlt extra-rlt)
+      ad-do-it
+      (setq extra-rlt
+            (save-excursion
+              (imenu--generic-function js2-imenu-extra-generic-expression)))
+      (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
+      ad-return-value)))
 ;; }}
 
 (defun my-js2-mode-setup()
@@ -274,9 +272,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
 ;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
-(eval-after-load 'rjsx-mode
-  '(progn
-     (define-key rjsx-mode-map "<" nil)))
+(with-eval-after-load "rjsx-mode"
+  (define-key rjsx-mode-map "<" nil))
 
 ;; {{ js-beautify
 (defun js-beautify (&optional indent-size)

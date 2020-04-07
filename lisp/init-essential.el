@@ -156,9 +156,8 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     ;; better performance, got Cygwin grep installed on Windows always
     (counsel-grep-or-swiper keyword)))
 
-(eval-after-load 'cliphist
-  '(progn
-     (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
-       (my-delete-selected-region))))
+(with-eval-after-load "cliphist"
+  (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
+    (my-delete-selected-region)))
 
 (provide 'init-essential)

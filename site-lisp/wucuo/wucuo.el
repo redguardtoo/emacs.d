@@ -311,11 +311,10 @@ property of the major mode name."
 (defun wucuo-setup-major-mode (mode)
   "Set up MODE's flyspell predicate."
   (if (stringp mode) (setq mode (symobol mode)))
-  (eval-after-load mode
-    (progn
-      (put mode
-           'flyspell-mode-predicate
-           'wucuo-generic-check-word-predicate))))
+  (with-eval-after-load mode
+    (put mode
+         'flyspell-mode-predicate
+         'wucuo-generic-check-word-predicate)))
 
 ;;;###autoload
 (defun wucuo-start (&optional force)

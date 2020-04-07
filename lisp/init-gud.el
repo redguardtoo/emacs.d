@@ -37,29 +37,11 @@
   (hack-gud-mode))
 ;; }}
 
-(defun gud-cls (&optional num)
-  "clear gud screen"
-  (interactive "p")
-  (let ((old-window (selected-window)))
-    (save-excursion
-      (cond
-       ((buffer-live-p (get-buffer "*gud-main*"))
-        (select-window (get-buffer-window "*gud-main*"))
-        (end-of-buffer)
-        (recenter-top-bottom)
-        (if (> num 1) (recenter-top-bottom))
-        (select-window old-window))
-       (t (error "GUD buffer doesn't exist!"))
-       ))
-    ))
-
-(eval-after-load 'gud
-                 '(progn
-                    (gud-def gud-kill "kill" "\C-k" "Kill the debugee")
-                    ))
+(with-eval-after-load "gud"
+  (gud-def gud-kill "kill" "\C-k" "Kill the debugee"))
 
 (defun gud-kill-yes ()
-  "gud-kill and confirm with y"
+  "gud-kill and confirm with y."
   (interactive)
   (let ((old-window (selected-window)))
     (save-excursion

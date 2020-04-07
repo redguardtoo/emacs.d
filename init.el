@@ -18,9 +18,9 @@
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397
-(eval-after-load "enriched"
-  '(defun enriched-decode-display-prop (start end &optional param)
-     (list start end)))
+(with-eval-after-load "enriched"
+  (defun enriched-decode-display-prop (start end &optional param)
+    (list start end)))
 ;; }}
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)

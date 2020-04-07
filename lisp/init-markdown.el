@@ -22,10 +22,9 @@
   (setq imenu-create-index-function 'markdown-imenu-index))
 (add-hook 'markdown-mode-hook 'markdown-mode-hook-setup)
 
-(eval-after-load 'markdown-mode
-  '(progn
-     ;; `pandoc' is better than obsolete `markdown'
-     (when (executable-find "pandoc")
-       (setq markdown-command "pandoc -f markdown"))))
+(with-eval-after-load "markdown-mode"
+  ;; `pandoc' is better than obsolete `markdown'
+  (when (executable-find "pandoc")
+    (setq markdown-command "pandoc -f markdown")))
 
 (provide 'init-markdown)

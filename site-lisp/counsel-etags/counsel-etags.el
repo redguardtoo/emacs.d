@@ -72,14 +72,13 @@
 ;;   Files in `counsel-etags-extra-tags-files' have only symbol with absolute path.
 ;;
 ;; - You can set up `counsel-etags-ignore-directories' and `counsel-etags-ignore-filenames',
-;;   (eval-after-load 'counsel-etags
-;;     '(progn
-;;        ;; counsel-etags-ignore-directories does NOT support wildcast
-;;        (push "build_clang" counsel-etags-ignore-directories)
-;;        (push "build_clang" counsel-etags-ignore-directories)
-;;        ;; counsel-etags-ignore-filenames supports wildcast
-;;        (push "TAGS" counsel-etags-ignore-filenames)
-;;        (push "*.json" counsel-etags-ignore-filenames)))
+;;   (with-eval-after-load 'counsel-etags
+;;      ;; counsel-etags-ignore-directories does NOT support wildcast
+;;      (push "build_clang" counsel-etags-ignore-directories)
+;;      (push "build_clang" counsel-etags-ignore-directories)
+;;      ;; counsel-etags-ignore-filenames supports wildcast
+;;      (push "TAGS" counsel-etags-ignore-filenames)
+;;      (push "*.json" counsel-etags-ignore-filenames))
 ;;
 ;;  - Rust programming language is supported.
 ;;    The easiest setup is to use ".dir-locals.el".

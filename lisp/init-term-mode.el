@@ -9,10 +9,9 @@
 ;; enable auto-completion in `shell'.
 ;; Since we already got a dropdown for auto-completion, so don't bother with
 ;; `company-mode' backend set up
-(eval-after-load 'shell
-  '(progn
-     (setq explicit-bash-args
-           (delete "--noediting" explicit-bash-args))))
+(with-eval-after-load "shell"
+  (setq explicit-bash-args
+        (delete "--noediting" explicit-bash-args)))
 
 (advice-add 'comint-term-environment
             :filter-return (lambda (env) (cons "INSIDE_EMACS" env)))
@@ -85,25 +84,24 @@
 
 (setq multi-term-program my-term-program)
 ;; check `term-bind-key-alist' for key bindings
-(eval-after-load 'multi-term
-  '(progn
-     (dolist (p '(("C-p" . term-send-up)
-                  ("C-n" . term-send-down)
-                  ("C-s" . swiper)
-                  ("C-r" . term-send-reverse-search-history)
-                  ("C-m" . term-send-raw)
-                  ("C-k" . term-send-kill-whole-line)
-                  ("C-y" . yank)
-                  ("C-_" . term-send-raw)
-                  ("M-f" . term-send-forward-word)
-                  ("M-b" . term-send-backward-word)
-                  ("M-K" . term-send-kill-line)
-                  ("M-p" . previous-line)
-                  ("M-n" . next-line)
-                  ("M-y" . yank-pop)
-                  ("M-." . term-send-raw-meta)))
-       (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
-       (add-to-list 'term-bind-key-alist p))))
+(with-eval-after-load "multi-term"
+  (dolist (p '(("C-p" . term-send-up)
+               ("C-n" . term-send-down)
+               ("C-s" . swiper)
+               ("C-r" . term-send-reverse-search-history)
+               ("C-m" . term-send-raw)
+               ("C-k" . term-send-kill-whole-line)
+               ("C-y" . yank)
+               ("C-_" . term-send-raw)
+               ("M-f" . term-send-forward-word)
+               ("M-b" . term-send-backward-word)
+               ("M-K" . term-send-kill-line)
+               ("M-p" . previous-line)
+               ("M-n" . next-line)
+               ("M-y" . yank-pop)
+               ("M-." . term-send-raw-meta)))
+    (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
+    (add-to-list 'term-bind-key-alist p)))
 ;; }}
 
 (provide 'init-term-mode)

@@ -65,14 +65,13 @@
   (setq-default save-place t)))
 
 ;; {{ find-file-in-project (ffip)
-(eval-after-load 'find-file-in-project
-  '(progn
-     (defun my-search-git-reflog-code ()
-       (let* ((default-directory (locate-dominating-file default-directory ".git")))
-         (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
-                                               (read-string "Regex: ")))))
-     (push 'my-search-git-reflog-code ffip-diff-backends)
-     (setq ffip-match-path-instead-of-filename t)))
+(with-eval-after-load "find-file-in-project"
+  (defun my-search-git-reflog-code ()
+    (let* ((default-directory (locate-dominating-file default-directory ".git")))
+      (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
+                                            (read-string "Regex: ")))))
+  (push 'my-search-git-reflog-code ffip-diff-backends)
+  (setq ffip-match-path-instead-of-filename t))
 
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
@@ -131,13 +130,12 @@
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 ;; {{ comint-mode
-(eval-after-load 'comint
-  '(progn
-     ;; Don't echo passwords when communicating with interactive programs:
-     ;; Github prompt is like "Password for 'https://user@github.com/':"
-     (setq comint-password-prompt-regexp
-           (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
-     (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt)))
+(with-eval-after-load "comint"
+  ;; Don't echo passwords when communicating with interactive programs:
+  ;; Github prompt is like "Password for 'https://user@github.com/':"
+  (setq comint-password-prompt-regexp
+        (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
+  (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt))
 (defun comint-mode-hook-setup ()
   ;; look up shell command history
   (local-set-key (kbd "M-n") 'counsel-shell-history)
@@ -266,12 +264,10 @@ This function can be re-used by other major modes after compilation."
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
 ;; {{ show email sent by `git send-email' in gnus
-(eval-after-load 'gnus
-  '(progn
-     (local-require 'gnus-article-treat-patch)
-     (setq gnus-article-patch-conditions
-           '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" ))
-     ))
+(with-eval-after-load "gnus"
+  (local-require 'gnus-article-treat-patch)
+  (setq gnus-article-patch-conditions
+        '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )))
 ;; }}
 
 (defun add-pwd-into-load-path ()
@@ -375,10 +371,9 @@ This function can be re-used by other major modes after compilation."
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
 ;; dired
-(eval-after-load "dired"
-  '(progn
-     (diredfl-global-mode 1)
-     (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1)))
+(with-eval-after-load "dired"
+  (diredfl-global-mode 1)
+  (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1))
 ;; }}
 
 ;; {{start dictionary lookup
@@ -688,10 +683,9 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; flymake
-(eval-after-load 'flymake
-  '(progn
-     (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
-     (setq flymake-gui-warnings-enabled nil)))
+(with-eval-after-load "flymake"
+  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+  (setq flymake-gui-warnings-enabled nil))
 
 ;; {{ check attachments
 (defun my-message-current-line-cited-p ()
@@ -764,10 +758,9 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; {{ eacl - emacs auto complete line(s)
 (global-set-key (kbd "C-x C-l") 'eacl-complete-line)
 (global-set-key (kbd "C-c ;") 'eacl-complete-multiline)
-(eval-after-load 'eacl
-  '(progn
-     ;; not interested in untracked files in git repository
-     (setq eacl-git-grep-untracked nil)))
+(with-eval-after-load "eacl"
+  ;; not interested in untracked files in git repository
+  (setq eacl-git-grep-untracked nil))
 ;; }}
 
 ;; {{
@@ -783,39 +776,38 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; @see https://github.com/szermatt/emacs-bash-completion
 (bash-completion-setup)
 
-(eval-after-load 'grep
-  '(progn
-     ;; eacl and other general grep (rgrep, grep ...) setup
-     (dolist (v '("auto"
-                  "target"
-                  "node_modules"
-                  "bower_components"
-                  "*dist"
-                  ".sass_cache"
-                  ".cache"
-                  ".npm"
-                  "elpa"))
-       (add-to-list 'grep-find-ignored-directories v))
-     (dolist (v '("*.min.js"
-                  "*.map"
-                  "*.bundle.js"
-                  "*.min.css"
-                  "tags"
-                  "TAGS"
-                  "GTAGS"
-                  "GRTAGS"
-                  "GPATH"
-                  "cscope.files"
-                  "*.json"
-                  "*.log"))
-       (add-to-list 'grep-find-ignored-files v))
+(with-eval-after-load "grep"
+  ;; eacl and other general grep (rgrep, grep ...) setup
+  (dolist (v '("auto"
+               "target"
+               "node_modules"
+               "bower_components"
+               "*dist"
+               ".sass_cache"
+               ".cache"
+               ".npm"
+               "elpa"))
+    (add-to-list 'grep-find-ignored-directories v))
+  (dolist (v '("*.min.js"
+               "*.map"
+               "*.bundle.js"
+               "*.min.css"
+               "tags"
+               "TAGS"
+               "GTAGS"
+               "GRTAGS"
+               "GPATH"
+               "cscope.files"
+               "*.json"
+               "*.log"))
+    (add-to-list 'grep-find-ignored-files v))
 
-     ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
-     (define-key grep-mode-map
-       (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode)))
+  ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
+  (define-key grep-mode-map
+    (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode))
 
 ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
-(eval-after-load 'wgrep
+(with-eval-after-load "wgrep"
   '(define-key grep-mode-map
      (kbd "C-c C-c") 'wgrep-finish-edit))
 
@@ -847,17 +839,16 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'adoc-mode-hook 'adoc-mode-hook-setup)
 ;; }}
 
-(eval-after-load 'compile
-  '(progn
-     (defadvice compile (around compile-hack activate)
-       (cond
-        ((member major-mode '(octave-mode))
-         (octave-send-buffer))
-        (t
-         ad-do-it)))
-     (add-to-list 'compilation-error-regexp-alist-alist
-                  (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
-     (add-to-list 'compilation-error-regexp-alist 'mocha)))
+(with-eval-after-load "compile"
+  (defadvice compile (around compile-hack activate)
+    (cond
+     ((member major-mode '(octave-mode))
+      (octave-send-buffer))
+     (t
+      ad-do-it)))
+  (add-to-list 'compilation-error-regexp-alist-alist
+               (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
+  (add-to-list 'compilation-error-regexp-alist 'mocha))
 
 (defun switch-to-builtin-shell ()
   "Switch to builtin shell.
@@ -886,15 +877,14 @@ If the shell is already opened in some buffer, switch to that buffer."
       (ansi-term my-term-program)))))
 
 ;; {{ emms
-(eval-after-load 'emms
-  '(progn
-     (emms-all)
-     (setq emms-player-list '(emms-player-mplayer-playlist
-                              emms-player-mplayer
-                              emms-player-mpg321
-                              emms-player-ogg123
-                              emms-player-vlc
-                              emms-player-vlc-playlist))))
+(with-eval-after-load "emms"
+  (emms-all)
+  (setq emms-player-list '(emms-player-mplayer-playlist
+                           emms-player-mplayer
+                           emms-player-mpg321
+                           emms-player-ogg123
+                           emms-player-vlc
+                           emms-player-vlc-playlist)))
 ;; }}
 
 (transient-mark-mode t)
@@ -919,11 +909,10 @@ If the shell is already opened in some buffer, switch to that buffer."
 (put 'narrow-to-defun 'disabled nil)
 
 ;; my screen is tiny, so I use minimum eshell prompt
-(eval-after-load 'eshell
-  '(progn
-     (setq eshell-prompt-function
-           (lambda ()
-             (concat (getenv "USER") " $ ")))))
+(with-eval-after-load "eshell"
+  (setq eshell-prompt-function
+        (lambda ()
+          (concat (getenv "USER") " $ "))))
 
 ;; I'm in Australia now, so I set the locale to "en_AU"
 (defun insert-date (prefix)
@@ -1131,22 +1120,21 @@ Including indent-buffer, which should not be called automatically on save."
 
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
-(eval-after-load 'epg
-  '(progn
-     (defadvice epg--start (around advice-epg-disable-agent disable)
-       "Make `epg--start' not able to find a gpg-agent."
-       (let ((agent (getenv "GPG_AGENT_INFO")))
-         (setenv "GPG_AGENT_INFO" nil)
-         ad-do-it
-         (setenv "GPG_AGENT_INFO" agent)))
+(with-eval-after-load "epg"
+  (defadvice epg--start (around advice-epg-disable-agent disable)
+    "Make `epg--start' not able to find a gpg-agent."
+    (let ((agent (getenv "GPG_AGENT_INFO")))
+      (setenv "GPG_AGENT_INFO" nil)
+      ad-do-it
+      (setenv "GPG_AGENT_INFO" agent)))
 
-     (unless (string-match-p "^gpg (GnuPG) 1.4"
-                             (shell-command-to-string (format "%s --version" epg-gpg-program)))
+  (unless (string-match-p "^gpg (GnuPG) 1.4"
+                          (shell-command-to-string (format "%s --version" epg-gpg-program)))
 
-       ;; `apt-get install pinentry-tty` if using emacs-nox
-       ;; Create `~/.gnupg/gpg-agent.conf'. has one line
-       ;; `pinentry-program /usr/bin/pinentry-curses`
-       (setq epa-pinentry-mode 'loopback))))
+    ;; `apt-get install pinentry-tty` if using emacs-nox
+    ;; Create `~/.gnupg/gpg-agent.conf'. has one line
+    ;; `pinentry-program /usr/bin/pinentry-curses`
+    (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
 ;; {{ show current function name in `mode-line'
@@ -1154,19 +1142,17 @@ Including indent-buffer, which should not be called automatically on save."
   ;; `which-function-mode' scanning makes Emacs unresponsive in big buffer
   (unless (buffer-too-big-p)
     ad-do-it))
-(eval-after-load "which-function"
-  '(progn
-     (add-to-list 'which-func-modes 'org-mode)))
+(with-eval-after-load "which-function"
+  (add-to-list 'which-func-modes 'org-mode))
 (which-function-mode 1)
 ;; }}
 
 ;; {{ pomodoro
-(eval-after-load 'pomodoro
-  '(progn
-     (setq pomodoro-play-sounds nil) ; *.wav is not installed
-     (setq pomodoro-break-time 2)
-     (setq pomodoro-long-break-time 5)
-     (setq pomodoro-work-time 15)))
+(with-eval-after-load "pomodoro"
+  (setq pomodoro-play-sounds nil) ; *.wav is not installed
+  (setq pomodoro-break-time 2)
+  (setq pomodoro-long-break-time 5)
+  (setq pomodoro-work-time 15))
 
 (unless (featurep 'pomodoro)
   (require 'pomodoro)
@@ -1230,11 +1216,10 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ wgrep setup
-(eval-after-load 'wgrep
-  '(progn
-     ;; save the change after wgrep finishes the job
-     (setq wgrep-auto-save-buffer t)
-     (setq wgrep-too-many-file-length 2024)))
+(with-eval-after-load "wgrep"
+  ;; save the change after wgrep finishes the job
+  (setq wgrep-auto-save-buffer t)
+  (setq wgrep-too-many-file-length 2024))
 ;; }}
 
 ;; {{ edit-server
@@ -1296,11 +1281,10 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ eldoc
-(eval-after-load 'eldoc
-  '(progn
-     ;; multi-line message should not display too soon
-     (setq eldoc-idle-delay 1)
-     (setq eldoc-echo-area-use-multiline-p t)))
+(with-eval-after-load "eldoc"
+  ;; multi-line message should not display too soon
+  (setq eldoc-idle-delay 1)
+  (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
 (provide 'init-misc)

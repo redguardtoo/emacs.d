@@ -2,48 +2,47 @@
 
 (ivy-mode 1) ; it enables ivy UI for `kill-buffer'
 
-(eval-after-load 'counsel
-  '(progn
-     ;; automatically pick up cygwin cli tools for counsel
-     (cond
-      ((executable-find "rg")
-       ;; ripgrep says that "-n" is enabled actually not,
-       ;; so we manually add it
-       (setq counsel-grep-base-command
-             (concat (executable-find "rg")
-                     " -n -M 512 --no-heading --color never -i \"%s\" %s")))
+(with-eval-after-load "counsel"
+  ;; automatically pick up cygwin cli tools for counsel
+  (cond
+   ((executable-find "rg")
+    ;; ripgrep says that "-n" is enabled actually not,
+    ;; so we manually add it
+    (setq counsel-grep-base-command
+          (concat (executable-find "rg")
+                  " -n -M 512 --no-heading --color never -i \"%s\" %s")))
 
-      (*win64*
-       (let* ((path (getenv "path"))
-              (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
-                           (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
-                           (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
-         ;; `cygpath' could be nil on Windows
-         (when cygpath
-           (unless (string-match-p cygpath counsel-git-cmd)
-             (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
+   (*win64*
+    (let* ((path (getenv "path"))
+           (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
+                        (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
+                        (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
+      ;; `cygpath' could be nil on Windows
+      (when cygpath
+        (unless (string-match-p cygpath counsel-git-cmd)
+          (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
 
-           (unless (string-match-p cygpath counsel-git-grep-cmd-default)
-             (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
-           ;; ;; git-log does not work
-           ;; (unless (string-match-p cygpath counsel-git-log-cmd)
-           ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
-           ;;                                     cygpath
-           ;;                                     "/cat "
-           ;;                                     cygpath
-           ;;                                     "/git log --grep '%s'")))
-           (unless (string-match-p cygpath counsel-grep-base-command)
-             (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))))
+        (unless (string-match-p cygpath counsel-git-grep-cmd-default)
+          (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
+        ;; ;; git-log does not work
+        ;; (unless (string-match-p cygpath counsel-git-log-cmd)
+        ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
+        ;;                                     cygpath
+        ;;                                     "/cat "
+        ;;                                     cygpath
+        ;;                                     "/git log --grep '%s'")))
+        (unless (string-match-p cygpath counsel-grep-base-command)
+          (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))))
 
-     ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
-     ;; press "M-o" to choose ivy action
-     (ivy-set-actions
-      'counsel-find-file
-      '(("j" find-file-other-frame "other frame")
-        ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-        ("x" counsel-find-file-extern "open externally")
-        ("d" delete-file "delete")
-        ("r" counsel-find-file-as-root "open as root")))))
+  ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
+  ;; press "M-o" to choose ivy action
+  (ivy-set-actions
+   'counsel-find-file
+   '(("j" find-file-other-frame "other frame")
+     ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
+     ("x" counsel-find-file-extern "open externally")
+     ("d" delete-file "delete")
+     ("r" counsel-find-file-as-root "open as root"))))
 
 ;; (setq ivy-use-virtual-buffers t) ; not good experience
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
@@ -194,11 +193,10 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
               :keymap ivy-switch-buffer-map
               :caller 'ivy-switch-buffer)))
 
-(eval-after-load 'ivy
-  '(progn
-     ;; work around ivy issue.
-     ;; @see https://github.com/abo-abo/swiper/issues/828
-     (setq ivy-display-style 'fancy)))
+(with-eval-after-load "ivy"
+  ;; work around ivy issue.
+  ;; @see https://github.com/abo-abo/swiper/issues/828
+  (setq ivy-display-style 'fancy))
 
 ;; {{ swiper&ivy-mode
 (global-set-key (kbd "C-s") 'counsel-grep-or-swiper)
@@ -285,24 +283,23 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
    (t
     (my-counsel-imenu))))
 
-(eval-after-load 'ivy
-  '(progn
-     ;; better performance on everything (especially windows), ivy-0.10.0 required
-     ;; @see https://github.com/abo-abo/swiper/issues/1218
-     (setq ivy-dynamic-exhibit-delay-ms 250)
+(with-eval-after-load "ivy"
+  ;; better performance on everything (especially windows), ivy-0.10.0 required
+  ;; @see https://github.com/abo-abo/swiper/issues/1218
+  (setq ivy-dynamic-exhibit-delay-ms 250)
 
-     ;; Press C-p and Enter to select current input as candidate
-     ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
-     (setq ivy-use-selectable-prompt t)
+  ;; Press C-p and Enter to select current input as candidate
+  ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
+  (setq ivy-use-selectable-prompt t)
 
-     (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
-     ;; set actions when running C-x b
-     ;; replace "frame" with window to open in new window
-     (ivy-set-actions
-      'ivy-switch-buffer-by-pinyin
-      '(("j" switch-to-buffer-other-frame "other frame")
-        ("k" kill-buffer "kill")
-        ("r" ivy--rename-buffer-action "rename")))))
+  (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
+  ;; set actions when running C-x b
+  ;; replace "frame" with window to open in new window
+  (ivy-set-actions
+   'ivy-switch-buffer-by-pinyin
+   '(("j" switch-to-buffer-other-frame "other frame")
+     ("k" kill-buffer "kill")
+     ("r" ivy--rename-buffer-action "rename"))))
 
 (defun my-counsel-company ()
   "Input code from company backend using fuzzy matching."

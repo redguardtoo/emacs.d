@@ -652,7 +652,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "ub" 'gud-break
   "uu" 'gud-run
   "up" 'gud-print
-  "ue" 'gud-cls
   "un" 'gud-next
   "us" 'gud-step
   "ui" 'gud-stepi
@@ -721,10 +720,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
  ;; Search character(s) at the beginning of word
  ;; See https://github.com/abo-abo/avy/issues/70
  ;; You can change the avy font-face in ~/.custom.el:
- ;;  (eval-after-load 'avy
- ;;   '(progn
- ;;      (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
- ;;      (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3")))
+ ;;  (with-eval-after-load "avy"
+ ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
+ ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
  ";" 'ace-pinyin-jump-char-2
  "w" 'avy-goto-word-or-subword-1
  "a" 'avy-goto-char-timer
@@ -893,36 +891,34 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; press ",xx" to expand region
 ;; then press "c" to contract, "x" to expand
-(eval-after-load "evil"
-  '(progn
-     ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
-     ;; Restore "M-." to original binding command
-     (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
-     (setq expand-region-contract-fast-key "c")
-     ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
-     ;; evil 1.0.8 search word instead of symbol
-     (setq evil-symbol-word-search t)
+(with-eval-after-load "evil"
+  ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
+  ;; Restore "M-." to original binding command
+  (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
+  (setq expand-region-contract-fast-key "c")
+  ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
+  ;; evil 1.0.8 search word instead of symbol
+  (setq evil-symbol-word-search t)
 
-     ;; don't add replaced text to `kill-ring'
-     (setq evil-kill-on-visual-paste nil)
+  ;; don't add replaced text to `kill-ring'
+  (setq evil-kill-on-visual-paste nil)
 
-     ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
-     ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
-     ;; (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
+  ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
+  ;; (defalias #'forward-evil-word #'forward-evil-symbol)
 
-     ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-     (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
-       `(eval-after-load (quote ,(if r r m))
-          '(progn
-             (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-             ;; force update evil keymaps after git-timemachine-mode loaded
-             (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
+  ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+  (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
+    `(with-eval-after-load (quote ,(if r r m))
+          (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+          ;; force update evil keymaps after git-timemachine-mode loaded
+          (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
 
-     (adjust-major-mode-keymap-with-evil "git-timemachine")
+  (adjust-major-mode-keymap-with-evil "git-timemachine")
 
-     ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
-     ;; Cursor is always black because of evil.
-     ;; Here is the workaround
-     (setq evil-default-cursor t)))
+  ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
+  ;; Cursor is always black because of evil.
+  ;; Here is the workaround
+  (setq evil-default-cursor t))
 
 (provide 'init-evil)

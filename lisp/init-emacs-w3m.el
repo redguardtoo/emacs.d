@@ -189,23 +189,22 @@
         (my-pclip cmd)
         (message "%s => clipboard/kill-ring" cmd))))))
 
-(eval-after-load 'w3m
-  '(progn
-     (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
-     (add-hook 'w3m-display-hook
-               (lambda (url)
-                 (let* ((title (or w3m-current-title url)))
-                   (when w3m-global-keyword
-                     ;; search keyword twice, first is url, second is your input,
-                     ;; third is actual result
-                     (goto-char (point-min))
-                     (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
-                     ;; move the cursor to the beginning of word
-                     (backward-char (length w3m-global-keyword))
-                     ;; cleanup for next search
-                     (setq w3m-global-keyword nil))
-                   ;; rename w3m buffer
-                   (rename-buffer
-                    (format "*w3m: %s*"
-                            (substring title 0 (min 50 (length title)))) t))))))
+(with-eval-after-load "w3m"
+  (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
+  (add-hook 'w3m-display-hook
+            (lambda (url)
+              (let* ((title (or w3m-current-title url)))
+                (when w3m-global-keyword
+                  ;; search keyword twice, first is url, second is your input,
+                  ;; third is actual result
+                  (goto-char (point-min))
+                  (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
+                  ;; move the cursor to the beginning of word
+                  (backward-char (length w3m-global-keyword))
+                  ;; cleanup for next search
+                  (setq w3m-global-keyword nil))
+                ;; rename w3m buffer
+                (rename-buffer
+                 (format "*w3m: %s*"
+                         (substring title 0 (min 50 (length title)))) t)))))
 (provide 'init-emacs-w3m)
