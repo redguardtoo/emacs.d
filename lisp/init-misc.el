@@ -712,13 +712,14 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
         search-result))))
 
 (defun my-message-has-attachment-p ()
-  "Return t if the message has an attachment."
+  "Return t if an attachment is already attached to the message."
   (save-excursion
     (goto-char (point-min))
     (save-match-data
       (re-search-forward "<#part" nil t))))
 
 (defun my-message-pre-send-check-attachment ()
+  "Check attachment before send mail."
   (when (and (my-message-says-attachment-p)
              (not (my-message-has-attachment-p)))
     (unless
