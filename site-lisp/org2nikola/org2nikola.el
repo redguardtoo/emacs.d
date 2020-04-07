@@ -47,6 +47,7 @@
 
 (defvar org2nikola-prettify-unsupported-language
   '(conf "ini"
+    rjsx "jsx"
     elisp "lisp"
     emacs-lisp "lisp"))
 
