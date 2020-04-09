@@ -6,16 +6,21 @@
     (kill-buffer (process-buffer proc))))
 
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
-;; enable auto-completion in `shell'.
-;; Since we already got a dropdown for auto-completion, so don't bother with
-;; `company-mode' backend set up
+;; Enable auto-completion in `shell'.
 (with-eval-after-load "shell"
-  (setq explicit-bash-args
-        (delete "--noediting" explicit-bash-args)))
+  (native-complete-setup-bash))
 
-(advice-add 'comint-term-environment
-            :filter-return (lambda (env) (cons "INSIDE_EMACS" env)))
-
+(defadvice bash-completion-tokenize (around bash-completion-tokenize-hack activate)
+  (let* ((args (ad-get-args 0))
+         (beg (nth 0 args))
+         (end (nth 1 args)))
+    ;; original code extracts tokens line by line of output of "complete -p"
+    (cond
+     ((not (string-match-p "^complete " (buffer-substring beg end)))
+      ;; filter out some wierd lines
+      (setq ad-return-value nil))
+     (t
+      ad-do-it))))
 
 (defun my-exit-shell-process (process event)
   "Called when the shell PROCESS is stopped.  EVENT is ignored."
@@ -23,6 +28,11 @@
 
 (defun shell-mode-hook-setup ()
   "Set up `shell-mode'."
+  ;; hook `completion-at-point', optional
+  (add-hook 'completion-at-point-functions #'native-complete-at-point nil t)
+  (setq-local company-backends '((company-files company-native-complete)))
+  ;; `company-native-complete' is better alternative than `completion-at-point'
+  (local-set-key (kbd "TAB") 'company-complete)
   ;; try to kill buffer when exit shell
   (let* ((proc (get-buffer-process (current-buffer)))
          (shell (file-name-nondirectory (car (process-command proc)))))
