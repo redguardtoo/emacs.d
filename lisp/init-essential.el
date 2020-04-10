@@ -140,12 +140,11 @@ If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen conte
    (t (error "Please select a region to narrow to"))))
 ;; }}
 
-(defun my-counsel-grep-or-swiper (&optional other-source)
+(defun my-swiper (&optional other-source)
   "Search current file.
 If OTHER-SOURCE is 1, get keyword from clipboard.
 If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (interactive "P")
-  (message "other-source=%s" other-source)
   (let* ((keyword (cond
                    ((eq 1 other-source)
                     (cliphist-select-item))
@@ -153,8 +152,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
                     (my-select-from-kill-ring 'identity))
                    ((region-active-p)
                     (my-selected-str)))))
-    ;; better performance, got Cygwin grep installed on Windows always
-    (counsel-grep-or-swiper keyword)))
+    ;; `swiper--re-builder' read from `ivy-re-builders-alist'
+    ;; more flexible
+    (swiper keyword)))
 
 (with-eval-after-load "cliphist"
   (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
