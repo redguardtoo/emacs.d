@@ -166,7 +166,11 @@
 
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
-    (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t)))
+    (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t))
+
+  ;; start emacs server, so emacsclient could be used
+  (require 'server)
+  (unless (server-running-p) (server-start)))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 
