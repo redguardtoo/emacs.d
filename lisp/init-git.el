@@ -169,6 +169,7 @@ Show the diff between current working code and git head."
 
 ;; {{ goto next/previous hunk
 (defun my-goto-next-hunk (arg)
+  "Goto next hunk."
   (interactive "p")
   (if (memq major-mode '(diff-mode))
       (diff-hunk-next)
@@ -179,6 +180,7 @@ Show the diff between current working code and git head."
       (git-gutter:next-hunk arg))))
 
 (defun my-goto-previous-hunk (arg)
+  "Goto previous hunk."
   (interactive "p")
   (if (memq major-mode '(diff-mode))
       (diff-hunk-prev)

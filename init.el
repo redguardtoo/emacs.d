@@ -50,9 +50,12 @@
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
+(defun my-vc-merge-p ()
+  (boundp 'startup-now))
+
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
-  (when (or (not maybe-disabled) (not (boundp 'startup-now)))
+  (when (or (not maybe-disabled) (not (my-vc-merge-p)))
     (load (file-truename (format "~/.emacs.d/lisp/%s" pkg)) t t)))
 
 (defun local-require (pkg)
@@ -159,7 +162,7 @@
   (setq load-path (cdr load-path))
   (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
-  (unless (boundp 'startup-now)
+  (unless (my-vc-merge-p)
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
     (load (expand-file-name "~/.custom.el") t nil)

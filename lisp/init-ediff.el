@@ -2,8 +2,7 @@
 
 (defvar my-ediff-panel-name nil)
 
-(when (and (boundp 'startup-now) startup-now)
-
+(when (my-vc-merge-p)
   ;; remove `org-mode' from `auto-mode-alist'. So nodes in org file do NOT collapse at all
   (setq auto-mode-alist  (rassq-delete-all 'org-mode auto-mode-alist))
   ;; associate simpler major mode with org file instead
