@@ -10,6 +10,7 @@
 (with-eval-after-load "shell"
   (native-complete-setup-bash))
 
+;; `bash-completion-tokenize' can handle garbage output of "complete -p"
 (defadvice bash-completion-tokenize (around bash-completion-tokenize-hack activate)
   (let* ((args (ad-get-args 0))
          (beg (nth 0 args))
@@ -31,7 +32,7 @@
   ;; hook `completion-at-point', optional
   (add-hook 'completion-at-point-functions #'native-complete-at-point nil t)
   (setq-local company-backends '((company-files company-native-complete)))
-  ;; `company-native-complete' is better alternative than `completion-at-point'
+  ;; `company-native-complete' is better than `completion-at-point'
   (local-set-key (kbd "TAB") 'company-complete)
   ;; try to kill buffer when exit shell
   (let* ((proc (get-buffer-process (current-buffer)))
