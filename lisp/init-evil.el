@@ -624,28 +624,26 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :prefix "SPC"
   :states '(normal visual))
 
+;; Please check "init-ediff.el" which contains `my-space-leader-def' code too
 (my-space-leader-def
-  "ee" 'my-swap-sexps
-  "nn" 'my-goto-next-hunk
-  "pp" 'my-goto-previous-hunk
-  "pc" 'my-dired-redo-from-commands-history
-  "pw" 'pwd
+  "n" 'my-goto-next-hunk
+  "p" 'my-goto-previous-hunk
+  "ch" 'my-dired-redo-from-commands-history
+  "dd" 'pwd
   "mm" 'counsel-evil-goto-global-marker
   "mf" 'mark-defun
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
-  "rr" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
+  "ee" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
   "sc" 'shell-command
   "ll" 'my-wg-switch-workgroup ; load windows layout
   "kk" 'scroll-other-window
   "jj" 'scroll-other-window-up
-  "rt" 'random-healthy-color-theme
+  "hh" 'random-healthy-color-theme
   "yy" 'hydra-launcher/body
-  "tt" 'my-toggle-indentation
+  "ii" 'my-toggle-indentation
   "g" 'hydra-git/body
-  "ps" 'profiler-start
-  "pr" 'profiler-report
   "ud" 'my-gud-gdb
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
