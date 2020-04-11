@@ -585,7 +585,7 @@ Then unit test is run automatically before =git commit=.
 ** Python environment
 This setup used [[https://github.com/jorgenschaefer/elpy][elpy (Emacs Python Development Environment)]].
 
-See elpy's official documentation on how to use elpy.
+See elpy official documentation on how to use elpy.
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
@@ -643,7 +643,7 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[http
 * Report bug
 Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first
 
-If you still can't resolve the issue, restart Emacs with option =---debug-init= in shell , run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue
+If you still can't resolve the issue, restart Emacs with option =---debug-init= in shell. Then run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue.
 
 The full command line to run Emacs is =emacs -nw --debug-init= in most environments.
 
