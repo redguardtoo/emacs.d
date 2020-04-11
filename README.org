@@ -268,7 +268,7 @@ On Windows, you need install Cygwin which provides command line programs to Emac
 
 Install Ctags (Universal Ctags is better. Exuberant Ctags is fine). On Windows, you could install Ctags through Cygwin.
 
-Run =M-x counsel-etags-find-ctags= from =counsel-etags= to navigate code. It uses tags files created by ctags. Tags file will be automatically created/update when you start using `counsel-etags`.
+Run =M-x counsel-etags-find-tag-at-point= from =counsel-etags= to navigate code. It uses tags files created by ctags. Tags file will be automatically created/update when you start using `counsel-etags`.
 
 Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is automatically detected.
 

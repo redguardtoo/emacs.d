@@ -207,6 +207,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 
 ;; {{  C-o f to toggle case sensitive, @see https://github.com/abo-abo/swiper/issues/1104
 (defun re-builder-extended-pattern (str)
+  "Build regex compatible with pinyin from STR."
   (let* ((len (length str)))
     (cond
      ;; do nothing

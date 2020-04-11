@@ -552,7 +552,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
-  "ss" 'my-counsel-grep-or-swiper
+  "ss" 'my-swiper
   "hd" 'describe-function
   "hf" 'find-function
   "hk" 'describe-key
