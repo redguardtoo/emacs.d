@@ -37,7 +37,7 @@
         diredp-next-line
         diredp-previous-line
         electric-pair-delete-pair
-        erase-visible-buffer
+        my-erase-visible-buffer
         eval-buffer
         evil-a-WORD
         evil-append

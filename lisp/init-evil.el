@@ -440,7 +440,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
   "ef" 'end-of-defun
   "m" 'evil-set-marker
-  "em" 'erase-visible-buffer
+  "em" 'my-erase-visible-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
   "sc" 'scratch

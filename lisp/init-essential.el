@@ -47,11 +47,11 @@
       (message "Buffer %s is not visible!" buf-name))
      (t
       (select-window target-window)
-      (let ((inhibit-read-only t))
+      (let* ((inhibit-read-only t))
         (erase-buffer))
       (select-window original-window)))))
 
-(defun erase-visible-buffer (&optional n)
+(defun my-erase-visible-buffer (&optional n)
   "Erase the content of the *Messages* buffer.
 N specifies the buffer to erase."
   (interactive "P")
@@ -67,6 +67,11 @@ N specifies the buffer to erase."
 
    ((eq 3 n)
     (erase-one-visible-buffer "*eshell*"))))
+
+(defun my-erase-current-buffer ()
+  "Erase current buffer even it's read-only."
+  (interactive)
+  (erase-one-visible-buffer (buffer-name (current-buffer))))
 ;; }}
 
 ;; {{ narrow region
