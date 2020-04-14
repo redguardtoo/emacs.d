@@ -234,7 +234,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'fringe-helper)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
-(require-package 'gist)
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)

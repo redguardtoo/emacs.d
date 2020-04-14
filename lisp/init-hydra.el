@@ -403,22 +403,22 @@ _SPC_ cancel _o_nly this     _d_elete
                      :color blue)
 "
 Git:
-[_dd_] Diff         [_i_] Gist selected
+[_dd_] Diff         [_ri_] Rebase closest
 [_dc_] Diff staged  [_s_] Show commit
-[_dr_] Diff range   [_r_] Reset gutter
-[_au_] Add modified [_h_] Gutter => HEAD
+[_dr_] Diff range   [_rr_] Reset gutter
+[_au_] Add modified [_rh_] Gutter => HEAD
 [_cc_] Commit       [_l_] Log selected/file
 [_ca_] Amend        [_b_] Branches
 [_ja_] Amend silent [_k_] Git commit link
 [_tt_] Stash        [_Q_] Quit gutter
 [_ta_] Apply Stash
 "
-  ("i" gist-region)
-  ("r" git-gutter-reset-to-default)
+  ("ri" my-git-rebase-interactive)
+  ("rr" git-gutter-reset-to-default)
+  ("rh" git-gutter-reset-to-head-parent)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
   ("b" magit-show-refs-popup)
-  ("h" git-gutter-reset-to-head-parent)
   ("k" git-link)
   ("g" magit-status)
   ("ta" magit-stash-apply)

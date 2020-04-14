@@ -116,7 +116,6 @@
   (require-init 'init-gud t)
   (require-init 'init-linum-mode)
   (require-init 'init-git t)
-  ;; (require-init 'init-gist)
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
   (require-init 'init-ctags t)
