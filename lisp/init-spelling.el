@@ -243,7 +243,8 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
 ;; }}
 
 (with-eval-after-load 'wucuo
-  ;; do NOT turn on `flyspell-mode' automatically when running `wucuo-start'
-  (setq wucuo-auto-turn-on-flyspell nil))
+  ;; do NOT turn on `flyspell-mode' automatically.
+  ;; use `flyspell-buffer' instead
+  (setq wucuo-flyspell-start-mode "lite"))
 
 (provide 'init-spelling)

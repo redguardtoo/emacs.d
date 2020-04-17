@@ -1,8 +1,8 @@
 ;;; wucuo.el --- Spell check code containing camel case words
 
-;; Copyright (C) 2018 Chen Bin
+;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.0.7
+;; Version: 0.0.9
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -39,6 +39,9 @@
 ;;     (wucuo-start t))
 ;;   (add-hook 'prog-mode-hook 'prog-mode-hook-setup)
 ;;
+;; The `flyspell-mode' is turned on by `wucuo-start' by default.
+;; See `wucuo-flyspell-start-mode' for other options.
+;;
 ;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
 ;; `flyspell-prog-mode' could be replaced by "wucuo".
 ;;
@@ -60,9 +63,11 @@
   :type 'boolean
   :group 'wucuo)
 
-(defcustom wucuo-auto-turn-on-flyspell t
-  "Turn on `flyspell-mode' automatically after running `wucuo-start'."
-  :type 'boolean
+(defcustom wucuo-flyspell-start-mode "full"
+  "If it's \"full\", turn on `flyspell-mode' automatically in `wucuo-start'.
+If it's \"lite\", run `flyspell-buffer' in `after-save-hook'.
+If it's nil, do nothing."
+  :type 'string
   :group 'wucuo)
 
 (defcustom wucuo-check-nil-font-face nil
@@ -108,6 +113,11 @@
   :type '(repeat sexp)
   :group 'wucuo)
 
+(defcustom wucuo-update-interval 10
+  "Interval (seconds) for `wucuo-spell-check-buffer' to actually call `flyspell-buffer."
+  :group 'wucuo
+  :type 'integer)
+
 (defcustom wucuo-personal-font-faces-to-check
   nil
   "Similar to `wucuo-font-faces-to-check'.
@@ -126,6 +136,9 @@ Running `wucuo-start' with first parameter being t will set up modes listed here
   "A callback to check WORD.  Return t if WORD is typo."
   :type 'function
   :group 'wucuo)
+
+;; Timer to run auto-update tags file
+(defvar wucuo-timer nil "Internal timer.")
 
 ;;;###autoload
 (defun wucuo-current-font-face (&optional quiet)
@@ -305,7 +318,7 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.0.7"))
+  (message "0.0.9"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
@@ -316,9 +329,28 @@ property of the major mode name."
        'wucuo-generic-check-word-predicate))
 
 ;;;###autoload
+(defun wucuo-spell-check-buffer ()
+  "Spell check current buffer"
+  (cond
+   ((not wucuo-timer)
+    ;; start timer if not started yet
+    (setq wucuo-timer (current-time)))
+
+   ((< (- (float-time (current-time)) (float-time wucuo-timer))
+       wucuo-update-interval)
+    ;; do nothing, avoid `flyspell-buffer' too often
+    )
+
+   (t
+    ;; real spell checking
+    (setq wucuo-timer (current-time))
+    (flyspell-buffer))))
+
+;;;###autoload
 (defun wucuo-start (&optional force)
   "Turn on wucuo to spell check code.
-If FORCE is t, the major mode's own predicate setup."
+If FORCE is t, use wucuo's predicate to override the predicate bundled with the major modes.
+The major modes whose predicates can be shadowed is in `wucuo-major-modes-to-setup-by-force'."
   (interactive)
   (when force
     (dolist (mode wucuo-major-modes-to-setup-by-force)
@@ -333,8 +365,13 @@ If FORCE is t, the major mode's own predicate setup."
   ;; can't show the overlay of error but can't delete overlay
   (setq flyspell-large-region 1)
 
-  (when wucuo-auto-turn-on-flyspell
-    (flyspell-mode 1)))
+  (cond
+   ;; full mode
+   ((string= wucuo-flyspell-start-mode "full")
+    (flyspell-mode 1))
+   ;; lite mode
+   ((string= wucuo-flyspell-start-mode "lite")
+    (add-hook 'after-save-hook 'flyspell-buffer nil t))))
 
 (provide 'wucuo)
 ;;; wucuo.el ends here
