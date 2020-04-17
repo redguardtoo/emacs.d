@@ -52,7 +52,6 @@
     (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
         ad-do-it)))
 
-
 ;; Logic:
 ;; If (aspell is installed) { use aspell}
 ;; else if (hunspell is installed) { use hunspell }
@@ -159,13 +158,17 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
   (setq-local ispell-extra-args (flyspell-detect-ispell-args)))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
 
-(defun enable-flyspell-mode-conditionally ()
+(defun enable-flyspell-mode-conditionally (&optional turn-off)
+  "Enable `flyspell-mode'.  If TURN-OFF is t, turn off it at the end."
   (when (and (not *no-memory*)
              ispell-program-name
              (executable-find ispell-program-name))
     ;; I don't use flyspell in text-mode because I often use Chinese.
     ;; I'd rather manually spell check the English text
-    (flyspell-mode 1)))
+    (flyspell-mode 1)
+    ;; The only reason is to load turn onf and turn of `flyspell-mode' is load some
+    ;; major mode's own predicate
+    (if turn-off (flyspell-mode -1))))
 
 ;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
@@ -240,7 +243,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
 ;; }}
 
 (with-eval-after-load 'wucuo
-  ;; do NOT turn on flyspell-mode automatically when running `wucuo-start'
+  ;; do NOT turn on `flyspell-mode' automatically when running `wucuo-start'
   (setq wucuo-auto-turn-on-flyspell nil))
 
 (provide 'init-spelling)

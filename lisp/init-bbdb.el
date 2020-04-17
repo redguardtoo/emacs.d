@@ -1,7 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (defun message-mode-hook-setup ()
-  (enable-flyspell-mode-conditionally)
   (bbdb-initialize 'message)
   (bbdb-initialize 'gnus)
   (local-set-key (kbd "TAB") 'bbdb-complete-name))
