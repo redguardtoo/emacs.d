@@ -18,7 +18,7 @@
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397
-(with-eval-after-load "enriched"
+(with-eval-after-load 'enriched
   (defun enriched-decode-display-prop (start end &optional param)
     (list start end)))
 ;; }}

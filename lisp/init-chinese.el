@@ -43,7 +43,7 @@
 (defvar my-pyim-directory "~/.eim"
   "The directory containing pyim dictionaries.")
 
-(with-eval-after-load "pyim"
+(with-eval-after-load 'pyim
   ;; use memory efficient pyim engine
   (setq pyim-dcache-backend 'pyim-dregcache)
   ;; don's use shortcode2word

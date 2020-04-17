@@ -39,7 +39,7 @@ If no files marked, always operate on current line in dired-mode."
       (error "no more than 2 files should be marked")))))
 
 
-(with-eval-after-load "dired-x"
+(with-eval-after-load 'dired-x
   (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                   ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
                   ((if (not *is-a-mac*) (my-guess-mplayer-path) "open") "ogm"
@@ -98,7 +98,7 @@ If no files marked, always operate on current line in dired-mode."
 ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
 (setq dired-dwim-target t)
 
-(with-eval-after-load "dired"
+(with-eval-after-load 'dired
   (require 'dired-x)
   (require 'dired-aux) ; for `dired-dwim-target-directory'
   (defadvice dired-guess-default (after dired-guess-default-after-hack activate)

@@ -189,7 +189,7 @@
         (my-pclip cmd)
         (message "%s => clipboard/kill-ring" cmd))))))
 
-(with-eval-after-load "w3m"
+(with-eval-after-load 'w3m
   (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
   (add-hook 'w3m-display-hook
             (lambda (url)

@@ -65,7 +65,7 @@
   (setq-default save-place t)))
 
 ;; {{ find-file-in-project (ffip)
-(with-eval-after-load "find-file-in-project"
+(with-eval-after-load 'find-file-in-project
   (defun my-search-git-reflog-code ()
     (let* ((default-directory (locate-dominating-file default-directory ".git")))
       (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
@@ -130,7 +130,7 @@
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 ;; {{ comint-mode
-(with-eval-after-load "comint"
+(with-eval-after-load 'comint
   ;; Don't echo passwords when communicating with interactive programs:
   ;; Github prompt is like "Password for 'https://user@github.com/':"
   (setq comint-password-prompt-regexp
@@ -264,7 +264,7 @@ This function can be re-used by other major modes after compilation."
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
 ;; {{ show email sent by `git send-email' in gnus
-(with-eval-after-load "gnus"
+(with-eval-after-load 'gnus
   (local-require 'gnus-article-treat-patch)
   (setq gnus-article-patch-conditions
         '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )))
@@ -371,7 +371,7 @@ This function can be re-used by other major modes after compilation."
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
 ;; dired
-(with-eval-after-load "dired"
+(with-eval-after-load 'dired
   (diredfl-global-mode 1)
   (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1))
 ;; }}
@@ -683,7 +683,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; }}
 
 ;; flymake
-(with-eval-after-load "flymake"
+(with-eval-after-load 'flymake
   (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   (setq flymake-gui-warnings-enabled nil))
 
@@ -758,7 +758,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; {{ eacl - emacs auto complete line(s)
 (global-set-key (kbd "C-x C-l") 'eacl-complete-line)
 (global-set-key (kbd "C-c ;") 'eacl-complete-multiline)
-(with-eval-after-load "eacl"
+(with-eval-after-load 'eacl
   ;; not interested in untracked files in git repository
   (setq eacl-git-grep-untracked nil))
 ;; }}
@@ -776,7 +776,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 ;; @see https://github.com/szermatt/emacs-bash-completion
 (bash-completion-setup)
 
-(with-eval-after-load "grep"
+(with-eval-after-load 'grep
   ;; eacl and other general grep (rgrep, grep ...) setup
   (dolist (v '("auto"
                "target"
@@ -807,7 +807,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
     (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode))
 
 ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
-(with-eval-after-load "wgrep"
+(with-eval-after-load 'wgrep
   '(define-key grep-mode-map
      (kbd "C-c C-c") 'wgrep-finish-edit))
 
@@ -839,7 +839,7 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
 (add-hook 'adoc-mode-hook 'adoc-mode-hook-setup)
 ;; }}
 
-(with-eval-after-load "compile"
+(with-eval-after-load 'compile
   (defadvice compile (around compile-hack activate)
     (cond
      ((member major-mode '(octave-mode))
@@ -877,7 +877,7 @@ If the shell is already opened in some buffer, switch to that buffer."
       (ansi-term my-term-program)))))
 
 ;; {{ emms
-(with-eval-after-load "emms"
+(with-eval-after-load 'emms
   (emms-all)
   (setq emms-player-list '(emms-player-mplayer-playlist
                            emms-player-mplayer
@@ -909,7 +909,7 @@ If the shell is already opened in some buffer, switch to that buffer."
 (put 'narrow-to-defun 'disabled nil)
 
 ;; my screen is tiny, so I use minimum eshell prompt
-(with-eval-after-load "eshell"
+(with-eval-after-load 'eshell
   (setq eshell-prompt-function
         (lambda ()
           (concat (getenv "USER") " $ "))))
@@ -1120,7 +1120,7 @@ Including indent-buffer, which should not be called automatically on save."
 
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
-(with-eval-after-load "epg"
+(with-eval-after-load 'epg
   (defadvice epg--start (around advice-epg-disable-agent disable)
     "Make `epg--start' not able to find a gpg-agent."
     (let ((agent (getenv "GPG_AGENT_INFO")))
@@ -1142,13 +1142,13 @@ Including indent-buffer, which should not be called automatically on save."
   ;; `which-function-mode' scanning makes Emacs unresponsive in big buffer
   (unless (buffer-too-big-p)
     ad-do-it))
-(with-eval-after-load "which-function"
+(with-eval-after-load 'which-function
   (add-to-list 'which-func-modes 'org-mode))
 (which-function-mode 1)
 ;; }}
 
 ;; {{ pomodoro
-(with-eval-after-load "pomodoro"
+(with-eval-after-load 'pomodoro
   (setq pomodoro-play-sounds nil) ; *.wav is not installed
   (setq pomodoro-break-time 2)
   (setq pomodoro-long-break-time 5)
@@ -1216,7 +1216,7 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ wgrep setup
-(with-eval-after-load "wgrep"
+(with-eval-after-load 'wgrep
   ;; save the change after wgrep finishes the job
   (setq wgrep-auto-save-buffer t)
   (setq wgrep-too-many-file-length 2024))
@@ -1281,7 +1281,7 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ eldoc
-(with-eval-after-load "eldoc"
+(with-eval-after-load 'eldoc
   ;; multi-line message should not display too soon
   (setq eldoc-idle-delay 1)
   (setq eldoc-echo-area-use-multiline-p t))

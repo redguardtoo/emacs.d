@@ -5,7 +5,7 @@
   "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
  (make-variable-buffer-local 'flyspell-check-doublon)
 
-(with-eval-after-load "flyspell"
+(with-eval-after-load 'flyspell
   ;; {{ flyspell setup for web-mode
   (defun web-mode-flyspell-verify ()
     (let* ((f (get-text-property (- (point) 1) 'face))
@@ -185,7 +185,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
                         (mapconcat 'identity aspell-words "\n"))))))
 
 ;; {{ langtool setup
-(with-eval-after-load "langtool"
+(with-eval-after-load 'langtool
   (setq langtool-generic-check-predicate
         '(lambda (start end)
            ;; set up for `org-mode'
@@ -239,7 +239,7 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
              rlt))))
 ;; }}
 
-(with-eval-after-load "wucuo"
+(with-eval-after-load 'wucuo
   ;; do NOT turn on flyspell-mode automatically when running `wucuo-start'
   (setq wucuo-auto-turn-on-flyspell nil))
 

@@ -718,7 +718,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
  ;; Search character(s) at the beginning of word
  ;; See https://github.com/abo-abo/avy/issues/70
  ;; You can change the avy font-face in ~/.custom.el:
- ;;  (with-eval-after-load "avy"
+ ;;  (with-eval-after-load 'avy
  ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
  ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
  ";" 'ace-pinyin-jump-char-2
@@ -889,7 +889,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; press ",xx" to expand region
 ;; then press "c" to contract, "x" to expand
-(with-eval-after-load "evil"
+(with-eval-after-load 'evil
   ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)

@@ -37,7 +37,7 @@
   (hack-gud-mode))
 ;; }}
 
-(with-eval-after-load "gud"
+(with-eval-after-load 'gud
   (gud-def gud-kill "kill" "\C-k" "Kill the debugee"))
 
 (defun gud-kill-yes ()

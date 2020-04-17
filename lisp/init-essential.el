@@ -161,7 +161,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     ;; more flexible
     (swiper keyword)))
 
-(with-eval-after-load "cliphist"
+(with-eval-after-load 'cliphist
   (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
     (my-delete-selected-region)))
 

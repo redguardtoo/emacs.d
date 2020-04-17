@@ -25,7 +25,7 @@
                         (if (stringp (car e)) (setq e (cdr e)))
                         (wg-switch-to-workgroup e)))))
 
-(with-eval-after-load "workgroups2"
+(with-eval-after-load 'workgroups2
   ;; make sure wg-create-workgroup always success
   (defadvice wg-create-workgroup (around wg-create-workgroup-hack activate)
     (unless (file-exists-p (wg-get-session-file))

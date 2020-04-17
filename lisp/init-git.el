@@ -295,7 +295,7 @@ If nothing is selected, use the word under cursor as function name to look up."
       (my-ensure 'find-file-in-project)
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
-(with-eval-after-load "vc-msg-git"
+(with-eval-after-load 'vc-msg-git
   ;; open file of certain revision
   (push '("m" "[m]agit-find-file"
           (lambda ()

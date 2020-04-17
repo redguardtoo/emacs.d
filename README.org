@@ -341,7 +341,7 @@ So you can use any functions defined in =~/.emacs.d=.
 
 Here is a sample to override keybindings defined in =~/.emacs.d/lisp/init-evil.el=,
 #+begin_src elisp
-(with-eval-after-load "evil"
+(with-eval-after-load 'evil
   (my-space-leader-def
     "ss" 'pwd
     "ll" 'pwd
@@ -589,7 +589,7 @@ See elpy official documentation on how to use elpy.
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
-(with-eval-after-load "lsp-mode"
+(with-eval-after-load 'lsp-mode
   ;; enable log only for debug
   (setq lsp-log-io nil)
   ;; use `evil-matchit' instead

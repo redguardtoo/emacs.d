@@ -7,7 +7,7 @@
 ;; Org clock
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(with-eval-after-load "org-clock"
+(with-eval-after-load 'org-clock
   ;; Change task state to STARTED when clocking in
   (setq org-clock-in-switch-to-state "STARTED")
   ;; Save clock data and notes in the LOGBOOK drawer
@@ -41,7 +41,7 @@
   (if is-promote (org-do-promote) (org-do-demote)))
 
 ;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
-(with-eval-after-load "org-mime"
+(with-eval-after-load 'org-mime
   (setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))
   (defun org-mime-html-hook-setup ()
     (org-mime-change-element-style "pre"
@@ -76,7 +76,7 @@
     (setq word-wrap t)))
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
-(with-eval-after-load "org"
+(with-eval-after-load 'org
   (my-ensure 'org-clock)
 
   ;; org-re-reveal requires org 8.3 while Emacs 25 uses org 8.2

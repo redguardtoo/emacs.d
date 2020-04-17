@@ -22,7 +22,7 @@
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
 
-(with-eval-after-load "paredit"
+(with-eval-after-load 'paredit
   (diminish 'paredit-mode " Par"))
 
 (defvar paredit-minibuffer-commands '(eval-expression
@@ -33,7 +33,7 @@
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
 ;; @see https://github.com/slime/slime
-(with-eval-after-load "slime"
+(with-eval-after-load 'slime
   ;; Please install sbcl at first
   (setq inferior-lisp-program "sbcl")
   (setq slime-contribs '(slime-fancy)))

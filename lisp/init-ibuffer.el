@@ -6,7 +6,7 @@
     (ibuffer-do-sort-by-filename/process))
   (ibuffer-switch-to-saved-filter-groups "default"))
 
-(with-eval-after-load "ibuffer"
+(with-eval-after-load 'ibuffer
   ;; Use human readable Size column instead of original one
   (define-ibuffer-column size-h
     (:name "Size" :inline t)

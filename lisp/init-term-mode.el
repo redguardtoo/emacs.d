@@ -7,7 +7,7 @@
 
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
 ;; Enable auto-completion in `shell'.
-(with-eval-after-load "shell"
+(with-eval-after-load 'shell
   ;; `comint-terminfo-terminal' is invented in Emacs 26
   (unless (and (boundp 'comint-terminfo-terminal)
                comint-terminfo-terminal)
@@ -99,7 +99,7 @@
 
 (setq multi-term-program my-term-program)
 ;; check `term-bind-key-alist' for key bindings
-(with-eval-after-load "multi-term"
+(with-eval-after-load 'multi-term
   (dolist (p '(("C-p" . term-send-up)
                ("C-n" . term-send-down)
                ("C-s" . swiper)

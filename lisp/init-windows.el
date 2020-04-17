@@ -131,7 +131,7 @@ Always focus on bigger window."
       map))
 
 (my-ensure 'winum)
-(with-eval-after-load "winum"
+(with-eval-after-load 'winum
   (setq winum-format "%s")
   (setq winum-mode-line-position 0)
   (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)

@@ -63,7 +63,7 @@
     (flymake-mode 1)))
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
-(with-eval-after-load "js-mode"
+(with-eval-after-load 'js-mode
   ;; '$' is part of variable name like '$item'
   (modify-syntax-entry ?$ "w" js-mode-syntax-table))
 
@@ -236,7 +236,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
-(with-eval-after-load "js2-mode"
+(with-eval-after-load 'js2-mode
   ;; {{ I hate the hotkeys to hide things
   (define-key js2-mode-map (kbd "C-c C-e") nil)
   (define-key js2-mode-map (kbd "C-c C-s") nil)
@@ -272,7 +272,7 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
 ;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
-(with-eval-after-load "rjsx-mode"
+(with-eval-after-load 'rjsx-mode
   (define-key rjsx-mode-map "<" nil))
 
 ;; {{ js-beautify

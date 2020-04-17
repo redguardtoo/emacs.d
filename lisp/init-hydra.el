@@ -61,7 +61,7 @@
   (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
-(with-eval-after-load "find-file-in-project"
+(with-eval-after-load 'find-file-in-project
   (defhydra hydra-ffip-diff-group (:color blue)
     "
 [_k_] Previous hunk
@@ -79,7 +79,7 @@
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
 ;; gnus-summary-mode
-(with-eval-after-load "gnus-sum"
+(with-eval-after-load 'gnus-sum
   (defhydra hydra-gnus-summary (:color blue)
     "
 [_F_] Forward (C-c C-f)             [_s_] Show thread
@@ -112,7 +112,7 @@
   (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))
 
 ;; gnus-article-mode
-(with-eval-after-load "gnus-art"
+(with-eval-after-load 'gnus-art
   (defhydra hydra-gnus-article (:color blue)
     "
 [_o_] Save attachment        [_F_] Forward
@@ -139,7 +139,7 @@
   (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body))
 
 ;; message-mode
-(with-eval-after-load "message"
+(with-eval-after-load 'message
   (defhydra hydra-message (:color blue)
     "
 [_c_] Complete mail address [_H_] convert to html mail
@@ -163,7 +163,7 @@
 ;; }}
 
 ;; {{ dired
-(with-eval-after-load "dired"
+(with-eval-after-load 'dired
   (defun my-replace-dired-base (base)
     "Change file name in `wdired-mode'"
     (let* ((fp (dired-file-name-at-point))
