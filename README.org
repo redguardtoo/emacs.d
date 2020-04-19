@@ -229,7 +229,9 @@ Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The f
 It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
-**** [[https://github.com/stsquad/emacs_chrome][edit browser's text area with Emacs]]
+**** [[https://github.com/koalaman/shellcheck][shellcheck]]
+- Required by =flymake-shellcheck=
+**** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
 Please install corresponding Chrome/Firefox addons.
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".

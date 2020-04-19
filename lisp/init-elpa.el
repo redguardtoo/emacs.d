@@ -17,6 +17,7 @@
     nov
     bbdb
     native-complete
+    flymake-shellcheck ; check shell script
     company-native-complete
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
@@ -263,7 +264,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
-(require-package 'flymake-jslint)
 (require-package 'ivy)
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
@@ -286,6 +286,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'bbdb)
 (require-package 'pomodoro)
 (require-package 'flymake-lua)
+(require-package 'flymake-shellcheck)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks

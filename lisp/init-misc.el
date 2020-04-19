@@ -15,6 +15,13 @@
 (global-set-key (kbd "C-q") #'aya-open-line)
 ;; }}
 
+;; {{ `sh-mode' setup
+(defun sh-mode-hook-setup ()
+  (flymake-shellcheck-load)
+  (flymake-mode 1))
+(add-hook 'sh-mode-hook 'sh-mode-hook-setup)
+;; }}
+
 ;; {{ ace-link
 (ace-link-setup-default)
 (global-set-key (kbd "M-o") 'ace-link)
