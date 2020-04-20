@@ -1295,4 +1295,28 @@ Including indent-buffer, which should not be called automatically on save."
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
+;; {{ fetch subtitles
+(defvar my-fetch-subtitles-proxy nil
+  "http proxy to fetch subtitles, like http://127.0.0.1:8118 (privoxy).")
+
+(defun my-fetch-subtitles (&optional video-file)
+  "Fetch subtitles of VIDEO-FILE.
+See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
+  (let* ((cmd-prefix "subgrab -l EN"))
+    (when my-fetch-subtitles-proxy
+      (setq cmd-prefix (format "http_proxy=%s https_proxy=%s %s"
+                               my-fetch-subtitles-proxy
+                               my-fetch-subtitles-proxy
+                               cmd-prefix)))
+    (cond
+     (video-file
+      (let* ((default-directory (file-name-directory video-file)))
+        (shell-command (format "%s --movie-name \"%s\" &"
+                               cmd-prefix
+                               (file-name-base video-file)))))
+     (t
+      (shell-command (format "%s --dir . &" cmd-prefix))))))
+
+;; }}
+
 (provide 'init-misc)

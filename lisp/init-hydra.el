@@ -237,10 +237,8 @@
 [_s1_] Fetch on subtitle    [_rb_] Change base
 [_+_] Create directory      [_dd_] Diff 2 files
 "
-    ("sa" (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
-    ("s1" (let* ((video-file (dired-file-name-at-point))
-                 (default-directory (file-name-directory video-file)))
-            (shell-command (format "periscope.py -l en %s &" (file-name-nondirectory video-file)))))
+    ("sa" (my-fetch-subtitles))
+    ("s1" (my-fetch-subtitles (dired-file-name-at-point)))
     ("pp" (my-copy-file-info 'file-truename))
     ("nn" (my-copy-file-info 'file-name-nondirectory))
     ("bb" (my-copy-file-info 'file-name-base))
