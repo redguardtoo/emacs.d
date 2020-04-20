@@ -245,6 +245,8 @@ Please note RUN-TOGETHER will make aspell less capable. So it should only be use
 (with-eval-after-load 'wucuo
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; use `flyspell-buffer' instead
-  (setq wucuo-flyspell-start-mode "lite"))
+  (setq wucuo-flyspell-start-mode "lite")
+  ;; spell check buffer every 30 seconds
+  (setq wucuo-update-interval 30))
 
 (provide 'init-spelling)
