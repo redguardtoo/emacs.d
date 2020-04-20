@@ -17,8 +17,9 @@
 
 ;; {{ `sh-mode' setup
 (defun sh-mode-hook-setup ()
-  (flymake-shellcheck-load)
-  (flymake-mode 1))
+  (when (executable-find "shellcheck")
+    (flymake-shellcheck-load)
+    (flymake-mode 1)))
 (add-hook 'sh-mode-hook 'sh-mode-hook-setup)
 ;; }}
 
