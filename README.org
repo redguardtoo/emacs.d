@@ -154,7 +154,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 - Required by =flyspell=
 - =hunspell= is the alternative of =aspell=. You need only one of them.
 - For =aspell=, you may need its dictionary =aspell-en=
-- aspell dictionary is set "en_US" in =~/.emacs.d/lisp/init-spelling.el=. It can be changed.
+- Default language for spell check is "en_US" in =init-spelling.el=. It can be changed
 - I recommend =aspell= for programmers. Non-programmers find =hunspell= is better on typo correction
 
 If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
@@ -172,7 +172,11 @@ ACN
 ACT
 #+end_src
 
+The content of personal dictionary can be cleaned by =M-x my-clean-aspell-dict=.
+
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
+
+Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Hunsepll uses =ispell-local-dictionary= and =ispell-local-dictionary=. That's it.
 **** tidy
 - Required by =web-mode= for syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
