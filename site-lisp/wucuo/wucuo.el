@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.0.9
+;; Version: 0.1.0
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -35,9 +35,15 @@
 ;;
 ;; To enable wucuo for all languages, insert below code into ".emacs",
 ;;
+;;   (setq wucuo-flyspell-start-mode "lite") ; optional
 ;;   (defun prog-mode-hook-setup ()
 ;;     (wucuo-start t))
 ;;   (add-hook 'prog-mode-hook 'prog-mode-hook-setup)
+;;
+;; If `wucuo-flyspell-start-mode' is "lite", `wucuo-start' calls
+;; `flyspell-buffer' periodically.
+;; The interval of buffer checking is controlled by `wucuo-update-interval'.
+;; It's more light weight than running `flyspell-mode'.
 ;;
 ;; The `flyspell-mode' is turned on by `wucuo-start' by default.
 ;; See `wucuo-flyspell-start-mode' for other options.
@@ -113,8 +119,8 @@ If it's nil, do nothing."
   :type '(repeat sexp)
   :group 'wucuo)
 
-(defcustom wucuo-update-interval 10
-  "Interval (seconds) for `wucuo-spell-check-buffer' to actually call `flyspell-buffer."
+(defcustom wucuo-update-interval 60
+  "Interval (seconds) for `wucuo-spell-check-buffer' which calls `flyspell-buffer'."
   :group 'wucuo
   :type 'integer)
 
@@ -318,7 +324,7 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.0.9"))
+  (message "0.1.0"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
@@ -371,7 +377,7 @@ The major modes whose predicates can be shadowed is in `wucuo-major-modes-to-set
     (flyspell-mode 1))
    ;; lite mode
    ((string= wucuo-flyspell-start-mode "lite")
-    (add-hook 'after-save-hook 'flyspell-buffer nil t))))
+    (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
 
 (provide 'wucuo)
 ;;; wucuo.el ends here

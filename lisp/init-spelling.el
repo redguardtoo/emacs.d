@@ -268,7 +268,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; use `flyspell-buffer' instead
   (setq wucuo-flyspell-start-mode "lite")
-  ;; spell check buffer every 30 seconds
-  (setq wucuo-update-interval 30))
+  ;; spell check buffer every 10 mins
+  (setq wucuo-update-interval 600))
 
 (provide 'init-spelling)
