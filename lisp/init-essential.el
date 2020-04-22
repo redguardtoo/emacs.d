@@ -165,4 +165,38 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
     (my-delete-selected-region)))
 
+;; {{ Write backup files to its own directory
+;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
+(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+  "Is binary file name?")
+
+(setq backup-enable-predicate
+      (lambda (name)
+        (and (normal-backup-enable-predicate name)
+             (not (string-match-p binary-file-name-regexp name)))))
+
+(if (not (file-exists-p (expand-file-name "~/.backups")))
+  (make-directory (expand-file-name "~/.backups")))
+(setq backup-by-coping t ; don't clobber symlinks
+      backup-directory-alist '(("." . "~/.backups"))
+      delete-old-versions t
+      version-control t  ;use versioned backups
+      kept-new-versions 6
+      kept-old-versions 2)
+
+;; Donot make backups of files, not safe
+;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
+(setq vc-make-backup-files nil)
+;; }}
+
+;; {{ tramp setup
+(add-to-list 'backup-directory-alist
+             (cons tramp-file-name-regexp nil))
+(setq tramp-chunksize 8192)
+
+;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+;; If you tramp is hanging, you can uncomment below line.
+;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;; }}
+
 (provide 'init-essential)
