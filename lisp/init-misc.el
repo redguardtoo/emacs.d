@@ -495,11 +495,6 @@ If step is -1, go backward."
     (setq rlt (list b e))
     rlt))
 
-;; {{ diff region SDK
-(defun diff-region-exit-from-certain-buffer (buffer-name)
-  (bury-buffer buffer-name)
-  (winner-undo))
-
 (defmacro diff-region-open-diff-output (content buffer-name)
   `(let ((rlt-buf (get-buffer-create ,buffer-name)))
     (save-current-buffer
@@ -509,19 +504,7 @@ If step is -1, go backward."
       (insert ,content)
       ;; `ffip-diff-mode' is more powerful than `diff-mode'
       (ffip-diff-mode)
-      (goto-char (point-min))
-      ;; Evil keybinding
-      (if (fboundp 'evil-local-set-key)
-          (evil-local-set-key 'normal "q"
-                              (lambda ()
-                                (interactive)
-                                (diff-region-exit-from-certain-buffer ,buffer-name))))
-      ;; Emacs key binding
-      (local-set-key (kbd "C-c C-c")
-                     (lambda ()
-                       (interactive)
-                       (diff-region-exit-from-certain-buffer ,buffer-name))))))
-;; }}
+      (goto-char (point-min)))))
 
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare."
@@ -538,17 +521,18 @@ If step is -1, go backward."
   (message "Now select other region to compare and run `diff-region-compare-with-b'"))
 
 (defun diff-region-compare-with-b ()
-  "Compare current region with region selected by `diff-region-tag-selected-as-a'.
-If no region is selected. You will be asked to use `kill-ring' or clipboard instead."
+  "Compare current region with the region set by `diff-region-tag-selected-as-a'.
+If no region is selected, `kill-ring' or clipboard is used instead."
   (interactive)
   (let* (rlt-buf
          diff-output
+         tmp
          ;; file A
-         (fa (make-temp-file (expand-file-name "scor"
+         (fa (make-temp-file (expand-file-name "diff-region"
                                                (or small-temporary-file-directory
                                                    temporary-file-directory))))
          ;; file B
-         (fb (make-temp-file (expand-file-name "scor"
+         (fb (make-temp-file (expand-file-name "diff-region"
                                                (or small-temporary-file-directory
                                                    temporary-file-directory)))))
     (when (and fa (file-exists-p fa) fb (file-exists-p fb))
@@ -574,12 +558,16 @@ If no region is selected. You will be asked to use `kill-ring' or clipboard inst
         (write-region (point-min) (point-max) fa))
       ;; diff NOW!
       ;; show the diff output
-      (if (string= (setq diff-output (shell-command-to-string (format "diff -Nabur %s %s" fa fb))) "")
-          ;; two regions are same
-          (message "Two regions are SAME!")
-        ;; show the diff
+      (cond
+       ((string= (setq diff-output (shell-command-to-string (format "%s -Nabur %s %s" diff-command fa fb))) "")
+        (message "Two regions are SAME!"))
+       ((and (executable-find "git")
+             (fboundp 'magit-diff-paths))
+        (magit-diff-paths fa fb)
+        (ffip-diff-mode))
+       (t
         (diff-region-open-diff-output diff-output
-                                      "*Diff-region-output*"))
+                                      "*Diff-region-output*")))
       ;; clean the temporary files
       (if (and fa (file-exists-p fa))
           (delete-file fa))
