@@ -551,9 +551,13 @@ If no region is selected, `kill-ring' or clipboard is used instead."
       (cond
        ((string= (setq diff-output (shell-command-to-string (format "%s -Nabur %s %s" diff-command fa fb))) "")
         (message "Two regions are SAME!"))
-       ((and (executable-find "git")
-             (fboundp 'magit-diff-paths))
-        (magit-diff-paths fa fb)
+       ((executable-find "git")
+        (my-ensure 'magit)
+        (magit-diff-setup nil (list "--no-index" "--indent-heuristic" "--histogram")
+                          nil (list (magit-convert-filename-for-git
+                                     (expand-file-name fa))
+                                    (magit-convert-filename-for-git
+                                     (expand-file-name fb))))
         (ffip-diff-mode))
        (t
         (diff-region-open-diff-output diff-output
