@@ -279,6 +279,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (interactive)
   (cond
    ((my-use-tags-as-imenu-function-p)
+    ;; see code of `my-use-tags-as-imenu-function-p'. Currently we only use ctags for imenu
+    ;; in typescript because `lsp-mode' is too damn slow
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
       (my-counsel-imenu)))
    (t
