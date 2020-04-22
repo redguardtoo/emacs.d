@@ -112,24 +112,14 @@
 ;; }}
 
 ;; {{ bookmark
-;; use my own bmk if it exists
-(if (file-exists-p (file-truename "~/.emacs.bmk"))
-    (setq bookmark-file (file-truename "~/.emacs.bmk")))
+;; use my own bookmark if it exists
+(with-eval-after-load 'bookmark
+  (if (file-exists-p (file-truename "~/.emacs.bmk"))
+      (setq bookmark-file (file-truename "~/.emacs.bmk"))))
 ;; }}
 
-(defun insert-lorem ()
-  (interactive)
-  (insert "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque sem mauris, aliquam vel interdum in, faucibus non libero. Asunt in anim uis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in anim id est laborum. Allamco laboris nisi ut aliquip ex ea commodo consequat."))
-
-(defun my-gud-gdb ()
-  (interactive)
-  (gud-gdb (concat "gdb --fullname \"" (cppcm-get-exe-path-current-buffer) "\"")))
-
-(defun my-overview-of-current-buffer ()
-  (interactive)
-  (set-selective-display (if selective-display nil 1)))
-
 (defun lookup-doc-in-man ()
+  "Read man by querying keyword at point."
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
 
@@ -155,8 +145,8 @@
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
-(defvar my-do-bury-compliation-buffer t
-  "Hide comliation buffer if compile successfully.")
+(defvar my-do-bury-compilation-buffer t
+  "Hide compilation buffer if compile successfully.")
 
 (defun compilation-finish-hide-buffer-on-success (buffer str)
   "Bury BUFFER whose name marches STR.
@@ -165,7 +155,7 @@ This function can be re-used by other major modes after compilation."
       ;;there were errors
       (message "compilation errors, press C-x ` to visit")
     ;;no errors, make the compilation window go away in 0.5 seconds
-    (when (and my-do-bury-compliation-buffer
+    (when (and my-do-bury-compilation-buffer
                (buffer-name buffer)
                (string-match "*compilation*" (buffer-name buffer)))
       ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
@@ -248,7 +238,7 @@ This function can be re-used by other major modes after compilation."
 (global-set-key (kbd "C-h C-f") 'find-function)
 
 ;; {{ time format
-;; If you want to customize time format, read documantation of `format-time-string'
+;; If you want to customize time format, read document of `format-time-string'
 ;; and customize `display-time-format'.
 ;; (setq display-time-format "%a %b %e")
 
@@ -385,7 +375,7 @@ This function can be re-used by other major modes after compilation."
 ;; }}
 
 ;; {{start dictionary lookup
-;; use below commands to create dicitonary
+;; use below commands to create dictionary
 ;; mkdir -p ~/.stardict/dic
 ;; # wordnet English => English
 ;; curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
@@ -585,7 +575,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 (defun extract-list-from-package-json ()
   "Extract package list from package.json."
   (interactive)
-  (let* ((str (my-use-selected-string-or-ask "")))
+  (let* ((str (my-use-selected-string-or-ask)))
     (message "my-select-cliphist-item called => %s" str)
     (setq str (replace-regexp-in-string ":.*$\\|\"" "" str))
     ;; join lines
@@ -927,39 +917,6 @@ If the shell is already opened in some buffer, switch to that buffer."
   (interactive)
   (message (format "%d" (- (region-end) (region-beginning)))))
 
-;; {{ imenu tweakment
-(defvar rimenu-position-pair nil "positions before and after imenu jump")
-(add-hook 'imenu-after-jump-hook
-          (lambda ()
-            (let* ((start-point (marker-position (car mark-ring)))
-                   (end-point (point)))
-              (setq rimenu-position-pair (list start-point end-point)))))
-
-(defun rimenu-jump ()
-  "Jump to the closest before/after position of latest imenu jump."
-  (interactive)
-  (when rimenu-position-pair
-    (let* ((p1 (car rimenu-position-pair))
-           (p2 (cadr rimenu-position-pair)))
-
-      ;; jump to the far way point of the rimenu-position-pair
-      (if (< (abs (- (point) p1))
-             (abs (- (point) p2)))
-          (goto-char p2)
-        (goto-char p1)))))
-;; }}
-
-;; {{ my blog tools
-(defun open-blog-on-current-month ()
-  (interactive)
-  (find-file (file-truename (concat "~/blog/" (format-time-string "%Y-%m") ".org"))))
-
-(defun insert-blog-version ()
-  "Insert version of my blog post."
-  (interactive)
-  (insert (format-time-string "%Y%m%d")))
-;; }}
-
 ;; show ascii table
 (defun ascii-table ()
   "Print the ascii table."
@@ -974,11 +931,6 @@ If the shell is already opened in some buffer, switch to that buffer."
   (beginning-of-buffer))
 
 ;; {{ unique lines
-(defun uniquify-all-lines-region (start end)
-  "Find duplicate lines in region START to END keeping first occurrence."
-  (interactive "*r")
-  )
-
 (defun uniq-lines ()
   "Delete duplicate lines in region or buffer."
   (interactive)
@@ -993,28 +945,23 @@ If the shell is already opened in some buffer, switch to that buffer."
         (replace-match "\\1\n\\2")))))
 ;; }}
 
-(defun insert-file-link-from-clipboard ()
+(defun my-insert-file-link-from-clipboard ()
   "Make sure the full path of file exist in clipboard.
 This command will convert full path into relative path.
 Then insert it as a local file link in `org-mode'."
   (interactive)
   (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
 
-(defun font-file-to-base64 (file)
-  "Convert font file into base64 encoded string."
-  (let* ((str "")
-         (file-base (file-name-sans-extension file))
-         (file-ext (file-name-extension file)))
-    (when (file-exists-p file)
+(defun my-font-file-to-base64 (font-file)
+  "Convert FONT-FILE into base64 encoded string."
+  (let* (str
+         (file-base (file-name-sans-extension font-file))
+         (file-ext (file-name-extension font-file)))
+    (when (file-exists-p font-file)
         (with-temp-buffer
-          (shell-command (concat "cat " file "|base64") 1)
+          (shell-command (concat "cat " font-file "|base64") 1)
           (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
     str))
-
-(defun current-thing-at-point ()
-  "Print current thing at point."
-  (interactive)
-  (message "thing = %s" (thing-at-point 'symbol)))
 
 ;; {{ copy the file-name/full-path in dired buffer into clipboard
 ;; `w` => copy file name
@@ -1085,19 +1032,6 @@ version control automatically."
 ;; midnight mode purges buffers which haven't been displayed in 3 days
 (require 'midnight)
 (setq midnight-mode t)
-
-(defun create-scratch-buffer ()
-  "Create a new scratch buffer."
-  (interactive)
-  (let* ((n 0) bufname)
-    (while (progn
-             (setq bufname (concat "*scratch"
-                                   (if (= n 0) "" (int-to-string n))
-                                   "*"))
-             (setq n (1+ n))
-             (get-buffer bufname)))
-    (switch-to-buffer (get-buffer-create bufname))
-    (emacs-lisp-mode)))
 
 (defun cleanup-buffer-safe ()
   "Perform a bunch of safe operations on the whitespace content of a buffer.
@@ -1242,7 +1176,7 @@ Including indent-buffer, which should not be called automatically on save."
   (edit-server-start))
 ;; }}
 
-(defun browse-current-file ()
+(defun my-browse-current-file ()
   "Open the current file as a URL using `browse-url'."
   (interactive)
   (browse-url-generic (concat "file://" (buffer-file-name))))
@@ -1279,7 +1213,7 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ eldoc
 (with-eval-after-load 'eldoc
   ;; multi-line message should not display too soon
-  (setq eldoc-idle-delay 1)
+  (setq eldoc-idle-delay 1.5)
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
