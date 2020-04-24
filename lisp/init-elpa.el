@@ -17,8 +17,8 @@
     nov
     bbdb
     native-complete
-    flymake-shellcheck ; check shell script
     company-native-complete
+    flymake-shellcheck ; check shell script
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
@@ -286,7 +286,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'bbdb)
 (require-package 'pomodoro)
 (require-package 'flymake-lua)
-(require-package 'flymake-shellcheck)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
@@ -363,6 +362,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 ;; }}
 
 (when *emacs26*
+  (require-package 'flymake-shellcheck)
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
   (require-package 'org-re-reveal))
 
