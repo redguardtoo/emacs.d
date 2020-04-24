@@ -1237,7 +1237,7 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
     (cond
      (video-file
       (let* ((default-directory (file-name-directory video-file)))
-        (shell-command (format "%s --movie-name \"%s\" &"
+        (shell-command (format "%s -m \"%s\" &"
                                cmd-prefix
                                (file-name-base video-file)))))
      (t
