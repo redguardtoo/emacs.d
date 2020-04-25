@@ -836,7 +836,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
 ;; same keybindgs as spacemacs:
-;;  - "SPC s e" to start `iedit-mode'
+;;  - Start `iedit-mode' by `evil-iedit-state/iedit-mode'
 ;;  - "TAB" to toggle current occurrence
 ;;  - "n" next, "N" previous (obviously we use "p" for yank)
 ;;  - "gg" the first occurence, "G" the last occurence
