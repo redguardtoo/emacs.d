@@ -1,7 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(add-auto-mode 'markdown-mode "\\.\\(m[k]d\\|markdown\\)\\'")
-
 (defun markdown-imenu-index ()
   (let* ((patterns '((nil "^#\\([# ]*[^#\n\r]+\\)" 1))))
     (save-excursion
@@ -12,7 +10,7 @@
   ;; makes markdown tables saner via orgtbl-mode
   ;; Insert org table and it will be automatically converted
   ;; to markdown table
-  (unless (featurep 'org-table) (require 'org-table))
+  (my-ensure 'org-table)
   (defun cleanup-org-tables ()
     (save-excursion
       (goto-char (point-min))
@@ -24,10 +22,9 @@
   (setq imenu-create-index-function 'markdown-imenu-index))
 (add-hook 'markdown-mode-hook 'markdown-mode-hook-setup)
 
-(eval-after-load 'markdown-mode
-  '(progn
-     ;; `pandoc' is better than obsolete `markdown'
-     (when (executable-find "pandoc")
-       (setq markdown-command "pandoc -f markdown"))))
+(with-eval-after-load 'markdown-mode
+  ;; `pandoc' is better than obsolete `markdown'
+  (when (executable-find "pandoc")
+    (setq markdown-command "pandoc -f markdown")))
 
 (provide 'init-markdown)

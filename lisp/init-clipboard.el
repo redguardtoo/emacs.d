@@ -28,8 +28,7 @@ If N is not nil, copy file name and line number."
 (defun cp-ffip-ivy-last ()
   "Copy visible keys of `ivy-last' into `kill-ring' and clipboard."
   (interactive)
-  (unless (featurep 'find-file-in-project)
-    (require 'find-file-in-project))
+  (my-ensure 'find-file-in-project)
   (when ffip-ivy-last-saved
     (copy-yank-str
      (mapconcat (lambda (e)
@@ -93,7 +92,7 @@ If NUM equals 4, indent 4 spaces."
       (message "thing => clipboard!"))))
 
 (defun paste-from-x-clipboard(&optional n)
-  "Paste string clipboard.
+  "Remove selected text and paste string clipboard.
 If N is 1, we paste diff hunk whose leading char should be removed.
 If N is 2, paste into `kill-ring' too.
 If N is 3, converted dashed to camelcased then paste.
@@ -114,6 +113,15 @@ If N is 4, rectangle paste. "
         (js-mode 1))
       ;; turn off syntax highlight
       (font-lock-mode -1))
+
+    ;; past a big string, stop lsp temporarily
+    (when (and (> (length str) 1024)
+               (boundp 'lsp-mode)
+               lsp-mode)
+      (lsp-disconnect)
+      (run-at-time 300 nil  #'lsp-deferred))
+
+    (my-delete-selected-region)
 
     ;; paste after the cursor in evil normal state
     (cond

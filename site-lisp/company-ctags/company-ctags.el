@@ -1,12 +1,12 @@
 ;;; company-ctags.el --- Fastest company-mode completion backend for ctags  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2019 Chen Bin
+;; Copyright (C) 2019,2020 Chen Bin
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
 ;; Version: 0.0.3
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "24.3") (company "0.9.0"))
+;; Package-Requires: ((emacs "24.4") (company "0.9.0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -35,22 +35,39 @@
 ;; Usage:
 ;;   Step 1, insert below code into your configuration,
 ;;
-;;   (eval-after-load 'company
-;;     '(progn
-;;        (company-ctags-auto-setup)))
+;;   (with-eval-after-load 'company
+;;      (company-ctags-auto-setup))
 ;;
 ;;   Step 2, Use Ctags to create tags file and enjoy.
 ;;
-;; You can also turn on `company-ctags-support-etags' to support tags
+;; Tips:
+;;
+;; - Turn on `company-ctags-support-etags' to support tags
 ;; file created by etags.  But it will increase initial loading time.
 ;;
-;; Make sure `diff-command' is executable on Windows.  You might need install GNU Diff.
-;; It optional but highly recommended.  It can speed up tags file updating.
+;; - Set `company-ctags-extra-tags-files' to load extra tags files,
+;;
+;;   (setq company-ctags-extra-tags-files '("$HOME/TAGS" "/usr/include/TAGS"))
+;;
+;; - Set `company-ctags-fuzzy-match-p' to fuzzy match the candidates.
+;;   The input could match any part of the candidate instead of the beginning of
+;;   the candidate.
+;;
+;; - Use rusty-tags to generate tags file for Rust programming language.
+;;   Add below code into ~/.emacs,
+;;     (setq company-ctags-tags-file-name "rusty-tags.emacs")
+;;
+;; - Make sure CLI program diff is executable on Windows.
+;; It's optional but highly recommended.  It can speed up tags file updating.
+;; This package uses diff through variable `diff-command'.
+;;
 
 ;;; Code:
 
+(require 'find-file)
 (require 'company nil t)
 (require 'cl-lib)
+(require 'subr-x)
 
 (defgroup company-ctags nil
   "Completion backend for ctags."
@@ -67,6 +84,22 @@ buffer automatically."
   "Non-nil to ignore case in completion candidates."
   :type 'boolean
   :package-version '(company . "0.7.3"))
+
+(defcustom company-ctags-extra-tags-files nil
+  "List of extra tags files which are loaded only once.
+
+A typical format is,
+
+    (\"./TAGS\" \"/usr/include/TAGS\" \"$PROJECT/*/include/TAGS\")
+
+Environment variables can be inserted between slashes (`/').
+They will be replaced by their definitions.  If a variable does
+not exist, it is replaced (silently) with an empty string."
+  :type '(repeat 'string))
+
+(defcustom company-ctags-quiet t
+  "Be quiet and do not notify user tags file status."
+  :type 'boolean)
 
 (defcustom company-ctags-support-etags nil
   "Support tags file created by etags.
@@ -87,10 +120,15 @@ Set it to t or to a list of major modes."
 Default value is 30 seconds."
   :type 'integer)
 
-
 (defcustom company-ctags-tags-file-name "TAGS"
   "The name of tags file."
   :type 'string)
+
+(defcustom company-ctags-fuzzy-match-p nil
+  "If t, fuzzy match the candidates.
+The input could match any part of the candidate instead of the beginning of
+the candidate."
+  :type 'boolean)
 
 (defvar company-ctags-modes
   '(prog-mode
@@ -111,8 +149,7 @@ Default value is 30 seconds."
   "The cached tags files.")
 
 (defvar company-ctags-cached-candidates nil
-  "The cached candidates searched with certain prefix.
-It's like (prefix . candidates).")
+  "The cached candidates searched with certain prefix.")
 
 (defconst company-ctags-fast-pattern
   "\177\\([^\177\001\n]+\\)\001"
@@ -221,14 +258,40 @@ If it's nil, return a dictionary, or else return the existing dictionary."
 
     dict))
 
-(defun company-ctags-all-completions (prefix tagname-dict)
-  "Search for partial match to PREFIX in TAGNAME-DICT."
-  (let* ((c (elt prefix 0))
-         (arr (gethash c tagname-dict (gethash ?' tagname-dict))))
-    (all-completions prefix arr)))
+(defun company-ctags-all-completions (string collection)
+  "Search  match to STRING in COLLECTION to see if it begins with STRING.
+If `company-ctags-fuzzy-match-p' is t, check if the match contains STRING."
+  (cond
+   (company-ctags-fuzzy-match-p
+    (let* (rlt)
+      ;; code should be efficient in side the this loop
+      (dolist (c collection)
+        (if (string-match string c) (push c rlt)))
+      rlt))
+   (t
+    (all-completions string collection))))
 
-(defun company-ctags-load-tags-file (file &optional force no-diff-prog quiet)
+(defun company-ctags-all-candidates (prefix tagname-dict)
+  "Search for partial match to PREFIX in TAGNAME-DICT."
+  (cond
+   (company-ctags-fuzzy-match-p
+    (let* ((keys (hash-table-keys tagname-dict))
+           arr
+           rlt)
+      ;; search all hashtables
+      ;; don't care the first character of prefix
+      (dolist (c keys)
+        (setq arr (gethash c tagname-dict))
+        (setq rlt (nconc rlt (company-ctags-all-completions prefix arr))))
+      rlt))
+   (t
+    (let* ((c (elt prefix 0))
+           (arr (gethash c tagname-dict (gethash ?' tagname-dict))))
+      (company-ctags-all-completions prefix arr)))))
+
+(defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog quiet)
   "Load tags from FILE.
+If STATIC-P is t, the corresponding tags file is read only once.
 If FORCE is t, tags file is read without `company-ctags-tags-file-caches'.
 If NO-DIFF-PROG is t, do NOT use diff on tags file.
 This function return t if any tag file is reloaded.
@@ -236,12 +299,19 @@ If QUIET is t, don not output any message."
   (let* (raw-content
          (file-info (and company-ctags-tags-file-caches
                          (gethash file company-ctags-tags-file-caches)))
-         (use-diff (and (not no-diff-prog) file-info (executable-find diff-command)))
+         (use-diff (and (not no-diff-prog)
+                        file-info
+                        (plist-get file-info :raw-content)
+                        (executable-find diff-command)))
          tagname-dict
          reloaded)
+
     (when (or force
               (not file-info)
               (and
+               ;; the tags file is static and is already read into cache
+               ;; so don't read it again
+               ;; (not (plist-get file-info :static-p))
                ;; time to expire cache from tags file
                (> (- (float-time (current-time))
                      (plist-get file-info :timestamp))
@@ -287,13 +357,28 @@ If QUIET is t, don not output any message."
 
       ;; finalize tags file info
       (puthash file
-               (list :raw-content raw-content
+               ;; if the tags file is read only once, it will never be updated
+               ;; by `diff-command', so don't need store original raw content
+               ;; of tags file in order to save memory.
+               (list :raw-content (unless static-p raw-content)
                      :tagname-dict tagname-dict
+                     :static-p static-p
                      :timestamp (float-time (current-time))
                      :filesize (nth 7 (file-attributes file)))
                company-ctags-tags-file-caches)
       (unless quiet (message "%s is loaded." file)))
     reloaded))
+
+(defun company-ctags--test-cached-candidates (prefix)
+  "Test PREFIX in `company-ctags-cached-candidates'."
+  (let* ((cands company-ctags-cached-candidates)
+         (key (plist-get cands :key))
+         (keylen (length key)))
+    ;;  prefix is "hello" and cache's prefix "ell"
+    (and (>= (length prefix) keylen)
+         (if company-ctags-fuzzy-match-p (string-match key prefix)
+           ;; key is the beginning of prefix
+           (string= (substring prefix 0 keylen) key)))))
 
 (defun company-ctags--candidates (prefix)
   "Get candidate with PREFIX."
@@ -304,31 +389,52 @@ If QUIET is t, don not output any message."
                                      (file-truename f))
                                    (delete-dups (append (if file (list file))
                                                         (company-ctags-buffer-table)))))
+           (extra-tags-files (ff-list-replace-env-vars company-ctags-extra-tags-files))
            rlt)
 
       ;; load tags files, maybe
       (dolist (f all-tags-files)
         (when (and f (file-exists-p f))
-          (when (company-ctags-load-tags-file f)
-            ;; clear cached candidates if any tags file is reloaded
+          (when (company-ctags-load-tags-file f
+                                              nil ; primary tags file, not static
+                                              nil
+                                              nil ; only for debug
+                                              company-ctags-quiet)
+            ;; invalidate cached candidates if any tags file is reloaded
             (setq company-ctags-cached-candidates nil))))
+
+      (when extra-tags-files
+        (dolist (f extra-tags-files)
+          (when (and f (file-exists-p f))
+            ;; tags file in `company-ctags-extra-tags-files' is read only once.
+            (company-ctags-load-tags-file f
+                                          t ; static tags file, read only once
+                                          nil
+                                          nil ; only for debug
+                                          company-ctags-quiet))))
 
       (cond
        ;; re-use cached candidates
-       ((and company-ctags-cached-candidates
-             (>= (length prefix) (length (car company-ctags-cached-candidates)))
-             (string= (substring prefix 0 (length (car company-ctags-cached-candidates)))
-                      (car company-ctags-cached-candidates)))
-        (setq rlt (all-completions prefix (cdr company-ctags-cached-candidates))))
+       ((and (not company-ctags-fuzzy-match-p)
+             company-ctags-cached-candidates
+             (company-ctags--test-cached-candidates prefix))
+
+        (let* ((cands (plist-get company-ctags-cached-candidates :cands)))
+          (setq rlt (company-ctags-all-completions prefix cands))))
 
        ;; search candidates through tags files
        (t
-        (dolist (f all-tags-files)
+        (dolist (f (nconc all-tags-files extra-tags-files))
           (let* ((cache (gethash f company-ctags-tags-file-caches))
                  (tagname-dict (plist-get cache :tagname-dict)))
             (when tagname-dict
-              (setq rlt (append rlt (company-ctags-all-completions prefix tagname-dict))))))
-        (setq company-ctags-cached-candidates (cons prefix rlt))))
+              (setq rlt (append rlt (company-ctags-all-candidates prefix tagname-dict))))))
+
+        ;; fuzzy algorithm don't use caching aglorithm
+        (unless company-ctags-fuzzy-match-p
+          (setq company-ctags-cached-candidates
+                ;; clone the rlt into cache
+                (list :key prefix :cands (mapcar 'identity rlt))))))
 
       ;; cleanup
       (if rlt (delete-dups rlt)))))

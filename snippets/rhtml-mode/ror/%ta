@@ -1,3 +1,0 @@
-#name : <%= text_area(" ... ", " ... ") %>
-# --
-<%= text_area("${object_name}", "${method}"$0) %>

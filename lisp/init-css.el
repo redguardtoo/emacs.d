@@ -1,10 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; Colourise CSS colour literals
-;; web-mode does not like rainbow-mode
-(dolist (hook '(css-mode-hook))
-  (add-hook hook 'rainbow-mode))
-
 (defun my-css-imenu-make-index ()
   (save-excursion
     (imenu--generic-function '((nil "^ *\\([a-zA-Z0-9&,.: _-]+\\) *{ *$" 1)
@@ -16,6 +11,7 @@
 ;; flymake-css is obsolete
 (defun css-mode-hook-setup ()
   (unless (is-buffer-file-temp)
+    (rainbow-mode 1)
     (counsel-css-imenu-setup)
     (setq imenu-create-index-function 'counsel-css--imenu-create-index-function)))
 (add-hook 'css-mode-hook 'css-mode-hook-setup)

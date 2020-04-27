@@ -2,29 +2,36 @@
 
 (defvar my-ediff-panel-name nil)
 
-(when (and (boundp 'startup-now) startup-now)
+(defadvice server-save-buffers-kill-terminal (after server-save-buffers-kill-terminal-after-hack activate)
+  ;; kill all buffers, so new ediff panel is re-created and `ediff-startup-hook-setup' is called again
+  ;; besides, remove the buffers whose binding files are already merged in `buffer-list'
+  (mapc 'kill-buffer (buffer-list)))
 
+(when (my-vc-merge-p)
   ;; remove `org-mode' from `auto-mode-alist'. So nodes in org file do NOT collapse at all
   (setq auto-mode-alist  (rassq-delete-all 'org-mode auto-mode-alist))
   ;; associate simpler major mode with org file instead
   (add-auto-mode 'outline-mode "\\.org\\(_archive\\)?$")
 
-
   (defmacro my-ediff-command (cmd &optional no-arg)
     `(lambda (&optional arg)
        (interactive "P")
-       (let* ((w (get-buffer-window)))
-         ;; go to panel window
-         (select-window (get-buffer-window my-ediff-panel-name))
-         ;; execute ediff command, ignore any error
-         (condition-case e
-             (if ,no-arg (funcall ,cmd) (funcall ,cmd arg))
-           (error
-            (message "%s" (error-message-string e))))
-         ;; back to original window
-         (select-window w))))
+       (let* ((w (get-buffer-window))
+              (p (get-buffer-window my-ediff-panel-name)))
 
-  (unless (featurep 'ediff) (require 'ediff))
+         ;; go to panel window
+         (when p
+           (select-window p)
+           ;; execute ediff command, ignore any error
+           (condition-case e
+               (if ,no-arg (funcall ,cmd) (funcall ,cmd arg))
+             (error
+              (message "%s" (error-message-string e))))
+
+           ;; back to original window
+           (select-window w)))))
+
+  (my-ensure 'ediff)
 
   ;; @see https://stackoverflow.com/a/29757750/245363
   (defun ediff-copy-both-to-C (&optional arg)
@@ -51,7 +58,8 @@
                              (t
                               (message "This is first difference!")))))
     "r" (my-ediff-command 'ediff-restore-diff-in-merge-buffer)
-    "R" (my-ediff-command 'ediff-revert-buffers-then-recompute-diffs) ; press "1-space-R" to revert without confirmation
+    ;; press "1-space-R" to revert without confirmation
+    "R" (my-ediff-command 'ediff-revert-buffers-then-recompute-diffs)
     "xa" (lambda () (interactive) (save-buffers-kill-terminal t)) ; similar to vim
     ;; use 1 3 as hotkey to be consistent with vim
     "1" (my-ediff-command 'ediff-copy-A-to-C)
@@ -60,10 +68,12 @@
 
   (defun ediff-startup-hook-setup ()
     ;; hide control panel if it's current buffer
-    (when (string-match-p (setq my-ediff-panel-name (buffer-name))
-                          "\*Ediff Control Panel.*\*")
+    (when (string-match-p "\*Ediff Control Panel.*\*" (buffer-name))
+      (unless my-ediff-panel-name (setq my-ediff-panel-name (buffer-name)))
       ;; load color theme for merge
-      (load-theme 'deeper-blue t)
+      (load-theme 'tao-yang t)
+      ;; show only clashed area
+      (ediff-toggle-show-clashes-only)
       ;; move to the first difference
       (ediff-next-difference)
       ;; move to the merged buffer window

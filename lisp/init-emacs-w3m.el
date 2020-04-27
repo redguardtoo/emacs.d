@@ -11,7 +11,7 @@
       w3m-terminal-coding-system 'utf-8
       w3m-use-cookies t
       w3m-cookie-accept-bad-cookies t
-      w3m-home-page "http://www.google.com.au"
+      w3m-home-page "https://www.google.com.au"
       w3m-command-arguments       '("-F" "-cookie")
       w3m-mailto-url-function     'compose-mail
       browse-url-browser-function 'w3m
@@ -40,15 +40,15 @@
 
 ;; C-u S g RET <search term> RET in w3m
 (setq w3m-search-engine-alist
-      '(("g" "http://www.google.com.au/search?q=%s" utf-8)
+      '(("g" "https://www.google.com.au/search?q=%s" utf-8)
         ;; stackoverflow search
-        ("q" "http://www.google.com.au/search?q=%s+site:stackoverflow.com" utf-8)
+        ("q" "https://www.google.com.au/search?q=%s+site:stackoverflow.com" utf-8)
         ;; wikipedia
-        ("w" "http://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8)
+        ("w" "https://en.wikipedia.org/wiki/Special:Search?search=%s" utf-8)
         ;; online dictionary
-        ("d" "http://dictionary.reference.com/search?q=%s" utf-8)
+        ("d" "https://dictionary.reference.com/search?q=%s" utf-8)
         ;; financial dictionary
-        ("f" "http://financial-dictionary.thefreedictionary.com/%s" utf-8)))
+        ("f" "https://financial-dictionary.thefreedictionary.com/%s" utf-8)))
 
 (defun w3m-set-url-from-search-engine-alist (k l url)
     (if (listp l)
@@ -60,7 +60,7 @@
   "`w3m-display-hook' must search current buffer with this keyword twice if not nil")
 
 (defun w3m-guess-keyword (&optional encode-space-with-plus)
-  (unless (featurep 'w3m) (require 'w3m))
+  (my-ensure 'w3m)
   (let* ((keyword (my-use-selected-string-or-ask "Enter keyword:"))
          (encoded-keyword (w3m-url-encode-string (setq w3m-global-keyword keyword))))
     ;; some search requires plus sign to replace space
@@ -69,7 +69,7 @@
       encoded-keyword)))
 
 (defun w3m-customized-search-api (search-engine &optional encode-space-with-plus)
-  (unless (featurep 'w3m) (require 'w3m))
+  (my-ensure 'w3m)
   (w3m-search search-engine (w3m-guess-keyword encode-space-with-plus)))
 
 (defun w3m-stackoverflow-search ()
@@ -116,14 +116,14 @@
   (interactive)
   (let ((keyword (w3m-guess-keyword)))
     ;; google
-    (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q=%22"
+    (browse-url-generic (concat "https://www.google.com.au/search?hl=en&q=%22"
                                 keyword
                                 "%22"
                                 (if buffer-file-name
 									(concat "+filetype%3A" (file-name-extension buffer-file-name))
 									"")))
     ;; stackoverflow.com
-    (browse-url-generic (concat "http://www.google.com.au/search?hl=en&q="
+    (browse-url-generic (concat "https://www.google.com.au/search?hl=en&q="
                                 keyword
                                 "+site:stackoverflow.com" ))))
 ;; }}
@@ -189,23 +189,22 @@
         (my-pclip cmd)
         (message "%s => clipboard/kill-ring" cmd))))))
 
-(eval-after-load 'w3m
-  '(progn
-     (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
-     (add-hook 'w3m-display-hook
-               (lambda (url)
-                 (let* ((title (or w3m-current-title url)))
-                   (when w3m-global-keyword
-                     ;; search keyword twice, first is url, second is your input,
-                     ;; third is actual result
-                     (goto-char (point-min))
-                     (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
-                     ;; move the cursor to the beginning of word
-                     (backward-char (length w3m-global-keyword))
-                     ;; cleanup for next search
-                     (setq w3m-global-keyword nil))
-                   ;; rename w3m buffer
-                   (rename-buffer
-                    (format "*w3m: %s*"
-                            (substring title 0 (min 50 (length title)))) t))))))
+(with-eval-after-load 'w3m
+  (define-key w3m-mode-map (kbd "C-c b") 'w3mext-open-link-or-image-or-url)
+  (add-hook 'w3m-display-hook
+            (lambda (url)
+              (let* ((title (or w3m-current-title url)))
+                (when w3m-global-keyword
+                  ;; search keyword twice, first is url, second is your input,
+                  ;; third is actual result
+                  (goto-char (point-min))
+                  (search-forward-regexp (replace-regexp-in-string " " ".*" w3m-global-keyword)  (point-max) t 3)
+                  ;; move the cursor to the beginning of word
+                  (backward-char (length w3m-global-keyword))
+                  ;; cleanup for next search
+                  (setq w3m-global-keyword nil))
+                ;; rename w3m buffer
+                (rename-buffer
+                 (format "*w3m: %s*"
+                         (substring title 0 (min 50 (length title)))) t)))))
 (provide 'init-emacs-w3m)

@@ -1,8 +1,8 @@
 ;;; wucuo.el --- Spell check code containing camel case words
 
-;; Copyright (C) 2018 Chen Bin
+;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.0.6
+;; Version: 0.1.0
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -36,9 +36,18 @@
 ;;
 ;; To enable wucuo for all languages, insert below code into ".emacs",
 ;;
+;;   (setq wucuo-flyspell-start-mode "lite") ; optional
 ;;   (defun prog-mode-hook-setup ()
 ;;     (wucuo-start t))
 ;;   (add-hook 'prog-mode-hook 'prog-mode-hook-setup)
+;;
+;; If `wucuo-flyspell-start-mode' is "lite", `wucuo-start' calls
+;; `flyspell-buffer' periodically.
+;; The interval of buffer checking is controlled by `wucuo-update-interval'.
+;; It's more light weight than running `flyspell-mode'.
+;;
+;; The `flyspell-mode' is turned on by `wucuo-start' by default.
+;; See `wucuo-flyspell-start-mode' for other options.
 ;;
 ;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
 ;; `flyspell-prog-mode' could be replaced by "wucuo".
@@ -59,6 +68,13 @@
 (defcustom wucuo-debug nil
   "Output debug information when it's not nil."
   :type 'boolean
+  :group 'wucuo)
+
+(defcustom wucuo-flyspell-start-mode "full"
+  "If it's \"full\", turn on `flyspell-mode' automatically in `wucuo-start'.
+If it's \"lite\", run `flyspell-buffer' in `after-save-hook'.
+If it's nil, do nothing."
+  :type 'string
   :group 'wucuo)
 
 (defcustom wucuo-check-nil-font-face nil
@@ -91,6 +107,11 @@
     js2-object-property
     js2-object-property-access
 
+    ;; css
+    font-lock-builtin-face
+    css-selector
+    css-property
+
     ;; ReactJS
     rjsx-text
     rjsx-tag
@@ -98,6 +119,11 @@
   "Only check word whose font face is among this list."
   :type '(repeat sexp)
   :group 'wucuo)
+
+(defcustom wucuo-update-interval 60
+  "Interval (seconds) for `wucuo-spell-check-buffer' which calls `flyspell-buffer'."
+  :group 'wucuo
+  :type 'integer)
 
 (defcustom wucuo-personal-font-faces-to-check
   nil
@@ -117,6 +143,9 @@ Running `wucuo-start' with first parameter being t will set up modes listed here
   "A callback to check WORD.  Return t if WORD is typo."
   :type 'function
   :group 'wucuo)
+
+;; Timer to run auto-update tags file
+(defvar wucuo-timer nil "Internal timer.")
 
 ;;;###autoload
 (defun wucuo-current-font-face (&optional quiet)
@@ -296,22 +325,39 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.0.6"))
+  (message "0.1.0"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
   "Set up MODE's flyspell predicate."
   (if (stringp mode) (setq mode (symobol mode)))
-  (eval-after-load mode
-    (progn
-      (put mode
-           'flyspell-mode-predicate
-           'wucuo-generic-check-word-predicate))))
+  (put mode
+       'flyspell-mode-predicate
+       'wucuo-generic-check-word-predicate))
+
+;;;###autoload
+(defun wucuo-spell-check-buffer ()
+  "Spell check current buffer"
+  (cond
+   ((not wucuo-timer)
+    ;; start timer if not started yet
+    (setq wucuo-timer (current-time)))
+
+   ((< (- (float-time (current-time)) (float-time wucuo-timer))
+       wucuo-update-interval)
+    ;; do nothing, avoid `flyspell-buffer' too often
+    )
+
+   (t
+    ;; real spell checking
+    (setq wucuo-timer (current-time))
+    (flyspell-buffer))))
 
 ;;;###autoload
 (defun wucuo-start (&optional force)
   "Turn on wucuo to spell check code.
-If FORCE is t, the major mode's own predicate setup."
+If FORCE is t, use wucuo's predicate to override the predicate bundled with the major modes.
+The major modes whose predicates can be shadowed is in `wucuo-major-modes-to-setup-by-force'."
   (interactive)
   (when force
     (dolist (mode wucuo-major-modes-to-setup-by-force)
@@ -322,7 +368,17 @@ If FORCE is t, the major mode's own predicate setup."
   (setq flyspell-generic-check-word-predicate
         #'wucuo-generic-check-word-predicate)
 
-  (flyspell-mode 1))
+  ;; work around issue when calling `flyspell-small-region'
+  ;; can't show the overlay of error but can't delete overlay
+  (setq flyspell-large-region 1)
+
+  (cond
+   ;; full mode
+   ((string= wucuo-flyspell-start-mode "full")
+    (flyspell-mode 1))
+   ;; lite mode
+   ((string= wucuo-flyspell-start-mode "lite")
+    (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
 
 (provide 'wucuo)
 ;;; wucuo.el ends here

@@ -63,10 +63,9 @@
     (flymake-mode 1)))
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
-(eval-after-load 'js-mode
-  '(progn
-     ;; '$' is part of variable name like '$item'
-     (modify-syntax-entry ?$ "w" js-mode-syntax-table)))
+(with-eval-after-load 'js-mode
+  ;; '$' is part of variable name like '$item'
+  (modify-syntax-entry ?$ "w" js-mode-syntax-table))
 
 ;; {{ patching imenu in js2-mode
 (setq js2-imenu-extra-generic-expression javascript-common-imenu-regex-list)
@@ -178,8 +177,7 @@ If NOT-JSON-P is not nil, validate as Javascript expression instead of JSON."
       (setq json-exp (format "var a=%s;"  json-exp)))
     (with-temp-buffer
       (insert json-exp)
-      (unless (featurep 'js2-mode)
-        (require 'js2-mode))
+      (my-ensure 'js2-mode)
       (js2-parse)
       (setq errs (js2-errors))
       (cond
@@ -208,7 +206,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
       (when (string= "json" (file-name-extension buffer-file-name))
         (setq str (format "var a=%s;" str))
         (setq cur-pos (+ cur-pos (length "var a="))))
-      (unless (featurep 'js2-mode) (require 'js2-mode))
+      (my-ensure 'js2-mode)
       (with-temp-buffer
         (insert str)
         (js2-init-scanner)
@@ -238,39 +236,23 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (setq extra-rlt (js2-imenu--remove-duplicate-items extra-rlt))
   (append rlt extra-rlt))
 
-;; {{ print json path, will be removed when latest STABLE js2-mode released
-(defun js2-get-element-index-from-array-node (elem array-node &optional hardcoded-array-index)
-  "Get index of ELEM from ARRAY-NODE or 0 and return it as string."
-  (let* ((idx 0) elems (rlt hardcoded-array-index))
-    (setq elems (js2-array-node-elems array-node))
-    (if (and elem (not hardcoded-array-index))
-        (setq rlt (catch 'nth-elt
-                    (dolist (x elems)
-                      ;; We know the ELEM does belong to ARRAY-NODE,
-                      (if (eq elem x) (throw 'nth-elt idx))
-                      (setq idx (1+ idx)))
-                    0)))
-    (format "[%s]" rlt)))
-;; }}
-
-(eval-after-load 'js2-mode
-  '(progn
-     ;; {{ I hate the hotkeys to hide things
-     (define-key js2-mode-map (kbd "C-c C-e") nil)
-     (define-key js2-mode-map (kbd "C-c C-s") nil)
-     (define-key js2-mode-map (kbd "C-c C-f") nil)
-     (define-key js2-mode-map (kbd "C-c C-t") nil)
-     (define-key js2-mode-map (kbd "C-c C-o") nil)
-     (define-key js2-mode-map (kbd "C-c C-w") nil)
-     ;; }}
-     (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
-       (let (rlt extra-rlt)
-         ad-do-it
-         (setq extra-rlt
-               (save-excursion
-                 (imenu--generic-function js2-imenu-extra-generic-expression)))
-         (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
-         ad-return-value))))
+(with-eval-after-load 'js2-mode
+  ;; {{ I hate the hotkeys to hide things
+  (define-key js2-mode-map (kbd "C-c C-e") nil)
+  (define-key js2-mode-map (kbd "C-c C-s") nil)
+  (define-key js2-mode-map (kbd "C-c C-f") nil)
+  (define-key js2-mode-map (kbd "C-c C-t") nil)
+  (define-key js2-mode-map (kbd "C-c C-o") nil)
+  (define-key js2-mode-map (kbd "C-c C-w") nil)
+  ;; }}
+  (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
+    (let (rlt extra-rlt)
+      ad-do-it
+      (setq extra-rlt
+            (save-excursion
+              (imenu--generic-function js2-imenu-extra-generic-expression)))
+      (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
+      ad-return-value)))
 ;; }}
 
 (defun my-js2-mode-setup()
@@ -289,36 +271,9 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
 
 (add-hook 'js2-mode-hook 'my-js2-mode-setup)
 
-(add-auto-mode 'js-mode
-               "\\.ja?son$"
-               "\\.pac$"
-               "\\.jshintrc$")
-
-(cond
- ((not *no-memory*)
-  ;; javascript
-  (add-auto-mode 'js2-mode
-                 "\\.js\\(\\.erb\\)?\\'")
-  ;; JSX
-  (add-auto-mode 'rjsx-mode
-                 "\\.jsx\\'"
-                 "components\\/.*\\.js\\'")
-  ;; mock file
-  (add-auto-mode 'js-mode
-                 "\\.mock.js\\'")
-  (add-to-list 'interpreter-mode-alist (cons "node" 'js2-mode)))
- (t
-  (add-auto-mode 'js-mode
-                 "\\.js\\(\\.erb\\)?\\'"
-                 "\\.babelrc\\'")))
-
-(add-auto-mode 'typescript-mode
-               "\\.ts$")
-
 ;; @see https://github.com/felipeochoa/rjsx-mode/issues/33
-(eval-after-load 'rjsx-mode
-  '(progn
-     (define-key rjsx-mode-map "<" nil)))
+(with-eval-after-load 'rjsx-mode
+  (define-key rjsx-mode-map "<" nil))
 
 ;; {{ js-beautify
 (defun js-beautify (&optional indent-size)
@@ -333,10 +288,15 @@ INDENT-SIZE decide the indentation level.
       (setq indent-size (cond
                          ((memq major-mode '(js-mode javascript-mode))
                           js-indent-level)
+
                          ((memq major-mode '(web-mode))
                           web-mode-code-indent-offset)
+
+                         ((memq major-mode '(typescript-mode))
+                          typescript-indent-level)
+
                          (t
-                          js2-basic-offset))))
+                          2))))
     ;; do it!
     (run-cmd-and-replace-region (concat "js-beautify"
                                         " --stdin "

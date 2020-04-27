@@ -29,7 +29,7 @@
    ((= n 5)
     ;; grep Chinese using pinyinlib.
     ;; In ivy filter, trigger key must be pressed before filter chinese
-    (unless (featurep 'pinyinlib) (require 'pinyinlib))
+    (my-ensure 'pinyinlib)
     (let* ((counsel-etags-convert-grep-keyword
             (lambda (keyword)
               (if (and keyword (> (length keyword) 0))
@@ -38,43 +38,40 @@
       (counsel-etags-grep)))))
 
 ;; {{ message buffer things
-(defun erase-specific-buffer (num buf-name)
-  "Erase the content of the buffer with BUF-NAME.
-Keep the last NUM lines if argument num if given."
-  (let* ((message-buffer (get-buffer buf-name))
-         (old-buffer (current-buffer)))
-    (save-excursion
-      (if (buffer-live-p message-buffer)
-          (progn
-            (switch-to-buffer message-buffer)
-            (if (not (null num))
-                (progn
-                  (end-of-buffer)
-                  (dotimes (i num)
-                    (previous-line))
-                  (set-register t (buffer-substring (point) (point-max)))
-                  (erase-buffer)
-                  (insert (get-register t))
-                  (switch-to-buffer old-buffer))
-              (progn
-                (erase-buffer)
-                (switch-to-buffer old-buffer))))
-        (error "Message buffer doesn't exists!")))))
+(defun erase-one-visible-buffer (buf-name)
+  "Erase the content of visible buffer with BUF-NAME."
+  (let* ((original-window (get-buffer-window))
+         (target-window (get-buffer-window buf-name)))
+    (cond
+     ((not target-window)
+      (message "Buffer %s is not visible!" buf-name))
+     (t
+      (select-window target-window)
+      (let* ((inhibit-read-only t))
+        (erase-buffer))
+      (select-window original-window)))))
 
-
-(defun erase-message-buffer (&optional num)
+(defun my-erase-visible-buffer (&optional n)
   "Erase the content of the *Messages* buffer.
-Keep the last NUM lines if argument num if given."
-  (interactive "p")
-  (erase-specific-buffer num "*Messages*"))
+N specifies the buffer to erase."
+  (interactive "P")
+  (cond
+   ((null n)
+    (erase-one-visible-buffer "*Messages*") )
 
-;; turn off read-only-mode in *Message* buffer, a "feature" in v24.4
-(when (fboundp 'messages-buffer-mode)
-  (defun messages-buffer-mode-hook-setup ()
-    (message "messages-buffer-mode-hook-setup called")
-    (read-only-mode -1))
-  (add-hook 'messages-buffer-mode-hook 'messages-buffer-mode-hook-setup))
+   ((eq 1 n)
+    (erase-one-visible-buffer "*shell*"))
 
+   ((eq 2 n)
+    (erase-one-visible-buffer "*Javascript REPL*"))
+
+   ((eq 3 n)
+    (erase-one-visible-buffer "*eshell*"))))
+
+(defun my-erase-current-buffer ()
+  "Erase current buffer even it's read-only."
+  (interactive)
+  (erase-one-visible-buffer (buffer-name (current-buffer))))
 ;; }}
 
 ;; {{ narrow region
@@ -93,34 +90,134 @@ Keep the last NUM lines if argument num if given."
         (goto-char (point-min)))
       (narrow-to-region start end)))
 
+;; @see https://www.reddit.com/r/emacs/comments/988paa/emacs_on_windows_seems_lagging/
+(unless *no-memory*
+  ;; speed up font rendering for special characters
+  (setq inhibit-compacting-font-caches t))
+
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
+;; fixed to behave correctly in org-src buffers; taken from:
+;; https://lists.gnu.org/archive/html/emacs-orgmode/2019-09/msg00094.html
 (defun narrow-or-widen-dwim (&optional use-indirect-buffer)
   "If the buffer is narrowed, it widens.
  Otherwise, it narrows to region, or Org subtree.
-If use-indirect-buffer is not nil, use `indirect-buffer' to hold the widen content."
+If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen content."
   (interactive "P")
-  (cond ((buffer-narrowed-p) (widen))
-        ((region-active-p)
-         (narrow-to-region-indirect-buffer-maybe (region-beginning)
-                                                 (region-end)
-                                                 use-indirect-buffer))
-        ((equal major-mode 'org-mode)
-         (org-narrow-to-subtree))
-        ((derived-mode-p 'diff-mode)
-         (let* (b e)
-           (save-excursion
-             ;; If the (point) is already beginning or end of file diff,
-             ;; the `diff-beginning-of-file' and `diff-end-of-file' return nil
-             (setq b (progn (diff-beginning-of-file) (point)))
-             (setq e (progn (diff-end-of-file) (point))))
-           (when (and b e (< b e))
-             (narrow-to-region-indirect-buffer-maybe b e use-indirect-buffer))))
-        ((derived-mode-p 'prog-mode)
-         (mark-defun)
-         (narrow-to-region-indirect-buffer-maybe (region-beginning)
-                                                 (region-end)
-                                                 use-indirect-buffer))
-        (t (error "Please select a region to narrow to"))))
+  (cond
+   ((and (not use-indirect-buffer) (buffer-narrowed-p))
+    (widen))
+
+   ((and (not use-indirect-buffer)
+         (eq major-mode 'org-mode)
+         (fboundp 'org-src-edit-buffer-p)
+         (org-src-edit-buffer-p))
+    (org-edit-src-exit))
+
+   ;; narrow to region
+   ((region-active-p)
+    (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                            (region-end)
+                                            use-indirect-buffer))
+
+   ;; narrow to specific org element
+   ((derived-mode-p 'org-mode)
+    (cond
+     ((ignore-errors (org-edit-src-code)) t)
+     ((ignore-errors (org-narrow-to-block) t))
+     ((ignore-errors (org-narrow-to-element) t))
+     (t (org-narrow-to-subtree))))
+
+   ((derived-mode-p 'diff-mode)
+    (let* (b e)
+      (save-excursion
+        ;; If the (point) is already beginning or end of file diff,
+        ;; the `diff-beginning-of-file' and `diff-end-of-file' return nil
+        (setq b (progn (diff-beginning-of-file) (point)))
+        (setq e (progn (diff-end-of-file) (point))))
+      (when (and b e (< b e))
+        (narrow-to-region-indirect-buffer-maybe b e use-indirect-buffer))))
+
+   ((derived-mode-p 'prog-mode)
+    (mark-defun)
+    (narrow-to-region-indirect-buffer-maybe (region-beginning)
+                                            (region-end)
+                                            use-indirect-buffer))
+   (t (error "Please select a region to narrow to"))))
+;; }}
+
+(defun my-swiper (&optional other-source)
+  "Search current file.
+If OTHER-SOURCE is 1, get keyword from clipboard.
+If OTHER-SOURCE is 2, get keyword from `kill-ring'."
+  (interactive "P")
+  (let* ((keyword (cond
+                   ((eq 1 other-source)
+                    (cliphist-select-item))
+                   ((eq 2 other-source)
+                    (my-select-from-kill-ring 'identity))
+                   ((region-active-p)
+                    (my-selected-str)))))
+    ;; `swiper--re-builder' read from `ivy-re-builders-alist'
+    ;; more flexible
+    (swiper keyword)))
+
+(with-eval-after-load 'cliphist
+  (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
+    (my-delete-selected-region)))
+
+;; {{ Write backup files to its own directory
+;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
+(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+  "Is binary file name?")
+
+(setq backup-enable-predicate
+      (lambda (name)
+        (and (normal-backup-enable-predicate name)
+             (not (string-match-p binary-file-name-regexp name)))))
+
+(if (not (file-exists-p (expand-file-name "~/.backups")))
+  (make-directory (expand-file-name "~/.backups")))
+(setq backup-by-coping t ; don't clobber symlinks
+      backup-directory-alist '(("." . "~/.backups"))
+      delete-old-versions t
+      version-control t  ;use versioned backups
+      kept-new-versions 6
+      kept-old-versions 2)
+
+;; Donot make backups of files, not safe
+;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
+(setq vc-make-backup-files nil)
+;; }}
+
+;; {{ tramp setup
+(add-to-list 'backup-directory-alist
+             (cons tramp-file-name-regexp nil))
+(setq tramp-chunksize 8192)
+
+;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+;; If you tramp is hanging, you can uncomment below line.
+;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
+;; }}
+
+;; {{ GUI frames
+;; Suppress GUI features
+(setq use-file-dialog nil)
+(setq use-dialog-box nil)
+(setq inhibit-startup-screen t)
+(setq inhibit-startup-echo-area-message t)
+
+;; Show a marker in the left fringe for lines not in the buffer
+(setq indicate-empty-lines t)
+
+;; NO tool bar
+(if (fboundp 'tool-bar-mode)
+  (tool-bar-mode -1))
+;; no scroll bar
+(if (fboundp 'set-scroll-bar-mode)
+  (set-scroll-bar-mode nil))
+;; no menu bar
+(if (fboundp 'menu-bar-mode)
+  (menu-bar-mode -1))
 ;; }}
 
 (provide 'init-essential)

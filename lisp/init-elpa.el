@@ -16,10 +16,14 @@
     auto-package-update
     nov
     bbdb
+    native-complete
+    company-native-complete
+    flymake-shellcheck ; check shell script
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
     command-log-mode
+    ;; lsp-mode ; stable version has performance issue, but unstable version sends too many warnings
     edit-server ; use Emacs to edit textarea in browser, need browser addon
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
@@ -35,7 +39,6 @@
     loc-changes
     test-simple
     ;; }}
-    counsel-css
     iedit
     undo-tree
     js-doc
@@ -79,15 +82,13 @@
     ;; }}
     slime
     groovy-mode
-    ;; company ; I won't wait another 2 years for stable
+    company ; I won't wait another 2 years for stable
     simple-httpd
     dsvn
     findr
     mwe-log-commands
-    counsel-gtags ; the stable version is never released
     noflet
     db
-    package-lint
     creole
     web
     buffer-move
@@ -154,7 +155,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
           ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/"))))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
-;; (setq package-archives '(("localelpa" . "~/.emacs.d/localelpa/") ("myelpa" . "~/projs/myelpa/")))
+;; (setq package-archives '(("localelpa" . "~/.emacs.d/localelpa/") ("myelpa" . "~/myelpa/")))
 
 ;;--------------------------------------------------------------------------
 ;; Internal implementation, newbies should NOT touch code below this line!
@@ -189,8 +190,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 
       ;; We still need use some unstable packages
       ((string= archive "melpa")
-       (or (string-match-p (format "%s" package)
-                           (mapconcat (lambda (s) (format "%s" s)) melpa-include-packages " "))
+       (or (member package melpa-include-packages)
            ;; color themes are welcomed
            (string-match-p "-theme" (format "%s" package))))
 
@@ -235,14 +235,15 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'fringe-helper)
 (require-package 'gitignore-mode)
 (require-package 'gitconfig-mode)
-(require-package 'gist)
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
 (require-package 'workgroups2)
 (require-package 'yaml-mode)
 (require-package 'paredit)
+(require-package 'xr) ; required by pyim
 (require-package 'findr)
+(require-package 'diredfl) ; font lock for `dired-mode'
 (require-package 'pinyinlib)
 (require-package 'find-by-pinyin-dired)
 (require-package 'jump)
@@ -263,10 +264,9 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
-(require-package 'flymake-jslint)
 (require-package 'ivy)
 (require-package 'swiper)
-(require-package 'counsel '(0 13 0)) ; counsel => swiper => ivy
+(require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
 (require-package 'ibuffer-vc)
@@ -299,8 +299,11 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'yasnippet)
 (require-package 'yasnippet-snippets)
 (require-package 'company)
+(require-package 'native-complete)
+(require-package 'company-native-complete)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
+(require-package 'lsp-mode)
 (require-package 'elpy)
 (require-package 'flycheck)
 (require-package 'py-autopep8)
@@ -315,7 +318,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'web-mode)
 (require-package 'dumb-jump)
 (require-package 'emms)
-(require-package 'package-lint) ; lint package before submit it to MELPA
 (require-package 'iedit)
 (require-package 'bash-completion)
 (require-package 'websocket) ; for debug debugging of browsers
@@ -325,7 +327,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'evil-escape)
 (require-package 'evil-exchange)
 (require-package 'evil-find-char-pinyin)
-(require-package 'evil-iedit-state)
 (require-package 'evil-mark-replace)
 (require-package 'evil-matchit)
 (require-package 'evil-nerd-commenter)
@@ -353,6 +354,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'benchmark-init)
 (require-package 'langtool) ; check grammer
 (require-package 'typescript-mode)
+(require-package 'edit-server)
 
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
@@ -363,68 +365,122 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 ;; }}
 
 (when *emacs26*
+  (require-package 'flymake-shellcheck)
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
   (require-package 'org-re-reveal))
 
+(defun my-install-popular-themes (popular-themes)
+  "Install POPULAR-THEMES from melpa."
+  (dolist (theme popular-themes)
+    (require-package theme)))
+
 (when *emacs25*
   (require-package 'magit) ; Magit 2.12 is the last feature release to support Emacs 24.4.
-  ;; Most popular thems from https://emacsthemes.com/popular/index.html
-  (require-package 'zenburn-theme)
-  (require-package 'solarized-theme)
-  (require-package 'spacemacs-theme)
-  (require-package 'color-theme-sanityinc-tomorrow)
-  (require-package 'monokai-theme)
-  (require-package 'leuven-theme)
-  (require-package 'color-theme-sanityinc-solarized)
-  (require-package 'material-theme)
-  (require-package 'gruvbox-theme)
-  (require-package 'moe-theme)
-  (require-package 'cyberpunk-theme) ; recommended
-  (require-package 'ample-theme)
-  (require-package 'dracula-theme) ; recommended
-  (require-package 'alect-themes)
-  (require-package 'sublime-themes)
-  (require-package 'darktooth-theme)
-  (require-package 'anti-zenburn-theme)
-  (require-package 'gotham-theme)
-  (require-package 'apropospriate-theme)
-  (require-package 'tao-theme)
-  (require-package 'ujelly-theme)
-  (require-package 'molokai-theme) ; recommended
-  (require-package 'grandshell-theme)
-  (require-package 'tangotango-theme)
-  (require-package 'afternoon-theme)
-  (require-package 'gruber-darker-theme)
-  (require-package 'ample-zen-theme)
-  (require-package 'doom-themes)
-  (require-package 'noctilux-theme)
-  (require-package 'flatland-theme)
-  (require-package 'organic-green-theme)
-  (require-package 'inkpot-theme)
-  (require-package 'flatui-theme)
-  (require-package 'hc-zenburn-theme)
-  (require-package 'clues-theme)
-  (require-package 'darkburn-theme) ; recommended
-  (require-package 'soothe-theme)
-  (require-package 'subatomic-theme)
-  (require-package 'naquadah-theme)
-  (require-package 'seti-theme)
-  (require-package 'spacegray-theme)
-  (require-package 'jazz-theme)
-  (require-package 'dakrone-theme)
-  (require-package 'espresso-theme)
-  (require-package 'phoenix-dark-pink-theme)
-  (require-package 'tango-plus-theme)
-  (require-package 'busybee-theme)
-  (require-package 'twilight-theme)
-  (require-package 'minimal-theme)
-  (require-package 'bubbleberry-theme)
-  (require-package 'cherry-blossom-theme)
-  (require-package 'heroku-theme)
-  (require-package 'hemisu-theme)
-  (require-package 'badger-theme)
-  (require-package 'distinguished-theme)
-  (require-package 'challenger-deep-theme))
+  ;; most popular 100 themes
+  (my-install-popular-themes
+   '(
+     afternoon-theme
+     alect-themes
+     ample-theme
+     ample-zen-theme
+     anti-zenburn-theme
+     apropospriate-theme
+     atom-dark-theme
+     atom-one-dark-theme
+     badwolf-theme
+     base16-theme
+     birds-of-paradise-plus-theme
+     bubbleberry-theme
+     busybee-theme
+     cherry-blossom-theme
+     clues-theme
+     color-theme-sanityinc-solarized
+     color-theme-sanityinc-tomorrow
+     cyberpunk-theme
+     dakrone-theme
+     darkburn-theme
+     darkmine-theme
+     darkokai-theme
+     darktooth-theme
+     django-theme
+     doom-themes
+     dracula-theme
+     espresso-theme
+     exotica-theme
+     eziam-theme
+     farmhouse-theme
+     flatland-theme
+     flatui-theme
+     gandalf-theme
+     gotham-theme
+     grandshell-theme
+     gruber-darker-theme
+     gruvbox-theme
+     hc-zenburn-theme
+     hemisu-theme
+     heroku-theme
+     inkpot-theme
+     ir-black-theme
+     jazz-theme
+     jbeans-theme
+     kaolin-themes
+     leuven-theme
+     light-soap-theme
+     lush-theme
+     madhat2r-theme
+     majapahit-theme
+     material-theme
+     minimal-theme
+     moe-theme
+     molokai-theme
+     monochrome-theme
+     monokai-theme
+     mustang-theme
+     naquadah-theme
+     noctilux-theme
+     nord-theme
+     obsidian-theme
+     occidental-theme
+     oldlace-theme
+     omtose-phellack-theme
+     organic-green-theme
+     phoenix-dark-mono-theme
+     phoenix-dark-pink-theme
+     planet-theme
+     professional-theme
+     purple-haze-theme
+     railscasts-theme
+     rebecca-theme
+     reverse-theme
+     seti-theme
+     smyx-theme
+     soft-charcoal-theme
+     soft-morning-theme
+     soft-stone-theme
+     solarized-theme
+     soothe-theme
+     spacegray-theme
+     spacemacs-theme
+     srcery-theme
+     subatomic-theme
+     subatomic256-theme
+     sublime-themes
+     sunny-day-theme
+     tango-2-theme
+     tango-plus-theme
+     tangotango-theme
+     tao-theme
+     toxi-theme
+     twilight-anti-bright-theme
+     twilight-bright-theme
+     twilight-theme
+     ujelly-theme
+     underwater-theme
+     white-sand-theme
+     zen-and-art-theme
+     zenburn-theme
+     zerodark-theme
+     )))
 ;; }}
 
 ;; kill buffer without my confirmation

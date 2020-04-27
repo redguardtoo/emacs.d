@@ -1,9 +1,9 @@
 # -*- mode: snippet -*-
-# name: try { ... } catch (e) { ... }
+# name: try { ... } catch (err) { ... }
 # key: try
 # --
 try {
   $0
-} catch (e) {
-  console.log('e=', e)
+} catch (err) {
+  console.log('error=', err);
 }

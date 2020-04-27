@@ -2,12 +2,12 @@
 
 ;;; Copyright (C) 2008 Paul Huff
 ;;; Copyright (C) 2015 Stefano Mazzucco
-;;; Copyright (C) 2016-2017 Chen Bin
+;;; Copyright (C) 2016-2020 Chen Bin
 
 ;;; Author: Paul Huff <paul.huff@gmail.com>, Stefano Mazzucco <MY FIRST NAME - AT - CURSO - DOT - RE>
 ;;; Maintainer: Chen Bin <chenbin.sh AT gmail DOT com>
 ;;; Created: 15 Feb 2014
-;;; Version: 1.1.1
+;;; Version: 1.2.0
 ;;; URL: https://github.com/redguardtoo/js-comint
 ;;; Package-Requires: ((emacs "24.3"))
 ;;; Keywords: javascript, node, inferior-mode, convenience
@@ -50,7 +50,7 @@
 ;;  and the `js-comint-program-arguments' list to the executable that runs
 ;;  the JS interpreter and the arguments to pass to it respectively.
 ;;  For example, on windows you might need below setup:
-;;    (setq inferior-js-program-command "C:/Program Files/nodejs/node.exe")
+;;    (setq js-comint-program-command "C:/Program Files/nodejs/node.exe")
 ;;
 ;;  After setup, do: `M-x js-comint-repl'
 ;;  Away you go.
@@ -92,6 +92,10 @@
 
 (defcustom js-comint-program-command "node"
   "JavaScript interpreter."
+  :group 'js-comint)
+
+(defcustom js-comint-set-env-when-startup t
+  "Set environment variable NODE_PATH automatically during startup."
   :group 'js-comint)
 
 (defvar js-comint-module-paths '()
@@ -214,8 +218,8 @@ Return a string representing the node version."
    ((not js-comint-module-paths)
     (message "`js-comint-module-paths' is empty."))
    (t
-    (let* ((dir (completing-read "Directory to delete: "
-                                 js-comint-module-paths)))
+    (let* ((dir (ido-completing-read "Directory to delete: "
+                                     js-comint-module-paths)))
       (when dir
         (setq js-comint-module-paths
               (delete dir js-comint-module-paths))
@@ -335,13 +339,22 @@ The environment variable \"NODE_PATH\" is setup by `js-comint-module-paths'."
                                  js-comint-program-command
                                  js-comint-program-arguments)))
       (when js-use-nvm
-        (unless (featurep 'nvm)
-          (require 'nvm))
-        (unless js-nvm-current-version
-          (js-comint-select-node-version)))
-      (setq js-comint-program-arguments (split-string cmd))
+        (unless (featurep 'nvm) (require 'nvm))
+        (unless js-nvm-current-version (js-comint-select-node-version)))
+
+            (setq js-comint-program-arguments (split-string cmd))
       (setq js-comint-program-command (pop js-comint-program-arguments)))))
-  (js-comint-start-or-switch-to-repl))
+
+  ;; set NOT_PATH automatically
+  (cond
+   ((and js-comint-set-env-when-startup
+             (file-exists-p (js-comint--suggest-module-path)))
+    (let* ((js-comint-module-paths (nconc (list (file-truename (js-comint--suggest-module-path)))
+                                          js-comint-module-paths)))
+      (js-comint-start-or-switch-to-repl)))
+   (t
+    (js-comint-start-or-switch-to-repl))))
+
 (defalias 'run-js 'js-comint-repl)
 
 (defun js-comint-send-string (str)
@@ -357,7 +370,6 @@ If no region selected, you could manually input javascript expression."
   (let* ((str (if (region-active-p)
                   (buffer-substring-no-properties (region-beginning) (region-end))
                 (read-string "input js expression: "))))
-    (message "str=%s" str)
     (js-comint-send-string str)))
 
 ;;;###autoload
@@ -422,6 +434,8 @@ If no region selected, you could manually input javascript expression."
   ;; Ignore duplicates
   (setq comint-input-ignoredups t)
   (add-hook 'comint-output-filter-functions 'js-comint-filter-output nil t)
+  (process-put (js-comint-get-process)
+               'adjust-window-size-function (lambda (_process _windows) ()))
   (use-local-map js-comint-mode-map)
   (ansi-color-for-comint-mode-on))
 

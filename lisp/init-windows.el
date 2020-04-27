@@ -130,13 +130,12 @@ Always focus on bigger window."
       (define-key map (kbd "M-8") 'winum-select-window-8)
       map))
 
-(unless (featurep 'winum) (require 'winum))
-(eval-after-load 'winum
-  '(progn
-     (setq winum-format "%s")
-     (setq winum-mode-line-position 0)
-     (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
-     (winum-mode 1)))
+(my-ensure 'winum)
+(with-eval-after-load 'winum
+  (setq winum-format "%s")
+  (setq winum-mode-line-position 0)
+  (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold)
+  (winum-mode 1))
 ;; }}
 
 (defun toggle-full-window()

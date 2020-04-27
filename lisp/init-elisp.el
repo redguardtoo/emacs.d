@@ -1,9 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(add-auto-mode 'emacs-lisp-mode
-               "\\.emacs-project\\'"
-               "archive-contents\\'"
-               "\\.emacs\\.bmk\\'" )
 
 ;; @see http://blog.urth.org/2011/06/02/flymake-versus-the-catalyst-restarter/
 (defun flymake-create-temp-intemp (file-name prefix)
@@ -69,10 +65,8 @@
 
 (defun elisp-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-    (when (require 'eldoc nil t)
-      (setq eldoc-idle-delay 0.2)
-      (setq eldoc-echo-area-use-multiline-p t)
-      (turn-on-eldoc-mode))
+    (my-ensure 'eldoc)
+    (turn-on-eldoc-mode)
     (enable-paredit-mode)
     (rainbow-delimiters-mode t)
     (set-up-hippie-expand-for-elisp)

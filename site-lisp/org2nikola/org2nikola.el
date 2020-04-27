@@ -45,12 +45,10 @@
   "Produce more verbose metadata required by new version of nikola 7.7+.
 `nikola plugin -i upgrade_metadata;nikola upgrade_metadata' to upgrade legacy metadata.")
 
-(defvar org2nikola-code-prettify-type "highlight.js"
-  "Renderred code for certain type. could be nil,
-\"google-prettify\", \"highlight.js\".")
-
 (defvar org2nikola-prettify-unsupported-language
-  '(elisp "lisp"
+  '(conf "ini"
+    rjsx "jsx"
+    elisp "lisp"
     emacs-lisp "lisp"))
 
 (defcustom org2nikola-after-hook nil
@@ -663,23 +661,12 @@ Shamelessly copied from org2blog/wp-replace-pre()."
               (delete-region code-start code-end)
               ;; Stripping out all the code highlighting done by htmlize
               (setq code (replace-regexp-in-string "<.*?>" "" code))
-              (cond
-               ((string= org2nikola-code-prettify-type "google-prettify")
-                ;; google prettify
-                ;; class linenums will add stripes which will destory the 3rd party skins
-                (insert (concat "\n<pre class=\"prettyprint lang-"
-                                (org2nikola-fix-unsupported-language lang)
-                                "\">"
-                                code
-                                "</pre>\n"))
-                )
-               (t
-                ;; default is highlight.js, it's the best!
-                (insert (concat "\n<pre><code class=\"lang-"
-                                (org2nikola-fix-unsupported-language lang)
-                                "\">"
-                                code
-                                "</code></pre>\n")))))))
+              ;; default is highlight.js, it's the best!
+              (insert (concat "\n<pre><code class=\"lang-"
+                              (org2nikola-fix-unsupported-language lang)
+                              "\">"
+                              code
+                              "</code></pre>\n")))))
         ;; Get the new html!
         (setq html (buffer-substring-no-properties (point-min) (point-max))))))
   html)
@@ -737,9 +724,8 @@ Shamelessly copied from org2blog/wp-replace-pre()."
     ;; html file
     (setq html-text (org2nikola-export-into-html-text))
 
-    (when org2nikola-code-prettify-type
-      (save-excursion
-        (setq html-text (org2nikola-replace-pre html-text))))
+    (save-excursion
+      (setq html-text (org2nikola-replace-pre html-text)))
     ;; post content should NOT contain title
     ;; both org 8 and org 9
     (setq html-text (replace-regexp-in-string (format "<h[23] .*%s.*" title) "" html-text))

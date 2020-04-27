@@ -5,6 +5,10 @@
 ;; enable evil-mode
 (evil-mode 1)
 
+;; @see https://github.com/syl20bnr/evil-iedit-state#key-bindings
+;; Don't know why it's not loaded if placed in elpa
+(local-require 'evil-iedit-state)
+
 (defvar my-use-m-for-matchit nil
   "If t, use \"m\" key for `evil-matchit-mode'.
 And \"%\" key is also retored to `evil-jump-item'.")
@@ -305,7 +309,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (forward-line 1)
     (evil-search search t t (point))))
 
-;; the original "gd" or `evil-goto-definition' now try `imenu', `xref', search string to `point-min'
+;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
+;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
 (evil-define-motion my-evil-goto-definition ()
   "Go to definition or first occurrence of symbol under point in current buffer."
@@ -315,10 +320,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
          (search (format "\\_<%s\\_>" (regexp-quote string)))
          ientry ipos)
     ;; load imenu if available
-    (unless (featurep 'imenu)
-      (condition-case nil
-          (require 'imenu)
-        (error nil)))
+    (my-ensure 'imenu)
+
     (if (null string)
         (user-error "No symbol under cursor")
       (setq isearch-forward t)
@@ -406,7 +409,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun counsel-evil-goto-global-marker ()
   "Goto global evil marker."
   (interactive)
-  (unless (featurep 'counsel-etags) (require 'counsel-etags))
+  (my-ensure 'counsel-etags)
   (ivy-read "Goto global evil marker"
             evil-global-markers-history
             :action (lambda (m)
@@ -431,12 +434,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :states '(normal visual))
 
 (my-comma-leader-def
+  "," 'evilnc-comment-operator
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
   "ef" 'end-of-defun
   "m" 'evil-set-marker
-  "em" 'erase-message-buffer
+  "em" 'my-erase-visible-buffer
   "eb" 'eval-buffer
   "sd" 'sudo-edit
   "sc" 'scratch
@@ -489,8 +493,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "yy" 'counsel-browse-kill-ring
   "cf" 'counsel-grep ; grep current buffer
   "gf" 'counsel-git ; find file
-  "gg" 'counsel-git-grep-by-selected ; quickest grep should be easy to press
-  "gm" 'counsel-git-find-my-file
+  "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
@@ -502,7 +505,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "ii" 'my-imenu-or-list-tag-in-current-file
-  "ij" 'rimenu-jump
   "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
@@ -510,7 +512,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "tb" 'dumb-jump-back
   "tm" 'my-git-timemachine
   ;; toggle overview,  @see http://emacs.wordpress.com/2007/01/16/quick-and-dirty-code-folding/
-  "ov" 'my-overview-of-current-buffer
   "oo" 'compile
   "c$" 'org-archive-subtree ; `C-c $'
   ;; org-do-demote/org-do-premote support selected region
@@ -549,10 +550,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
-  "ss" (lambda ()
-         (interactive)
-         ;; better performance, got Cygwin grep installed on Windows always
-         (counsel-grep-or-swiper (if (region-active-p) (my-selected-str))))
+  "ss" 'my-swiper
   "hd" 'describe-function
   "hf" 'find-function
   "hk" 'describe-key
@@ -571,7 +569,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "otl" 'org-toggle-link-display
   "oa" '(lambda ()
           (interactive)
-          (unless (featurep 'org) (require 'org))
+          (my-ensure 'org)
           (counsel-org-agenda-headlines))
   "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
@@ -599,8 +597,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xc" 'my-switch-to-shell-or-ansi-term
-  "xz" 'my-switch-to-shell-or-ansi-term
+  "xc" 'my-switch-to-shell
+  "xz" 'my-switch-to-shell
   "vf" 'vc-rename-file-and-buffer
   "vc" 'vc-copy-file-and-rename-buffer
   "xv" 'vc-next-action ; 'C-x v v' in original
@@ -624,35 +622,31 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :prefix "SPC"
   :states '(normal visual))
 
+;; Please check "init-ediff.el" which contains `my-space-leader-def' code too
 (my-space-leader-def
-  "ee" 'my-swap-sexps
-  "nn" 'my-goto-next-hunk
-  "pp" 'my-goto-previous-hunk
-  "pc" 'my-dired-redo-from-commands-history
-  "pw" 'pwd
+  "n" 'my-goto-next-hunk
+  "p" 'my-goto-previous-hunk
+  "ch" 'my-dired-redo-from-commands-history
+  "dd" 'pwd
   "mm" 'counsel-evil-goto-global-marker
   "mf" 'mark-defun
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
-  "se" 'evil-iedit-state/iedit-mode ; start iedit in emacs
+  "ee" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
   "sc" 'shell-command
   "ll" 'my-wg-switch-workgroup ; load windows layout
   "kk" 'scroll-other-window
   "jj" 'scroll-other-window-up
-  "rt" 'random-healthy-color-theme
+  "hh" 'random-healthy-color-theme
   "yy" 'hydra-launcher/body
-  "tt" 'my-toggle-indentation
+  "ii" 'my-toggle-indentation
   "g" 'hydra-git/body
-  "ps" 'profiler-start
-  "pr" 'profiler-report
-  "ud" 'my-gud-gdb
   "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
   "uu" 'gud-run
   "up" 'gud-print
-  "ue" 'gud-cls
   "un" 'gud-next
   "us" 'gud-step
   "ui" 'gud-stepi
@@ -721,10 +715,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
  ;; Search character(s) at the beginning of word
  ;; See https://github.com/abo-abo/avy/issues/70
  ;; You can change the avy font-face in ~/.custom.el:
- ;;  (eval-after-load 'avy
- ;;   '(progn
- ;;      (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
- ;;      (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3")))
+ ;;  (with-eval-after-load 'avy
+ ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
+ ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
  ";" 'ace-pinyin-jump-char-2
  "w" 'avy-goto-word-or-subword-1
  "a" 'avy-goto-char-timer
@@ -779,6 +772,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ evil-nerd-commenter
 (evilnc-default-hotkeys t)
+(define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
@@ -793,7 +787,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun my-evilnc-comment-or-uncomment-paragraphs (&optional num)
   "Comment or uncomment NUM paragraphs which might contain html tags."
   (interactive "p")
-  (unless (featurep 'evil-nerd-commenter) (require 'evil-nerd-commenter))
+  (my-ensure 'evil-nerd-commenter)
   (let* ((paragraph-region (evilnc--get-one-paragraph-region))
          (html-p (ignore-errors
                    (or (save-excursion
@@ -808,7 +802,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun my-imenu-comments ()
   "Imenu display comments."
   (interactive)
-  (unless (featurep 'counsel) (require 'counsel))
+  (my-ensure 'counsel)
   (when (fboundp 'evilnc-imenu-create-index-function)
     (let* ((imenu-create-index-function 'evilnc-imenu-create-index-function))
       (counsel-imenu))))
@@ -842,7 +836,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
 ;; same keybindgs as spacemacs:
-;;  - "SPC s e" to start `iedit-mode'
+;;  - Start `iedit-mode' by `evil-iedit-state/iedit-mode'
 ;;  - "TAB" to toggle current occurrence
 ;;  - "n" next, "N" previous (obviously we use "p" for yank)
 ;;  - "gg" the first occurence, "G" the last occurence
@@ -873,42 +867,53 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 ;; }}
 
+;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company
+;; Run "grep fg ~/.emacs.d/misc/english-words.txt", got "afghan".
+;; "afgan" is rarely used when programming
+(general-imap "f"
+  (general-key-dispatch 'self-insert-command
+    :timeout 0.3
+    "g" 'my-counsel-company))
 
-(defun my-switch-to-shell-or-ansi-term ()
-  "Switch to shell or terminal."
+(defun my-switch-to-shell ()
+  "Switch to built in or 3rd party shell."
   (interactive)
   (cond
-   ((fboundp 'switch-to-shell-or-ansi-term)
-    (switch-to-shell-or-ansi-term))
+   ((display-graphic-p)
+    (switch-to-builtin-shell))
    (t
     (suspend-frame))))
 
 ;; press ",xx" to expand region
 ;; then press "c" to contract, "x" to expand
-(eval-after-load "evil"
-  '(progn
-     (setq expand-region-contract-fast-key "c")
-     ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
-     ;; evil 1.0.8 search word instead of symbol
-     (setq evil-symbol-word-search t)
+(with-eval-after-load 'evil
+  ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
+  ;; Restore "M-." to original binding command
+  (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
+  (setq expand-region-contract-fast-key "c")
+  ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
+  ;; evil 1.0.8 search word instead of symbol
+  (setq evil-symbol-word-search t)
 
-     ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
-     ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
-     ;; (defalias #'forward-evil-word #'forward-evil-symbol)
+  ;; don't add replaced text to `kill-ring'
+  (setq evil-kill-on-visual-paste nil)
 
-     ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
-     (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
-       `(eval-after-load (quote ,(if r r m))
-          '(progn
-             (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-             ;; force update evil keymaps after git-timemachine-mode loaded
-             (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps))))
+  ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
+  ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
+  ;; (defalias #'forward-evil-word #'forward-evil-symbol)
 
-     (adjust-major-mode-keymap-with-evil "git-timemachine")
+  ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
+  (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
+    `(with-eval-after-load (quote ,(if r r m))
+          (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+          ;; force update evil keymaps after git-timemachine-mode loaded
+          (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
 
-     ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
-     ;; Cursor is always black because of evil.
-     ;; Here is the workaround
-     (setq evil-default-cursor t)))
+  (adjust-major-mode-keymap-with-evil "git-timemachine")
+
+  ;; @see https://bitbucket.org/lyro/evil/issue/342/evil-default-cursor-setting-should-default
+  ;; Cursor is always black because of evil.
+  ;; Here is the workaround
+  (setq evil-default-cursor t))
 
 (provide 'init-evil)

@@ -4,9 +4,7 @@
 ;; Without this comment emacs25 adds (package-initialize) here
 ;; (package-initialize)
 
-(push (expand-file-name "~/.emacs.d/lisp") load-path)
-
-(let* ((minver "24.4"))
+(let* ((minver "25.1"))
   (when (version< emacs-version minver)
     (error "Emacs v%s or higher is required." minver)))
 
@@ -21,9 +19,9 @@
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397
-(eval-after-load "enriched"
-  '(defun enriched-decode-display-prop (start end &optional param)
-     (list start end)))
+(with-eval-after-load 'enriched
+  (defun enriched-decode-display-prop (start end &optional param)
+    (list start end)))
 ;; }}
 ;;----------------------------------------------------------------------------
 ;; Which functionality to enable (use t or nil for true and false)
@@ -38,7 +36,10 @@
 (setq *emacs26* (>= emacs-major-version 26))
 (setq *no-memory* (cond
                    (*is-a-mac*
-                    (< (string-to-number (nth 1 (split-string (shell-command-to-string "sysctl hw.physmem")))) 4000000000))
+                    ;; @see https://discussions.apple.com/thread/1753088
+                    ;; "sysctl -n hw.physmem" does not work
+                    (<= (string-to-number (shell-command-to-string "sysctl -n hw.memsize"))
+                        (* 4 1024 1024)))
                    (*linux* nil)
                    (t nil)))
 
@@ -50,9 +51,12 @@
   (setq gc-cons-percentage 0.5)
   (run-with-idle-timer 5 t #'garbage-collect))
 
+(defun my-vc-merge-p ()
+  (boundp 'startup-now))
+
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
-  (when (or (not maybe-disabled) (not (boundp 'startup-now)))
+  (when (or (not maybe-disabled) (not (my-vc-merge-p)))
     (load (file-truename (format "~/.emacs.d/lisp/%s" pkg)) t t)))
 
 (defun local-require (pkg)
@@ -90,11 +94,11 @@
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
   (require-init 'init-modeline)
   (require-init 'init-utils)
+  (require-init 'init-file-type)
   (require-init 'init-elpa)
   (require-init 'init-exec-path t) ;; Set up $PATH
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling t)
-  (require-init 'init-theme t)
   (require-init 'init-macos-keys t)
   (require-init 'init-gui-frames t)
   (require-init 'init-uniquify t)
@@ -107,7 +111,6 @@
   (require-init 'init-org t)
   (require-init 'init-css t)
   (require-init 'init-python t)
-  (require-init 'init-ruby-mode t)
   (require-init 'init-lisp t)
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
@@ -115,7 +118,6 @@
   (require-init 'init-gud t)
   (require-init 'init-linum-mode)
   (require-init 'init-git t)
-  ;; (require-init 'init-gist)
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
   (require-init 'init-ctags t)
@@ -134,8 +136,13 @@
 
   ;; projectile costs 7% startup time
 
+  ;; don't play with color-theme in light weight mode
+  ;; color themes are already installed in `init-elpa.el'
+  (require-init 'init-theme)
+
   ;; misc has some crucial tools I need immediately
   (require-init 'init-essential)
+  ;; handy tools though not must have
   (require-init 'init-misc t)
 
   (require-init 'init-emacs-w3m t)
@@ -144,7 +151,7 @@
   (require-init 'init-writting t)
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
-  (require-init 'init-evil) ; init-evil dependent on init-clipboard
+  ;(require-init 'init-evil) ; init-evil dependent on init-clipboard
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
@@ -159,7 +166,7 @@
   (setq load-path (cdr load-path))
   (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
 
-  (unless (boundp 'startup-now)
+  (unless (my-vc-merge-p)
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
     (load (expand-file-name "~/.custom.el") t nil)

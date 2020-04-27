@@ -19,16 +19,11 @@
 
 (setq-default initial-scratch-message (show-scratch-buffer-message))
 
-;; racket
-(add-auto-mode 'lisp-mode "\\.rkt\\'")
-
 ;; A quick way to jump to the definition of a function given its key binding
 (global-set-key (kbd "C-h K") 'find-function-on-key)
 
-(eval-after-load 'paredit
-  '(progn
-     (diminish 'paredit-mode " Par")))
-
+(with-eval-after-load 'paredit
+  (diminish 'paredit-mode " Par"))
 
 (defvar paredit-minibuffer-commands '(eval-expression
                                       pp-eval-expression
@@ -37,27 +32,11 @@
                                       ibuffer-do-view-and-eval)
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-(defun my-swap-sexps (&optional num)
-  "Swap two lisp sexps."
-  (interactive "P")
-  (let* ((c (following-char)))
-    (cond
-     (num
-      (unless (eq c 40)
-        (goto-char (line-beginning-position))))
-     (t
-      (unless (eq c 40)
-        (goto-char (line-end-position))
-        (goto-char (+ (point) 1)))))
-    (transpose-sexps 1)
-    (backward-sexp)))
-
 ;; @see https://github.com/slime/slime
-(eval-after-load 'slime
-  '(progn
-     ;; Please install sbcl at first
-     (setq inferior-lisp-program "sbcl")
-     (setq slime-contribs '(slime-fancy))))
+(with-eval-after-load 'slime
+  ;; Please install sbcl at first
+  (setq inferior-lisp-program "sbcl")
+  (setq slime-contribs '(slime-fancy)))
 
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes

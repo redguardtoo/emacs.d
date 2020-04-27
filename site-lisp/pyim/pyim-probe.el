@@ -169,6 +169,12 @@
     (and (member str-before-1 puncts)
          (member (char-to-string char) puncts))))
 
+(defun pyim-probe-org-latex-mode ()
+  "org-mode 中的 latex fragment 和 latex 宏指令中自动切换到英文输入."
+  (when (eq major-mode 'org-mode)
+    (or (not (eq (org-inside-LaTeX-fragment-p) nil))
+        (not (eq (org-inside-latex-macro-p) nil)))))
+
 ;; * Footer
 (provide 'pyim-probe)
 

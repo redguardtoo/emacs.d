@@ -1,14 +1,62 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defun my-kill-process-buffer-when-exit (proc)
+  "Kill buffer of process PROC when it's terminated."
+  (when (memq (process-status proc) '(signal exit))
+    (kill-buffer (process-buffer proc))))
+
+;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
+;; Enable auto-completion in `shell'.
+(with-eval-after-load 'shell
+  ;; `comint-terminfo-terminal' is invented in Emacs 26
+  (unless (and (boundp 'comint-terminfo-terminal)
+               comint-terminfo-terminal)
+    (setq comint-terminfo-terminal "dumb"))
+  (native-complete-setup-bash))
+
+;; `bash-completion-tokenize' can handle garbage output of "complete -p"
+(defadvice bash-completion-tokenize (around bash-completion-tokenize-hack activate)
+  (let* ((args (ad-get-args 0))
+         (beg (nth 0 args))
+         (end (nth 1 args)))
+    ;; original code extracts tokens line by line of output of "complete -p"
+    (cond
+     ((not (string-match-p "^complete " (buffer-substring beg end)))
+      ;; filter out some wierd lines
+      (setq ad-return-value nil))
+     (t
+      ad-do-it))))
+
+(defun my-exit-shell-process (process event)
+  "Called when the shell PROCESS is stopped.  EVENT is ignored."
+  (my-kill-process-buffer-when-exit process))
+
+(defun shell-mode-hook-setup ()
+  "Set up `shell-mode'."
+  ;; hook `completion-at-point', optional
+  (add-hook 'completion-at-point-functions #'native-complete-at-point nil t)
+  (setq-local company-backends '((company-files company-native-complete)))
+  ;; `company-native-complete' is better than `completion-at-point'
+  (local-set-key (kbd "TAB") 'company-complete)
+  ;; try to kill buffer when exit shell
+  (let* ((proc (get-buffer-process (current-buffer)))
+         (shell (file-name-nondirectory (car (process-command proc)))))
+    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
+    (unless (string-match shell-dumb-shell-regexp shell)
+      (set-process-sentinel proc #'my-exit-shell-process))))
+(add-hook 'shell-mode-hook 'shell-mode-hook-setup)
+;; }}
+
+
+(defun eshell-mode-hook-setup ()
+  "Set up `eshell-mode'."
+  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+  (local-set-key (kbd "M-n") 'counsel-esh-history))
+(add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
+
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-;; kill the buffer when terminal is exited
-(defadvice term-sentinel (around my-advice-term-sentinel (proc msg))
-  (if (memq (process-status proc) '(signal exit))
-      (let* ((buffer (process-buffer proc)))
-        ad-do-it
-        (kill-buffer buffer))
-    ad-do-it))
-(ad-activate 'term-sentinel)
+(defadvice term-sentinel (after term-sentinel-after-hack activate)
+  (my-kill-process-buffer-when-exit (nth 0 (ad-get-args 0))))
 
 ;; always use bash
 
@@ -54,26 +102,25 @@
 
 (setq multi-term-program my-term-program)
 ;; check `term-bind-key-alist' for key bindings
-(eval-after-load 'multi-term
-  '(progn
-     (dolist (p '(("C-p" . term-send-up)
-                  ("C-n" . term-send-down)
-                  ("C-s" . swiper)
-                  ("C-r" . term-send-reverse-search-history)
-                  ("C-m" . term-send-raw)
-                  ("C-k" . term-send-kill-whole-line)
-                  ;("C-y" . yank)
-                  ("C-y" . term-paste)
-                  ("C-_" . term-send-raw)
-                  ("M-f" . term-send-forward-word)
-                  ("M-b" . term-send-backward-word)
-                  ("M-K" . term-send-kill-line)
-                  ("M-p" . previous-line)
-                  ("M-n" . next-line)
-                  ("M-y" . yank-pop)
-                  ("M-." . term-send-raw-meta)))
-       (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
-       (add-to-list 'term-bind-key-alist p))))
+(with-eval-after-load 'multi-term
+  (dolist (p '(("C-p" . term-send-up)
+               ("C-n" . term-send-down)
+               ("C-s" . swiper)
+               ("C-r" . term-send-reverse-search-history)
+               ("C-m" . term-send-raw)
+               ("C-k" . term-send-kill-whole-line)
+               ;("C-y" . yank)
+               ("C-y" . term-paste)
+               ("C-_" . term-send-raw)
+               ("M-f" . term-send-forward-word)
+               ("M-b" . term-send-backward-word)
+               ("M-K" . term-send-kill-line)
+               ("M-p" . previous-line)
+               ("M-n" . next-line)
+               ("M-y" . yank-pop)
+               ("M-." . term-send-raw-meta)))
+    (setq term-bind-key-alist (delq (assoc (car p) term-bind-key-alist) term-bind-key-alist))
+    (add-to-list 'term-bind-key-alist p)))
 ;; }}
 
 (provide 'init-term-mode)
