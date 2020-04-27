@@ -277,23 +277,37 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
   "Get clipboard content."
   (let* ((powershell-program (executable-find "powershell.exe")))
     (cond
-     ((and (memq system-type '(gnu gnu/linux gnu/kfreebsd))
-           powershell-program)
+     ;; Windows
+     ((fboundp 'w32-get-clipboard-data)
+      ;; `w32-set-clipboard-data' makes `w32-get-clipboard-data' always return null
+      (w32-get-clipboard-data))
+
+     ;; Windows 10
+     (powershell-program
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
            (call-process powershell-program nil t nil "-command" "Get-Clipboard")))))
+
+     ;; xclip can handle
      (t
       (xclip-get-selection 'clipboard)))))
 
 (defun my-pclip (str-val)
-  "Set clipboard content."
+  "Put STR-VAL into clipboard."
   (let* ((win64-clip-program (executable-find "clip.exe")))
     (cond
-     ((and win64-clip-program (memq system-type '(gnu gnu/linux gnu/kfreebsd)))
+     ;; Windows
+     ((fboundp 'w32-set-clipboard-data)
+      (w32-set-clipboard-data str-val))
+
+     ;; Windows 10
+     ((and win64-clip-program)
       (with-temp-buffer
         (insert str-val)
         (call-process-region (point-min) (point-max) win64-clip-program)))
+
+     ;; xclip can handle
      (t
       (xclip-set-selection 'clipboard str-val)))))
 ;; }}
