@@ -100,11 +100,7 @@ If N is not nil, only list files in current project."
   (shell-command "history -r") ; reload history
   (let* ((collection
           (nreverse
-           (split-string (with-temp-buffer
-                           (insert-file-contents (file-truename "~/.bash_history"))
-                           (buffer-string))
-                         "\n"
-                         t))))
+           (my-read-lines (file-truename "~/.bash_history")))))
     (ivy-read (format "Bash history:") collection
               :action (lambda (val)
                         (kill-new val)

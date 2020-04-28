@@ -191,7 +191,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
   "Clean ~/.aspell.pws (dictionary used by aspell)."
   (interactive)
   (let* ((dict (file-truename "~/.aspell.en.pws"))
-         (lines (read-lines dict))
+         (lines (my-read-lines dict))
          ;; sort words
          (aspell-words (sort (cdr lines) 'string<)))
     (with-temp-file dict

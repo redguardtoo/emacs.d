@@ -37,18 +37,28 @@
            load-path))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
-(defun get-string-from-file (file)
+(defun my-get-string-from-file
+    (file)
   "Return FILE's content."
   (with-temp-buffer
     (insert-file-contents file)
     (buffer-string)))
 
-(defun read-lines (file)
+(defun my-read-lines (file)
   "Return a list of lines of FILE."
-  (with-temp-buffer
-    (insert-file-contents file)
-    (split-string (buffer-string) "\n" t)))
+  (split-string (my-get-string-from-file file) "\n" t))
 ;; }}
+
+(defun my-write-to-file (str file)
+  "Write STR to FILE."
+  (with-temp-buffer
+    (insert str)
+    (write-file (file-truename file))))
+
+(defun my-write-to-missing-file (str file)
+  "Write STR to FILE if it's missing."
+  (unless (file-exists-p file)
+    (my-write-to-file str file)))
 
 (defun nonempty-lines (s)
   (split-string s "[\r\n]+" t))

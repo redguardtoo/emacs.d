@@ -240,10 +240,8 @@
         yas-next-field-or-maybe-expand
         ))
 
-(unless (file-exists-p (file-truename keyfreq-file))
-  (with-temp-buffer
-    (insert "()")
-    (write-file (file-truename keyfreq-file))))
+(with-eval-after-load 'keyfreq
+  (my-write-to-missing-file "()" keyfreq-file))
 
 ;; And use keyfreq-show to see how many times you used a command.
 ;; It's recommended to use `keyfreq-mode' (could be in "~/.custom.el").
