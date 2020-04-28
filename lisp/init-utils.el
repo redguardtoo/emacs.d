@@ -33,7 +33,7 @@
                  (mapcar (lambda (dir)
                            (unless (string-match-p "^\\." dir)
                              (expand-file-name dir)))
-                         (directory-files "~/.emacs.d/site-lisp/")))
+                         (directory-files my-site-lisp-dir)))
            load-path))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
