@@ -7,7 +7,7 @@
 
 ;; Package-Requires: ((counsel "0.13.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.6
+;; Version: 1.9.7
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -40,6 +40,8 @@
 ;;   Or just use native imenu with below setup,
 ;;      (setq imenu-create-index-function
 ;;            'counsel-etags-imenu-default-create-index-function)
+;;
+;;   Use `counsel-etags-imenu-excluded-items' to exclude fake items extracted by ctags.
 ;;
 ;;   `counsel-etags-scan-code' to create tags file
 ;;   `counsel-etags-grep' to grep
@@ -365,6 +367,23 @@ related functions need create and scan files in this folder."
   :group 'counsel-etags
   :type 'string)
 
+(defcustom counsel-etags-imenu-excluded-items
+  '("this"
+    "if"
+    "unless"
+    "import"
+    "const"
+    "public"
+    "private"
+    "for"
+    "while"
+    "export"
+    "declare"
+    "let")
+  "Regex could extract fake imenu items which should be excluded."
+  :group 'counsel-etags
+  :type '(repeat 'string))
+
 (defcustom counsel-etags-candidates-optimize-limit 256
   "Re-order candidates if candidate count is less than this variable's value.
 Candidates whose file path has Levenshtein distance to current file/directory.
@@ -470,14 +489,15 @@ Return nil if it's not found."
         (counsel-etags-win-path executable-name "e")
         (counsel-etags-win-path executable-name "f")
         (counsel-etags-win-path executable-name "g")
-        (counsel-etags-win-path executable-name "h")))
+        (counsel-etags-win-path executable-name "h")
+        executable-name))
    (t
     (if (executable-find executable-name) (executable-find executable-name)))))
 
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.6"))
+  (message "1.9.7"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1270,9 +1290,10 @@ CONTEXT is extra information collected before finding tag definition."
       (counsel-etags-scan-string (shell-command-to-string cmd)
                                  tagname-re
                                  nil
-                                 (push (cons (match-string-no-properties 2)
-                                             (match-string-no-properties 3))
-                                       cands))
+                                 (let* ((k (match-string-no-properties 2))
+                                        (v (match-string-no-properties 3)))
+                                   (unless (member k counsel-etags-imenu-excluded-items)
+                                     (push (cons k v) cands))))
 
       ;; now cands is just name and line number
       ;; we need convert it into imenu items (name . marker)
@@ -1281,8 +1302,8 @@ CONTEXT is extra information collected before finding tag definition."
           (let* ((name (car c)))
             (goto-char (point-min))
             (counsel-etags-forward-line (cdr c))
-            (search-forward name (point-at-eol))
-            (forward-char (- (length name)))
+            (when (search-forward name (point-at-eol) t)
+              (forward-char (- (length name))))
             (push (cons name (point-marker)) imenu-items))))
 
       ;; clean up tmp file

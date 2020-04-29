@@ -43,6 +43,15 @@
                    (*linux* nil)
                    (t nil)))
 
+(defconst my-emacs-d (file-name-as-directory user-emacs-directory)
+  "Directory of emacs.d")
+
+(defconst my-site-lisp-dir (concat my-emacs-d "site-lisp")
+  "Directory of site-lisp")
+
+(defconst my-lisp-dir (concat my-emacs-d "lisp")
+  "Directory of lisp")
+
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
 ;; Emacs 25 does gc too frequently
 (when *emacs25*
@@ -57,16 +66,17 @@
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
   (when (or (not maybe-disabled) (not (my-vc-merge-p)))
-    (load (file-truename (format "~/.emacs.d/lisp/%s" pkg)) t t)))
+    (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
 (defun local-require (pkg)
+  "Require PKG in site-lisp directory."
   (unless (featurep pkg)
     (load (expand-file-name
            (cond
             ((eq pkg 'go-mode-load)
-             (format "~/.emacs.d/site-lisp/go-mode/%s" pkg))
+             (format "%s/go-mode/%s" my-site-lisp-dir pkg))
             (t
-             (format "~/.emacs.d/site-lisp/%s/%s" pkg pkg))))
+             (format "%s/%s/%s" my-site-lisp-dir pkg pkg))))
           t t)))
 
 ;; *Message* buffer should be writable in 24.4+
@@ -164,16 +174,16 @@
   ;; down all `require' statement. So we do this at the end of startup
   ;; NO ELPA package is dependent on "site-lisp/".
   (setq load-path (cdr load-path))
-  (my-add-subdirs-to-load-path "~/.emacs.d/site-lisp/")
+  (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir))
 
   (unless (my-vc-merge-p)
     ;; my personal setup, other major-mode specific setup need it.
-    ;; It's dependent on "~/.emacs.d/site-lisp/*.el"
+    ;; It's dependent on *.el in `my-site-lisp-dir'
     (load (expand-file-name "~/.custom.el") t nil)
 
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
-    (load (setq custom-file (expand-file-name "~/.emacs.d/custom-set-variables.el")) t t)))
+    (load (setq custom-file (expand-file-name (concat my-emacs-d "custom-set-variables.el"))) t t)))
 
 (setq gc-cons-threshold best-gc-cons-threshold)
 

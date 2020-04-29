@@ -17,7 +17,7 @@
 (defun my-yas-reload-all ()
   "Compile and reload yasnippets.  Run the command after adding new snippets."
   (interactive)
-  (yas-compile-directory (file-truename "~/.emacs.d/snippets"))
+  (yas-compile-directory (file-truename (concat my-emacs-d "snippets")))
   (yas-reload-all)
   (yas-minor-mode 1))
 

@@ -307,7 +307,6 @@ This function can be re-used by other major modes after compilation."
                         "\\.sub$"
                         "\\.srt$"
                         "\\.ass$"
-                        ;; ~/.emacs.d/**/*.el included
                         ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
                         ))
 ;; }}
@@ -804,7 +803,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 
 ;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el" or "savehist".
 ;; Any global variable matching `session-globals-regexp' is saved *automatically*.
-(setq session-save-file (expand-file-name "~/.emacs.d/.session"))
+(setq session-save-file (expand-file-name (concat my-emacs-d ".session")))
 (setq session-globals-max-size 2048)
 ;; can store 8Mb string
 (setq session-globals-max-string (* 8 1024 1024))
@@ -1100,7 +1099,7 @@ Including indent-buffer, which should not be called automatically on save."
   (my-ensure 'url)
   (if word (setq word (downcase word)))
   (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
-         (cached-mp3 (file-truename (format "~/.emacs.d/misc/%s.mp3" word)))
+         (cached-mp3 (file-truename (concat my-emacs-d (format "misc/%s.mp3" word))))
          (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
          html-text
          online-mp3)

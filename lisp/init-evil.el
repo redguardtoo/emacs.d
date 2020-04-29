@@ -868,7 +868,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; }}
 
 ;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company
-;; Run "grep fg ~/.emacs.d/misc/english-words.txt", got "afghan".
+;; Run "grep fg english-words.txt", got "afghan".
 ;; "afgan" is rarely used when programming
 (general-imap "f"
   (general-key-dispatch 'self-insert-command

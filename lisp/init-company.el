@@ -102,7 +102,7 @@
            ispell-alternate-dictionary)
       (setq company-ispell-dictionary ispell-alternate-dictionary))
      (t
-       (setq company-ispell-dictionary (file-truename "~/.emacs.d/misc/english-words.txt"))))))
+       (setq company-ispell-dictionary (file-truename (concat my-emacs-d "misc/english-words.txt")))))))
 
 ;; message-mode use company-bbdb.
 ;; So we should NOT turn on company-ispell
