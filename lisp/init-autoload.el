@@ -48,6 +48,8 @@
 (autoload 'fastdef-insert "fastdef" nil t)
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
 (autoload 'org-mime-htmlize "org-mime" nil t)
+(autoload 'org-mime-edit-mail-in-org-mode "org-mime" nil t)
+(autoload 'org-mime-revert-to-plain-text-mail "org-mime" nil t)
 (autoload 'org-mime-org-buffer-htmlize "org-mime" nil t)
 (autoload 'org-mime-org-subtree-htmlize "org-mime" nil t)
 (autoload 'doctest-mode "doctest-mode" "Python doctest editing mode." t)
