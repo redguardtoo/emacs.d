@@ -177,7 +177,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 (if (not (file-exists-p (expand-file-name "~/.backups")))
   (make-directory (expand-file-name "~/.backups")))
-(setq backup-by-coping t ; don't clobber symlinks
+(setq backup-by-copying t ; don't clobber symlinks
       backup-directory-alist '(("." . "~/.backups"))
       delete-old-versions t
       version-control t  ;use versioned backups
