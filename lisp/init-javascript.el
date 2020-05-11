@@ -20,31 +20,14 @@
               js2-enter-indents-newline nil
               js2-bounce-indent-p t)
 
+;; don't waste time on angular patterns, it's updated too frequently
 (setq javascript-common-imenu-regex-list
-      '(("Attribute" " \\([a-z][a-zA-Z0-9-_]+\\) *= *\{[a-zA-Z0-9_.(), ]+\}\\( \\|$\\)" 1)
-        ("Controller" "[. \t]controller([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Controller" "[. \t]controllerAs:[ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Filter" "[. \t]filter([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("State" "[. \t]state[(:][ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Factory" "[. \t]factory([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Global" "^\\(export const\\|const\\) \\([a-zA-Z][a-zA-Z0-9]*\\) =" 2)
-        ("Service" "[. \t]service([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Module" "[. \t]module( *['\"]\\([a-zA-Z0-9_.]+\\)['\"], *\\[" 1)
-        ("ngRoute" "[. \t]when(\\(['\"][a-zA-Z0-9_\/]+['\"]\\)" 1)
-        ("Directive" "[. \t]directive([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Event" "[. \t]\$on([ \t]*['\"]\\([^'\"]+\\)" 1)
-        ("Config" "[. \t]config([ \t]*function *( *\\([^\)]+\\)" 1)
-        ("Config" "[. \t]config([ \t]*\\[ *['\"]\\([^'\"]+\\)" 1)
-        ("OnChange" "[ \t]*\$(['\"]\\([^'\"]*\\)['\"]).*\.change *( *function" 1)
-        ("OnClick" "[ \t]*\$([ \t]*['\"]\\([^'\"]*\\)['\"]).*\.click *( *function" 1)
-        ("Watch" "[. \t]\$watch( *['\"]\\([^'\"]+\\)" 1)
-        ("Function" "function[ \t]+\\([a-zA-Z0-9_$.]+\\)[ \t]*(" 1)
+      '(("Function" "function[ \t]+\\([a-zA-Z0-9_$.]+\\)[ \t]*(" 1)
         ("Function" "^[ \t]*\\([a-zA-Z0-9_$.]+\\)[ \t]*=[ \t]*function[ \t]*(" 1)
         ;; {{ es6 beginning
         ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*([a-zA-Z0-9, ]*) *\{ *$" 1) ;; es6 fn1 () { }
         ("Function" "^[ \t]*\\([A-Za-z_$][A-Za-z0-9_$]+\\)[ \t]*=[ \t]*(?[a-zA-Z0-9, ]*)?[ \t]*=>" 1) ;; es6 fn1 = (e) =>
         ;; }}
-        ("Task" "[. \t]task([ \t]*['\"]\\([^'\"]+\\)" 1)
         ))
 
 ;; js-mode imenu enhancement
