@@ -66,7 +66,7 @@ The candidate could be placed in RLT."
          ;; two weeks is a sprint, minus weekend and days for sprint review and test
          (cmd (format "git --no-pager log %s --name-status --since=\"10 days ago\" --pretty=format:"
                       my-git-recent-files-extra-options))
-         (lines (split-string (shell-command-to-string cmd) "\n+"))
+         (lines (delq nil (delete-dups (split-string (shell-command-to-string cmd) "\n+"))))
          items
          rlt)
     (when lines
@@ -78,7 +78,6 @@ The candidate could be placed in RLT."
          ((= (length items) 3)
           (my-git-extract-file 1 items rlt)
           (my-git-extract-file 2 items rlt)))))
-    (message "rlt=%s" rlt)
     rlt))
 
 (defun my-counsel-recentf (&optional n)
@@ -95,7 +94,7 @@ If N is 2, list files in my recent 20 commits."
     (cond
      ((and (eq n 1) root-dir)
       (setq hint (format "Recent files in %s: " root-dir))
-      (setq files (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) files))))
+      (setq files (delq nil (delete-dups (mapcar (lambda (f) (path-in-directory-p f root-dir)) files)))))
      ((eq n 2)
       (setq hint (format "Files in recent Git commits: "))
       (setq files (my-git-recent-files))))
