@@ -197,6 +197,43 @@
                           (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
       (shell-command (concat cmd " &"))))
 
+  (defun my-extract-mkv-subtitle ()
+    "Use mkvtoolnix to extract mkv subtitle."
+    (interactive)
+    (let* ((file (file-name-nondirectory (dired-file-name-at-point)))
+           (ext (file-name-extension file))
+           (default-directory (file-name-directory (dired-file-name-at-point)))
+           lines
+           trunks
+           track-number)
+      (cond
+       ((not (string= "mkv" ext))
+        (message "Only mkv files can be processed."))
+       ((not (executable-find "mkvextract"))
+        ("Please install mkvtoolnix."))
+       (t
+        ;; split output into trunks
+        (setq trunks (split-string (shell-command-to-string (format "mkvinfo \"%s\"" file))
+                                   "| ?\\+ [A-Z][^\n]+[\n]*"))
+        ;; only interested english subtitle trunk
+        (setq trunks (delq nil (mapcar
+                                (lambda (trunk)
+
+                                  (when (and (string-match "Track type: subtitles" trunk)
+                                             (or (not (string-match "Language: " trunk))
+                                                 (string-match "Language: eng" trunk)))
+                                    trunk))
+                                trunks)))
+        (when (and (> (length trunks) 0)
+                   (string-match "Track number: \\([0-9]+\\)" (car trunks)))
+
+          ;; only extract the track number from the first truck
+          (setq track-number (1- (string-to-number (match-string 1 (car trunks)))))
+          (shell-command (format "mkvextract tracks \"%s\" %s:\"%s.srt\" > /dev/null 2>&1"
+                                 file
+                                 track-number
+                                 (file-name-base file))))))))
+
   (defun my-record-wav-by-mp3 ()
     "Record a wav using meta data from current mp3 file."
     (interactive)
@@ -235,7 +272,10 @@
 [_cc_] Last command         [_ff_] Find         [_dd_] directory
 [_sa_] Fetch all subtitles  [_C_]  Copy
 [_s1_] Fetch on subtitle    [_rb_] Change base
-[_+_] Create directory      [_dd_] Diff 2 files
+[_vv_] Video => Mp3         [_dd_] Diff 2 files
+[_aa_] Recording Wav
+[_ee_] Mkv => Srt
+[_+_] Create directory
 "
     ("sa" (my-fetch-subtitles))
     ("s1" (my-fetch-subtitles (dired-file-name-at-point)))
@@ -245,6 +285,7 @@
     ("dd" (my-copy-file-info 'file-name-directory))
     ("rb" (my-replace-dired-base (car kill-ring)))
     ("vv" my-extract-mp3-from-video)
+    ("ee" my-extract-mkv-subtitle)
     ("aa" my-record-wav-by-mp3)
     ("cc" my-dired-redo-last-command)
     ("zz" my-play-both-mp3-and-wav)

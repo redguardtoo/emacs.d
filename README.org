@@ -220,7 +220,7 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
-- Tweak environment variable PATH so Emacs find ripgrep
+- Tweak environment variable =PATH= so Emacs can find ripgrep
 **** [[http://www.sbcl.org/][sbcl]]
 - Required by [[https://common-lisp.net/project/slime/][SLIME: The Superior Lisp Interaction Mode for Emacs]]
 **** ffmpeg
@@ -230,9 +230,12 @@ It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
+- Check syntax of shell script
 - Required by =flymake-shellcheck=
 **** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
 Please install corresponding Chrome/Firefox addons.
+**** [[https://mkvtoolnix.download/][mkvtoolnix]]
+- Used by hydra command in dired
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
