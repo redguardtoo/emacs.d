@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defun my-lua-mode-setup ()
   (interactive)
   (unless (is-buffer-file-temp)

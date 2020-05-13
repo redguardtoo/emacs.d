@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defun flymake-html-init ()
   "Lint html."
   (let* ((temp-file (flymake-init-create-temp-buffer-copy

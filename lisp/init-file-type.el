@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;;; {{ shell and conf
 (add-auto-mode 'conf-mode
                "\\.[^b][^a][a-zA-Z]*rc$"

@@ -163,6 +163,8 @@
 ;; }}
 
 ;; {{ dired
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (with-eval-after-load 'dired
   (defun my-replace-dired-base (base)
     "Change file name in `wdired-mode'"
