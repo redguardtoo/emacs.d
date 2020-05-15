@@ -7,8 +7,8 @@
 (global-set-key (kbd "C-x 4 U") 'winner-redo)
 
 (my-ensure 'find-file-in-project)
-(global-set-key (kbd "C-x 2") 'ffip-split-window-vertically)
-(global-set-key (kbd "C-x 3") 'ffip-split-window-horizontally)
+(global-set-key (kbd "C-x 2") 'split-window-vertically)
+(global-set-key (kbd "C-x 3") 'split-window-horizontally)
 
 (defun scroll-other-window-up ()
   (interactive)
