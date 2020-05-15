@@ -455,9 +455,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
-  "xd" 'dired
   "xo" 'ace-window
-  "ff" 'toggle-full-window ;; I use WIN+F in i3
+  "ff" 'my-toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
   "tt" 'find-file-in-current-directory
   "jj" 'find-file-in-project-at-point
@@ -523,8 +522,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "qq" 'my-multi-purpose-grep
   "dd" 'counsel-etags-grep-current-directory
   "rr" 'my-counsel-recentf
-  "rh" 'counsel-yank-bash-history ; bash history command => yank-ring
-  "rd" 'counsel-recent-directory
   "da" 'diff-region-tag-selected-as-a
   "db" 'diff-region-compare-with-b
   "di" 'evilmi-delete-items

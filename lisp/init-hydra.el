@@ -13,11 +13,12 @@
 [_B_] New bookmark        [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
 [_m_] Goto bookmark       [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
 [_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
-[_b_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
+[_bb_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
 [_e_] Erase buffer        [_w_] Pronounce word
 [_r_] Erase this buffer   [_E_] Typewriter on
 [_f_] Recent file         [_V_] old typewriter
 [_d_] Recent directory
+[_bh_] Bash history
 [_hr_] Dired CMD history
 [_hh_] Random theme
 [_q_] Quit
@@ -27,6 +28,7 @@
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" counsel-recent-directory)
+  ("bh" counsel-insert-bash-history)
   ("hh" random-healthy-color-theme)
   ("ss" wg-create-workgroup)
   ("ll" my-wg-switch-workgroup)
@@ -51,7 +53,7 @@
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
-  ("b" dianyou-switch-gnus-buffer)
+  ("bb" dianyou-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
   ("q" nil :color red))
 

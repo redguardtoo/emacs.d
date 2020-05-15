@@ -135,7 +135,7 @@ If N is 2, list files in my recent 20 commits."
                                    bookmark-alist)))
             :action #'bookmark-jump))
 
-(defun counsel-yank-bash-history ()
+(defun counsel-insert-bash-history ()
   "Yank the bash history."
   (interactive)
   (shell-command "history -r") ; reload history
@@ -145,7 +145,8 @@ If N is 2, list files in my recent 20 commits."
     (ivy-read (format "Bash history:") collection
               :action (lambda (val)
                         (kill-new val)
-                        (message "%s => kill-ring" val)))))
+                        (message "%s => kill-ring" val)
+                        (insert val)))))
 
 (defun counsel-recent-directory (&optional n)
   "Goto recent directories.
