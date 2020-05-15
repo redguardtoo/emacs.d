@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -56,6 +56,11 @@
 ;;
 ;; Or setup for only one major mode when major mode has its own flyspell setup:
 ;;   (wucuo-setup-major-mode "js2-mode")
+;;
+;; Instead of enabling `flyspell-mode' to check the word when inputting, you can use
+;; `wucuo-spell-check-buffer' to spell check current buffer.
+;; It uses `wucuo-update-interval',`wucuo-spell-check-buffer-max', and
+;; `wucuo-spell-check-buffer-predicate' to ensure buffer checking happen less frequently.
 
 ;;; Code:
 (require 'flyspell)
@@ -119,10 +124,19 @@ If it's nil, do nothing."
   :type '(repeat sexp)
   :group 'wucuo)
 
-(defcustom wucuo-update-interval 60
-  "Interval (seconds) for `wucuo-spell-check-buffer' which calls `flyspell-buffer'."
+(defcustom wucuo-update-interval 16
+  "Interval (seconds) for `wucuo-spell-check-buffer' to actually call `flyspell-buffer'."
   :group 'wucuo
   :type 'integer)
+
+(defcustom wucuo-spell-check-buffer-max (* 128 1024 1024)
+  "Max size of buffer to run `wucuo-spell-check-buffer'."
+  :type 'integer
+  :group 'wucuo)
+
+(defvar wucuo-spell-check-buffer-predicate nil
+  "Function to test if current buffer is checked by `wucuo-spell-check-buffer'.
+Returns t to continue checking, nil otherwise.")
 
 (defcustom wucuo-personal-font-faces-to-check
   nil
@@ -324,7 +338,7 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.1.0"))
+  (message "0.1.1"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
@@ -336,7 +350,7 @@ property of the major mode name."
 
 ;;;###autoload
 (defun wucuo-spell-check-buffer ()
-  "Spell check current buffer"
+  "Spell check current buffer."
   (cond
    ((not wucuo-timer)
     ;; start timer if not started yet
@@ -350,7 +364,11 @@ property of the major mode name."
    (t
     ;; real spell checking
     (setq wucuo-timer (current-time))
-    (flyspell-buffer))))
+    (when (and (< (buffer-size) wucuo-spell-check-buffer-max)
+               (or (null wucuo-spell-check-buffer-predicate)
+                   (and (functionp wucuo-spell-check-buffer-predicate)
+                        (funcall wucuo-spell-check-buffer-predicate))))
+      (flyspell-buffer)))))
 
 ;;;###autoload
 (defun wucuo-start (&optional force)
