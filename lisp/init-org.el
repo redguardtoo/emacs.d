@@ -54,8 +54,6 @@
 (defun org-mode-hook-setup ()
   (unless (is-buffer-file-temp)
     (setq evil-auto-indent nil)
-    ;; org-mode's own flycheck will be loaded
-    (enable-flyspell-mode-conditionally t)
 
     ;; org-mime setup, run this command in org-file, than yank in `message-mode'
     (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)

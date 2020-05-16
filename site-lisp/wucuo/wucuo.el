@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -129,12 +129,20 @@ region in current window."
     rjsx-text
     rjsx-tag
     rjsx-attr)
-  "Only check word whose font face is among this list."
+  "Only check word whose font face is among this list.
+If major mode's own predicate is not nil, the font face check is skipped."
+  :type '(repeat sexp)
+  :group 'wucuo)
+
+(defcustom wucuo-personal-font-faces-to-check
+  nil
+  "Similar to `wucuo-font-faces-to-check'.  Define personal font faces to check.
+If major mode's own predicate is not nil, the font face check is skipped."
   :type '(repeat sexp)
   :group 'wucuo)
 
 (defcustom wucuo-update-interval 16
-  "Interval (seconds) for `wucuo-spell-check-buffer' to actually call `flyspell-buffer'."
+  "Interval (seconds) for `wucuo-spell-check-buffer' to call `flyspell-buffer'."
   :group 'wucuo
   :type 'integer)
 
@@ -146,13 +154,6 @@ region in current window."
 (defvar wucuo-spell-check-buffer-predicate nil
   "Function to test if current buffer is checked by `wucuo-spell-check-buffer'.
 Returns t to continue checking, nil otherwise.")
-
-(defcustom wucuo-personal-font-faces-to-check
-  nil
-  "Similar to `wucuo-font-faces-to-check'.
-Define personal font faces to check."
-  :type '(repeat sexp)
-  :group 'wucuo)
 
 (defcustom wucuo-major-modes-to-setup-by-force
   '(typescript-mode)
@@ -293,6 +294,9 @@ property of the major mode name."
   (let* ((case-fold-search nil)
          (pos (- (point) 1))
          (current-font-face (and (> pos 0) (get-text-property pos 'face)))
+         ;; "(flyspell-mode 1)" loads per major mode predicate anyway
+         (mode-predicate (and (not (string= "full" wucuo-flyspell-start-mode))
+                              (get major-mode 'flyspell-mode-predicate)))
          (font-matched (or (memq current-font-face wucuo-font-faces-to-check)
                            (memq current-font-face wucuo-personal-font-faces-to-check)
                            (and wucuo-check-nil-font-face (eq current-font-face nil))))
@@ -304,12 +308,17 @@ property of the major mode name."
     (cond
      ((<= pos 0)
       nil)
-     ;; only check word with certain fonts
-     ((not font-matched)
-      (setq rlt nil))
-
      ;; ignore two character word, some major mode word equals to sub-word
      ((< (length (setq word (thing-at-point 'symbol))) 2)
+      (setq rlt nil))
+
+     ((and mode-predicate (not (funcall mode-predicate)))
+      ;; run major mode predicate
+      (setq rlt nil))
+
+     ;; only check word with certain fonts
+     ((and (not mode-predicate) (not font-matched))
+      ;; major mode's predicate might want to manage font face check self
       (setq rlt nil))
 
      ;; handle camel case word
@@ -347,7 +356,7 @@ property of the major mode name."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.1.1"))
+  (message "0.1.2"))
 
 ;;;###autoload
 (defun wucuo-setup-major-mode (mode)
@@ -388,7 +397,7 @@ property of the major mode name."
             (goto-char orig-pos)
             (forward-line (window-total-height))
             (setq end (line-end-position)))
-         (flyspell-region beg end))))))))
+          (flyspell-region beg end))))))))
 
 ;;;###autoload
 (defun wucuo-start (&optional force)

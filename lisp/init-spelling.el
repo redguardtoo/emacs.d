@@ -10,12 +10,11 @@
 
 (with-eval-after-load 'flyspell
   ;; {{ flyspell setup for web-mode
-  (defun web-mode-flyspell-verify ()
+  (defun my-web-mode-flyspell-verify ()
     (let* ((f (get-text-property (- (point) 1) 'face))
            rlt)
       (cond
-       ;; Check the words with these font faces, possibly.
-       ;; This *blacklist* will be tweaked in next condition
+       ;; Check the words whose font face is NOT in below *blacklist*
        ((not (memq f '(web-mode-html-attr-value-face
                        web-mode-html-tag-face
                        web-mode-html-attr-name-face
@@ -42,7 +41,7 @@
        (t
         (setq rlt nil)))
       rlt))
-  (put 'web-mode 'flyspell-mode-predicate 'web-mode-flyspell-verify)
+  (put 'web-mode 'flyspell-mode-predicate 'my-web-mode-flyspell-verify)
   ;; }}
 
   ;; better performance
@@ -175,18 +174,6 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
   (my-ensure 'wucuo)
   (wucuo-start t))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
-
-(defun enable-flyspell-mode-conditionally (&optional turn-off)
-  "Enable `flyspell-mode'.  If TURN-OFF is t, turn off it at the end."
-  (when (and (not *no-memory*)
-             ispell-program-name
-             (executable-find ispell-program-name))
-    ;; I don't use flyspell in text-mode because I often use Chinese.
-    ;; I'd rather manually spell check the English text
-    (flyspell-mode 1)
-    ;; The purpose to turn on and turn off `flyspell-mode' is to load some
-    ;; major mode's own predicate
-    (if turn-off (flyspell-mode -1))))
 
 ;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
 ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
