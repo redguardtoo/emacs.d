@@ -168,7 +168,12 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
 
 (defun text-mode-hook-setup ()
   ;; Turn off RUN-TOGETHER option when spell check text-mode
-  (setq-local ispell-extra-args (flyspell-detect-ispell-args)))
+  (setq-local ispell-extra-args (flyspell-detect-ispell-args))
+
+  ;; since `wucuo-flyspell-start-mode' is "ultra", no worry about
+  ;; performance at all.
+  (my-ensure 'wucuo)
+  (wucuo-start t))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
 
 (defun enable-flyspell-mode-conditionally (&optional turn-off)
@@ -266,9 +271,9 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
   ;; }}
 
   ;; do NOT turn on `flyspell-mode' automatically.
-  ;; use `flyspell-buffer' instead
-  (setq wucuo-flyspell-start-mode "lite")
-  ;; spell check buffer every 10 mins
-  (setq wucuo-update-interval 600))
+  ;; check buffer or visible region only
+  (setq wucuo-flyspell-start-mode "ultra")
+  ;; spell check buffer every 30 seconds
+  (setq wucuo-update-interval 30))
 
 (provide 'init-spelling)
