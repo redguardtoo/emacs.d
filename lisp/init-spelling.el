@@ -40,6 +40,7 @@
        ;; finalize the blacklist
        (t
         (setq rlt nil)))
+      ;; If rlt is t, it's a typo. If nil, not a typo.
       rlt))
   (put 'web-mode 'flyspell-mode-predicate 'my-web-mode-flyspell-verify)
   ;; }}
