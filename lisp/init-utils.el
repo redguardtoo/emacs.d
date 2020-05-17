@@ -37,8 +37,7 @@
            load-path))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
-(defun my-get-string-from-file
-    (file)
+(defun my-get-string-from-file (file)
   "Return FILE's content."
   (with-temp-buffer
     (insert-file-contents file)
