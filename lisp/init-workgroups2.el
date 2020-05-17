@@ -6,8 +6,15 @@
 (setq wg-load-last-workgroup nil)
 (setq wg-open-this-wg nil)
 
+
 ;(workgroups-mode 1) ; put this one at the bottom of .emacs
 ;; by default, the sessions are saved in "~/.emacs_workgroups"
+(defun my-wg-read-session-file ()
+  (read
+   (with-temp-buffer
+     (insert-file-contents (file-truename wg-session-file))
+     (buffer-string))))
+
 (defun my-wg-switch-workgroup ()
   (interactive)
   (my-ensure 'workgroups2)
@@ -15,7 +22,8 @@
   (let* ((group-names (mapcar (lambda (group)
                                 ;; re-shape list for the ivy-read
                                 (cons (wg-workgroup-name group) group))
-                              (wg-session-workgroup-list (read (f-read-text (file-truename wg-session-file)))))))
+                              (wg-session-workgroup-list
+                               (my-wg-read-session-file)))))
 
     (ivy-read "Select work group: "
               group-names
@@ -35,7 +43,7 @@
     (unless wg-current-session
       ;; code extracted from `wg-open-session'.
       ;; open session but do NOT load any workgroup.
-      (let* ((session (read (f-read-text (file-truename wg-session-file)))))
+      (let* ((session (my-wg-read-session-file)))
         (setf (wg-session-file-name session) wg-session-file)
         (wg-reset-internal (wg-unpickel-session-parameters session))))
     ad-do-it
