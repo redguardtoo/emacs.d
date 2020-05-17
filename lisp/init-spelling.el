@@ -82,7 +82,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
           (cond
            ;; Kevin Atkinson said now aspell supports camel case directly
            ;; https://github.com/redguardtoo/emacs.d/issues/796
-           ((string-match-p "--camel-case"
+           ((string-match-p "--.*camel-case"
                             (shell-command-to-string (concat ispell-program-name " --help")))
             (setq args (append args '("--camel-case"))))
 
