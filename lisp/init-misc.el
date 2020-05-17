@@ -725,11 +725,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
                       table)))
 (add-hook 'minibuffer-inactive-mode-hook 'minibuffer-inactive-mode-hook-setup)
 
-;; {{ dumb-jump
-(setq dumb-jump-selector 'ivy)
-(dumb-jump-mode)
-;; }}
-
 ;; {{ vc-msg
 (defun vc-msg-hook-setup (vcs-type commit-info)
   ;; copy commit id to clipboard
