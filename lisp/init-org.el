@@ -71,6 +71,26 @@
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (with-eval-after-load 'org
+  ;; {{
+  (defvar my-org-src--saved-temp-window-config nil
+    "Window layout before edit special element.")
+  (defun my-org-edit-special (&optional arg)
+    "Save current window layout before `org-edit' buffer is open.
+ARG is ignored."
+    (setq my-org-src--saved-temp-window-config (current-window-configuration)))
+
+  (defun my-org-edit-src-exit ()
+    "Restore the window layout that was saved before `org-edit-special' is called."
+    (when my-org-src--saved-temp-window-config
+      (set-window-configuration my-org-src--saved-temp-window-config)
+      (setq my-org-src--saved-temp-window-config nil)))
+
+
+  ;; org 9.3 do not restore windows layout when editing special element
+  (advice-add 'org-edit-special :before 'my-org-edit-special)
+  (advice-add 'org-edit-src-exit :after 'my-org-edit-src-exit)
+  ;; }}
+
   (my-ensure 'org-clock)
 
   ;; org-re-reveal requires org 8.3 while Emacs 25 uses org 8.2
