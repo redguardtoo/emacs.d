@@ -512,7 +512,11 @@ Return nil if it's not found."
         (counsel-etags-win-path executable-name "f")
         (counsel-etags-win-path executable-name "g")
         (counsel-etags-win-path executable-name "h")
-        executable-name))
+        ;; There is "find.exe" in Windows which could be wrongly
+        ;; used as GNU/BSD Find. So don't use "find" at all
+        ;; in this case.
+        (unless (string-match "find" executable-name)
+          executable-name)))
    (t
     (if (executable-find executable-name) (executable-find executable-name)))))
 
