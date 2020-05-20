@@ -611,11 +611,23 @@ Return nil if it's not found."
                                                                   invocation-directory))))
     (replace-regexp-in-string "/" "\\\\" emacs-executable)))
 
+(defun counsel-etags--ctags--info (ctags-program)
+  "Get CTAGS-PROGRAM information."
+  (shell-command-to-string (concat ctags-program " --version")))
+
 (defun counsel-etags-is-exuberant-ctags (ctags-program)
   "If CTAGS-PROGRAM is Exuberant Ctags."
-  (let* ((cmd-output (shell-command-to-string (concat ctags-program " --version"))))
+  (let* ((cmd-output (counsel-etags--ctags--info ctags-program)))
     (and (not (string-match-p "Universal Ctags" cmd-output))
          (string-match-p "Exuberant Ctags" cmd-output))))
+
+(defun counsel-etags-valid-ctags (ctags-program)
+  "If CTAGS-PROGRAM is valid (exuberant ctags or universal ctags), return the program.
+Or else (emacs etags) return nil."
+  (when ctags-program
+    (let* ((cmd-output (counsel-etags--ctags--info ctags-program)))
+      (unless (string-match-p " ETAGS.README" cmd-output)
+        ctags-program))))
 
 (defun counsel-etags-ctags-options-file-cli (ctags-program)
   "Use CTAGS-PROGRAM to create command line for `counsel-etags-ctags-options-file'."
@@ -712,7 +724,8 @@ If CODE-FILE is a real file, the command scans it and output to stdout."
   (let* ((find-program (or counsel-etags-find-program
                            (counsel-etags-guess-program "find")))
          (ctags-program (or counsel-etags-tags-program
-                            (counsel-etags-guess-program "ctags")))
+                            (counsel-etags-valid-ctags
+                             (counsel-etags-guess-program "ctags"))))
          (default-directory src-dir)
          ;; if both find and ctags exist, use both
          ;; if only ctags exists, use ctags
@@ -720,8 +733,11 @@ If CODE-FILE is a real file, the command scans it and output to stdout."
          (cmd (counsel-etags-get-scan-command find-program ctags-program))
          (tags-file (counsel-etags-get-tags-file-path src-dir)))
     (unless ctags-program
-      (error "Please install Ctags before running this program!"))
-    (when counsel-etags-debug (message "counsel-etags-scan-dir-internal called => src-dir=%s find-program=%s ctags-program=%s default-directory=%s cmd=%s" src-dir find-program ctags-program default-directory cmd))
+      (error "Please install Exuberant Ctags or Universal Ctags before running this program!"))
+    (when counsel-etags-debug
+      (message "counsel-etags-scan-dir-internal called => src-dir=%s" src-dir)
+      (message "find-program=%s ctags-program=%s" find-program ctags-program)
+      (message "default-directory=%s cmd=%s" default-directory cmd))
     ;; always update cli options
     (message "%s at %s" (if counsel-etags-debug cmd "Scan") default-directory)
     (counsel-etags-async-shell-command cmd tags-file)))
