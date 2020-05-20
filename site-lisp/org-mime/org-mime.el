@@ -626,7 +626,6 @@ Following headline properties can determine the mail headers,
 
 (defun org-mime-src--remove-overlay ()
   "Remove overlay from current source buffer."
-  (message "org-mime-src--remove-overlay called overlay=%s p=%s" org-mime-src--overlay (overlayp org-mime-src--overlay))
   (when (overlayp org-mime-src--overlay)
     (delete-overlay org-mime-src--overlay)))
 
@@ -663,6 +662,7 @@ Following headline properties can determine the mail headers,
   t)
 
 (defun org-mime-src-mode-configure-edit-buffer ()
+  "Set up clean up functions when editing source code."
   (add-hook 'kill-buffer-hook #'org-mime-src--remove-overlay nil 'local)
   (setq buffer-offer-save t)
   (setq-local write-contents-functions '(org-mime-edit-src-save)))
@@ -680,7 +680,6 @@ Following headline properties can determine the mail headers,
     (org-mime-edit-src-save)
     (unless source-buffer (error "Source buffer disappeared.  Aborting"))
     ;; Insert modified code.  Ensure it ends with a newline character.
-    (message "=====edit-buffer=%s" edit-buffer)
     (kill-buffer edit-buffer)
 
     ;; to the beginning of the block opening line.
