@@ -13,6 +13,7 @@
 (autoload 'ivy-recentf "ivy" "" t)
 (autoload 'ivy-read "ivy")
 (autoload 'rainbow-mode "rainbow-mode" nil t)
+(autoload 'roblox-mode "roblox-mode" nil t)
 (autoload 'csv-mode "csv-mode" "Major mode for editing comma-separated value files." t)
 (autoload 'csv-nav-mode "csv-nav-mode" "Major mode for navigating comma-separated value files." t)
 (autoload 'counsel-etags-find-tag-at-point "counsel-etags" "" t nil)

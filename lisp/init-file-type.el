@@ -125,5 +125,7 @@
 ;; python
 (add-interpreter-mode 'python-mode "python")
 
+;; roblox studio
+(add-auto-mode 'roblox-mode "\\.rbxlx\\'")
 ;; }}
 (provide 'init-file-type)
