@@ -625,7 +625,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "yy" 'hydra-launcher/body
   "ii" 'my-toggle-indentation
   "g" 'hydra-git/body
-  "uk" 'gud-kill-yes
   "ur" 'gud-remove
   "ub" 'gud-break
   "uu" 'gud-run

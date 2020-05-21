@@ -32,9 +32,11 @@
     ;; NOT evil-mode
     (toggle-input-method))))
 
-(defadvice evil-insert-state (around evil-insert-state-hack activate)
-  ad-do-it
+(defun my-evil-insert-state-hack (orig-func &rest args)
+  "Notify user IME status."
+  (apply orig-func args)
   (if current-input-method (message "IME on!")))
+(advice-add 'evil-insert-state :around #'my-evil-insert-state-hack)
 
 (global-set-key (kbd "C-\\") 'evil-toggle-input-method)
 ;; }}
@@ -146,9 +148,10 @@
     (advice-add 'calendar-mark-holidays :around #'cal-china-x-mark-holidays)
     (calendar args)))
 
-(defadvice calendar-exit (before calendar-exit-before-hack activate)
+(defun my-calendar-exit-hack (&optional arg)
   "Clean the cal-chinese-x setup."
   (advice-remove 'calendar-mark-holidays #'cal-china-x-mark-holidays))
+(advice-add 'calendar-exit :before #'my-calendar-exit-hack)
 ;; }}
 
 (provide 'init-chinese)

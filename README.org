@@ -490,7 +490,7 @@ I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native v
 By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
-- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
+- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to make Emacs start up faster.
 - You can add your snippets into =snippets/=.
 - Run =grep -rns --exclude='.yas*' 'key:' *= in =snippets/= to see my own snippets
 ** Non-English users
@@ -594,6 +594,7 @@ See elpy official documentation on how to use elpy.
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
+
 (with-eval-after-load 'lsp-mode
   ;; enable log only for debug
   (setq lsp-log-io nil)
@@ -616,12 +617,13 @@ You could insert below code into =~/.custom.el=,
   (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
   ;; don't ping LSP lanaguage server too frequently
   (defvar lsp-on-touch-time 0)
-  (defadvice lsp-on-change (around lsp-on-change-hack activate)
-    ;; do run `lsp-on-change' too frequently
+  (defun my-lsp-on-change-hack (orig-fun &rest args)
+    ;; do NOT run `lsp-on-change' too frequently
     (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 30) ;; 30 seconds
+                lsp-on-touch-time) 120) ;; 2 mins
       (setq lsp-on-touch-time (float-time (current-time)))
-      ad-do-it)))
+      (apply orig-fun args)))
+  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 #+end_src
 
 Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.

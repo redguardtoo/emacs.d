@@ -1,9 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; avoid spell-checking doublon (double word) in certain major modes
-(defvar flyspell-check-doublon t
+(defvar my-flyspell-check-doublon t
   "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
- (make-variable-buffer-local 'flyspell-check-doublon)
+ (make-variable-buffer-local 'my-flyspell-check-doublon)
 
 (defvar my-default-spell-check-language "en_US"
   "Language used by aspell and hunspell CLI.")
@@ -49,11 +49,12 @@
   (setq flyspell-issue-message-flag nil)
 
   ;; flyspell-lazy is outdated and conflicts with latest flyspell
-  ;; It only improves the performance of flyspell so it's not essential.
 
-  (defadvice flyspell-highlight-incorrect-region (around flyspell-highlight-incorrect-region-hack activate)
-    (if (or flyspell-check-doublon (not (eq 'doublon (ad-get-arg 2))))
-        ad-do-it)))
+  (defun my-flyspell-highlight-incorrect-region-hack (orig-func beg end poss)
+    "Don't mark doublon (double words) as typo."
+    (when (or my-flyspell-check-doublon (not (eq 'doublon poss)))
+      (apply orig-func beg end poss)))
+  (advice-add 'flyspell-highlight-incorrect-region :around #'my-flyspell-highlight-incorrect-region-hack))
 
 ;; Logic:
 ;; If (aspell is installed) { use aspell}
@@ -146,25 +147,19 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
 ;; `ispell-extra-args' is *always* used when start CLI aspell process
 (setq-default ispell-extra-args (flyspell-detect-ispell-args t))
 
-(defadvice ispell-word (around my-ispell-word activate)
+(defun my-ispell-word-hack (orig-func &rest args)
+  "Use Emacs original arguments when calling `ispell-word'.
+When fixing a typo, avoid pass camel case option to cli program."
   (let* ((old-ispell-extra-args ispell-extra-args))
     (ispell-kill-ispell t)
     ;; use emacs original arguments
     (setq ispell-extra-args (flyspell-detect-ispell-args))
-    ad-do-it
+    (apply orig-func args)
     ;; restore our own ispell arguments
     (setq ispell-extra-args old-ispell-extra-args)
     (ispell-kill-ispell t)))
-
-(defadvice flyspell-auto-correct-word (around my-flyspell-auto-correct-word activate)
-  (let* ((old-ispell-extra-args ispell-extra-args))
-    (ispell-kill-ispell t)
-    ;; use emacs original arguments
-    (setq ispell-extra-args (flyspell-detect-ispell-args))
-    ad-do-it
-    ;; restore our own ispell arguments
-    (setq ispell-extra-args old-ispell-extra-args)
-    (ispell-kill-ispell t)))
+(advice-add 'ispell-word :around #'my-ispell-word-hack)
+(advice-add 'flyspell-auto-correct-word :around #'my-ispell-word-hack)
 
 (defun text-mode-hook-setup ()
   ;; Turn off RUN-TOGETHER option when spell check text-mode

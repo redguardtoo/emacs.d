@@ -162,18 +162,19 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (swiper keyword)))
 
 (with-eval-after-load 'cliphist
-  (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
-    (my-delete-selected-region)))
+  (defun cliphist-routine-before-insert-hack (&optional arg)
+    (my-delete-selected-region))
+  (advice-add 'cliphist-routine-before-insert :before #'cliphist-routine-before-insert-hack))
 
 ;; {{ Write backup files to its own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
-(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+(defvar my-binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
 (setq backup-enable-predicate
       (lambda (name)
         (and (normal-backup-enable-predicate name)
-             (not (string-match-p binary-file-name-regexp name)))))
+             (not (string-match-p my-binary-file-name-regexp name)))))
 
 (if (not (file-exists-p (expand-file-name "~/.backups")))
   (make-directory (expand-file-name "~/.backups")))

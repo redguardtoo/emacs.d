@@ -171,15 +171,12 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
                      "-autoloads.el")
                     pkg-dir))
 
-(defadvice package-generate-autoloads (after package-generate-autoloads-hack activate)
+(defun my-package-generate-autoloads-hack (pkg-desc pkg-dir)
   "Stop package.el from leaving open autoload files lying around."
-  (let* ((original-args (ad-get-args 0))
-         (pkg-desc (nth 0 original-args))
-         (pkg-dir (nth 1 original-args))
-         (path (package-generate-autoload-path pkg-desc pkg-dir)))
-    ;; (message "pkg-desc=%s pkg-dir=%s path=%s" pkg-desc pkg-dir path)
+  (let* ((path (package-generate-autoload-path pkg-desc pkg-dir)))
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
+(advice-add 'package-generate-autoloads :after #'my-package-generate-autoloads-hack)
 
 (defun package-filter-function (package version archive)
   "Optional predicate function used to internally filter packages used by package.el.
@@ -350,7 +347,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
 (require-package 'benchmark-init)
-(require-package 'langtool) ; check grammer
+(require-package 'langtool) ; check grammar
 (require-package 'typescript-mode)
 (require-package 'edit-server)
 

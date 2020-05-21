@@ -15,21 +15,15 @@
   (native-complete-setup-bash))
 
 ;; `bash-completion-tokenize' can handle garbage output of "complete -p"
-(defadvice bash-completion-tokenize (around bash-completion-tokenize-hack activate)
-  (let* ((args (ad-get-args 0))
-         (beg (nth 0 args))
-         (end (nth 1 args)))
-    ;; original code extracts tokens line by line of output of "complete -p"
-    (cond
-     ((not (string-match-p "^complete " (buffer-substring beg end)))
-      ;; filter out some wierd lines
-      (setq ad-return-value nil))
-     (t
-      ad-do-it))))
-
-(defun my-exit-shell-process (process event)
-  "Called when the shell PROCESS is stopped.  EVENT is ignored."
-  (my-kill-process-buffer-when-exit process))
+(defun my-bash-completion-tokenize-hack (orig-fun beg end)
+  ;; original code extracts tokens line by line of output of "complete -p"
+  (cond
+   ((not (string-match-p "^complete " (buffer-substring beg end)))
+    ;; filter out some weird lines
+    nil)
+   (t
+    (apply orig-fun beg end))))
+(advice-add 'bash-completion-tokenize :around #'my-bash-completion-tokenize)
 
 (defun shell-mode-hook-setup ()
   "Set up `shell-mode'."
@@ -43,7 +37,9 @@
          (shell (file-name-nondirectory (car (process-command proc)))))
     ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
     (unless (string-match shell-dumb-shell-regexp shell)
-      (set-process-sentinel proc #'my-exit-shell-process))))
+      (set-process-sentinel proc
+                            (lambda (process event)
+                              (my-kill-process-buffer-when-exit process))))))
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
@@ -55,14 +51,12 @@
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-(defadvice term-sentinel (after term-sentinel-after-hack activate)
-  (my-kill-process-buffer-when-exit (nth 0 (ad-get-args 0))))
+(defun my-term-sentinel-hack (proc)
+  (my-kill-process-buffer-when-exit proc))
+(advice-add 'term-sentinel :after #'my-term-sentinel-hack)
 
 ;; always use bash
 (defvar my-term-program "/bin/bash")
-(defadvice ansi-term (before force-bash)
-  (interactive (list my-term-program)))
-(ad-activate 'ansi-term)
 
 ;; utf8
 (defun my-term-use-utf8 ()

@@ -51,8 +51,6 @@
   (modify-syntax-entry ?$ "w" js-mode-syntax-table))
 
 ;; {{ patching imenu in js2-mode
-(setq js2-imenu-extra-generic-expression javascript-common-imenu-regex-list)
-
 (defvar js2-imenu-original-item-lines nil
   "List of line information of original imenu items.")
 
@@ -200,7 +198,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 (defun js2-imenu--remove-duplicate-items (extra-rlt)
   (delq nil (mapcar 'js2-imenu--check-single-item extra-rlt)))
 
-(defun js2-imenu--merge-imenu-items (rlt extra-rlt)
+(defun my-js2-imenu--merge-imenu-items (rlt extra-rlt)
   "RLT contains imenu items created from AST.
 EXTRA-RLT contains items parsed with simple regex.
 Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
@@ -228,14 +226,11 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
   (define-key js2-mode-map (kbd "C-c C-o") nil)
   (define-key js2-mode-map (kbd "C-c C-w") nil)
   ;; }}
-  (defadvice js2-mode-create-imenu-index (around my-js2-mode-create-imenu-index activate)
-    (let (rlt extra-rlt)
-      ad-do-it
-      (setq extra-rlt
-            (save-excursion
-              (imenu--generic-function js2-imenu-extra-generic-expression)))
-      (setq ad-return-value (js2-imenu--merge-imenu-items ad-return-value extra-rlt))
-      ad-return-value)))
+  (defun my-js2-mode-create-imenu-index-hack (orig-func &rest args)
+    (let* ((extra-items (save-excursion
+                          (imenu--generic-function javascript-common-imenu-regex-list))))
+      (my-js2-imenu--merge-imenu-items (apply orig-func args) extra-items)))
+  (advice-add 'js2-mode-create-imenu-index :around #'my-js2-mode-create-imenu-index-hack))
 ;; }}
 
 (defun my-js2-mode-setup()

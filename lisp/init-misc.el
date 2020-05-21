@@ -193,7 +193,7 @@ This function can be re-used by other major modes after compilation."
 
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
-    (setq flyspell-check-doublon nil)
+    (setq my-flyspell-check-doublon nil)
     ;; enable for all programming modes
     ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
     (unless (derived-mode-p 'js2-mode)
@@ -824,12 +824,14 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 (with-eval-after-load 'compile
-  (defadvice compile (around compile-hack activate)
+  (defun my-compile-hack (orig-func &rest args)
     (cond
      ((member major-mode '(octave-mode))
       (octave-send-buffer))
      (t
-      ad-do-it)))
+      (apply orig-func args))))
+  (advice-add 'compile :around #'my-compile-hack)
+
   (add-to-list 'compilation-error-regexp-alist-alist
                (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'mocha))
@@ -950,25 +952,14 @@ Then insert it as a local file link in `org-mode'."
   (interactive)
   (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
 
-(defun my-font-file-to-base64 (font-file)
-  "Convert FONT-FILE into base64 encoded string."
-  (let* (str
-         (file-base (file-name-sans-extension font-file))
-         (file-ext (file-name-extension font-file)))
-    (when (file-exists-p font-file)
-        (with-temp-buffer
-          (shell-command (concat "cat " font-file "|base64") 1)
-          (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
-    str))
-
-;; {{ copy the file-name/full-path in dired buffer into clipboard
-;; `w` => copy file name
-;; `C-u 0 w` => copy full path
-(defadvice dired-copy-filename-as-kill (after dired-filename-to-clipboard activate)
+(defun my-dired-copy-filename-as-kill-hack (&optional arg)
+  "Copy the file name or file path from dired into clipboard.
+Press \"w\" to copy file name.
+Press \"C-u 0 w\" to copy full path."
   (let* ((str (current-kill 0)))
     (my-pclip str)
     (message "%s => clipboard" str)))
-;; }}
+(advice-add 'dired-copy-filename-as-kill :after #'my-dired-copy-filename-as-kill-hack)
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
 (defun vc-rename-file-and-buffer ()
@@ -1049,27 +1040,28 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 (with-eval-after-load 'epg
-  (defadvice epg--start (around advice-epg-disable-agent disable)
-    "Make `epg--start' not able to find a gpg-agent."
-    (let ((agent (getenv "GPG_AGENT_INFO")))
+  (defun my-epg--start-hack (orig-func &rest args)
+    "Make `epg--start' not able to find gpg-agent."
+    (let* ((agent (getenv "GPG_AGENT_INFO")))
       (setenv "GPG_AGENT_INFO" nil)
-      ad-do-it
+      (apply orig-func args)
       (setenv "GPG_AGENT_INFO" agent)))
+  (advice-add 'epg--start :around #'my-epg--start-hack)
 
   (unless (string-match-p "^gpg (GnuPG) 1.4"
                           (shell-command-to-string (format "%s --version" epg-gpg-program)))
 
-    ;; `apt-get install pinentry-tty` if using emacs-nox
-    ;; Create `~/.gnupg/gpg-agent.conf'. has one line
-    ;; `pinentry-program /usr/bin/pinentry-curses`
+    ;; "apt-get install pinentry-tty" if using emacs-nox
+    ;; Create `~/.gnupg/gpg-agent.conf' which has one line
+    ;; "pinentry-program /usr/bin/pinentry-curses"
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
 ;; {{ show current function name in `mode-line'
-(defadvice which-func-update (around which-func-update-hack activate)
-  ;; `which-function-mode' scanning makes Emacs unresponsive in big buffer
-  (unless (buffer-too-big-p)
-    ad-do-it))
+(defun my-which-func-update-hack (orig-func &rest args)
+  "`which-function-mode' scanning makes Emacs unresponsive in big buffer."
+  (unless (buffer-too-big-p) (apply orig-func args)))
+(advice-add 'which-func-update :around #'my-which-func-update-hack)
 (with-eval-after-load 'which-function
   (add-to-list 'which-func-modes 'org-mode))
 (which-function-mode 1)
@@ -1189,23 +1181,25 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
 (defvar my-default-yes-no-answers nil
     "Usage: (setq my-default-yes-no-answers '((t . \"question1\") (t . \"question2\")))).")
-(defadvice y-or-n-p (around y-or-n-p-hack activate)
-  (let* ((prompt (car (ad-get-args 0))))
+(defun my-y-or-n-p-hack (orig-func &rest args)
+  "Answer yes or no automatically for some questions."
+  (let* ((prompt (car (ad-get-args 0)))
+         rlt)
     (cond
      ((and my-default-yes-no-answers
            (listp my-default-yes-no-answers))
-      (let* ((i 0)
-             found
-             cand)
+      (let* ((i 0) found cand)
         (while (and (setq cand (nth i my-default-yes-no-answers))
                     (not found))
           (when (string-match-p (cdr cand) prompt)
             (setq found t)
-            (setq ad-return-value (car cand)))
+            (setq rlt (car cand)))
           (setq i (1+ i)))
-        (unless found ad-do-it)))
+        (unless found (setq rlt (apply orig-func args)))))
      (t
-      ad-do-it))))
+      (setq rlt (apply orig-func args))))
+    rlt))
+(advice-add 'y-or-n-p :around #'my-y-or-n-p-hack)
 ;; }}
 
 ;; {{ eldoc
