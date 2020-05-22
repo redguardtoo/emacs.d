@@ -7,7 +7,7 @@
 ;; so it should not be turned off by default
 ;; (blink-cursor-mode -1)
 
-(defun pickup-random-color-theme (themes)
+(defun my-pickup-random-color-theme (themes)
   "Pickup random color theme from themes."
   (my-ensure 'counsel)
   (let* ((available-themes (mapcar 'symbol-name themes))
@@ -15,11 +15,15 @@
     (counsel-load-theme-action theme)
     (message "Color theme [%s] loaded." theme)))
 
+(defvar my-favourite-color-themes nil
+  "Color themes to use by `random-color-theme'.")
+
 ;; random color theme
-(defun random-color-theme ()
+(defun my-random-color-theme ()
   "Random color theme."
   (interactive)
-  (pickup-random-color-theme (custom-available-themes)))
+  (my-pickup-random-color-theme (or my-favourite-color-themes
+                                    (custom-available-themes))))
 
 (defun random-healthy-color-theme (&optional join-dark-side)
   "Random healthy color theme.  If JOIN-DARK-SIDE is t, use dark theme only."
@@ -70,7 +74,7 @@
                                                 xp)))))
         (when (if prefer-light-p light-theme-p (not light-theme-p))
           (push theme themes))))
-  (pickup-random-color-theme themes)))
+  (my-pickup-random-color-theme themes)))
 
 (defun my-theme-packages(packages)
   "Get themes from PACKAGES."
