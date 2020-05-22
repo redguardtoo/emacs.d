@@ -104,9 +104,13 @@ If no files marked, always operate on current line in dired-mode."
   (my-ensure 'dired-x)
   (my-ensure 'dired-aux) ; for `dired-dwim-target-directory'
 
+  (defun my-dired-basename ()
+    (file-name-base (car (dired-get-marked-files 'no-dir))))
+
   (defun my-dired-guess-default-hack (orig-func &rest args)
     "Detect subtitles for mplayer."
     (let* ((rlt (apply orig-func args)))
+      (message "rlt=%s" rlt)
       (when (and (stringp rlt)
                  (string-match-p "^mplayer -quiet" rlt))
         (let* ((dir (file-name-as-directory (concat default-directory
@@ -116,17 +120,18 @@ If no files marked, always operate on current line in dired-mode."
           ;; append subtitle to mplayer cli
           (cond
            ((file-exists-p (concat dir "English.sub"))
-            (concat rlt " -vobsub Subs/English"))
+            (setq rlt (concat rlt " -vobsub Subs/English")))
            ((file-exists-p (concat dir "Chinese.sub"))
-            (concat rlt " -vobsub Subs/Chinese"))
-           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-            (concat rlt " -vobsub Subs/" basename))
+            (seq rlt (concat rlt " -vobsub Subs/Chinese")))
+           ((file-exists-p (concat dir (setq basename (my-dired-basename)) ".sub"))
+            (setq rlt (concat rlt " -vobsub Subs/" basename)))
            ((file-exists-p (concat dir "English.srt"))
-            (concat rlt " -sub Subs/English.srt"))
+            (setq rlt (concat rlt " -sub Subs/English.srt")))
            ((file-exists-p (concat dir "Chinese.srt"))
-            (concat rlt " -sub Subs/Chinese.srt"))
-           ((file-exists-p (concat dir (setq basename (file-name-base (car (dired-get-marked-files 'no-dir)))) ".sub"))
-            (concat rlt " -sub Subs/" basename ".srt")))))))
+            (setq rlt (concat rlt " -sub Subs/Chinese.srt")))
+           ((file-exists-p (concat dir (setq basename (my-dired-basename)) ".sub"))
+            (setq rlt (concat rlt " -sub Subs/" basename ".srt"))))))
+      rlt))
   (advice-add 'dired-guess-default :around #'my-dired-guess-default-hack)
 
   (defun my-dired-find-file-hack (orig-func &rest args)
@@ -163,44 +168,5 @@ If no files marked, always operate on current line in dired-mode."
   ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
   (setq dired-listing-switches "-laGh1v")
   (setq dired-recursive-deletes 'always))
-
-;; {{ try to re-play the last dired commands
-(defvar my-dired-commands-history nil
-  "History of `dired-do-shell-command' arguments.")
-
-(defun my-dired-do-shell-command-hack (command &optional arg file-list)
-  "Add dired COMMAND to history."
-  ;; only record command which operate on files
-  (when (and (listp file-list) (> (length file-list) 0))
-    (add-to-list 'my-dired-commands-history
-                 (list (my-format-dired-args args)
-                       (format "%s %s"
-                               (car (split-string (file-name-nondirectory command) " "))
-                               file-list)
-                       default-directory
-                       (list command arg file-list)))))
-(advice-add 'dired-do-shell-command :before #'my-dired-do-shell-command-hack)
-
-(defun my-dired-redo-last-command ()
-  "Redo last shell command."
-  (interactive)
-  (let* ((info (car my-dired-commands-history)))
-    (when info
-      (let* ((default-directory (nth 1 info))
-             (args (nth 2 info)))
-        (apply 'dired-do-shell-command args)))))
-
-(defun my-dired-redo-from-commands-history ()
-  "Redo one of previous shell commands."
-  (interactive)
-  (when my-dired-commands-history
-    (ivy-read "Previous dired shell commands:"
-              my-dired-commands-history
-              :action
-              (lambda (info)
-                (let* ((default-directory (nth 1 info))
-                       (args (nth 2 info)))
-                  (apply 'dired-do-shell-command args))))))
-;; }}
 
 (provide 'init-dired)

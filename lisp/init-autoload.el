@@ -10,6 +10,8 @@
 (autoload 'dianyou-paste-image-from-clipboard "dianyou" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
+(autoload 'mybigword-show-big-words-from-file "mybigword" "" t)
+(autoload 'mybigword-show-big-words-from-current-buffer "mybigword" "" t)
 (autoload 'ivy-recentf "ivy" "" t)
 (autoload 'ivy-read "ivy")
 (autoload 'rainbow-mode "rainbow-mode" nil t)
