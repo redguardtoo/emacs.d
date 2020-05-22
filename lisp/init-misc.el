@@ -1183,7 +1183,7 @@ Including indent-buffer, which should not be called automatically on save."
     "Usage: (setq my-default-yes-no-answers '((t . \"question1\") (t . \"question2\")))).")
 (defun my-y-or-n-p-hack (orig-func &rest args)
   "Answer yes or no automatically for some questions."
-  (let* ((prompt (car (ad-get-args 0)))
+  (let* ((prompt (car args))
          rlt)
     (cond
      ((and my-default-yes-no-answers

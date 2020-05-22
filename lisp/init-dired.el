@@ -145,16 +145,19 @@ If no files marked, always operate on current line in dired-mode."
         (apply orig-func args)))))
   (advice-add 'dired-find-file :around #'my-dired-find-file-hack)
 
-  (defun my-dired-do-async-shell-command-hack (orig-func command &optional arg file-list)
+  (defun my-dired-do-async-shell-command-hack (orig-func &rest args)
     "Mplayer scan dvd-ripped directory in dired correctly."
-    (let* ((first-file (file-truename (and file-list (car file-list)))))
+    (let* ((command (nth 0 args))
+           (arg (nth 1 args))
+           (file-list (nth 2 args))
+           (first-file (file-truename (and file-list (car file-list)))))
       (cond
        ((file-directory-p first-file)
         (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
                                      (my-guess-mplayer-path)
                                      first-file)))
        (t
-        (apply orig-func command arg file-list)))))
+        (apply orig-func args)))))
   (advice-add 'dired-do-async-shell-command :around #'my-dired-do-async-shell-command-hack)
 
   ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650

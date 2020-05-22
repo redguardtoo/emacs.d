@@ -50,10 +50,13 @@
 
   ;; flyspell-lazy is outdated and conflicts with latest flyspell
 
-  (defun my-flyspell-highlight-incorrect-region-hack (orig-func beg end poss)
+  (defun my-flyspell-highlight-incorrect-region-hack (orig-func &rest args)
     "Don't mark doublon (double words) as typo."
-    (when (or my-flyspell-check-doublon (not (eq 'doublon poss)))
-      (apply orig-func beg end poss)))
+    (let* ((beg (nth 0 args))
+           (end (nth 1 args))
+           (poss (nth 2 args)))
+      (when (or my-flyspell-check-doublon (not (eq 'doublon poss)))
+        (apply orig-func args))))
   (advice-add 'flyspell-highlight-incorrect-region :around #'my-flyspell-highlight-incorrect-region-hack))
 
 ;; Logic:

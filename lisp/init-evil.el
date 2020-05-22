@@ -378,11 +378,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
                                (string-trim (my-line-str)))))))
 (advice-add 'evil-set-marker :before #'my-evil-set-marker-hack)
 
-(defun my-evil-goto-mark-line-hack (orig-func char &optional noerror)
+(defun my-evil-goto-mark-line-hack (orig-func &rest args)
   "Place line marker into history."
-  (let* ((orig-pos (point)))
+  (let* ((char (nth 0 args))
+         (orig-pos (point)))
     (condition-case nil
-        (apply orig-func char noerror)
+        (apply orig-func args)
       (error (progn
                (when (and (eq orig-pos (point)) evil-global-markers-history)
                  (let* ((markers evil-global-markers-history)

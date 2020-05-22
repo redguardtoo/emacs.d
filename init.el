@@ -11,6 +11,8 @@
   4000000
   "Best default gc threshold value.  Should NOT be too big!")
 
+(defvar my-debug nil "Enable debug mode.")
+
 ;; don't GC during startup to save time
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -60,6 +62,7 @@
   (run-with-idle-timer 5 t #'garbage-collect))
 
 (defun my-vc-merge-p ()
+  "Use Emacs for git merge only?"
   (boundp 'startup-now))
 
 (defun require-init (pkg &optional maybe-disabled)
