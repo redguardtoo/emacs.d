@@ -111,7 +111,7 @@ If no files marked, always operate on current line in dired-mode."
                  (string-match-p "^mplayer -quiet" rlt))
         (let* ((dir (file-name-as-directory (concat default-directory
                                                     "Subs")))
-               (files (car (ad-get-args 0)))
+               (files (car args))
                basename)
           ;; append subtitle to mplayer cli
           (cond
