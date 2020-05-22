@@ -358,33 +358,31 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 ;; {{
 (defvar evil-global-markers-history nil)
-(defadvice evil-set-marker (before evil-set-marker-before-hack activate)
-  (let* ((args (ad-get-args 0))
-         (c (nth 0 args))
-         (pos (or (nth 1 args) (point))))
-    ;; only rememeber global markers
-    (when (and (>= c ?A) (<= c ?Z) buffer-file-name)
-      (setq evil-global-markers-history
-            (delq nil
-                  (mapcar `(lambda (e)
-                             (unless (string-match (format "^%s@" (char-to-string ,c)) e)
-                               e))
-                          evil-global-markers-history)))
-      (setq evil-global-markers-history
-            (add-to-list 'evil-global-markers-history
-                         (format "%s@%s:%d:%s"
-                                 (char-to-string c)
-                                 (file-truename buffer-file-name)
-                                 (line-number-at-pos pos)
-                                 (string-trim (my-line-str))))))))
+(defun my-evil-set-marker-hack (char &optional pos advance)
+  "Place evil marker's position into history."
+  (unless pos (setq pos (point)))
+  ;; only rememeber global markers
+  (when (and (>= char ?A) (<= char ?Z) buffer-file-name)
+    (setq evil-global-markers-history
+          (delq nil
+                (mapcar `(lambda (e)
+                           (unless (string-match (format "^%s@" (char-to-string ,char)) e)
+                             e))
+                        evil-global-markers-history)))
+    (setq evil-global-markers-history
+          (add-to-list 'evil-global-markers-history
+                       (format "%s@%s:%d:%s"
+                               (char-to-string char)
+                               (file-truename buffer-file-name)
+                               (line-number-at-pos pos)
+                               (string-trim (my-line-str)))))))
+(advice-add 'evil-set-marker :before #'my-evil-set-marker-hack)
 
-(defadvice evil-goto-mark-line (around evil-goto-mark-line-hack activate)
-  (let* ((args (ad-get-args 0))
-         (c (nth 0 args))
-         (orig-pos (point)))
-
+(defun my-evil-goto-mark-line-hack (orig-func char &optional noerror)
+  "Place line marker into history."
+  (let* ((orig-pos (point)))
     (condition-case nil
-        ad-do-it
+        (apply orig-func char noerror)
       (error (progn
                (when (and (eq orig-pos (point)) evil-global-markers-history)
                  (let* ((markers evil-global-markers-history)
@@ -395,7 +393,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                    (while (and (not found) (< i (length markers)))
                      (setq m (nth i markers))
                      (when (string-match (format "\\`%s@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'"
-                                                 (char-to-string c))
+                                                 (char-to-string char))
                                          m)
                        (setq file (match-string-no-properties 1 m))
                        (setq found (match-string-no-properties 2 m)))
@@ -403,6 +401,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                    (when file
                      (find-file file)
                      (counsel-etags-forward-line found)))))))))
+(advice-add 'evil-goto-mark-line :around #'my-evil-goto-mark-line-hack)
 
 (defun counsel-evil-goto-global-marker ()
   "Goto global evil marker."
@@ -678,15 +677,16 @@ If the character before and after CH is space or tab, CH is NOT slash"
  "jk" 'js2r-kill)
 ;; }}
 
-;; Press `dd' to delete lines in `wgrep-mode' in evil directly
-(defadvice evil-delete (around evil-delete-hack activate)
+(defun my-evil-delete-hack (orig-func &rest args)
+  "Press `dd' to delete lines in `wgrep-mode' in evil directly."
   ;; make buffer writable
   (if (and (boundp 'wgrep-prepared) wgrep-prepared)
       (wgrep-toggle-readonly-area))
-  ad-do-it
+  (apply orig-func args)
   ;; make buffer read-only
   (if (and (boundp 'wgrep-prepared) wgrep-prepared)
       (wgrep-toggle-readonly-area)))
+(advice-add 'evil-delete :around #'my-evil-delete-hack)
 
 ;; {{ Use `;` as leader key, for searching something
 (general-create-definer my-semicolon-leader-def
@@ -718,45 +718,44 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; http://emacs.stackexchange.com/questions/24099/how-to-yank-text-to-search-command-after-in-evil-mode/
 (defvar my-search-text-history nil "List of text I searched.")
 (defun my-select-from-search-text-history ()
+  "My select the history of text searching."
   (interactive)
   (ivy-read "Search text history:" my-search-text-history
             :action (lambda (item)
                       (copy-yank-str item)
                       (message "%s => clipboard & yank ring" item))))
-(defun my-cc-isearch-string ()
-  (interactive)
-  (if (and isearch-string (> (length isearch-string) 0))
-      ;; NOT pollute clipboard who has things to paste into Emacs
-      (add-to-list 'my-search-text-history isearch-string)))
 
-(defadvice evil-search-incrementally (after evil-search-incrementally-after-hack activate)
-  (my-cc-isearch-string))
-
-(defadvice evil-search-word (after evil-search-word-after-hack activate)
-  (my-cc-isearch-string))
-
-(defadvice evil-visualstar/begin-search (after evil-visualstar/begin-search-after-hack activate)
-  (my-cc-isearch-string))
+(defun my-cc-isearch-string (&rest args)
+  "Add `isearch-string' inot history."
+  (and isearch-string
+       (> (length isearch-string) 0)
+       (push isearch-string my-search-text-history)))
+(advice-add 'evil-search-incrementally :after #'my-cc-isearch-string)
+(advice-add 'evil-search-word :after #'my-cc-isearch-string)
+(advice-add 'evil-visualstar/begin-search :after #'my-cc-isearch-string)
 ;; }}
 
-;; change mode-line color by evil state
-(let* ((default-color (cons (face-background 'mode-line)
-			    (face-foreground 'mode-line))))
-  (add-hook 'post-command-hook
-	    (lambda ()
-	      (let* ((color (cond ((minibufferp) default-color)
-				  ((evil-insert-state-p) '("#e80000" . "#ffffff"))
-				  ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
-				  ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
-				  (t default-color))))
-		(set-face-background 'mode-line (car color))
-		(set-face-foreground 'mode-line (cdr color))))))
+;; {{ change mode-line color by evil state
+(defconst my-default-color (cons (face-background 'mode-line)
+                                  (face-foreground 'mode-line)))
+(defun my-show-evil-state ()
+  "Change mode line color to notify user evil current state."
+  (let* ((color (cond ((minibufferp) my-default-color)
+                      ((evil-insert-state-p) '("#e80000" . "#ffffff"))
+                      ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
+                      ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
+                      (t my-default-color))))
+    (set-face-background 'mode-line (car color))
+    (set-face-foreground 'mode-line (cdr color))))
+(add-hook 'post-command-hook #'my-show-evil-state)
+;; }}
 
 ;; {{ evil-nerd-commenter
 (evilnc-default-hotkeys t)
 (define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
+  "Is current line html?"
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
                                                (line-end-position)))
          (re (format "^[ \t]*\\(%s\\)?[ \t]*</?[a-zA-Z]+"
@@ -867,12 +866,12 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (suspend-frame))))
 
 ;; press ",xx" to expand region
-;; then press "c" to contract, "x" to expand
+;; then press "char" to contract, "x" to expand
 (with-eval-after-load 'evil
   ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
-  (setq expand-region-contract-fast-key "c")
+  (setq expand-region-contract-fast-key "char")
   ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
   ;; evil 1.0.8 search word instead of symbol
   (setq evil-symbol-word-search t)

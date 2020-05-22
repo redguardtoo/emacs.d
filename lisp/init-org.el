@@ -109,25 +109,29 @@ ARG is ignored."
     (interactive "P")
     (org-agenda arg "n"))
 
-  (defadvice org-open-at-point (around org-open-at-point-choose-browser activate)
+
+  (defun my-org-open-at-point-hack (orig-func arg reference-buffer)
     "\"C-u M-x org-open-at-point\" to open link with `browse-url-generic-program'.
 It's value could be customized liked \"/usr/bin/firefox\".
 \"M-x org-open-at-point\" to open the url with embedded emacs-w3m."
     (let* ((browse-url-browser-function
             (cond
              ;; open with `browse-url-generic-program'
-             ((equal (ad-get-arg 0) '(4)) 'browse-url-generic)
+             ((equal arg '(4)) 'browse-url-generic)
              ;; open with w3m
              (t 'w3m-browse-url))))
-      ad-do-it))
+      (apply orig-func arg reference-buffer)))
+  (advice-add 'org-open-at-point :around #'my-org-open-at-point-hack)
 
-  (defadvice org-publish (around org-publish-advice activate)
+  (defun my-org-publish-hack (orig-func &rest args)
     "Stop running `major-mode' hook when `org-publish'."
     (let* ((load-user-customized-major-mode-hook nil))
-      ad-do-it))
+      (apply orig-func args)))
+  (advice-add 'org-publish :around #'my-org-publish-hack)
 
   ;; {{ NO spell check for embedded snippets
-  (defun org-mode-is-code-snippet ()
+  (defun my-org-mode-code-snippet-p ()
+    "Code snippet embedded in org file?"
     (let* (rlt
            (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\)")
            (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\)")
@@ -139,26 +143,25 @@ It's value could be customized liked \"/usr/bin/firefox\".
       (if (and b e (< (point) e)) (setq rlt t))
       rlt))
 
-  ;; no spell check for property
-  (defun org-mode-current-line-is-property ()
-    (string-match-p "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str)))
-
-  ;; Please note flyspell only use ispell-word
-  (defadvice org-mode-flyspell-verify (after org-mode-flyspell-verify-hack activate)
-    (let* ((run-spellcheck ad-return-value))
+  (defun my-org-mode-flyspell-verify-hack (orig-func &rest args)
+    "flyspell only uses `ispell-word'."
+    (let* ((run-spellcheck (apply orig-func args)))
       (when run-spellcheck
         (cond
+         ;; skip checking in below fonts
          ((font-belongs-to (point) '(org-verbatim org-code))
           (setq run-spellcheck nil))
 
-         ((org-mode-current-line-is-property)
+         ;; skip checking property lines
+         ((string-match "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str))
           (setq run-spellcheck nil))
 
+         ;; skipping checking in code snippet
          ;; slow test should be placed at last
-         ((org-mode-is-code-snippet)
+         ((my-org-mode-code-snippet-p)
           (setq run-spellcheck nil))))
-
-      (setq ad-return-value run-spellcheck)))
+      run-spellcheck))
+  (advice-add 'org-mode-flyspell-verify :around #'my-org-mode-flyspell-verify-hack)
   ;; }}
 
   ;; {{ convert to odt
@@ -172,10 +175,12 @@ It's value could be customized liked \"/usr/bin/firefox\".
   (my-setup-odt-org-convert-process)
   ;; }}
 
-  (defadvice org-refile (around org-refile-hack activate)
-    ;; when `org-refile' scanning org files, disable user's org-mode hooks
+  (defun my-org-refile-hack (orig-func &rest args)
+    "When `org-refile' scans org files,
+skip user's own code in `org-mode-hook'."
     (let* ((force-buffer-file-temp-p t))
-      ad-do-it))
+      (apply orig-func args)))
+  (advice-add 'org-refile :around #'my-org-refile-hack)
 
   ;; {{ export org-mode in Chinese into PDF
   ;; @see http://freizl.github.io/posts/tech/2012-04-06-export-orgmode-file-in-Chinese.html
