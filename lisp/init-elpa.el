@@ -216,6 +216,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'amx)
 (require-package 'avy)
+(require-package 'popup) ; some old package need it
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)
 (require-package 'csv-mode)
