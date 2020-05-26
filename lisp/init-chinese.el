@@ -2673,7 +2673,7 @@
 
     (cond
      ((eq i max-len)
-      (if (eq max-len (length w1)) t))
+      (eq max-len (length w1)))
      (t
       rlt))))
 
