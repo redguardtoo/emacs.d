@@ -2657,6 +2657,7 @@
 "罐" 110)))
 
 (defun my-chinese-compare (w1 w2)
+  "Compare Chinese word W2 and W3 by pinyin."
   (let ((i 0)
         (max-len (min (length w1) (length w2)))
         v1 v2

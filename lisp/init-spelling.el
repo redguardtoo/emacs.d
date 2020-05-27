@@ -202,6 +202,8 @@ When fixing a typo, avoid pass camel case option to cli program."
                   (ignored-font-faces '(org-verbatim
                                         org-block-begin-line
                                         org-meta-line
+                                        org-special-keyword
+                                        org-property-value
                                         org-tag
                                         org-link
                                         org-table
