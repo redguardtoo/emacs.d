@@ -301,6 +301,8 @@ Some packages are so important to my workflow that they are locked.
 Those packages are placed at =site-lisp/=.
 
 They will not be upgraded by package system.
+
+Please make sure same package is not installed through elpa. Please check the content of directory "elpa/" in =.emacs.d= root. 
 ** How to install new packages?
 I only use two package repositories,
 - [[https://stable.melpa.org]] (holding stable packages)

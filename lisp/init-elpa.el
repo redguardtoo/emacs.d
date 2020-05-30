@@ -337,7 +337,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
 (require-package 'benchmark-init)
-(require-package 'langtool) ; check grammar
+;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
 (require-package 'edit-server)
 
