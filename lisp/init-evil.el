@@ -52,7 +52,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
-(defmacro define-and-bind-text-object (key start-regex end-regex)
+(defmacro my-evil-define-and-bind-text-object (key start-regex end-regex)
   (let* ((inner-name (make-symbol "inner-name"))
          (outer-name (make-symbol "outer-name")))
     `(progn
@@ -64,17 +64,17 @@ And \"%\" key is also retored to `evil-jump-item'.")
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
 ;; between dollar signs:
-(define-and-bind-text-object "$" "\\$" "\\$")
+(my-evil-define-and-bind-text-object "$" "\\$" "\\$")
 ;; between equal signs
-(define-and-bind-text-object "=" "=" "=")
+(my-evil-define-and-bind-text-object "=" "=" "=")
 ;; between pipe characters:
-(define-and-bind-text-object "|" "|" "|")
+(my-evil-define-and-bind-text-object "|" "|" "|")
 ;; regular expression
-(define-and-bind-text-object "/" "/" "/")
+(my-evil-define-and-bind-text-object "/" "/" "/")
 ;; trimmed line
-(define-and-bind-text-object "l" "^ *" " *$")
+(my-evil-define-and-bind-text-object "l" "^ *" " *$")
 ;; angular template
-(define-and-bind-text-object "r" "\{\{" "\}\}")
+(my-evil-define-and-bind-text-object "r" "\{\{" "\}\}")
 ;; }}
 
 
@@ -87,7 +87,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
 ;;    "/test/back.exe"
 ;;    "C:hello\\hello\\world\\test.exe"
 ;;    "D:blah\\hello\\world\\base.exe"
-(defun evil-filepath-is-separator-char (ch)
+(defun my-evil-path-is-separator-char (ch)
   "Check ascii table that CH is slash characters.
 If the character before and after CH is space or tab, CH is NOT slash"
   (let* (rlt prefix-ch postfix-ch)
@@ -103,7 +103,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (setq rlt t))
     rlt))
 
-(defun evil-filepath-not-path-char (ch)
+(defun my-evil-path-not-path-char (ch)
   "Check ascii table for charctater."
   (or (and (<= 0 ch) (<= ch 32))
       (memq ch
@@ -120,30 +120,30 @@ If the character before and after CH is space or tab, CH is NOT slash"
               ?}
               127))))
 
-(defun evil-filepath-calculate-path (b e)
+(defun my-evil-path-calculate-path (b e)
   (let* (rlt f)
     (when (and b e)
       (setq b (+ 1 b))
       (when (save-excursion
               (goto-char e)
-              (setq f (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+              (setq f (my-evil-path-search-forward-char 'my-evil-path-is-separator-char t))
               (and f (>= f b)))
         (setq rlt (list b (+ 1 f) (- e 1)))))
     rlt))
 
-(defun evil-filepath-get-path-already-inside ()
+(defun my-evil-path-get-path-already-inside ()
   (let* (b e)
     (save-excursion
-      (setq b (evil-filepath-search-forward-char 'evil-filepath-not-path-char t)))
+      (setq b (my-evil-path-search-forward-char 'my-evil-path-not-path-char t)))
     (save-excursion
-      (when (setq e (evil-filepath-search-forward-char 'evil-filepath-not-path-char))
+      (when (setq e (my-evil-path-search-forward-char 'my-evil-path-not-path-char))
         (goto-char (- e 1))
         ;; example: hello/world,
         (if (memq (following-char) '(?, ?.))
             (setq e (- e 1)))))
-    (evil-filepath-calculate-path b e)))
+    (my-evil-path-calculate-path b e)))
 
-(defun evil-filepath-search-forward-char (fn &optional backward)
+(defun my-evil-path-search-forward-char (fn &optional backward)
   (let* (found
          rlt
          (limit (if backward (point-min) (point-max)))
@@ -161,24 +161,24 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (if found (setq rlt (point))))
     rlt))
 
-(defun evil-filepath-extract-region ()
+(defun my-evil-path-extract-region ()
   "Find the closest file path"
   (let* (rlt b f1 f2)
-    (if (and (not (evil-filepath-not-path-char (following-char)))
-             (setq rlt (evil-filepath-get-path-already-inside)))
+    (if (and (not (my-evil-path-not-path-char (following-char)))
+             (setq rlt (my-evil-path-get-path-already-inside)))
         ;; maybe (point) is in the middle of the path
         t
       ;; need search forward AND backward to find the right path
       (save-excursion
         ;; path in backward direction
-        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char t))
+        (when (setq b (my-evil-path-search-forward-char #'my-evil-path-is-separator-char t))
           (goto-char b)
-          (setq f1 (evil-filepath-get-path-already-inside))))
+          (setq f1 (my-evil-path-get-path-already-inside))))
       (save-excursion
         ;; path in forward direction
-        (when (setq b (evil-filepath-search-forward-char 'evil-filepath-is-separator-char))
+        (when (setq b (my-evil-path-search-forward-char #'my-evil-path-is-separator-char))
           (goto-char b)
-          (setq f2 (evil-filepath-get-path-already-inside))))
+          (setq f2 (my-evil-path-get-path-already-inside))))
       ;; pick one path as the final result
       (cond
        ((and f1 f2)
@@ -192,20 +192,20 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
     rlt))
 
-(evil-define-text-object evil-filepath-inner-text-object (&optional count begin end type)
+(evil-define-text-object my-evil-path-inner-text-object (&optional count begin end type)
   "File name of nearby path"
-  (let* ((selected-region (evil-filepath-extract-region)))
+  (let* ((selected-region (my-evil-path-extract-region)))
     (if selected-region
         (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
 
-(evil-define-text-object evil-filepath-outer-text-object (&optional NUM begin end type)
+(evil-define-text-object my-evil-path-outer-text-object (&optional NUM begin end type)
   "Nearby path."
-  (let* ((selected-region (evil-filepath-extract-region)))
-    (if selected-region
-        (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
+  (let* ((selected-region (my-evil-path-extract-region)))
+    (when selected-region
+      (evil-range (car selected-region) (+ 1 (nth 2 selected-region)) type :expanded t))))
 
-(define-key evil-inner-text-objects-map "f" 'evil-filepath-inner-text-object)
-(define-key evil-outer-text-objects-map "f" 'evil-filepath-outer-text-object)
+(define-key evil-inner-text-objects-map "f" 'my-evil-path-inner-text-object)
+(define-key evil-outer-text-objects-map "f" 'my-evil-path-outer-text-object)
 ;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
@@ -220,16 +220,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
-(defun toggle-org-or-message-mode ()
-  (interactive)
-  (if (eq major-mode 'message-mode)
-      (org-mode)
-    (if (eq major-mode 'org-mode) (message-mode))))
-
-;; (evil-set-initial-state 'org-mode 'emacs)
-
-;; As a general RULE, mode specific evil leader keys started
-;; with uppercased character or 'g' or special character except "=" and "-"
+;; As a general rule, mode specific evil leader keys started
+;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
@@ -554,7 +546,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
           (interactive)
           (my-ensure 'org)
           (counsel-org-agenda-headlines))
-  "om" 'toggle-org-or-message-mode
   "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "wrn" 'httpd-restart-now
