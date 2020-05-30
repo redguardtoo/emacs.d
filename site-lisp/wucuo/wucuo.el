@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -38,8 +38,8 @@
 ;; when using this program.
 ;;
 ;; 3. Tips
-;; If `wucuo-flyspell-start-mode' is "lite", `wucuo-start' runs `flyspell-buffer'.
-;; If it's "lite", `wucuo-start' runs `flyspell-region' to check visible region
+;; If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
+;; If it's "normal", `wucuo-start' runs `flyspell-region' to check visible region
 ;; in current window.
 ;;
 ;; The interval of checking is set by `wucuo-update-interval'.
@@ -60,12 +60,12 @@
   :type 'boolean
   :group 'wucuo)
 
-(defcustom wucuo-flyspell-start-mode "ultra"
-  "If it's \"lite\", run `flyspell-buffer' in `after-save-hook'.
-If it's \"ultra\", run `flyspell-region' in `after-save-hook' to check visible
+(defcustom wucuo-flyspell-start-mode "fast"
+  "If it's \"normal\", run `flyspell-buffer' in `after-save-hook'.
+If it's \"fast\", run `flyspell-region' in `after-save-hook' to check visible
 region in current window."
-  :type '(choice (string :tag "lite")
-                 (string :tag "ultra"))
+  :type '(choice (string :tag "normal")
+                 (string :tag "fast"))
   :group 'wucuo)
 
 (defcustom wucuo-check-nil-font-face 'text
@@ -217,9 +217,9 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
     (setq i 0)
     (while (< i runes-length)
       (when (> (length (aref runes i)) 0)
-        (setq rlt (add-to-list 'rlt (aref runes i) t)))
+        (push (aref runes i) rlt))
       (setq i (1+ i)))
-    rlt))
+    (nreverse rlt)))
 
 (defun wucuo-spell-checker-to-string (line)
   "Feed LINE into spell checker and return output as string."
@@ -281,8 +281,9 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
 (defun wucuo-generic-check-word-predicate ()
   "Function providing per-mode customization over which words are spell checked.
 Returns t to continue checking, nil otherwise."
-  ;; Emacs 24 uses `font-lock-fontify-buffer'.
-  (font-lock-fontify-buffer)
+
+  ;; Emacs 25 used `font-lock-ensure'
+  (font-lock-ensure)
 
   (let* ((case-fold-search nil)
          (pos (- (point) 1))
@@ -350,7 +351,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.0"))
+  (message "0.2.1"))
 
 
 ;;;###autoload
@@ -375,10 +376,10 @@ Returns t to continue checking, nil otherwise."
                    (and (functionp wucuo-spell-check-buffer-predicate)
                         (funcall wucuo-spell-check-buffer-predicate))))
       (cond
-       ((string= wucuo-flyspell-start-mode "lite")
+       ((string= wucuo-flyspell-start-mode "normal")
         (if wucuo-debug (message "flyspell-buffer called."))
         (flyspell-buffer))
-       ((string= wucuo-flyspell-start-mode "ultra")
+       ((string= wucuo-flyspell-start-mode "fast")
         (let* (beg end (orig-pos (point)))
           (save-excursion
             (forward-line (- (window-total-height)))
@@ -393,8 +394,8 @@ Returns t to continue checking, nil otherwise."
 (defun wucuo-start (&optional arg)
   "Turn on wucuo to spell check code.  ARG is ignored."
   (interactive)
-
   (if wucuo-debug (message "wucuo-start called."))
+  (ignore arg)
 
   (cond
    (flyspell-mode
@@ -408,7 +409,6 @@ Returns t to continue checking, nil otherwise."
     ;; can't show the overlay of error but can't delete overlay
     (setq flyspell-large-region 1)
 
-    ;; lite mode
     (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
 
 (provide 'wucuo)
