@@ -184,7 +184,7 @@ This function can be re-used by other major modes after compilation."
 
     ;; {{ spell check camel-case word
     (my-ensure 'wucuo)
-    (wucuo-start t)
+    (wucuo-start)
     ;; }}
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html

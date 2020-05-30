@@ -167,11 +167,8 @@ When fixing a typo, avoid pass camel case option to cli program."
 (defun text-mode-hook-setup ()
   ;; Turn off RUN-TOGETHER option when spell check text-mode
   (setq-local ispell-extra-args (flyspell-detect-ispell-args))
-
-  ;; since `wucuo-flyspell-start-mode' is "ultra", no worry about
-  ;; performance at all.
   (my-ensure 'wucuo)
-  (wucuo-start t))
+  (wucuo-start))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
 
 ;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
@@ -249,7 +246,7 @@ When fixing a typo, avoid pass camel case option to cli program."
 ;; }}
 
 (with-eval-after-load 'wucuo
-  ;; {{ wucuo is used to check camel cased code.  Code is usually written
+  ;; {{ wucuo is used to check camel cased code and plain text.  Code is usually written
   ;; in English. If your code uses other language (Spanish?),
   ;; Un-comment and modify below two lines:
 
@@ -260,7 +257,6 @@ When fixing a typo, avoid pass camel case option to cli program."
 
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; check buffer or visible region only
-  (setq wucuo-flyspell-start-mode "ultra")
   ;; spell check buffer every 30 seconds
   (setq wucuo-update-interval 30))
 
