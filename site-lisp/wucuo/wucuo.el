@@ -34,8 +34,10 @@
 ;;   (add-hook 'prog-mode-hook 'wucuo-start)
 ;;   (add-hook 'text-mode-hook 'wucuo-start)
 ;;
-;; Please note `flyspell-prog-mode' and `flyspell-mode' should not be enabled
-;; when using this program.
+;; The spell checking starts when current buffer is saved.
+;;
+;; Please note `flyspell-prog-mode' and `flyspell-mode' should be turned off
+;; before using this program.
 ;;
 ;; 3. Tips
 ;; If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
@@ -122,7 +124,7 @@ If major mode's own predicate is not nil, the font face check is skipped."
   :type '(repeat sexp)
   :group 'wucuo)
 
-(defcustom wucuo-update-interval 16
+(defcustom wucuo-update-interval 2
   "Interval (seconds) for `wucuo-spell-check-buffer' to call `flyspell-buffer'."
   :group 'wucuo
   :type 'integer)

@@ -258,6 +258,6 @@ When fixing a typo, avoid pass camel case option to cli program."
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; check buffer or visible region only
   ;; spell check buffer every 30 seconds
-  (setq wucuo-update-interval 30))
+  (setq wucuo-update-interval 2))
 
 (provide 'init-spelling)
