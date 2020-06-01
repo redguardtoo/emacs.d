@@ -1,11 +1,11 @@
-;;; mybigword.el --- Use Zipf frequency of each word to extract English big words
-
+;;; mybigword.el --- Vocabulary builder using Zipf to extract English big words -*- lexical-binding: t; -*-
+;;
 ;; Copyright (C) 2020 Chen Bin <chenbin DOT sh AT gmail.com>
-
+;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
-;; URL: http://github.com/redguardtoo/mybigword
-;; Version: 0.0.1
-;; Keywords: dictionary
+;; URL: https://github.com/redguardtoo/mybigword
+;; Version: 0.0.2
+;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.4"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -23,7 +23,7 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -59,15 +59,14 @@
 
 (defcustom mybigword-data-file nil
   "The word frequency file whose lines are sorted alphabetically.
-Each line has two fields.  The first field is the downcased word.
+Each line has two fields.  The first field is the lowercase word.
 The second field is the frequency usage of the word.
 If nil, the default data is used."
   :group 'mybigword
   :type 'string)
 
 (defcustom mybigword-excluded-words
-  '(
-    "anybody"
+  '("anybody"
     "anymore"
     "anyone"
     "anyway"
@@ -96,20 +95,22 @@ If nil, the default data is used."
     "then"
     "wasn"
     "worry"
-    "wouldn"
-    )
+    "wouldn")
   "The words being excluded."
   :group 'mybigword
   :type '(repeat string))
 
 (defcustom mybigword-upper-limit 4
-  "The word whose zipf frequency is below this limit is displayed."
+  "The word whose zipf frequency is below this limit is big word."
   :group 'mybigword
   :type 'float)
 
 ;; internal variable
 (defvar mybigword-cache nil
   "Cached frequency data.")
+
+(defvar mybigword-debug nil
+  "For debug only.")
 
 ;;;###autoload
 (defun mybigword-update-cache ()
@@ -123,8 +124,12 @@ If nil, the default data is used."
          end
          raw-content
          content)
+
+    (when mybigword-debug
+      (message "mybigword-update-cache called file=%s" file))
+
     (when (file-exists-p file)
-      ;; initialize hashtable whose key is from a...z
+      ;; initialize hash table whose key is from a...z
       (setq content (make-hash-table :test #'equal))
 
       ;; read content of file
@@ -195,7 +200,7 @@ If nil, the default data is used."
           (insert (format "%s %s\n" (car bw) (cdr bw))))
         (goto-char (point-min)))
        (t
-        (message "No word is found")))))
+        (message "No big word is found!")))))
 
 (defmacro mybigword-push-cand (word dict cands)
   "Get WORD and its frequency from DICT.  Push them into CANDS."
@@ -203,22 +208,28 @@ If nil, the default data is used."
 
 (defmacro mybigword-push-word (word frequency result)
   "Push WORD FREQUENCY into RESULT."
-  `(when (not (member ,word mybigword-excluded-words))
+  `(unless (member ,word mybigword-excluded-words)
      (push (cons ,word ,frequency) ,result)))
 
 ;;;###autoload
 (defun mybigword-extract-words (text)
   "Words whose usage frequency is below `mybigword-upper-limit' in TEXT."
-  (let* ((raw-words (mapcar 'downcase (split-string text "[^A-Za-z]+")))
-         (words (delq nil (delete-dups (sort raw-words 'string<))))
+  (let* ((raw-words (mapcar #'downcase (split-string text "[^A-Za-z]+")))
+         (words (delq nil (delete-dups (sort raw-words #'string<))))
          h str
          rlt)
+
+    (when mybigword-debug
+      (message "mybigword-cache file=%s size=%s"
+               (plist-get mybigword-cache :file)
+               (plist-get mybigword-cache :filesize)))
+
     (when mybigword-cache
       (setq h (plist-get mybigword-cache :content))
       (dolist (word words)
         (when (and (> (length word) 3)
                    (setq str (gethash (elt word 0) h)))
-          (let* (freq cands (max-item '(nil . 0)))
+          (let* (cands (max-item '(nil . 0)))
             (mybigword-push-cand word str cands)
             (mybigword-push-cand (mybigword-convert-word word) str cands)
             (mybigword-push-cand (mybigword-convert-word-again word) str cands)
