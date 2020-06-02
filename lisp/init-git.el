@@ -192,11 +192,24 @@ Show the diff between current working code and git head."
 ;; }}
 
 ;; {{
-(defun my-git-extract-based (target)
+(defun my-git-extract-based (target lines)
   "Extract based version from TARGET."
-  (replace-regexp-in-string "^tag: +"
-                            ""
-                            (car (nreverse (split-string target ", +")))))
+  (let* (based (i 0) break)
+    (while (and (not break) (< i (length lines)))
+      (cond
+       ((string-match (regexp-quote target) (nth i lines))
+        (setq break t))
+       (t
+        (setq i (1+ i)))))
+    ;; find child of target commit
+    (when (and (< 0 i)
+               (< i (length lines)))
+      (setq based
+            (replace-regexp-in-string "^tag: +"
+                                      ""
+                                      (car (split-string (nth (1- i) lines)
+                                                         " +")))))
+    based))
 
 (defun my-git-rebase-interactive (&optional user-select-branch)
   "Rebase interactively on the closest branch or tag in git log output.
@@ -215,10 +228,11 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
       (message "No tag or branch is found to base on."))
      ((or (not user-select-branch)) (eq (length targets) 1)
       ;; select the closest/only tag or branch
-      (setq based (my-git-extract-based (nth 0 targets))))
+      (setq based (my-git-extract-based (nth 0 targets) lines)))
      (t
       ;; select the one tag or branch
-      (setq based (my-git-extract-based (completing-read "Select based: " targets)))))
+      (setq based (my-git-extract-based (completing-read "Select based: " targets)
+                                        lines))))
 
     ;; start git rebase
     (when based
