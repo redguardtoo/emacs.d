@@ -33,10 +33,14 @@
 ;; when new tags file is created.
 ;;
 ;; Usage:
+;;
+;;   Step 0, Make sure `company-mode' is already set up
+;;   See http://company-mode.github.io/ for details.
+;;
 ;;   Step 1, insert below code into your configuration,
 ;;
-;;   (with-eval-after-load 'company
-;;      (company-ctags-auto-setup))
+;;     (with-eval-after-load 'company
+;;        (company-ctags-auto-setup))
 ;;
 ;;   Step 2, Use Ctags to create tags file and enjoy.
 ;;
