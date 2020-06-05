@@ -390,7 +390,8 @@ Returns t to continue checking, nil otherwise."
   "Spell check current buffer."
   (if wucuo-debug (message "wucuo-spell-check-buffer called."))
   (cond
-   ((not (string-match "aspell$\\|hunspell$" ispell-program-name))
+   ((or (null ispell-program-name)
+        (not (string-match "aspell$\\|hunspell$" ispell-program-name)))
     ;; do nothing, wucuo only works with aspell or hunspell
     (if wucuo-debug (message "aspell or hunspell is missing in `ispell-program-name'.")))
 
