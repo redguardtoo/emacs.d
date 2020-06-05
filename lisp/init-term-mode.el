@@ -16,16 +16,16 @@
 
 ;; `bash-completion-tokenize' can handle garbage output of "complete -p"
 (defun my-bash-completion-tokenize-hack (orig-fun &rest args)
-  ;; original code extracts tokens line by line of output of "complete -p"
-  (let* ((beg (nth 0 beg))
-         (end (nth 1 end)))
+  "Original code extracts tokens line by line of output of \"complete -p\"."
+  (let* ((beg (nth 0 args))
+         (end (nth 1 args)))
     (cond
      ((not (string-match-p "^complete " (buffer-substring beg end)))
       ;; filter out some weird lines
       nil)
      (t
       (apply orig-fun args)))))
-(advice-add 'bash-completion-tokenize :around #'my-bash-completion-tokenize)
+(advice-add 'bash-completion-tokenize :around #'my-bash-completion-tokenize-hack)
 
 (defun shell-mode-hook-setup ()
   "Set up `shell-mode'."
