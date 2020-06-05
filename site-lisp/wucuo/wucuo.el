@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -39,6 +39,11 @@
 ;; Please note `flyspell-prog-mode' and `flyspell-mode' should be turned off
 ;; before using this program.
 ;;
+;; User's configuration for the package flyspell still works.
+;; Flyspell provides two minor modes, `flyspell-prog-mode' and `flyspell-mode'.
+;; They are replaced by this program.  But all the other commands and configuration
+;; for flyspell is still valid.
+;;
 ;; 3. Tips
 ;; If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
 ;; If it's "normal", `wucuo-start' runs `flyspell-region' to check visible region
@@ -47,6 +52,26 @@
 ;; The interval of checking is set by `wucuo-update-interval'.
 ;;
 ;; See `wucuo-check-nil-font-face' on how to check plain text (text without font)
+;;
+;; Use `wucuo-current-font-face' to detect font face at point.
+;;
+;; You can define a function in `wucuo-spell-check-buffer-predicate'.
+;; If the function returns t, the spell checking of current buffer will continue.
+;; If it returns nil, the spell checking is skipped.
+;;
+;; Here is sample to skip checking in specified major modes,
+;;   (setq wucuo-spell-check-buffer-predicate
+;;         (lambda ()
+;;           (not (memq major-mode
+;;                      '(dired-mode
+;;                        log-edit-mode
+;;                        compilation-mode
+;;                        help-mode
+;;                        profiler-report-mode
+;;                        speedbar-mode
+;;                        gud-mode
+;;                        calc-mode
+;;                        Info-mode)))))
 ;;
 
 ;;; Code:
@@ -79,12 +104,16 @@ If it's t, check plain text in any mode."
   :group 'wucuo)
 
 (defcustom wucuo-aspell-language-to-use "en"
-  "Language to use passed to aspell option '--lang'."
+  "Language to use passed to aspell option '--lang'.
+Please note it's only to check camel cased words.
+User's original dictionary configration for flyspell still works."
   :type 'string
   :group 'wucuo)
 
 (defcustom wucuo-hunspell-dictionary-base-name "en_US"
-  "Dictionary base name pass to hunspell option '-d'."
+  "Dictionary base name pass to hunspell option '-d'.
+Please note it's only used to check camel cased words.
+User's original dictionary configration for flyspell still works."
   :type 'string
   :group 'wucuo)
 
@@ -353,7 +382,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.1"))
+  (message "0.2.2"))
 
 
 ;;;###autoload
@@ -361,6 +390,10 @@ Returns t to continue checking, nil otherwise."
   "Spell check current buffer."
   (if wucuo-debug (message "wucuo-spell-check-buffer called."))
   (cond
+   ((not (string-match "aspell$\\|hunspell$" ispell-program-name))
+    ;; do nothing, wucuo only works with aspell or hunspell
+    (if wucuo-debug (message "aspell or hunspell is missing in `ispell-program-name'.")))
+
    ((not wucuo-timer)
     ;; start timer if not started yet
     (setq wucuo-timer (current-time)))
