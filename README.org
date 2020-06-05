@@ -144,8 +144,6 @@ You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML
 =shr= supports colored text while =w3m= not.
 
 But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
-**** lua
-- Required by =flymake-lua=
 **** aspell or hunspell
 - Required by =flyspell=
 - =hunspell= is the alternative of =aspell=. You need only one of them.
@@ -173,8 +171,8 @@ The content of personal dictionary can be cleaned by =M-x my-clean-aspell-dict=.
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 
 Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Hunspell uses =ispell-local-dictionary= and =ispell-local-dictionary=. That's it.
-**** tidy
-- Required by =web-mode= for syntax check.
+**** xmlstarlet or xml
+- Required by =flymake= for HTML syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
@@ -194,8 +192,6 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into =init.el=
 **** Pandoc
 - Required by =markdown-preview= from =markdown-mode=
-**** GCC/Make
-- Required by =flymake=
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
@@ -211,9 +207,6 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 **** js-beautify
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
-**** syntaxerl
-- syntax check [[http://www.erlang.org/][Erlang]] through flymake
-- Install from [[https://github.com/ten0s/syntaxerl]]
 **** sdcv (console version of StarDict)
 - Required by =sdcv.e=
 - Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
@@ -231,7 +224,7 @@ It's Grammar, Style and Spell Checker
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
-- Required by =flymake-shellcheck=
+- Required by =lazyflymake=
 **** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
 Please install corresponding Chrome/Firefox addons.
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]

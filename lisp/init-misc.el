@@ -15,14 +15,6 @@
 (global-set-key (kbd "C-q") #'aya-open-line)
 ;; }}
 
-;; {{ `sh-mode' setup
-(defun sh-mode-hook-setup ()
-  (when (and *emacs26* (executable-find "shellcheck"))
-    (flymake-shellcheck-load)
-    (flymake-mode 1)))
-(add-hook 'sh-mode-hook 'sh-mode-hook-setup)
-;; }}
-
 ;; {{ ace-link
 (ace-link-setup-default)
 (global-set-key (kbd "M-o") 'ace-link)
@@ -673,7 +665,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 
 ;; flymake
 (with-eval-after-load 'flymake
-  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   (setq flymake-gui-warnings-enabled nil))
 
 ;; {{ check attachments
@@ -1230,7 +1221,6 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
                                (file-name-base video-file)))))
      (t
       (shell-command (format "%s --dir . &" cmd-prefix))))))
-
 ;; }}
 
 (provide 'init-misc)

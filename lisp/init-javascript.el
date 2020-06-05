@@ -42,8 +42,7 @@
 (defun mo-js-mode-hook ()
   (when (and (not (is-buffer-file-temp)) (not (derived-mode-p 'js2-mode)))
     (my-common-js-setup)
-    (setq imenu-create-index-function 'mo-js-imenu-make-index)
-    (flymake-mode 1)))
+    (setq imenu-create-index-function 'mo-js-imenu-make-index)))
 (add-hook 'js-mode-hook 'mo-js-mode-hook)
 
 (with-eval-after-load 'js-mode
@@ -241,8 +240,8 @@ Merge RLT and EXTRA-RLT, items in RLT has *higher* priority."
     (setq mode-name "JS2")
     ;; counsel/ivy is more generic and powerful for refactoring
     ;; js2-mode has its own syntax linter
-    (flymake-mode -1)
-    ;; call js-doc commands through `counsel-M-x'!
+
+   ;; call js-doc commands through `counsel-M-x'!
 
     ;; @see https://github.com/mooz/js2-mode/issues/350
     (setq forward-sexp-function nil)))

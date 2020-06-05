@@ -1,27 +1,10 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun flymake-html-init ()
-  "Lint html."
-  (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                     'flymake-create-temp-inplace))
-         (local-file (file-relative-name
-                      temp-file
-                      (file-name-directory buffer-file-name))))
-    (list "tidy" (list local-file))))
-
-(defun flymake-html-load ()
-  (when (and (not (null buffer-file-name)) (file-writable-p buffer-file-name))
-    (set (make-local-variable 'flymake-allowed-file-name-masks)
-         '(("\\.html\\|\\.ctp\\|\\.ftl\\|\\.jsp\\|\\.php\\|\\.erb\\|\\.rhtm\\|\\.vue" flymake-html-init))
-         )
-    (set (make-local-variable 'flymake-err-line-patterns)
-         ;; only validate missing html tags
-         '(("line \\([0-9]+\\) column \\([0-9]+\\) - \\(Warning\\|Error\\): \\(missing <\/[a-z0-9A-Z]+>.*\\)" nil 1 2 4)))
-    (flymake-mode 1)))
+;; See `flymake-xml-program' for html flymake check
+;; No extra setup is required.
 
 (defun web-mode-hook-setup ()
   (unless (is-buffer-file-temp)
-    (flymake-html-load)
     (setq my-flyspell-check-doublon nil)
     (remove-hook 'yas-after-exit-snippet-hook
                  'web-mode-yasnippet-exit-hook t)
