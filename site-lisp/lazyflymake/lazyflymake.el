@@ -1,4 +1,4 @@
-;;; lazyflymake.el --- Light weight syntax checker for Emacs, alternative of `flymake-mode' -*- lexical-binding: t -*-
+;;; lazyflymake.el --- Lightweight syntax checker for Emacs, alternative of `flymake-mode' -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2020 Chen Bin
 ;;
@@ -61,6 +61,10 @@
 ;; Timer to run auto-update tags file
 (defvar lazyflymake-timer nil "Internal timer.")
 
+(defvar lazyflymake-start-check-now nil
+  "If it's t, `lazyflymake-start' starts buffer syntax check immediately.
+This variable is for debug and unit test only.")
+
 (defun lazyflymake-load(file-name-regexp mask)
   "Load flymake MASK for files matching FILE-NAME-REGEXP."
   (let* ((lib (intern (concat "lazyflymake-" (symbol-name mask))))
@@ -94,6 +98,14 @@
         (setq flymake-diagnostic-functions '(flymake-start-syntax-check)))
       (push (list file-name-regexp init-fn) flymake-allowed-file-name-masks))))
 
+(defun lazyflymake-start-now ()
+  "Check current buffer right now."
+  ;; `flymake-start' need this hash table
+  (unless flymake--backend-state
+    (setq flymake--backend-state (make-hash-table)))
+  ;; start checking immediately
+  (flymake-start nil t))
+
 (defun lazyflymake-check-buffer ()
   "Spell check current buffer."
   (if lazyflymake-debug (message "lazyflymake-check-buffer called."))
@@ -111,11 +123,7 @@
     ;; check
     (setq lazyflymake-timer (current-time))
     (when (and (< (buffer-size) lazyflymake-check-buffer-max))
-      ;; `flymake-start' need this hash table
-      (unless flymake--backend-state
-        (setq flymake--backend-state (make-hash-table)))
-      ;; start checking immediately
-      (flymake-start nil t)
+      (lazyflymake-start-now)
       (if lazyflymake-debug (message "Flymake syntax checking ..."))))))
 
 (defun lazyflymake-guess-shell-script-regexp ()
@@ -173,8 +181,15 @@
 
   (if lazyflymake-debug (message "flymake-allowed-file-name-masks=%s" flymake-allowed-file-name-masks))
 
-  ;; use global hook to save resource
-  (add-hook 'after-save-hook #'lazyflymake-check-buffer nil))
+  (cond
+   ;; for debug, unit test, and CI
+   (lazyflymake-start-check-now
+    (lazyflymake-start-now)
+    (if lazyflymake-debug (message "Flymake syntax checking now ...")))
+
+   (t
+    ;; use global hook to save resource
+    (add-hook 'after-save-hook #'lazyflymake-check-buffer nil))))
 
 ;;;###autoload
 (defun lazyflymake-stop ()
