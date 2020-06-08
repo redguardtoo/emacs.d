@@ -389,6 +389,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
      espresso-theme
      exotica-theme
      eziam-theme
+     fantom-theme
      farmhouse-theme
      flatland-theme
      flatui-theme
@@ -457,6 +458,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
      twilight-theme
      ujelly-theme
      underwater-theme
+     vscode-dark-plus-theme
      white-sand-theme
      zen-and-art-theme
      zenburn-theme
