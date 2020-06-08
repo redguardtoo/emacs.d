@@ -4,6 +4,6 @@
 (with-eval-after-load 'flymake
   (setq flymake-gui-warnings-enabled nil))
 
-(add-hook 'progmode-hook #'lazyflymake-start)
+(add-hook 'prog-mode-hook #'lazyflymake-start)
 
 (provide 'init-flymake)

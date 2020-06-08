@@ -391,9 +391,10 @@ Returns t to continue checking, nil otherwise."
   (if wucuo-debug (message "wucuo-spell-check-buffer called."))
   (cond
    ((or (null ispell-program-name)
+        (not (executable-find ispell-program-name))
         (not (string-match "aspell$\\|hunspell$" ispell-program-name)))
     ;; do nothing, wucuo only works with aspell or hunspell
-    (if wucuo-debug (message "aspell or hunspell is missing in `ispell-program-name'.")))
+    (if wucuo-debug (message "aspell/hunspell missing in `ispell-program-name' or not installed.")))
 
    ((not wucuo-timer)
     ;; start timer if not started yet
