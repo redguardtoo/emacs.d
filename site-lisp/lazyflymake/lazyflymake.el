@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: convenience, languages, tools
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/lazyflymake
@@ -28,7 +28,8 @@
 ;;
 ;;    (add-hook 'prog-mode-hook #'lazyflymake-start)
 ;;
-;;  Done !
+;; Errors are reported after saving current file.
+;; Use `flymake-goto-next-error', `flymake-goto-prev-error' to locate errors.
 ;;
 ;; Please note this program also set up flymake for Shell script, Emacs Lisp,
 ;; and Lua automatically.
@@ -65,6 +66,10 @@
   "If it's t, `lazyflymake-start' starts buffer syntax check immediately.
 This variable is for debug and unit test only.")
 
+(defun lazyflymake-new-flymake-p ()
+  "Test the flymake version."
+  (fboundp 'flymake-start))
+
 (defun lazyflymake-load(file-name-regexp mask)
   "Load flymake MASK for files matching FILE-NAME-REGEXP."
   (let* ((lib (intern (concat "lazyflymake-" (symbol-name mask))))
@@ -93,18 +98,20 @@ This variable is for debug and unit test only.")
             (push pattern flymake-err-line-patterns))
            ((listp pattern)
             (setq-local flymake-err-line-patterns pattern)))))
-      ;; in-case someone empty this variable
-      (unless flymake-diagnostic-functions
-        (setq flymake-diagnostic-functions '(flymake-start-syntax-check)))
       (push (list file-name-regexp init-fn) flymake-allowed-file-name-masks))))
 
-(defun lazyflymake-start-now ()
+(defun lazyflymake-start-buffer-checking-process ()
   "Check current buffer right now."
   ;; `flymake-start' need this hash table
-  (unless flymake--backend-state
-    (setq flymake--backend-state (make-hash-table)))
-  ;; start checking immediately
-  (flymake-start nil t))
+  (cond
+   ((lazyflymake-new-flymake-p)
+    (unless flymake--backend-state
+      (setq flymake--backend-state (make-hash-table)))
+    ;; start checking current buffer immediately
+    (flymake-start nil t))
+   (t
+    ;; start checking current buffer immediately
+    (flymake-start-syntax-check))))
 
 (defun lazyflymake-check-buffer ()
   "Spell check current buffer."
@@ -123,7 +130,7 @@ This variable is for debug and unit test only.")
     ;; check
     (setq lazyflymake-timer (current-time))
     (when (and (< (buffer-size) lazyflymake-check-buffer-max))
-      (lazyflymake-start-now)
+      (lazyflymake-start-buffer-checking-process)
       (if lazyflymake-debug (message "Flymake syntax checking ..."))))))
 
 (defun lazyflymake-guess-shell-script-regexp ()
@@ -142,6 +149,22 @@ This variable is for debug and unit test only.")
     (match-string idx output))
    (t
     "nil")))
+
+(defun lazyflymake--legacy-info-at-point ()
+  "Get info of errors at point.  Only used by old version of flymake."
+  (let* ((line-no (line-number-at-pos))
+         (errors (or (car (flymake-find-err-info flymake-err-info line-no))
+                     (user-error "No errors for current line")))
+         (menu (mapcar (lambda (x)
+                         (if (flymake-ler-file x)
+                             (cons (format "%s - %s(%d)"
+                                           (flymake-ler-text x)
+                                           (flymake-ler-file x)
+                                           (flymake-ler-line x))
+                                   x)
+                           (list (flymake-ler-text x))))
+                       errors)))
+         (format "Line %s: %s" line-no (caar menu))))
 
 ;;;###autoload
 (defun lazyflymake-test-err-line-pattern ()
@@ -165,13 +188,25 @@ This variable is for debug and unit test only.")
                    (lazyflymake--extract-err output (nth 4 pattern))))
         (setq i (1+ i))))))
 
+(defun lazyflymake-echo-error (&optional arg)
+  "Echo error at point.  ARG is ignored."
+  (ignore arg)
+  (message (lazyflymake--legacy-info-at-point)))
+
 ;;;###autoload
 (defun lazyflymake-start ()
   "Turn on lazyflymake to syntax check code."
   (interactive)
 
   ;; set up `flymake-allowed-file-name-masks'
-  (lazyflymake-load "\\.el$" 'elisp)
+  ;; Emacs 26 has its own elisp syntax init
+  (unless (lazyflymake-new-flymake-p) (lazyflymake-load "\\.el$" 'elisp))
+
+  ;; set log level to WARNING, so we could see error message in echo area
+  (unless (lazyflymake-new-flymake-p)
+    (advice-add 'flymake-goto-next-error :after #'lazyflymake-echo-error)
+    (advice-add 'flymake-goto-prev-error :after #'lazyflymake-echo-error))
+
   (lazyflymake-load "\\.lua$" 'lua)
   ;; a bit hard to get regex matching all shell script files
   (when (and (memq major-mode lazyflymake-shell-script-modes)
@@ -184,7 +219,7 @@ This variable is for debug and unit test only.")
   (cond
    ;; for debug, unit test, and CI
    (lazyflymake-start-check-now
-    (lazyflymake-start-now)
+    (lazyflymake-start-buffer-checking-process)
     (if lazyflymake-debug (message "Flymake syntax checking now ...")))
 
    (t
@@ -195,7 +230,11 @@ This variable is for debug and unit test only.")
 (defun lazyflymake-stop ()
   "Turn on lazyflymake to syntax check code."
   (interactive)
-  (remove-hook 'after-save-hook #'lazyflymake-check-buffer nil))
+  (remove-hook 'after-save-hook #'lazyflymake-check-buffer nil)
+
+  (unless (lazyflymake-new-flymake-p)
+    (advice-remove 'flymake-goto-next-error #'lazyflymake-echo-error)
+    (advice-remove 'flymake-goto-prev-error #'lazyflymake-echo-error)))
 
 (provide 'lazyflymake)
 ;;; lazyflymake.el ends here

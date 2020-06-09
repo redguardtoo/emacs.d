@@ -26,7 +26,7 @@
     buffer-file-name)
    (t
     (flymake-init-create-temp-buffer-copy
-     'flymake-create-temp-intemp))))
+     'flymake-create-temp-inplace))))
 
 (provide 'lazyflymake-sdk)
 ;;; lazyflymake-sdk.el ends here
