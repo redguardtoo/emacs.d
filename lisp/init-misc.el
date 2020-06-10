@@ -749,7 +749,9 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 ;; @see https://github.com/szermatt/emacs-bash-completion
-(bash-completion-setup)
+;; Other completion functions have higher priority
+;; than `bash-completion-dynamic-complete'.
+(add-hook 'shell-dynamic-complete-functions #'bash-completion-dynamic-complete t)
 
 (with-eval-after-load 'grep
   ;; eacl and other general grep (rgrep, grep ...) setup
