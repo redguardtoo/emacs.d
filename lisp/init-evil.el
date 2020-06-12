@@ -198,7 +198,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (if selected-region
         (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
 
-(evil-define-text-object my-evil-path-outer-text-object (&optional NUM begin end type)
+(evil-define-text-object my-evil-path-outer-text-object (&optional count begin end type)
   "Nearby path."
   (let* ((selected-region (my-evil-path-extract-region)))
     (when selected-region
