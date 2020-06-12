@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2017, 2018 Chen Bin
 ;;
-;; Version: 2.0.2
+;; Version: 2.0.3
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -328,11 +328,33 @@ EXTRA is optional information to filter candidates."
   "Get line beginning position."
   (save-excursion (back-to-indentation) (point)))
 
+(defun eacl-ensure-no-region-selected ()
+  "If region is selected, delete text out of selected region."
+  (when (region-active-p)
+    (let* ((b (region-beginning))
+           (e (region-end)))
+      ;; delete text outside of selected region
+      (cond
+       ((or (< b (line-beginning-position))
+            (< (line-end-position) e))
+        (error "Please select region inside current line."))
+       (t
+        (delete-region e (line-end-position))
+        (delete-region (line-beginning-position) b)))
+
+      ;; de-select region and move focus to region end
+      (when (and (boundp 'evil-mode) (eq evil-state 'visual))
+        (evil-exit-visual-state)
+        (evil-insert-state))
+      (goto-char (line-end-position)))))
+
 ;;;###autoload
 (defun eacl-complete-line ()
   "Complete line by grepping project.
+The selected region will replace current line first.
 The text from line beginning to current point is used as grep keyword.
 Whitespace in the keyword could match any characters."
+  (eacl-ensure-no-region-selected)
   (interactive)
   (let* ((cur-line-info (eacl-current-line-info))
          (cur-line (car cur-line-info))
@@ -399,10 +421,12 @@ Return (cons multiline-text end-line-text) or nil."
 
 ;;;###autoload
 (defun eacl-complete-multiline ()
-  "Complete multiline code or html tag.
+  "Complete multi-line code or html tag.
+The selected region will replace current line first.
 The text from line beginning to current point is used as grep keyword.
 Whitespace in keyword could match any characters."
   (interactive)
+  (eacl-ensure-no-region-selected)
   (let* ((orig-linenum (count-lines 1 (point)))
          (orig-file (and buffer-file-name (file-truename buffer-file-name)))
          (eacl-keyword-start (eacl-line-beginning-position))
