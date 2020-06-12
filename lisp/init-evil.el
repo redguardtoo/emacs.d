@@ -518,11 +518,16 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "si" 'evilmi-select-items
   "jb" 'js-beautify
   "jp" 'my-print-json-path
-  "xe" 'eval-last-sexp
   "x0" 'delete-window
   "x1" 'delete-other-windows
   "x2" 'split-window-vertically
   "x3" 'split-window-horizontally
+  ;; {{ @see http://ergoemacs.org/emacs/emacs_pinky_2020.html
+  "xq" 'delete-window
+  "xe" 'delete-other-windows
+  "xa" 'split-window-vertically
+  "xd" 'split-window-horizontally
+  ;; }}
   "s2" 'ffip-split-window-vertically
   "s3" 'ffip-split-window-horizontally
   "xr" 'rotate-windows
