@@ -371,4 +371,15 @@ For example,
     (prefer-coding-system 'utf-8))))
 ;; }}
 
+(defun my-skip-white-space (start step)
+  "Skip white spaces from START, return position of first non-space character.
+If STEP is 1,  search in forward direction, or else in backward direction."
+  (let* ((b start)
+         (e (if (> step 0) (line-end-position) (line-beginning-position))))
+    (save-excursion
+      (goto-char b)
+      (while (and (not (eq b e)) (memq (following-char) '(9 32)))
+        (forward-char step))
+      (point))))
+
 (provide 'init-utils)
