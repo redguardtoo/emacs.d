@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -382,7 +382,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.2"))
+  (message "0.2.3"))
 
 
 ;;;###autoload
@@ -433,20 +433,48 @@ Returns t to continue checking, nil otherwise."
   (interactive)
   (if wucuo-debug (message "wucuo-start called."))
   (ignore arg)
+  (wucuo-mode 1))
 
+(defun wucuo-stop ()
+  "Turn off wucuo and stop spell checking code."
+  (interactive)
+  (if wucuo-debug (message "wucuo-stop called."))
+  (wucuo-mode -1))
+
+(define-minor-mode wucuo-mode
+  "Toggle spell checking (Wucuo mode).
+With a prefix argument ARG, enable Flyspell mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Wucuo mode is a buffer-local minor mode.  When enabled, it
+spawns a single Ispell process and checks each word.  The default
+flyspell behavior is to highlight incorrect words.
+
+Remark:
+`wucuo-mode' uses `flyspell' and `flyspell-mode-mpa'.  Thus all Flyspell options and
+key bindings are valid."
+  :lighter flyspell-mode-line-string
+  :keymap flyspell-mode-map
+  :group 'wucuo
   (cond
-   (flyspell-mode
-    (message "Please turn off `flyspell-mode' and `flyspell-prog-mode' before wucuo starts!"))
+   (wucuo-mode
+    (condition-case err
+        (cond
+         (flyspell-mode
+          (message "Please turn off `flyspell-mode' and `flyspell-prog-mode' before wucuo starts!"))
+         (t
+          ;; To be honest, no other major mode can do better than this program
+          (setq flyspell-generic-check-word-predicate
+                #'wucuo-generic-check-word-predicate)
+
+          ;; work around issue when calling `flyspell-small-region'
+          ;; can't show the overlay of error but can't delete overlay
+          (setq flyspell-large-region 1)
+          (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t)))
+      (error (message "Error enabling Flyspell mode:\n%s" (cdr err))
+             (wucuo-mode -1))))
    (t
-    ;; To be honest, no other major mode can do better than this program
-    (setq flyspell-generic-check-word-predicate
-          #'wucuo-generic-check-word-predicate)
-
-    ;; work around issue when calling `flyspell-small-region'
-    ;; can't show the overlay of error but can't delete overlay
-    (setq flyspell-large-region 1)
-
-    (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
-
+    (remove-hook 'after-save-hook #'wucuo-spell-check-buffer t))))
 (provide 'wucuo)
 ;;; wucuo.el ends here
