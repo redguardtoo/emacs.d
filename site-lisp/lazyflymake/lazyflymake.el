@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020 Chen Bin
 ;;
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: convenience, languages, tools
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/lazyflymake
@@ -223,14 +223,15 @@ This variable is for debug and unit test only.")
     (if lazyflymake-debug (message "Flymake syntax checking now ...")))
 
    (t
-    ;; use global hook to save resource
-    (add-hook 'after-save-hook #'lazyflymake-check-buffer nil))))
+    ;; local hook will override global hook. So have to use local hook
+    ;; here.
+    (add-hook 'after-save-hook #'lazyflymake-check-buffer nil t))))
 
 ;;;###autoload
 (defun lazyflymake-stop ()
   "Turn on lazyflymake to syntax check code."
   (interactive)
-  (remove-hook 'after-save-hook #'lazyflymake-check-buffer nil)
+  (remove-hook 'after-save-hook #'lazyflymake-check-buffer t)
 
   (unless (lazyflymake-new-flymake-p)
     (advice-remove 'flymake-goto-next-error #'lazyflymake-echo-error)

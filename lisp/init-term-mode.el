@@ -1,9 +1,11 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun my-kill-process-buffer-when-exit (proc)
-  "Kill buffer of process PROC when it's terminated."
-  (when (memq (process-status proc) '(signal exit))
-    (kill-buffer (process-buffer proc))))
+(defun my-kill-process-buffer-when-exit (process event)
+  "Kill buffer of PROCESS when it's terminated.
+EVENT is ignored."
+  (ignore event)
+  (when (memq (process-status process) '(signal exit))
+    (kill-buffer (process-buffer process))))
 
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
 ;; Enable auto-completion in `shell'.
@@ -37,11 +39,9 @@
   ;; try to kill buffer when exit shell
   (let* ((proc (get-buffer-process (current-buffer)))
          (shell (file-name-nondirectory (car (process-command proc)))))
-    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding
+    ;; Don't waste time on dumb shell which `shell-write-history-on-exit' is binding to
     (unless (string-match shell-dumb-shell-regexp shell)
-      (set-process-sentinel proc
-                            (lambda (process event)
-                              (my-kill-process-buffer-when-exit process))))))
+      (set-process-sentinel proc #'my-kill-process-buffer-when-exit))))
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
@@ -53,10 +53,7 @@
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-(defun my-term-sentinel-hack (proc msg)
-  (ignore msg)
-  (my-kill-process-buffer-when-exit proc))
-(advice-add 'term-sentinel :after #'my-term-sentinel-hack)
+(advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
 ;; always use bash
 (defvar my-term-program "/bin/bash")
