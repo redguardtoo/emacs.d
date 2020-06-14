@@ -13,7 +13,7 @@
 [_B_] New bookmark        [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
 [_m_] Goto bookmark       [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
 [_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
-[_bb_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
+[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
 [_e_] Erase buffer        [_w_] Pronounce word
 [_r_] Erase this buffer   [_E_] Typewriter on
 [_f_] Recent file         [_V_] old typewriter
