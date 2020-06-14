@@ -53,7 +53,8 @@
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
-(defun my-term-sentinel-hack (proc)
+(defun my-term-sentinel-hack (proc msg)
+  (ignore msg)
   (my-kill-process-buffer-when-exit proc))
 (advice-add 'term-sentinel :after #'my-term-sentinel-hack)
 
