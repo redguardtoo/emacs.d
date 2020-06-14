@@ -28,9 +28,8 @@
    :line-number (line-number-at-pos)
    :fullpath (and (buffer-file-name) (file-truename (buffer-file-name)))
    :font-face (get-text-property (point) 'face)
-   :line-text (buffer-substring-no-properties
-               (line-beginning-position)
-               (line-end-position))))
+   :line-text (buffer-substring-no-properties (line-beginning-position)
+                                              (line-end-position))))
 
 (defmacro counsel-etags-sdk-string-contains (str ch)
   "If STR contain character CH."
