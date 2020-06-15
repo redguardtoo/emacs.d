@@ -1068,34 +1068,44 @@ Including indent-buffer, which should not be called automatically on save."
 ;; }}
 
 ;; {{ pronunciation
+(defun my-extract-word-mp3 (url)
+  "Extract mp3 from URL's response."
+  (let* ((html-text (with-current-buffer
+                        (url-retrieve-synchronously url) (buffer-string)))
+         (regexp "<source type=\"audio/mpeg\" src=\"\\([^\"]+\\)"))
+    (when (and html-text
+               (not (string-match "404" html-text))
+               (string-match regexp html-text))
+      (message "object=%s" (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))
+      (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))))
+
 (defun my-pronounce-word (&optional word)
+  "Use cambridge dictionary to pronounce WORD."
   (interactive "sWord: ")
   (my-ensure 'url)
   (if word (setq word (downcase word)))
   (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
          (cached-mp3 (file-truename (concat my-emacs-d (format "misc/%s.mp3" word))))
          (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
-         html-text
          online-mp3)
     (cond
      ((file-exists-p cached-mp3)
       (my-async-shell-command (format "%s %s" player cached-mp3)))
-     ((and (not (string-match "404" (setq html-text (with-current-buffer (url-retrieve-synchronously url) (buffer-string)))))
-           (string-match "data-src-mp3=\"\\([^\"]+\\)" html-text))
-      (setq online-mp3 (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))
+     ((setq online-mp3 (my-extract-word-mp3 url))
       (url-copy-file online-mp3 cached-mp3)
       (my-async-shell-command (format "%s %s" player cached-mp3)))
      (t
       (message "Sorry, can't find pronunciation for \"%s\"" word)))))
 
-(defun my-pronounce-current-word (&optional manual)
-  "Pronounce current word."
+(defun my-pronounce-current-word (&optional user-input-p)
+  "Pronounce current word.
+If USER-INPUT-P is t, user need input the word."
   (interactive "P")
   (when (memq major-mode '(nov-mode))
     ;; go to end of word to workaround `nov-mode' bug
     (forward-word)
     (forward-char -1))
-  (let* ((word (if manual (read-string "Word: ")
+  (let* ((word (if user-input-p (read-string "Word: ")
                  (thing-at-point 'word))))
     (my-pronounce-word word)))
 ;; }}
