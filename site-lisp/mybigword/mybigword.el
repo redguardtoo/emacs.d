@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.0.2
+;; Version: 0.0.4
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "24.4"))
 ;;
@@ -50,8 +50,21 @@
 ;;
 ;;   Run `mybigword-show-big-words-from-file'
 ;;   Run `mybigword-show-big-words-from-current-buffer'
+;;
+;;
+;; Customize `mybigword-excluded-words' or `mybigword-personal-excluded-words' to
+;; exclude words.
+;;
+;; Customize `mybigword-default-format-function' to format the word for display.
+;; If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used to
+;; find the definitions of all big words.
+;;
+;; Customize `mybigword-hide-word-function' to hide word for display
+;;
 
 ;;; Code:
+
+(require 'dictionary nil t)
 
 (defgroup mybigword nil
   "Filter the words by the frequency usage of each word."
@@ -70,6 +83,8 @@ If nil, the default data is used."
     "anymore"
     "anyone"
     "anyway"
+    "aren"
+    "brien"
     "couldn"
     "dear"
     "didn"
@@ -89,21 +104,45 @@ If nil, the default data is used."
     "our"
     "ours"
     "ourselves"
+    "shouldn"
     "sorry"
     "thank"
     "theirs"
     "then"
     "wasn"
+    "weren"
     "worry"
     "wouldn")
   "The words being excluded."
   :group 'mybigword
   :type '(repeat string))
 
+(defcustom mybigword-personal-excluded-words nil
+  "The personal words being excluded."
+  :group 'mybigword
+  :type '(repeat string))
+
+(defcustom mybigword-default-format-function
+  'mybigword-format-word
+  "The function to format big word before displaying it.
+If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used."
+  :group 'mybigword
+  :type 'function)
+
 (defcustom mybigword-upper-limit 4
   "The word whose zipf frequency is below this limit is big word."
   :group 'mybigword
   :type 'float)
+
+(defcustom mybigword-hide-unknown-word t
+  "Hide unknown word."
+  :group 'mybigword
+  :type 'boolean)
+
+(defcustom mybigword-hide-word-function nil
+  "The function to hide a word which has one parameter \" word\"."
+  :group 'mybigword
+  :type 'function)
 
 ;; internal variable
 (defvar mybigword-cache nil
@@ -151,9 +190,9 @@ If nil, the default data is used."
                (substring-no-properties raw-content beg (length raw-content))
                content)
       (setq mybigword-cache (list :content content
-                                 :file file
-                                 :timestamp (float-time (current-time))
-                                 :filesize (nth 7 (file-attributes file))))
+                                  :file file
+                                  :timestamp (float-time (current-time))
+                                  :filesize (nth 7 (file-attributes file))))
       (message "Frequency file %s is loaded." file))))
 
 (defmacro mybigword-extract-freq (word str)
@@ -186,21 +225,39 @@ If nil, the default data is used."
       (setq rlt (match-string 1 raw-word))))
     rlt))
 
+(defun mybigword-format-word (word zipf)
+  "Format WORD and ZIPF."
+  (format "%s %s\n" word zipf))
+
+(defun mybigword-format-with-dictionary (word zipf)
+  "Format WORD and ZIPF with dictionary api."
+  (ignore zipf)
+  (condition-case nil
+      (concat (dictionary-definition word) "\n\n\n")
+    (error nil)))
+
 (defun mybigword-show-big-words-from-content (content)
   "Show words whose zipf frequency is below `mybigword-upper-limit' in CONTENT."
   (unless mybigword-cache (mybigword-update-cache))
   (let* ((big-words (mybigword-extract-words content)))
     (cond
-       (big-words
-        ;; sort windows
-        (setq big-words (sort big-words (lambda (a b) (< (cdr a) (cdr b)))))
-        (switch-to-buffer-other-window "*BigWords*")
-        (erase-buffer)
-        (dolist (bw big-words)
-          (insert (format "%s %s\n" (car bw) (cdr bw))))
-        (goto-char (point-min)))
-       (t
-        (message "No big word is found!")))))
+     (big-words
+      ;; sort windows
+      (setq big-words (sort big-words (lambda (a b) (< (cdr a) (cdr b)))))
+      (switch-to-buffer-other-window "*BigWords*")
+      (erase-buffer)
+      (dolist (bw big-words)
+        (let* (str
+               (word (car bw))
+               (zipf (cdr bw)))
+          (unless (or (and mybigword-hide-unknown-word (eq zipf -1))
+                      (and mybigword-hide-word-function
+                           (not (funcall mybigword-hide-word-function word))))
+            (when (setq str (funcall mybigword-default-format-function word zipf))
+              (insert str)))))
+      (goto-char (point-min)))
+     (t
+      (message "No big word is found!")))))
 
 (defmacro mybigword-push-cand (word dict cands)
   "Get WORD and its frequency from DICT.  Push them into CANDS."
@@ -208,7 +265,8 @@ If nil, the default data is used."
 
 (defmacro mybigword-push-word (word frequency result)
   "Push WORD FREQUENCY into RESULT."
-  `(unless (member ,word mybigword-excluded-words)
+  `(unless (or (member ,word mybigword-excluded-words)
+               (member ,word mybigword-personal-excluded-words))
      (push (cons ,word ,frequency) ,result)))
 
 ;;;###autoload
@@ -220,6 +278,7 @@ If nil, the default data is used."
          rlt)
 
     (when mybigword-debug
+      (message "mybigword-extract-words called. words=%s" words)
       (message "mybigword-cache file=%s size=%s"
                (plist-get mybigword-cache :file)
                (plist-get mybigword-cache :filesize)))
@@ -246,6 +305,9 @@ If nil, the default data is used."
              (t
               ;; word is not found in dictionary
               (mybigword-push-word word -1 rlt)))))))
+    ;; need remove duplicates
+    ;; for example, "notifies" and "notify" is actually one word
+    (setq rlt (delq nil (delete-dups rlt)))
     rlt))
 
 ;;;###autoload

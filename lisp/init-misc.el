@@ -1076,7 +1076,6 @@ Including indent-buffer, which should not be called automatically on save."
     (when (and html-text
                (not (string-match "404" html-text))
                (string-match regexp html-text))
-      (message "object=%s" (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))
       (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))))
 
 (defun my-pronounce-word (&optional word)
@@ -1228,6 +1227,26 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
                                (file-name-base video-file)))))
      (t
       (shell-command (format "%s --dir . &" cmd-prefix))))))
+;; }}
+
+;; {{ use sdcv dictionary to find big word definition
+(defun my-sdcv-format-bigword (word zipf)
+  "Format INFO of bigword using sdcv dictionary."
+  (ignore zipf)
+  (local-require 'sdcv)
+  ;; 2 level org format
+  (condition-case nil
+      (format "** %s\n%s\n\n"
+              (car info)
+              (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
+    (error nil)))
+
+(defun my-lookup-big-word-definition-in-buffer ()
+  "Look up big word definitions."
+  (interactive)
+  (local-require 'mybigword)
+  (let* ((mybigword-default-format-function 'my-sdcv-format-bigword))
+    (mybigword-show-big-words-from-current-buffer)))
 ;; }}
 
 (provide 'init-misc)
