@@ -3,6 +3,6 @@
 # key: try
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-(condition-case ex
+(condition-case nil
     $0
-  ('error nil))
+  (error nil))
