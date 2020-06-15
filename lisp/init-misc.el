@@ -1231,15 +1231,19 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
 
 ;; {{ use sdcv dictionary to find big word definition
 (defun my-sdcv-format-bigword (word zipf)
-  "Format INFO of bigword using sdcv dictionary."
+  "Format WORD and ZIPF using sdcv dictionary."
   (ignore zipf)
-  (local-require 'sdcv)
-  ;; 2 level org format
-  (condition-case nil
-      (format "** %s\n%s\n\n"
-              (car info)
-              (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
-    (error nil)))
+  (let* (rlt def)
+    (local-require 'sdcv)
+    ;; 2 level org format
+    (condition-case nil
+        (progn
+          (setq def (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
+          (setq def (replace-regexp-in-string "^-->.*" "" def))
+          (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
+          (setq rlt (format "** %s\n%s\n" word def)))
+      (error nil))
+    rlt))
 
 (defun my-lookup-big-word-definition-in-buffer ()
   "Look up big word definitions."
