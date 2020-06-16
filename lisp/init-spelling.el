@@ -68,14 +68,14 @@
 ;; - aspell is older
 ;; - looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
-(defun flyspell-detect-ispell-args (&optional run-together)
+(defun my-detect-ispell-args (&optional run-together)
   "If RUN-TOGETHER is true, spell check the CamelCase words.
 Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `prog-mode-hook' only."
   (let* (args)
     (when ispell-program-name
       (cond
        ;; use aspell
-       ((string-match "aspell$" ispell-program-name)
+       ((string-match "aspell" ispell-program-name)
         ;; force the English dictionary, support Camel Case spelling check (tested with aspell 0.6)
         ;; For aspell's option "--lang", "two letter ISO 3166 country code after a underscore" is OPTIONAL.
         (setq args (list "--sug-mode=ultra" (format "--lang=%s" my-default-spell-check-language)))
@@ -97,7 +97,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
             (setq args (append args '("--run-together" "--run-together-limit=16")))))))
 
        ;; use hunspell
-       ((string-match "hunspell$" ispell-program-name)
+       ((string-match "hunspell" ispell-program-name)
         (setq args nil))))
     args))
 
@@ -131,24 +131,26 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
 (defvar my-force-to-use-hunspell nil
   "Force to use hunspell.  If nil, try to detect aspell&hunspell.")
 
-(cond
- ;; use aspell
- ((and (not my-force-to-use-hunspell) (executable-find "aspell"))
-  (setq ispell-program-name "aspell"))
+(defun my-configure-ispell-parameters ()
+  "Set `ispell-program-name' and other parameters."
+  (cond
+   ;; use aspell
+   ((and (not my-force-to-use-hunspell) (executable-find "aspell"))
+    (setq ispell-program-name "aspell"))
 
- ;; use hunspell
- ((executable-find "hunspell")
-  (setq ispell-program-name "hunspell")
-  (setq ispell-local-dictionary "hunspelldict")
-  (setq ispell-local-dictionary-alist
-        (list (list "hunspelldict" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil (list "-d" my-default-spell-check-language) nil 'utf-8))))
- (t (setq ispell-program-name nil)
-    (message "You need install either aspell or hunspell for ispell")))
+   ;; use hunspell
+   ((executable-find "hunspell")
+    (setq ispell-program-name "hunspell")
+    (setq ispell-local-dictionary "hunspelldict")
+    (setq ispell-local-dictionary-alist
+          (list (list "hunspelldict" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil (list "-d" my-default-spell-check-language) nil 'utf-8)))
+    ;; new variable i
+    (when (boundp 'ispell-hunspell-dictionary-alist)
+      (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)))
+   (t (setq ispell-program-name nil)
+      (message "You need install either aspell or hunspell for ispell"))))
 
-;; `ispell-cmd-args' contains *extra* arguments appending to CLI process
-;; when (ispell-send-string). Useless!
-;; `ispell-extra-args' is *always* used when start CLI aspell process
-(setq-default ispell-extra-args (flyspell-detect-ispell-args t))
+(my-configure-ispell-parameters)
 
 (defun my-ispell-word-hack (orig-func &rest args)
   "Use Emacs original arguments when calling `ispell-word'.
@@ -156,7 +158,7 @@ When fixing a typo, avoid pass camel case option to cli program."
   (let* ((old-ispell-extra-args ispell-extra-args))
     (ispell-kill-ispell t)
     ;; use emacs original arguments
-    (setq ispell-extra-args (flyspell-detect-ispell-args))
+    (setq ispell-extra-args (my-detect-ispell-args))
     (apply orig-func args)
     ;; restore our own ispell arguments
     (setq ispell-extra-args old-ispell-extra-args)
@@ -166,7 +168,7 @@ When fixing a typo, avoid pass camel case option to cli program."
 
 (defun text-mode-hook-setup ()
   ;; Turn off RUN-TOGETHER option when spell check text-mode
-  (setq-local ispell-extra-args (flyspell-detect-ispell-args))
+  (setq-local ispell-extra-args (my-detect-ispell-args))
   (my-ensure 'wucuo)
   (wucuo-start))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
