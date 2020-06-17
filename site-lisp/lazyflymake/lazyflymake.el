@@ -102,15 +102,10 @@ This variable is for debug and unit test only.")
 
 (defun lazyflymake-start-buffer-checking-process ()
   "Check current buffer right now."
-  ;; `flymake-start' need this hash table
   (cond
    ((lazyflymake-new-flymake-p)
-    (unless flymake--backend-state
-      (setq flymake--backend-state (make-hash-table)))
-    ;; start checking current buffer immediately
     (flymake-start nil t))
    (t
-    ;; start checking current buffer immediately
     (flymake-start-syntax-check))))
 
 (defun lazyflymake-check-buffer ()
@@ -215,6 +210,10 @@ This variable is for debug and unit test only.")
     (lazyflymake-load (lazyflymake-guess-shell-script-regexp) 'shell))
 
   (if lazyflymake-debug (message "flymake-allowed-file-name-masks=%s" flymake-allowed-file-name-masks))
+
+  ;; initialize some internal variables of `flymake-mode'
+  (flymake-mode-on)
+  (flymake-mode-off)
 
   (cond
    ;; for debug, unit test, and CI
