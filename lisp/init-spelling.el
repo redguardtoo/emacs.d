@@ -36,7 +36,7 @@
           (search-backward-regexp "=['\"]" (line-beginning-position) t)
           (backward-char)
           (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
-                                  (thing-at-point 'symbol)))))
+                                  (or (thing-at-point 'symbol) "")))))
        ;; finalize the blacklist
        (t
         (setq rlt nil)))
