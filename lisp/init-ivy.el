@@ -315,6 +315,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun my-imenu-or-list-tag-in-current-file ()
   "Combine the power of counsel-etags and imenu."
   (interactive)
+  (counsel-etags-push-marker-stack)
   (cond
    ((my-use-tags-as-imenu-function-p)
     ;; see code of `my-use-tags-as-imenu-function-p'. Currently we only use ctags for imenu

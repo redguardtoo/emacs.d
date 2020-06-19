@@ -21,6 +21,7 @@
 (autoload 'csv-nav-mode "csv-nav-mode" "Major mode for navigating comma-separated value files." t)
 (autoload 'counsel-etags-find-tag-at-point "counsel-etags" "" t nil)
 (autoload 'counsel-etags-list-tag-in-current-file "counsel-etags" "" t nil)
+(autoload 'counsel-etags-push-marker-stack "counsel-etags" "" t nil)
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
 (autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
