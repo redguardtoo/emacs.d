@@ -907,7 +907,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; press ",xx" to expand region
 ;; then press "char" to contract, "x" to expand
 (with-eval-after-load 'evil
-  ;; evil re-assign "M-." to `evil-repeat-pop-next` which I don't use actually.
+  ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
   (setq expand-region-contract-fast-key "char")
