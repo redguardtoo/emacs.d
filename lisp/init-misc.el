@@ -889,7 +889,7 @@ If the shell is already opened in some buffer, switch to that buffer."
           (concat (getenv "USER") " $ "))))
 
 ;; I'm in Australia now, so I set the locale to "en_AU"
-(defun insert-date (prefix)
+(defun my-insert-date (prefix)
   "Insert the current date. With prefix-argument, use ISO format. With
    two prefix arguments, write out the day and month name."
   (interactive "P")
