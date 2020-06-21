@@ -66,6 +66,9 @@
 ;;     (let* ((mybigword-default-format-function 'mybigword-format-with-dictionary))
 ;;       (mybigword-show-big-words-from-current-buffer))
 ;;
+;;   You can also set `mybigword-default-format-header-function' to add a header before
+;;   displaying words.
+;;
 ;;   2. Parse the *.srt to play the video containing the word in org file
 ;;   Make sure the org tree node has the property =SRT_PATH=.
 ;;
@@ -158,6 +161,12 @@ If nil, the default data is used."
   "The personal words being excluded."
   :group 'mybigword
   :type '(repeat string))
+
+(defcustom mybigword-default-format-header-function
+  (lambda (file) (ignore file) "")
+  "The function to format the header before displaying big word list."
+  :group 'mybigword
+  :type 'function)
 
 (defcustom mybigword-default-format-function
   'mybigword-format-word
@@ -290,8 +299,9 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
       (concat (dictionary-definition word) "\n\n\n")
     (error nil)))
 
-(defun mybigword-show-big-words-from-content (content)
-  "Show words whose zipf frequency is below `mybigword-upper-limit' in CONTENT."
+(defun mybigword-show-big-words-from-content (content file)
+  "Show words whose zipf frequency is below `mybigword-upper-limit' in CONTENT.
+FILE is the file path."
   (unless mybigword-cache (mybigword-update-cache))
   (let* ((big-words (mybigword-extract-words content)))
     (cond
@@ -300,6 +310,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
       (setq big-words (sort big-words (lambda (a b) (< (cdr a) (cdr b)))))
       (switch-to-buffer-other-window "*BigWords*")
       (erase-buffer)
+      (insert (funcall mybigword-default-format-header-function file))
       (dolist (bw big-words)
         (let* (str
                (word (car bw))
@@ -368,7 +379,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 (defun mybigword-show-big-words-from-current-buffer ()
   "Show big words in current buffer."
   (interactive)
-  (mybigword-show-big-words-from-content (buffer-string)))
+  (mybigword-show-big-words-from-content (buffer-string) buffer-file-name))
 
 ;;;###autoload
 (defun mybigword-show-big-words-from-file (file)
@@ -377,7 +388,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   (when (and file (file-exists-p file))
     (unless mybigword-cache (mybigword-update-cache))
     (let* ((content (mybigword-read-file file)))
-      (mybigword-show-big-words-from-content content))))
+      (mybigword-show-big-words-from-content content file))))
 
 (defun mybigword-video-path (srt-path)
   "Return video path of SRT-PATH."
