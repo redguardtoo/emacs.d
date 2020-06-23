@@ -120,7 +120,6 @@
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
-  (require-init 'init-gud t)
   (require-init 'init-linum-mode)
   (require-init 'init-git t)
   (require-init 'init-gtags t)
