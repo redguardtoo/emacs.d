@@ -246,8 +246,6 @@ This function can be re-used by other major modes after compilation."
 (defalias 'list-buffers 'ibuffer)
 
                                         ;effective emacs item 7; no scrollbar, no menubar, no toolbar
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
 (defun my-download-subtitles ()
   (interactive)
