@@ -210,15 +210,17 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq indicate-empty-lines t)
 
-;; NO tool bar
-(if (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-;; no scroll bar
-(if (fboundp 'set-scroll-bar-mode)
-  (set-scroll-bar-mode nil))
+;; NO tool bar, scroll-bar
+(when window-system
+  (and (fboundp 'scroll-bar-mode) (not (eq scroll-bar-mode -1))
+       (scroll-bar-mode -1))
+  (and (fboundp 'tool-bar-mode) (not (eq tool-bar-mode -1))
+       (tool-bar-mode -1))
+  (and (fboundp 'horizontal-scroll-bar-mode)
+       (horizontal-scroll-bar-mode -1)))
 ;; no menu bar
-(if (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
+(and (fboundp 'menu-bar-mode) (not (eq menu-bar-mode -1))
+     (menu-bar-mode -1))
 ;; }}
 
 (provide 'init-essential)
