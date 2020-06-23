@@ -1083,7 +1083,13 @@ Including indent-buffer, which should not be called automatically on save."
   (if word (setq word (downcase word)))
   (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
          (cached-mp3 (file-truename (concat my-emacs-d (format "misc/%s.mp3" word))))
-         (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
+         (player (cond
+                  (*is-a-mac*
+                   "open")
+                  (*win64*
+                   "start")
+                  (t
+                   (my-guess-mplayer-path))))
          online-mp3)
     (cond
      ((file-exists-p cached-mp3)
