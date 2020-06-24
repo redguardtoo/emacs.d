@@ -34,6 +34,8 @@
 
 ;; {{ git-gutter
 (local-require 'git-gutter)
+(setq git-gutter:disabled-modes
+      '(dired-mode))
 
 (defun git-gutter-reset-to-head-parent()
   "Reset  gutter to HEAD^.  Support Subversion and Git."
@@ -55,7 +57,7 @@
       (car (split-string item "|" t)))))
 
 (defun my-git-show-commit-internal ()
-  "Show git commit"
+  "Show git commit."
   (let* ((id (my-git-commit-id)))
     (when id
       (shell-command-to-string (format "git show %s" id)))))
