@@ -49,7 +49,7 @@
   ("pe" forward-paragraph)
   ("R" emms-random)
   ("n" emms-next)
-  ("w" my-pronounce-current-word)
+  ("w" mybigword-pronounce-word)
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)

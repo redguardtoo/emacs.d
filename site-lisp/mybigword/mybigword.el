@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.0.5
+;; Version: 0.0.6
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -69,8 +69,12 @@
 ;;   You can also set `mybigword-default-format-header-function' to add a header before
 ;;   displaying words.
 ;;
+;;   Customize `mybigword-hide-word-function' to hide word for display
+;;
+;;
 ;;   2. Parse the *.srt to play the video containing the word in org file
-;;   Make sure the org tree node has the property =SRT_PATH=.
+;;   Make sure the org tree node has the property SRT_PATH.
+;;   Mplayer is required to play the video. See `mybigword-mplayer-program' for details.
 ;;
 ;;   Sample of org file:
 ;;    * Star Trek s06e26
@@ -79,12 +83,17 @@
 ;;      :END:
 ;;    telepathic egotist
 ;;
-;;   Move focus over the word like "egotist". Run "M-x mybigword-play-video-of-word-at-point".
-;;   mplayer plays the corresponding video at the time the word is spoken.
+;;   Move focus over the word like "egotist".  Run "M-x mybigword-play-video-of-word-at-point".
+;;   Then mplayer plays the corresponding video at the time the word is spoken.
 ;;
 ;;   Please note `mybigword-play-video-of-word-at-point' can be used in other major modes.
 ;;   See `mybigword-default-video-info-function' for details.
-;;   Customize `mybigword-hide-word-function' to hide word for display
+;;
+;;
+;;   3. Use `mybigword-pronounce-word' to pronounce the word at point.
+;;   The word's audio is downloaded from https://dictionary.cambridge.org
+;;   The audio download url could be customized in `mybigword-default-audio-url-function'.
+;;
 ;;
 
 ;;; Code:
@@ -93,6 +102,7 @@
 (require 'outline)
 (require 'org)
 (require 'cl-lib)
+(require 'url)
 
 (defgroup mybigword nil
   "Filter the words by the frequency usage of each word."
@@ -108,6 +118,12 @@ If nil, the default data is used."
 
 (defcustom mybigword-mplayer-program "mplayer"
   "Mplayer program."
+  :group 'mybigword
+  :type 'string)
+
+(defcustom mybigword-download-directory nil
+  "Directory to store downloaded files.
+If it's nil, ~/.emacs.d/mybigword is is used."
   :group 'mybigword
   :type 'string)
 
@@ -185,6 +201,12 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 (defcustom mybigword-default-video-info-function
   'mybigword-org-video-info
   "The function to play the video of the big word."
+  :group 'mybigword
+  :type 'function)
+
+(defcustom mybigword-default-audio-url-function
+  'mybigword-cambridge-mp3-url
+  "The function to get audio download url of given word."
   :group 'mybigword
   :type 'function)
 
@@ -434,15 +456,24 @@ FILE is the file path."
       (setq m 0))
     (format "%02d:%02d:%02d" h m s)))
 
+
+(defun mybigword-async-shell-command (command)
+  "Execute string COMMAND asynchronously."
+  (let* ((proc (start-process "MyBigWord"
+			      nil
+			      shell-file-name
+			      shell-command-switch
+			      command)))
+    (set-process-sentinel proc 'ignore)))
+
 (defun mybigword-run-mplayer (start-time video-path)
   "Use START-TIME and VIDEO-PATH to run mplayer."
   (when start-time
     (let* ((cmd (format "%s -ss %s -osdlevel 2 %s"
-                        mybigword-mplayer-program
-                        (mybigword-adjust-start-time start-time)
-                        video-path))
-           (proc (start-process "Mplayer" nil shell-file-name shell-command-switch cmd)))
-      (set-process-sentinel proc 'ignore))))
+			mybigword-mplayer-program
+			(mybigword-adjust-start-time start-time)
+			video-path)))
+      (mybigword-async-shell-command cmd))))
 
 (defun mybigword-org-video-info (word)
   "Find the video information of the WORD in `org-mode'.
@@ -482,6 +513,68 @@ The information is in current org node's \"SRT_PATH\" property."
                (setq info (funcall mybigword-default-video-info-function word)))
       (mybigword-run-mplayer (plist-get info :start-time)
                              (plist-get info :video-path)))))
+
+(defun mybigword-cambridge-mp3-url (word)
+  "Get URL to download mp3 of WORD."
+  (let* ((url (concat "https://dictionary.cambridge.org/pronunciation/english/" word))
+	 (html-text (with-current-buffer
+			(url-retrieve-synchronously url) (buffer-string)))
+	 (regexp "<source type=\"audio/mpeg\" src=\"\\([^\"]+\\)"))
+    (when (and html-text
+	       (not (string-match "404" html-text))
+	       (string-match regexp html-text))
+      (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))))
+
+(defun mybigword-play-mp3-program ()
+  "Program to play mp3."
+  (cond
+   ;; macOS
+   ((eq system-type 'darwin) "open")
+   ;; Windows
+   ((eq system-type 'windows-nt) "start")
+   ;; Use mplayer
+   (t mybigword-mplayer-program)))
+
+(defun mybigword-get-download-directory ()
+  "Get download directory."
+  (cond
+   (mybigword-download-directory
+    (file-name-as-directory mybigword-download-directory))
+   (t
+    (let* ((dir (concat (file-name-as-directory user-emacs-directory) "mybigword")))
+      (unless (file-exists-p dir) (make-directory dir t))
+      (file-name-as-directory dir)))))
+
+;;;###autoload
+(defun mybigword-pronounce-word-internal (word)
+  "Use cambridge dictionary to pronounce WORD."
+  (setq word (downcase word))
+  (let* ((cached-mp3 (file-truename (concat (mybigword-get-download-directory) word ".mp3")))
+	 (player (mybigword-play-mp3-program))
+	 online-mp3)
+    (cond
+     ((file-exists-p cached-mp3)
+      (mybigword-async-shell-command (format "%s %s" player cached-mp3)))
+     ((setq online-mp3 (funcall mybigword-default-audio-url-function word))
+      (url-copy-file online-mp3 cached-mp3)
+      (mybigword-async-shell-command (format "%s %s" player cached-mp3)))
+     (t
+      (message "Sorry, can't find pronunciation for \"%s\"" word)))))
+
+;;;###autoload
+(defun mybigword-pronounce-word (&optional user-input-p)
+  "Pronounce current word.  If USER-INPUT-P is t, user need input the word."
+  (interactive "P")
+  ;; work around `nov-mode' issue
+  (when (memq major-mode '(nov-mode))
+    ;; go to end of word to workaround `nov-mode' bug
+    (forward-word)
+    (forward-char -1))
+
+  (let* ((word (if user-input-p (read-string "Word: ")
+		 (thing-at-point 'word))))
+    (when word
+      (mybigword-pronounce-word-internal word))))
 
 (provide 'mybigword)
 ;;; mybigword.el ends here

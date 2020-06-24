@@ -1065,75 +1065,28 @@ Including indent-buffer, which should not be called automatically on save."
   (pomodoro-add-to-mode-line))
 ;; }}
 
-;; {{ pronunciation
-(defun my-extract-word-mp3 (url)
-  "Extract mp3 from URL's response."
-  (let* ((html-text (with-current-buffer
-                        (url-retrieve-synchronously url) (buffer-string)))
-         (regexp "<source type=\"audio/mpeg\" src=\"\\([^\"]+\\)"))
-    (when (and html-text
-               (not (string-match "404" html-text))
-               (string-match regexp html-text))
-      (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))))
-
-(defun my-pronounce-word (&optional word)
-  "Use cambridge dictionary to pronounce WORD."
-  (interactive "sWord: ")
-  (my-ensure 'url)
-  (if word (setq word (downcase word)))
-  (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
-         (cached-mp3 (file-truename (concat my-emacs-d (format "misc/%s.mp3" word))))
-         (player (cond
-                  (*is-a-mac*
-                   "open")
-                  (*win64*
-                   "start")
-                  (t
-                   (my-guess-mplayer-path))))
-         online-mp3)
-    (cond
-     ((file-exists-p cached-mp3)
-      (my-async-shell-command (format "%s %s" player cached-mp3)))
-     ((setq online-mp3 (my-extract-word-mp3 url))
-      (url-copy-file online-mp3 cached-mp3)
-      (my-async-shell-command (format "%s %s" player cached-mp3)))
-     (t
-      (message "Sorry, can't find pronunciation for \"%s\"" word)))))
-
-(defun my-pronounce-current-word (&optional user-input-p)
-  "Pronounce current word.
-If USER-INPUT-P is t, user need input the word."
-  (interactive "P")
-  (when (memq major-mode '(nov-mode))
-    ;; go to end of word to workaround `nov-mode' bug
-    (forward-word)
-    (forward-char -1))
-  (let* ((word (if user-input-p (read-string "Word: ")
-                 (thing-at-point 'word))))
-    (my-pronounce-word word)))
-;; }}
-
 ;; {{ epub setup
 (defun nov-mode-hook-setup ()
-  (local-set-key (kbd "d") (lambda ()
-                             (interactive)
-                             (when (memq major-mode '(nov-mode))
-                               ;; go to end of word to workaround `nov-mode' bug
-                               (forward-word)
-                               (forward-char -1))
-                             (sdcv-search-input (thing-at-point 'word))))
-  (local-set-key (kbd "w") 'my-pronounce-current-word)
+  "Set up of `nov-mode'."
+  (local-set-key (kbd "d")
+		 (lambda ()
+		   (interactive)
+		   ;; go to end of word to workaround `nov-mode' bug
+		   (forward-word)
+		   (forward-char -1)
+		   (sdcv-search-input (thing-at-point 'word))))
+  (local-set-key (kbd "w") 'mybigword-pronounce-word)
   (local-set-key (kbd ";") 'avy-goto-char-2))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
 ;; }}
 
 ;; {{ octave
-(add-hook 'octave-mode-hook
-          (lambda ()
-            (abbrev-mode 1)
-            (auto-fill-mode 1)
-            (if (eq window-system 'x)
-                (font-lock-mode 1))))
+(defun octave-mode-hook-setup ()
+  "Set up of `octave-mode'."
+  (abbrev-mode 1)
+  (auto-fill-mode 1)
+  (if (eq window-system 'x) (font-lock-mode 1)))
+(add-hook 'octave-mode-hook 'octave-mode-hook-setup)
 ;; }}
 
 ;; {{ wgrep setup
