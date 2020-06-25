@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -74,7 +74,7 @@
 ;;
 ;;   2. Parse the *.srt to play the video containing the word in org file
 ;;   Make sure the org tree node has the property SRT_PATH.
-;;   Mplayer is required to play the video. See `mybigword-mplayer-program' for details.
+;;   Mplayer is required to play the video.  See `mybigword-mplayer-program' for details.
 ;;
 ;;   Sample of org file:
 ;;    * Star Trek s06e26
@@ -118,6 +118,11 @@ If nil, the default data is used."
 
 (defcustom mybigword-mplayer-program "mplayer"
   "Mplayer program."
+  :group 'mybigword
+  :type 'string)
+
+(defcustom mybigword-video-file-regexp "\\.\\(mp4\\|avi\\|mkv\\)$"
+  "Regular expression to match video file names."
   :group 'mybigword
   :type 'string)
 
@@ -414,18 +419,17 @@ FILE is the file path."
 
 (defun mybigword-video-path (srt-path)
   "Return video path of SRT-PATH."
-  (let* (rlt
+  (let* ((rlt '(nil . 99999))
          (dir (file-name-directory srt-path))
-         (base (file-name-base srt-path)))
-    (cond
-     ((and (setq rlt (concat dir base ".mp4"))
-           (file-exists-p rlt))
-      rlt)
-     ((and (setq rlt (concat dir base ".mkv"))
-           (file-exists-p rlt))
-      rlt)
-     (t
-      nil))))
+	 (video-files (directory-files dir t mybigword-video-file-regexp))
+         (base (file-name-base srt-path))
+	 (distance-fn (if (fboundp 'string-distance) 'string-distance
+	       'org-babel-edit-distance)))
+    (dolist (v video-files)
+      (let* ((distance (funcall distance-fn (file-name-base v) base)))
+	(when (< distance (cdr rlt))
+	  (setq rlt (cons v distance)))))
+    (car rlt)))
 
 (defun mybigword-mplayer-start-time (chunks word)
   "Get video start time from CHUNKS and WORD."
@@ -469,10 +473,11 @@ FILE is the file path."
 (defun mybigword-run-mplayer (start-time video-path)
   "Use START-TIME and VIDEO-PATH to run mplayer."
   (when start-time
-    (let* ((cmd (format "%s -ss %s -osdlevel 2 %s"
+    (let* ((default-directory (file-name-directory video-path))
+	   (cmd (format "%s -ss %s -osdlevel 2 %s"
 			mybigword-mplayer-program
 			(mybigword-adjust-start-time start-time)
-			video-path)))
+			(file-name-nondirectory video-path))))
       (mybigword-async-shell-command cmd))))
 
 (defun mybigword-org-video-info (word)
@@ -505,7 +510,9 @@ The information is in current org node's \"SRT_PATH\" property."
 
 ;;;###autoload
 (defun mybigword-play-video-of-word-at-point ()
-  "Search video's subtitle (*.srt) and play the video containing the word."
+  "Search video's subtitle (*.srt) and play the video containing the word.
+The video file should be in the same directory of subtitle.
+Its file name should be similar to the subtitle's file name."
   (interactive)
   (let* ((word (or (thing-at-point 'word) (read-string "Input a word: ")))
          info)
