@@ -678,8 +678,8 @@ If INCLUSIVE is t, the text object is inclusive."
   "ee" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
   "sc" 'shell-command
   "ll" 'my-wg-switch-workgroup ; load windows layout
-  "kk" 'scroll-other-window
-  "jj" 'scroll-other-window-up
+  "jj" 'scroll-other-window
+  "kk" 'scroll-other-window-up
   "hh" 'random-healthy-color-theme
   "yy" 'hydra-launcher/body
   "ii" 'my-toggle-indentation
