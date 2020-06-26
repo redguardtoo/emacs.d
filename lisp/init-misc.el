@@ -245,8 +245,6 @@ This function can be re-used by other major modes after compilation."
 
 (defalias 'list-buffers 'ibuffer)
 
-                                        ;effective emacs item 7; no scrollbar, no menubar, no toolbar
-
 (defun my-download-subtitles ()
   (interactive)
   (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
