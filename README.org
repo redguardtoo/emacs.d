@@ -144,8 +144,6 @@ You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML
 =shr= supports colored text while =w3m= not.
 
 But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
-**** lua
-- Required by =flymake-lua=
 **** aspell or hunspell
 - Required by =flyspell=
 - =hunspell= is the alternative of =aspell=. You need only one of them.
@@ -173,8 +171,8 @@ The content of personal dictionary can be cleaned by =M-x my-clean-aspell-dict=.
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 
 Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Hunspell uses =ispell-local-dictionary= and =ispell-local-dictionary=. That's it.
-**** tidy
-- Required by =web-mode= for syntax check.
+**** xmlstarlet or xml
+- Required by =flymake= for HTML syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
@@ -194,8 +192,6 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 - If you use =company-clang=, add =(setq company-clang-arguments '("-I/example1/dir" "-I/example2/dir"))= into =init.el=
 **** Pandoc
 - Required by =markdown-preview= from =markdown-mode=
-**** GCC/Make
-- Required by =flymake=
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
@@ -211,16 +207,13 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 **** js-beautify
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
-**** syntaxerl
-- syntax check [[http://www.erlang.org/][Erlang]] through flymake
-- Install from [[https://github.com/ten0s/syntaxerl]]
 **** sdcv (console version of StarDict)
 - Required by =sdcv.e=
 - Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
-- Tweak environment variable PATH so Emacs find ripgrep
+- Tweak environment variable =PATH= so Emacs can find ripgrep
 **** [[http://www.sbcl.org/][sbcl]]
 - Required by [[https://common-lisp.net/project/slime/][SLIME: The Superior Lisp Interaction Mode for Emacs]]
 **** ffmpeg
@@ -230,9 +223,12 @@ It's Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
-- Required by =flymake-shellcheck=
+- Check syntax of shell script
+- Required by =lazyflymake=
 **** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
 Please install corresponding Chrome/Firefox addons.
+**** [[https://mkvtoolnix.download/][mkvtoolnix]]
+- Used by hydra command in dired
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
@@ -280,7 +276,7 @@ Code auto-completion works out of box by using tags file created by Ctags. You n
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =lisp= if you have any further questions on setup.
 ** Key bindings
-Don't memorize any key binding. Try =M-x any-command-in-emacs and key binding hint is displayed.
+Don't memorize any key binding. Try =M-x any-command-in-emacs= and hint for its key binding is displayed.
 
 Most key bindings are defined in =lisp/init-evil.el=, a few key in =lisp/init-hydra.el= which uses [[https://github.com/abo-abo/hydra][Hydra]].
 
@@ -298,6 +294,8 @@ Some packages are so important to my workflow that they are locked.
 Those packages are placed at =site-lisp/=.
 
 They will not be upgraded by package system.
+
+Please make sure same package is not installed through elpa. Please check the content of directory "elpa/" in =.emacs.d= root. 
 ** How to install new packages?
 I only use two package repositories,
 - [[https://stable.melpa.org]] (holding stable packages)
@@ -430,7 +428,7 @@ If you use Zsh instead of Bash, please modify =init-term-mode.el=.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
-Chinese can use [[https://github.com/tumashu/chinese-fonts-setup][chinese-fonts-setup]].
+Chinese can use [[https://github.com/tumashu/cnfonts][cnfonts]].
 
 They are not included in this setup. You need install them manually.
 ** Synchronize setup with Git
@@ -487,7 +485,7 @@ I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native v
 By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
-- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to optimize the Emacs startup only. IMO, it's not worth the effort.
+- Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to make Emacs start up faster.
 - You can add your snippets into =snippets/=.
 - Run =grep -rns --exclude='.yas*' 'key:' *= in =snippets/= to see my own snippets
 ** Non-English users
@@ -591,6 +589,7 @@ See elpy official documentation on how to use elpy.
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
+
 (with-eval-after-load 'lsp-mode
   ;; enable log only for debug
   (setq lsp-log-io nil)
@@ -613,12 +612,13 @@ You could insert below code into =~/.custom.el=,
   (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
   ;; don't ping LSP lanaguage server too frequently
   (defvar lsp-on-touch-time 0)
-  (defadvice lsp-on-change (around lsp-on-change-hack activate)
-    ;; do run `lsp-on-change' too frequently
+  (defun my-lsp-on-change-hack (orig-fun &rest args)
+    ;; do NOT run `lsp-on-change' too frequently
     (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 30) ;; 30 seconds
+                lsp-on-touch-time) 120) ;; 2 mins
       (setq lsp-on-touch-time (float-time (current-time)))
-      ad-do-it)))
+      (apply orig-fun args)))
+  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 #+end_src
 
 Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.

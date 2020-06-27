@@ -1,9 +1,9 @@
 # -*- coding: utf-8; mode: snippet -*-
-# name: (advice-add ... :after)
+# name: (advice-add ... :before)
 # key: advice
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
 (defun my-${1:$(yas/substr yas-text "[^ ]*")}-hack (&optional arg)
-  (message "arg=%s" arg)
-  $0)
-(advice-add '${1:find-file} :after #'my-${1:$(yas/substr yas-text "[^ ]*")}-hack)
+   (message "arg=%s" arg)
+   $0)
+(advice-add '${1:find-file} :before #'my-${1:$(yas/substr yas-text "[^ ]*")}-hack)

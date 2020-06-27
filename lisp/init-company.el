@@ -40,15 +40,9 @@
         ;; @see https://github.com/company-mode/company-mode/issues/146
         company-tooltip-align-annotations t)
 
-  ;; @see https://github.com/redguardtoo/emacs.d/commit/2ff305c1ddd7faff6dc9fa0869e39f1e9ed1182d
-  (defadvice company-in-string-or-comment (around company-in-string-or-comment-hack activate)
-    (if (memq major-mode '(php-mode html-mode web-mode nxml-mode))
-        (setq ad-return-value nil)
-      ad-do-it))
-
-  ;; press SPACE will accept the highlighted candidate and insert a space
-  ;; `M-x describe-variable company-auto-complete-chars` for details
-  ;; That's BAD idea.
+  ;; Press SPACE will accept the highlighted candidate and insert a space
+  ;; "M-x describe-variable company-auto-complete-chars" for details.
+  ;; So that's BAD idea.
   (setq company-auto-complete nil)
 
   ;; NOT to load company-mode for certain major modes.
@@ -57,11 +51,15 @@
   ;; https://github.com/company-mode/company-mode/issues/29
   (setq company-global-modes
         '(not
-          eshell-mode comint-mode erc-mode gud-mode rcirc-mode
+          eshell-mode
+          comint-mode
+          erc-mode
+          gud-mode
+          rcirc-mode
           minibuffer-inactive-mode)))
 
 (with-eval-after-load 'company-ispell
-  (defadvice company-ispell-available (around company-ispell-available-hack activate)
+  (defun my-company-ispell-available-hack (orig-func &rest args)
     ;; in case evil is disabled
     (my-ensure 'evil-nerd-commenter)
     (cond
@@ -69,10 +67,10 @@
            (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
                (not (evilnc-is-pure-comment (point))))) ; auto-complete in comment only
       ;; only use company-ispell in comment when coding
-      (setq ad-return-value nil))
+      nil)
      (t
-      ad-do-it))))
-
+      (apply orig-func args))))
+  (advice-add 'company-ispell-available :around #'my-company-ispell-available-hack))
 
 (defun my-add-ispell-to-company-backends ()
   "Add ispell to the last of `company-backends'."

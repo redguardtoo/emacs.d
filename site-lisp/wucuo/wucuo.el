@@ -1,12 +1,12 @@
-;;; wucuo.el --- Spell check code containing camel case words
+;;; wucuo.el --- Fastest solution to spell check camel case code or plain text -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.1.0
+;; Version: 0.2.4
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -27,39 +27,62 @@
 ;;; Commentary:
 ;;
 ;; 1. Setup
-;; Please install either aspell or hunspell and its corresponding dictionaries.
+;; Please install either aspell or hunspell and their dictionaries.
 ;;
 ;; 2. Usage
+<<<<<<< HEAD
 ;; Run `wucuo-start' to setup and start `flyspell-mode'.
 ;; It spell check camel case words in code.
 ;; Or just add "(wucuo-start)" into "~/.emacs".
+=======
+;; Insert below code into ".emacs",
+;;   (add-hook 'prog-mode-hook 'wucuo-start)
+;;   (add-hook 'text-mode-hook 'wucuo-start)
+>>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
 ;;
-;; To enable wucuo for all languages, insert below code into ".emacs",
+;; The spell checking starts when current buffer is saved.
 ;;
-;;   (setq wucuo-flyspell-start-mode "lite") ; optional
-;;   (defun prog-mode-hook-setup ()
-;;     (wucuo-start t))
-;;   (add-hook 'prog-mode-hook 'prog-mode-hook-setup)
+;; Please note `flyspell-prog-mode' and `flyspell-mode' should be turned off
+;; before using this program.
 ;;
-;; If `wucuo-flyspell-start-mode' is "lite", `wucuo-start' calls
-;; `flyspell-buffer' periodically.
-;; The interval of buffer checking is controlled by `wucuo-update-interval'.
-;; It's more light weight than running `flyspell-mode'.
+;; User's configuration for the package flyspell still works.
+;; Flyspell provides two minor modes, `flyspell-prog-mode' and `flyspell-mode'.
+;; They are replaced by this program.  But all the other commands and configuration
+;; for flyspell is still valid.
 ;;
-;; The `flyspell-mode' is turned on by `wucuo-start' by default.
-;; See `wucuo-flyspell-start-mode' for other options.
+;; 3. Tips
+;; If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
+;; If it's "normal", `wucuo-start' runs `flyspell-region' to check visible region
+;; in current window.
 ;;
-;; Please note `flyspell-prog-mode' should not be enabled when using "wucuo".
-;; `flyspell-prog-mode' could be replaced by "wucuo".
+;; The interval of checking is set by `wucuo-update-interval'.
 ;;
-;; Or add one line setup if you prefer running `flyspell-buffer' manually:
-;;   (setq flyspell-generic-check-word-predicate #'wucuo-generic-check-word-predicate)
+;; See `wucuo-check-nil-font-face' on how to check plain text (text without font)
 ;;
-;; Or setup for only one major mode when major mode has its own flyspell setup:
-;;   (wucuo-setup-major-mode "js2-mode")
+;; Use `wucuo-current-font-face' to detect font face at point.
+;;
+;; You can define a function in `wucuo-spell-check-buffer-predicate'.
+;; If the function returns t, the spell checking of current buffer will continue.
+;; If it returns nil, the spell checking is skipped.
+;;
+;; Here is sample to skip checking in specified major modes,
+;;   (setq wucuo-spell-check-buffer-predicate
+;;         (lambda ()
+;;           (not (memq major-mode
+;;                      '(dired-mode
+;;                        log-edit-mode
+;;                        compilation-mode
+;;                        help-mode
+;;                        profiler-report-mode
+;;                        speedbar-mode
+;;                        gud-mode
+;;                        calc-mode
+;;                        Info-mode)))))
+;;
 
 ;;; Code:
 (require 'flyspell)
+(require 'font-lock)
 
 (defgroup wucuo nil
   "Code spell checker."
@@ -70,25 +93,38 @@
   :type 'boolean
   :group 'wucuo)
 
-(defcustom wucuo-flyspell-start-mode "full"
-  "If it's \"full\", turn on `flyspell-mode' automatically in `wucuo-start'.
-If it's \"lite\", run `flyspell-buffer' in `after-save-hook'.
-If it's nil, do nothing."
-  :type 'string
+(defcustom wucuo-inherit-flyspell-mode-keybindings t
+  "Inherit `flyspell-mode' keybindings."
+  :type 'boolean
   :group 'wucuo)
 
-(defcustom wucuo-check-nil-font-face nil
-  "If nil, ignore text without font face."
+(defcustom wucuo-flyspell-start-mode "fast"
+  "If it's \"normal\", run `flyspell-buffer' in `after-save-hook'.
+If it's \"fast\", run `flyspell-region' in `after-save-hook' to check visible
+region in current window."
+  :type '(choice (string :tag "normal")
+                 (string :tag "fast"))
+  :group 'wucuo)
+
+(defcustom wucuo-check-nil-font-face 'text
+  "If nil, ignore plain text (text without font face).
+If it's 'text, check plain text in `text-mode' only.
+If it's 'prog, check plain text in `prog-mode' only.
+If it's t, check plain text in any mode."
   :type 'sexp
   :group 'wucuo)
 
 (defcustom wucuo-aspell-language-to-use "en"
-  "Language to use passed to aspell option '--lang'."
+  "Language to use passed to aspell option '--lang'.
+Please note it's only to check camel cased words.
+User's original dictionary configration for flyspell still works."
   :type 'string
   :group 'wucuo)
 
 (defcustom wucuo-hunspell-dictionary-base-name "en_US"
-  "Dictionary base name pass to hunspell option '-d'."
+  "Dictionary base name pass to hunspell option '-d'.
+Please note it's only used to check camel cased words.
+User's original dictionary configration for flyspell still works."
   :type 'string
   :group 'wucuo)
 
@@ -116,26 +152,35 @@ If it's nil, do nothing."
     rjsx-text
     rjsx-tag
     rjsx-attr)
-  "Only check word whose font face is among this list."
+  "Only check word whose font face is among this list.
+If major mode's own predicate is not nil, the font face check is skipped."
   :type '(repeat sexp)
   :group 'wucuo)
-
-(defcustom wucuo-update-interval 60
-  "Interval (seconds) for `wucuo-spell-check-buffer' which calls `flyspell-buffer'."
-  :group 'wucuo
-  :type 'integer)
 
 (defcustom wucuo-personal-font-faces-to-check
   nil
-  "Similar to `wucuo-font-faces-to-check'.
-Define personal font faces to check."
+  "Similar to `wucuo-font-faces-to-check'.  Define personal font faces to check.
+If major mode's own predicate is not nil, the font face check is skipped."
   :type '(repeat sexp)
   :group 'wucuo)
 
-(defcustom wucuo-major-modes-to-setup-by-force
+(defcustom wucuo-update-interval 2
+  "Interval (seconds) for `wucuo-spell-check-buffer' to call `flyspell-buffer'."
+  :group 'wucuo
+  :type 'integer)
+
+(defcustom wucuo-spell-check-buffer-max (* 4 1024 1024)
+  "Max size of buffer to run `wucuo-spell-check-buffer'."
+  :type 'integer
+  :group 'wucuo)
+
+(defvar wucuo-spell-check-buffer-predicate nil
+  "Function to test if current buffer is checked by `wucuo-spell-check-buffer'.
+Returns t to continue checking, nil otherwise.")
+
+(defcustom wucuo-modes-whose-predicate-ignored
   '(typescript-mode)
-  "Major modes whose own predicate should be replaced by this program.
-Running `wucuo-start' with first parameter being t will set up modes listed here."
+  "Major modes whose own predicates should be ignored."
   :type '(repeat sexp)
   :group 'wucuo)
 
@@ -214,15 +259,15 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
     (setq i 0)
     (while (< i runes-length)
       (when (> (length (aref runes i)) 0)
-        (setq rlt (add-to-list 'rlt (aref runes i) t)))
+        (push (aref runes i) rlt))
       (setq i (1+ i)))
-    rlt))
+    (nreverse rlt)))
 
 (defun wucuo-spell-checker-to-string (line)
   "Feed LINE into spell checker and return output as string."
   (let* ((cmd (cond
                ;; aspell: `echo "helle world" | aspell pipe --lang en`
-               ((string-match-p "aspell$" ispell-program-name)
+               ((string-match-p "aspell\\(\\.exe\\)?$" ispell-program-name)
                 (format "%s pipe --lang %s" ispell-program-name wucuo-aspell-language-to-use))
                ;; hunspell: `echo "helle world" | hunspell -a -d en_US`
                (t
@@ -258,36 +303,54 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
    (t
     sub-word)))
 
+(defmacro wucuo--get-mode-predicate ()
+  "Get per mode predicate."
+  `(unless (memq major-mode wucuo-modes-whose-predicate-ignored)
+     (get major-mode 'flyspell-mode-predicate)))
+
+(defmacro wucuo--font-matched-p (font-face)
+  "Text with FONT-FACE should be checked."
+  `(or (memq ,font-face wucuo-font-faces-to-check)
+       (memq ,font-face wucuo-personal-font-faces-to-check)
+       (and (null ,font-face)
+            (or (eq t wucuo-check-nil-font-face)
+                (and (eq wucuo-check-nil-font-face 'text)
+                     (derived-mode-p 'text-mode))
+                (and (eq wucuo-check-nil-font-face 'prog)
+                     (derived-mode-p 'prog-mode))))))
+
 ;;;###autoload
 (defun wucuo-generic-check-word-predicate ()
-  "Function providing per-mode customization over which words are flyspelled.
-Returns t to continue checking, nil otherwise.
-Flyspell mode sets this variable to whatever is the `flyspell-mode-predicate'
-property of the major mode name."
-  ;; Emacs 24 uses `font-lock-fontify-buffer'.
-  (if (fboundp 'font-lock-ensure) (font-lock-ensure)
-    (font-lock-fontify-buffer))
+  "Function providing per-mode customization over which words are spell checked.
+Returns t to continue checking, nil otherwise."
 
   (let* ((case-fold-search nil)
          (pos (- (point) 1))
          (current-font-face (and (> pos 0) (get-text-property pos 'face)))
-         (font-matched (or (memq current-font-face wucuo-font-faces-to-check)
-                           (memq current-font-face wucuo-personal-font-faces-to-check)
-                           (and wucuo-check-nil-font-face (eq current-font-face nil))))
+         ;; "(flyspell-mode 1)" loads per major mode predicate anyway
+         (mode-predicate (wucuo--get-mode-predicate))
+         (font-matched (wucuo--font-matched-p current-font-face))
          subwords
          word
          (rlt t))
 
-    (when wucuo-debug (message "font-matched=%s, current-font-face=%s" font-matched current-font-face))
+    (if wucuo-debug (message "mode-predicate=%s" mode-predicate))
+    (if wucuo-debug (message "font-matched=%s, current-font-face=%s" font-matched current-font-face))
     (cond
      ((<= pos 0)
       nil)
-     ;; only check word with certain fonts
-     ((not font-matched)
+     ;; ignore two character word.
+     ;; in some major mode, word equals to sub-word
+     ((< (length (setq word (thing-at-point 'symbol))) 2)
       (setq rlt nil))
 
-     ;; ignore two character word, some major mode word equals to sub-word
-     ((< (length (setq word (thing-at-point 'symbol))) 2)
+     ((and mode-predicate (not (funcall mode-predicate)))
+      ;; run major mode predicate
+      (setq rlt nil))
+
+     ;; only check word with certain fonts
+     ((and (not mode-predicate) (not font-matched))
+      ;; major mode's predicate might want to manage font face check self
       (setq rlt nil))
 
      ;; handle camel case word
@@ -299,7 +362,9 @@ property of the major mode name."
      (t
       (setq rlt (funcall wucuo-extra-predicate word))))
 
-    (when wucuo-debug (message "wucuo-generic-check-word-predicate => word=%s rlt=%s wucuo-extra-predicate=%s subwords=%s" word rlt wucuo-extra-predicate subwords))
+    (when wucuo-debug
+      (message "wucuo-generic-check-word-predicate => word=%s rlt=%s wucuo-extra-predicate=%s subwords=%s"
+               word rlt wucuo-extra-predicate subwords))
     rlt))
 
 ;;;###autoload
@@ -317,28 +382,46 @@ property of the major mode name."
   "Create hunspell personal dictionary."
   (interactive)
   (with-temp-buffer
-    (let* ((file (file-truename (format "~/.hunspell_%s" wucuo-hunspell-dictionary-base-name))))
+    (let* ((f (file-truename (format "~/.hunspell_%s" wucuo-hunspell-dictionary-base-name))))
       (insert "abcd\ndefg\n")
-      (write-file file)
-      (message "%s created." file))))
+      (write-file f)
+      (message "%s created." f))))
 
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.1.0"))
+  (message "0.2.4"))
 
 ;;;###autoload
-(defun wucuo-setup-major-mode (mode)
-  "Set up MODE's flyspell predicate."
-  (if (stringp mode) (setq mode (symobol mode)))
-  (put mode
-       'flyspell-mode-predicate
-       'wucuo-generic-check-word-predicate))
+(defun wucuo-spell-check-visible-region ()
+  "Spell check visible region in current buffer"
+  (interactive)
+  (let* (beg end (orig-pos (point)))
+    (save-excursion
+      (forward-line (- (window-total-height)))
+      (setq beg (line-beginning-position))
+      (goto-char orig-pos)
+      (forward-line (window-total-height))
+      (setq end (line-end-position)))
+    (when (and beg end (< beg end))
+      (if wucuo-debug (message "wucuo-spell-check-visible-region called from %s to %s" beg end))
+      ;; See https://emacs-china.org/t/flyspell-mode-wucuo-0-2-0/13274/46 where the performance issue
+      ;; is reported.
+      ;; Try test https://github.com/emacs-mirror/emacs/blob/master/src/xdisp.c
+      (font-lock-ensure beg end)
+      (flyspell-region beg end))))
 
 ;;;###autoload
 (defun wucuo-spell-check-buffer ()
-  "Spell check current buffer"
+  "Spell check current buffer."
+  (if wucuo-debug (message "wucuo-spell-check-buffer called."))
   (cond
+   ((or (null ispell-program-name)
+        (not (executable-find ispell-program-name))
+        (not (string-match "aspell\\(\\.exe\\)?$\\|hunspell\\(\\.exe\\)?$" ispell-program-name)))
+    ;; do nothing, wucuo only works with aspell or hunspell
+    (if wucuo-debug (message "aspell/hunspell missing in `ispell-program-name' or not installed.")))
+
    ((not wucuo-timer)
     ;; start timer if not started yet
     (setq wucuo-timer (current-time)))
@@ -351,34 +434,91 @@ property of the major mode name."
    (t
     ;; real spell checking
     (setq wucuo-timer (current-time))
-    (flyspell-buffer))))
+    (when (and (< (buffer-size) wucuo-spell-check-buffer-max)
+               (or (null wucuo-spell-check-buffer-predicate)
+                   (and (functionp wucuo-spell-check-buffer-predicate)
+                        (funcall wucuo-spell-check-buffer-predicate))))
+      (cond
+       ((string= wucuo-flyspell-start-mode "normal")
+        (if wucuo-debug (message "flyspell-buffer called."))
+        ;; `font-lock-ensure' on whole buffer could be slow
+        (font-lock-ensure)
+        (flyspell-buffer))
+       ((string= wucuo-flyspell-start-mode "fast")
+        (wucuo-spell-check-visible-region)))))))
 
 ;;;###autoload
-(defun wucuo-start (&optional force)
-  "Turn on wucuo to spell check code.
-If FORCE is t, use wucuo's predicate to override the predicate bundled with the major modes.
-The major modes whose predicates can be shadowed is in `wucuo-major-modes-to-setup-by-force'."
+(defun wucuo-start (&optional arg)
+  "Turn on wucuo to spell check code.  ARG is ignored."
   (interactive)
-  (when force
-    (dolist (mode wucuo-major-modes-to-setup-by-force)
-      (wucuo-setup-major-mode mode)))
-
-  ;; setup flyspell if the major mode does not have per its own flyspell setup.
-  ;; to be honest, no other major mode can do better than this program
-  (setq flyspell-generic-check-word-predicate
-        #'wucuo-generic-check-word-predicate)
-
-  ;; work around issue when calling `flyspell-small-region'
-  ;; can't show the overlay of error but can't delete overlay
-  (setq flyspell-large-region 1)
-
+  (if wucuo-debug (message "wucuo-start called."))
+  (ignore arg)
   (cond
-   ;; full mode
-   ((string= wucuo-flyspell-start-mode "full")
-    (flyspell-mode 1))
-   ;; lite mode
-   ((string= wucuo-flyspell-start-mode "lite")
+   (wucuo-inherit-flyspell-mode-keybindings
+    (wucuo-mode 1))
+   (t
+    (wucuo-mode-on))))
+
+(defun wucuo-stop ()
+  "Turn off wucuo and stop spell checking code."
+  (interactive)
+  (if wucuo-debug (message "wucuo-stop called."))
+  (cond
+   (wucuo-inherit-flyspell-mode-keybindings
+    (wucuo-mode -1))
+   (t
+    (wucuo-mode-off))))
+
+(defun wucuo-mode-on ()
+  "Turn Wucuo mode on.  Do not use this; use `wucuo-mode' instead."
+  (cond
+   (flyspell-mode
+    (message "Please turn off `flyspell-mode' and `flyspell-prog-mode' before wucuo starts!"))
+   (t
+    ;; To be honest, no other major mode can do better than this program
+    (setq flyspell-generic-check-word-predicate
+          #'wucuo-generic-check-word-predicate)
+
+    ;; work around issue when calling `flyspell-small-region'
+    ;; can't show the overlay of error but can't delete overlay
+    (setq flyspell-large-region 1)
     (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
+
+(defun wucuo-mode-off ()
+  "Turn Wucuo mode on.  Do not use this; use `wucuo-mode' instead."
+
+  ;; {{ copied from `flyspell-mode-off'
+  (flyspell-delete-all-overlays)
+  (setq flyspell-pre-buffer nil)
+  (setq flyspell-pre-point  nil)
+  ;; }}
+
+  (remove-hook 'after-save-hook #'wucuo-spell-check-buffer t))
+
+(define-minor-mode wucuo-mode
+  "Toggle spell checking (Wucuo mode).
+With a prefix argument ARG, enable Flyspell mode if ARG is
+positive, and disable it otherwise.  If called from Lisp, enable
+the mode if ARG is omitted or nil.
+
+Wucuo mode is a buffer-local minor mode.  When enabled, it
+spawns a single Ispell process and checks each word.  The default
+flyspell behavior is to highlight incorrect words.
+
+Remark:
+`wucuo-mode' uses `flyspell' and `flyspell-mode-mpa'.  Thus all Flyspell options and
+key bindings are valid."
+  :lighter flyspell-mode-line-string
+  :keymap flyspell-mode-map
+  :group 'wucuo
+  (cond
+   (wucuo-mode
+    (condition-case err
+        (wucuo-mode-on)
+      (error (message "Error enabling Flyspell mode:\n%s" (cdr err))
+             (wucuo-mode -1))))
+   (t
+    (wucuo-mode-off))))
 
 (provide 'wucuo)
 ;;; wucuo.el ends here

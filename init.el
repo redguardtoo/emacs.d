@@ -12,6 +12,8 @@
   4000000
   "Best default gc threshold value.  Should NOT be too big!")
 
+(defvar my-debug nil "Enable debug mode.")
+
 ;; don't GC during startup to save time
 (setq gc-cons-threshold most-positive-fixnum)
 
@@ -61,6 +63,7 @@
   (run-with-idle-timer 5 t #'garbage-collect))
 
 (defun my-vc-merge-p ()
+  "Use Emacs for git merge only?"
   (boundp 'startup-now))
 
 (defun require-init (pkg &optional maybe-disabled)
@@ -78,11 +81,6 @@
             (t
              (format "%s/%s/%s" my-site-lisp-dir pkg pkg))))
           t t)))
-
-;; *Message* buffer should be writable in 24.4+
-(defadvice switch-to-buffer (after switch-to-buffer-after-hack activate)
-  (if (string= "*Messages*" (buffer-name))
-      (read-only-mode -1)))
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
 ;; Normally file-name-handler-alist is set to
@@ -125,7 +123,6 @@
   (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
-  (require-init 'init-gud t)
   (require-init 'init-linum-mode)
   (require-init 'init-git t)
   (require-init 'init-gtags t)
@@ -175,6 +172,7 @@
   ;; NO ELPA package is dependent on "site-lisp/".
   (setq load-path (cdr load-path))
   (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir))
+  (require-init 'init-flymake t)
 
   (unless (my-vc-merge-p)
     ;; my personal setup, other major-mode specific setup need it.

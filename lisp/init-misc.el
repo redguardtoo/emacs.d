@@ -15,14 +15,6 @@
 (global-set-key (kbd "C-q") #'aya-open-line)
 ;; }}
 
-;; {{ `sh-mode' setup
-(defun sh-mode-hook-setup ()
-  (when (and *emacs26* (executable-find "shellcheck"))
-    (flymake-shellcheck-load)
-    (flymake-mode 1)))
-(add-hook 'sh-mode-hook 'sh-mode-hook-setup)
-;; }}
-
 ;; {{ ace-link
 (ace-link-setup-default)
 (global-set-key (kbd "M-o") 'ace-link)
@@ -184,8 +176,12 @@ This function can be re-used by other major modes after compilation."
 
     ;; {{ spell check camel-case word
     (my-ensure 'wucuo)
+<<<<<<< HEAD
     (wucuo-start t)
 
+=======
+    (wucuo-start)
+>>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
     ;; }}
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
@@ -194,7 +190,7 @@ This function can be re-used by other major modes after compilation."
 
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
-    (setq flyspell-check-doublon nil)
+    (setq my-flyspell-check-doublon nil)
     ;; enable for all programming modes
     ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
     (unless (derived-mode-p 'js2-mode)
@@ -253,10 +249,6 @@ This function can be re-used by other major modes after compilation."
 (defun void () "this is a no-op" (interactive))
 
 (defalias 'list-buffers 'ibuffer)
-
-                                        ;effective emacs item 7; no scrollbar, no menubar, no toolbar
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-(if (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 
 (defun my-download-subtitles ()
   (interactive)
@@ -674,7 +666,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 
 ;; flymake
 (with-eval-after-load 'flymake
-  (remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
   (setq flymake-gui-warnings-enabled nil))
 
 ;; {{ check attachments
@@ -726,11 +717,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
                       table)))
 (add-hook 'minibuffer-inactive-mode-hook 'minibuffer-inactive-mode-hook-setup)
 
-;; {{ dumb-jump
-(setq dumb-jump-selector 'ivy)
-(dumb-jump-mode)
-;; }}
-
 ;; {{ vc-msg
 (defun vc-msg-hook-setup (vcs-type commit-info)
   ;; copy commit id to clipboard
@@ -762,9 +748,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
       (typewriter-mode -1)
     (typewriter-mode 1)))
 ;; }}
-
-;; @see https://github.com/szermatt/emacs-bash-completion
-(bash-completion-setup)
 
 (with-eval-after-load 'grep
   ;; eacl and other general grep (rgrep, grep ...) setup
@@ -830,12 +813,14 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 (with-eval-after-load 'compile
-  (defadvice compile (around compile-hack activate)
+  (defun my-compile-hack (orig-func &rest args)
     (cond
      ((member major-mode '(octave-mode))
       (octave-send-buffer))
      (t
-      ad-do-it)))
+      (apply orig-func args))))
+  (advice-add 'compile :around #'my-compile-hack)
+
   (add-to-list 'compilation-error-regexp-alist-alist
                (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'mocha))
@@ -905,7 +890,7 @@ If the shell is already opened in some buffer, switch to that buffer."
           (concat (getenv "USER") " $ "))))
 
 ;; I'm in Australia now, so I set the locale to "en_AU"
-(defun insert-date (prefix)
+(defun my-insert-date (prefix)
   "Insert the current date. With prefix-argument, use ISO format. With
    two prefix arguments, write out the day and month name."
   (interactive "P")
@@ -956,25 +941,14 @@ Then insert it as a local file link in `org-mode'."
   (interactive)
   (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
 
-(defun my-font-file-to-base64 (font-file)
-  "Convert FONT-FILE into base64 encoded string."
-  (let* (str
-         (file-base (file-name-sans-extension font-file))
-         (file-ext (file-name-extension font-file)))
-    (when (file-exists-p font-file)
-        (with-temp-buffer
-          (shell-command (concat "cat " font-file "|base64") 1)
-          (setq str (replace-regexp-in-string "\n" "" (buffer-string)))))
-    str))
-
-;; {{ copy the file-name/full-path in dired buffer into clipboard
-;; `w` => copy file name
-;; `C-u 0 w` => copy full path
-(defadvice dired-copy-filename-as-kill (after dired-filename-to-clipboard activate)
+(defun my-dired-copy-filename-as-kill-hack (&optional arg)
+  "Copy the file name or file path from dired into clipboard.
+Press \"w\" to copy file name.
+Press \"C-u 0 w\" to copy full path."
   (let* ((str (current-kill 0)))
     (my-pclip str)
     (message "%s => clipboard" str)))
-;; }}
+(advice-add 'dired-copy-filename-as-kill :after #'my-dired-copy-filename-as-kill-hack)
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
 (defun vc-rename-file-and-buffer ()
@@ -1055,27 +1029,28 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 (with-eval-after-load 'epg
-  (defadvice epg--start (around advice-epg-disable-agent disable)
-    "Make `epg--start' not able to find a gpg-agent."
-    (let ((agent (getenv "GPG_AGENT_INFO")))
+  (defun my-epg--start-hack (orig-func &rest args)
+    "Make `epg--start' not able to find gpg-agent."
+    (let* ((agent (getenv "GPG_AGENT_INFO")))
       (setenv "GPG_AGENT_INFO" nil)
-      ad-do-it
+      (apply orig-func args)
       (setenv "GPG_AGENT_INFO" agent)))
+  (advice-add 'epg--start :around #'my-epg--start-hack)
 
   (unless (string-match-p "^gpg (GnuPG) 1.4"
                           (shell-command-to-string (format "%s --version" epg-gpg-program)))
 
-    ;; `apt-get install pinentry-tty` if using emacs-nox
-    ;; Create `~/.gnupg/gpg-agent.conf'. has one line
-    ;; `pinentry-program /usr/bin/pinentry-curses`
+    ;; "apt-get install pinentry-tty" if using emacs-nox
+    ;; Create `~/.gnupg/gpg-agent.conf' which has one line
+    ;; "pinentry-program /usr/bin/pinentry-curses"
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
 ;; {{ show current function name in `mode-line'
-(defadvice which-func-update (around which-func-update-hack activate)
-  ;; `which-function-mode' scanning makes Emacs unresponsive in big buffer
-  (unless (buffer-too-big-p)
-    ad-do-it))
+(defun my-which-func-update-hack (orig-func &rest args)
+  "`which-function-mode' scanning makes Emacs unresponsive in big buffer."
+  (unless (buffer-too-big-p) (apply orig-func args)))
+(advice-add 'which-func-update :around #'my-which-func-update-hack)
 (with-eval-after-load 'which-function
   (add-to-list 'which-func-modes 'org-mode))
 (which-function-mode 1)
@@ -1093,60 +1068,28 @@ Including indent-buffer, which should not be called automatically on save."
   (pomodoro-add-to-mode-line))
 ;; }}
 
-;; {{ pronunciation
-(defun my-pronounce-word (&optional word)
-  (interactive "sWord: ")
-  (my-ensure 'url)
-  (if word (setq word (downcase word)))
-  (let* ((url (format "https://dictionary.cambridge.org/pronunciation/english/%s" word))
-         (cached-mp3 (file-truename (concat my-emacs-d (format "misc/%s.mp3" word))))
-         (player (if (not *is-a-mac*) (my-guess-mplayer-path) "open"))
-         html-text
-         online-mp3)
-    (cond
-     ((file-exists-p cached-mp3)
-      (my-async-shell-command (format "%s %s" player cached-mp3)))
-     ((and (not (string-match "404" (setq html-text (with-current-buffer (url-retrieve-synchronously url) (buffer-string)))))
-           (string-match "data-src-mp3=\"\\([^\"]+\\)" html-text))
-      (setq online-mp3 (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))
-      (url-copy-file online-mp3 cached-mp3)
-      (my-async-shell-command (format "%s %s" player cached-mp3)))
-     (t
-      (message "Sorry, can't find pronunciation for \"%s\"" word)))))
-
-(defun my-pronounce-current-word (&optional manual)
-  "Pronounce current word."
-  (interactive "P")
-  (when (memq major-mode '(nov-mode))
-    ;; go to end of word to workaround `nov-mode' bug
-    (forward-word)
-    (forward-char -1))
-  (let* ((word (if manual (read-string "Word: ")
-                 (thing-at-point 'word))))
-    (my-pronounce-word word)))
-;; }}
-
 ;; {{ epub setup
 (defun nov-mode-hook-setup ()
-  (local-set-key (kbd "d") (lambda ()
-                             (interactive)
-                             (when (memq major-mode '(nov-mode))
-                               ;; go to end of word to workaround `nov-mode' bug
-                               (forward-word)
-                               (forward-char -1))
-                             (sdcv-search-input (thing-at-point 'word))))
-  (local-set-key (kbd "w") 'my-pronounce-current-word)
+  "Set up of `nov-mode'."
+  (local-set-key (kbd "d")
+		 (lambda ()
+		   (interactive)
+		   ;; go to end of word to workaround `nov-mode' bug
+		   (forward-word)
+		   (forward-char -1)
+		   (sdcv-search-input (thing-at-point 'word))))
+  (local-set-key (kbd "w") 'mybigword-pronounce-word)
   (local-set-key (kbd ";") 'avy-goto-char-2))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
 ;; }}
 
 ;; {{ octave
-(add-hook 'octave-mode-hook
-          (lambda ()
-            (abbrev-mode 1)
-            (auto-fill-mode 1)
-            (if (eq window-system 'x)
-                (font-lock-mode 1))))
+(defun octave-mode-hook-setup ()
+  "Set up of `octave-mode'."
+  (abbrev-mode 1)
+  (auto-fill-mode 1)
+  (if (eq window-system 'x) (font-lock-mode 1)))
+(add-hook 'octave-mode-hook 'octave-mode-hook-setup)
 ;; }}
 
 ;; {{ wgrep setup
@@ -1195,29 +1138,31 @@ Including indent-buffer, which should not be called automatically on save."
 ;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
 (defvar my-default-yes-no-answers nil
     "Usage: (setq my-default-yes-no-answers '((t . \"question1\") (t . \"question2\")))).")
-(defadvice y-or-n-p (around y-or-n-p-hack activate)
-  (let* ((prompt (car (ad-get-args 0))))
+(defun my-y-or-n-p-hack (orig-func &rest args)
+  "Answer yes or no automatically for some questions."
+  (let* ((prompt (car args))
+         rlt)
     (cond
      ((and my-default-yes-no-answers
            (listp my-default-yes-no-answers))
-      (let* ((i 0)
-             found
-             cand)
+      (let* ((i 0) found cand)
         (while (and (setq cand (nth i my-default-yes-no-answers))
                     (not found))
           (when (string-match-p (cdr cand) prompt)
             (setq found t)
-            (setq ad-return-value (car cand)))
+            (setq rlt (car cand)))
           (setq i (1+ i)))
-        (unless found ad-do-it)))
+        (unless found (setq rlt (apply orig-func args)))))
      (t
-      ad-do-it))))
+      (setq rlt (apply orig-func args))))
+    rlt))
+(advice-add 'y-or-n-p :around #'my-y-or-n-p-hack)
 ;; }}
 
 ;; {{ eldoc
 (with-eval-after-load 'eldoc
   ;; multi-line message should not display too soon
-  (setq eldoc-idle-delay 1.5)
+  (setq eldoc-idle-delay 1)
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
@@ -1242,7 +1187,30 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
                                (file-name-base video-file)))))
      (t
       (shell-command (format "%s --dir . &" cmd-prefix))))))
+;; }}
 
+;; {{ use sdcv dictionary to find big word definition
+(defun my-sdcv-format-bigword (word zipf)
+  "Format WORD and ZIPF using sdcv dictionary."
+  (ignore zipf)
+  (let* (rlt def)
+    (local-require 'sdcv)
+    ;; 2 level org format
+    (condition-case nil
+        (progn
+          (setq def (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
+          (setq def (replace-regexp-in-string "^-->.*" "" def))
+          (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
+          (setq rlt (format "** %s\n%s\n" word def)))
+      (error nil))
+    rlt))
+
+(defun my-lookup-big-word-definition-in-buffer ()
+  "Look up big word definitions."
+  (interactive)
+  (local-require 'mybigword)
+  (let* ((mybigword-default-format-function 'my-sdcv-format-bigword))
+    (mybigword-show-big-words-from-current-buffer)))
 ;; }}
 
 (provide 'init-misc)

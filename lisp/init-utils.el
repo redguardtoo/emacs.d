@@ -37,8 +37,7 @@
            load-path))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
-(defun my-get-string-from-file
-    (file)
+(defun my-get-string-from-file (file)
   "Return FILE's content."
   (with-temp-buffer
     (insert-file-contents file)
@@ -361,13 +360,26 @@ For example,
     (add-hook 'shell-mode-hook #'my-windows-shell-mode-coding)
     (add-hook 'inferior-python-mode-hook #'my-windows-shell-mode-coding)
 
-    (defadvice org-babel-execute:python (around org-babel-execute:python-hack activate)
+    (defun my-org-babel-execute:python-hack (orig-func &rest args)
       ;; @see https://github.com/Liu233w/.spacemacs.d/issues/6
       (let* ((coding-system-for-write 'utf-8))
-        ad-do-it)))
+        (apply orig-func args)))
+    (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
+
    (t
     (set-language-environment "UTF-8")
     (prefer-coding-system 'utf-8))))
 ;; }}
+
+(defun my-skip-white-space (start step)
+  "Skip white spaces from START, return position of first non-space character.
+If STEP is 1,  search in forward direction, or else in backward direction."
+  (let* ((b start)
+         (e (if (> step 0) (line-end-position) (line-beginning-position))))
+    (save-excursion
+      (goto-char b)
+      (while (and (not (eq b e)) (memq (following-char) '(9 32)))
+        (forward-char step))
+      (point))))
 
 (provide 'init-utils)

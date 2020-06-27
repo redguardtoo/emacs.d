@@ -1,3 +1,5 @@
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 ;;; {{ shell and conf
 (add-auto-mode 'conf-mode
                "\\.[^b][^a][a-zA-Z]*rc$"
@@ -88,8 +90,7 @@
 
 ;; {{ web/html
 (add-auto-mode 'web-mode
-               "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|er
-b\\)$")
+               "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\)$")
 ;; }}
 
 ;; {{js
@@ -124,5 +125,7 @@ b\\)$")
 ;; python
 (add-interpreter-mode 'python-mode "python")
 
+;; roblox studio
+(add-auto-mode 'roblox-mode "\\.rbxlx\\'")
 ;; }}
 (provide 'init-file-type)

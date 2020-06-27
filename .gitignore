@@ -66,3 +66,4 @@ network-security.data
 *.ogg
 nov-places
 transient/
+elpy/

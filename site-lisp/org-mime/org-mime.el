@@ -6,8 +6,8 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.1.6
-;; Package-Requires: ((emacs "24.4") (cl-lib "0.5"))
+;; Version: 0.2.0
+;; Package-Requires: ((emacs "25.1") (cl-lib "0.5"))
 
 ;; This file is not part of GNU Emacs.
 
@@ -67,8 +67,11 @@
 ;;
 ;; Quick start:
 ;; Write a message in message-mode, make sure the mail body follows
-;; org format. Before sending mail, run `M-x org-mime-htmlize' to convert the
-;; body to html, then send the mail as usual.
+;; org format. Run `org-mime-edit-mail-in-org-mode' to edit mail
+;; in a special edit with `org-mode'.
+;; Run `org-mime-htmlize' to convert the plain text mail to html mail.
+;; Run `org-mime-revert-to-plain-text-mail' if you want to restore to
+;; plain text mail.
 ;;
 ;; Setup (OPTIONAL):
 ;; You might want to bind this to a key with something like the
@@ -99,6 +102,14 @@
 ;; 3. Now the quoted mail uses a modern style (like Gmail), so mail replies
 ;; looks clean and modern. If you prefer the old style, please set
 ;; `org-mime-beautify-quoted-mail' to nil.
+;;
+;; 4. Please note this program can only embed exported HTML into mail.
+;;    Org-mode is responsible for rendering HTML.
+;;
+;;    For example, see https://github.com/org-mime/org-mime/issues/38
+;;    The solution is patching org-mode,
+;;    https://lists.gnu.org/archive/html/emacs-orgmode/2019-11/msg00016.html
+;;
 
 ;;; Code:
 (require 'cl-lib)
@@ -128,6 +139,12 @@ And ensure first line isn't assumed to be a title line."
   :group 'org-mime
   :type '(choice 'mml 'semi 'vm))
 
+(defcustom org-mime-export-ascii nil
+  "ASCII export options for text/plain.
+Default (nil) selects the original org-mode file."
+  :group 'org-mime
+  :type '(choice 'ascii 'latin1 'utf-8))
+
 (defcustom org-mime-preserve-breaks t
   "Temporary value of `org-export-preserve-breaks' during mime encoding."
   :group 'org-mime
@@ -150,7 +167,7 @@ And ensure first line isn't assumed to be a title line."
   :type 'sexp)
 
 (defvar org-mime-export-options '(:with-latex dvipng)
-  "Default export options which may overrides org buffer/subtree options.
+  "Default export options which may override org buffer/subtree options.
 You avoid exporting section-number/author/toc with the setup below,
 `(setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))'")
 
@@ -169,6 +186,13 @@ buffer holding the text to be exported.")
 (defvar org-mime-debug nil
   "Enable debug logger.")
 
+;; internal variables
+(defvar org-mime-src--overlay nil)
+(defvar org-mime-src--beg-marker nil)
+(defvar org-mime-src--end-marker nil)
+(defvar org-mime--saved-temp-window-config nil)
+(defconst org-mime-src--hint "## org-mime hint: Press C-c C-c to commit change.\n")
+
 (defun org-mime-get-export-options (subtreep)
   "SUBTREEP is t if current node is subtree."
   (cond
@@ -186,12 +210,23 @@ buffer holding the text to be exported.")
   (buffer-substring-no-properties (line-beginning-position)
                                   (line-end-position)))
 
+(defun org-mime-use-ascii-charset ()
+  "Return nil unless org-mime-export-ascii is set to a valid value."
+  (car (memq org-mime-export-ascii '(ascii utf-8 latin1))))
+
 (defun org-mime-export-buffer-or-subtree (subtreep)
   "Similar to `org-html-export-as-html' and `org-org-export-as-org'.
 SUBTREEP is t if current node is subtree."
-  (let* ((plain (buffer-string))
+  (let* (
+         (ascii-charset (org-mime-use-ascii-charset))
+         (opts (org-mime-get-export-options subtreep))
+         (plain (if ascii-charset
+                    (progn
+                      (setq org-ascii-charset ascii-charset)
+                      (org-export-string-as (buffer-string) 'ascii nil opts))
+                  (buffer-string)))
          (buf (org-export-to-buffer 'html "*Org Mime Export*"
-                nil subtreep nil (org-mime-get-export-options subtreep)))
+                nil subtreep nil opts))
          (body (prog1
                    (with-current-buffer buf
                      (buffer-string))
@@ -282,10 +317,10 @@ HTML is the body of the message."
   "Markup a multipart/alternative with HTML alternatives.
 If html portion of message includes IMAGES they are wrapped in multipart/related part."
   (cl-case org-mime-library
-    (mml (concat "<#multipart type=alternative>\n<#part type=text/plain>"
+    (mml (concat "<#multipart type=alternative>\n<#part type=text/plain>\n"
                  plain
                  (when images "<#multipart type=related>")
-                 "<#part type=text/html>"
+                 "<#part type=text/html>\n"
                  (if org-mime-beautify-quoted-mail
                      (org-mime-beautify-quoted html)
                    html)
@@ -400,6 +435,13 @@ CURRENT-FILE is used to calculate full path of images."
               (mml-attach-file f))
             files))))
 
+(defun org-mime-mail-body-begin ()
+  "Get begin of mail body."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward mail-header-separator)
+    (+ (point) 1)))
+
 ;;;###autoload
 (defun org-mime-htmlize ()
   "Export a portion of an email to html using `org-mode'.
@@ -409,18 +451,21 @@ If called with an active region only export that region, otherwise entire body."
   (let* ((region-p (org-region-active-p))
          (html-start (funcall org-mime-find-html-start
                               (or (and region-p (region-beginning))
-                                  (save-excursion
-                                    (goto-char (point-min))
-                                    (search-forward mail-header-separator)
-                                    (+ (point) 1)))))
+                                  (org-mime-mail-body-begin))))
          (html-end (or (and region-p (region-end))
                        ;; TODO: should catch signature...
                        (point-max)))
-         (plain (buffer-substring html-start html-end))
+         (org-text (buffer-substring html-start html-end))
 ;; to hold attachments for inline html images
          (opts (if (fboundp 'org-export--get-inbuffer-options)
                    (org-export--get-inbuffer-options)))
-         (html (org-mime-export-string (concat org-mime-default-header plain) opts))
+         (ascii-charset (org-mime-use-ascii-charset))
+         (plain (if ascii-charset
+                    (progn
+                      (setq org-ascii-charset ascii-charset)
+                      (org-export-string-as (concat org-mime-default-header org-text) 'ascii nil opts))
+                  org-text))
+         (html (org-mime-export-string (concat org-mime-default-header org-text) opts))
          (file (make-temp-name (expand-file-name
                                 "mail" temporary-file-directory))))
 
@@ -457,8 +502,7 @@ If SUBTREEP is t, curret org node is subtree."
          (plain (cdr exported))
          (export-opts (org-mime-get-export-options subtreep))
          patched-html)
-    (unless (featurep 'message) (require 'message))
-    (message-mail to subject headers nil)
+    (compose-mail to subject headers nil)
     (message-goto-body)
     (setq patched-html (with-temp-buffer
                          (insert html)
@@ -579,6 +623,158 @@ Following headline properties can determine the mail headers,
           (org-narrow-to-subtree)
           (org-mime-compose exported file to subject other-headers t))
         (message-goto-to)))))
+
+(defun org-mime-src--remove-overlay ()
+  "Remove overlay from current source buffer."
+  (when (overlayp org-mime-src--overlay)
+    (delete-overlay org-mime-src--overlay)))
+
+(defun org-mime-edited-code ()
+  "Get edited code."
+  (save-excursion
+    (goto-char (point-min))
+    (search-forward org-mime-src--hint (point-max) t)
+    (goto-char (line-beginning-position))
+    (buffer-substring-no-properties (point) (point-max))))
+
+(defun org-mime-edit-src-save ()
+  "Save parent buffer with current state source-code buffer."
+  (interactive)
+  (set-buffer-modified-p nil)
+  (let* ((edited-code (org-mime-edited-code))
+         (beg org-mime-src--beg-marker)
+         (end org-mime-src--end-marker)
+         (overlay org-mime-src--overlay))
+    (with-current-buffer (marker-buffer org-mime-src--beg-marker)
+      (undo-boundary)
+      (goto-char beg)
+      ;; Temporarily disable read-only features of OVERLAY in order to
+      ;; insert new contents.
+      (delete-overlay overlay)
+      (delete-region beg end)
+      (let* ((expecting-bol (bolp)))
+        (insert edited-code)
+        (when (and expecting-bol (not (bolp))) (insert "\n")))
+      (save-buffer)
+      (move-overlay overlay beg (point))))
+  ;; `write-contents-functions' requires the function to return
+  ;; a non-nil value so that other functions are not called.
+  t)
+
+(defun org-mime-src-mode-configure-edit-buffer ()
+  "Set up clean up functions when editing source code."
+  (add-hook 'kill-buffer-hook #'org-mime-src--remove-overlay nil 'local)
+  (setq buffer-offer-save t)
+  (setq-local write-contents-functions '(org-mime-edit-src-save)))
+
+(defvar org-mime-src-mode-hook nil
+  "Hook run after switching embedded org code to its `org-mode'.")
+
+(defun org-mime-edit-src-exit ()
+  "Kill current sub-editing buffer and return to source buffer."
+  (interactive)
+  (let* ((beg org-mime-src--beg-marker)
+         (end org-mime-src--end-marker)
+         (edit-buffer (current-buffer))
+         (source-buffer (marker-buffer beg)))
+    (org-mime-edit-src-save)
+    (unless source-buffer (error "Source buffer disappeared.  Aborting"))
+    ;; Insert modified code.  Ensure it ends with a newline character.
+    (kill-buffer edit-buffer)
+
+    ;; to the beginning of the block opening line.
+    (goto-char beg)
+
+    ;; Clean up left-over markers and restore window configuration.
+    (set-marker beg nil)
+    (set-marker end nil)
+    (when org-mime--saved-temp-window-config
+      (set-window-configuration org-mime--saved-temp-window-config)
+      (setq org-mime--saved-temp-window-config nil))))
+
+(defvar org-mime-src-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-c") 'org-mime-edit-src-exit)
+    (define-key map (kbd "C-x C-s") 'org-mime-edit-src-save)
+    map))
+
+(define-minor-mode org-mime-src-mode
+  "Minor mode for org major mode buffers generated from mail body."
+  nil " OrgMimeSrc" nil
+  )
+(add-hook 'org-mime-src-mode-hook #'org-mime-src-mode-configure-edit-buffer)
+
+(defun org-mime-src--make-source-overlay (beg end)
+  "Create overlay between BEG and END positions and return it."
+  (let* ((overlay (make-overlay beg end)))
+    (overlay-put overlay 'face 'secondary-selection)
+    (let ((read-only
+           (list
+            (lambda (&rest _)
+              (user-error
+               "Cannot modify an area being edited in a dedicated buffer")))))
+      (overlay-put overlay 'modification-hooks read-only)
+      (overlay-put overlay 'insert-in-front-hooks read-only)
+      (overlay-put overlay 'insert-behind-hooks read-only))
+    overlay))
+
+(defun org-mime-edit-mail-in-org-mode ()
+  "Call a special editor to edit the mail body in `org-mode'."
+  (interactive)
+  ;; see `org-src--edit-element'
+  (cond
+   ((eq major-mode 'org-mode)
+    (message "This command is not for `org-mode'."))
+   (t
+    (setq org-mime--saved-temp-window-config (current-window-configuration))
+    (let* ((beg (copy-marker (org-mime-mail-body-begin)))
+           (end (copy-marker (point-max)))
+           (bufname "OrgMimeMailBody")
+           (buffer (generate-new-buffer bufname))
+           (overlay (org-mime-src--make-source-overlay beg end))
+           (text (buffer-substring-no-properties beg end)))
+
+      (setq org-mime-src--beg-marker beg)
+      (setq org-mime-src--end-marker end)
+      ;; don't use local-variable because only user can't edit multiple emails
+      ;; or multiple embedded org code in one mail
+      (setq org-mime-src--overlay overlay)
+
+      (save-excursion
+        (delete-other-windows)
+        (org-switch-to-buffer-other-window buffer)
+        (erase-buffer)
+        (insert org-mime-src--hint)
+        (insert text)
+        (goto-char (point-min))
+        (org-mode)
+        (org-mime-src-mode))))))
+
+(defun org-mime-revert-to-plain-text-mail ()
+  "Revert mail body to plain text "
+  (interactive)
+  (let* ((txt-sep "<#part type=text/plain")
+         (html-sep "<#part type=text/html>")
+         mail-beg
+         mail-text
+         txt-beg
+         txt-end)
+    (save-excursion
+      (goto-char (point-min))
+      (setq mail-beg (search-forward mail-header-separator (point-max) t))
+      (setq txt-beg (search-forward txt-sep (point-max) t))
+      (setq txt-end (search-forward html-sep (point-max) t)))
+    (cond
+     ((and mail-beg txt-beg txt-end (< mail-beg txt-beg txt-end))
+      ;; extract text mail
+      (setq mail-text (buffer-substring-no-properties txt-beg
+                                                      (- txt-end (length html-sep))))
+      ;; delete html mail
+      (delete-region mail-beg (point-max))
+      ;; restore text mail
+      (insert mail-text))
+     (t
+      (message "Can not find plain text mail.")))))
 
 (provide 'org-mime)
 ;; Local Variables:

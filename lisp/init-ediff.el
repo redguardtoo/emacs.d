@@ -2,10 +2,11 @@
 
 (defvar my-ediff-panel-name nil)
 
-(defadvice server-save-buffers-kill-terminal (after server-save-buffers-kill-terminal-after-hack activate)
-  ;; kill all buffers, so new ediff panel is re-created and `ediff-startup-hook-setup' is called again
-  ;; besides, remove the buffers whose binding files are already merged in `buffer-list'
+(defun my-server-save-buffers-kill-terminal-hack (&optional arg)
+  "Kill buffers to create ediff panel and call `ediff-startup-hook-setup'.
+Also remove buffers whose binding files already merged in `buffer-list'."
   (mapc 'kill-buffer (buffer-list)))
+(advice-add 'server-save-buffers-kill-terminal :after #'my-server-save-buffers-kill-terminal-hack)
 
 (when (my-vc-merge-p)
   ;; remove `org-mode' from `auto-mode-alist'. So nodes in org file do NOT collapse at all

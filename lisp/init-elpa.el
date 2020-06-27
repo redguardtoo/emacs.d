@@ -1,12 +1,12 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun initialize-package ()
+(defun my-initialize-package ()
   (unless nil ;package--initialized
     ;; optimization, no need to activate all the packages so early
     (setq package-enable-at-startup nil)
     (package-initialize)))
 
-(initialize-package)
+(my-initialize-package)
 
 ;; List of visible packages from melpa-unstable (http://melpa.org).
 ;; Please add the package name into `melpa-include-packages'
@@ -18,7 +18,6 @@
     bbdb
     native-complete
     company-native-complete
-    flymake-shellcheck ; check shell script
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
@@ -27,9 +26,9 @@
     edit-server ; use Emacs to edit textarea in browser, need browser addon
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
+    package-lint ; for melpa pull request only
     auto-yasnippet
     typescript-mode ; the stable version lacks important feature (highlight function names)
-    dumb-jump
     websocket ; to talk to the browser
     evil-exchange
     evil-find-char-pinyin
@@ -98,7 +97,6 @@
     pyim-basedict
     scratch
     session
-    flymake-lua
     multi-term
     inflections
     lua-mode
@@ -159,57 +157,43 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ;; my local repository is always needed.
 (push (cons "localelpa" (concat my-emacs-d "localelpa/")) package-archives)
 
-
-;;--------------------------------------------------------------------------
-;; Internal implementation, newbies should NOT touch code below this line!
-;;--------------------------------------------------------------------------
-;; Patch up annoying package.el quirks
-
-(defun package-generate-autoload-path (pkg-desc pkg-dir)
-  (expand-file-name (concat
-                     ;; pkg-desc is string in emacs 24.3.1,
-                     (if (symbolp pkg-desc) (symbol-name pkg-desc) pkg-desc)
-                     "-autoloads.el")
-                    pkg-dir))
-
-(defadvice package-generate-autoloads (after package-generate-autoloads-hack activate)
+(defun my-package-generate-autoloads-hack (pkg-desc pkg-dir)
   "Stop package.el from leaving open autoload files lying around."
-  (let* ((original-args (ad-get-args 0))
-         (pkg-desc (nth 0 original-args))
-         (pkg-dir (nth 1 original-args))
-         (path (package-generate-autoload-path pkg-desc pkg-dir)))
-    ;; (message "pkg-desc=%s pkg-dir=%s path=%s" pkg-desc pkg-dir path)
+  (let* ((path (expand-file-name (concat
+                                  ;; pkg-desc is string in emacs 24.3.1,
+                                  (if (symbolp pkg-desc) (symbol-name pkg-desc) pkg-desc)
+                                  "-autoloads.el")
+                                 pkg-dir)))
     (with-current-buffer (find-file-existing path)
       (kill-buffer nil))))
+(advice-add 'package-generate-autoloads :after #'my-package-generate-autoloads-hack)
 
-(defun package-filter-function (package version archive)
-  "Optional predicate function used to internally filter packages used by package.el.
-The function is called with the arguments PACKAGE VERSION ARCHIVE, where
-PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
-  ARCHIVE is the string name of the package archive."
+(defun my-package--add-to-archive-contents-hack (orig-func &rest args)
+  "Some packages should be hidden."
+  (let* ((package (nth 0 args))
+         (archive (nth 1 args))
+         (pkg-name (car package))
+         (version (package--ac-desc-version (cdr package)))
+         (add-to-p t))
     (cond
      ((string= archive "melpa-stable")
-      (not (memq package melpa-stable-banned-packages)))
+      (setq add-to-p
+            (not (memq pkg-name melpa-stable-banned-packages))))
 
-      ;; We still need use some unstable packages
-      ((string= archive "melpa")
-       (or (member package melpa-include-packages)
-           ;; color themes are welcomed
-           (string-match-p "-theme" (format "%s" package))))
+     ;; We still need use some unstable packages
+     ((string= archive "melpa")
+      (setq add-to-p
+            (or (member pkg-name melpa-include-packages)
+                ;; color themes are welcomed
+                (string-match-p "-theme" (format "%s" pkg-name))))))
 
-      ;; I'm not picky on other repositories
-      (t t)))
+    (when my-debug
+      (message "package name=%s version=%s package=%s" pkg-name version package))
 
-(defadvice package--add-to-archive-contents
-  (around filter-packages (package archive) activate)
-  "Add filtering of available packages using `package-filter-function'."
-  (if (package-filter-function (car package)
-                               (funcall (if (fboundp 'package-desc-version)
-                                            'package--ac-desc-version
-                                          'package-desc-vers)
-                                        (cdr package))
-                               archive)
-      ad-do-it))
+    (when add-to-p
+      ;; The package is visible through package manager
+      (apply orig-func args))))
+(advice-add 'package--add-to-archive-contents :around #'my-package--add-to-archive-contents-hack)
 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
@@ -231,6 +215,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 ; color-theme 6.6.1 in elpa is buggy
 (require-package 'amx)
 (require-package 'avy)
+(require-package 'popup) ; some old package need it
 (require-package 'auto-yasnippet)
 (require-package 'ace-link)
 (require-package 'csv-mode)
@@ -241,7 +226,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
-(require-package 'workgroups2)
 (require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'xr) ; required by pyim
@@ -288,7 +272,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'cpputils-cmake)
 (require-package 'bbdb)
 (require-package 'pomodoro)
-(require-package 'flymake-lua)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
@@ -319,10 +302,8 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'pyim-basedict) ; it's default pyim dictionary
 (require-package 'web-mode)
-(require-package 'dumb-jump)
 (require-package 'emms)
 (require-package 'iedit)
-(require-package 'bash-completion)
 (require-package 'websocket) ; for debug debugging of browsers
 (require-package 'jss)
 (require-package 'undo-tree)
@@ -355,7 +336,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
 (require-package 'benchmark-init)
-(require-package 'langtool) ; check grammer
+;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
 (require-package 'edit-server)
 
@@ -368,7 +349,6 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
 ;; }}
 
 (when *emacs26*
-  (require-package 'flymake-shellcheck)
   ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
   (require-package 'org-re-reveal))
 
@@ -411,6 +391,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      espresso-theme
      exotica-theme
      eziam-theme
+     fantom-theme
      farmhouse-theme
      flatland-theme
      flatui-theme
@@ -479,6 +460,7 @@ PACKAGE is a symbol, VERSION is a vector as produced by `version-to-list', and
      twilight-theme
      ujelly-theme
      underwater-theme
+     vscode-dark-plus-theme
      white-sand-theme
      zen-and-art-theme
      zenburn-theme

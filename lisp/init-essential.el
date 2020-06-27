@@ -162,22 +162,23 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (swiper keyword)))
 
 (with-eval-after-load 'cliphist
-  (defadvice cliphist-routine-before-insert (before before-cliphist-paste activate)
-    (my-delete-selected-region)))
+  (defun cliphist-routine-before-insert-hack (&optional arg)
+    (my-delete-selected-region))
+  (advice-add 'cliphist-routine-before-insert :before #'cliphist-routine-before-insert-hack))
 
 ;; {{ Write backup files to its own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
-(defvar binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+(defvar my-binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
   "Is binary file name?")
 
 (setq backup-enable-predicate
       (lambda (name)
         (and (normal-backup-enable-predicate name)
-             (not (string-match-p binary-file-name-regexp name)))))
+             (not (string-match-p my-binary-file-name-regexp name)))))
 
 (if (not (file-exists-p (expand-file-name "~/.backups")))
   (make-directory (expand-file-name "~/.backups")))
-(setq backup-by-coping t ; don't clobber symlinks
+(setq backup-by-copying t ; don't clobber symlinks
       backup-directory-alist '(("." . "~/.backups"))
       delete-old-versions t
       version-control t  ;use versioned backups
@@ -209,15 +210,17 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq indicate-empty-lines t)
 
-;; NO tool bar
-(if (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-;; no scroll bar
-(if (fboundp 'set-scroll-bar-mode)
-  (set-scroll-bar-mode nil))
+;; NO tool bar, scroll-bar
+(when window-system
+  (and (fboundp 'scroll-bar-mode) (not (eq scroll-bar-mode -1))
+       (scroll-bar-mode -1))
+  (and (fboundp 'tool-bar-mode) (not (eq tool-bar-mode -1))
+       (tool-bar-mode -1))
+  (and (fboundp 'horizontal-scroll-bar-mode)
+       (horizontal-scroll-bar-mode -1)))
 ;; no menu bar
-(if (fboundp 'menu-bar-mode)
-  (menu-bar-mode -1))
+(and (fboundp 'menu-bar-mode) (not (eq menu-bar-mode -1))
+     (menu-bar-mode -1))
 ;; }}
 
 (provide 'init-essential)

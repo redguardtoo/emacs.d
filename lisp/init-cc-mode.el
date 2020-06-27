@@ -1,12 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun c-wx-lineup-topmost-intro-cont (langelem)
-  (save-excursion
-    (beginning-of-line)
-    (if (re-search-forward "EVT_" (line-end-position) t)
-      'c-basic-offset
-      (c-lineup-topmost-intro-cont langelem))))
-
 ;; avoid default "gnu" style, use more popular one
 (setq c-default-style '((java-mode . "java")
                         (awk-mode . "awk")
@@ -18,9 +11,10 @@
   ;; new value
   (add-to-list 'c-offsets-alist '(key . val)))
 
+(setq-default c-basic-offset 4)
+
 (defun my-common-cc-mode-setup ()
   "setup shared by all languages (java/groovy/c++ ...)"
-  (setq c-basic-offset 4)
   ;; give me NO newline automatically after electric expressions are entered
   (setq c-auto-newline nil)
 
@@ -51,19 +45,6 @@
   ;; {{ @see https://github.com/redguardtoo/cpputils-cmake
   ;; In theory, you can write your own Makefile for `flyamke-mode' without cmake.
   ;; Nobody actually does it in real world.
-  ;; So make sure cmake is used before uncomment below code.
-
-  ;; (when buffer-file-name
-  ;;   (flymake-mode 1)
-  ;;   (when (and (executable-find "cmake")
-  ;;              (not (string-match-p "^\\(/usr/local/include\\|/usr/src/linux/include\\)/.*"
-  ;;                                   buffer-file-name)))
-  ;;     (cppcm-reload-all)))
-
-  ;; }}
-
-  ;; wxWidgets setup
-  (c-set-offset 'topmost-intro-cont 'c-wx-lineup-topmost-intro-cont)
 
   ;; debugging Emacs c code
   (add-to-list 'imenu-generic-expression '(nil "^DEFUN *(\"\\([a-zA-Z0-9-]+\\)" 1))

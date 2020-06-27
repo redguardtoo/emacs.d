@@ -89,20 +89,61 @@
 
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
 
+(defvar my-git-recent-files-extra-options ""
+  "Extra options for git recent files.
+For example, could be \"---author=MyName\"")
+
+(defmacro my-git-extract-file (n items rlt)
+  "Extract Nth item from ITEMS as a file candidate.
+The candidate could be placed in RLT."
+  `(let* ((file (string-trim (nth ,n ,items))))
+     (when (file-exists-p file)
+       (push (cons file (file-truename file)) ,rlt))))
+
+(defun my-git-recent-files ()
+  "Get files in my recent git commits."
+  (let* ((default-directory (locate-dominating-file default-directory ".git"))
+         ;; two weeks is a sprint, minus weekend and days for sprint review and test
+         (cmd (format "git --no-pager log %s --name-status --since=\"10 days ago\" --pretty=format:"
+                      my-git-recent-files-extra-options))
+         (lines (delq nil (delete-dups (split-string (shell-command-to-string cmd) "\n+"))))
+         items
+         rlt)
+    (when lines
+      (dolist (l lines)
+        (setq items (split-string l "[ \t]+" l))
+        (cond
+         ((= (length items) 2)
+          (my-git-extract-file 1 items rlt))
+         ((= (length items) 3)
+          (my-git-extract-file 1 items rlt)
+          (my-git-extract-file 2 items rlt)))))
+    rlt))
+
 (defun my-counsel-recentf (&optional n)
   "Find a file on `recentf-list'.
-If N is not nil, only list files in current project."
+If N is 1, only list files in current project.
+If N is 2, list files in my recent 20 commits."
   (interactive "P")
   (my-ensure 'recentf)
+  (unless n (setq n 0))
   (recentf-mode 1)
   (let* ((files (mapcar #'substring-no-properties recentf-list))
-         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
-    (when (and n root-dir)
-      (setq files (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) files))))
-    (ivy-read "Recentf: "
+         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root))))
+         (hint "Recent files: "))
+    (cond
+     ((and (eq n 1) root-dir)
+      (setq hint (format "Recent files in %s: " root-dir))
+      (setq files (delq nil (delete-dups (mapcar (lambda (f) (path-in-directory-p f root-dir)) files)))))
+     ((eq n 2)
+      (setq hint (format "Files in recent Git commits: "))
+      (setq files (my-git-recent-files))))
+
+    (ivy-read hint
               files
               :initial-input (if (region-active-p) (my-selected-str))
               :action (lambda (f)
+                        (if (consp f) (setq f (cdr f)))
                         (with-ivy-window
                           (find-file f)))
               :caller 'counsel-recentf)))
@@ -134,7 +175,7 @@ If N is not nil, only list files in current project."
                                    bookmark-alist)))
             :action #'bookmark-jump))
 
-(defun counsel-yank-bash-history ()
+(defun counsel-insert-bash-history ()
   "Yank the bash history."
   (interactive)
   (shell-command "history -r") ; reload history
@@ -144,7 +185,8 @@ If N is not nil, only list files in current project."
     (ivy-read (format "Bash history:") collection
               :action (lambda (val)
                         (kill-new val)
-                        (message "%s => kill-ring" val)))))
+                        (message "%s => kill-ring" val)
+                        (insert val)))))
 
 (defun counsel-recent-directory (&optional n)
   "Goto recent directories.
@@ -313,7 +355,11 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (defun my-imenu-or-list-tag-in-current-file ()
   "Combine the power of counsel-etags and imenu."
   (interactive)
+<<<<<<< HEAD
 
+=======
+  (counsel-etags-push-marker-stack)
+>>>>>>> a9fc3efd843acb7a330bef35ce4da1ede301cf8c
   (cond
    ((my-use-tags-as-imenu-function-p)
     ;; see code of `my-use-tags-as-imenu-function-p'. Currently we only use ctags for imenu

@@ -13,11 +13,12 @@
 [_B_] New bookmark        [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
 [_m_] Goto bookmark       [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
 [_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
-[_b_] Switch Gnus buffer  [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
+[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
 [_e_] Erase buffer        [_w_] Pronounce word
 [_r_] Erase this buffer   [_E_] Typewriter on
 [_f_] Recent file         [_V_] old typewriter
 [_d_] Recent directory
+[_bh_] Bash history
 [_hr_] Dired CMD history
 [_hh_] Random theme
 [_q_] Quit
@@ -27,6 +28,7 @@
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" counsel-recent-directory)
+  ("bh" counsel-insert-bash-history)
   ("hh" random-healthy-color-theme)
   ("ss" wg-create-workgroup)
   ("ll" my-wg-switch-workgroup)
@@ -47,11 +49,11 @@
   ("pe" forward-paragraph)
   ("R" emms-random)
   ("n" emms-next)
-  ("w" my-pronounce-current-word)
+  ("w" mybigword-pronounce-word)
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
-  ("b" dianyou-switch-gnus-buffer)
+  ("bb" dianyou-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
   ("q" nil :color red))
 
@@ -163,6 +165,8 @@
 ;; }}
 
 ;; {{ dired
+;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (with-eval-after-load 'dired
   (defun my-replace-dired-base (base)
     "Change file name in `wdired-mode'"
@@ -196,6 +200,43 @@
                           total
                           (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
       (shell-command (concat cmd " &"))))
+
+  (defun my-extract-mkv-subtitle ()
+    "Use mkvtoolnix to extract mkv subtitle."
+    (interactive)
+    (let* ((file (file-name-nondirectory (dired-file-name-at-point)))
+           (ext (file-name-extension file))
+           (default-directory (file-name-directory (dired-file-name-at-point)))
+           lines
+           trunks
+           track-number)
+      (cond
+       ((not (string= "mkv" ext))
+        (message "Only mkv files can be processed."))
+       ((not (executable-find "mkvextract"))
+        ("Please install mkvtoolnix."))
+       (t
+        ;; split output into trunks
+        (setq trunks (split-string (shell-command-to-string (format "mkvinfo \"%s\"" file))
+                                   "| ?\\+ [A-Z][^\n]+[\n]*"))
+        ;; only interested english subtitle trunk
+        (setq trunks (delq nil (mapcar
+                                (lambda (trunk)
+
+                                  (when (and (string-match "Track type: subtitles" trunk)
+                                             (or (not (string-match "Language: " trunk))
+                                                 (string-match "Language: eng" trunk)))
+                                    trunk))
+                                trunks)))
+        (when (and (> (length trunks) 0)
+                   (string-match "Track number: \\([0-9]+\\)" (car trunks)))
+
+          ;; only extract the track number from the first truck
+          (setq track-number (1- (string-to-number (match-string 1 (car trunks)))))
+          (shell-command (format "mkvextract tracks \"%s\" %s:\"%s.srt\" > /dev/null 2>&1"
+                                 file
+                                 track-number
+                                 (file-name-base file))))))))
 
   (defun my-record-wav-by-mp3 ()
     "Record a wav using meta data from current mp3 file."
@@ -235,7 +276,10 @@
 [_cc_] Last command         [_ff_] Find         [_dd_] directory
 [_sa_] Fetch all subtitles  [_C_]  Copy
 [_s1_] Fetch on subtitle    [_rb_] Change base
-[_+_] Create directory      [_dd_] Diff 2 files
+[_vv_] Video => Mp3         [_dd_] Diff 2 files
+[_aa_] Recording Wav
+[_ee_] Mkv => Srt
+[_+_] Create directory
 "
     ("sa" (my-fetch-subtitles))
     ("s1" (my-fetch-subtitles (dired-file-name-at-point)))
@@ -245,6 +289,7 @@
     ("dd" (my-copy-file-info 'file-name-directory))
     ("rb" (my-replace-dired-base (car kill-ring)))
     ("vv" my-extract-mp3-from-video)
+    ("ee" my-extract-mkv-subtitle)
     ("aa" my-record-wav-by-mp3)
     ("cc" my-dired-redo-last-command)
     ("zz" my-play-both-mp3-and-wav)
