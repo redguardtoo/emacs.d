@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.4
+;; Version: 0.2.5
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -384,7 +384,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.4"))
+  (message "0.2.5"))
 
 ;;;###autoload
 (defun wucuo-spell-check-visible-region ()
@@ -404,6 +404,11 @@ Returns t to continue checking, nil otherwise."
       ;; Try test https://github.com/emacs-mirror/emacs/blob/master/src/xdisp.c
       (font-lock-ensure beg end)
       (flyspell-region beg end))))
+
+(defun wucuo-buffer-windows-visible-p ()
+  "Check if current buffer's windows is visible."
+  (let* ((win (get-buffer-window (current-buffer))))
+    (and win (window-live-p win))))
 
 ;;;###autoload
 (defun wucuo-spell-check-buffer ()
@@ -428,7 +433,8 @@ Returns t to continue checking, nil otherwise."
    (t
     ;; real spell checking
     (setq wucuo-timer (current-time))
-    (when (and (< (buffer-size) wucuo-spell-check-buffer-max)
+    (when (and (wucuo-buffer-windows-visible-p)
+               (< (buffer-size) wucuo-spell-check-buffer-max)
                (or (null wucuo-spell-check-buffer-predicate)
                    (and (functionp wucuo-spell-check-buffer-predicate)
                         (funcall wucuo-spell-check-buffer-predicate))))
