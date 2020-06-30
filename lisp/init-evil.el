@@ -5,10 +5,6 @@
 ;; enable evil-mode
 (evil-mode 1)
 
-;; @see https://github.com/syl20bnr/evil-iedit-state#key-bindings
-;; Don't know why it's not loaded if placed in elpa
-(local-require 'evil-iedit-state)
-
 (defvar my-use-m-for-matchit nil
   "If t, use \"m\" key for `evil-matchit-mode'.
 And \"%\" key is also retored to `evil-jump-item'.")
@@ -675,7 +671,7 @@ If INCLUSIVE is t, the text object is inclusive."
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
-  "ee" 'evil-iedit-state/iedit-mode ; start iedit in emacs to rename variables in defun
+  "ee" 'evilmr-replace-in-defun ; replace in defun
   "sc" 'shell-command
   "ll" 'my-wg-switch-workgroup ; load windows layout
   "jj" 'scroll-other-window
