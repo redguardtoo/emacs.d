@@ -6,17 +6,17 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Misc^                     ^Audio^               ^Move^                          ^Pomodoro^
------------------------------------------------------------------------------------------------
-[_ss_] Save workgroup     [_R_] Emms Random     [_sa_] Backward Sentence (M-a)  [_ss_] Start
-[_ll_] Load workgroup     [_n_] Emms Next       [_se_] Forward Sentence (M-e)   [_st_] Stop
-[_B_] New bookmark        [_p_] Emms Previous   [_la_] Backward Up List         [_sr_] Resume
-[_m_] Goto bookmark       [_P_] Emms Pause      [_le_] Forward List             [_sp_] Pause
-[_v_] Show/Hide undo      [_O_] Emms Open       [_pa_] Backward Paragraph (M-{)
-[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_pe_] Forward Paragraph (M-})
-[_e_] Erase buffer        [_w_] Pronounce word
-[_r_] Erase this buffer   [_E_] Typewriter on
-[_f_] Recent file         [_V_] old typewriter
+^Misc^                     ^Audio^              ^Study^
+--------------------------------------------------------------------------
+[_ss_] Save workgroup     [_R_] Emms Random     [_w_] Pronounce word
+[_ll_] Load workgroup     [_n_] Emms Next       [_W_] Big words definition
+[_B_] New bookmark        [_p_] Emms Previous   [_v_] Play big word video
+[_m_] Goto bookmark       [_P_] Emms Pause      [_ss_] Pomodoro start
+[_uu_] Show/Hide undo     [_O_] Emms Open       [_st_] Pomodoro stop
+[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_sr_] Pomodoro resume
+[_e_] Erase buffer        [_E_] Typewriter on   [_sp_] Pomodoro pause
+[_r_] Erase this buffer   [_V_] Old typewriter
+[_f_] Recent file
 [_d_] Recent directory
 [_bh_] Bash history
 [_hr_] Dired CMD history
@@ -36,20 +36,16 @@
   ("r" my-erase-current-buffer)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
-  ("v" undo-tree-visualize)
+  ("uu" undo-tree-visualize)
   ("ss" pomodoro-start)
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
-  ("sa" backward-sentence)
-  ("se" forward-sentence)
-  ("la" backward-up-list)
-  ("le" forward-list)
-  ("pa" backward-paragraph)
-  ("pe" forward-paragraph)
   ("R" emms-random)
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
+  ("W" my-lookup-big-word-definition-in-buffer)
+  ("v" mybigword-play-video-of-word-at-point)
   ("p" emms-previous)
   ("P" emms-pause)
   ("O" emms-play-playlist)
