@@ -119,21 +119,6 @@
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
-;; {{ comint-mode
-(with-eval-after-load 'comint
-  ;; Don't echo passwords when communicating with interactive programs:
-  ;; Github prompt is like "Password for 'https://user@github.com/':"
-  (setq comint-password-prompt-regexp
-        (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
-  (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt))
-(defun comint-mode-hook-setup ()
-  ;; look up shell command history
-  (local-set-key (kbd "M-n") 'counsel-shell-history)
-  ;; Don't show trailing whitespace in REPL.
-  (local-set-key (kbd "M-;") 'comment-dwim))
-(add-hook 'comint-mode-hook 'comint-mode-hook-setup)
-;; }}
-
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
