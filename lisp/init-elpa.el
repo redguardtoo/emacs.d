@@ -333,6 +333,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'benchmark-init)
 ;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
+(require-package 'tide) ; typescript IDE
 (require-package 'edit-server)
 
 ;; {{ Fixed expiring GNU ELPA keys
