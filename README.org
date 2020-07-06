@@ -38,7 +38,6 @@
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
   - [[#react-and-jsx][React and JSX]]
   - [[#git-gutter][git-gutter]]
-  - [[#start-a-shell-inside-emacs][Start a shell inside Emacs]]
   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
   - [[#indentation][Indentation]]
@@ -333,7 +332,9 @@ Then run =git mergetool -t ediff= to resolve conflicts.
 
 Here is [[https://gist.github.com/redguardtoo/d4ecd51f785bd117a6a0][my ~/.gitconfig]]. You can use [[https://github.com/redguardtoo/test-git-mergetool]] to practice.
 ** Default terminal shell
-You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term= and =multi-term=.
+Run =M-x shell=. If you use Zsh instead of Bash, please modify =init-term-mode.el=.
+
+You can customize =my-term-program= whose default value is =/bin/bash=. It's used by =ansi-term=.
 ** Override default setup
 Place your setup in =~/.custom.el= which is loaded after other "*.el".
 
@@ -421,10 +422,6 @@ You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS
       (shell-command-to-string (format "p4 diff -du -db %s"
                                        (file-relative-name buffer-file-name))))
 #+end_src
-** Start a shell inside Emacs
-Please =M-x multi-term=.
-
-If you use Zsh instead of Bash, please modify =init-term-mode.el=.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
