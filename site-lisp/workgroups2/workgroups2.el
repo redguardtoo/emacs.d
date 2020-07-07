@@ -1147,6 +1147,7 @@ If not - try to go to the parent dir and do the same."
     hash-table
     buffer
     marker
+    wg-wconfig
     ;;window-configuration
     ;;frame
     ;;window
@@ -1174,6 +1175,7 @@ If not - try to go to the parent dir and do the same."
     (h . wg-pickel-deserialize-hash-table)
     (b . wg-pickel-deserialize-buffer)
     (m . wg-pickel-deserialize-marker)
+    (d . wg-pickel-deserialize-default)
     ;;(f . wg-pickel-deserialize-frame)
     )
   "Alist mapping type keys to object deserialization functions.")
@@ -1199,7 +1201,7 @@ If not - try to go to the parent dir and do the same."
 
 (put 'wg-pickel-unpickelable-type-error
      'error-message
-     "Attemp to pickel unpickelable type")
+     "Attempt to pickel unpickelable type")
 
 (defun wg-pickelable-or-error (obj)
   "Error when OBJ isn't pickelable."
@@ -1222,11 +1224,14 @@ If not - try to go to the parent dir and do the same."
   (and (consp obj) (eq (car obj) wg-pickel-identifier)))
 
 ;; accessor functions
+(defun wg-pickel-default-serializer (object)
+  "Return OBJECT's data."
+  (list 'd (prin1-to-string object)))
 
 (defun wg-pickel-object-serializer (obj)
   "Return the object serializer for the `type-of' OBJ."
   (or (wg-aget wg-pickel-object-serializers (type-of obj))
-      (error "Invalid type: %S" (type-of obj))))
+      #'wg-pickel-default-serializer))
 
 (defun wg-pickel-link-serializer (obj)
   "Return the link serializer for the `type-of' OBJ."
@@ -1304,6 +1309,9 @@ If not - try to go to the parent dir and do the same."
   (let ((m (make-marker)))
     (set-marker m (car data) (wg-pickel-deserialize-buffer (car (cdr data))))))
 
+(defun wg-pickel-deserialize-default (object)
+  "Return data from OBJECT."
+  (read object))
 
 ;; cons - http://www.gnu.org/software/emacs/manual/html_node/eintr/cons.html
 (defun wg-pickel-cons-serializer (cons)
