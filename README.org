@@ -170,6 +170,8 @@ The content of personal dictionary can be cleaned by =M-x my-clean-aspell-dict=.
 Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
 
 Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Hunspell uses =ispell-local-dictionary= and =ispell-local-dictionary=. That's it.
+
+For hunspell, please read my comment in =init-spelling.el=.
 **** xmlstarlet or xml
 - Required by =flymake= for HTML syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
@@ -258,7 +260,7 @@ Required for vim user,
 ** Methodology
 See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * Usage
-I *avoid overriding the original setup* of third party command line program.
+Original configuration from Emacs or third party packages are respected.
 
 ** Quick start
 On Windows, you need install Cygwin which provides command line programs to Emacs. Cygwin could be installed on any hard drive but it's highly recommended don't change it relative path to the root driver.

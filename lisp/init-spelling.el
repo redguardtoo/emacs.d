@@ -59,13 +59,13 @@
         (apply orig-func args))))
   (advice-add 'flyspell-highlight-incorrect-region :around #'my-flyspell-highlight-incorrect-region-hack))
 
-;; Logic:
+;; Basic Logic Summary:
 ;; If (aspell is installed) { use aspell}
 ;; else if (hunspell is installed) { use hunspell }
 ;; English dictionary is used.
 ;;
 ;; I prefer aspell because:
-;; - aspell is older
+;; - aspell is very stable and easy to install
 ;; - looks Kevin Atkinson still get some road map for aspell:
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
 (defun my-detect-ispell-args (&optional run-together)
@@ -115,7 +115,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
 ;; that folder.
 ;;
 ;; 4. Hunspell's option "-d en_US" means finding dictionary "en_US"
-;; Set `ispell-local-dictionary-alist' to set that option of hunspell
+;; Modify `ispell-local-dictionary-alist' to set that option of hunspell
 ;;
 ;; 5. Copy "en_US.dic" and "en_US.aff" from that temporary folder to
 ;; the place for dictionary files. I use "~/usr_local/share/hunspell/".
@@ -123,10 +123,10 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
 ;; 6. Add that folder to shell environment variable "DICPATH"
 ;;
 ;; 7. Restart emacs so when hunspell is run by ispell/flyspell to make
-;; DICPATH take effect
+;; "DICPATH" take effect
 ;;
 ;; hunspell searches a dictionary named "en_US" in the path specified by
-;; `$DICPATH' by default.
+;; "DICPATH" by default.
 
 (defvar my-force-to-use-hunspell nil
   "Force to use hunspell.  If nil, try to detect aspell&hunspell.")
@@ -144,12 +144,14 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
     (setq ispell-local-dictionary "hunspelldict")
     (setq ispell-local-dictionary-alist
           (list (list "hunspelldict" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil (list "-d" my-default-spell-check-language) nil 'utf-8)))
-    ;; new variable i
+    ;; new variable `ispell-hunspell-dictionary-alist' is defined in Emacs
+    ;; If it's nil, Emacs tries to automatically set up the dictionaries.
     (when (boundp 'ispell-hunspell-dictionary-alist)
       (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)))
    (t (setq ispell-program-name nil)
       (message "You need install either aspell or hunspell for ispell"))))
 
+;; You could define your own configuration and call `my-configure-ispell-parameters' in "~/.custom.el"
 (my-configure-ispell-parameters)
 
 (defun my-ispell-word-hack (orig-func &rest args)
