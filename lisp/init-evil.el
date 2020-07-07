@@ -231,7 +231,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (evil-declare-key 'normal markdown-mode-map
   "gh" 'outline-up-heading
   "gl" 'outline-next-visible-heading
-  (kbd "TAB") 'org-cycle)
+  (kbd "TAB") 'markdown-cycle)
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
 ;; You may delete this setup to use Evil NORMAL state always.
