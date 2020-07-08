@@ -32,7 +32,6 @@
     websocket ; to talk to the browser
     evil-exchange
     evil-find-char-pinyin
-    evil-lion
     ;; {{ dependencies of stable realgud are too old
     load-relative
     loc-changes
@@ -311,7 +310,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
-(require-package 'evil-lion)
 (require-package 'evil-args)
 (require-package 'evil-textobj-syntax)
 (require-package 'slime)

@@ -7,7 +7,7 @@
 
 (defvar my-use-m-for-matchit nil
   "If t, use \"m\" key for `evil-matchit-mode'.
-And \"%\" key is also retored to `evil-jump-item'.")
+And \"%\" key is also restored to `evil-jump-item'.")
 
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (global-evil-surround-mode 1)
@@ -20,7 +20,7 @@ And \"%\" key is also retored to `evil-jump-item'.")
     (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
 
   (when (memq major-mode '(org-mode))
-   (push '(91 . ("[[" . "]]")) evil-surround-pairs-alist) ; [
+   (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
    (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
 
   (when (memq major-mode '(emacs-lisp-mode))
@@ -159,7 +159,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
     rlt))
 
 (defun my-evil-path-extract-region ()
-  "Find the closest file path"
+  "Find the closest file path."
   (let* (rlt b f1 f2)
     (if (and (not (my-evil-path-not-path-char (following-char)))
              (setq rlt (my-evil-path-get-path-already-inside)))
@@ -221,7 +221,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
-  "gl" 'outline-next-visible-heading
   "$" 'org-end-of-line ; smarter behaviour on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
@@ -230,7 +229,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 
 (evil-declare-key 'normal markdown-mode-map
   "gh" 'outline-up-heading
-  "gl" 'outline-next-visible-heading
   (kbd "TAB") 'markdown-cycle)
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
@@ -856,27 +854,12 @@ If INCLUSIVE is t, the text object is inclusive."
 (evil-exchange-install)
 ;; }}
 
-;; {{ evil-lion
-;; After pressing `glip=` or `gl2j=` (gl is the operator, ip or 2j is text object, = separator):
-;; one = 1
-;; three = 3
-;; fifteen = 15
-;;
-;; will become:
-;; one     = 1
-;; three   = 3
-;; fifteen = 15
-;;
-;; If the align separator is / you will be prompted for a regular expression instead of a plain character.
-(evil-lion-mode)
-;; }}
-
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
-;; same keybindgs as spacemacs:
+;; same keybindings as spacemacs:
 ;;  - Start `iedit-mode' by `evil-iedit-state/iedit-mode'
 ;;  - "TAB" to toggle current occurrence
 ;;  - "n" next, "N" previous (obviously we use "p" for yank)
-;;  - "gg" the first occurence, "G" the last occurence
+;;  - "gg" the first occurrence, "G" the last occurrence
 ;;  - Please note ";;" or `avy-goto-char-timer' is also useful
 ;; }}
 
