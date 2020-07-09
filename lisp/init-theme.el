@@ -98,8 +98,9 @@
   "Insert names of popular theme."
   (interactive)
   (let* (pkgs
-         (old-names (if (region-active-p) (mapcar 'string-trim
-                                                  (split-string (my-selected-str) "\n"))))
+         (old-names (when (region-active-p)
+                      (mapcar 'string-trim
+                              (split-string (my-selected-str) "\n"))))
          names)
     (with-current-buffer
         (url-retrieve-synchronously "http://melpa.org/download_counts.json" t t 30)

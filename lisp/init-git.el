@@ -217,13 +217,14 @@ Show the diff between current working code and git head."
   "Rebase interactively on the closest branch or tag in git log output.
 If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
   (interactive "P")
-  (let* ((log-output (shell-command-to-string "git --no-pager log --decorate --oneline -n 1024"))
-         (lines (split-string log-output "\n"))
+  (let* ((cmd "git --no-pager log --decorate --oneline -n 1024")
+         (lines (my-lines-from-command-output cmd))
          (targets (delq nil
                         (mapcar (lambda (e)
                                   (when (and (string-match "^[a-z0-9]+ (\\([^()]+\\)) " e)
                                              (not (string-match "^[a-z0-9]+ (HEAD " e)))
-                                    (match-string 1 e))) lines)))
+                                    (match-string 1 e)))
+                                lines)))
          based)
     (cond
      ((or (not targets) (eq (length targets) 0))
@@ -280,9 +281,22 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 
 ;; }}
 
+(defun my-git-find-file-in-commit (&optional arg)
+  "Find file in previous commit with ARG.
+If ARG is 1, find file in previous commit."
+  (interactive "P")
+  (my-ensure 'magit)
+  (let* ((rev (concat "HEAD" (if (eq arg 1) "^")))
+         (prompt (format "Find file from commit %s" rev))
+         (cmd (my-git-files-in-rev-command rev arg))
+         (default-directory (my-git-root-dir))
+         (file (completing-read prompt (my-lines-from-command-output cmd))))
+    (when file
+      (find-file file))))
+
 (defun my-git-log-trace-definition ()
   "Similar to `magit-log-trace-definition' but UI is simpler.
-If multi-lines are selected, trace the defintion of line range.
+If multi-lines are selected, trace the definition of line range.
 If only one line is selected, use current selection as function name to look up.
 If nothing is selected, use the word under cursor as function name to look up."
   (interactive)

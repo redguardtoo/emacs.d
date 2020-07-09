@@ -67,7 +67,7 @@
 ;; {{ find-file-in-project (ffip)
 (with-eval-after-load 'find-file-in-project
   (defun my-search-git-reflog-code ()
-    (let* ((default-directory (locate-dominating-file default-directory ".git")))
+    (let* ((default-directory (my-git-root-dir)))
       (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
                                             (read-string "Regex: ")))))
   (push 'my-search-git-reflog-code ffip-diff-backends)

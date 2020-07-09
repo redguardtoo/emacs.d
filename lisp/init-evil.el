@@ -579,7 +579,8 @@ If INCLUSIVE is t, the text object is inclusive."
   "xa" 'split-window-vertically
   "xd" 'split-window-horizontally
   "s0" 'delete-window
-  "s1" 'delete-other-windows
+  "
+s1" 'delete-other-windows
   "s2" 'split-window-vertically
   "s3" 'split-window-horizontally
   "sq" 'delete-window

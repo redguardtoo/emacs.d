@@ -642,16 +642,19 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[http
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 - You can run =optimize-emacs-startup= to compile "*.el" under =lisp/=
 * Report bug
-Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ at first
+Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ first.
 
-If you still can't resolve the issue, restart Emacs with option =---debug-init= in shell. Then run =M-x toggle-debug-on-error= in Emacs. Try to reproduce the issue.
+If you still can't resolve the issue,
+- Restart Emacs with option =--debug-init= in shell
+- Run =M-x toggle-debug-on-error= in Emacs
+- Reproduce the issue and send me the error message
 
-The full command line to run Emacs is =emacs -nw --debug-init= in most environments.
+The full command line to start Emacs is =emacs -nw --debug-init=.
 
 If you use [[https://emacsformacosx.com][Emacs for Mac OS X]], the command line is =/Application/Emacs.app/Contents/MacOS/Emacs -nw --debug-init=.
 
-Send error messages to the original developer if it's third party package's problem
+Send error messages to the original developer if it's third party package's problem.
 
-If *you are sure* it's this setup's problem, file bug report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
+If *you are sure* it's this my bug, file report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
 Bug report should include *environment details*.

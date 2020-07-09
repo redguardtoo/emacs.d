@@ -1,8 +1,4 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
-
-;; may be in an arbitrary order
-(eval-when-compile (require 'cl))
-
 (setq-default js2-use-font-lock-faces t
               js2-mode-must-byte-compile nil
               ;; {{ comment indention in modern frontend development

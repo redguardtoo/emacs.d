@@ -450,7 +450,7 @@ Git:
 [_ca_] Amend        [_b_] Branches
 [_ja_] Amend silent [_k_] Git commit link
 [_tt_] Stash        [_Q_] Quit gutter
-[_ta_] Apply Stash
+[_ta_] Apply Stash  [_f_] Find file in commit
 "
   ("ri" my-git-rebase-interactive)
   ("rr" git-gutter-reset-to-default)
@@ -470,6 +470,7 @@ Git:
   ("ja" (magit-commit-amend "--reuse-message=HEAD"))
   ("au" magit-stage-modified)
   ("Q" git-gutter-toggle)
+  ("f" my-git-find-file-in-commit)
   ("q" nil))
 (global-set-key (kbd "C-c C-g") 'hydra-git/body)
 ;; }}
