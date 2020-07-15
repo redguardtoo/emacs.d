@@ -21,6 +21,7 @@
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
   - [[#quick-start][Quick start]]
+  - [[#better-performance][Better performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
   - [[#locked-packages][Locked packages]]
@@ -173,7 +174,7 @@ Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Huns
 
 For hunspell, please read my comment in =init-spelling.el=.
 **** xmlstarlet or xml
-- Required by =flymake= for HTML syntax check.
+- Required by =lazyflymake= for HTML syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
@@ -275,7 +276,25 @@ Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find f
 
 Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
 
-Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =lisp= if you have any further questions on setup.
+Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
+** Better performance
+This configuration is already optimized for low specification machines on Windows/Linux/macOS.
+
+But you could still squeeze more performance by decrease the frequency of spell checking and programming syntax check.
+
+The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is light weight alternative of =flyspell-mode=.
+
+The programming syntax check is  done by [[https://github.com/redguardtoo/lazyflymake][lazyflymake]] which is light weight alternative of =flymake-mode=.
+
+Insert below code to =~/.custom.el= to increase the interval of check,
+#+begin_src elisp
+(with-eval-after-load 'wucuo
+  ;; 300 seconds
+  (setq wucuo-update-interval 300))
+(with-eval-after-load 'lazyflymake
+  ;; 300 seconds
+  (setq lazyflymake-update-interval 300))
+#+end_src
 ** Key bindings
 Don't memorize any key binding. Try =M-x any-command-in-emacs= and hint for its key binding is displayed.
 
