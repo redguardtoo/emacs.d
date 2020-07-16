@@ -34,19 +34,66 @@
 
 ;; {{ git-gutter
 (local-require 'git-gutter)
-(setq git-gutter:disabled-modes
-      '(dired-mode))
+(with-eval-after-load 'git-gutter
+  (setq git-gutter:update-interval 2)
+  ;; nobody use bzr
+  ;; I could be forced to use subversion or hg which has higher priority
+  ;; Please note my $HOME directory is under git control
+  (setq git-gutter:handled-backends '(svn hg git))
+  (setq git-gutter:disabled-modes
+        '(asm-mode
+          org-mode
+          outline-mode
+          markdown-mode
+          image-mode)))
 
 (defun git-gutter-reset-to-head-parent()
-  "Reset  gutter to HEAD^.  Support Subversion and Git."
+  "Reset gutter to HEAD^.  Support Subversion and Git."
   (interactive)
-  (let* (parent (filename (buffer-file-name)))
-    (if (eq git-gutter:vcs-type 'svn)
-        (setq parent "PREV")
-      (setq parent (if filename (concat (shell-command-to-string (concat "git --no-pager log --oneline -n1 --pretty=\"format:%H\" " filename)) "^") "HEAD^")))
+  (let* ((filename (buffer-file-name))
+         (cmd (concat "git --no-pager log --oneline -n1 --pretty=\"format:%H\" "
+                      filename))
+         (parent (cond
+                  ((eq git-gutter:vcs-type 'svn)
+                   "PREV")
+                  (filename
+                   (concat (shell-command-to-string cmd) "^"))
+                  (t
+                   "HEAD^"))))
     (git-gutter:set-start-revision parent)
     (message "git-gutter:set-start-revision HEAD^")))
 
+(defun git-gutter-toggle ()
+  "Toggle git gutter."
+  (interactive)
+  (git-gutter-mode -1)
+  ;; git-gutter-fringe doesn't seem to
+  ;; clear the markup right away
+  (sit-for 0.1)
+  (git-gutter:clear))
+
+(defun git-gutter-reset-to-default ()
+  "Restore git gutter to its original status.
+Show the diff between current working code and git head."
+  (interactive)
+  (git-gutter:set-start-revision nil)
+  (message "git-gutter reset"))
+
+(global-git-gutter-mode t)
+
+(unless (fboundp 'global-display-line-numbers-mode)
+ ;; git-gutter's workaround for linum-mode bug.
+ ;; should not be used in `display-line-number-mode'
+ (git-gutter:linum-setup))
+
+(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+;; Stage current hunk
+(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+;; Revert current hunk
+(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+
+;; }}
 
 (defun my-git-commit-id ()
   "Select commit id from current branch."
@@ -67,42 +114,6 @@
   (interactive)
   (let* ((ffip-diff-backends '(("Show git commit" . my-git-show-commit-internal))))
     (ffip-show-diff 0)))
-
-(defun git-gutter-toggle ()
-  "Toggle git gutter."
-  (interactive)
-  (git-gutter-mode -1)
-  ;; git-gutter-fringe doesn't seem to
-  ;; clear the markup right away
-  (sit-for 0.1)
-  (git-gutter:clear))
-
-(defun git-gutter-reset-to-default ()
-  "Restore git gutter to its original status.
-Show the diff between current working code and git head."
-  (interactive)
-  (git-gutter:set-start-revision nil)
-  (message "git-gutter reset"))
-
-(global-git-gutter-mode t)
-
-;; nobody use bzr
-;; I could be forced to use subversion or hg which has higher priority
-;; Please note my $HOME directory is under git control
-(custom-set-variables '(git-gutter:handled-backends '(svn hg git)))
-
-(unless (fboundp 'global-display-line-numbers-mode)
- ;; git-gutter's workaround for linum-mode bug.
- ;; should not be used in `display-line-number-mode`
- (git-gutter:linum-setup))
-
-(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
-(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
-;; Stage current hunk
-(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
-;; Revert current hunk
-(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
-;; }}
 
 ;; {{ git-timemachine
 (defun my-git-timemachine-show-selected-revision ()
