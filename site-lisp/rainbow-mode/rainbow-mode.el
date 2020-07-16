@@ -1,10 +1,10 @@
 ;;; rainbow-mode.el --- Colorize color names in buffers
 
-;; Copyright (C) 2010-2015 Free Software Foundation, Inc
+;; Copyright (C) 2010-2019 Free Software Foundation, Inc
 
 ;; Author: Julien Danjou <julien@danjou.info>
 ;; Keywords: faces
-;; Version: 0.11
+;; Version: 1.0.3
 
 ;; This file is part of GNU Emacs.
 
@@ -29,9 +29,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
+(require 'cl-lib)
 (require 'regexp-opt)
 (require 'faces)
 (require 'color)
@@ -44,7 +42,8 @@
   :tag "Rainbow"
   :group 'help)
 
-;; Hexadecimal colors
+;;; Hexadecimal colors
+
 (defvar rainbow-hexadecimal-colors-font-lock-keywords
   '(("[^&]\\(#\\(?:[0-9a-fA-F]\\{3\\}\\)+\\{1,4\\}\\)"
      (1 (rainbow-colorize-itself 1)))
@@ -58,7 +57,8 @@
      (0 (rainbow-colorize-itself))))
   "Font-lock keywords to add for hexadecimal colors.")
 
-;; rgb() colors
+;;; rgb() colors
+
 (defvar rainbow-html-rgb-colors-font-lock-keywords
   '(("rgb(\s*\\([0-9]\\{1,3\\}\\(?:\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*,\s*\\([0-9]\\{1,3\\}\\(?:\\.[0-9]\\)?\\(?:\s*%\\)?\\)\s*)"
      (0 (rainbow-colorize-rgb)))
@@ -70,7 +70,8 @@
      (0 (rainbow-colorize-hsl))))
   "Font-lock keywords to add for RGB colors.")
 
-;; HTML colors name
+;;; HTML colors
+
 (defvar rainbow-html-colors-font-lock-keywords nil
   "Font-lock keywords to add for HTML colors.")
 (make-variable-buffer-local 'rainbow-html-colors-font-lock-keywords)
@@ -225,12 +226,14 @@
     ("YellowGreen" . "#9ACD32"))
   "Alist of HTML colors.
 Each entry should have the form (COLOR-NAME . HEXADECIMAL-COLOR)."
+  :type 'alist
   :group 'rainbow)
 
 (defcustom rainbow-html-colors-major-mode-list
   '(html-mode css-mode php-mode nxml-mode xml-mode)
   "List of major mode where HTML colors are enabled when
 `rainbow-html-colors' is set to auto."
+  :type '(repeat (symbol :tag "Major-Mode"))
   :group 'rainbow)
 
 (defcustom rainbow-html-colors 'auto
@@ -239,9 +242,13 @@ If set to t, the HTML colors will be enabled.  If set to nil, the
 HTML colors will not be enabled.  If set to auto, the HTML colors
 will be enabled if a major mode has been detected from the
 `rainbow-html-colors-major-mode-list'."
+  :type '(choice (symbol :tag "enable in certain modes" auto)
+                 (symbol :tag "enable globally" t)
+                 (symbol :tag "disable" nil))
   :group 'rainbow)
 
-;; X colors
+;;; X colors
+
 (defvar rainbow-x-colors-font-lock-keywords
   `((,(regexp-opt (x-defined-colors) 'words)
      (0 (rainbow-colorize-itself))))
@@ -251,6 +258,7 @@ will be enabled if a major mode has been detected from the
   '(emacs-lisp-mode lisp-interaction-mode c-mode c++-mode java-mode)
   "List of major mode where X colors are enabled when
 `rainbow-x-colors' is set to auto."
+  :type '(repeat (symbol :tag "Major-Mode"))
   :group 'rainbow)
 
 (defcustom rainbow-x-colors 'auto
@@ -259,9 +267,13 @@ If set to t, the X colors will be enabled.  If set to nil, the
 X colors will not be enabled.  If set to auto, the X colors
 will be enabled if a major mode has been detected from the
 `rainbow-x-colors-major-mode-list'."
+  :type '(choice (symbol :tag "enable in certain modes" auto)
+                 (symbol :tag "enable globally" t)
+                 (symbol :tag "disable" nil))
   :group 'rainbow)
 
-;; LaTeX colors
+;;; LaTeX colors
+
 (defvar rainbow-latex-rgb-colors-font-lock-keywords
   '(("{rgb}{\\([0-9.]+\\),\s*\\([0-9.]+\\),\s*\\([0-9.]+\\)}"
      (0 (rainbow-colorize-rgb-float)))
@@ -275,6 +287,7 @@ will be enabled if a major mode has been detected from the
   '(latex-mode)
   "List of major mode where LaTeX colors are enabled when
 `rainbow-x-colors' is set to auto."
+  :type '(repeat (symbol :tag "Major-Mode"))
   :group 'rainbow)
 
 (defcustom rainbow-latex-colors 'auto
@@ -283,9 +296,13 @@ If set to t, the LaTeX colors will be enabled. If set to nil, the
 LaTeX colors will not be enabled.  If set to auto, the LaTeX colors
 will be enabled if a major mode has been detected from the
 `rainbow-latex-colors-major-mode-list'."
+  :type '(choice (symbol :tag "enable in certain modes" auto)
+                 (symbol :tag "enable globally" t)
+                 (symbol :tag "disable" nil))
   :group 'rainbow)
 
-;; Shell colors
+;;; Shell colors
+
 (defvar rainbow-ansi-colors-font-lock-keywords
   '(("\\(\\\\[eE]\\|\\\\033\\|\\\\x1[bB]\\|\033\\)\\[\\([0-9;]*m\\)"
      (0 (rainbow-colorize-ansi))))
@@ -295,6 +312,7 @@ will be enabled if a major mode has been detected from the
   '(sh-mode c-mode c++-mode)
   "List of major mode where ANSI colors are enabled when
 `rainbow-ansi-colors' is set to auto."
+  :type '(repeat (symbol :tag "Major-Mode"))
   :group 'rainbow)
 
 (defcustom rainbow-ansi-colors 'auto
@@ -303,11 +321,13 @@ If set to t, the ANSI colors will be enabled. If set to nil, the
 ANSI colors will not be enabled.  If set to auto, the ANSI colors
 will be enabled if a major mode has been detected from the
 `rainbow-ansi-colors-major-mode-list'."
+  :type '(choice (symbol :tag "enable in certain modes" auto)
+                 (symbol :tag "enable globally" t)
+                 (symbol :tag "disable" nil))
   :group 'rainbow)
 
-;; R colors
+;;; R colors
 
-;; R colors name
 (defvar rainbow-r-colors-font-lock-keywords nil
   "Font-lock keywords to add for R colors.")
 (make-variable-buffer-local 'rainbow-r-colors-font-lock-keywords)
@@ -975,11 +995,14 @@ will be enabled if a major mode has been detected from the
     ("yellowgreen" . "#9ACD32"))
   "Alist of R colors.
 Each entry should have the form (COLOR-NAME . HEXADECIMAL-COLOR)."
+  :type 'alist
   :group 'rainbow)
+
 (defcustom rainbow-r-colors-major-mode-list
   '(ess-mode)
   "List of major mode where R colors are enabled when
 `rainbow-r-colors' is set to auto."
+  :type '(repeat (symbol :tag "Major-Mode"))
   :group 'rainbow)
 
 (defcustom rainbow-r-colors 'auto
@@ -988,10 +1011,13 @@ If set to t, the R colors will be enabled.  If set to nil, the
 R colors will not be enabled.  If set to auto, the R colors
 will be enabled if a major mode has been detected from the
 `rainbow-r-colors-major-mode-list'."
+  :type '(choice (symbol :tag "enable in certain modes" auto)
+                 (symbol :tag "enable globally" t)
+                 (symbol :tag "disable" nil))
   :group 'rainbow)
 
+;;; Functions
 
-;; Functions
 (defun rainbow-colorize-match (color &optional match)
   "Return a matched string propertized with a face whose
 background is COLOR. The foreground is computed using
@@ -1032,8 +1058,8 @@ If the percentage value is above 100, it's converted to 100."
         (s (/ (string-to-number (match-string-no-properties 2)) 100.0))
         (l (/ (string-to-number (match-string-no-properties 3)) 100.0)))
     (rainbow-colorize-match
-     (multiple-value-bind (r g b)
-	 (color-hsl-to-rgb h s l)
+     (cl-destructuring-bind (r g b)
+         (color-hsl-to-rgb h s l)
        (format "#%02X%02X%02X" (* r 255) (* g 255) (* b 255))))))
 
 (defun rainbow-colorize-rgb ()
@@ -1073,7 +1099,7 @@ If the percentage value is above 100, it's converted to 100."
                              0
                              (if xterm-color? 'face 'font-lock-face)
                              applied)))
-        (unless (listp (car face-property))
+        (unless (listp (or (car-safe face-property) face-property))
           (setq face-property (list face-property)))
         (setq color (funcall (if xterm-color? 'cadr 'cdr)
                              (or (assq (if xterm-color?
@@ -1088,41 +1114,47 @@ If the percentage value is above 100, it's converted to 100."
       (rainbow-colorize-match color))))
 
 (defun rainbow-color-luminance (red green blue)
-  "Calculate the luminance of color composed of RED, BLUE and GREEN.
+  "Calculate the relative luminance of color composed of RED, GREEN and BLUE.
 Return a value between 0 and 1."
-  (/ (+ (* .2126 red) (* .7152 green) (* .0722 blue)) 256))
+  (/ (+ (* .2126 red) (* .7152 green) (* .0722 blue)) 255))
 
 (defun rainbow-x-color-luminance (color)
-  "Calculate the luminance of a color string (e.g. \"#ffaa00\", \"blue\").
+  "Calculate the relative luminance of a color string (e.g. \"#ffaa00\", \"blue\").
 Return a value between 0 and 1."
   (let* ((values (x-color-values color))
-	 (r (/ (car values) 256.0))
+         (r (/ (car values) 256.0))
          (g (/ (cadr values) 256.0))
-	 (b (/ (caddr values) 256.0)))
+         (b (/ (caddr values) 256.0)))
     (rainbow-color-luminance r g b)))
+
+;;; Mode
 
 (defun rainbow-turn-on ()
   "Turn on raibow-mode."
   (font-lock-add-keywords nil
-                          rainbow-hexadecimal-colors-font-lock-keywords)
+                          rainbow-hexadecimal-colors-font-lock-keywords
+                          t)
   ;; Activate X colors?
   (when (or (eq rainbow-x-colors t)
             (and (eq rainbow-x-colors 'auto)
                  (memq major-mode rainbow-x-colors-major-mode-list)))
     (font-lock-add-keywords nil
-                            rainbow-x-colors-font-lock-keywords))
+                            rainbow-x-colors-font-lock-keywords
+                            t))
   ;; Activate LaTeX colors?
   (when (or (eq rainbow-latex-colors t)
             (and (eq rainbow-latex-colors 'auto)
                  (memq major-mode rainbow-latex-colors-major-mode-list)))
     (font-lock-add-keywords nil
-                            rainbow-latex-rgb-colors-font-lock-keywords))
+                            rainbow-latex-rgb-colors-font-lock-keywords
+                            t))
   ;; Activate ANSI colors?
   (when (or (eq rainbow-ansi-colors t)
             (and (eq rainbow-ansi-colors 'auto)
                  (memq major-mode rainbow-ansi-colors-major-mode-list)))
     (font-lock-add-keywords nil
-                            rainbow-ansi-colors-font-lock-keywords))
+                            rainbow-ansi-colors-font-lock-keywords
+                            t))
   ;; Activate HTML colors?
   (when (or (eq rainbow-html-colors t)
             (and (eq rainbow-html-colors 'auto)
@@ -1132,7 +1164,8 @@ Return a value between 0 and 1."
              (0 (rainbow-colorize-by-assoc rainbow-html-colors-alist)))))
     (font-lock-add-keywords nil
                             `(,@rainbow-html-colors-font-lock-keywords
-                              ,@rainbow-html-rgb-colors-font-lock-keywords)))
+                              ,@rainbow-html-rgb-colors-font-lock-keywords)
+                            t))
   ;; Activate R colors?
   (when (or (eq rainbow-r-colors t)
             (and (eq rainbow-r-colors 'auto)
@@ -1142,7 +1175,7 @@ Return a value between 0 and 1."
              (0 (rainbow-colorize-by-assoc rainbow-r-colors-alist)))))
     (font-lock-add-keywords nil
                             rainbow-r-colors-font-lock-keywords
-                            )))
+                            t)))
 
 (defun rainbow-turn-off ()
   "Turn off rainbow-mode."
@@ -1155,20 +1188,108 @@ Return a value between 0 and 1."
      ,@rainbow-html-colors-font-lock-keywords
      ,@rainbow-html-rgb-colors-font-lock-keywords)))
 
+(defvar rainbow-keywords-hook nil
+  "Hook used to add additional font-lock keywords.
+This hook is called by `rainbow-mode' before it re-enables
+`font-lock-mode'.  Hook functions must only add additional
+keywords when `rainbow-mode' is non-nil.  When that is nil,
+then they must remove those additional keywords again.")
+
 ;;;###autoload
 (define-minor-mode rainbow-mode
   "Colorize strings that represent colors.
 This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
   :lighter " Rbow"
-  (progn
-    (if rainbow-mode
-        (rainbow-turn-on)
-      (rainbow-turn-off))
-    ;; Call font-lock-mode to refresh the buffer when used e.g. interactively
-    (font-lock-mode 1)))
+  (if rainbow-mode
+      (rainbow-turn-on)
+    (rainbow-turn-off))
+  ;; We cannot use `rainbow-mode-hook' because this has
+  ;; to be done before `font-lock-mode' is re-enabled.
+  (run-hooks 'rainbow-keywords-hook)
+  ;; Call `font-lock-mode' to refresh the buffer when used
+  ;; e.g. interactively.
+  (font-lock-mode 1))
 
 ;;;; ChangeLog:
 
+;; 2019-12-23  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	Release rainbow-mode 1.0.3
+;; 
+;; 	* Use cl-lib instead of cl
+;; 
+;; 	  As of Emacs 27.1 `cl' is officially deprecated.
+;; 
+;; 	  `cl' was only required for `multiple-value-bind' and using that was
+;; 	 conceptually wrong to begin with: `color-hsl-to-rgb' does NOT return
+;; 	three
+;; 	 values; it returns one value which happens to consist of three
+;; 	components and
+;; 	 any one of these components by itself is meaningless. Now we use
+;; 	 `cl-destructuring-bind', which does not have the same connotation.
+;; 
+;; 	* rainbow-keywords-hook: New hook run by rainbow-mode
+;; 
+;; 	* rainbow-mode: Remove unnecessary progn
+;; 	 Also improve a contained comment.
+;; 
+;; 	Thanks Jonas Bernoulli <jonas@bernoul.li>
+;; 
+;; 2019-11-25  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	Release rainbow-mode 1.0.2
+;; 
+;; 2019-11-25  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	Fix a off-by-one error and some wording in rainbow-mode
+;; 
+;; 	* packages/rainbow-mode/rainbow-mode.el (rainbow-color-luminance): Fix a 
+;; 	off-by-one error and wording.
+;; 	(rainbow-x-color-luminance): Fix wording.
+;; 
+;; 	Thanks Peder Stray.
+;; 
+;; 2018-05-21  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	* rainbow-mode/rainbow-mode.el: do not fail if face-property is a symbol
+;; 
+;; 	It turns out there are cases when `face-property' can be just a symbol
+;; 	and we need to protect our selves from that, i.e. `car' should not fail.
+;; 	Hence,
+;; 	`car-safe' is there and if it's `nil', then fall back to `face-property'
+;; 	as is.
+;; 
+;; 	See https://github.com/tarsius/hl-todo/issues/17
+;; 
+;; 2018-03-26  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	rainbow-mode: release 1.0
+;; 
+;; 2018-03-26  Jonas Bernoulli  <jonas@bernoul.li>
+;; 
+;; 	Allow outline-minor-mode to find section headings
+;; 
+;; 2018-03-26  Jonas Bernoulli  <jonas@bernoul.li>
+;; 
+;; 	Set type of customizable options
+;; 
+;; 2018-03-26  Jonas Bernoulli  <jonas@bernoul.li>
+;; 
+;; 	Enforce use of spaces for indentation
+;; 
+;; 	Also untabify some code added by a contributor who, unlike you, has not
+;; 	globally set `indent-tabs-mode' to nil.
+;; 
+;; 2017-05-29  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	Fix `rainbow-color-luminance' docstring
+;; 
+;; 2015-10-12  Julien Danjou  <julien@danjou.info>
+;; 
+;; 	rainbow: add font-lock at the end
+;; 
+;; 	See https://github.com/fxbois/web-mode/issues/612
+;; 
 ;; 2015-03-06  Julien Danjou  <julien@danjou.info>
 ;; 
 ;; 	rainbow: fix font-lock-mode refresh
@@ -1240,4 +1361,7 @@ This will fontify with colors the string like \"#aabbcc\" or \"blue\"."
 
 (provide 'rainbow-mode)
 
+;; Local Variables:
+;; indent-tabs-mode: nil
+;; End:
 ;;; rainbow-mode.el ends here
