@@ -76,12 +76,7 @@
 ;;
 ;;; Code:
 
-(if (not (featurep 'cl-lib))
-    (progn
-      (require 'cl)
-      ;; fix conflict name
-      (defalias 'cl-reduce 'reduce))
-  (require 'cl-lib))
+(require 'cl-lib)
 ;; (require 'json)?
 
 (defgroup keyfreq nil
