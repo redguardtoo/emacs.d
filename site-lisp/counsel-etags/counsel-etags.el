@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((counsel "0.13.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.11
+;; Version: 1.9.12
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -47,6 +47,7 @@
 ;;
 ;;   `counsel-etags-scan-code' to create tags file
 ;;   `counsel-etags-grep' to grep
+;;   `counsel-etags-grep-extra-arguments' has extra arguments for grep
 ;;   `counsel-etags-grep-current-directory' to grep in current directory
 ;;   `counsel-etags-recent-tag' to open recent tag
 ;;   `counsel-etags-find-tag' to two steps tag matching use regular expression and filter
@@ -179,6 +180,17 @@ A CLI to create tags file:
   "If t, tags will not be updated automatically."
   :group 'counsel-etags
   :type 'boolean)
+
+(defcustom counsel-etags-use-ripgrep-force nil
+  "Force use ripgrep as grep program.
+If rg is not in $PATH, then it should be defined in `counsel-etags-grep-program'."
+  :group 'counsel-etags
+  :type 'boolean)
+
+(defcustom counsel-etags-grep-extra-arguments ""
+  "Extra arguments passed to grep program."
+  :group 'counsel-etags
+  :type 'string)
 
 (defcustom counsel-etags-convert-grep-keyword 'identity
   "Convert keyword to grep to new regex to feed into grep program.
@@ -548,7 +560,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.11"))
+  (message "1.9.12"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1559,9 +1571,9 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
         (setq counsel-etags-keyword (replace-regexp-in-string "\"" "\\\\\""str))))))
   counsel-etags-keyword)
 
-(defun counsel-etags-has-quick-grep ()
-  "Does ripgrep program exist?"
-  (executable-find "rg"))
+(defun counsel-etags-has-quick-grep-p ()
+  "Test if ripgrep program exist."
+  (or counsel-etags-use-ripgrep-force (executable-find "rg")))
 
 (defun counsel-etags-exclude-opts (use-cache)
   "Grep CLI options.  IF USE-CACHE is t, the options is read from cache."
@@ -1571,7 +1583,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
                               counsel-etags-ignore-filenames)))
     ;; please note Windows DOS CLI only support double quotes
     (cond
-     ((counsel-etags-has-quick-grep)
+     ((counsel-etags-has-quick-grep-p)
       (concat (mapconcat (lambda (e)
                            (format "-g=\"!%s/*\"" (shell-quote-argument e)))
                          ignore-dirs " ")
@@ -1592,19 +1604,22 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   "Use KEYWORD and USE-CACHE to build CLI.
 Extended regex is used, like (pattern1|pattern2)."
   (cond
-   ((counsel-etags-has-quick-grep)
+   ((counsel-etags-has-quick-grep-p)
     ;; "--hidden" force ripgrep to search hidden files/directories, that's default
     ;; behavior of grep
-    (format "%s --hidden %s \"%s\" --"
-            (concat (executable-find "rg")
-                    ;; (if counsel-etags-debug " --debug")
-                    " -n -M 1024 --no-heading --color never -s --path-separator /")
+    (format "%s %s %s --hidden %s \"%s\" --"
+            ;; if rg is not in $PATH, then it's in `counsel-etags-grep-program'
+            (or (executable-find "rg") counsel-etags-grep-program)
+            ;; (if counsel-etags-debug " --debug")
+            "-n -M 1024 --no-heading --color never -s --path-separator /"
+            counsel-etags-grep-extra-arguments
             (counsel-etags-exclude-opts use-cache)
             keyword))
    (t
     ;; use extended regex always
-    (format "%s -rsnE %s \"%s\" *"
+    (format "%s -rsnE %s %s \"%s\" *"
             (or counsel-etags-grep-program (counsel-etags-guess-program "grep"))
+            counsel-etags-grep-extra-arguments
             (counsel-etags-exclude-opts use-cache)
             keyword))))
 
