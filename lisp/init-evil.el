@@ -5,6 +5,32 @@
 ;; enable evil-mode
 (evil-mode 1)
 
+;; {{ replace undo-tree with undo-fu
+;; @see https://github.com/emacs-evil/evil/issues/1074
+;; (global-undo-tree-mode -1)
+(my-ensure 'undo-fu)
+;; copied from doom-emacs
+(define-minor-mode undo-fu-mode
+  "Enables `undo-fu' for the current session."
+  :keymap (let ((map (make-sparse-keymap)))
+            (define-key map [remap undo] #'undo-fu-only-undo)
+            (define-key map [remap redo] #'undo-fu-only-redo)
+            (define-key map (kbd "C-_")     #'undo-fu-only-undo)
+            (define-key map (kbd "M-_")     #'undo-fu-only-redo)
+            (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
+            (define-key map (kbd "C-x r u") #'undo-fu-session-save)
+            (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
+            map)
+  :init-value nil
+  :global t)
+(undo-fu-mode 1)
+;; }}
+
+;; Store more undo history to prevent loss of data
+(setq undo-limit 8000000
+      undo-strong-limit 8000000
+      undo-outer-limit 8000000)
+
 (defvar my-use-m-for-matchit nil
   "If t, use \"m\" key for `evil-matchit-mode'.
 And \"%\" key is also restored to `evil-jump-item'.")

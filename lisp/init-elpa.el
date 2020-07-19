@@ -21,6 +21,7 @@
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
     evil-textobj-syntax
+    undo-fu
     command-log-mode
     ;; lsp-mode ; stable version has performance issue, but unstable version sends too many warnings
     edit-server ; use Emacs to edit textarea in browser, need browser addon
@@ -312,6 +313,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'evil-visualstar)
 (require-package 'evil-args)
 (require-package 'evil-textobj-syntax)
+(require-package 'undo-fu)
 (require-package 'slime)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)
