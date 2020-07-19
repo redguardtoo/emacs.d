@@ -1169,10 +1169,10 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
       (shell-command (format "%s --dir . &" cmd-prefix))))))
 ;; }}
 
+(defvar my-sdcv-org-head-level 2)
 ;; {{ use sdcv dictionary to find big word definition
 (defun my-sdcv-format-bigword (word zipf)
   "Format WORD and ZIPF using sdcv dictionary."
-  (ignore zipf)
   (let* (rlt def)
     (local-require 'sdcv)
     ;; 2 level org format
@@ -1181,7 +1181,11 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
           (setq def (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
           (setq def (replace-regexp-in-string "^-->.*" "" def))
           (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
-          (setq rlt (format "** %s\n%s\n" word def)))
+          (setq rlt (format "%s %s (%s)\n%s\n"
+                            (make-string my-sdcv-org-head-level ?*)
+                            word
+                            zipf
+                            def)))
       (error nil))
     rlt))
 
