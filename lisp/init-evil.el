@@ -46,15 +46,15 @@ And \"%\" key is also restored to `evil-jump-item'.")
     (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
 
   (when (memq major-mode '(org-mode))
-   (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
-   (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
+    (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
+    (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
 
   (when (memq major-mode '(emacs-lisp-mode))
-   (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
-   (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
+    (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
+    (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 
   (when (derived-mode-p 'js-mode)
-   (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
+    (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
 
   ;; generic
   (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
@@ -720,38 +720,38 @@ If INCLUSIVE is t, the text object is inclusive."
   :keymaps 'js2-mode-map)
 
 (my-javascript-leader-def
- "de" 'js2-display-error-list
- "nn" 'js2-next-error
- "te" 'js2-mode-toggle-element
- "tf" 'js2-mode-toggle-hide-functions
- "jeo" 'js2r-expand-object
- "jco" 'js2r-contract-object
- "jeu" 'js2r-expand-function
- "jcu" 'js2r-contract-function
- "jea" 'js2r-expand-array
- "jca" 'js2r-contract-array
- "jwi" 'js2r-wrap-buffer-in-iife
- "jig" 'js2r-inject-global-in-iife
- "jev" 'js2r-extract-var
- "jiv" 'js2r-inline-var
- "jrv" 'js2r-rename-var
- "jvt" 'js2r-var-to-this
- "jag" 'js2r-add-to-globals-annotation
- "jsv" 'js2r-split-var-declaration
- "jss" 'js2r-split-string
- "jef" 'js2r-extract-function
- "jem" 'js2r-extract-method
- "jip" 'js2r-introduce-parameter
- "jlp" 'js2r-localize-parameter
- "jtf" 'js2r-toggle-function-expression-and-declaration
- "jao" 'js2r-arguments-to-object
- "juw" 'js2r-unwrap
- "jwl" 'js2r-wrap-in-for-loop
- "j3i" 'js2r-ternary-to-if
- "jlt" 'js2r-log-this
- "jsl" 'js2r-forward-slurp
- "jba" 'js2r-forward-barf
- "jk" 'js2r-kill)
+  "de" 'js2-display-error-list
+  "nn" 'js2-next-error
+  "te" 'js2-mode-toggle-element
+  "tf" 'js2-mode-toggle-hide-functions
+  "jeo" 'js2r-expand-object
+  "jco" 'js2r-contract-object
+  "jeu" 'js2r-expand-function
+  "jcu" 'js2r-contract-function
+  "jea" 'js2r-expand-array
+  "jca" 'js2r-contract-array
+  "jwi" 'js2r-wrap-buffer-in-iife
+  "jig" 'js2r-inject-global-in-iife
+  "jev" 'js2r-extract-var
+  "jiv" 'js2r-inline-var
+  "jrv" 'js2r-rename-var
+  "jvt" 'js2r-var-to-this
+  "jag" 'js2r-add-to-globals-annotation
+  "jsv" 'js2r-split-var-declaration
+  "jss" 'js2r-split-string
+  "jef" 'js2r-extract-function
+  "jem" 'js2r-extract-method
+  "jip" 'js2r-introduce-parameter
+  "jlp" 'js2r-localize-parameter
+  "jtf" 'js2r-toggle-function-expression-and-declaration
+  "jao" 'js2r-arguments-to-object
+  "juw" 'js2r-unwrap
+  "jwl" 'js2r-wrap-in-for-loop
+  "j3i" 'js2r-ternary-to-if
+  "jlt" 'js2r-log-this
+  "jsl" 'js2r-forward-slurp
+  "jba" 'js2r-forward-barf
+  "jk" 'js2r-kill)
 ;; }}
 
 (defun my-evil-delete-hack (orig-func &rest args)
@@ -771,24 +771,24 @@ If INCLUSIVE is t, the text object is inclusive."
   :states '(normal visual))
 
 (my-semicolon-leader-def
- ;; Search character(s) at the beginning of word
- ;; See https://github.com/abo-abo/avy/issues/70
- ;; You can change the avy font-face in ~/.custom.el:
- ;;  (with-eval-after-load 'avy
- ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
- ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
- ";" 'ace-pinyin-jump-char-2
- "w" 'avy-goto-word-or-subword-1
- "a" 'avy-goto-char-timer
- "db" 'sdcv-search-input ; details
- "dt" 'sdcv-search-input+ ; summary
- "dd" 'my-lookup-dict-org
- "mm" 'lookup-doc-in-man
- "gg" 'w3m-google-search
- "gd" 'w3m-search-financial-dictionary
- "ga" 'w3m-java-search
- "gh" 'w3mext-hacker-search ; code search in all engines with firefox
- "gq" 'w3m-stackoverflow-search)
+  ;; Search character(s) at the beginning of word
+  ;; See https://github.com/abo-abo/avy/issues/70
+  ;; You can change the avy font-face in ~/.custom.el:
+  ;;  (with-eval-after-load 'avy
+  ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
+  ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
+  ";" 'ace-pinyin-jump-char-2
+  "w" 'avy-goto-word-or-subword-1
+  "a" 'avy-goto-char-timer
+  "db" 'sdcv-search-input ; details
+  "dt" 'sdcv-search-input+ ; summary
+  "dd" 'my-lookup-dict-org
+  "mm" 'lookup-doc-in-man
+  "gg" 'w3m-google-search
+  "gd" 'w3m-search-financial-dictionary
+  "ga" 'w3m-java-search
+  "gh" 'w3mext-hacker-search ; code search in all engines with firefox
+  "gq" 'w3m-stackoverflow-search)
 ;; }}
 
 ;; {{ remember what we searched
@@ -814,7 +814,7 @@ If INCLUSIVE is t, the text object is inclusive."
 
 ;; {{ change mode-line color by evil state
 (defconst my-default-color (cons (face-background 'mode-line)
-                                  (face-foreground 'mode-line)))
+                                 (face-foreground 'mode-line)))
 (defun my-show-evil-state ()
   "Change mode line color to notify user evil current state."
   (let* ((color (cond ((minibufferp) my-default-color)
@@ -949,9 +949,9 @@ If INCLUSIVE is t, the text object is inclusive."
   ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings
   (defmacro adjust-major-mode-keymap-with-evil (m &optional r)
     `(with-eval-after-load (quote ,(if r r m))
-          (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
-          ;; force update evil keymaps after git-timemachine-mode loaded
-          (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
+       (evil-make-overriding-map ,(intern (concat m "-mode-map")) 'normal)
+       ;; force update evil keymaps after git-timemachine-mode loaded
+       (add-hook (quote ,(intern (concat m "-mode-hook"))) #'evil-normalize-keymaps)))
 
   (adjust-major-mode-keymap-with-evil "git-timemachine")
 
