@@ -568,6 +568,9 @@ If INCLUSIVE is t, the text object is inclusive."
   "jsr" 'js-send-region
   "jsb" 'js-clear-send-buffer
   "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
+  "ls" 'highlight-symbol
+  "lq" 'highlight-symbol-query-replace
+  "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "ii" 'my-imenu-or-list-tag-in-current-file
   "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
