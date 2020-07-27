@@ -501,6 +501,17 @@ If INCLUSIVE is t, the text object is inclusive."
   :prefix ","
   :states '(normal visual))
 
+(defun my-rename-thing-at-point ()
+  "Rename thing at point."
+  (interactive)
+  (cond
+   ((derived-mode-p 'js2-mode)
+    ;; use `js2-mode' parser, much smarter and works in any scope
+    (js2hl-rename-thing-at-point))
+   (t
+    ;; simple string search/replace in function scope
+    (evilmr-replace-in-defun))))
+
 (my-comma-leader-def
   "," 'evilnc-comment-operator
   "bf" 'beginning-of-defun
@@ -549,7 +560,7 @@ If INCLUSIVE is t, the text object is inclusive."
   "wk" 'evil-window-up
   "wj" 'evil-window-down
   ;; }}
-  "rv" 'evilmr-replace-in-defun
+  "rv" 'my-rename-thing-at-point
   "rb" 'evilmr-replace-in-buffer
   "ts" 'evilmr-tag-selected-region ;; recommended
   "cby" 'cb-switch-between-controller-and-view
@@ -572,7 +583,6 @@ If INCLUSIVE is t, the text object is inclusive."
   "lq" 'highlight-symbol-query-replace
   "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
   "ii" 'my-imenu-or-list-tag-in-current-file
-  "." 'evil-ex
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
   "tm" 'my-git-timemachine
@@ -695,7 +705,6 @@ If INCLUSIVE is t, the text object is inclusive."
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
-  "ee" 'evilmr-replace-in-defun ; replace in defun
   "sc" 'shell-command
   "ll" 'my-wg-switch-workgroup ; load windows layout
   "jj" 'scroll-other-window
