@@ -1109,6 +1109,7 @@ CONTEXT is extra information collected before find tag definition."
   (setq s (replace-regexp-in-string "\\." "\\\\\." s))
   (setq s (replace-regexp-in-string "\\[" "\\\\\[" s))
   (setq s (replace-regexp-in-string "\\]" "\\\\\]" s))
+  (setq s (replace-regexp-in-string "-" "\\\\-" s))
   ;; perl-regex support non-ASCII characters
   ;; Turn on `-P` from `git grep' and `grep'
   ;; the_silver_searcher and ripgrep need no setup
