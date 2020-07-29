@@ -7,7 +7,7 @@
 ;; Author: Sergey Pashinin <sergey at pashinin dot com>
 ;; Keywords: session management window-configuration persistence
 ;; Homepage: https://github.com/pashinin/workgroups2
-;; Version: 1.2.0
+;; Version: 1.2.1
 ;; Package-Requires: ((emacs "25.1") (dash "2.8.0"))
 ;;
 ;; This program is free software; you can redistribute it and/or modify
@@ -33,38 +33,22 @@
 ;; If you find a bug - please post it here:
 ;; https://github.com/pashinin/workgroups2/issues
 ;;
+;; Quick start,
 ;;
-;; Install
-;; ----------------------
-;; See the README.md file at: https://github.com/pashinin/workgroups2
-;; Add the lines below to your .emacs configuration.
+;; - use `wg-create-workgroup' to save current windows layout
+;; - use `wg-open-workgroup' to open saved windows layout
 ;;
-;; (require 'workgroups2)
+;; Optionally, you can use minor-mode `workgroups-mode' by put below
+;; line into .emacs ,
 ;;
-;; <settings here>
+;; (workgroups-mode 1)
 ;;
-;; (workgroups-mode 1)  ; put this one at the bottom of .emacs
-;;
-;;
-;; Configure
-;; ----------------------
-;; ;; Change prefix key (before activating WG)
-;; (setq wg-prefix-key (kbd "C-c z"))
-;;
-;; ;; Change workgroups session file
-;; (setq wg-session-file "~/.emacs.d/.emacs_workgroups"
-;;
-;; ;; Set your own keyboard shortcuts to reload/save/switch WG:
-;; (global-set-key (kbd "<pause>")     'wg-reload-session)
-;; (global-set-key (kbd "C-S-<pause>") 'wg-save-session)
-;; (global-set-key (kbd "s-z")         'wg-switch-to-workgroup)
-;; (global-set-key (kbd "s-/")         'wg-switch-to-previous-workgroup)
-;;
-;;
-;; Use
-;; ----------------------
 ;; Most commands start with prefix `wg-prefix-key'.
 ;; You can change it before activating workgroups.
+;; Change prefix key (before activating WG)
+;;
+;; (setq wg-prefix-key (kbd "C-c z"))
+;;
 ;; By default prefix is: "C-c z"
 ;;
 ;; <prefix> <key>
@@ -75,13 +59,10 @@
 ;; <prefix> v    - switch to workgroup
 ;; <prefix> C-s  - save session
 ;; <prefix> C-f  - load session
+;; <prefix> ?    -  for more help
 ;;
-;;
-;; Help
-;; ----------------------
-;; Type "<prefix> ?" for more help
-;;
-;; See also: https://github.com/pashinin/workgroups2/wiki
+;; Change workgroups session file,
+;; (setq wg-session-file "~/.emacs.d/.emacs_workgroups"
 ;;
 ;;; Code:
 
@@ -89,7 +70,7 @@
 (require 'dash)
 (require 'ring)
 
-(defconst wg-version "1.2.0" "Current version of Workgroups.")
+(defconst wg-version "1.2.1" "Current version of Workgroups.")
 
 (defgroup workgroups nil
   "Workgroups for Emacs -- Emacs session manager"
@@ -913,34 +894,29 @@ If PARAM is not found, return DEFAULT which defaults to nil."
   "Return t if BUFFER-OR-NAME is the current buffer, nil otherwise."
   (eq (wg-get-buffer buffer-or-name) (current-buffer)))
 
-(defun wg-concat (&rest symbols-and-strings)
-  "Return a new interned symbol by concatenating SYMBOLS-AND-STRINGS."
-  (intern (mapconcat (lambda (obj) (if (symbolp obj) (symbol-name obj) obj))
-                     symbols-and-strings "")))
-
 (defmacro wg-defstruct (name-form &rest slot-defs)
   "`defstruct' wrapper that namespace-prefixes all generated functions.
 Note: this doesn't yet work with :conc-name, and possibly other
 options."
   (declare (indent 2))
   (let* ((prefix "wg")
-         (name name-form)
-         (prefixed-name (wg-concat prefix "-" name)))
+         (name (symbol-name name-form)) ; string type
+         (prefixed-name (concat prefix "-" name))
+         (symbol-prefixed-name (intern prefixed-name)))
     (cl-labels ((rebind (opstr)
-                        (let ((oldfnsym (wg-concat opstr "-" prefixed-name))
-                              (newfnsym (wg-concat prefix "-" opstr "-" name)))
-                          `((fset ',newfnsym
-                                  (symbol-function ',oldfnsym))
+                        (let ((oldfnsym (intern (concat opstr "-" prefixed-name)))
+                              (newfnsym (intern (concat prefix "-" opstr "-" name))))
+                          `((fset ',newfnsym (symbol-function ',oldfnsym))
                             (fmakunbound ',oldfnsym)))))
       ;; `eval-and-compile' gets rid of byte-comp warnings ("function `foo' not
       ;; known to be defined").  We can accomplish this with `declare-function'
       ;; too, but it annoyingly requires inclusion of the function's arglist,
       ;; which gets ugly.
       `(eval-and-compile
-         (cl-defstruct ,prefixed-name ,@slot-defs)
+         (cl-defstruct ,symbol-prefixed-name ,@slot-defs)
          ,@(rebind "make")
          ,@(rebind "copy")
-         ',prefixed-name))))
+         ',symbol-prefixed-name))))
 
 ;; {{
 (wg-defstruct session
@@ -3339,7 +3315,7 @@ that, use `wg-clone-workgroup'."
   (unless wg-current-session
     ;; code extracted from `wg-open-session'.
     ;; open session but do NOT load any workgroup.
-    (let* ((session (my-wg-read-session-file)))
+    (let* ((session (read (wg-read-text wg-session-file))))
       (setf (wg-session-file-name session) wg-session-file)
       (wg-reset-internal (wg-unpickel-session-parameters session))))
 
@@ -4205,6 +4181,21 @@ including a `wg-help' variable that basically duplicated every
 command's docstring;  But why, when there's `apropos-command'?"
   (interactive)
   (apropos-command "^wg-"))
+
+;;;###autoload
+(defun wg-open-workgroup ()
+  "Open specific workgroup."
+  (interactive)
+  (let* ((group-names (mapcar (lambda (group)
+                                ;; re-shape group for `completing-read'
+                                (cons (wg-workgroup-name group) group))
+                              (wg-session-workgroup-list
+                               (read (wg-read-text wg-session-file)))))
+         (selected-group (completing-read "Select work group: " group-names)))
+
+    (when selected-group
+      (wg-find-session-file wg-session-file)
+      (wg-switch-to-workgroup selected-group))))
 
 (provide 'workgroups2)
 ;;; workgroups2.el ends here

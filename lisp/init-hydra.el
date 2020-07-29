@@ -31,7 +31,8 @@
   ("bh" counsel-insert-bash-history)
   ("hh" random-healthy-color-theme)
   ("ss" wg-create-workgroup)
-  ("ll" my-wg-switch-workgroup)
+  ("ll" wg-open-workgroup)
+
   ("e" my-erase-visible-buffer)
   ("r" my-erase-current-buffer)
   ("E" toggle-typewriter)

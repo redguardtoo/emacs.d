@@ -706,7 +706,8 @@ If INCLUSIVE is t, the text object is inclusive."
   "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
   "sc" 'shell-command
-  "ll" 'my-wg-switch-workgroup ; load windows layout
+  "ll" 'wg-open-workgroup ; load windows layout
+
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
   "hh" 'random-healthy-color-theme
