@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.0.7
+;; Version: 0.0.8
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -474,7 +474,7 @@ FILE is the file path."
   "Use START-TIME and VIDEO-PATH to run mplayer."
   (when start-time
     (let* ((default-directory (file-name-directory video-path))
-	   (cmd (format "%s -ss %s -osdlevel 2 %s"
+	   (cmd (format "%s -ss %s -osdlevel 2 \"%s\""
 			mybigword-mplayer-program
 			(mybigword-adjust-start-time start-time)
 			(file-name-nondirectory video-path))))
