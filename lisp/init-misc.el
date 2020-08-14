@@ -272,7 +272,6 @@ This function can be re-used by other major modes after compilation."
                         "\\.mp[34]$"
                         "\\.avi$"
                         "\\.wav$"
-                        "\\.pdf$"
                         "\\.docx?$"
                         "\\.xlsx?$"
                         ;; sub-titles
@@ -1195,6 +1194,11 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
   (local-require 'mybigword)
   (let* ((mybigword-default-format-function 'my-sdcv-format-bigword))
     (mybigword-show-big-words-from-current-buffer)))
+;; }}
+
+;; {{ use pdf-tools to view pdf
+(when (and (display-graphic-p) *linux*)
+  (pdf-loader-install))
 ;; }}
 
 (provide 'init-misc)

@@ -284,7 +284,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (my-ensure 'counsel)
   (cond
    ;; `counsel--imenu-candidates' was created on 2019-10-12
-   ((fboundp 'counsel--imenu-candidates)
+   ((and (fboundp 'counsel--imenu-candidates)
+         (not (memq major-mode '(pdf-view-mode))))
     (let* ((cands (counsel--imenu-candidates))
            (pre-selected (thing-at-point 'symbol))
            (pos (point))

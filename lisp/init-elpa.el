@@ -334,6 +334,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
 (require-package 'edit-server)
+;; run "M-x pdf-tool-install" at debian and open pdf in GUI Emacs
+(require-package 'pdf-tools)
 
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
