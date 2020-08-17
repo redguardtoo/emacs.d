@@ -278,7 +278,7 @@ Code auto-completion works out of box by using tags file created by Ctags. You n
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Get better performance
-*** Adjust interval of spell check and sytnax check
+*** Adjust interval of spell check and syntax check
 This configuration is already optimized for low specification machines on Windows/Linux/macOS.
 
 But you could still squeeze more performance by decreasing the frequency of spell checking and programming syntax check.
