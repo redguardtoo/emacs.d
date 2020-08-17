@@ -4,7 +4,8 @@
   (unless nil ;package--initialized
     ;; optimization, no need to activate all the packages so early
     (setq package-enable-at-startup nil)
-    (package-initialize)))
+    ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
+    (when (< emacs-major-version 27) (package-initialize))))
 
 (my-initialize-package)
 
