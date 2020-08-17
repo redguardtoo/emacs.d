@@ -5,7 +5,7 @@
     ;; optimization, no need to activate all the packages so early
     (setq package-enable-at-startup nil)
     ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
-    (when (< emacs-major-version 27) (package-initialize))))
+    (package-initialize)))
 
 (my-initialize-package)
 
@@ -31,7 +31,6 @@
     package-lint ; for melpa pull request only
     auto-yasnippet
     typescript-mode ; the stable version lacks important feature (highlight function names)
-    websocket ; to talk to the browser
     evil-exchange
     evil-find-char-pinyin
     ;; {{ dependencies of stable realgud are too old
@@ -42,7 +41,6 @@
     iedit
     undo-tree
     js-doc
-    jss ; remote debugger of browser
     ;; {{ since stable v0.13.0 released, we go back to stable version
     ;; ivy
     ;; counsel
@@ -80,7 +78,6 @@
     distinguished-theme
     tao-theme
     ;; }}
-    slime
     groovy-mode
     company ; I won't wait another 2 years for stable
     simple-httpd
@@ -301,7 +298,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'emms)
 (require-package 'iedit)
 (require-package 'websocket) ; for debug debugging of browsers
-(require-package 'jss)
 (require-package 'undo-tree)
 (require-package 'evil)
 (require-package 'evil-escape)
@@ -315,7 +311,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'evil-args)
 (require-package 'evil-textobj-syntax)
 (require-package 'undo-fu)
-(require-package 'slime)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)
 (require-package 'keyfreq)

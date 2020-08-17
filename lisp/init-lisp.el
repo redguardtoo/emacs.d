@@ -32,12 +32,6 @@
                                       ibuffer-do-view-and-eval)
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
-;; @see https://github.com/slime/slime
-(with-eval-after-load 'slime
-  ;; Please install sbcl at first
-  (setq inferior-lisp-program "sbcl")
-  (setq slime-contribs '(slime-fancy)))
-
 ;; ----------------------------------------------------------------------------
 ;; Enable desired features for all lisp modes
 ;; ----------------------------------------------------------------------------
