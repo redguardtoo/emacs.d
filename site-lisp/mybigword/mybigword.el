@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.0.8
+;; Version: 0.0.9
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -94,6 +94,9 @@
 ;;   The word's audio is downloaded from https://dictionary.cambridge.org
 ;;   The audio download url could be customized in `mybigword-default-audio-url-function'.
 ;;
+;;   4. Use `mybigword-show-image-of-word' to show images of the word at point
+;;   in external browser.  Please note `browse-url-generic' is used in this
+;;   command.
 ;;
 
 ;;; Code:
@@ -103,6 +106,7 @@
 (require 'org)
 (require 'cl-lib)
 (require 'url)
+(require 'browse-url)
 
 (defgroup mybigword nil
   "Filter the words by the frequency usage of each word."
@@ -508,6 +512,30 @@ The information is in current org node's \"SRT_PATH\" property."
           (setq rlt (list :video-path video-path :start-time start-time))))))
     rlt))
 
+(defun mybigword--word-at-point (&optional user-input-p)
+  "Get word at point or ask user to input word.
+If USER-INPUT-P is t, user need input the word."
+  (let* (word)
+    (save-excursion
+      (cond
+       (user-input-p
+        (setq word (read-string "Please input a word: ")))
+
+       ((setq word (and (region-active-p)
+                        (buffer-substring (region-beginning) (region-end))))
+        ;; selected region is a word
+        )
+
+       (t
+        ;; work around `nov-mode' issue
+        (when (memq major-mode '(nov-mode))
+          ;; go to end of word to workaround `nov-mode' bug
+          (forward-word)
+          (forward-char -1))
+        ;; word at point
+        (setq word (thing-at-point 'word)))))
+    word))
+
 ;;;###autoload
 (defun mybigword-play-video-of-word-at-point ()
   "Search video's subtitle (*.srt) and play the video containing the word.
@@ -515,10 +543,7 @@ The video file should be in the same directory of subtitle.
 Its file name should be similar to the subtitle's file name.
 The word is either the word at point, or selected string or string from input."
   (interactive)
-  (let* ((word (or (and (region-active-p)
-                        (buffer-substring (region-beginning) (region-end)))
-                   (thing-at-point 'word)
-                   (read-string "Input a word: ")))
+  (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t)))
          info)
     (when (and word
                (setq info (funcall mybigword-default-video-info-function word)))
@@ -577,18 +602,21 @@ The word is either the word at point, or selected string or string from input."
 
 ;;;###autoload
 (defun mybigword-pronounce-word (&optional user-input-p)
-  "Pronounce current word.  If USER-INPUT-P is t, user need input the word."
+  "Pronounce word.  If USER-INPUT-P is t, user need input the word."
   (interactive "P")
-  ;; work around `nov-mode' issue
-  (when (memq major-mode '(nov-mode))
-    ;; go to end of word to workaround `nov-mode' bug
-    (forward-word)
-    (forward-char -1))
-
-  (let* ((word (if user-input-p (read-string "Word: ")
-		 (thing-at-point 'word))))
+  (let* ((word (mybigword--word-at-point user-input-p)))
     (when word
       (mybigword-pronounce-word-internal word))))
+
+;;;###autoload
+(defun mybigword-show-image-of-word (&optional user-input-p)
+  "Show image of word.  If USER-INPUT-P is t, user need input the word.
+Please note `browse-url-generic' is used to open external browser."
+  (interactive "P")
+  (let* ((word (mybigword--word-at-point user-input-p)))
+    (when word
+      (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
+                                  (replace-regexp-in-string " " "%20" word))))))
 
 (provide 'mybigword)
 ;;; mybigword.el ends here

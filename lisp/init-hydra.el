@@ -11,11 +11,11 @@
 [_ss_] Save workgroup     [_R_] Emms Random     [_w_] Pronounce word
 [_ll_] Load workgroup     [_n_] Emms Next       [_W_] Big words definition
 [_B_] New bookmark        [_p_] Emms Previous   [_v_] Play big word video
-[_m_] Goto bookmark       [_P_] Emms Pause      [_ss_] Pomodoro start
-[_uu_] Show/Hide undo     [_O_] Emms Open       [_st_] Pomodoro stop
-[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_sr_] Pomodoro resume
-[_e_] Erase buffer        [_E_] Typewriter on   [_sp_] Pomodoro pause
-[_r_] Erase this buffer   [_V_] Old typewriter
+[_m_] Goto bookmark       [_P_] Emms Pause      [_im_] Image of word
+[_uu_] Show/Hide undo     [_O_] Emms Open       [_ss_] Pomodoro start
+[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_st_] Pomodoro stop
+[_e_] Erase buffer        [_E_] Typewriter on   [_sr_] Pomodoro resume
+[_r_] Erase this buffer   [_V_] Old typewriter  [_sp_] Pomodoro pause
 [_f_] Recent file
 [_d_] Recent directory
 [_bh_] Bash history
@@ -47,6 +47,7 @@
   ("R" emms-random)
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
+  ("im" mybigword-show-image-of-word)
   ("W" my-lookup-big-word-definition-in-buffer)
   ("v" mybigword-play-video-of-word-at-point)
   ("p" emms-previous)
