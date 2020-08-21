@@ -155,7 +155,7 @@ If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell
 
 You can set =my-force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
 
-This setup use [[https://github.com/redguardtoo/wucuo][wucuo]] to spell check camel case words. It supports both aspell and hunspell.  Run =M-x wucuo-start= and =M-x flyspell-buffer= to check camel case words. 
+This setup use [[https://github.com/redguardtoo/wucuo][wucuo]] to spell check camel case words. It supports both aspell and hunspell.  Run =M-x wucuo-start= and =M-x flyspell-buffer= to check camel case words.
 
 Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. Its content is like:
 #+begin_src conf
@@ -237,11 +237,11 @@ Knowledge of Linux/Unix is required. At least you should know the meanings of "e
 Please read this tutorial at least for once.
 *** Step 1, learn OS basic
 At minimum you need know how Emacs interacts with other command line programs,
-- What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]] 
+- What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]]
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
 
 *** Step 2, read official tutorial
-Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial. 
+Press =C-h t= in Emacs ("C" means Ctrl key, "M" means Alt key) to read bundled tutorial.
 
 At minimum, you need learn:
 - How to move cursor
@@ -272,7 +272,7 @@ Run =M-x counsel-etags-find-tag-at-point= from =counsel-etags= to navigate code.
 
 Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is automatically detected.
 
-Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. Project root is automatically detected. You can also add one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=. 
+Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. Project root is automatically detected. You can also add one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=.
 
 Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
 
@@ -328,7 +328,7 @@ Those packages are placed at =site-lisp/=.
 
 They will not be upgraded by package system.
 
-Please make sure same package is not installed through elpa. Please check the content of directory "elpa/" in =.emacs.d= root. 
+Please make sure same package is not installed through elpa. Please check the content of directory "elpa/" in =.emacs.d= root.
 ** How to install new packages?
 I only use two package repositories,
 - [[https://stable.melpa.org]] (holding stable packages)
@@ -345,7 +345,7 @@ You'd better place everything related to =MY-PKG= into =~/.custom.el= so the mai
 
 If the package does not exist in the stable repository, modify =melpa-include-packages= in =lisp/init-elpa.el= first.
 
-I encourage you to read =init-elpa.el= to understand how packages are managed if you are good at Emacs Lisp, 
+I encourage you to read =init-elpa.el= to understand how packages are managed if you are good at Emacs Lisp,
 ** Git blame current line
 Run =vc-msg-show=.
 
@@ -573,10 +573,25 @@ You can also complete line by =M-x eacl-complete-line= and complete multi-lines 
 Please note pyim is already built into this setup. You need not install it through ELPA.
 
 Run =M-x toggle-input-method= to toggle input method [[https://github.com/tumashu/pyim][pyim]].
+*** Use Pinyin
+The default dictionary for pinyin might not be big enough. So you need install bigger dictionaries.
 
 Dictionaries with ".pyim" extension under the directory =~/.eim/= are automatically loaded.
 
-Please =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim= to install dictionary for pyim. 
+Please run =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim= to install extra dictionaries.
+
+The default pinyin scheme is =quanpin= but you can insert below code into =~/.custom.el= to switch to a different pinyin scheme,
+#+begin_src elisp
+(with-eval-after-load 'pyim
+  (setq pyim-default-scheme 'xiaohe-shuangpin))
+#+end_src
+*** Use Wubi
+Dictionary for wubi is already installed. Please insert below code into =~/.custom.el= to enable wubi dictionary and use wubi scheme,
+#+begin_src elisp
+(setq my-pyim-enable-wubi-dict t)
+(with-eval-after-load 'pyim
+  (setq pyim-default-scheme 'wubi))
+#+end_src
 ** Install multiple versions of Emacs
 Run below commands in shell:
 #+begin_src bash

@@ -93,6 +93,7 @@
     legalese
     htmlize
     pyim-basedict
+    pyim-wbdict
     scratch
     session
     inflections
@@ -225,7 +226,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'lua-mode)
 (require-package 'yaml-mode)
 (require-package 'paredit)
-(require-package 'xr) ; required by pyim
 (require-package 'findr)
 (require-package 'diredfl) ; font lock for `dired-mode'
 (require-package 'pinyinlib)
@@ -293,7 +293,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'neotree)
 (require-package 'hydra)
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
-(require-package 'pyim-basedict) ; it's default pyim dictionary
 (require-package 'web-mode)
 (require-package 'emms)
 (require-package 'iedit)
@@ -330,6 +329,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'edit-server)
 ;; run "M-x pdf-tool-install" at debian and open pdf in GUI Emacs
 (require-package 'pdf-tools)
+(require-package 'pyim)
+(require-package 'pyim-wbdict) ; someone may use wubi IME, not me
 
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to

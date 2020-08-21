@@ -45,40 +45,55 @@
 (defvar my-pyim-directory "~/.eim"
   "The directory containing pyim dictionaries.")
 
-(with-eval-after-load 'pyim
-  ;; use memory efficient pyim engine
-  (setq pyim-dcache-backend 'pyim-dregcache)
-  ;; don's use shortcode2word
-  (setq pyim-enable-shortcode nil)
+(defvar my-pyim-enable-wubi-dict nil
+  "Use Pinyin dictionary for Pyim IME.")
 
+(with-eval-after-load 'pyim
   ;; use western punctuation
   (setq pyim-punctuation-dict nil)
+
   (setq default-input-method "pyim")
 
-  ;; automatically load all "*.pyim" under "~/.eim/"
-  ;; `directory-files-recursively' requires Emacs 25
-  (let* ((files (and (file-exists-p my-pyim-directory)
-                     (directory-files-recursively my-pyim-directory "\.pyim$")))
-         disable-basedict)
-    (when (and files (> (length files) 0))
-      (setq pyim-dicts
-            (mapcar (lambda (f)
-                      (list :name (file-name-base f) :file f))
-                    files))
-      ;; disable basedict if bigdict or greatdict is used
-      (dolist (f files)
-        (when (or (string= "pyim-bigdict" (file-name-base f))
-                  (string= "pyim-greatdict" (file-name-base f)))
-          (setq disable-basedict t))))
-    (unless disable-basedict (pyim-basedict-enable)))
+  (cond
+   (my-pyim-enable-wubi-dict
+    ;; load wubi dictionary
+    (let* ((dir (file-name-directory
+                 (locate-library "pyim-wbdict.el")))
+           (file (concat dir "pyim-wbdict-v98.pyim")))
+      (when (and (file-exists-p file) (featurep 'pyim))
+        (setq pyim-dicts
+              (list (list :name "wbdict-v98-elpa" :file file :elpa t))))))
+   (t
+    (setq pyim-fuzzy-pinyin-alist
+          '(("en" "eng")
+            ("in" "ing")))
 
-  (setq pyim-fuzzy-pinyin-alist
-        '(("en" "eng")
-          ("in" "ing")))
+    ;;  pyim-bigdict is recommended (20M). There are many useless words in pyim-greatdict which also slows
+    ;;  down pyim performance
+    ;; `curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim`
 
-  ;;  pyim-bigdict is recommended (20M). There are many useless words in pyim-greatdict which also slows
-  ;;  down pyim performance
-  ;; `curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim`
+    ;; don's use shortcode2word
+    (setq pyim-enable-shortcode nil)
+
+    ;; use memory efficient pyim engine for pinyin ime
+    (setq pyim-dcache-backend 'pyim-dregcache)
+
+    ;; automatically load pinyin dictionaries "*.pyim" under "~/.eim/"
+    ;; `directory-files-recursively' requires Emacs 25
+    (let* ((files (and (file-exists-p my-pyim-directory)
+                       (directory-files-recursively my-pyim-directory "\.pyim$")))
+           disable-basedict)
+      (when (and files (> (length files) 0))
+        (setq pyim-dicts
+              (mapcar (lambda (f)
+                        (list :name (file-name-base f) :file f))
+                      files))
+        ;; disable basedict if bigdict or greatdict is used
+        (dolist (f files)
+          (when (or (string= "pyim-bigdict" (file-name-base f))
+                    (string= "pyim-greatdict" (file-name-base f)))
+            (setq disable-basedict t))))
+      (unless disable-basedict (pyim-basedict-enable)))))
 
   ;; don't use tooltip
   (setq pyim-use-tooltip 'popup))
