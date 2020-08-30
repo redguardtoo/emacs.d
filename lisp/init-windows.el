@@ -2,11 +2,22 @@
 
 ;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (winner-mode 1)
-;; copied from http://puntoblogspot.blogspot.com/2011/05/undo-layouts-in-emacs.html
-(global-set-key (kbd "C-x 4 u") 'winner-undo)
-(global-set-key (kbd "C-x 4 U") 'winner-redo)
+;; @see https://emacs-china.org/t/emacs-builtin-mode/11937/63
+;; press u undo and r to redo
+(defun my-transient-winner-undo ()
+  "Transient version of `winner-undo'."
+  (interactive)
+  (let ((echo-keystrokes nil))
+    (winner-undo)
+    (message "Winner: [u]ndo [r]edo [q]uit")
+    (set-transient-map
+     (let ((map (make-sparse-keymap)))
+       (define-key map [?u] #'winner-undo)
+       (define-key map [?r] #'winner-redo)
+       map)
+     t)))
+(global-set-key (kbd "C-x 4 u") 'my-transient-winner-undo)
 
-(my-ensure 'find-file-in-project)
 (global-set-key (kbd "C-x 2") 'split-window-vertically)
 (global-set-key (kbd "C-x 3") 'split-window-horizontally)
 

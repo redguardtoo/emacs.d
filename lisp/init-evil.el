@@ -625,8 +625,7 @@ If INCLUSIVE is t, the text object is inclusive."
   ;; }}
   "xr" 'rotate-windows
   "xt" 'toggle-two-split-window
-  "uu" 'winner-undo
-  "ur" 'winner-redo
+  "uu" 'my-transient-winner-undo
   "fs" 'ffip-save-ivy-last
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
