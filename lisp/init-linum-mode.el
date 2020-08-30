@@ -4,6 +4,7 @@
 (defvar my-linum-inhibit-modes
   '(eshell-mode
     shell-mode
+    js-comint-mode
     profiler-report-mode
     ffip-diff-mode
     dictionary-mode
