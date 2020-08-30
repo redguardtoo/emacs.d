@@ -63,6 +63,29 @@ EVENT is ignored."
 (add-hook 'term-exec-hook 'my-term-use-utf8)
 ;; }}
 
+;; {{ hack counsel-browser-history
+(defvar my-comint-full-input nil)
+(defun my-counsel-shell-history-hack (orig-func &rest args)
+  (setq my-comint-full-input (my-comint-current-input))
+  (my-comint-kill-current-input)
+  (apply orig-func args)
+  (setq my-comint-full-input nil))
+(advice-add 'counsel-shell-history :around #'my-counsel-shell-history-hack)
+(defun my-ivy-history-contents-hack (orig-func &rest args)
+  (let* ((rlt (apply orig-func args))
+         (input my-comint-full-input))
+    (when (and input (not (string= input "")))
+      ;; filter shell history with current input
+      (setq rlt
+            (delq nil (mapcar
+                       `(lambda (s)
+                          (if (string-match (regexp-quote ,input) s) s))
+                       rlt))))
+    (when (and rlt (> (length rlt) 0)))
+    rlt))
+(advice-add 'ivy-history-contents :around #'my-ivy-history-contents-hack)
+;; }}
+
 ;; {{ comint-mode
 (with-eval-after-load 'comint
   ;; Don't echo passwords when communicating with interactive programs:

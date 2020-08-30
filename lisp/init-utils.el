@@ -399,4 +399,20 @@ If STEP is 1,  search in forward direction, or else in backward direction."
         (forward-char step))
       (point))))
 
+(defun my-comint-current-input-region ()
+  "Region of current shell input."
+  (cons (process-mark (get-buffer-process (current-buffer)))
+        (line-end-position)))
+
+(defun my-comint-kill-current-input ()
+  "Kill current input in shell."
+  (interactive)
+  (let* ((region (my-comint-current-input-region)))
+    (kill-region (car region) (cdr region))))
+
+(defun my-comint-current-input ()
+  "Get current input in shell."
+  (let* ((region (my-comint-current-input-region)))
+    (string-trim (buffer-substring-no-properties (car region) (cdr region)))))
+
 (provide 'init-utils)
