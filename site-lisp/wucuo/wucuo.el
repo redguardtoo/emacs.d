@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.5
+;; Version: 0.2.6
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -83,6 +83,7 @@
 ;;; Code:
 (require 'flyspell)
 (require 'font-lock)
+(require 'cl-lib)
 
 (defgroup wucuo nil
   "Code spell checker."
@@ -197,12 +198,16 @@ Returns t to continue checking, nil otherwise.")
 ;; Timer to run auto-update tags file
 (defvar wucuo-timer nil "Internal timer.")
 
+(defmacro wucuo-get-font-face (position)
+  "Get font face at POSITION."
+  `(get-text-property ,position 'face))
+
 ;;;###autoload
 (defun wucuo-current-font-face (&optional quiet)
   "Get font face under cursor.
 If QUIET is t, font face is not output."
   (interactive)
-  (let* ((rlt (format "%S" (get-text-property (point) 'face))))
+  (let* ((rlt (format "%S" (wucuo-get-font-face (point)))))
     (kill-new rlt)
     (unless quiet (message rlt))))
 
@@ -316,16 +321,22 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
   `(unless (memq major-mode wucuo-modes-whose-predicate-ignored)
      (get major-mode 'flyspell-mode-predicate)))
 
-(defmacro wucuo--font-matched-p (font-face)
-  "Text with FONT-FACE should be checked."
-  `(or (memq ,font-face wucuo-font-faces-to-check)
-       (memq ,font-face wucuo-personal-font-faces-to-check)
-       (and (null ,font-face)
-            (or (eq t wucuo-check-nil-font-face)
-                (and (eq wucuo-check-nil-font-face 'text)
-                     (derived-mode-p 'text-mode))
-                (and (eq wucuo-check-nil-font-face 'prog)
-                     (derived-mode-p 'prog-mode))))))
+(defun wucuo--font-matched-p (font-faces)
+  "Verify if any of FONT-FACES should be spell checked."
+
+  ;; multiple font faces at one point
+  (when (and (not (listp font-faces))
+             (not (null font-faces)))
+    (setq font-faces (list font-faces)))
+
+  (or (cl-intersection font-faces wucuo-font-faces-to-check)
+      (cl-intersection font-faces wucuo-personal-font-faces-to-check)
+      (and (null font-faces)
+           (or (eq t wucuo-check-nil-font-face)
+               (and (eq wucuo-check-nil-font-face 'text)
+                    (derived-mode-p 'text-mode))
+               (and (eq wucuo-check-nil-font-face 'prog)
+                    (derived-mode-p 'prog-mode))))))
 
 ;;;###autoload
 (defun wucuo-generic-check-word-predicate ()
@@ -334,7 +345,7 @@ Returns t to continue checking, nil otherwise."
 
   (let* ((case-fold-search nil)
          (pos (- (point) 1))
-         (current-font-face (and (> pos 0) (get-text-property pos 'face)))
+         (current-font-face (and (> pos 0) (wucuo-get-font-face pos)))
          ;; "(flyspell-mode 1)" loads per major mode predicate anyway
          (mode-predicate (wucuo--get-mode-predicate))
          (font-matched (wucuo--font-matched-p current-font-face))
@@ -398,7 +409,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.5"))
+  (message "0.2.6"))
 
 ;;;###autoload
 (defun wucuo-spell-check-visible-region ()
@@ -418,6 +429,27 @@ Returns t to continue checking, nil otherwise."
   "Check if current buffer's windows is visible."
   (let* ((win (get-buffer-window (current-buffer))))
     (and win (window-live-p win))))
+
+(defun wucuo-spell-check-internal ()
+  "Spell check buffer or internal region."
+  ;; work around some old ispell issue on Emacs 27.1
+  (unless (boundp 'ispell-menu-map-needed)
+    (defvar ispell-menu-map-needed nil))
+
+  ;; hide "Spell Checking ..." message
+  (let* ((flyspell-issue-message-flag nil))
+    (cond
+     ;; check buffer
+     ((and (string= wucuo-flyspell-start-mode "normal")
+           (< (buffer-size) wucuo-spell-check-buffer-max))
+      (if wucuo-debug (message "flyspell-buffer called."))
+      ;; `font-lock-ensure' on whole buffer could be slow
+      (font-lock-ensure)
+      (flyspell-buffer))
+
+     ;; check visible region
+     ((string= wucuo-flyspell-start-mode "fast")
+      (wucuo-spell-check-visible-region)))))
 
 ;;;###autoload
 (defun wucuo-spell-check-buffer ()
@@ -446,18 +478,7 @@ Returns t to continue checking, nil otherwise."
                (or (null wucuo-spell-check-buffer-predicate)
                    (and (functionp wucuo-spell-check-buffer-predicate)
                         (funcall wucuo-spell-check-buffer-predicate))))
-      (cond
-       ;; check buffer
-       ((and (string= wucuo-flyspell-start-mode "normal")
-             (< (buffer-size) wucuo-spell-check-buffer-max))
-        (if wucuo-debug (message "flyspell-buffer called."))
-        ;; `font-lock-ensure' on whole buffer could be slow
-        (font-lock-ensure)
-        (flyspell-buffer))
-
-       ;; check visible region
-       ((string= wucuo-flyspell-start-mode "fast")
-        (wucuo-spell-check-visible-region)))))))
+      (wucuo-spell-check-internal)))))
 
 ;;;###autoload
 (defun wucuo-start (&optional arg)
@@ -481,19 +502,23 @@ Returns t to continue checking, nil otherwise."
    (t
     (wucuo-mode-off))))
 
+(defun wucuo-enhance-flyspell ()
+  "Enhance flyspell."
+  ;; To be honest, no other major mode can do better than this program
+  (setq flyspell-generic-check-word-predicate
+        #'wucuo-generic-check-word-predicate)
+
+  ;; work around issue when calling `flyspell-small-region'
+  ;; can't show the overlay of error but can't delete overlay
+  (setq flyspell-large-region 1))
+
 (defun wucuo-mode-on ()
   "Turn Wucuo mode on.  Do not use this; use `wucuo-mode' instead."
   (cond
    (flyspell-mode
     (message "Please turn off `flyspell-mode' and `flyspell-prog-mode' before wucuo starts!"))
    (t
-    ;; To be honest, no other major mode can do better than this program
-    (setq flyspell-generic-check-word-predicate
-          #'wucuo-generic-check-word-predicate)
-
-    ;; work around issue when calling `flyspell-small-region'
-    ;; can't show the overlay of error but can't delete overlay
-    (setq flyspell-large-region 1)
+    (wucuo-enhance-flyspell)
     (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
 
 (defun wucuo-mode-off ()
