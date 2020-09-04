@@ -247,7 +247,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
-  "$" 'org-end-of-line ; smarter behaviour on headlines etc.
+  "$" 'org-end-of-line ; smarter behavior on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
   ">" 'org-demote-or-promote ; indent
@@ -374,7 +374,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun my-evil-set-marker-hack (char &optional pos advance)
   "Place evil marker's position into history."
   (unless pos (setq pos (point)))
-  ;; only rememeber global markers
+  ;; only remember global markers
   (when (and (>= char ?A) (<= char ?Z) buffer-file-name)
     (setq evil-global-markers-history
           (delq nil
@@ -630,7 +630,11 @@ If INCLUSIVE is t, the text object is inclusive."
   "fr" 'ffip-ivy-resume
   "fc" 'cp-ffip-ivy-last
   "ss" 'my-swiper
-  "fb" 'flyspell-buffer
+  "fb" '(lambda ()
+          (interactive)
+          (my-ensure 'wucuo)
+          (let* ((wucuo-flyspell-start-mode "normal"))
+            (wucuo-spell-check-internal)))
   "fe" 'flyspell-goto-next-error
   "fa" 'flyspell-auto-correct-word
   "lb" 'langtool-check-buffer
@@ -957,7 +961,7 @@ If INCLUSIVE is t, the text object is inclusive."
   (setq evil-kill-on-visual-paste nil)
 
   ;; @see https://emacs.stackexchange.com/questions/9583/how-to-treat-underscore-as-part-of-the-word
-  ;; uncomment below line to make "dw" has exact same behaviour in evil as as in vim
+  ;; uncomment below line to make "dw" has exact same behavior in evil as as in vim
   ;; (defalias #'forward-evil-word #'forward-evil-symbol)
 
   ;; @see https://bitbucket.org/lyro/evil/issue/511/let-certain-minor-modes-key-bindings

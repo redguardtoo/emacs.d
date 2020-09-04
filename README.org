@@ -270,7 +270,7 @@ ACT
 ** Methodology
    See [[https://github.com/redguardtoo/mastering-emacs-in-one-year-guide][Master Emacs in One Year]].
 * Usage
-  Original configuration from Emacs or third party packages are respected.
+Original configuration from Emacs or third party packages are respected.
 
 ** Quick start
    On Windows, you need install Cygwin which provides command line programs to Emacs. Cygwin could be installed on any hard drive but it's highly recommended don't change it relative path to the root driver.
@@ -331,11 +331,11 @@ ACT
    Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
 ** Spell check camel case code
-   This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode=. I strongly recommend you reading the section [[aspell or hunspell]] at least once.
+   This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode=. I strongly recommend you reading the section "aspell or hunspell" at least once.
 
    Wucuo is fast, reliable, and powerful. It's better than any spell checking solutions of other text and IDE (VSCode, Sublime Text 3, IntelliJ IDEA ...).
 
-   Please don't disabled it simply because it's a new package.
+   Please don't disable it simply because it's a new package.
 ** Locked packages
    Some packages are so important to my workflow that they are locked.
 
