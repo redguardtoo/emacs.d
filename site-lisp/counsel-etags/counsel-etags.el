@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin dot sh AT gmail dot com>
 ;; URL: http://github.com/redguardtoo/counsel-etags
-;; Package-Requires: ((counsel "0.13.0"))
+;; Package-Requires: ((emacs "25.1") (counsel "0.13.0"))
 ;; Keywords: tools, convenience
 ;; Version: 1.9.14
 
@@ -711,7 +711,6 @@ If it's Emacs etags return nil."
 (defun counsel-etags-ctags-options-file-cli (program)
   "Use PROGRAM to create cli for `counsel-etags-ctags-options-file'."
   (let* (str
-         langs
          (exuberant-ctags-p (counsel-etags-is-exuberant-ctags program)))
     (cond
      ;; Don't use any configuration file at all
@@ -893,7 +892,6 @@ HASH store the previous distance."
              (d (make-vector (* (1+ length-str1) (1+ length-str2)) 0))
              ;; d is a table with lenStr2+1 rows and lenStr1+1 columns
              (row-width (1+ length-str1))
-             (rlt 0)
              (i 0)
              (j 0))
         ;; i and j are used to iterate over str1 and str2
@@ -1534,6 +1532,10 @@ The tags updating might not happen."
                    (file-name-directory buffer-file-name)))
          (tags-file (and counsel-etags-tags-file-history
                          (car counsel-etags-tags-file-history))))
+
+    (when counsel-etags-debug
+      (message "counsel-etags-virtual-update-tags called. dir=%s tags-file=%s" dir tags-file))
+
     (when (and dir
                tags-file
                (string-match-p (file-name-directory (file-truename tags-file))
@@ -1550,8 +1552,8 @@ The tags updating might not happen."
 
        (t
         (setq counsel-etags-timer (current-time))
-        (let* ((tags-file (counsel-etags-locate-tags-file))
-               (dir (file-name-directory (file-truename tags-file))))
+        (let* ((dir (file-name-directory (file-truename (counsel-etags-locate-tags-file)))))
+          (if counsel-etags-debug (message "update tags in %s" dir))
           (funcall counsel-etags-update-tags-backend dir)))))))
 
 (defun counsel-etags-unquote-regex-parens (str)
