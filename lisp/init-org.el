@@ -71,6 +71,9 @@
     ;; @see https://github.com/snosov1/toc-org
     (toc-org-enable)
 
+    ;; default `org-indent-line' inserts extra spaces at the beginning of lines
+    (setq-local indent-line-function 'indent-relative)
+
     ;; display wrapped lines instead of truncated lines
     (setq truncate-lines nil)
     (setq word-wrap t)))
