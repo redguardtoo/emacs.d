@@ -1051,11 +1051,15 @@ CONTEXT is extra information collected before find tag definition."
          cands
          file-size
          file-content)
+    (when counsel-etags-debug
+      (message "counsel-etags-extract-cands called. tags-file=%s cached-file-size=%s tags-file-size=%s"
+               tags-file
+               (counsel-etags-cache-filesize tags-file)
+               (nth 7 (file-attributes tags-file))))
     ;; ONLY when the checksum (file size) is different from the physical file size,
     ;; update cache by reading from physical file.
     ;; Not precise but acceptable algorithm.
-    (when (and tags-file
-               (file-exists-p tags-file)
+    (when (and tags-file (file-exists-p tags-file)
                ;; TAGS file is smaller when being created.
                ;; Do NOT load incomplete tags file
                (< (counsel-etags-cache-filesize tags-file)
@@ -1071,7 +1075,7 @@ CONTEXT is extra information collected before find tag definition."
 
     ;; Get better performance by scan from beginning to end.
     (when counsel-etags-debug
-      (message "tags-file=%s tagname=%s" tags-file tagname))
+      (message "counsel-etags-extract-cands called. tags-file=%s tagname=%s" tags-file tagname))
 
     (when (and tags-file
                (setq file-content (counsel-etags-cache-content tags-file)))
@@ -1101,11 +1105,15 @@ CONTEXT is extra information collected before find tag definition."
                                                             fuzzy
                                                             context))))
 
+    (when counsel-etags-debug
+      (message "counsel-etags-collect-cands called. tags-file=%s cands=%s" tags-file cands))
     ;; current-file is used to calculated string distance.
     (setq rlt (mapcar 'car (counsel-etags-sort-candidates-maybe cands 3 nil current-file)))
     (when counsel-etags-extra-tags-files
       ;; don't sort candidate from 3rd party libraries
       (dolist (file (ff-list-replace-env-vars counsel-etags-extra-tags-files))
+        (when counsel-etags-debug
+          (message "load %s in %s" file counsel-etags-extra-tags-files))
         (when (setq cands (counsel-etags-extract-cands file
                                                        tagname
                                                        fuzzy
