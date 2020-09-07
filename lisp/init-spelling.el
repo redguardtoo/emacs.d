@@ -1,10 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; avoid spell-checking doublon (double word) in certain major modes
-(defvar my-flyspell-check-doublon t
-  "Check doublon (double word) when calling `flyspell-highlight-incorrect-region'.")
- (make-variable-buffer-local 'my-flyspell-check-doublon)
-
 (defvar my-default-spell-check-language "en_US"
   "Language used by aspell and hunspell CLI.")
 
@@ -46,18 +41,9 @@
   ;; }}
 
   ;; better performance
-  (setq flyspell-issue-message-flag nil)
+  (setq flyspell-issue-message-flag nil))
 
   ;; flyspell-lazy is outdated and conflicts with latest flyspell
-
-  (defun my-flyspell-highlight-incorrect-region-hack (orig-func &rest args)
-    "Don't mark doublon (double words) as typo."
-    (let* ((beg (nth 0 args))
-           (end (nth 1 args))
-           (poss (nth 2 args)))
-      (when (or my-flyspell-check-doublon (not (eq 'doublon poss)))
-        (apply orig-func args))))
-  (advice-add 'flyspell-highlight-incorrect-region :around #'my-flyspell-highlight-incorrect-region-hack))
 
 ;; Basic Logic Summary:
 ;; If (aspell is installed) { use aspell}

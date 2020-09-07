@@ -65,7 +65,7 @@
     (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
 
     ;; don't spell check double words
-    (setq my-flyspell-check-doublon nil)
+    (setq-local wucuo-flyspell-check-doublon nil)
 
     ;; create updated table of contents of org file
     ;; @see https://github.com/snosov1/toc-org

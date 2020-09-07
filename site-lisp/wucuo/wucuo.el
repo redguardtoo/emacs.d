@@ -102,6 +102,11 @@
   :type 'boolean
   :group 'wucuo)
 
+(defcustom wucuo-flyspell-check-doublon t
+  "Mark doublon (double words) as typo."
+  :type 'boolean
+  :group 'wucuo)
+
 (defcustom wucuo-flyspell-start-mode "fast"
   "If it's \"normal\", run `flyspell-buffer' in `after-save-hook'.
 If it's \"fast\", run `flyspell-region' in `after-save-hook' to check visible
@@ -537,6 +542,16 @@ If RUN-TOGETHER is t, aspell can check camel cased word."
        (t
         (setq args (append args '("--run-together" "--run-together-limit=16"))))))
     args))
+
+(with-eval-after-load 'flyspell
+  (defun wucuo-flyspell-highlight-incorrect-region-hack (orig-func &rest args)
+    "Don't mark doublon (double words) as typo.  ORIG-FUNC and ARGS is part of advice."
+    (let* ((beg (nth 0 args))
+           (end (nth 1 args))
+           (poss (nth 2 args)))
+      (when (or wucuo-flyspell-check-doublon (not (eq 'doublon poss)))
+        (apply orig-func args))))
+  (advice-add 'flyspell-highlight-incorrect-region :around #'wucuo-flyspell-highlight-incorrect-region-hack))
 
 ;;;###autoload
 (defun wucuo-spell-check-file (file &optional kill-emacs-p full-path)

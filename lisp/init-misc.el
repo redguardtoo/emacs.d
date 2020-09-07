@@ -170,7 +170,7 @@ This function can be re-used by other major modes after compilation."
 
     ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
     ;; don't spell check double words
-    (setq my-flyspell-check-doublon nil)
+    (setq-local wucuo-flyspell-check-doublon nil)
     ;; enable for all programming modes
     ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
     (unless (derived-mode-p 'js2-mode)
