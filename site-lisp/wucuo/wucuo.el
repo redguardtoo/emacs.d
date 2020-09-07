@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2018-2020 Chen Bin
 ;;
-;; Version: 0.2.6
+;; Version: 0.2.7
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -87,6 +87,7 @@
 (require 'flyspell)
 (require 'font-lock)
 (require 'cl-lib)
+(require 'wucuo-sdk)
 
 (defgroup wucuo nil
   "Code spell checker."
@@ -104,6 +105,17 @@
 
 (defcustom wucuo-flyspell-check-doublon t
   "Mark doublon (double words) as typo."
+  :type 'boolean
+  :group 'wucuo)
+
+(defcustom wucuo-enable-camel-case-algorithm-p t
+  "Enable slow algorithm for camel case word.
+If command line program has native support for camel case words, you could turn off the algorithm."
+  :type 'boolean
+  :group 'wucuo)
+
+(defcustom wucuo-enable-extra-typo-detection-algorithm-p t
+  "Enable extra smart typo detection algorithm."
   :type 'boolean
   :group 'wucuo)
 
@@ -203,19 +215,26 @@ Returns t to continue checking, nil otherwise.")
   :type 'function
   :group 'wucuo)
 
+(defvar wucuo-extra-typo-detection-algorithms
+  '(wucuo-flyspell-html-verify
+    wucuo-flyspell-org-verify)
+  "Extra Algorithms to test typos.")
+
 ;; Timer to run auto-update tags file
 (defvar wucuo-timer nil "Internal timer.")
 
-(defmacro wucuo-get-font-face (position)
-  "Get font face at POSITION."
-  `(get-text-property ,position 'face))
+(defun wucuo-register-extra-typo-detection-algorithms ()
+  "Register extra typo detection algorithms."
+  (autoload 'markdown-flyspell-check-word-p "markdown-mode" nil)
+  (dolist (a wucuo-extra-typo-detection-algorithms)
+    (autoload a (symbol-name a) nil)))
 
 ;;;###autoload
 (defun wucuo-current-font-face (&optional quiet)
   "Get font face under cursor.
 If QUIET is t, font face is not output."
   (interactive)
-  (let* ((rlt (format "%S" (wucuo-get-font-face (point)))))
+  (let* ((rlt (format "%S" (wucuo-sdk-get-font-face (point)))))
     (kill-new rlt)
     (unless quiet (message rlt))))
 
@@ -346,6 +365,12 @@ Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
                (and (eq wucuo-check-nil-font-face 'prog)
                     (derived-mode-p 'prog-mode))))))
 
+(defun wucuo-major-mode-html-p ()
+  "Major mode is handling html like file."
+  ;; no one uses html-mode now
+  (or (derived-mode-p 'nxml-mode)
+      (eq major-mode 'web-mode)))
+
 ;;;###autoload
 (defun wucuo-generic-check-word-predicate ()
   "Function providing per-mode customization over which words are spell checked.
@@ -353,7 +378,7 @@ Returns t to continue checking, nil otherwise."
 
   (let* ((case-fold-search nil)
          (pos (- (point) 1))
-         (current-font-face (and (> pos 0) (wucuo-get-font-face pos)))
+         (current-font-face (and (> pos 0) (wucuo-sdk-get-font-face pos)))
          ;; "(flyspell-mode 1)" loads per major mode predicate anyway
          (mode-predicate (wucuo--get-mode-predicate))
          (font-matched (wucuo--font-matched-p current-font-face))
@@ -375,17 +400,26 @@ Returns t to continue checking, nil otherwise."
       ;; run major mode predicate
       (setq rlt nil))
 
+     ;; should be right after per mode predicate
+     ((and wucuo-enable-extra-typo-detection-algorithm-p
+           (or (and (wucuo-major-mode-html-p) (not (wucuo-flyspell-html-verify)))
+               (and (eq major-mode 'org-mode) (not (wucuo-flyspell-org-verify)))
+               (and (eq major-mode 'markdown-mode) (not (markdown-flyspell-check-word-p)))))
+      (setq rlt nil))
+
      ;; only check word with certain fonts
      ((and (not mode-predicate) (not font-matched))
-      ;; major mode's predicate might want to manage font face check self
+      ;; major mode's predicate might want to manage font face check by itself
       (setq rlt nil))
 
      ;; handle camel case word
-     ((and (setq subwords (wucuo-split-camel-case word)) (> (length subwords) 1))
+     ((and wucuo-enable-camel-case-algorithm-p
+           (setq subwords (wucuo-split-camel-case word))
+           (> (length subwords) 1))
       (let* ((s (mapconcat #'wucuo-handle-sub-word subwords " ")))
         (setq rlt (wucuo-check-camel-case-word-predicate s))))
 
-     ;; `wucuo-extra-predicate' actually do nothing by default
+     ;; `wucuo-extra-predicate' actually does nothing by default
      (t
       (setq rlt (funcall wucuo-extra-predicate word))))
 
@@ -417,7 +451,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.6"))
+  (message "0.2.7"))
 
 ;;;###autoload
 (defun wucuo-spell-check-visible-region ()
@@ -546,9 +580,7 @@ If RUN-TOGETHER is t, aspell can check camel cased word."
 (with-eval-after-load 'flyspell
   (defun wucuo-flyspell-highlight-incorrect-region-hack (orig-func &rest args)
     "Don't mark doublon (double words) as typo.  ORIG-FUNC and ARGS is part of advice."
-    (let* ((beg (nth 0 args))
-           (end (nth 1 args))
-           (poss (nth 2 args)))
+    (let* ((poss (nth 2 args)))
       (when (or wucuo-flyspell-check-doublon (not (eq 'doublon poss)))
         (apply orig-func args))))
   (advice-add 'flyspell-highlight-incorrect-region :around #'wucuo-flyspell-highlight-incorrect-region-hack))
@@ -622,6 +654,8 @@ key bindings are valid."
              (wucuo-mode -1))))
    (t
     (wucuo-mode-off))))
+
+(wucuo-register-extra-typo-detection-algorithms)
 
 (provide 'wucuo)
 ;;; wucuo.el ends here

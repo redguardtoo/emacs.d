@@ -140,41 +140,6 @@ It's value could be customized liked \"/usr/bin/firefox\".
       (apply orig-func args)))
   (advice-add 'org-publish :around #'my-org-publish-hack)
 
-  ;; {{ NO spell check for embedded snippets
-  (defun my-org-mode-code-snippet-p ()
-    "Code snippet embedded in org file?"
-    (let* (rlt
-           (begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\)")
-           (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\)")
-           (case-fold-search t)
-           b e)
-      (save-excursion
-        (if (setq b (re-search-backward begin-regexp nil t))
-            (setq e (re-search-forward end-regexp nil t))))
-      (if (and b e (< (point) e)) (setq rlt t))
-      rlt))
-
-  (defun my-org-mode-flyspell-verify-hack (orig-func &rest args)
-    "flyspell only uses `ispell-word'."
-    (let* ((run-spellcheck (apply orig-func args)))
-      (when run-spellcheck
-        (cond
-         ;; skip checking in below fonts
-         ((font-belongs-to (point) '(org-verbatim org-code))
-          (setq run-spellcheck nil))
-
-         ;; skip checking property lines
-         ((string-match "^[ \t]+:[A-Z]+:[ \t]+" (my-line-str))
-          (setq run-spellcheck nil))
-
-         ;; skipping checking in code snippet
-         ;; slow test should be placed at last
-         ((my-org-mode-code-snippet-p)
-          (setq run-spellcheck nil))))
-      run-spellcheck))
-  (advice-add 'org-mode-flyspell-verify :around #'my-org-mode-flyspell-verify-hack)
-  ;; }}
-
   ;; {{ convert to odt
   (defun my-setup-odt-org-convert-process ()
     (interactive)

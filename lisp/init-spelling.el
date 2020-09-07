@@ -4,42 +4,6 @@
   "Language used by aspell and hunspell CLI.")
 
 (with-eval-after-load 'flyspell
-  ;; {{ flyspell setup for web-mode
-  (defun my-web-mode-flyspell-verify ()
-    (let* ((f (get-text-property (- (point) 1) 'face))
-           rlt)
-      (cond
-       ;; Check the words whose font face is NOT in below *blacklist*
-       ((not (memq f '(web-mode-html-attr-value-face
-                       web-mode-html-tag-face
-                       web-mode-html-attr-name-face
-                       web-mode-constant-face
-                       web-mode-doctype-face
-                       web-mode-keyword-face
-                       web-mode-comment-face ;; focus on get html label right
-                       web-mode-function-name-face
-                       web-mode-variable-name-face
-                       web-mode-css-property-name-face
-                       web-mode-css-selector-face
-                       web-mode-css-color-face
-                       web-mode-type-face
-                       web-mode-block-control-face)))
-        (setq rlt t))
-       ;; check attribute value under certain conditions
-       ((memq f '(web-mode-html-attr-value-face))
-        (save-excursion
-          (search-backward-regexp "=['\"]" (line-beginning-position) t)
-          (backward-char)
-          (setq rlt (string-match "^\\(value\\|class\\|ng[A-Za-z0-9-]*\\)$"
-                                  (or (thing-at-point 'symbol) "")))))
-       ;; finalize the blacklist
-       (t
-        (setq rlt nil)))
-      ;; If rlt is t, it's a typo. If nil, not a typo.
-      rlt))
-  (put 'web-mode 'flyspell-mode-predicate 'my-web-mode-flyspell-verify)
-  ;; }}
-
   ;; better performance
   (setq flyspell-issue-message-flag nil))
 
