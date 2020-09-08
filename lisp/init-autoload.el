@@ -9,7 +9,6 @@
 (autoload 'dianyou-insert-email-address-from-received-mails "dianyou" "" t)
 (autoload 'dianyou-paste-image-from-clipboard "dianyou" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
-(autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'mybigword-show-big-words-from-file "mybigword" "" t)
 (autoload 'mybigword-show-big-words-from-current-buffer "mybigword" "" t)
 (autoload 'mybigword-play-video-of-word-at-point "mybigword" "" t)
