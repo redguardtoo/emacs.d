@@ -14,7 +14,7 @@
 
 (defun lazyflymake-lua-err-line-pattern ()
   "Return error line pattern.
-If return a list containing the pattern, `flymake-err-line-patterns' use the
+If return a list containing the pattern, `flymake-err-line-patterns' uses the
 list and is also converted into a buffer local variable.
 If return the pattern, it's is pushed to `flymake-err-line-patterns'.
 If return nil, nothing need be done."

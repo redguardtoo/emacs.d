@@ -42,40 +42,31 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'flymake)
 (require 'lazyflymake-sdk)
-
-(defcustom lazyflymake-update-interval 2
-  "Interval (seconds) for `lazyflymake-check-buffer'."
-  :group 'lazyflymake
-  :type 'integer)
 
 (defcustom lazyflymake-shell-script-modes '(sh-mode)
   "Major modes for shell script."
   :group 'lazyflymake
   :type '(repeat 'sexp))
 
-(defcustom lazyflymake-check-buffer-max (* 128 1024 1024)
-  "Max size of buffer to run `lazyflymake-check-buffer'."
-  :type 'integer
-  :group 'lazyflymake)
+(defvar flymake-err-line-patterns)
+(defvar flymake-allowed-file-name-masks)
 
-;; Timer to run auto-update tags file
-(defvar lazyflymake-timer nil "Internal timer.")
-
-(defvar lazyflymake-start-check-now nil
-  "If it's t, `lazyflymake-start' starts buffer syntax check immediately.
-This variable is for debug and unit test only.")
-
+;;;###autoload
 (defun lazyflymake-new-flymake-p ()
   "Test the flymake version."
   (fboundp 'flymake-start))
 
-(defun lazyflymake-load(file-name-regexp mask)
-  "Load flymake MASK for files matching FILE-NAME-REGEXP."
+;;;###autoload
+(defun lazyflymake-load(file-name-regexp mask &optional force)
+  "Load flymake MASK for files matching FILE-NAME-REGEXP.
+If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is replaced."
   (let* ((lib (intern (concat "lazyflymake-" (symbol-name mask))))
          (prefix (concat "lazyflymake-" (symbol-name mask)))
          (init-fn (intern (format "%s-%s" prefix "init")))
-         (pattern-fn (intern (format "%s-%s" prefix "err-line-pattern"))))
+         (pattern-fn (intern (format "%s-%s" prefix "err-line-pattern")))
+         filtered-masks)
 
     (when lazyflymake-debug
       (message "lazyflymake-load: mask=%s regexp=%s code-file=%s"
@@ -87,9 +78,22 @@ This variable is for debug and unit test only.")
     (when (and buffer-file-name
                (string-match file-name-regexp buffer-file-name)
                ;; respect existing set up in `flymake-allowed-file-name-masks'
-               (not (cl-find-if `(lambda (e) (string= (car e) ,file-name-regexp))
-                                flymake-allowed-file-name-masks)))
-      (unless (featurep lib) (require lib))
+               (or (eq (length (setq filtered-masks (cl-remove-if
+                                                `(lambda (e)
+                                                   (string= (car e) ,file-name-regexp))
+                                                flymake-allowed-file-name-masks)))
+                       (length flymake-allowed-file-name-masks))
+                   force))
+
+      ;; delete existing set up first
+      (when (and filtered-masks force)
+        (setq flymake-allowed-file-name-masks filtered-masks))
+
+      ;; library is loaded or functions inside the library are defined
+      (unless (or (and (fboundp 'init-fn) (fboundp 'pattern-fn))
+                  (featurep lib))
+        (require lib))
+
       (let* ((pattern (funcall pattern-fn)))
         (if lazyflymake-debug (message "pattern=%s" pattern))
         (when pattern
@@ -99,34 +103,6 @@ This variable is for debug and unit test only.")
            ((listp pattern)
             (setq-local flymake-err-line-patterns pattern)))))
       (push (list file-name-regexp init-fn) flymake-allowed-file-name-masks))))
-
-(defun lazyflymake-start-buffer-checking-process ()
-  "Check current buffer right now."
-  (cond
-   ((lazyflymake-new-flymake-p)
-    (flymake-start nil t))
-   (t
-    (flymake-start-syntax-check))))
-
-(defun lazyflymake-check-buffer ()
-  "Spell check current buffer."
-  (if lazyflymake-debug (message "lazyflymake-check-buffer called."))
-  (cond
-   ((not lazyflymake-timer)
-    ;; start timer if not started yet
-    (setq lazyflymake-timer (current-time)))
-
-   ((< (- (float-time (current-time)) (float-time lazyflymake-timer))
-       lazyflymake-update-interval)
-    ;; do nothing, avoid `flyspell-buffer' too often
-    (if lazyflymake-debug "Flymake syntax check skipped."))
-
-   (t
-    ;; check
-    (setq lazyflymake-timer (current-time))
-    (when (and (< (buffer-size) lazyflymake-check-buffer-max))
-      (lazyflymake-start-buffer-checking-process)
-      (if lazyflymake-debug (message "Flymake syntax checking ..."))))))
 
 (defun lazyflymake-guess-shell-script-regexp ()
   "Guess shell script file name regex."
@@ -138,7 +114,7 @@ This variable is for debug and unit test only.")
       (format "\\%s$" (file-name-base buffer-file-name))))))
 
 (defun lazyflymake--extract-err (output idx)
-  "Extract error informationfrom OUTPUT using IDX."
+  "Extract error information from OUTPUT using IDX."
   (cond
    (idx
     (match-string idx output))
@@ -163,7 +139,7 @@ This variable is for debug and unit test only.")
 
 ;;;###autoload
 (defun lazyflymake-test-err-line-pattern ()
-  "Test one line of command line progam output by `flymake-err-line-patterns'."
+  "Test one line of command line program output by `flymake-err-line-patterns'."
   (interactive)
   (let* ((output (read-string "One line of CLI output: "))
          (i 0)
@@ -211,26 +187,16 @@ This variable is for debug and unit test only.")
 
   (if lazyflymake-debug (message "flymake-allowed-file-name-masks=%s" flymake-allowed-file-name-masks))
 
-  ;; initialize some internal variables of `flymake-mode'
-  (flymake-mode-on)
-  (flymake-mode-off)
+  ;; js-mode has its own linter
+  (unless (derived-mode-p 'js2-mode)
+    (lazyflymake-load "\\.[jt]s$" 'eslint))
 
-  (cond
-   ;; for debug, unit test, and CI
-   (lazyflymake-start-check-now
-    (lazyflymake-start-buffer-checking-process)
-    (if lazyflymake-debug (message "Flymake syntax checking now ...")))
-
-   (t
-    ;; local hook will override global hook. So have to use local hook
-    ;; here.
-    (add-hook 'after-save-hook #'lazyflymake-check-buffer nil t))))
+  (unless flymake-mode (flymake-mode 1)))
 
 ;;;###autoload
 (defun lazyflymake-stop ()
   "Turn on lazyflymake to syntax check code."
   (interactive)
-  (remove-hook 'after-save-hook #'lazyflymake-check-buffer t)
 
   (unless (lazyflymake-new-flymake-p)
     (advice-remove 'flymake-goto-next-error #'lazyflymake-echo-error)
