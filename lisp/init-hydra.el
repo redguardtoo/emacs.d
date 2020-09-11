@@ -276,7 +276,7 @@
 [_cc_] Last command         [_ff_] Find         [_dd_] directory
 [_sa_] Fetch all subtitles  [_C_]  Copy
 [_s1_] Fetch on subtitle    [_rb_] Change base
-[_vv_] Video => Mp3         [_dd_] Diff 2 files
+[_vv_] Video => Mp3         [_df_] Diff 2 files
 [_aa_] Recording Wav
 [_ee_] Mkv => Srt
 [_+_] Create directory
