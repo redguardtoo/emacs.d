@@ -98,6 +98,7 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
     ;; If it's nil, Emacs tries to automatically set up the dictionaries.
     (when (boundp 'ispell-hunspell-dictionary-alist)
       (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)))
+
    (t (setq ispell-program-name nil)
       (message "You need install either aspell or hunspell for ispell"))))
 
