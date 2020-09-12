@@ -46,7 +46,8 @@
 ;;
 ;; 3. Tips
 ;;
-;; - `wucuo-spell-check-file' will spell check one file and report its typos
+;; - `wucuo-spell-check-file' spell check one file and report typos
+;; - `wucuo-spell-check-directory' spell check files in one directory and report typos
 ;;
 ;; - If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
 ;;   If it's "normal", `wucuo-start' runs `flyspell-region' to check visible region
@@ -87,6 +88,7 @@
 (require 'flyspell)
 (require 'font-lock)
 (require 'cl-lib)
+(require 'find-lisp)
 (require 'wucuo-sdk)
 
 (defgroup wucuo nil
@@ -198,6 +200,39 @@ If major mode's own predicate is not nil, the font face check is skipped."
 (defcustom wucuo-spell-check-region-max (* 1000 80)
   "Max size of region to run `flyspell-region'."
   :type 'integer
+  :group 'wucuo)
+
+(defcustom wucuo-find-file-regexp ".*"
+  "The file found in `wucuo-spell-check-directory' matches this regex."
+  :type 'string
+  :group 'wucuo)
+
+(defcustom wucuo-exclude-file-regexp
+  "^.*\\.\\(o\\|a\\|lib\\|elc\\|pyc\\|mp[34]\\|mkv\\|avi\\|mpeg\\|docx?\\|xlsx?\\|pdf\\|png\\|jpe?g\\|gif\\|tiff\\|session\\|yas-compiled-snippets.el\\)\\|TAGS\\|tags$"
+  "The file found in `wucuo-spell-check-directory' does not match this regex."
+  :type 'string
+  :group 'wucuo)
+
+(defcustom wucuo-exclude-directories
+  '(
+    ".cache"
+    ".cask"
+    ".cvs"
+    ".git"
+    ".gradle"
+    ".npm"
+    ".sass-cache"
+    ".svn"
+    ".tox"
+    "bower_components"
+    "build"
+    "dist"
+    "elpa"
+    "node_modules"
+    )
+  "The directories skipped by `wucuo-spell-check-directory'.
+Please note the directory name should not contain any slash character."
+  :type '(repeat string)
   :group 'wucuo)
 
 (defvar wucuo-spell-check-buffer-predicate nil
@@ -405,6 +440,7 @@ Returns t to continue checking, nil otherwise."
            (or (and (wucuo-major-mode-html-p) (not (wucuo-flyspell-html-verify)))
                (and (eq major-mode 'org-mode) (not (wucuo-flyspell-org-verify)))
                (and (eq major-mode 'markdown-mode) (not (markdown-flyspell-check-word-p)))))
+
       (setq rlt nil))
 
      ;; only check word with certain fonts
@@ -460,7 +496,7 @@ Returns t to continue checking, nil otherwise."
   (let* ((beg (window-start))
          (end (window-end)))
     (when (< (- end beg) wucuo-spell-check-region-max)
-      (if wucuo-debug (message "wucuo-spell-check-visible-region called from %s to %s" beg end))
+      (if wucuo-debug (message "wucuo-spell-check-visible-region called from %s to %s; major-mode=%s" beg end major-mode))
       ;; See https://emacs-china.org/t/flyspell-mode-wucuo-0-2-0/13274/46
       ;; where the performance issue is reported.
       ;; Tested in https://github.com/emacs-mirror/emacs/blob/master/src/xdisp.c
@@ -585,28 +621,99 @@ If RUN-TOGETHER is t, aspell can check camel cased word."
         (apply orig-func args))))
   (advice-add 'flyspell-highlight-incorrect-region :around #'wucuo-flyspell-highlight-incorrect-region-hack))
 
+(defun wucuo-goto-next-error ()
+  "Go to next error silently."
+  (let ((pos (point))
+        (max (point-max)))
+    (when (and (eq (current-buffer) flyspell-old-buffer-error)
+               (eq pos flyspell-old-pos-error))
+      (if (= flyspell-old-pos-error max) (goto-char (point-min))
+        (forward-word 1))
+      (setq pos (point)))
+    ;; seek the next error
+    (while (and (< pos max)
+                (let ((ovs (overlays-at pos))
+                      (r '()))
+                  (while (and (not r) (consp ovs))
+                    (if (flyspell-overlay-p (car ovs))
+                        (setq r t)
+                      (setq ovs (cdr ovs))))
+                  (not r)))
+      (setq pos (1+ pos)))
+    ;; save the current location for next invocation
+    (setq flyspell-old-pos-error pos)
+    (setq flyspell-old-buffer-error (current-buffer))
+    (goto-char pos)))
+
 ;;;###autoload
-(defun wucuo-spell-check-file (file &optional kill-emacs-p full-path)
+(defun wucuo-spell-check-file (file &optional kill-emacs-p full-path-p)
   "Spell check FILE and report all typos.
 If KILL-EMACS-P is t, kill the Emacs and set exit program code.
-If FULL-PATH is t, always show typo's file full path."
-  (wucuo-enhance-flyspell)
+If FULL-PATH-P is t, always show typo's file full path.
+Return t if there is typo."
   (find-file file)
+  ;; should set `flyspell-generic-check-word-predicate' after major mode is loaded
+  (wucuo-enhance-flyspell)
+
   (font-lock-ensure)
   (let* ((wucuo-flyspell-start-mode "normal")
          typo-p)
     (wucuo-spell-check-internal)
     ;; report all errors
     (goto-char (point-min))
-    (flyspell-goto-next-error)
+    (wucuo-goto-next-error)
     (while (< (point) (1- (point-max)))
       (setq typo-p t)
       (message "%s:%s: typo '%s' at %s is found"
-               (if full-path (file-truename file) file)
+               (if full-path-p (file-truename file) file)
                (count-lines (point-min) (point))
                (thing-at-point 'word)
                (point))
-      (flyspell-goto-next-error))
+      (wucuo-goto-next-error))
+    (when (and typo-p kill-emacs-p)
+      (kill-emacs 1))
+    typo-p))
+
+(defun wucuo-find-file-predicate  (file dir)
+  "True if FILE matches `wucuo-find-file-regexp'.
+And FILE does not match `wucuo-exclude-file-regexp'.
+DIR is the directory containing FILE."
+  (and (not (file-directory-p (expand-file-name file dir)))
+       (not (and wucuo-exclude-file-regexp
+                 (string-match wucuo-exclude-file-regexp file)))
+       (string-match wucuo-find-file-regexp file)))
+
+(defun wucuo-find-directory-predicate  (dir parent)
+  "True if DIR is not a dot file, and not a symlink.
+And DIR does not match `wucuo-exclude-directories'.
+PARENT is the parent directory of DIR."
+  ;; Skip current and parent directories
+  (not (or (string= dir ".")
+           (string= dir "..")
+           (member dir wucuo-exclude-directories)
+           ;; Skip directories which are symlinks
+           ;; Easy way to circumvent recursive loops
+           (file-symlink-p (expand-file-name dir parent)))))
+
+;;;###autoload
+(defun wucuo-spell-check-directory (directory &optional kill-emacs-p full-path-p)
+  "Spell check DIRECTORY and report all typos.
+If KILL-EMACS-P is t, kill the Emacs and set exit program code.
+If FULL-PATH-P is t, always show typo's file full path."
+  (let* ((files (find-lisp-find-files-internal directory
+                                               #'wucuo-find-file-predicate
+                                               #'wucuo-find-directory-predicate))
+         (count (length files))
+         (i 1)
+         typo-p)
+
+    (dolist (f files)
+      (when wucuo-debug
+        (message "checking file %s %s/%s"  f i count)
+        (setq i (1+ i)))
+
+      (when (wucuo-spell-check-file f nil full-path-p)
+        (setq typo-p t)))
     (when (and typo-p kill-emacs-p)
       (kill-emacs 1))))
 

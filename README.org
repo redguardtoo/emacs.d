@@ -676,7 +676,7 @@ You could insert below code into =~/.custom.el=,
 (setq lsp-restart 'auto-restart)
 ;; don't watch 3rd party javascript libraries
 (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
-;; don't ping LSP lanaguage server too frequently
+;; don't ping LSP language server too frequently
 (defvar lsp-on-touch-time 0)
 (defun my-lsp-on-change-hack (orig-fun &rest args)
 ;; do NOT run `lsp-on-change' too frequently
