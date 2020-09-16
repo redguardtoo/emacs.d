@@ -15,5 +15,5 @@ githooks:
 
 # Run tests.
 test: clean
-	$(EMACS) -nw --batch --eval '(let* ((user-emacs-directory default-directory) (user-init-file (expand-file-name "init.el")) (load-path (delq default-directory load-path))) (load-file user-init-file))'
+	$(EMACS) -Q -nw --batch -l init.el
 
