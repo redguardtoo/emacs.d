@@ -285,7 +285,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'company-native-complete)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
-(require-package 'lsp-mode)
+(if *emacs26* (require-package 'lsp-mode))
 (require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
