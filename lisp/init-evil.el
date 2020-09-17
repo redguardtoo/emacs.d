@@ -641,9 +641,10 @@ If INCLUSIVE is t, the text object is inclusive."
   "fa" 'flyspell-auto-correct-word
   "lb" 'langtool-check-buffer
   "ll" 'langtool-goto-next-error
-  "pe" 'flymake-goto-prev-error
-  "ne" 'flymake-goto-next-error
+  "pe" 'lazyflymake-goto-prev-error
+  "ne" 'lazyflymake-goto-next-error
   "og" 'org-agenda
+
   "otl" 'org-toggle-link-display
   "oa" '(lambda ()
           (interactive)

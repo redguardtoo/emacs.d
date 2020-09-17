@@ -306,11 +306,11 @@ The programming syntax check is done by [[https://github.com/redguardtoo/lazyfly
 Insert below code to =~/.custom.el= to increase the interval of check,
 #+begin_src elisp
 (with-eval-after-load 'wucuo
-;; 300 seconds
-(setq wucuo-update-interval 300))
+;; 4 second
+(setq wucuo-update-interval 4))
 (with-eval-after-load 'lazyflymake
-;; 300 seconds
-(setq lazyflymake-update-interval 300))
+;; 2 seconds
+(setq lazyflymake-update-interval 3))
 #+end_src
 *** Why opening file is slow
 Insert below code into =~/.custom.el=, replace "/home/user1/your-file-path" with the file you want to open,
