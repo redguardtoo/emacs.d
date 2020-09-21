@@ -403,4 +403,14 @@ If STEP is 1,  search in forward direction, or else in backward direction."
   (let* ((region (my-comint-current-input-region)))
     (string-trim (buffer-substring-no-properties (car region) (cdr region)))))
 
+(defun my-imenu-items (&optional index-function)
+  "Get imenu items using INDEX-FUNCTION."
+  (my-ensure 'imenu)
+  (let* ((imenu-auto-rescan t)
+         (imenu-create-index-function (or index-function imenu-create-index-function))
+         (imenu-auto-rescan-maxout (buffer-size))
+         (items (imenu--make-index-alist t)))
+    (delete (assoc "*Rescan*" items) items)))
+
 (provide 'init-utils)
+;;; init-utils.el ends here
