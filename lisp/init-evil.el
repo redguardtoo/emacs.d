@@ -243,6 +243,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; Move back the cursor one position when exiting insert mode
 (setq evil-move-cursor-back t)
 
+(define-key evil-normal-state-map "gh" 'beginning-of-defun)
+
 ;; As a general rule, mode specific evil leader keys started
 ;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
