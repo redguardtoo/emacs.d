@@ -205,14 +205,14 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
         (and (normal-backup-enable-predicate name)
              (not (string-match-p my-binary-file-name-regexp name)))))
 
-(if (not (file-exists-p (expand-file-name "~/.backups")))
-  (make-directory (expand-file-name "~/.backups")))
-(setq backup-by-copying t ; don't clobber symlinks
-      backup-directory-alist '(("." . "~/.backups"))
-      delete-old-versions t
-      version-control t  ;use versioned backups
-      kept-new-versions 6
-      kept-old-versions 2)
+(let* ((backup-dir (expand-file-name "~/.backups")))
+  (unless (file-exists-p backup-dir) (make-directory backup-dir))
+  (setq backup-by-copying t ; don't clobber symlinks
+        backup-directory-alist (list (cons "." backup-dir))
+        delete-old-versions t
+        version-control t  ;use versioned backups
+        kept-new-versions 8
+        kept-old-versions 4))
 
 ;; Donot make backups of files, not safe
 ;; @see https://github.com/joedicastro/dotfiles/tree/master/emacs
