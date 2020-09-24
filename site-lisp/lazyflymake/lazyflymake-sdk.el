@@ -32,5 +32,15 @@
     (if lazyflymake-debug (message "lazyflymake-sdk-code-file => %s" rlt))
     rlt))
 
+(defun lazyflymake-sdk-hint ()
+  "Hint the user."
+  (message "This command works when `lazyflymake-flymake-mode-on' is nil"))
+
+(defun lazyflymake-sdk-valid-overlays (overlays)
+  "Clean up and return valid OVERLAYS."
+  ;; remove overlay without binding buffer
+  (sort (cl-remove-if (lambda (ov) (not (overlay-start ov))) overlays)
+        (lambda (a b) (< (overlay-start a) (overlay-start b)))))
+
 (provide 'lazyflymake-sdk)
 ;;; lazyflymake-sdk.el ends here

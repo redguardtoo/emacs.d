@@ -24,14 +24,27 @@
 ;; along with this program; if not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
-;;  Remove "(flymake-mode 1)" from ~/.emacs and insert below line instead,
 ;;
+;; One line to set up flymake and start flymake-mode,
 ;;    (add-hook 'prog-mode-hook #'lazyflymake-start)
 ;;
-;; Errors are reported after saving current file.
-;; Use `flymake-goto-next-error', `flymake-goto-prev-error' to locate errors.
+;; By default, flymake-mode is turned on in `lazyflymake-start'.
+;; You could keep using all the commands from flymake.
 ;;
-;; Please note this program also set up flymake for Shell script, Emacs Lisp,
+;; This program also provides below commands to locate errors/warnings:
+;; - `lazyflymake-goto-next-error'
+;; - `lazyflymake-goto-prev-error'
+;;
+;; There is also a light weight mode which does not use flymake-mode.
+;; Enable it by insert extra one line set up,
+;;
+;;   (setq lazyflymake-flymake-mode-on nil)
+;;
+;; So flymake-mode is not turned on by `lazyflymake-start' automatically.
+;; The syntax check happens if and only if current buffer is saved.
+;; Extra command `lazyflymake-list-errors' is provided in light weight mode.
+;;
+;; This program also sets up flymake for Shell script, Emacs Lisp,
 ;; and Lua automatically.
 ;;
 ;; Shellcheck (https://github.com/koalaman/shellcheck) is required to check
@@ -197,7 +210,7 @@ If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is repla
     ov))
 
 (defun lazyflymake-current-file-p (file)
-  "FILE does match `buffer-file-name'."
+  "FILE does match current buffer's path."
 
   ;; algorithms to match file
   ;; - exactly same as full path name or at least file name is same
@@ -254,10 +267,35 @@ If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is repla
           (when (or (lazyflymake-current-file-p file)
                     (eq major-mode 'emacs-lisp-mode))
             (push (lazyflymake-make-overlay err) ovs))))
-      ;; remove overlay without binding buffer
-      (setq ovs (cl-remove-if (lambda (ov) (not (overlay-start ov))) ovs))
       (setq lazyflymake-overlays
-            (sort ovs (lambda (a b) (< (overlay-start a) (overlay-start b))))))))
+            (lazyflymake-sdk-valid-overlays ovs)))))
+
+(defun lazyflymake-overlay-to-string (overlay)
+  "Format OVERLAY to string."
+  (let* ((line (count-lines (point-min) (overlay-start overlay)))
+         (err-text (overlay-get overlay 'help-echo)))
+    (format "line %s: %s" line err-text)))
+
+(defun lazyflymake-list-errors ()
+  "List errors in current buffer."
+  (interactive)
+  (let* (ovs)
+    (cond
+     (lazyflymake-flymake-mode-on
+      (lazyflymake-sdk-hint))
+
+     ((not (setq ovs (lazyflymake-sdk-valid-overlays lazyflymake-overlays)))
+      (message "No error found."))
+
+     (t
+      (let* ((cands (mapcar (lambda (o)
+                              (cons (lazyflymake-overlay-to-string o) o))
+                            ovs))
+             (err (completing-read "Go to: " cands))
+             ov)
+        (when err
+          (setq ov (cdr (assoc err cands)))
+          (lazyflymake-goto-overlay-center ov)))))))
 
 (defun lazyflymake-proc-output (process)
   "The output of PROCESS."
