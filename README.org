@@ -507,7 +507,7 @@ Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[h
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheat sheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
-Comment out =(require 'init-modeline)= in init.el at first.
+Comment out =(require 'init-modeline)= in =init.el= at first.
 ** Key bindings doesn't work?
 Other desktop applications may intercept the key bindings. For example, [[https://github.com/redguardtoo/emacs.d/issues/320][it's reported QQ on windows 8 can intercept "M-x"]].
 ** Org-mode
@@ -566,7 +566,7 @@ By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(
 ** Evil setup
 It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
-Please read [[https://github.com/emacs-evil/evil/raw/master/doc/evil.pdf][its PDF manual]] before using =evil-mode=.
+You could visit [[https://github.com/emacs-evil/evil/][its website]] to download its free ebook there.
 ** C++ auto-completion doesn't work?
 I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
 
