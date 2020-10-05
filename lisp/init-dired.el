@@ -107,30 +107,68 @@ If no files marked, always operate on current line in dired-mode."
   (defun my-dired-basename ()
     (file-name-base (car (dired-get-marked-files 'no-dir))))
 
+  (defun my-mplayer-subtitle-option (subtitle directory)
+    "Return mplayer option from SUBTITLE under DIRECTORY."
+    (let* ((vobsub-p (string-match "\.sub$" subtitle))
+           (opt (if vobsub-p "-vobsub" "-sub"))
+           (basename (file-name-base subtitle)))
+      (format "%s \"%s/%s\""
+              opt
+              directory
+              (if vobsub-p basename
+                (concat basename "." (file-name-extension subtitle))))))
+
+  (defun my-detect-subtitle (subtitle &optional search-in-dir)
+    "Find SUBTITLE file and return mplayer option.
+If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
+    (let* ((sub-directory "Subs")
+           (subtitle-dir (file-name-as-directory (concat default-directory sub-directory)))
+           rlt)
+      (cond
+       ((file-exists-p (concat subtitle-dir subtitle))
+        (setq rlt (my-mplayer-subtitle-option subtitle sub-directory)))
+       ((and search-in-dir
+             (file-exists-p subtitle-dir)
+             (fboundp 'string-distance))
+        (let* ((files (find-lisp-find-files-internal subtitle-dir
+                                                     (lambda (file dir)
+                                                       (and (not (file-directory-p (expand-file-name file dir)))
+                                                            (string-match "\\.srt\\|\\.sub$" file)))
+                                                     (lambda (dir parent)
+                                                       (not (or (string= dir ".")
+                                                                (string= dir "..")
+                                                                (file-symlink-p (expand-file-name dir parent)))))))
+               (target (concat (downcase (file-name-base subtitle)) "english"))
+               found
+               distance
+               (min-distance (length subtitle)))
+          ;; find the subtitle whose file name is closest to the original file name
+          (when (and files (> (length files) 0))
+            (dolist (f files)
+              (setq distance (string-distance target (downcase (file-name-base f))))
+              (when (< distance min-distance)
+                (setq min-distance distance)
+                (setq found f)))
+            (setq rlt (my-mplayer-subtitle-option found sub-directory))))))
+      rlt))
+
   (defun my-dired-guess-default-hack (orig-func &rest args)
     "Detect subtitles for mplayer."
     (let* ((rlt (apply orig-func args)))
-      (message "rlt=%s" rlt)
       (when (and (stringp rlt)
                  (string-match-p "^mplayer -quiet" rlt))
-        (let* ((dir (file-name-as-directory (concat default-directory
-                                                    "Subs")))
-               (files (car args))
-               basename)
-          ;; append subtitle to mplayer cli
-          (cond
-           ((file-exists-p (concat dir "English.sub"))
-            (setq rlt (concat rlt " -vobsub Subs/English")))
-           ((file-exists-p (concat dir "Chinese.sub"))
-            (seq rlt (concat rlt " -vobsub Subs/Chinese")))
-           ((file-exists-p (concat dir (setq basename (my-dired-basename)) ".sub"))
-            (setq rlt (concat rlt " -vobsub Subs/" basename)))
-           ((file-exists-p (concat dir "English.srt"))
-            (setq rlt (concat rlt " -sub Subs/English.srt")))
-           ((file-exists-p (concat dir "Chinese.srt"))
-            (setq rlt (concat rlt " -sub Subs/Chinese.srt")))
-           ((file-exists-p (concat dir (setq basename (my-dired-basename)) ".sub"))
-            (setq rlt (concat rlt " -sub Subs/" basename ".srt"))))))
+        ;; append subtitle to mplayer cli
+        (setq rlt
+              (format "%s %s"
+                      rlt
+                      (or
+                       (my-detect-subtitle "English.sub")
+                       (my-detect-subtitle "Chinese.sub")
+                       (my-detect-subtitle (concat (my-dired-basename) ".sub"))
+                       (my-detect-subtitle "English.srt")
+                       (my-detect-subtitle "Chinese.srt")
+                       (my-detect-subtitle (concat (my-dired-basename) ".srt") t)
+                       ""))))
       rlt))
   (advice-add 'dired-guess-default :around #'my-dired-guess-default-hack)
 
