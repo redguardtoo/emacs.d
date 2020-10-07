@@ -75,7 +75,7 @@ is used when current file is saved."
   :group 'lazyflymake
   :type '(repeat 'sexp))
 
-(defcustom lazyflymake-file-match-algorithm "strict"
+(defcustom lazyflymake-file-match-algorithm nil
   "The algorithm to match file name.
 If it's \"string\", the full path of file should be same as current code file.
 If it's nil, do not check file at all."
@@ -95,6 +95,10 @@ If it's nil, do not check file at all."
 (defvar lazyflymake-start-check-now nil
   "If it's t, `lazyflymake-start' starts buffer syntax check immediately.
 This variable is for debug and unit test only.")
+
+(defvar lazyflymake-process-name
+  "lazyflymake-proc"
+  "Name of the running process")
 
 ;;;###autoload
 (defun lazyflymake-new-flymake-p ()
@@ -308,29 +312,53 @@ If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is repla
   (let* ((status (process-status process)))
     (when (memq status '(exit signal))
       (let* ((errors (lazyflymake-extract-errors (lazyflymake-proc-output process))))
-        (lazyflymake-show-errors errors)))))
+        (lazyflymake-show-errors errors)
+        (when (and lazyflymake-temp-source-file-name
+                   (file-exists-p lazyflymake-temp-source-file-name))
+          (let* ((backend (lazyflymake-find-backend))
+                 (cleanup-fn (or (nth 2 backend) 'flymake-simple-cleanup))
+                 (flymake-proc--temp-source-file-name lazyflymake-temp-source-file-name))
+            (funcall cleanup-fn)))))))
+
+(defun lazyflymake-run-program (program args buffer)
+  "Run PROGRAM with ARGS and output to BUFFER.
+Return the running process."
+  (let* ((proc (apply 'start-file-process lazyflymake-process-name buffer program args)))
+    ;; maybe the temporary source file is already deleted
+    (unless (file-exists-p lazyflymake-temp-source-file-name)
+      (setq lazyflymake-temp-source-file-name nil))
+
+    ;; For flymake-mode, I don't use this `process-put' trick
+    (when lazyflymake-temp-source-file-name
+      (process-put proc
+                   'flymake-proc--temp-source-file-name
+                   lazyflymake-temp-source-file-name))
+    proc))
+
+(defun lazyflymake-find-backend ()
+  "Find backend."
+  (cl-find-if (lambda (m)
+                (string-match (car m) buffer-file-name))
+              flymake-allowed-file-name-masks))
 
 (defun lazyflymake-start-buffer-checking-process ()
   "Check current buffer right now."
-  (let* ((backend (cl-find-if (lambda (m)
-                                (string-match (car m) buffer-file-name))
-                              flymake-allowed-file-name-masks)))
+  (let* ((backend (lazyflymake-find-backend))
+         (proc (get-process lazyflymake-process-name)))
     (when (and backend
-               ;; only when syntax checking process should be running
-               (memq (process-status "lazyflymake-proc") '(nil exit signal)))
+               ;; the previous check process should stopped
+               (not proc))
       (unwind-protect
-          (let* ((flymake-proc--temp-source-file-name nil)
-                 (init-fn (nth 1 backend))
+          (let* ((init-fn (nth 1 backend))
                  (cmd-and-args (funcall init-fn))
                  (program (car cmd-and-args))
                  (args (nth 1 cmd-and-args))
                  (buf (lazyflymake-proc-buffer t))
-                 (proc (apply 'start-file-process "lazyflymake-proc" buf program args)))
+                 (proc (lazyflymake-run-program program args buf)))
             (lazyflymake-clear-errors)
-            (when flymake-proc--temp-source-file-name
-              (process-put proc 'flymake-proc--temp-source-file-name flymake-proc--temp-source-file-name))
             (set-process-sentinel proc #'lazyflymake-proc-report)
 
+            ;; check emacs lisp code doc in another process
             (when (and (eq major-mode 'emacs-lisp-mode)
                        (fboundp 'elisp-flymake-checkdoc))
               (elisp-flymake-checkdoc (lambda (diags)
