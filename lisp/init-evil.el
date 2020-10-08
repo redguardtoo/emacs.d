@@ -7,7 +7,6 @@
 
 ;; {{ replace undo-tree with undo-fu
 ;; @see https://github.com/emacs-evil/evil/issues/1074
-;; (global-undo-tree-mode -1)
 (my-ensure 'undo-fu)
 ;; copied from doom-emacs
 (define-minor-mode undo-fu-mode
@@ -24,6 +23,7 @@
   :init-value nil
   :global t)
 (undo-fu-mode 1)
+(global-set-key (kbd "C-r") 'undo-fu-only-redo)
 ;; }}
 
 ;; Store more undo history to prevent loss of data
@@ -369,7 +369,6 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
 (define-key evil-insert-state-map (kbd "M-j") 'yas-expand)
 (define-key evil-emacs-state-map (kbd "M-j") 'yas-expand)
-(global-set-key (kbd "C-r") 'undo-tree-redo)
 
 ;; {{
 (defvar evil-global-markers-history nil)
@@ -650,7 +649,6 @@ If INCLUSIVE is t, the text object is inclusive."
           (interactive)
           (my-ensure 'org)
           (counsel-org-agenda-headlines))
-  "ut" 'undo-tree-visualize
   "ar" 'align-regexp
   "wrn" 'httpd-restart-now
   "wrd" 'httpd-restart-at-default-directory

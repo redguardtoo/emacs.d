@@ -12,11 +12,10 @@
 [_ll_] Load workgroup     [_n_] Emms Next       [_W_] Big words definition
 [_B_] New bookmark        [_p_] Emms Previous   [_v_] Play big word video
 [_m_] Goto bookmark       [_P_] Emms Pause      [_im_] Image of word
-[_uu_] Show/Hide undo     [_O_] Emms Open       [_ss_] Pomodoro start
-[_bb_] Switch Gnus buffer [_L_] Emms Playlist   [_st_] Pomodoro stop
-[_e_] Erase buffer        [_E_] Typewriter on   [_sr_] Pomodoro resume
-[_r_] Erase this buffer   [_V_] Old typewriter  [_sp_] Pomodoro pause
-[_f_] Recent file
+[_bb_] Switch Gnus buffer [_O_] Emms Open       [_ss_] Pomodoro start
+[_e_] Erase buffer        [_L_] Emms Playlist   [_st_] Pomodoro stop
+[_r_] Erase this buffer   [_E_] Typewriter on   [_sr_] Pomodoro resume
+[_f_] Recent file         [_V_] Old typewriter  [_sp_] Pomodoro pause
 [_d_] Recent directory
 [_bh_] Bash history
 [_hr_] Dired CMD history
@@ -39,7 +38,6 @@
   ("r" my-erase-current-buffer)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
-  ("uu" undo-tree-visualize)
   ("ss" pomodoro-start)
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
