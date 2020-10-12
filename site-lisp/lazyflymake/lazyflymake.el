@@ -325,7 +325,8 @@ If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is repla
 Return the running process."
   (let* ((proc (apply 'start-file-process lazyflymake-process-name buffer program args)))
     ;; maybe the temporary source file is already deleted
-    (unless (file-exists-p lazyflymake-temp-source-file-name)
+    (when (not (and lazyflymake-temp-source-file-name
+                    (file-exists-p lazyflymake-temp-source-file-name)))
       (setq lazyflymake-temp-source-file-name nil))
 
     ;; For flymake-mode, I don't use this `process-put' trick
