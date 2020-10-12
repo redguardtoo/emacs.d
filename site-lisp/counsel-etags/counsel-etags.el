@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "25.1") (counsel "0.13.0"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.14
+;; Version: 1.9.15
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -571,7 +571,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.14"))
+  (message "1.9.15"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1369,7 +1369,7 @@ CONTEXT is extra information collected before finding tag definition.
 If SHOW-TAGNAME-P is t, show the tag name in the minibuffer."
   (let* ((time (current-time))
          (dir (counsel-etags-tags-file-directory))
-         (current-file (file-local-name current-file)))
+         (current-file (and current-file (file-local-name current-file))))
     (if dir (setq dir (file-local-name dir)))
     (when counsel-etags-debug
       (message "counsel-etags-find-tag-api called => tagname=%s fuzzy=%s dir%s current-file=%s context=%s"
