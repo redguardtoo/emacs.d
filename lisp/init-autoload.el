@@ -14,6 +14,7 @@
 (autoload 'mybigword-play-video-of-word-at-point "mybigword" "" t)
 (autoload 'mybigword-pronounce-word "mybigword" "" t)
 (autoload 'mybigword-show-image-of-word "mybigword" "" t)
+(autoload 'mybigword-video2mp3 "mybigword" "" t)
 (autoload 'js2hl-show-thing-at-point "js2hl" "" t)
 (autoload 'js2hl-show-exits "js2hl" "" t)
 (autoload 'js2hl-rename-thing-at-point "js2hl" "" t)
