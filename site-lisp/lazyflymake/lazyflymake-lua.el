@@ -24,8 +24,8 @@ If return nil, nothing need be done."
   "Lua syntax check init."
   (when (executable-find lazyflymake-lua-program)
     (if lazyflymake-debug (message "lazyflymake-lua-init called"))
-    (list lazyflymake-lua-program
-          (list "-p" (lazyflymake-sdk-code-file)))))
+    (let* ((file (lazyflymake-sdk-code-file)))
+      (and file (list lazyflymake-lua-program (list "-p" file))))))
 
 (provide 'lazyflymake-lua)
 ;;; lazyflymake-lua.el ends here

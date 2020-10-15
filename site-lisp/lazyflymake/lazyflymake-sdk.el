@@ -22,12 +22,18 @@
 
 (defun lazyflymake-sdk-code-file ()
   "Get code file to check."
-  (let* ((local-file-p (and (lazyflymake-sdk-file-exist-p)
-                            (not (buffer-narrowed-p))))
+  (let* ((local-file-p (lazyflymake-sdk-file-exist-p))
          (rlt (cond
+               ;; do not syntax check when buffer is narrowed
+               ((buffer-narrowed-p)
+                nil)
+
+               ;; use current local file
                (local-file-p
                 ;; save a little resource to create temp file
                 buffer-file-name)
+
+               ;; create temporary source file
                (t
                 (flymake-init-create-temp-buffer-copy
                  'flymake-create-temp-inplace)))))

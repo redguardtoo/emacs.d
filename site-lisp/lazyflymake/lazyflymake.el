@@ -243,14 +243,16 @@ If FORCE is t, the existing set up in `flymake-allowed-file-name-masks' is repla
       (setq output (replace-regexp-in-string "^:elisp-flymake-output-start[\r\n]*" "" output))
       (unless (string= "" output)
         (let* ((original-errors (read output)))
-          (setq errors (mapcar (lambda (e)
-                                 (list buffer-file-name
-                                       (nth 1 e)
-                                       (save-excursion
-                                         (goto-char (nth 1 e))
-                                         (line-end-position))
-                                       (nth 0 e)))
-                               original-errors)))))
+          ;; (read output) may fail
+          (when (listp original-errors)
+            (setq errors (mapcar (lambda (e)
+                                   (list buffer-file-name
+                                         (nth 1 e)
+                                         (save-excursion
+                                           (goto-char (nth 1 e))
+                                           (line-end-position))
+                                         (nth 0 e)))
+                                 original-errors))))))
      (t
       ;; extract syntax errors
       (dolist (l (split-string output "[\r\n]+"  t "[ \t]+"))

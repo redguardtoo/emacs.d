@@ -19,10 +19,10 @@ If return nil, nothing need be done."
   "Eslint syntax check init."
   (let* ((dir (locate-dominating-file default-directory "node_modules"))
          (local-eslint (concat dir "node_modules/.bin/eslint"))
-         (program (if (file-exists-p local-eslint) local-eslint "eslint")))
+         (program (if (file-exists-p local-eslint) local-eslint "eslint"))
+         (file (lazyflymake-sdk-code-file)))
     (when (executable-find program)
-      (list program
-            (list "--format" "unix" (lazyflymake-sdk-code-file))))))
+      (and file (list program (list "--format" "unix" file))))))
 
 (provide 'lazyflymake-eslint)
 ;;; lazyflymake-eslint.el ends here
