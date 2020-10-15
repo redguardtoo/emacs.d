@@ -1074,30 +1074,6 @@ Including indent-buffer, which should not be called automatically on save."
   (setq wgrep-too-many-file-length 2024))
 ;; }}
 
-;; {{ edit-server
-(defun edit-server-start-hook-setup ()
-  "Some web sites actually pass html to edit server."
-  (let* ((url (buffer-name)))
-    (cond
-     ((string-match "github.com" url)
-      (markdown-mode))
-     ((string-match "zhihu.com" url)
-      ;; `web-mode' plus `sgml-pretty-print' get best result
-      (web-mode)
-      ;; format html
-      (my-ensure 'sgml)
-      (sgml-pretty-print (point-min) (point-max))
-      (goto-char (point-min))
-      ;; insert text after removing br tag, that's required by zhihu.com
-      ;; unfortunately, after submit comment once, page need be refreshed.
-      (replace-regexp "<br data-text=\"true\">" "")))))
-
-(add-hook 'edit-server-start-hook 'edit-server-start-hook-setup)
-(when (require 'edit-server nil t)
-  (setq edit-server-new-frame nil)
-  (edit-server-start))
-;; }}
-
 (defun my-browse-current-file ()
   "Open the current file as a URL using `browse-url'."
   (interactive)
