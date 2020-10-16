@@ -33,6 +33,7 @@
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
 (autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
+(autoload 'lazyflymake-start "lazyflymake" "" t nil)
 (autoload 'markdown-mode "markdown-mode" "Mode for editing Markdown documents" t)
 (autoload 'csv-mode "csv-mode" "Major mode for comma-separated value files." t)
 (autoload 'sdcv-search-pointer "sdcv" "show word explanation in buffer" t)
