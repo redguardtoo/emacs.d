@@ -153,17 +153,16 @@ This function can be re-used by other major modes after compilation."
     (when (should-use-minimum-resource)
       (font-lock-mode -1)))
 
-  (my-ensure 'lazyflymake)
-  (lazyflymake-start)
-
   (company-ispell-setup)
 
   (unless (is-buffer-file-temp)
 
-    ;; {{ spell check camel-case word
-    (my-ensure 'wucuo)
-    (wucuo-start)
-    ;; }}
+    (unless (featurep 'esup-child)
+      (my-ensure 'lazyflymake)
+      (lazyflymake-start)
+
+      (my-ensure 'wucuo)
+      (wucuo-start))
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
     (setq compilation-finish-functions
@@ -1016,17 +1015,6 @@ Including indent-buffer, which should not be called automatically on save."
     ;; Create `~/.gnupg/gpg-agent.conf' which has one line
     ;; "pinentry-program /usr/bin/pinentry-curses"
     (setq epa-pinentry-mode 'loopback)))
-;; }}
-
-;; {{ show current function name in `mode-line'
-(defun my-which-func-update-hack (orig-func &rest args)
-  "`which-function-mode' scanning makes Emacs unresponsive in big buffer."
-  (unless (buffer-too-big-p) (apply orig-func args)))
-(advice-add 'which-func-update :around #'my-which-func-update-hack)
-
-(with-eval-after-load 'which-function
-  (push 'org-mode which-func-modes))
-(run-with-idle-timer 4 nil #'which-function-mode)
 ;; }}
 
 ;; {{ pomodoro

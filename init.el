@@ -58,17 +58,6 @@
   (when (or (not maybe-disabled) (not (my-vc-merge-p)))
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
-(defun local-require (pkg)
-  "Require PKG in site-lisp directory."
-  (unless (featurep pkg)
-    (load (expand-file-name
-           (cond
-            ((eq pkg 'go-mode-load)
-             (format "%s/go-mode/%s" my-site-lisp-dir pkg))
-            (t
-             (format "%s/%s/%s" my-site-lisp-dir pkg pkg))))
-          t t)))
-
 (defun my-add-subdirs-to-load-path (lisp-dir)
   "Add sub-directories under LISP-DIR into `load-path'."
   (let* ((default-directory lisp-dir))

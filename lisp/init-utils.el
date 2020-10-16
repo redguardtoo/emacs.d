@@ -1,11 +1,22 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defmacro my-ensure (feature)
+(defun local-require (pkg)
+  "Require PKG in site-lisp directory."
+  (unless (featurep pkg)
+    (load (expand-file-name
+           (cond
+            ((eq pkg 'go-mode-load)
+             (format "%s/go-mode/%s" my-site-lisp-dir pkg))
+            (t
+             (format "%s/%s/%s" my-site-lisp-dir pkg pkg))))
+          t t)))
+
+(defun my-ensure (feature)
   "Make sure FEATURE is required."
-  `(unless (featurep ,feature)
-     (condition-case nil
-         (require ,feature)
-       (error nil))))
+  (unless (featurep feature)
+    (condition-case nil
+        (require feature)
+      (error nil))))
 
 (defun my-git-root-dir ()
   "Git root directory."
