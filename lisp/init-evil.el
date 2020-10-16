@@ -36,34 +36,35 @@
 And \"%\" key is also restored to `evil-jump-item'.")
 
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
-(global-evil-surround-mode 1)
-(defun evil-surround-prog-mode-hook-setup ()
-  "Set up surround shortcuts."
-  (cond
-   ((memq major-mode '(sh-mode))
-    (push '(?$ . ("$(" . ")")) evil-surround-pairs-alist))
-   (t
-    (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
+(run-with-idle-timer 2 nil #'global-evil-surround-mode)
+(with-eval-after-load 'evil-surround
+  (defun evil-surround-prog-mode-hook-setup ()
+    "Set up surround shortcuts."
+    (cond
+     ((memq major-mode '(sh-mode))
+      (push '(?$ . ("$(" . ")")) evil-surround-pairs-alist))
+     (t
+      (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
 
-  (when (memq major-mode '(org-mode))
-    (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
-    (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
+    (when (memq major-mode '(org-mode))
+      (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
+      (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
 
-  (when (memq major-mode '(emacs-lisp-mode))
-    (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
-    (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
+    (when (memq major-mode '(emacs-lisp-mode))
+      (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
+      (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 
-  (when (derived-mode-p 'js-mode)
-    (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
+    (when (derived-mode-p 'js-mode)
+      (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
 
-  ;; generic
-  (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
-(add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup)
+    ;; generic
+    (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
+  (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup))
 ;; }}
 
 ;; {{ For example, press `viW*`
 (setq evil-visualstar/persistent t)
-(global-evil-visualstar-mode t)
+(run-with-idle-timer 2 nil #'global-evil-visualstar-mode)
 ;; }}
 
 ;; ffip-diff-mode (read only) evil setup
@@ -845,7 +846,7 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ evil-nerd-commenter
-(evilnc-default-hotkeys t)
+(run-with-idle-timer 2 nil #'evilnc-default-hotkeys)
 (define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
@@ -884,14 +885,14 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ `evil-matchit'
-(global-evil-matchit-mode 1)
+(run-with-idle-timer 2 nil #'global-evil-matchit-mode)
 ;; }}
 
 ;; {{ evil-exchange
 ;; press gx twice to exchange, gX to cancel
 ;; change default key bindings (if you want) HERE
 ;; (setq evil-exchange-key (kbd "zx"))
-(evil-exchange-install)
+(run-with-idle-timer 4 nil #'evil-exchange-install)
 ;; }}
 
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
@@ -904,7 +905,7 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ Evil’s f/F/t/T command can search PinYin ,
-(evil-find-char-pinyin-mode 1)
+(run-with-idle-timer 4 nil #'evil-find-char-pinyin-mode)
 ;; }}
 
 ;; {{ Port of vim-textobj-syntax.

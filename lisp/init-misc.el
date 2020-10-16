@@ -15,11 +15,6 @@
 (global-set-key (kbd "C-q") #'aya-open-line)
 ;; }}
 
-;; {{ ace-link
-(ace-link-setup-default)
-(global-set-key (kbd "M-o") 'ace-link)
-;; }}
-
 ;; open header file under cursor
 (global-set-key (kbd "C-x C-o") 'ffap)
 
@@ -148,12 +143,18 @@ This function can be re-used by other major modes after compilation."
         (eq (char-syntax (char-before (1- (point)))) ?w))
    (electric-pair-conservative-inhibit char)))
 
+(with-eval-after-load 'flymake
+  (setq flymake-gui-warnings-enabled nil))
+
 (defun generic-prog-mode-hook-setup ()
   (when (buffer-too-big-p)
     ;; Turn off `linum-mode' when there are more than 5000 lines
     (linum-mode -1)
     (when (should-use-minimum-resource)
       (font-lock-mode -1)))
+
+  (my-ensure 'lazyflymake)
+  (lazyflymake-start)
 
   (company-ispell-setup)
 
@@ -222,7 +223,7 @@ This function can be re-used by other major modes after compilation."
 ;; from RobinH, Time management
 (setq display-time-24hr-format t) ; the date in modeline is English too, magic!
 (setq display-time-day-and-date t)
-(display-time) ; show date in modeline
+(run-with-idle-timer 2 nil #'display-time)
 ;; }}
 
 ;;a no-op function to bind to if you want to set a keystroke to null
@@ -330,9 +331,6 @@ This function can be re-used by other major modes after compilation."
       (goto-line 0))))
 ;; }}
 
-(local-require 'ace-pinyin)
-(ace-pinyin-global-mode +1)
-
 ;; {{ avy, jump between texts, like easymotion in vim
 ;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
 ;; dired
@@ -356,9 +354,9 @@ This function can be re-used by other major modes after compilation."
 ;; ANSI-escape coloring in compilation-mode
 ;; {{ http://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
 (ignore-errors
-  (require 'ansi-color)
   (defun my-colorize-compilation-buffer ()
     (when (eq major-mode 'compilation-mode)
+      (my-ensure 'ansi-color)
       (ansi-color-apply-on-region compilation-filter-start (point-max))))
   (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
 ;; }}
@@ -847,9 +845,9 @@ If the shell is already opened in some buffer, switch to that buffer."
   ;; Although win64 is fine. It still slows down generic performance.
   ;; @see https://stackoverflow.com/questions/3589535/why-reload-notification-slow-in-emacs-when-files-are-modified-externally
   ;; So no auto-revert-mode on Windows/Cygwin
-  (global-auto-revert-mode)
   (setq global-auto-revert-non-file-buffers t
-        auto-revert-verbose nil))
+        auto-revert-verbose nil)
+  (run-with-idle-timer 4 nil #'global-auto-revert-mode))
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -983,8 +981,7 @@ version control automatically."
 (put 'upcase-region 'disabled nil)
 
 ;; midnight mode purges buffers which haven't been displayed in 3 days
-(require 'midnight)
-(setq midnight-mode t)
+(run-with-idle-timer 4 nil #'midnight-mode)
 
 (defun cleanup-buffer-safe ()
   "Perform a bunch of safe operations on the whitespace content of a buffer.
@@ -1026,9 +1023,10 @@ Including indent-buffer, which should not be called automatically on save."
   "`which-function-mode' scanning makes Emacs unresponsive in big buffer."
   (unless (buffer-too-big-p) (apply orig-func args)))
 (advice-add 'which-func-update :around #'my-which-func-update-hack)
+
 (with-eval-after-load 'which-function
-  (add-to-list 'which-func-modes 'org-mode))
-(which-function-mode 1)
+  (push 'org-mode which-func-modes))
+(run-with-idle-timer 4 nil #'which-function-mode)
 ;; }}
 
 ;; {{ pomodoro
@@ -1036,12 +1034,9 @@ Including indent-buffer, which should not be called automatically on save."
   (setq pomodoro-play-sounds nil) ; *.wav is not installed
   (setq pomodoro-break-time 2)
   (setq pomodoro-long-break-time 5)
-  (setq pomodoro-work-time 15))
-
-(unless (featurep 'pomodoro)
-  (require 'pomodoro)
-  (pomodoro-add-to-mode-line))
-;; }}
+  (setq pomodoro-work-time 15)
+  ;; Instead of calling `pomodoro-add-to-mode-line`
+  (push '(pomodoro-mode-line-string pomodoro-mode-line-string) mode-line-format))
 
 ;; {{ epub setup
 (defun nov-mode-hook-setup ()
@@ -1080,10 +1075,9 @@ Including indent-buffer, which should not be called automatically on save."
   (browse-url-generic (concat "file://" (buffer-file-name))))
 
 ;; {{ which-key-mode
-(local-require 'which-key)
 (setq which-key-allow-imprecise-window-fit t) ; performance
 (setq which-key-separator ":")
-(which-key-mode 1)
+(run-with-idle-timer 2 nil #'which-key-mode)
 ;; }}
 
 ;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
@@ -1171,6 +1165,17 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
 ;; {{ use pdf-tools to view pdf
 (when (and (display-graphic-p) *linux*)
   (pdf-loader-install))
+;; }}
+
+;; {{ exe path
+(with-eval-after-load 'exec-path-from-shell
+  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"))
+    (push var exec-path-from-shell-variables)))
+
+(when (and window-system (memq window-system '(mac ns)))
+  ;; @see https://github.com/purcell/exec-path-from-shell/issues/75
+  ;; I don't use those exec path anyway.
+  (run-with-idle-timer 4 nil #'exec-path-from-shell-initialize))
 ;; }}
 
 (provide 'init-misc)

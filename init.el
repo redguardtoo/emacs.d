@@ -181,7 +181,7 @@
   (setq gc-cons-percentage 0.1) ; original value
   (garbage-collect))
 
-(run-with-idle-timer 4 t #'my-cleanup-gc)
+(run-with-idle-timer 4 nil #'my-cleanup-gc)
 
 ;;; Local Variables:
 ;;; no-byte-compile: t

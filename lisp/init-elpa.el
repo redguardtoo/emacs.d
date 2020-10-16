@@ -1,13 +1,21 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (defun my-initialize-package ()
-  (unless nil ;package--initialized
-    ;; optimization, no need to activate all the packages so early
-    (setq package-enable-at-startup nil)
-    (when *emacs27*
-      (setq package-quick-start t))
+  ;; optimization, no need to activate all the packages so early
+  (setq package-enable-at-startup nil)
+  (cond
+   (*emacs27*
+    ;; you still need run `M-x package-quickstart-refresh' at least once
+    ;; to generate a big file containing `autoload' statements
+    (setq package-quick-start t)
+
+    ;; esup need call `package-initialize'
+    ;; @see https://github.com/jschaf/esup/issues/84
+    (when (featurep 'esup-child)
+      (package-initialize)))
+   (t
     ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
-    (package-initialize)))
+    (package-initialize))))
 
 (my-initialize-package)
 
@@ -217,7 +225,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'avy)
 (require-package 'popup) ; some old package need it
 (require-package 'auto-yasnippet)
-(require-package 'ace-link)
 (require-package 'csv-mode)
 (require-package 'expand-region) ; I prefer stable version
 (require-package 'fringe-helper)
@@ -351,12 +358,15 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
     (require-package theme)))
 
 (require-package 'magit)
+(require-package 'ace-pinyin)
+(require-package 'which-key)
 
 ;; most popular 100 themes
 (my-install-popular-themes
  '(
    afternoon-theme
    alect-themes
+   ace-pinyin
    ample-theme
    ample-zen-theme
    anti-zenburn-theme

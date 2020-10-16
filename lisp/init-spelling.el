@@ -4,6 +4,10 @@
   "Language used by aspell and hunspell CLI.")
 
 (with-eval-after-load 'flyspell
+  ;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
+  ;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
+  (global-set-key (kbd "C-c s") 'flyspell-auto-correct-word)
+
   ;; better performance
   (setq flyspell-issue-message-flag nil))
 
@@ -125,10 +129,6 @@ When fixing a typo, avoid pass camel case option to cli program."
   (my-ensure 'wucuo)
   (wucuo-start))
 (add-hook 'text-mode-hook 'text-mode-hook-setup)
-
-;; You can also use "M-x ispell-word" or hotkey "M-$". It pop up a multiple choice
-;; @see http://frequal.com/Perspectives/EmacsTip03-FlyspellAutoCorrectWord.html
-(global-set-key (kbd "C-c s") 'flyspell-auto-correct-word)
 
 (defun my-clean-aspell-dict ()
   "Clean ~/.aspell.pws (dictionary used by aspell)."

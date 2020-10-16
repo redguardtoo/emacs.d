@@ -79,6 +79,7 @@
 (autoload 'eacl-complete-multiline "eacl" "")
 (autoload 'dropdown-list "dropdown-list" "")
 (autoload 'magit-commit-popup "magit" "")
+(autoload 'global-git-gutter-mode "git-gutter" "" t)
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

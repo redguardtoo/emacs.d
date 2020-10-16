@@ -33,7 +33,6 @@
 ;; ;; }}
 
 ;; {{ git-gutter
-(local-require 'git-gutter)
 (with-eval-after-load 'git-gutter
   (setq git-gutter:update-interval 2)
   ;; nobody use bzr
@@ -79,7 +78,7 @@ Show the diff between current working code and git head."
   (git-gutter:set-start-revision nil)
   (message "git-gutter reset"))
 
-(global-git-gutter-mode t)
+(run-with-idle-timer 2 nil #'global-git-gutter-mode)
 
 (unless (fboundp 'global-display-line-numbers-mode)
  ;; git-gutter's workaround for linum-mode bug.
