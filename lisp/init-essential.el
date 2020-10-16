@@ -192,12 +192,14 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 (with-eval-after-load 'cliphist
   (defun cliphist-routine-before-insert-hack (&optional arg)
+    (ignore arg)
     (my-delete-selected-region))
   (advice-add 'cliphist-routine-before-insert :before #'cliphist-routine-before-insert-hack))
 
 ;; {{ Write backup files to its own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
-(defvar my-binary-file-name-regexp "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\)$"
+(defvar my-binary-file-name-regexp
+  "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\|pyim\\|\\.recentf\\)$"
   "Is binary file name?")
 
 (setq backup-enable-predicate
@@ -219,15 +221,15 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (setq vc-make-backup-files nil)
 ;; }}
 
-;; {{ tramp setup
-(add-to-list 'backup-directory-alist
-             (cons tramp-file-name-regexp nil))
-(setq tramp-chunksize 8192)
+(with-eval-after-load 'tramp
+  (push (cons tramp-file-name-regexp nil) backup-directory-alist)
 
 ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
 ;; If you tramp is hanging, you can uncomment below line.
 ;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-;; }}
+
+  (setq tramp-chunksize 8192))
+
 
 ;; {{ GUI frames
 ;; Suppress GUI features
