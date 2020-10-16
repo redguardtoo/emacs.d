@@ -414,7 +414,7 @@ If step is -1, go backward."
 
 (defun my-minibuffer-exit-hook ()
   ;; evil-mode also use minibuf
-  (setq gc-cons-threshold best-gc-cons-threshold))
+  (setq gc-cons-threshold 67108864))
 
 ;; @see http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)

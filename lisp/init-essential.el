@@ -239,17 +239,17 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq indicate-empty-lines t)
 
-;; NO tool bar, scroll-bar
-(when window-system
-  (and (fboundp 'scroll-bar-mode) (not (eq scroll-bar-mode -1))
-       (scroll-bar-mode -1))
-  (and (fboundp 'tool-bar-mode) (not (eq tool-bar-mode -1))
-       (tool-bar-mode -1))
-  (and (fboundp 'horizontal-scroll-bar-mode)
-       (horizontal-scroll-bar-mode -1)))
-;; no menu bar
-(and (fboundp 'menu-bar-mode) (not (eq menu-bar-mode -1))
-     (menu-bar-mode -1))
+(defun my-mini-ui ()
+  "Minimum ui."
+  ;; NO tool bar, scroll-bar
+  (when window-system
+    (scroll-bar-mode -1)
+    (tool-bar-mode -1)
+    (horizontal-scroll-bar-mode -1)))
+(run-with-idle-timer 2 nil #'my-mini-ui)
 ;; }}
+
+;; no menu bar
+(menu-bar-mode -1)
 
 (provide 'init-essential)
