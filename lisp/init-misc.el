@@ -990,13 +990,6 @@ might be bad."
   (untabify (point-min) (point-max))
   (delete-trailing-whitespace))
 
-(defun cleanup-buffer ()
-  "Perform a bunch of operations on the whitespace content of a buffer.
-Including indent-buffer, which should not be called automatically on save."
-  (interactive)
-  (cleanup-buffer-safe)
-  (indent-region (point-min) (point-max)))
-
 ;; {{ easygpg setup
 ;; @see http://www.emacswiki.org/emacs/EasyPG#toc4
 (with-eval-after-load 'epg
