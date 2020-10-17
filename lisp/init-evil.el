@@ -7,7 +7,6 @@
 
 ;; {{ replace undo-tree with undo-fu
 ;; @see https://github.com/emacs-evil/evil/issues/1074
-(my-ensure 'undo-fu)
 ;; copied from doom-emacs
 (define-minor-mode undo-fu-mode
   "Enables `undo-fu' for the current session."
@@ -23,7 +22,8 @@
   :init-value nil
   :global t)
 (undo-fu-mode 1)
-(global-set-key (kbd "C-r") 'undo-fu-only-redo)
+(define-key evil-normal-state-map "u" 'undo-fu-only-undo)
+(define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo)
 ;; }}
 
 ;; Store more undo history to prevent loss of data

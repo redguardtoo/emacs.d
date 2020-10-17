@@ -1,11 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun ibuffer-mode-hook-setup ()
-  (ibuffer-vc-set-filter-groups-by-vc-root)
-  (unless (eq ibuffer-sorting-mode 'filename/process)
-    (ibuffer-do-sort-by-filename/process))
-  (ibuffer-switch-to-saved-filter-groups "default"))
-
 (with-eval-after-load 'ibuffer
   ;; Use human readable Size column instead of original one
   (define-ibuffer-column size-h
@@ -73,6 +67,12 @@
                              (mode . gnus-article-mode)
                              (name . "^\\.bbdb$")
                              (name . "^\\.newsrc-dribble")))))))
+  (defun ibuffer-mode-hook-setup ()
+    (ibuffer-vc-set-filter-groups-by-vc-root)
+    (unless (eq ibuffer-sorting-mode 'filename/process)
+      (ibuffer-do-sort-by-filename/process))
+    (ibuffer-switch-to-saved-filter-groups "default"))
+
   (add-hook 'ibuffer-mode-hook 'ibuffer-mode-hook-setup)
 
   ;; Modify the default ibuffer-formats

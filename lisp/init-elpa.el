@@ -11,7 +11,9 @@
 
     ;; esup need call `package-initialize'
     ;; @see https://github.com/jschaf/esup/issues/84
-    (when (or (featurep 'esup-child) (my-vc-merge-p))
+    (when (or (featurep 'esup-child)
+              (fboundp 'profile-dotemacs)
+              (my-vc-merge-p))
       (package-initialize)))
    (t
     ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
