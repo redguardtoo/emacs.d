@@ -13,6 +13,7 @@
     ;; @see https://github.com/jschaf/esup/issues/84
     (when (or (featurep 'esup-child)
               (fboundp 'profile-dotemacs)
+              (not (file-exists-p (concat my-emacs-d "elpa")))
               (my-vc-merge-p))
       (package-initialize)))
    (t
