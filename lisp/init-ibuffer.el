@@ -11,9 +11,6 @@
       (format "%7.1fk" (/ (buffer-size) 1000.0)))
      (t
       (format "%8d" (buffer-size)))))
-  ;; Explicitly require ibuffer-vc to get its column definitions, which
-  ;; can't be autoloaded
-  (require 'ibuffer-vc)
 
   (setq ibuffer-expert t
         ibuffer-show-empty-filter-groups nil
@@ -68,7 +65,6 @@
                              (name . "^\\.bbdb$")
                              (name . "^\\.newsrc-dribble")))))))
   (defun ibuffer-mode-hook-setup ()
-    (ibuffer-vc-set-filter-groups-by-vc-root)
     (unless (eq ibuffer-sorting-mode 'filename/process)
       (ibuffer-do-sort-by-filename/process))
     (ibuffer-switch-to-saved-filter-groups "default"))
