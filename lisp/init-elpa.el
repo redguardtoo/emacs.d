@@ -91,7 +91,6 @@
     groovy-mode
     company ; I won't wait another 2 years for stable
     simple-httpd
-    dsvn
     findr
     mwe-log-commands
     noflet
@@ -254,7 +253,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'scratch)
 (require-package 'rainbow-delimiters)
 (require-package 'textile-mode)
-(require-package 'dsvn)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
 (require-package 'ivy)
