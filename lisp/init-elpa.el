@@ -14,7 +14,8 @@
     (when (or (featurep 'esup-child)
               (fboundp 'profile-dotemacs)
               (not (file-exists-p (concat my-emacs-d "elpa")))
-              (my-vc-merge-p))
+              (my-vc-merge-p)
+              noninteractive)
       (package-initialize)))
    (t
     ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
@@ -26,7 +27,7 @@
 ;; Please add the package name into `melpa-include-packages'
 ;; if it's not visible after  `list-packages'.
 (defvar melpa-include-packages
-  '(ace-window ; lastest stable is released on year 2014
+  '(ace-window ; latest stable is released on year 2014
     auto-package-update
     nov
     bbdb
