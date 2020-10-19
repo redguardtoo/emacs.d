@@ -3,4 +3,4 @@
 # key: map
 # contributor: Chen Bin <chenbin DOT sh AT gmail>
 # --
-map(e => e.$0);
+map(${1:e} => ${1:$(yas/substr yas-text "[^ ]*")}.$0)
