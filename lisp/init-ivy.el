@@ -135,20 +135,18 @@ If N is 2, list files in my recent 20 commits."
                                    bookmark-alist)))
             :action #'bookmark-jump))
 
-(defun counsel-insert-bash-history ()
+(defun my-insert-bash-history ()
   "Yank the bash history."
   (interactive)
   (shell-command "history -r") ; reload history
-  (let* ((collection
-          (nreverse
-           (my-read-lines (file-truename "~/.bash_history")))))
-    (ivy-read (format "Bash history:") collection
-              :action (lambda (val)
-                        (kill-new val)
-                        (message "%s => kill-ring" val)
-                        (insert val)))))
+  (let* ((collection (nreverse (my-read-lines (file-truename "~/.bash_history"))))
+         (val (completing-read "Bash history: " collection)))
+  (when val
+      (kill-new val)
+      (message "%s => kill-ring" val)
+      (insert val))))
 
-(defun counsel-recent-directory (&optional n)
+(defun my-recent-directory (&optional n)
   "Goto recent directories.
 If N is not nil, only list directories in current project."
   (interactive "P")
@@ -157,12 +155,12 @@ If N is not nil, only list directories in current project."
                  (append my-dired-directory-history
                          (mapcar 'file-name-directory recentf-list)
                          ;; fasd history
-                         (if (executable-find "fasd")
-                             (nonempty-lines (shell-command-to-string "fasd -ld"))))))
+                         (and (executable-find "fasd")
+                              (nonempty-lines (shell-command-to-string "fasd -ld"))))))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
     (when (and n root-dir)
       (setq cands (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) cands))))
-    (ivy-read "directories:" cands :action 'dired)))
+    (dired (completing-read "Directories: " cands))))
 
 (defun ivy-occur-grep-mode-hook-setup ()
   "Set up ivy occur grep mode."
