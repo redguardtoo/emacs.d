@@ -109,14 +109,16 @@ If no files marked, always operate on current line in dired-mode."
 
   (defun my-mplayer-subtitle-option (subtitle directory)
     "Return mplayer option from SUBTITLE under DIRECTORY."
-    (let* ((vobsub-p (string-match "\.sub$" subtitle))
-           (opt (if vobsub-p "-vobsub" "-sub"))
-           (basename (file-name-base subtitle)))
-      (format "%s \"%s/%s\""
-              opt
-              directory
-              (if vobsub-p basename
-                (concat basename "." (file-name-extension subtitle))))))
+    (or (when subtitle
+          (let* ((vobsub-p (string-match "\.sub$" subtitle))
+                 (opt (if vobsub-p "-vobsub" "-sub"))
+                 (basename (file-name-base subtitle)))
+            (format "%s \"%s/%s\""
+                    opt
+                    directory
+                    (if vobsub-p basename
+                      (concat basename "." (file-name-extension subtitle))))))
+        ""))
 
   (defun my-detect-subtitle (subtitle &optional search-in-dir)
     "Find SUBTITLE file and return mplayer option.
