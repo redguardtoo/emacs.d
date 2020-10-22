@@ -318,9 +318,13 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
      (t
       (xclip-get-selection 'clipboard)))))
 
+(defvar my-ssh-client-user nil
+  "User name of ssh client.")
+
 (defun my-pclip (str-val)
   "Put STR-VAL into clipboard."
-  (let* ((win64-clip-program (executable-find "clip.exe")))
+  (let* ((win64-clip-program (executable-find "clip.exe"))
+         ssh-client)
     (cond
      ;; Windows
      ((fboundp 'w32-set-clipboard-data)
@@ -331,6 +335,22 @@ you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (with-temp-buffer
         (insert str-val)
         (call-process-region (point-min) (point-max) win64-clip-program)))
+
+     ;; If Emacs is inside an ssh session, place the clipboard content
+     ;; into "~/.tmp-clipboard" and send it back into ssh client
+     ;; Make sure you already set up ssh correctly.
+     ;; Only enabled if ssh server is macOS
+     ((and (setq ssh-client (getenv "SSH_CLIENT"))
+           (not (string= ssh-client ""))
+           *is-a-mac*)
+      (let* ((file "~/.tmp-clipboard")
+             (ip (car (split-string ssh-client "[ \t]+")))
+             (cmd (format "scp %s %s@%s:~/" file my-ssh-client-user ip)))
+        (when my-ssh-client-user
+          (my-write-to-file str-val file)
+          (shell-command cmd)
+          ;; clean up
+          (delete-file file))))
 
      ;; xclip can handle
      (t
