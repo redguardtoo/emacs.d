@@ -89,19 +89,12 @@
   (dolist (pattern patterns)
     (add-to-list 'interpreter-mode-alist (cons pattern mode))))
 
-(defun font-belongs-to (pos fonts)
-  "Current font at POS belongs to FONTS."
-  (let* ((fontfaces (get-text-property pos 'face)))
-    (when (not (listp fontfaces))
-      (setf fontfaces (list fontfaces)))
-    (delq nil
-          (mapcar (lambda (f)
-                    (member f fonts))
-                  fontfaces))))
+(defun my-what-face (&optional position)
+  "Shows all faces at POSITION."
+  (let* ((face (get-text-property (or position (point)) 'face)))
+    (unless (keywordp (car-safe face)) (list face))))
 
-;;----------------------------------------------------------------------------
 ;; String utilities missing from core emacs
-;;----------------------------------------------------------------------------
 (defun string-all-matches (regex str &optional group)
   "Find all matches for `REGEX' within `STR', returning the full match string or group `GROUP'."
   (let ((result nil)
@@ -111,11 +104,6 @@
       (push (match-string group str) result)
       (setq pos (match-end group)))
     result))
-
-;; Find the directory containing a given library
-(defun directory-of-library (library-name)
-  "Return the directory in which the `LIBRARY-NAME' load file is found."
-  (file-name-as-directory (file-name-directory (find-library-name library-name))))
 
 (defun path-in-directory-p (file directory)
   "FILE is in DIRECTORY."
@@ -442,6 +430,55 @@ If STEP is 1,  search in forward direction, or else in backward direction."
          (imenu-auto-rescan-maxout (buffer-size))
          (items (imenu--make-index-alist t)))
     (delete (assoc "*Rescan*" items) items)))
+
+(defun my-create-range (&optional inclusive)
+  "Return range by font face.
+Copied from 3rd party package evil-textobj."
+  (let* ((point-face (my-what-face))
+         (pos (point))
+         (backward-point pos) ; last char when stop, including white space
+         (backward-none-space-point pos) ; last none white space char
+         (forward-point pos) ; last char when stop, including white space
+         (forward-none-space-point pos) ; last none white space char
+         (start pos)
+         (end pos))
+
+    ;; check chars backward,
+    ;; stop when char is not white space and has different face
+    (save-excursion
+      (let ((continue t))
+        (while (and continue (>= (- (point) 1) (point-min)))
+          (backward-char)
+          (if (= 32 (char-after))
+              (setq backward-point (point))
+            (if (equal point-face (my-what-face))
+                (progn (setq backward-point (point))
+                       (setq backward-none-space-point (point)))
+              (setq continue nil))))))
+
+    ;; check chars forward,
+    ;; stop when char is not white space and has different face
+    (save-excursion
+      (let ((continue t))
+        (while (and continue (< (+ (point) 1) (point-max)))
+          (forward-char)
+          (let ((forward-point-face (my-what-face)))
+            (if (= 32 (char-after))
+                (setq forward-point (point))
+              (if (equal point-face forward-point-face)
+                  (progn (setq forward-point (point))
+                         (setq forward-none-space-point (point)))
+                (setq continue nil)))))))
+
+    (cond
+     (inclusive
+      (setq start backward-none-space-point)
+      (setq end forward-none-space-point))
+     (t
+      (setq start (1+ backward-none-space-point))
+      (setq end (1- forward-none-space-point))))
+
+    (cons start (1+ end))))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

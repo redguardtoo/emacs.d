@@ -344,8 +344,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
       ;; if imenu is available, try it
       (cond
        ((and (derived-mode-p 'js2-mode)
-             (or (null (get-text-property (point) 'face))
-                 (font-belongs-to (point) '(rjsx-tag))))
+             (cl-intersection (my-what-face) '(rjsx-tag)))
         (js2-jump-to-definition))
        ((fboundp 'imenu--make-index-alist)
         (condition-case nil
@@ -473,26 +472,21 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; }}
 
 ;; {{ I select string inside single quote frequently
-(defun my-single-or-double-quote-range (count beg end type inclusive)
+(defun my-text-obj-similar-font (count beg end type inclusive)
   "Get maximum range of single or double quote text object.
 If INCLUSIVE is t, the text object is inclusive."
-  (let* ((s-range (evil-select-quote ?' beg end type count inclusive))
-         (d-range (evil-select-quote ?\" beg end type count inclusive))
-         (beg (min (nth 0 s-range) (nth 0 d-range)))
-         (end (max (nth 1 s-range) (nth 1 d-range))))
-    (setf (nth 0 s-range) beg)
-    (setf (nth 1 s-range) end)
-    s-range))
+  (let* ((range (my-create-range inclusive)))
+    (evil-range (car range) (cdr range) inclusive)))
 
 (evil-define-text-object my-evil-a-single-or-double-quote (count &optional beg end type)
   "Select a single-quoted expression."
   :extend-selection t
-  (my-single-or-double-quote-range count beg end type t))
+  (my-text-obj-similar-font count beg end type t))
 
 (evil-define-text-object my-evil-inner-single-or-double-quote (count &optional beg end type)
   "Select 'inner' single-quoted expression."
   :extend-selection nil
-  (my-single-or-double-quote-range count beg end type nil))
+  (my-text-obj-similar-font count beg end type nil))
 
 (define-key evil-outer-text-objects-map "i" #'my-evil-a-single-or-double-quote)
 (define-key evil-inner-text-objects-map "i" #'my-evil-inner-single-or-double-quote)
@@ -530,8 +524,8 @@ If INCLUSIVE is t, the text object is inclusive."
   "af" 'ace-maximize-window
   "ac" 'aya-create
   "pp" 'paste-from-x-clipboard ; used frequently
-  "bs" '(lambda () (interactive) (goto-edge-by-comparing-font-face -1))
-  "es" 'goto-edge-by-comparing-font-face
+  "bs" '(lambda () (interactive) (goto-char (car (my-create-range t))))
+  "es" '(lambda () (interactive) (goto-char (1- (cdr (my-create-range t)))))
   "vj" 'my-validate-json-or-js-expression
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer

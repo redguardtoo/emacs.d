@@ -20,7 +20,7 @@
   (cond
    ;; skip yas expand in org heading
    ((and (eq major-mode 'org-mode)
-         (string-match "^org-level-" (format "%S" (get-text-property (point) 'face))))
+         (string-match "^org-level-" (format "%S" (my-what-face))))
     (org-cycle))
    (t
     (apply orig-func args))))

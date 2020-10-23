@@ -360,51 +360,6 @@ This function can be re-used by other major modes after compilation."
   (add-hook 'compilation-filter-hook 'my-colorize-compilation-buffer))
 ;; }}
 
-;; @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
-(defun font-face-is-similar (f1 f2)
-  "Font face F1 and F2 are similar or same."
-  ;; (message "f1=%s f2=%s" f1 f2)
-  ;; in emacs-lisp-mode, the '^' from "^abde" has list of faces:
-  ;;   (font-lock-negation-char-face font-lock-string-face)
-  (if (listp f1) (setq f1 (nth 1 f1)))
-  (if (listp f2) (setq f2 (nth 1 f2)))
-
-  (or (eq f1 f2)
-      ;; C++ comment has different font face for limit and content
-      ;; f1 or f2 could be a function object because of rainbow mode
-      (and (string-match "-comment-" (format "%s" f1))
-           (string-match "-comment-" (format "%s" f2)))))
-
-(defun font-face-at-point-similar-p (font-face-list)
-  "Test if font face at point is similar to any font in FONT-FACE-LIST."
-  (let* ((f (get-text-property (point) 'face))
-         rlt)
-    (dolist (ff font-face-list)
-      (if (font-face-is-similar f ff) (setq rlt t)))
-    rlt))
-
-;; {{
-(defun goto-edge-by-comparing-font-face (&optional step)
-  "Goto either the begin or end of string/comment/whatever.
-If step is -1, go backward."
-  (interactive "P")
-  (let* ((cf (get-text-property (point) 'face))
-         (p (point))
-         rlt
-         found
-         end)
-    (unless step (setq step 1)) ;default value
-    (setq end (if (> step 0) (point-max) (point-min)))
-    (while (and (not found) (not (= end p)))
-      (if (not (font-face-is-similar (get-text-property p 'face) cf))
-          (setq found t)
-        (setq p (+ p step))))
-    (if found (setq rlt (- p step))
-      (setq rlt p))
-    ;; (message "rlt=%s found=%s" rlt found)
-    (goto-char rlt)))
-;; }}
-
 (defun my-minibuffer-setup-hook ()
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
   (local-set-key (kbd "C-k") 'kill-line)
