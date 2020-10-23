@@ -902,27 +902,6 @@ If INCLUSIVE is t, the text object is inclusive."
 (run-with-idle-timer 4 nil #'evil-find-char-pinyin-mode)
 ;; }}
 
-;; {{ Port of vim-textobj-syntax.
-;; It provides evil text objects for consecutive items with same syntax highlight.
-;; press "vah" or "vih"
-(require 'evil-textobj-syntax)
-;; }}
-
-;; {{ evil-args
-;; bind evil-args text objects
-(define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
-(define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-
-;; bind evil-forward/backward-args
-(define-key evil-normal-state-map "L" 'evil-forward-arg)
-(define-key evil-normal-state-map "H" 'evil-backward-arg)
-(define-key evil-motion-state-map "L" 'evil-forward-arg)
-(define-key evil-motion-state-map "H" 'evil-backward-arg)
-
-;; bind evil-jump-out-args
-(define-key evil-normal-state-map "K" 'evil-jump-out-args)
-;; }}
-
 ;; ;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company
 ;; ;; Run "grep fg english-words.txt", got "afghan".
 ;; ;; "afgan" is rarely used when programming
