@@ -559,8 +559,6 @@ If INCLUSIVE is t, the text object is inclusive."
   "rv" 'my-rename-thing-at-point
   "rb" 'evilmr-replace-in-buffer
   "ts" 'evilmr-tag-selected-region ;; recommended
-  "cby" 'cb-switch-between-controller-and-view
-  "cbu" 'cb-get-url-from-controller
   "rt" 'counsel-etags-recent-tag
   "ft" 'counsel-etags-find-tag
   "yy" 'counsel-browse-kill-ring
