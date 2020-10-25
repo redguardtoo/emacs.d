@@ -8,6 +8,8 @@
 (autoload 'dianyou-switch-gnus-buffer "dianyou" "" t)
 (autoload 'dianyou-insert-email-address-from-received-mails "dianyou" "" t)
 (autoload 'dianyou-paste-image-from-clipboard "dianyou" "" t)
+(autoload 'ace-pinyin-jump-char "ace-pinyin" "" t)
+(autoload 'ace-pinyin-jump-char-2 "ace-pinyin" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'mybigword-show-big-words-from-file "mybigword" "" t)
 (autoload 'mybigword-show-big-words-from-current-buffer "mybigword" "" t)

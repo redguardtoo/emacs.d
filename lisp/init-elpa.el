@@ -28,6 +28,7 @@
 ;; if it's not visible after  `list-packages'.
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
+    ace-pinyin
     auto-package-update
     nov
     bbdb
@@ -364,7 +365,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
  '(
    afternoon-theme
    alect-themes
-   ace-pinyin
    ample-theme
    ample-zen-theme
    anti-zenburn-theme
