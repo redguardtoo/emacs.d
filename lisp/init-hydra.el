@@ -35,7 +35,7 @@
   ("ll" wg-open-workgroup)
 
   ("e" my-erase-visible-buffer)
-  ("r" my-erase-current-buffer)
+  ("r" my-erase-comint-shell-buffer)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("ss" pomodoro-start)

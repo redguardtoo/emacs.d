@@ -95,12 +95,48 @@ N specifies the buffer to erase."
    ((eq 3 n)
     (my-erase-one-visible-buffer "*eshell*"))))
 
-(defun my-erase-current-buffer (&optional n)
-  "Erase current buffer even it's read-only.
-Keep N cli output if it's not nil."
+(defun my-all-windows ()
+  "Return all windows."
+  (cl-mapcan (lambda (f)
+               (window-list f 0 (frame-first-window f)))
+             (visible-frame-list)))
+
+(defvar my-after-check-errors-of-other-windows-function nil)
+
+(defun my-erase-comint-shell-buffer ()
+  "Kill running sub-process and Erase shell buffer."
   (interactive "P")
-  (my-erase-one-visible-buffer (buffer-name (current-buffer)) n)
-  (goto-char (point-max)))
+  (cond
+   ;; erase buffer, check errors in other window and insert certain command
+   ((derived-mode-p 'comint-mode)
+    ;; loop all sub-windows.
+    ;; if no error, run `my-after-check-errors-of-other-windows-function'
+    (let* ((orig-w (get-buffer-window))
+           (wins (my-all-windows))
+           err-wins)
+      (dolist (w wins)
+        (select-window w)
+        (when (and (eq major-mode 'js2-mode)
+                   (> (length (js2-errors)) 0))
+          (push (buffer-name) err-wins)))
+      ;; back to original window
+      (select-window orig-w)
+
+      (comint-interrupt-subjob)
+      ;; wait 2 seconds
+      (sit-for 2)
+      (my-erase-one-visible-buffer (buffer-name (current-buffer)))
+      (goto-char (point-max))
+
+      (cond
+       (err-wins
+        (message "Code syntax error in windows %s"
+                 (mapconcat 'identity err-wins " ")))
+       (my-after-check-errors-of-other-windows-function
+        (funcall my-after-check-errors-of-other-windows-function)))))
+
+   (t
+    (message "Can't erase buffer in %s" major-mode))))
 ;; }}
 
 ;; {{ narrow region
