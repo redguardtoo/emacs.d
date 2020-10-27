@@ -706,6 +706,13 @@ If no region is selected, `kill-ring' or clipboard is used instead."
   (define-key grep-mode-map
     (kbd "C-x C-q") 'wgrep-change-to-wgrep-mode))
 
+(defun my-wgrep-mark-deletion-hack (&optional arg)
+  "After mark a line for deletion, move to next line.
+ARG is ignored."
+  (ignore arg)
+  (forward-line))
+(advice-add 'wgrep-mark-deletion :after #'my-wgrep-mark-deletion-hack)
+
 ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
 (with-eval-after-load 'wgrep
   '(define-key grep-mode-map
