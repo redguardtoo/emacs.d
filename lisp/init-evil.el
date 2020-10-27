@@ -733,35 +733,7 @@ If INCLUSIVE is t, the text object is inclusive."
   "de" 'js2-display-error-list
   "nn" 'js2-next-error
   "te" 'js2-mode-toggle-element
-  "tf" 'js2-mode-toggle-hide-functions
-  "jeo" 'js2r-expand-object
-  "jco" 'js2r-contract-object
-  "jeu" 'js2r-expand-function
-  "jcu" 'js2r-contract-function
-  "jea" 'js2r-expand-array
-  "jca" 'js2r-contract-array
-  "jwi" 'js2r-wrap-buffer-in-iife
-  "jig" 'js2r-inject-global-in-iife
-  "jev" 'js2r-extract-var
-  "jiv" 'js2r-inline-var
-  "jrv" 'js2r-rename-var
-  "jvt" 'js2r-var-to-this
-  "jag" 'js2r-add-to-globals-annotation
-  "jsv" 'js2r-split-var-declaration
-  "jss" 'js2r-split-string
-  "jef" 'js2r-extract-function
-  "jem" 'js2r-extract-method
-  "jip" 'js2r-introduce-parameter
-  "jlp" 'js2r-localize-parameter
-  "jtf" 'js2r-toggle-function-expression-and-declaration
-  "jao" 'js2r-arguments-to-object
-  "juw" 'js2r-unwrap
-  "jwl" 'js2r-wrap-in-for-loop
-  "j3i" 'js2r-ternary-to-if
-  "jlt" 'js2r-log-this
-  "jsl" 'js2r-forward-slurp
-  "jba" 'js2r-forward-barf
-  "jk" 'js2r-kill)
+  "tf" 'js2-mode-toggle-hide-functions)
 ;; }}
 
 (defun my-evil-delete-hack (orig-func &rest args)
