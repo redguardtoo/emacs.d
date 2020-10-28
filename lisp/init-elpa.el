@@ -28,7 +28,6 @@
 ;; if it's not visible after  `list-packages'.
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
-    ace-pinyin
     auto-package-update
     nov
     bbdb
@@ -357,7 +356,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
     (require-package theme)))
 
 (require-package 'magit)
-(require-package 'ace-pinyin)
 (require-package 'which-key)
 
 ;; most popular 100 themes
