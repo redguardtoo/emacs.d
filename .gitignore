@@ -68,3 +68,4 @@ nov-places
 transient/
 elpy/
 package-quickstart.el
+.lsp-session*
