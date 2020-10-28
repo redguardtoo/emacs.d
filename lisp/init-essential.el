@@ -105,7 +105,7 @@ N specifies the buffer to erase."
 
 (defun my-erase-comint-shell-buffer ()
   "Kill running sub-process and Erase shell buffer."
-  (interactive "P")
+  (interactive)
   (cond
    ;; erase buffer, check errors in other window and insert certain command
    ((derived-mode-p 'comint-mode)
