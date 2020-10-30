@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1"))
 ;;
@@ -89,7 +89,7 @@
 ;;   See `mybigword-video2mp3' on how to generate mp3 from video files.
 ;;
 ;;   Please note `mybigword-play-video-of-word-at-point' can be used in other major modes.
-;;   See `mybigword-default-video-info-function' for details.
+;;   See `mybigword-default-media-info-function' for details.
 ;;
 ;;
 ;;   3. Use `mybigword-pronounce-word' to pronounce the word at point.
@@ -130,6 +130,11 @@ If nil, the default data is used."
 
 (defcustom mybigword-video-file-regexp "\\.\\(mp4\\|avi\\|mkv\\)$"
   "Regular expression to match video file names."
+  :group 'mybigword
+  :type 'string)
+
+(defcustom mybigword-audio-file-regexp "\\.\\(mp3\\|wav\\|flac\\)$"
+  "Regular expression to match audio file names."
   :group 'mybigword
   :type 'string)
 
@@ -210,8 +215,8 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   :group 'mybigword
   :type 'function)
 
-(defcustom mybigword-default-video-info-function
-  'mybigword-org-video-info
+(defcustom mybigword-default-media-info-function
+  'mybigword-org-media-info
   "The function to play the video of the big word."
   :group 'mybigword
   :type 'function)
@@ -429,11 +434,11 @@ FILE is the file path."
     (let* ((content (mybigword-read-file file)))
       (mybigword-show-big-words-from-content content file))))
 
-(defun mybigword-video-path (srt-path)
-  "Return video path of SRT-PATH."
+(defun mybigword-media-file-path (srt-path regexp)
+  "Return video/audio path similar to SRT-PATH and whose file name match REGEXP."
   (let* ((rlt '(nil . 99999))
          (dir (file-name-directory srt-path))
-	 (video-files (directory-files dir t mybigword-video-file-regexp))
+	 (video-files (directory-files dir t regexp))
          (base (file-name-base srt-path))
 	 (distance-fn (if (fboundp 'string-distance) 'string-distance
 	       'org-babel-edit-distance)))
@@ -498,10 +503,10 @@ If PLAY-MP3-P is t, mp3 is played."
        (t
         (mybigword-async-shell-command cmd))))))
 
-(defun mybigword-org-video-info (word)
+(defun mybigword-org-media-info (word)
   "Find the video information of the WORD in `org-mode'.
 The information is in current org node's \"SRT_PATH\" property."
-  (let* (rlt srt-path video-path)
+  (let* (rlt srt-path)
     (cond
      ((not (eq major-mode 'org-mode))
       (message "This function can only be used in `org-mode'."))
@@ -515,15 +520,14 @@ The information is in current org node's \"SRT_PATH\" property."
      ((not (file-exists-p srt-path))
       (message "File %s does not exist." srt-path))
 
-     ((not (setq video-path (mybigword-video-path srt-path)))
-      (message "Video of subtitle %s does not exist." srt-path))
-
      (t
       (let* ((chunks (split-string (mybigword-read-file srt-path)
                                    "\n\n+[0-9]+ *\n"))
              (start-time (mybigword-mplayer-start-time chunks word)))
         (when start-time
-          (setq rlt (list :video-path video-path :start-time start-time))))))
+          (setq rlt (list :video-path (mybigword-media-file-path srt-path mybigword-video-file-regexp)
+                          :audio-path (mybigword-media-file-path srt-path mybigword-audio-file-regexp)
+                          :start-time start-time))))))
     rlt))
 
 (defun mybigword--word-at-point (&optional user-input-p)
@@ -550,11 +554,11 @@ If USER-INPUT-P is t, user need input the word."
         (setq word (thing-at-point 'word)))))
     word))
 
-(defun mybigword-mp3-path (video-file)
-  "Get mp3 file with similar name to VIDEO-FILE."
-  (and video-file
-       (concat (file-name-directory video-file)
-               (file-name-base video-file)
+(defun mybigword-mp3-path (file)
+  "Get mp3 file with similar name to FILE."
+  (and file
+       (concat (file-name-directory file)
+               (file-name-base file)
                ".mp3")))
 
 ;;;###autoload
@@ -565,19 +569,19 @@ Its file name should be similar to the subtitle's file name.
 If video file is missing, the mp3 with similar name is played.
 The word is either the word at point, or selected string or string from input."
   (interactive)
-  (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t)))
-         info)
-    (when (and word
-               (setq info (funcall mybigword-default-video-info-function word)))
-      (let* ((file (plist-get info :video-path)))
+  (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t))))
+    (when word
+      (let* ((info (funcall mybigword-default-media-info-function word))
+             (video (plist-get info :video-path))
+             (audio (plist-get info :audio-path)))
         (cond
          ;; try to play video first
-         ((and file (file-exists-p file))
-          (mybigword-run-mplayer (plist-get info :start-time) file))
+         ((and video (file-exists-p video))
+          (mybigword-run-mplayer (plist-get info :start-time) video))
 
-         ;; try to play mp3 next
-         ((and (setq file (mybigword-mp3-path file)) (file-exists-p file))
-          (mybigword-run-mplayer (plist-get info :start-time) file t)))))))
+         ;; try to play audio
+         ((and audio (file-exists-p audio))
+          (mybigword-run-mplayer (plist-get info :start-time) audio t)))))))
 
 (defun mybigword-cambridge-mp3-url (word)
   "Get URL to download mp3 of WORD."
