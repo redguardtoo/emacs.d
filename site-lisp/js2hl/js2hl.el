@@ -1,13 +1,13 @@
-;;; js2hl.el --- Highlight/rename things using `js2-mode' parser  -*- lexical-binding: t -*-
+;;; js2hl.el --- Highlight/rename things using js2-mode parser  -*- lexical-binding: t -*-
 ;;
 ;; Copyright (C) 2020 Chen Bin <chenbin DOT sh@gmail DOT com>
 ;; Copyright (C) 2016-2017 Mihai Bazon <mihai.bazon@gmail.com>
 ;;
 ;; Version: 0.0.1
-;; Keywords: conveniences
+;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/js2hl
-;; Package-Requires: ((emacs "24.4") (js2-mode "20190219")
+;; Package-Requires: ((emacs "24.4") (js2-mode "20190219"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -50,7 +50,7 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'js2-mode nil t)
+(require 'js2-mode)
 
 (defvar js2-mode-ast)
 
@@ -247,7 +247,8 @@ That is, `return' and `throw' statements."
   (let* (first-place)
     (cond
      ((and places (consp (setq first-place (nth 0 places))))
-      (buffer-substring-no-properties (car first-place) (cdr first-place)))
+      (kill-new (buffer-substring-no-properties (car first-place)
+                                                (cdr first-place))))
      (t
       ""))))
 
