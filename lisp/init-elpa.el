@@ -5,8 +5,12 @@
   (setq package-enable-at-startup nil)
   (cond
    (*emacs27*
-    ;; you still need run `M-x package-quickstart-refresh' at least once
-    ;; to generate a big file containing `autoload' statements
+    ;; you need run `M-x package-quickstart-refresh' at least once
+    ;; to generate file "package-quickstart.el'.
+    ;; It contains the `autoload' statements for all packages.
+    ;; Please note once this file is created, you can't automatically
+    ;; install missing package any more
+    ;; You also need need re-generate this if any package is upgraded.
     (setq package-quick-start t)
 
     ;; esup need call `package-initialize'
