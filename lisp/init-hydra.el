@@ -34,8 +34,8 @@
   ("ii" my-counsel-imenu)
   ("ll" wg-open-workgroup)
 
-  ("e" my-erase-visible-buffer)
-  ("r" my-erase-comint-shell-buffer)
+  ("e" shellcop-erase-buffer)
+  ("r" shellcop-reset-with-new-command)
   ("E" toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("ss" pomodoro-start)

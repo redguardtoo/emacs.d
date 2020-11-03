@@ -515,7 +515,7 @@ If INCLUSIVE is t, the text object is inclusive."
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
   "ef" 'end-of-defun
   "m" 'evil-set-marker
-  "em" 'my-erase-visible-buffer
+  "em" 'shellcop-erase-buffer
   "eb" 'eval-buffer
   "sc" 'scratch
   "ee" 'eval-expression
