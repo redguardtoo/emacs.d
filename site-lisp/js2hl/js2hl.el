@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 Chen Bin <chenbin DOT sh@gmail DOT com>
 ;; Copyright (C) 2016-2017 Mihai Bazon <mihai.bazon@gmail.com>
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/js2hl
@@ -34,7 +34,7 @@
 ;; Usage,
 ;;
 ;; `js2hl-show-thing-at-point' to show things at point.
-;; Things are variable, strings, numbers, names like "this" or "super".
+;; Things are variable or it property, strings, numbers, names like "this" or "super".
 ;; It uses parser of `js2-mode' to extract correct things.
 ;;
 ;; `js2hl-rename-thing-at-point' to rename things at point.
@@ -86,20 +86,63 @@ If NODE-LENGTH is not nil, use it to calculate end of region."
                  (js2-node-abs-end ,node))))
      (push (cons beg end) ,result)))
 
+(defun js2hl-parent-prop-get-node (name-node)
+  "If parent of NAME-NODE is property get node, return parent."
+  (let* ((parent (and name-node (js2-node-parent name-node))))
+    (and (js2-prop-get-node-p parent) parent)))
+
+(defun js2hl-parent-prop-get-node-leftest-node (name-node)
+  "Leftest node of NAME-NODE.
+Given js code \"a.b.c\", c is name node, a is the left."
+  (let* ((parent (js2hl-parent-prop-get-node name-node))
+         (left (and parent (js2-prop-get-node-left parent)))
+         property-names)
+    (push (js2-name-node-name name-node) property-names)
+    (while (and left (not (js2-name-node-p left)) )
+      (push (js2-name-node-name (js2-prop-get-node-right left)) property-names)
+      (setq left (js2-prop-get-node-left left)))
+    (list left property-names)))
+
 (defun js2hl-get-var-regions ()
   "Get variable regions."
   (let* ((name-node (js2hl-local-name-node-at-point))
-         (name (js2-name-node-name name-node))
          (len (js2-node-len name-node))
+         (name (js2-name-node-name name-node))
          (scope (js2hl-name-node-defining-scope name-node))
+         leftest
          result)
+
+    (when (and (not scope)
+               (setq leftest (js2hl-parent-prop-get-node-leftest-node name-node)))
+      (setq name (js2-name-node-name (nth 0 leftest)))
+      (setq scope (js2hl-name-node-defining-scope (nth 0 leftest))))
     (js2-visit-ast scope
                    (lambda (node end-p)
                      (when (and (not end-p)
                                 (js2hl-local-name-node-p node)
                                 (string= name (js2-name-node-name node))
                                 (eq scope (js2hl-name-node-defining-scope node)))
-                       (js2hl-push-node-region node result len))
+                       (cond
+                        ;; change properties of variable
+                        (leftest
+                         (let* (parent
+                                (i 0)
+                                (property-names (nth 1 leftest))
+                                (level (length property-names))
+                                (property-match-p t))
+                           (when (setq parent (js2hl-parent-prop-get-node node) )
+                             (while (and property-match-p (< i level))
+                               (setq property-match-p
+                                     (and (setq node (js2hl-parent-prop-get-node node))
+                                          (string= (nth i property-names)
+                                                   (js2-name-node-name (js2-prop-get-node-right node)))))
+                               (setq i (1+ i)))
+                             (when property-match-p
+                               (js2hl-push-node-region (js2-prop-get-node-right node) result len)))))
+
+                        ;; change variable name
+                        (t
+                         (js2hl-push-node-region node result len))))
                      t))
     (nreverse result)))
 
@@ -153,11 +196,14 @@ If NODE-LENGTH is not nil, use it to calculate end of region."
   "Get regions at position POS."
   (let* ((node (js2-node-at-point pos)))
     (cond
-     ((js2-name-node-p node) (js2hl-get-var-regions))
+     ((js2-name-node-p node)
+      (js2hl-get-var-regions))
+
      ((or (js2-string-node-p node)
           (js2-number-node-p node)
           (js2-regexp-node-p node))
       (js2hl-get-constant-regions node))
+
      ((js2-this-or-super-node-p node)
       (js2hl-get-this-regions node)))))
 
