@@ -26,17 +26,21 @@
 ;;; Commentary:
 
 ;;  Open the file from command line error report,
-;;   - Insert "(with-eval-after-load 'shell-mode 'shellcop-start)" into ~/.emacs,
+;;   - Insert "(add-hook 'shell-mode-hook 'shellcop-start)" into ~/.emacs
 ;;   - Start shell by "M-x shell"
 ;;   - Run any command line program in shell
-;;   - Press ENTER in command line program error output which contains file and line number
+;;   - Press ENTER in the program's output which contains file and line number
 ;;
 ;; `shellcop-reset-with-new-command' will,
 ;;   - kill current running process
 ;;   - erase the content in shell buffer
-;;   - run `shellcop-insert-shell-command-function'
+;;   - If `shellcop-sub-window-has-error-function' return nil in all sub-windows, run `shellcop-insert-shell-command-function'
 ;;
-;; `shellcop-erase-buffer' erases the content of current shell
+;; `shellcop-erase-buffer' erases the content buffer with below names,
+;;   - "*Messages*" (default)
+;;   - "*shell*" (if parameter 1 is passed)
+;;   - "*Javascript REPL*" (if parameter 2 is passed)
+;;   - "*eshell*" (if parameter 3 is passed)
 ;;
 
 ;;; Code:
@@ -100,25 +104,19 @@ If there is error, it returns t."
       (while (and (< (point) end) (not rlt))
         ;; searching
         (when (setq file (thing-at-point 'filename))
-          (setq rlt (shellcop-location-detail file)))
+          (when (setq rlt (shellcop-location-detail file))
+            (setq rlt (cons (string-trim (shellcop-current-line)) rlt))))
         (forward-word)))
     rlt))
 
 (defmacro shellcop-push-location (location result)
   "Push LOCATION into RESULT."
   `(unless (cl-some (lambda (pattern)
-                      (let* ((file (car ,location)))
+                      (let* ((file (nth 1 ,location)))
                         (or (string-match pattern file)
                             (not (file-exists-p file)))))
                     shellcop-excluded-file-patterns)
-     ;; reformat the item into string because `completing-read' is not
-     ;; as powerful as `ivy-read'
-     (let* ((str (format "%s:%s"
-                         (nth 0 ,location)
-                         (nth 1 ,location))))
-       (when (nth 2 ,location)
-         (setq str (concat str ":" (nth 2,location))))
-       (push str ,result))))
+     (push ,location ,result)))
 
 (defun shellcop-extract-locations-at-point (&optional above)
   "Extract locations in one direction into RLT.
@@ -158,21 +156,21 @@ If ABOVE is t, extract locations above current point; or else below current poin
      ((or artifical (not (eq major-mode 'shell-mode)))
       ;; do nothing
       (apply orig-func args))
+
      ((setq locations (shellcop-extract-all-locations))
       (let* (location-detail
              location)
-        (when (and locations
-                   (> (length locations) 0)
-                   (setq location (completing-read "Go to: " locations)))
-          (when (setq location-detail (shellcop-location-detail location))
-            (find-file-other-window (nth 0 location-detail))
-            (goto-char (point-min))
-            ;; forward N lines
-            (shellcop-forward-line (string-to-number (nth 1 location-detail)))
-            ;; move to specific column
-            (when (nth 2 location-detail)
-              (goto-char (line-beginning-position))
-              (forward-char (string-to-number (nth 2 location-detail))))))))
+        (when (and (> (length locations) 0)
+                   (setq location (completing-read "Go to: " locations))
+                   (setq location-detail (assoc location locations)))
+          (find-file-other-window (nth 1 location-detail))
+          (goto-char (point-min))
+          ;; forward N lines
+          (shellcop-forward-line (string-to-number (nth 2 location-detail)))
+          ;; move to specific column
+          (when (nth 3 location-detail)
+            (goto-char (line-beginning-position))
+            (forward-char (string-to-number (nth 3 location-detail)))))))
      (t
       (apply orig-func args)))))
 
