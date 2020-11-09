@@ -250,19 +250,24 @@ If HINT is empty, use symbol at point."
     rlt))
 
 (defvar my-mplayer-extra-opts ""
-  "Extra options for mplayer (ao or vo setup).  For example,
-you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
+  "Extra options for mplayer (ao or vo setup).
+For example, you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
 
 (defun my-guess-mplayer-path ()
+  "Guess cli program mplayer's path."
   (let* ((rlt "mplayer"))
     (cond
-     (*is-a-mac* (setq rlt "mplayer -quiet"))
+     (*is-a-mac*
+      (setq rlt "mplayer -quiet"))
+
      (*linux*
-      (setq rlt (format "mplayer -quiet -stop-xscreensaver %s" my-mplayer-extra-opts)))
+      (setq rlt (format "mplayer -quiet -stop-xscreensaver %s"
+                        my-mplayer-extra-opts)))
      (*cygwin*
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
           (setq rlt "/cygdrive/c/mplayer/mplayer.exe -quiet")
         (setq rlt "/cygdrive/d/mplayer/mplayer.exe -quiet")))
+
      (t ; windows
       (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
           (setq rlt "c:\\\\mplayer\\\\mplayer.exe -quiet")
