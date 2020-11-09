@@ -11,6 +11,7 @@
 (autoload 'ace-pinyin-jump-char "ace-pinyin" "" t)
 (autoload 'ace-pinyin-jump-char-2 "ace-pinyin" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
+(autoload 'auto-save-enable "auto-save" "" t)
 (autoload 'mybigword-show-big-words-from-file "mybigword" "" t)
 (autoload 'mybigword-show-big-words-from-current-buffer "mybigword" "" t)
 (autoload 'mybigword-play-video-of-word-at-point "mybigword" "" t)

@@ -499,7 +499,6 @@ If no region is selected, `kill-ring' or clipboard is used instead."
   "Extract package list from package.json."
   (interactive)
   (let* ((str (my-use-selected-string-or-ask)))
-    (message "my-select-cliphist-item called => %s" str)
     (setq str (replace-regexp-in-string ":.*$\\|\"" "" str))
     ;; join lines
     (setq str (replace-regexp-in-string "[\r\n \t]+" " " str))
@@ -528,12 +527,22 @@ If no region is selected, `kill-ring' or clipboard is used instead."
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "indent-tabs-mode=%s" indent-tabs-mode))
 
+(defvar my-auto-save-exclude-major-mode-list
+  '(message-mode)
+  "The major modes where auto-save is disabled.")
+
 ;; {{ auto-save.el
-(local-require 'auto-save)
-(add-to-list 'auto-save-exclude 'file-too-big-p t)
-(setq auto-save-idle 2) ; 2 seconds
-(auto-save-enable)
-(setq auto-save-slient t)
+(defun my-check-major-mode-for-auto-save (file)
+  "Check current major mode of FILE for auto save."
+  (ignore file)
+  (memq major-mode my-auto-save-exclude-major-mode-list))
+
+(with-eval-after-load 'auto-save
+  (push 'my-file-too-big-p auto-save-exclude)
+  (push 'my-check-major-mode-for-auto-save auto-save-exclude)
+  (setq auto-save-idle 2) ; 2 seconds
+  (setq auto-save-slient t))
+(run-with-idle-timer 4 nil #'auto-save-enable)
 ;; }}
 
 ;; {{ csv

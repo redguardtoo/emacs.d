@@ -214,10 +214,12 @@ If HINT is empty, use symbol at point."
 (defvar cached-normal-file-full-path nil)
 
 (defun buffer-too-big-p ()
+  "Test if current buffer is too big."
   ;; 5000 lines
   (> (buffer-size) (* 5000 80)))
 
-(defun file-too-big-p (file)
+(defun my-file-too-big-p (file)
+  "Test if FILE is too big."
   (> (nth 7 (file-attributes file))
      (* 5000 64)))
 
