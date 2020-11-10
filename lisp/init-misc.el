@@ -676,8 +676,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 ;; }}
 
 ;; {{
-(local-require 'typewriter-mode)
-(defun toggle-typewriter ()
+(defun my-toggle-typewriter ()
   "Turn on/off typewriter."
   (interactive)
   (if (bound-and-true-p typewriter-mode)

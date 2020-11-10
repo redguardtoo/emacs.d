@@ -36,7 +36,7 @@
 
   ("e" shellcop-erase-buffer)
   ("r" shellcop-reset-with-new-command)
-  ("E" toggle-typewriter)
+  ("E" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("ss" pomodoro-start)
   ("st" pomodoro-stop)

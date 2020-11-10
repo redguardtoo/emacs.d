@@ -1,6 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 (autoload 'xclip-set-selection "xclip" "" t)
 (autoload 'xclip-get-selection "xclip" "" t)
+(autoload 'keyfreq-mode "keyfreq" "" t)
+(autoload 'keyfreq-autosave-mode "keyfreq" "" t)
 (autoload 'langtool-check "langtool" "" t)
 (autoload 'langtool-check-buffer "langtool" "" t)
 (autoload 'dianyou-group-make-nnir-group "dianyou" "" t)
@@ -12,6 +14,7 @@
 (autoload 'ace-pinyin-jump-char-2 "ace-pinyin" "" t)
 (autoload 'gmail2bbdb-import-file "gmail2bbdb" "" t)
 (autoload 'auto-save-enable "auto-save" "" t)
+(autoload 'typewriter-mode "typewriter-mode" "" t)
 (autoload 'mybigword-show-big-words-from-file "mybigword" "" t)
 (autoload 'mybigword-show-big-words-from-current-buffer "mybigword" "" t)
 (autoload 'mybigword-play-video-of-word-at-point "mybigword" "" t)
