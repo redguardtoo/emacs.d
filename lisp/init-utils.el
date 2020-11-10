@@ -487,5 +487,20 @@ Copied from 3rd party package evil-textobj."
 
     (cons start (1+ end))))
 
+(defun my-pinyinlib-build-regexp-string (str)
+  "Build pinyin regexp from STR."
+  (my-ensure 'pinyinlib)
+  (let* (rlt (i 0) ch)
+    (while (< i (length str))
+      (setq ch (elt str i))
+      (setq rlt (concat rlt
+                        (cond
+                         ((and (<= ?a ch) (<= ch ?z))
+                          (pinyinlib-build-regexp-char ch))
+                         (t
+                          (char-to-string ch)))))
+      (setq i (1+ i)))
+    rlt))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here
