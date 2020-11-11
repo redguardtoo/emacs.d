@@ -13,4 +13,4 @@ install:
   - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
 
 script:
-  - bash <(exit 0)
+  - bash <(make test)
