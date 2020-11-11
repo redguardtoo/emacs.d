@@ -241,7 +241,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (let* ((len (length str)))
     (cond
      ;; do nothing
-     ((<= (length str) 0))
+     ((<= (length str) 1))
 
      ;; If the first character of input in ivy is ":",
      ;; remaining input is converted into Chinese pinyin regex.
