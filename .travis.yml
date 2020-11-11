@@ -11,6 +11,7 @@ env:
 
 install:
   - bash <(curl https://raw.githubusercontent.com/purcell/nix-emacs-ci/master/travis-install)
+  - bash <(command -v aspell > /dev/null 2>&1 || nix-env -i aspell && nix-env -f '<nixpkgs>' -iA aspellDicts.en)
 
 script:
   - bash <(make test)
