@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(run-with-idle-timer 1 nil #'ivy-mode) ; it enables ivy UI for `kill-buffer'
+(my-run-with-idle-timer 1 #'ivy-mode) ; it enables ivy UI for `kill-buffer'
 
 (with-eval-after-load 'counsel
   ;; automatically pick up cygwin cli tools for counsel

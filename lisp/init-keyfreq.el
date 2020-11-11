@@ -6,7 +6,7 @@
   "Turn on keyfreq."
   (interactive)
   ;; Fire up keyfreq a few seconds later to start up emacs faster
-  (run-with-idle-timer 4 nil (lambda ()
+  (my-run-with-idle-timer 4 (lambda ()
                                (keyfreq-mode 1)
                                (keyfreq-autosave-mode 1))))
 

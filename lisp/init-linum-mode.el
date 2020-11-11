@@ -47,6 +47,6 @@
                                         ;; don't show line number for certain file extensions
                                         (should-use-minimum-resource)))))
   (add-hook 'display-line-numbers-mode-hook 'display-line-numbers-mode-hook-setup)
-  (run-with-idle-timer 2 nil #'global-display-line-numbers-mode))
+  (my-run-with-idle-timer 2 #'global-display-line-numbers-mode))
 
 (provide 'init-linum-mode)

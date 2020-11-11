@@ -222,7 +222,7 @@ This function can be re-used by other major modes after compilation."
 ;; from RobinH, Time management
 (setq display-time-24hr-format t) ; the date in modeline is English too, magic!
 (setq display-time-day-and-date t)
-(run-with-idle-timer 2 nil #'display-time)
+(my-run-with-idle-timer 2 #'display-time)
 ;; }}
 
 ;;a no-op function to bind to if you want to set a keystroke to null
@@ -542,7 +542,7 @@ If no region is selected, `kill-ring' or clipboard is used instead."
   (push 'my-check-major-mode-for-auto-save auto-save-exclude)
   (setq auto-save-idle 2) ; 2 seconds
   (setq auto-save-slient t))
-(run-with-idle-timer 4 nil #'auto-save-enable)
+(my-run-with-idle-timer 4 #'auto-save-enable)
 ;; }}
 
 ;; {{ csv
@@ -816,7 +816,7 @@ If the shell is already opened in some buffer, switch to that buffer."
   ;; So no auto-revert-mode on Windows/Cygwin
   (setq global-auto-revert-non-file-buffers t
         auto-revert-verbose nil)
-  (run-with-idle-timer 4 nil #'global-auto-revert-mode))
+  (my-run-with-idle-timer 4 #'global-auto-revert-mode))
 
 ;;----------------------------------------------------------------------------
 ;; Don't disable narrowing commands
@@ -950,7 +950,7 @@ version control automatically."
 (put 'upcase-region 'disabled nil)
 
 ;; midnight mode purges buffers which haven't been displayed in 3 days
-(run-with-idle-timer 4 nil #'midnight-mode)
+(my-run-with-idle-timer 4 #'midnight-mode)
 
 (defun cleanup-buffer-safe ()
   "Perform a bunch of safe operations on the whitespace content of a buffer.
@@ -1028,7 +1028,7 @@ might be bad."
 ;; {{ which-key-mode
 (setq which-key-allow-imprecise-window-fit t) ; performance
 (setq which-key-separator ":")
-(run-with-idle-timer 2 nil #'which-key-mode)
+(my-run-with-idle-timer 2 #'which-key-mode)
 ;; }}
 
 ;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
@@ -1126,7 +1126,7 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
 (when (and window-system (memq window-system '(mac ns)))
   ;; @see https://github.com/purcell/exec-path-from-shell/issues/75
   ;; I don't use those exec path anyway.
-  (run-with-idle-timer 4 nil #'exec-path-from-shell-initialize))
+  (my-run-with-idle-timer 4 #'exec-path-from-shell-initialize))
 ;; }}
 
 (provide 'init-misc)

@@ -36,7 +36,7 @@
 And \"%\" key is also restored to `evil-jump-item'.")
 
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
-(run-with-idle-timer 2 nil #'global-evil-surround-mode)
+(my-run-with-idle-timer 2 #'global-evil-surround-mode)
 (with-eval-after-load 'evil-surround
   (defun evil-surround-prog-mode-hook-setup ()
     "Set up surround shortcuts."
@@ -64,7 +64,7 @@ And \"%\" key is also restored to `evil-jump-item'.")
 
 ;; {{ For example, press `viW*`
 (setq evil-visualstar/persistent t)
-(run-with-idle-timer 2 nil #'global-evil-visualstar-mode)
+(my-run-with-idle-timer 2 #'global-evil-visualstar-mode)
 ;; }}
 
 ;; ffip-diff-mode (read only) evil setup
@@ -810,7 +810,7 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ evil-nerd-commenter
-(run-with-idle-timer 2 nil #'evilnc-default-hotkeys)
+(my-run-with-idle-timer 2 #'evilnc-default-hotkeys)
 (define-key evil-motion-state-map "gc" 'evilnc-comment-operator) ; same as doom-emacs
 
 (defun my-current-line-html-p (paragraph-region)
@@ -849,14 +849,14 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ `evil-matchit'
-(run-with-idle-timer 2 nil #'global-evil-matchit-mode)
+(my-run-with-idle-timer 2 #'global-evil-matchit-mode)
 ;; }}
 
 ;; {{ evil-exchange
 ;; press gx twice to exchange, gX to cancel
 ;; change default key bindings (if you want) HERE
 ;; (setq evil-exchange-key (kbd "zx"))
-(run-with-idle-timer 4 nil #'evil-exchange-install)
+(my-run-with-idle-timer 4 #'evil-exchange-install)
 ;; }}
 
 ;; {{ @see https://github.com/syl20bnr/spacemacs/blob/master/doc/DOCUMENTATION.org#replacing-text-with-iedit
@@ -869,7 +869,7 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; }}
 
 ;; {{ Evil’s f/F/t/T command can search PinYin ,
-(run-with-idle-timer 4 nil #'evil-find-char-pinyin-mode)
+(my-run-with-idle-timer 4 #'evil-find-char-pinyin-mode)
 ;; }}
 
 ;; ;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company

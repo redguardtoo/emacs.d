@@ -1,7 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; Navigate window layouts with "C-c <left>" and "C-c <right>"
-(run-with-idle-timer 2 nil #'winner-mode)
+(my-run-with-idle-timer 2 #'winner-mode)
 
 ;; @see https://emacs-china.org/t/emacs-builtin-mode/11937/63
 ;; press u undo and r to redo
@@ -100,7 +100,7 @@
   (setq winum-mode-line-position 0)
   (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold))
 ;; }}
-(run-with-idle-timer 2 nil #'winum-mode)
+(my-run-with-idle-timer 2 #'winum-mode)
 
 (defun my-toggle-full-window()
   "Toggle full view of selected window."

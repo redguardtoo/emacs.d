@@ -78,7 +78,7 @@ Show the diff between current working code and git head."
   (git-gutter:set-start-revision nil)
   (message "git-gutter reset"))
 
-(run-with-idle-timer 2 nil #'global-git-gutter-mode)
+(my-run-with-idle-timer 2 #'global-git-gutter-mode)
 
 (unless (fboundp 'global-display-line-numbers-mode)
  ;; git-gutter's workaround for linum-mode bug.

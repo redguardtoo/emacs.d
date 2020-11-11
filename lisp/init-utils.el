@@ -502,5 +502,16 @@ Copied from 3rd party package evil-textobj."
       (setq i (1+ i)))
     rlt))
 
+(defvar my-disable-idle-timer nil
+  "Function passed to `my-run-with-idle-timer' is run immediately.")
+
+(defun my-run-with-idle-timer (seconds func)
+  "After SECONDS, run function FUNC once."
+  (cond
+   (my-disable-idle-timer
+    (funcall func))
+   (t
+    (run-with-idle-timer seconds nil func))))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here

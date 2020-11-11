@@ -181,7 +181,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
     (horizontal-scroll-bar-mode -1)))
-(run-with-idle-timer 2 nil #'my-mini-ui)
+(my-run-with-idle-timer 2 #'my-mini-ui)
 ;; }}
 
 ;; no menu bar
