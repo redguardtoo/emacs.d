@@ -187,4 +187,18 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; no menu bar
 (menu-bar-mode -1)
 
+;; Nicer naming of buffers for files with identical names
+(setq uniquify-buffer-name-style 'reverse)
+(setq uniquify-separator " • ")
+(setq uniquify-after-kill-buffer-p t)
+(setq uniquify-ignore-buffers-re "^\\*")
+
+(setq hippie-expand-try-functions-list
+      '(try-complete-file-name-partially
+        try-complete-file-name
+        try-expand-dabbrev
+        try-expand-dabbrev-all-buffers
+        try-expand-dabbrev-from-kill))
+(global-set-key (kbd "M-/") 'hippie-expand)
+
 (provide 'init-essential)

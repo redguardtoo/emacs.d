@@ -15,5 +15,5 @@ githooks:
 
 # Run tests.
 test: clean
-	$(EMACS) -Q -nw --batch -l init.el
+	$(EMACS) -Q -nw --batch -l init.el -l tests/emacs.d-test.el
 
