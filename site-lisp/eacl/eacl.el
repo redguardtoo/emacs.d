@@ -1,12 +1,12 @@
 ;;; eacl.el --- Auto-complete lines by grepping project
 
-;; Copyright (C) 2017, 2018 Chen Bin
+;; Copyright (C) 2017-2020 Chen Bin
 ;;
-;; Version: 2.0.3
+;; Version: 2.0.4
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
-;; Package-Requires: ((emacs "24.4") (ivy "0.9.1"))
+;; Package-Requires: ((emacs "24.4"))
 ;; Keywords: abbrev, convenience, matching
 
 ;; This file is not part of GNU Emacs.
@@ -36,6 +36,9 @@
 ;; List of commands,
 ;;
 ;; `eacl-complete-line' complete single line.
+;; Line candidates are extracted in project root or N level of parent directory.
+;; N is the optional parameter of `eacl-complete-line'.
+;;
 ;; `eacl-complete-multiline' completes multiline code or html tag.
 ;;
 ;; Modify `grep-find-ignored-directories' and `grep-find-ignored-files'
@@ -72,12 +75,12 @@
 ;;
 ;; "git grep" is automatically used for grepping in git repository.
 ;; Please note "git grep" does NOT use `grep-find-ignored-directories' OR
-;; `grep-find-ignored-files'. You could set `eacl-git-grep-untracked' to tell
-;; git whether untracked files should be grepped in the repository.
-
+;; `grep-find-ignored-files'.
+;;
+;; Set `eacl-git-grep-untracked' if untracked files should be git grepped.
+;;
 
 ;;; Code:
-(require 'ivy nil t)
 (require 'grep)
 (require 'cl-lib)
 
@@ -296,15 +299,40 @@ If MULTILINE-P is t, command is for multiline matching."
                 (eacl-grep-exclude-opts)
                 search-regex)))))))
 
-(defun eacl-complete-line-internal (keyword extra)
-  "Complete line by grepping with KEYWORD.
-EXTRA is optional information to filter candidates."
-  (let* ((default-directory (or (funcall eacl-project-root-callback) default-directory))
+
+(defun eacl-parent-directory (n directory)
+  "Return N - 1 level parent directory of DIRECTORY."
+  (let* ((rlt directory))
+    (while (and (> n 1) (not (string= "" rlt)))
+      (setq rlt (file-name-directory (directory-file-name rlt)))
+      (setq n (1- n)))
+    (if (string= "" rlt) (setq rlt nil))
+    rlt))
+
+(defun eacl-complete-line-directory (&optional n)
+  "Get directory to grep text with N."
+  (cond
+   ((and n (> n 0))
+    (eacl-parent-directory n default-directory))
+
+   (t
+    (or (funcall eacl-project-root-callback)
+        default-directory))))
+
+(defun eacl-hint (time)
+  "Hint for candidates since TIME."
+  (format "candidates (%.01f seconds): "
+          (float-time (time-since time))))
+
+(defun eacl-complete-line-internal (keyword extra &optional n)
+  "Grep with KEYWORD, EXTRA information and N level parent directory."
+  (let* ((default-directory (eacl-complete-line-directory n))
          (cmd (eacl-search-command (eacl-shell-quote-argument keyword) nil))
          (orig-collection (eacl-get-candidates cmd "[\r\n]+" keyword))
          (line (eacl-trim-string (cdr extra)))
          (collection (delq nil (mapcar `(lambda (s) (unless (string= s ,line) s))
                                        (eacl-clean-candidates orig-collection))))
+         selected
          (line-end (line-end-position))
          (time (current-time)))
 
@@ -317,12 +345,8 @@ EXTRA is optional information to filter candidates."
       ;; one candidate, just complete it now
       (eacl-replace-text (car collection) line-end))
      (t
-      (ivy-read (format "candidates (%.01f seconds):"
-                        (float-time (time-since time)))
-                collection
-                :action `(lambda (l)
-                           (if (consp l) (setq l (cdr l)))
-                           (eacl-replace-text l ,line-end)))))))
+      (when (setq selected (completing-read (eacl-hint time) collection))
+        (eacl-replace-text selected line-end))))))
 
 (defun eacl-line-beginning-position ()
   "Get line beginning position."
@@ -337,30 +361,35 @@ EXTRA is optional information to filter candidates."
       (cond
        ((or (< b (line-beginning-position))
             (< (line-end-position) e))
-        (error "Please select region inside current line."))
+        (error "Please select region inside current line!"))
        (t
         (delete-region e (line-end-position))
         (delete-region (line-beginning-position) b)))
 
       ;; de-select region and move focus to region end
-      (when (and (boundp 'evil-mode) (eq evil-state 'visual))
+      (when (and (boundp 'evil-mode) evil-mode (eq evil-state 'visual))
         (evil-exit-visual-state)
         (evil-insert-state))
       (goto-char (line-end-position)))))
 
 ;;;###autoload
-(defun eacl-complete-line ()
-  "Complete line by grepping project.
+(defun eacl-complete-line (&optional n)
+  "Complete line by grepping in root or N level parent directory.
 The selected region will replace current line first.
 The text from line beginning to current point is used as grep keyword.
 Whitespace in the keyword could match any characters."
   (eacl-ensure-no-region-selected)
-  (interactive)
+  (interactive "P")
   (let* ((cur-line-info (eacl-current-line-info))
          (cur-line (car cur-line-info))
          (eacl-keyword-start (eacl-line-beginning-position))
          (keyword (eacl-get-keyword cur-line)))
-    (eacl-complete-line-internal keyword cur-line-info)
+
+    ;; Run "C-u eacl-complete-line"
+    (when (and n (not (numberp n)))
+      (setq n 1))
+
+    (eacl-complete-line-internal keyword cur-line-info n)
     (setq eacl-keyword-start nil)))
 
 (defmacro eacl-find-multiline-end (indentation)
@@ -372,16 +401,6 @@ Whitespace in the keyword could match any characters."
   "Is html related mode."
   (or (memq major-mode '(web-mode rjsx-mode xml-mode js2-jsx-mode))
       (derived-mode-p 'sgml-mode)))
-
-(defmacro eacl-match-html-start-tag-p (line html-p)
-  "LINE is like '>'."
-  `(and ,html-p
-        ;; eng html tag can't be ">"
-        (string-match "^[ \t]*>[ \t]*$" ,line)))
-
-(defmacro eacl-match-start-bracket-p (line)
-  "LINE is '{'."
-  `(string-match "^[ \t]*[\\[{(][ \t]*$" ,line))
 
 (defun eacl-extract-matched-multiline (line linenum file &optional html-p)
   "Extract matched lines start from LINE at LINENUM in FILE.
@@ -411,8 +430,10 @@ Return (cons multiline-text end-line-text) or nil."
              (t
               (goto-char end)
               (setq line (eacl-current-line-text))
-              (when (and (not (eacl-match-start-bracket-p line))
-                         (not (eacl-match-html-start-tag-p line html-p)))
+              (when (and (not (string-match "^[ \t]*[\\[{(][ \t]*$" line))
+                         (not (and html-p
+                                   ;; eng html tag can't be ">"
+                                   (string-match "^[ \t]*>[ \t]*$" line))))
                 ;; candidate found!
                 (setq rlt (buffer-substring-no-properties beg end))
                 (setq continue nil))))))))
@@ -457,13 +478,16 @@ Whitespace in keyword could match any characters."
                       (not cached-file-content))
                   (insert-file-contents file)
                   (setq cached-file-name file)
-                  (setq cached-file-content (buffer-substring-no-properties (point-min) (point-max))))
+                  (setq cached-file-content (buffer-string)))
                  (t
                   (insert cached-file-content)))
                 (goto-char (point-min))
                 (forward-line (1- linenum))
                 (goto-char (line-beginning-position))
-                (when (setq cand (eacl-extract-matched-multiline line linenum file html-p))
+                (when (setq cand (eacl-extract-matched-multiline line
+                                                                 linenum
+                                                                 file
+                                                                 html-p))
                   (when eacl-debug (message "cand=%s" cand))
                   (add-to-list 'rlt cand)))))))
       (cond
@@ -472,12 +496,10 @@ Whitespace in keyword could match any characters."
        ((= (length rlt) 1)
         (eacl-replace-text (car rlt) line-end))
        (t
-        (ivy-read (format "candidates (%.01f seconds):"
-                          (float-time (time-since time)))
-                  (mapcar 'eacl-multiline-candidate-summary rlt)
-                  :action `(lambda (l)
-                             (if (consp l) (setq l (cdr l)))
-                             (eacl-replace-text l ,line-end))))))))
+        (let* ((cands (mapcar 'eacl-multiline-candidate-summary rlt))
+               (selected (completing-read (eacl-hint time) cands)))
+          (when selected
+            (eacl-replace-text (cdr (assoc selected cands)) line-end))))))))
 
 (provide 'eacl)
 ;;; eacl.el ends here
