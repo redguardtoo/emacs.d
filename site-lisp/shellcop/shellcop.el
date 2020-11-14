@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: unix tools
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/shellcop
@@ -287,22 +287,18 @@ Keep latest N cli program output if it's not nil."
     (message "Can't erase buffer in %s" major-mode))))
 
 ;;;###autoload
-(defun shellcop-erase-buffer (&optional n)
-  "Erase the content of the *Messages* buffer.
-N specifies the buffer to erase."
-  (interactive "P")
+(defun shellcop-erase-buffer ()
+  "Erase *Messages* buffer if not in `shell-mode' or `messages-buffer-mode'.
+Or else erase current buffer."
+  (interactive)
   (cond
-   ((null n)
-    (shellcop-erase-one-visible-buffer "*Messages*"))
+   ((memq major-mode '(shell-mode message-buffer-mode))
+    (shellcop-erase-one-visible-buffer (buffer-name (current-buffer)))
+    (when (eq major-mode 'shell-mode)
+      (comint-send-input)))
 
-   ((eq 1 n)
-    (shellcop-erase-one-visible-buffer "*shell*"))
-
-   ((eq 2 n)
-    (shellcop-erase-one-visible-buffer "*Javascript REPL*"))
-
-   ((eq 3 n)
-    (shellcop-erase-one-visible-buffer "*eshell*"))))
+   (t
+    (shellcop-erase-one-visible-buffer "*Message*"))))
 
 (provide 'shellcop)
 ;;; shellcop.el ends here
