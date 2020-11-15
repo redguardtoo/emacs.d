@@ -298,7 +298,7 @@ Or else erase current buffer."
       (comint-send-input)))
 
    (t
-    (shellcop-erase-one-visible-buffer "*Message*"))))
+    (shellcop-erase-one-visible-buffer "*Messages*"))))
 
 (provide 'shellcop)
 ;;; shellcop.el ends here
