@@ -497,13 +497,14 @@ If INCLUSIVE is t, the text object is inclusive."
   :prefix ","
   :states '(normal visual))
 
-(defun my-rename-thing-at-point ()
-  "Rename thing at point."
-  (interactive)
+(defun my-rename-thing-at-point (&optional n)
+  "Rename thing at point.
+If N > 0, only occurrences in current N lines are renamed."
+  (interactive "P")
   (cond
    ((derived-mode-p 'js2-mode)
     ;; use `js2-mode' parser, much smarter and works in any scope
-    (js2hl-rename-thing-at-point))
+    (js2hl-rename-thing-at-point n))
    (t
     ;; simple string search/replace in function scope
     (evilmr-replace-in-defun))))

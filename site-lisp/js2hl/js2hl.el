@@ -3,7 +3,7 @@
 ;; Copyright (C) 2020 Chen Bin <chenbin DOT sh@gmail DOT com>
 ;; Copyright (C) 2016-2017 Mihai Bazon <mihai.bazon@gmail.com>
 ;;
-;; Version: 0.0.2
+;; Version: 0.0.3
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/js2hl
@@ -299,21 +299,32 @@ That is, `return' and `throw' statements."
       ""))))
 
 ;;;###autoload
-(defun js2hl-rename-thing-at-point ()
+(defun js2hl-rename-thing-at-point (&optional n)
   "Replace the highlighted things with NEW-NAME.
+If N > 0, only occurrences in current N lines are renamed.
 Only works if the mode was called with `js2hl-show-thing-at-point'."
-  (interactive)
+  (interactive "P")
   (let* ((places (sort (js2hl-get-regions-at-point) #'js2hl-compare-regions))
          (old-name (js2hl-get-old-name places))
-         (new-name (read-string (format "Replace \"%s\" with: " old-name))))
+         (new-name (read-string (format "Replace \"%s\" with: " old-name)))
+         (edit-begin (point-min))
+         (edit-end (point-max)))
+
+    (when (and n (> 0))
+      (setq edit-begin (line-beginning-position))
+      (save-excursion
+       (forward-line (1- n))
+       (setq edit-end (line-end-position))))
+
     (when (and places new-name)
       (save-excursion
         (dolist (p (nreverse places))
           (let* ((begin (car p))
                  (end (cdr p)))
-            (delete-region begin end)
-            (goto-char begin)
-            (insert new-name)))
+            (when (and (<= edit-begin begin) (< end edit-end))
+              (delete-region begin end)
+              (goto-char begin)
+              (insert new-name))))
         (message "%d occurrences renamed to %s" (length places) new-name)))
     (js2hl-forget-it)))
 
