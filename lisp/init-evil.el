@@ -558,6 +558,7 @@ If N > 0, only occurrences in current N lines are renamed."
   "wj" 'evil-window-down
   ;; }}
   "rv" 'my-rename-thing-at-point
+  "nm" 'js2hl-add-namespace-to-thing-at-point
   "rb" 'evilmr-replace-in-buffer
   "ts" 'evilmr-tag-selected-region ;; recommended
   "rt" 'counsel-etags-recent-tag

@@ -27,6 +27,7 @@
 (autoload 'js2hl-show-thing-at-point "js2hl" "" t)
 (autoload 'js2hl-show-exits "js2hl" "" t)
 (autoload 'js2hl-rename-thing-at-point "js2hl" "" t)
+(autoload 'js2hl-add-namespace-to-thing-at-point "js2hl" "" t)
 (autoload 'ivy-recentf "ivy" "" t)
 (autoload 'ivy-read "ivy")
 (autoload 'rainbow-mode "rainbow-mode" nil t)
