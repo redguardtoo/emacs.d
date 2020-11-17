@@ -50,10 +50,9 @@
   "Can use tags file to build imenu function"
   (my-ensure 'counsel-etags)
   (and (locate-dominating-file default-directory "TAGS")
-       ;; ctags needs extra setup to extract typescript tags
-       (file-exists-p counsel-etags-ctags-options-file)
-       (memq major-mode '(typescript-mode
-                          js-mode))))
+       ;; latest universal ctags has built in parser for javacript/typescript
+       (counsel-etags-universal-ctags-p "ctags")
+       (memq major-mode '(typescript-mode js-mode javascript-mode))))
 
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
 (defun my-get-string-from-file (file)

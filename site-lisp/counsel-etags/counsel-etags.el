@@ -55,7 +55,8 @@
 ;;   `counsel-etags-update-tags-force' to update current tags file by force
 ;;   `counsel-etags-ignore-config-file' specifies paths of ignore configuration files
 ;;   (".gitignore", ".hgignore", etc).  Path is either absolute or relative to the tags file.
-;;
+;;   `counsel-etags-universal-ctags-p' to detect if Universal Ctags is used.
+;;   `counsel-etags-exuberant-ctags-p' to detect if Exuberant Ctags is used.
 ;;
 ;; Tips:
 ;;
@@ -423,7 +424,7 @@ related functions need create and scan files in this folder."
 
 (defcustom counsel-etags-ctags-options-base "~/.ctags.exuberant"
   "Ctags configuration base use by all Ctags implementations.
-If Universal Ctags is used, it's converted to `counsel-etags-ctags-options-file'.
+Universal Ctags converts it to `counsel-etags-ctags-options-file'.
 If it's nil, nothing happens."
   :group 'counsel-etags
   :type 'string)
@@ -447,7 +448,8 @@ If it's nil, nothing happens."
   :type '(repeat 'string))
 
 (defcustom counsel-etags-imenu-excluded-types
-  '("variable")
+  '("variable"
+    "constant")
   "Some imenu items should be excluded by type.
 Run 'ctags -x some-file' to see the type in second column of output."
   :group 'counsel-etags
@@ -668,11 +670,18 @@ Return nil if it's not found."
   "Get CTAGS-PROGRAM information."
   (shell-command-to-string (concat ctags-program " --version")))
 
-(defun counsel-etags-is-exuberant-ctags (ctags-program)
+;;;###autoload
+(defun counsel-etags-exuberant-ctags-p (ctags-program)
   "If CTAGS-PROGRAM is Exuberant Ctags."
   (let* ((cmd-output (counsel-etags--ctags--info ctags-program)))
     (and (not (string-match-p "Universal Ctags" cmd-output))
          (string-match-p "Exuberant Ctags" cmd-output))))
+
+;;;###autoload
+(defun counsel-etags-universal-ctags-p (ctags-program)
+  "If CTAGS-PROGRAM is Universal Ctags."
+  (and (executable-find ctags-program)
+       (not (counsel-etags-exuberant-ctags-p ctags-program))))
 
 (defun counsel-etags-valid-ctags (ctags-program)
   "If CTAGS-PROGRAM is Ctags return the program.
@@ -711,7 +720,7 @@ If it's Emacs etags return nil."
 (defun counsel-etags-ctags-options-file-cli (program)
   "Use PROGRAM to create cli for `counsel-etags-ctags-options-file'."
   (let* (str
-         (exuberant-ctags-p (counsel-etags-is-exuberant-ctags program)))
+         (exuberant-ctags-p (counsel-etags-exuberant-ctags-p program)))
     (cond
      ;; Don't use any configuration file at all
      ((or (not counsel-etags-ctags-options-file)
@@ -780,7 +789,7 @@ If CODE-FILE is a real file, the command scans it and output to stdout."
                     ;; print a tabular, human-readable cross reference
                     ;; --<my-lang>-kinds=f still accept all user defined regex
                     ;; so we have to filter in Emacs Lisp
-                    (if code-file "-x" "")
+                    (if code-file "-x -w" "")
                     (if code-file (format "\"%s\"" code-file) ""))))
 
      (t
@@ -1411,14 +1420,18 @@ If SHOW-TAGNAME-P is t, show the tag name in the minibuffer."
   (let* (cands
          (lines (split-string output "\n")))
     (dolist (l lines)
-      (let* ((items (split-string l " +")))
+      (let* ((items (split-string l " +"))
+             (tag-name (nth 0 items))
+             (tag-type (nth 1 items))
+             (tag-line-num (nth 2 items)))
         (when (and (>= (length items) 4)
                    ;; tag name is not excluded
-                   (not (member (nth 0 items) counsel-etags-imenu-excluded-names))
+                   (not (member tag-name counsel-etags-imenu-excluded-names))
 
                    ;; tags type is not excluded
-                   (not (member (nth 1 items) counsel-etags-imenu-excluded-types)))
-          (push (cons (nth 0 items) (nth 2 items)) cands))))
+                   (not (member tag-type counsel-etags-imenu-excluded-types))
+                   (string-match "[0-9]+" tag-line-num))
+          (push (cons tag-name tag-line-num) cands))))
     cands))
 
 
