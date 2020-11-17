@@ -428,7 +428,7 @@ If STEP is 1,  search in forward direction, or else in backward direction."
   (let* ((region (my-comint-current-input-region)))
     (string-trim (buffer-substring-no-properties (car region) (cdr region)))))
 
-(defun my-imenu-items (&optional index-function)
+(defun my-rescan-imenu-items (&optional index-function)
   "Get imenu items using INDEX-FUNCTION."
   (my-ensure 'imenu)
   (let* ((imenu-auto-rescan t)
@@ -511,6 +511,22 @@ Copied from 3rd party package evil-textobj."
     (funcall func))
    (t
     (run-with-idle-timer seconds nil func))))
+
+(defun my-get-closest-imenu-item (cands)
+  "Return closest imen item from CANDS."
+  (let* ((pos (point))
+         closest)
+    (dolist (c cands)
+      (let* ((item (cdr c))
+             (m (cdr item)))
+        (when (and m (<= (marker-position m) pos))
+          (cond
+           ((not closest)
+            (setq closest item))
+           ((< (- pos (marker-position m))
+               (- pos (marker-position (cdr closest))))
+            (setq closest item))))))
+    closest))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

@@ -292,7 +292,7 @@ This function can be re-used by other major modes after compilation."
   "Return current function name."
   ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
   ;; clean the imenu cache
-  (my-imenu-items (if (my-use-tags-as-imenu-function-p)
+  (my-rescan-imenu-items (if (my-use-tags-as-imenu-function-p)
                       'counsel-etags-imenu-default-create-index-function
                     imenu-create-index-function))
   (which-function))

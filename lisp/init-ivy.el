@@ -282,18 +282,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
          (not (memq major-mode '(pdf-view-mode))))
     (let* ((cands (counsel--imenu-candidates))
            (pre-selected (thing-at-point 'symbol))
-           (pos (point))
-           closest)
-      (dolist (c cands)
-        (let* ((item (cdr c))
-               (m (cdr item)))
-          (when (and m (<= (marker-position m) pos))
-            (cond
-             ((not closest)
-              (setq closest item))
-             ((< (- pos (marker-position m))
-                 (- pos (marker-position (cdr closest))))
-              (setq closest item))))))
+           (closest (my-get-closest-imenu-item cands)))
       (if closest (setq pre-selected (car closest)))
       (ivy-read "imenu items: " cands
                 :preselect pre-selected
