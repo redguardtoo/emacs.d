@@ -111,6 +111,7 @@
     htmlize
     pyim-basedict
     pyim-wbdict
+    pyim
     scratch
     session
     inflections
