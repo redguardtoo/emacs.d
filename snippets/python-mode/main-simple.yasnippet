@@ -1,0 +1,20 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: simple main
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail
+# --
+#!/usr/bin/env python
+import sys
+import re
+
+def usage():
+    print("`(and buffer-file-name (file-name-base buffer-file-name))`")
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        usage()
+        exit(1)
+
+    $0
+    print("%s, hello %s" % ("hi", "world"))
+    pass
