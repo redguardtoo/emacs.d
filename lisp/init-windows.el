@@ -100,7 +100,7 @@
   (setq winum-mode-line-position 0)
   (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold))
 ;; }}
-(my-run-with-idle-timer 2 #'winum-mode)
+(winum-mode 1)
 
 (defun my-toggle-full-window()
   "Toggle full view of selected window."
