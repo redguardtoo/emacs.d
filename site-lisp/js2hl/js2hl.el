@@ -7,7 +7,7 @@
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/js2hl
-;; Package-Requires: ((emacs "24.4") (js2-mode "20190219"))
+;; Package-Requires: ((emacs "25.1") (js2-mode "20190219"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -308,12 +308,12 @@ That is, `return' and `throw' statements."
 (defun js2hl-rename-thing-at-point-internal (new-name-function n)
   "Replace the highlighted things with result of calling NEW-NAME-FUNCTION.
 If N > 0, only occurrences in current N lines are renamed."
-  (interactive "P")
   (let* ((places (sort (js2hl-get-regions-at-point) #'js2hl-compare-regions))
          (old-name (js2hl-get-old-name places))
          (new-name (funcall new-name-function old-name))
          (edit-begin (point-min))
-         (edit-end (point-max)))
+         (edit-end (point-max))
+         (cnt (length places)))
 
     (when (and n (> 0))
       (setq edit-begin (line-beginning-position))
@@ -329,8 +329,10 @@ If N > 0, only occurrences in current N lines are renamed."
             (when (and (<= edit-begin begin) (< end edit-end))
               (delete-region begin end)
               (goto-char begin)
-              (insert new-name))))
-        (message "%d occurrences renamed to %s" (length places) new-name)))
+              (insert new-name)))))
+      ;; force update the AST, so user can start next renaming immediately
+      (js2-do-parse)
+      (message "%d occurrences renamed to %s" cnt new-name))
     (js2hl-forget-it)))
 
 ;;;###autoload
