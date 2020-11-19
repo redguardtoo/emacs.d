@@ -738,17 +738,6 @@ If N > 0, only occurrences in current N lines are renamed."
   "tf" 'js2-mode-toggle-hide-functions)
 ;; }}
 
-(defun my-evil-delete-hack (orig-func &rest args)
-  "Press `dd' to delete lines in `wgrep-mode' in evil directly."
-  ;; make buffer writable
-  (if (and (boundp 'wgrep-prepared) wgrep-prepared)
-      (wgrep-toggle-readonly-area))
-  (apply orig-func args)
-  ;; make buffer read-only
-  (if (and (boundp 'wgrep-prepared) wgrep-prepared)
-      (wgrep-toggle-readonly-area)))
-(advice-add 'evil-delete :around #'my-evil-delete-hack)
-
 ;; {{ Use `;` as leader key, for searching something
 (general-create-definer my-semicolon-leader-def
   :prefix ";"
