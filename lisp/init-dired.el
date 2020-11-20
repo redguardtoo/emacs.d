@@ -209,4 +209,16 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
   (setq dired-listing-switches "-laGh1v")
   (setq dired-recursive-deletes 'always))
 
+(defun my-computer-sleep-now ()
+  "Make my computer sleep now."
+  (interactive)
+  (let* ((cmd (cond
+               (*cygwin*
+                "rundll32.exe PowrProf.dll,SetSuspendState")
+               (*is-a-mac*
+                "pmset sleepnow")
+               (t
+                "sudo pm-suspend"))))
+    (shell-command cmd)))
+
 (provide 'init-dired)
