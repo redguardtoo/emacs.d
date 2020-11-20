@@ -4,9 +4,9 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "24.4") (company "0.9.0"))
+;; Package-Requires: ((emacs "25.1") (company "0.9.0"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -64,6 +64,8 @@
 ;; - Make sure CLI program diff is executable on Windows.
 ;; It's optional but highly recommended.  It can speed up tags file updating.
 ;; This package uses diff through variable `diff-command'.
+;;
+;; - `company-ctags-debug-info' for debugging.
 ;;
 
 ;;; Code:
@@ -128,6 +130,11 @@ Default value is 30 seconds."
   "The name of tags file."
   :type 'string)
 
+(defcustom company-ctags-tag-name-valid-characters
+  "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%_!*&1234567890"
+  "The characters of tag name.  It's used for partition algorithm."
+  :type 'string)
+
 (defcustom company-ctags-fuzzy-match-p nil
   "If t, fuzzy match the candidates.
 The input could match any part of the candidate instead of the beginning of
@@ -146,6 +153,8 @@ the candidate."
     python-mode
     lua-mode
     web-mode))
+
+(defvar company-backends) ; avoid compiling warning
 
 (defvar-local company-ctags-buffer-table 'unknown)
 
@@ -180,53 +189,60 @@ the candidate."
           (setq company-ctags-buffer-table (company-ctags-find-table))
         company-ctags-buffer-table)))
 
+(defun company-ctags-tag-name-character-p (c)
+  "Test if character C is in `company-ctags-tag-name-valid-characters'."
+  (let (rlt (i 0) (len (length company-ctags-tag-name-valid-characters)))
+    (while (and (not rlt) (< i len))
+      (setq rlt (eq (elt company-ctags-tag-name-valid-characters i) c))
+      (setq i (1+ i)))
+    rlt))
+
 (defmacro company-ctags-push-tagname (tagname tagname-dict)
   "Push TAGNAME into TAGNAME-DICT."
-  `(let* ((c (elt ,tagname 0)))
-    (cond
-     ((or (and (>= c ?a) (<= c ?z))
-          (and (>= c ?A) (<= c ?Z))
-          (eq c ?$)
-          (eq c ?#)
-          (eq c ?@)
-          (eq c ?%)
-          (eq c ?_)
-          (eq c ?!)
-          (eq c ?*)
-          (eq c ?&)
-          (and (>= c ?0) (<= c ?9)))
-      (push ,tagname (gethash c ,tagname-dict)))
-     (t
-      (push ,tagname (gethash ?' ,tagname-dict))))))
+  `(let ((c (elt ,tagname 0)))
+     (when (company-ctags-tag-name-character-p c)
+       (push ,tagname (gethash c ,tagname-dict)))))
+
+(defun company-ctags-n-items (n tagnames)
+  "Return first N items of TAGNAMES."
+  (cond
+   ((<= (length tagnames) n)
+    tagnames)
+   (t
+    (let (rlt (i 0))
+      (while (< i n)
+        (push (nth i tagnames) rlt)
+        (setq i (1+ i)))
+      (push " ..." rlt)
+      (nreverse rlt)))))
+
+;;;###autoload
+(defun company-ctags-debug-info ()
+  "Print all debug information."
+  (interactive)
+  (let* ((caches company-ctags-tags-file-caches)
+         (keys (hash-table-keys caches)))
+    (message "* cache contents")
+    (dolist (k keys)
+      (let* ((h (gethash k caches))
+             (timestamp (plist-get h :timestamp))
+             (filesize (plist-get h :filesize))
+             (dict (plist-get h :tagname-dict))
+             (dict-keys (hash-table-keys dict)))
+        (message "** key=%s timestamp=%s filesize=%s\n" k timestamp filesize)
+        (dolist (dk dict-keys)
+          (let* ((items (company-ctags-n-items 4 (gethash dk dict))))
+            (when (> (length items) 0)
+              (message "  %s: %s" (string dk) items))))))))
 
 (defun company-ctags-init-tagname-dict ()
   "Initialize tagname dict."
   (let* ((i 0)
-         (dict (make-hash-table)))
-    ;; initialize hashtable whose key is from a...z and A...Z
-    (while (< i 26)
-      ;; make sure the hash value is not nil
-      (puthash (+ ?a i) '() dict)
-      (puthash (+ ?A i) '() dict)
+         (dict (make-hash-table))
+         (len (length company-ctags-tag-name-valid-characters)))
+    (while (< i len)
+      (puthash (elt company-ctags-tag-name-valid-characters i) '() dict)
       (setq i (1+ i)))
-
-    ;; initialize hashtable whose key is from 0...9
-    (setq i 0)
-    (while (< i 10)
-      ;; make sure the hash value is not nil
-      (puthash (+ ?0 i) '() dict)
-      (setq i (1+ i)))
-    ;; other key used as the first character of variable name
-    (puthash ?$ '() dict)
-    (puthash ?_ '() dict)
-    (puthash ?# '() dict)
-    (puthash ?& '() dict)
-    (puthash ?@ '() dict)
-    (puthash ?! '() dict)
-    (puthash ?* '() dict)
-    (puthash ?% '() dict)
-    ;; rubbish bin
-    (puthash ?' '() dict)
     dict))
 
 (defun company-ctags-parse-tags (text &optional dict)
@@ -282,7 +298,7 @@ If `company-ctags-fuzzy-match-p' is t, check if the match contains STRING."
     (let* ((keys (hash-table-keys tagname-dict))
            arr
            rlt)
-      ;; search all hashtables
+      ;; search all hash tables
       ;; don't care the first character of prefix
       (dolist (c keys)
         (setq arr (gethash c tagname-dict))
@@ -290,7 +306,7 @@ If `company-ctags-fuzzy-match-p' is t, check if the match contains STRING."
       rlt))
    (t
     (let* ((c (elt prefix 0))
-           (arr (gethash c tagname-dict (gethash ?' tagname-dict))))
+           (arr (gethash c tagname-dict)))
       (company-ctags-all-completions prefix arr)))))
 
 (defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog quiet)
@@ -434,7 +450,7 @@ If QUIET is t, don not output any message."
             (when tagname-dict
               (setq rlt (append rlt (company-ctags-all-candidates prefix tagname-dict))))))
 
-        ;; fuzzy algorithm don't use caching aglorithm
+        ;; fuzzy algorithm don't use caching algorithm
         (unless company-ctags-fuzzy-match-p
           (setq company-ctags-cached-candidates
                 ;; clone the rlt into cache
@@ -445,8 +461,7 @@ If QUIET is t, don not output any message."
 
 ;;;###autoload
 (defun company-ctags (command &optional arg &rest ignored)
-  "Completion backend of for ctags.
-Execute COMMAND with ARG and IGNORED."
+  "Completion backend of for ctags.  Execute COMMAND with ARG and IGNORED."
   (interactive (list 'interactive))
   (cl-case command
     (interactive (company-begin-backend 'company-ctags))
