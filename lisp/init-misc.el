@@ -738,6 +738,7 @@ ARG is ignored."
                                 file-name-history
                                 search-ring
                                 regexp-search-ring))
+(setq session-save-file-coding-system 'utf-8)
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
