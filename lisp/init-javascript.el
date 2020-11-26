@@ -184,6 +184,7 @@ INDENT-SIZE decide the indentation level.
                 "inject"
                 "isDev"
                 "it"
+                "jest"
                 "jQuery"
                 "jasmine"
                 "key" ; Keysnail
