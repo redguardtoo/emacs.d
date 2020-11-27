@@ -117,7 +117,10 @@
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
-(defvar my-do-bury-compilation-buffer t
+;; hide the compilation buffer automatically is not a good idea.
+;; if compiling command is a unit test command
+;; It's better let user decide when to hide something
+(defvar my-do-bury-compilation-buffer nil
   "Hide compilation buffer if compile successfully.")
 
 (defun compilation-finish-hide-buffer-on-success (buffer str)
