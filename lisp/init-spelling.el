@@ -137,6 +137,8 @@ When fixing a typo, avoid pass camel case option to cli program."
          (lines (my-read-lines dict))
          ;; sort words
          (aspell-words (sort (cdr lines) 'string<)))
+    (save-buffer)
+    (sit-for 1)
     (with-temp-file dict
       (insert (format "%s %d\n%s"
                         "personal_ws-1.1 en"
