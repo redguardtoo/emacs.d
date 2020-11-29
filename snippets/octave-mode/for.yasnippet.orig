@@ -1,0 +1,16 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: for i = 1:m
+<<<<<<< HEAD
+# key: lo
+=======
+# key: for
+>>>>>>> 26b084bf (octave snippet)
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+for i = 1:${1:m}
+  $0
+<<<<<<< HEAD
+end
+=======
+end
+>>>>>>> 26b084bf (octave snippet)
