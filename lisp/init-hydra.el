@@ -456,7 +456,7 @@ Git:
 "
   ("ri" my-git-rebase-interactive)
   ("rr" git-gutter-reset-to-default)
-  ("rh" git-gutter-reset-to-head-parent)
+  ("rh" my-git-gutter-reset-to-head-parent)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
   ("b" magit-show-refs-popup)
