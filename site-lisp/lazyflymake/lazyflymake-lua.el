@@ -8,7 +8,7 @@
 (require 'lazyflymake-sdk)
 
 (defcustom lazyflymake-lua-program "luac"
-  "The path to the check program."
+  "The path of the lua linter."
   :group 'lazyflymake
   :type 'string)
 

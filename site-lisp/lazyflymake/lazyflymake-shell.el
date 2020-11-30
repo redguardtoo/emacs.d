@@ -8,7 +8,7 @@
 (require 'lazyflymake-sdk)
 
 (defcustom lazyflymake-shell-program "shellcheck"
-  "The path to the shellcheck executable."
+  "The path of the shellcheck linter."
   :group 'lazyflymake
   :type 'string)
 
