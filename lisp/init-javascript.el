@@ -21,7 +21,6 @@
   ;; '$' is part of variable name like '$item'
   (modify-syntax-entry ?$ "w" js-mode-syntax-table))
 
-;; {{ patching imenu in js2-mode
 (defun my-validate-json-or-js-expression (&optional not-json-p)
   "Validate buffer or select region as JSON.
 If NOT-JSON-P is not nil, validate as Javascript expression instead of JSON."
@@ -84,6 +83,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 ;; }}
 
 (defun my-js2-mode-setup()
+  "Set up javascript."
   (unless (is-buffer-file-temp)
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
