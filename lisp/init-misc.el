@@ -1011,9 +1011,8 @@ might be bad."
 ;; {{ octave
 (defun octave-mode-hook-setup ()
   "Set up of `octave-mode'."
-  (abbrev-mode 1)
-  (auto-fill-mode 1)
-  (if (eq window-system 'x) (font-lock-mode 1)))
+  (setq-local comment-start "%")
+  (setq-local comment-add 0))
 (add-hook 'octave-mode-hook 'octave-mode-hook-setup)
 ;; }}
 
