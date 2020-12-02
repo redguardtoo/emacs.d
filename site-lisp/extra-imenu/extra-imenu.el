@@ -78,35 +78,38 @@
    ((and (listp item) (not (listp (cdr item))))
     (extra-imenu-position (cdr item)))))
 
-(defun extra-imenu-merge-imenu-items (original-items extra-items)
-  "Merge ORIGINAL-ITEMS and EXTRA-ITEMS into one imenu items list."
+;;;###autoload
+(defun extra-imenu-add-new-items (original-items patterns)
+  "Merge ORIGINAL-ITEMS and extra imenu items from PATTERNS.
+PATTERNS should be an alist of the same form as `imenu-generic-expression'."
   ;; Clear the lines.
-  (cond
-   (extra-items
-    (let* (ranges)
-      ;; Analyze the old imenu items from original imenu backend.
-      ;; Only care about line number here.
-      (dolist (item original-items)
-        (let* ((val (extra-imenu-position item)))
-          (when val
-            (push (extra-imenu-line-range val) ranges))))
+  (let* ((extra-items (save-excursion (imenu--generic-function patterns))))
+    (cond
+     (extra-items
+      (let* (ranges)
+        ;; Analyze the old imenu items from original imenu backend.
+        ;; Only care about line number here.
+        (dolist (item original-items)
+          (let* ((val (extra-imenu-position item)))
+            (when val
+              (push (extra-imenu-line-range val) ranges))))
 
-      ;; EXTRA-ITEMS sample:
-      ;; ((function ("hello" . #<marker 63>) ("bye" . #<marker 128>))
-      ;;  (controller ("MyController" . #<marker 128))
-      ;;  (hello . #<marker 161>))
-      (append original-items
-              (cl-remove-if (lambda (item)
-                              (let* ((position (extra-imenu-position item)))
-                                (cl-some (lambda (item-range)
-                                           (and position
-                                                (< position (cdr item-range))
-                                                (>= position (car item-range))))
-                                         ranges)))
-                            extra-items))))
+        ;; EXTRA-ITEMS sample:
+        ;; ((function ("hello" . #<marker 63>) ("bye" . #<marker 128>))
+        ;;  (controller ("MyController" . #<marker 128))
+        ;;  (hello . #<marker 161>))
+        (append original-items
+                (cl-remove-if (lambda (item)
+                                (let* ((position (extra-imenu-position item)))
+                                  (cl-some (lambda (item-range)
+                                             (and position
+                                                  (< position (cdr item-range))
+                                                  (>= position (car item-range))))
+                                           ranges)))
+                              extra-items))))
 
-   (t
-    original-items)))
+     (t
+      original-items))))
 
 ;;;###autoload
 (defun extra-imenu-auto-setup (patterns)
@@ -115,9 +118,7 @@ PATTERNS should be an alist of the same form as `imenu-generic-expression'."
   (let* ((old-imenu-fn imenu-create-index-function))
     (setq imenu-create-index-function
           (lambda ()
-            (extra-imenu-merge-imenu-items (funcall old-imenu-fn)
-                                           (save-excursion
-                                             (imenu--generic-function patterns)))))))
+            (extra-imenu-add-new-items (funcall old-imenu-fn) patterns)))))
 
 (provide 'extra-imenu)
 ;;; extra-imenu.el ends here
