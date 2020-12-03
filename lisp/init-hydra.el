@@ -469,7 +469,7 @@ Git:
   ("dr" (progn (magit-diff-range (my-git-commit-id))))
   ("cc" magit-commit-popup)
   ("ca" magit-commit-amend)
-  ("ja" (magit-commit-amend "--reuse-message=HEAD"))
+  ("ja" (magit-commit-amend "--reuse-message=HEAD --no-verify"))
   ("au" magit-stage-modified)
   ("Q" git-gutter-toggle)
   ("f" my-git-find-file-in-commit)
