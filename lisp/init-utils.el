@@ -486,6 +486,12 @@ Copied from 3rd party package evil-textobj."
 
     (cons start (1+ end))))
 
+(defun my-get-char (position)
+  "Get character at POSITION."
+  (save-excursion
+    (goto-char position)
+    (following-char)))
+
 (defun my-pinyinlib-build-regexp-string (str)
   "Build pinyin regexp from STR."
   (my-ensure 'pinyinlib)
