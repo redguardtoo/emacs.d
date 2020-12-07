@@ -197,24 +197,6 @@ When fixing a typo, avoid pass camel case option to cli program."
 ;; }}
 
 
-(defun my-personal-typo-checker (typo)
-  "Double check TYPO reported."
-  (ignore typo)
-  (let* ((typo-p t))
-    (when (memq major-mode '(python-mode))
-      (save-excursion
-        (backward-word)
-        (let* ((pos (point)))
-          (when (eq (get-text-property pos 'face) 'font-lock-string-face)
-            ;; aspell regard symbol as part of word
-            ;; @see http://aspell.net/0.61/man-html/Words-With-Symbols-in-Them.html#Words-With-Symbols-in-Them
-            ;; @see https://github.com/redguardtoo/emacs.d/issues/892
-            (when (and (eq (my-get-char (1- pos)) ?')
-                       (<= ?a (my-get-char (- pos 2)))
-                       (>= ?z (my-get-char (- pos 2))))
-              (setq typo-p nil))))))
-    typo-p))
-
 (with-eval-after-load 'wucuo
   ;; {{ wucuo is used to check camel cased code and plain text.  Code is usually written
   ;; in English. If your code uses other language (Spanish?),
@@ -224,7 +206,6 @@ When fixing a typo, avoid pass camel case option to cli program."
   ;; (setq wucuo-hunspell-dictionary-base-name "en_US")
 
   ;; }}
-  (setq wucuo-extra-predicate 'my-personal-typo-checker)
 
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; check buffer or visible region only
