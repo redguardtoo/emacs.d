@@ -147,7 +147,7 @@ This function can be re-used by other major modes after compilation."
            (rlt t)
            (i 0))
       (while (and (< i n) rlt)
-        (let* ((c (char-before (- (point) n))))
+        (let* ((c (char-before (- (point) i))))
           (when (not (and c (or (and (<= ?a c) (<= c ?z))
                                 (and (<= ?A c) (<= c ?Z))
                                 (and (<= ?0 c) (<= c ?9)))))
@@ -157,18 +157,22 @@ This function can be re-used by other major modes after compilation."
 
 (defun my-electric-pair-inhibit (char)
   "Customize electric pair when input CHAR."
-  (cond
-   ((and (memq major-mode '(minibuffer-inactive-mode)))
-    (not (string-match "^Eval:" (buffer-string))))
+  (let* (rlt)
+    (cond
+     ((and (memq major-mode '(minibuffer-inactive-mode))
+           (not (string-match "^Eval:" (buffer-string))))
+      (setq rlt t))
 
-   ;; Don't insert extra single/double quotes at the end of word
-   ;; Also @see https://github.com/redguardtoo/emacs.d/issues/892#issuecomment-740259242
-   ((and (memq (char-before (point)) '(34 39))
-         (my-normal-word-before-point-p (1- (point))))
-    t)
+     ;; Don't insert extra single/double quotes at the end of word
+     ;; Also @see https://github.com/redguardtoo/emacs.d/issues/892#issuecomment-740259242
+     ((and (memq (char-before (point)) '(34 39))
+           (my-normal-word-before-point-p (1- (point))))
+      (setq rlt t))
 
-   (t
-    (electric-pair-default-inhibit char))))
+     (t
+      (setq rlt (electric-pair-default-inhibit char))))
+
+    rlt))
 
 (with-eval-after-load 'flymake
   (setq flymake-gui-warnings-enabled nil))
