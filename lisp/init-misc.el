@@ -138,26 +138,30 @@ This function can be re-used by other major modes after compilation."
       (winner-undo)
       (message "NO COMPILATION ERRORS!"))))
 
-(defun my-normal-word-before-point-p (position)
-  "A normal word exists before POSITION."
+(defun my-normal-word-before-point-p (position n fn)
+  "A normal word exists before POSITION.  N characters before current point is checked.
+FN checks these characters belong to normal word characters."
   (save-excursion
     (goto-char position)
     ;; sample N characters before POSITION
-    (let* ((n 4)
-           (rlt t)
+    (let* ((rlt t)
            (i 0))
       (while (and (< i n) rlt)
         (let* ((c (char-before (- (point) i))))
-          (when (not (and c (or (and (<= ?a c) (<= c ?z))
-                                (and (<= ?A c) (<= c ?Z))
-                                (and (<= ?0 c) (<= c ?9)))))
+          (when (not (and c (funcall fn c)))
             (setq rlt nil)))
         (setq i (1+ i)))
       rlt)))
 
 (defun my-electric-pair-inhibit (char)
   "Customize electric pair when input CHAR."
-  (let* (rlt)
+  (message "my-electric-pair-inhibit called")
+  (let* (rlt
+         (quote-chars '(34 39))
+         (word-fn (lambda (c)
+                    (or (and (<= ?a c) (<= c ?z))
+                        (and (<= ?A c) (<= c ?Z))
+                        (and (<= ?0 c) (<= c ?9))))))
     (cond
      ((and (memq major-mode '(minibuffer-inactive-mode))
            (not (string-match "^Eval:" (buffer-string))))
@@ -165,8 +169,8 @@ This function can be re-used by other major modes after compilation."
 
      ;; Don't insert extra single/double quotes at the end of word
      ;; Also @see https://github.com/redguardtoo/emacs.d/issues/892#issuecomment-740259242
-     ((and (memq (char-before (point)) '(34 39))
-           (my-normal-word-before-point-p (1- (point))))
+     ((and (memq (char-before (point)) quote-chars)
+           (my-normal-word-before-point-p (1- (point)) 4 word-fn))
       (setq rlt t))
 
      (t
