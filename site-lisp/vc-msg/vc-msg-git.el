@@ -189,14 +189,48 @@ Parse the command execution output and return a plist:
        "vs-msg"
        (vc-msg-git-shell-output (vc-msg-git-generate-cmd (format "show %s" id))))))))
 
+(defun vc-msg-git-copy-info (field)
+  "Copy info of FIELD."
+  (let* ((id (plist-get vc-msg-previous-commit-info field)))
+    (kill-new id)
+    (message "%s => kill-ring" id)))
+
 (defcustom vc-msg-git-extra
-  '(("c" "[c]ode" vc-msg-git-show-code))
+  '(("c" "[c]ode" vc-msg-git-show-code)
+    ("h" "[h]ash" (lambda () (vc-msg-git-copy-info :id)))
+    ("a" "[a]uthor" (lambda () (vc-msg-git-copy-info :author))))
   "Extra keybindings/commands used by `vc-msg-map'.
-An example:
+Examples:
 '((\"c\" \"[c]ode\" (lambda () (message \"%s\" vc-msg-previous-commit-info))
   (\"d\" \"[d]iff\" (lambda () (message \"%s\" vc-msg-previous-commit-info))))"
   :type '(repeat sexp)
   :group 'vc-msg)
+
+(defun vc-msg-git-extra-setup ()
+  "Set up `vc-msg-git-extra' for more functionalities."
+
+  ;; magit
+  (when (fboundp 'magit-find-file)
+    (push '("m" "[m]agit-find-file"
+            (lambda ()
+              (let* ((info vc-msg-previous-commit-info))
+                (funcall 'magit-find-file
+                         (plist-get info :id)
+                         (concat (vc-msg-sdk-git-rootdir)
+                                 (plist-get info :filename))))))
+          vc-msg-git-extra))
+
+  ;; git link
+  (when (fboundp 'git-link-commit)
+    (push '("g" "[g]it-link-commit"
+            (lambda ()
+              (let* ((info vc-msg-previous-commit-info))
+                (with-temp-buffer
+                  (insert (plist-get info :id))
+                  (call-interactively 'git-link-commit)))))
+          vc-msg-git-extra)))
+
+(vc-msg-git-extra-setup)
 
 (provide 'vc-msg-git)
 ;;; vc-msg-git.el ends here

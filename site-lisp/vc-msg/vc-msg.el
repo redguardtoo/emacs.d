@@ -1,8 +1,8 @@
 ;;; vc-msg.el --- Show commit information of current line
 
-;; Copyright (C) 2017 Chen Bin
+;; Copyright (C) 2017-2020 Chen Bin
 ;;
-;; Version: 1.0.2
+;; Version: 1.1.0
 ;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
@@ -68,6 +68,23 @@
 ;;
 ;; The program provides a plugin framework so you can easily write a
 ;; plugin to support any alien VCS.  Please use "vc-msg-git.el" as a sample.
+
+;; Sample configuration to integrate with Magit (https://magit.vc/),
+;;
+;; (eval-after-load 'vc-msg-git
+;;   '(progn
+;;      ;; show code of commit
+;;      (setq vc-msg-git-show-commit-function 'magit-show-commit)
+;;      ;; open file of certain revision
+;;      (push '("m"
+;;              "[m]agit-find-file"
+;;              (lambda ()
+;;                (let* ((info vc-msg-previous-commit-info)
+;;                       (git-dir (locate-dominating-file default-directory ".git")))
+;;                  (magit-find-file (plist-get info :id )
+;;                                   (concat git-dir (plist-get info :filename))))))
+;;            vc-msg-git-extra)))
+;;
 
 ;;; Code:
 
