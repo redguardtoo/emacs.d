@@ -155,7 +155,6 @@ FN checks these characters belong to normal word characters."
 
 (defun my-electric-pair-inhibit (char)
   "Customize electric pair when input CHAR."
-  (message "my-electric-pair-inhibit called")
   (let* (rlt
          (quote-chars '(34 39))
          (word-fn (lambda (c)
