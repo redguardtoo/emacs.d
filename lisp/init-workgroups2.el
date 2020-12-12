@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(setq wg-use-default-session-file nil)
+(setq wg-session-load-on-start nil)
 ;; don't open last workgroup automatically in `wg-open-session',
 ;; I only want to check available workgroups! Nothing more.
 (setq wg-load-last-workgroup nil)
