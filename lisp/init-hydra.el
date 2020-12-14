@@ -6,17 +6,17 @@
 ;; use similar key bindings as init-evil.el
 (defhydra hydra-launcher (:color blue)
   "
-^Misc^                     ^Audio^              ^Study^
+^Misc^                    ^Study^                    ^Audio^
 --------------------------------------------------------------------------
-[_ss_] Save workgroup     [_R_] Emms Random     [_w_] Pronounce word
-[_ll_] Load workgroup     [_n_] Emms Next       [_W_] Big words definition
-[_B_] New bookmark        [_p_] Emms Previous   [_v_] Play big word video
-[_m_] Goto bookmark       [_P_] Emms Pause      [_im_] Image of word
-[_bb_] Switch Gnus buffer [_O_] Emms Open       [_ss_] Pomodoro start
-[_e_] Erase buffer        [_L_] Emms Playlist   [_st_] Pomodoro stop
-[_r_] Erase this buffer   [_E_] Typewriter on   [_sr_] Pomodoro resume
-[_f_] Recent file         [_V_] Old typewriter  [_sp_] Pomodoro pause
-[_d_] Recent directory
+[_ss_] Save workgroup     [_w_] Pronounce word       [_R_] Emms Random
+[_ll_] Load workgroup     [_W_] Big words definition [_n_] Emms Next
+[_B_] New bookmark        [_v_] Play big word video  [_p_] Emms Previous
+[_m_] Goto bookmark       [_im_] Image of word       [_P_] Emms Pause
+[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_O_] Emms Open
+[_e_] Erase buffer        [_s2_] Pomodoro big task   [_L_] Emms Playlist
+[_r_] Erase this buffer   [_st_] Pomodoro stop       [_E_] Typewriter on
+[_f_] Recent file         [_sr_] Pomodoro resume     [_V_] Old typewriter
+[_d_] Recent directory    [_sp_] Pomodoro pause
 [_bh_] Bash history
 [_hr_] Dired CMD history
 [_hh_] Random theme
@@ -38,7 +38,8 @@
   ("r" shellcop-reset-with-new-command)
   ("E" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
-  ("ss" pomodoro-start)
+  ("s1" pomodoro-start)
+  ("s2" (let ((pomodoro-work-time 60)) (call-interactively 'pomodoro-start)))
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
