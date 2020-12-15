@@ -1,0 +1,7 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: N of input and output (columns)
+# key: n
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+${1:train.X} = ${1:$(yas/substr yas-text "[^ ]*")}(:, 1:${2:1000});
+${3:train.y} = ${3:$(yas/substr yas-text "[^ ]*")}(:, 1:${2:$(yas/substr yas-text "[^ ]*")});
