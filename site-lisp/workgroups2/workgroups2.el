@@ -2773,7 +2773,8 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'"
   (let* ((special-data (wg-buf-special-data buf))
          (buffer (save-window-excursion
                    (condition-case err
-                       (funcall (car special-data) buf)
+                       (let ((fn (car special-data)))
+                         (and fn (funcall (car special-data) buf)))
                      (error (message "Error deserializing %S: %S" (wg-buf-name buf) err)
                             nil)))))
     (when (and special-data buffer)
@@ -3334,79 +3335,69 @@ that, use `wg-clone-workgroup'."
   ;; I prefer simpler UI
   (message "Workgroup \"%s\" was created and saved." name))
 
-(defun wg-switch-to-workgroup (workgroup &optional noerror)
-  "Switch to WORKGROUP.
-NOERROR means fail silently."
+(defun wg-switch-to-workgroup (workgroup)
+  "Switch to WORKGROUP."
   (interactive (list (wg-read-workgroup-name)))
   (fset 'buffer-list wg-buffer-list-original)
   (let ((workgroup (wg-get-workgroup-create workgroup))
         (current (wg-current-workgroup t)))
-    (when (and (eq workgroup current) (not noerror))
-      (error "Already on: %s" (wg-workgroup-name current)))
-    (when current (push current wg-deactivation-list))
-    (unwind-protect
-        (progn
-          ;; Before switch
-          (run-hooks 'wg-before-switch-to-workgroup-hook)
-          ;; Save info about some hard-to-work-with libraries
-          (let (wg-flag-modified)
-            (wg-set-workgroup-parameter 'ecb (and (boundp 'ecb-minor-mode)
-                                                  ecb-minor-mode)))
-          ;;(wg-set-workgroup-parameter (wg-current-workgroup t) 'ecb-win-config (ecb-current-window-configuration))
-          ;; (type-of (ecb-current-window-configuration))
-          ;; (type-of (car (ecb-current-window-configuration)))
-          ;; (type-of (car (nthcdr 3 (ecb-current-window-configuration))))
-          ;; (wg-pickelable-or-error (ecb-current-window-configuration))
-          ;;(ecb-current-window-configuration)
-          ;;)
-
-          ;; Before switching - turn off ECB
-          ;; https://github.com/pashinin/workgroups2/issues/34
-          (when (and (boundp 'ecb-minor-mode)
-                     (boundp 'ecb-frame)
-                     (fboundp 'ecb-deactivate)
-                     ecb-minor-mode
-                     (equal ecb-frame (selected-frame)))
-            (let ((ecb-split-edit-window-after-start 'before-deactivation))
-              (ecb-deactivate)))
-
-          ;; Switch
-          (wg-restore-workgroup workgroup)
-          (wg-set-previous-workgroup current)
-          (wg-set-current-workgroup workgroup)
-
-          ;; After switch
-          ;; Save "last-workgroup" to the session params
-          (let (wg-flag-modified)
-            (awhen (wg-current-workgroup t)
-                   (wg-set-session-parameter 'last-workgroup (wg-workgroup-name it)))
-            (awhen (wg-previous-workgroup t)
-                   (wg-set-session-parameter 'prev-workgroup (wg-workgroup-name it))))
-
-          ;; If a workgroup had ECB - turn it on
-          (if (and (boundp 'ecb-minor-mode)
-                   (not ecb-minor-mode)
-                   (fboundp 'ecb-activate)
-                   (wg-workgroup-parameter (wg-current-workgroup t) 'ecb nil))
+    (unless (and (eq workgroup current))
+      (when current (push current wg-deactivation-list))
+      (unwind-protect
+          (progn
+            ;; Before switch
+            (run-hooks 'wg-before-switch-to-workgroup-hook)
+            ;; Save info about some hard-to-work-with libraries
+            (let (wg-flag-modified)
+              (wg-set-workgroup-parameter 'ecb (and (boundp 'ecb-minor-mode)
+                                                    ecb-minor-mode)))
+            ;; Before switching - turn off ECB
+            ;; https://github.com/pashinin/workgroups2/issues/34
+            (when (and (boundp 'ecb-minor-mode)
+                       (boundp 'ecb-frame)
+                       (fboundp 'ecb-deactivate)
+                       ecb-minor-mode
+                       (equal ecb-frame (selected-frame)))
               (let ((ecb-split-edit-window-after-start 'before-deactivation))
-                (ecb-activate)))
-          ;;(ecb-last-window-config-before-deactivation
-          ;; (wg-workgroup-parameter (wg-current-workgroup t) 'ecb-win-config nil)))
+                (ecb-deactivate)))
 
-          ;; `sr-speedbar'
-          ;; if *SPEEDBAR* buffer is visible - set some variables
-          (let* ((buffers (mapcar 'window-buffer (window-list)))
-                 (buffer-names (mapcar 'buffer-name buffers)))
-            (when (and (featurep 'sr-speedbar)
-                       (member sr-speedbar-buffer-name buffer-names))
-              (setq sr-speedbar-window (get-buffer-window sr-speedbar-buffer-name))))
+            ;; Switch
+            (wg-restore-workgroup workgroup)
+            (wg-set-previous-workgroup current)
+            (wg-set-current-workgroup workgroup)
 
-          ;; Finally
-          (if wg-mess-with-buffer-list
-              (fset 'buffer-list wg-buffer-list-function))
-          (wg-fontified-message (:cmd "Switched: ") (wg-workgroup-name (wg-current-workgroup t)))
-          (run-hooks 'wg-after-switch-to-workgroup-hook))
-      (when current (pop wg-deactivation-list)))))
+            ;; After switch
+            ;; Save "last-workgroup" to the session params
+            (let (wg-flag-modified)
+              (awhen (wg-current-workgroup t)
+                     (wg-set-session-parameter 'last-workgroup (wg-workgroup-name it)))
+              (awhen (wg-previous-workgroup t)
+                     (wg-set-session-parameter 'prev-workgroup (wg-workgroup-name it))))
+
+            ;; If a workgroup had ECB - turn it on
+            (if (and (boundp 'ecb-minor-mode)
+                     (not ecb-minor-mode)
+                     (fboundp 'ecb-activate)
+                     (wg-workgroup-parameter (wg-current-workgroup t) 'ecb nil))
+                (let ((ecb-split-edit-window-after-start 'before-deactivation))
+                  (ecb-activate)))
+            ;;(ecb-last-window-config-before-deactivation
+            ;; (wg-workgroup-parameter (wg-current-workgroup t) 'ecb-win-config nil)))
+
+            ;; `sr-speedbar'
+            ;; if *SPEEDBAR* buffer is visible - set some variables
+            (let* ((buffers (mapcar 'window-buffer (window-list)))
+                   (buffer-names (mapcar 'buffer-name buffers)))
+              (when (and (featurep 'sr-speedbar)
+                         (member sr-speedbar-buffer-name buffer-names))
+                (setq sr-speedbar-window (get-buffer-window sr-speedbar-buffer-name))))
+
+            ;; Finally
+            (if wg-mess-with-buffer-list
+                (fset 'buffer-list wg-buffer-list-function))
+            (wg-fontified-message (:cmd "Switched: ") (wg-workgroup-name (wg-current-workgroup t)))
+            (run-hooks 'wg-after-switch-to-workgroup-hook))
+        (when current (pop wg-deactivation-list))))))
 
 (defun wg-switch-to-workgroup-at-index (index)
   "Switch to the workgroup at INDEX in `wg-workgroup-list'."
