@@ -136,7 +136,7 @@ It's value could be customized liked \"/usr/bin/firefox\".
 
   (defun my-org-publish-hack (orig-func &rest args)
     "Stop running `major-mode' hook when `org-publish'."
-    (let* ((load-user-customized-major-mode-hook nil))
+    (let* ((my-load-user-customized-major-mode-hook nil))
       (apply orig-func args)))
   (advice-add 'org-publish :around #'my-org-publish-hack)
 
@@ -154,7 +154,7 @@ It's value could be customized liked \"/usr/bin/firefox\".
   (defun my-org-refile-hack (orig-func &rest args)
     "When `org-refile' scans org files,
 skip user's own code in `org-mode-hook'."
-    (let* ((force-buffer-file-temp-p t))
+    (let* ((my-force-buffer-file-temp-p t))
       (apply orig-func args)))
   (advice-add 'org-refile :around #'my-org-refile-hack)
 
