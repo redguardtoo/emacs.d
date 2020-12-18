@@ -721,6 +721,9 @@ Shamelessly copied from org2blog/wp-replace-pre()."
 
 (defun org2nikola--render-subtree (&optional donot-publish)
   "Render current subtree and publish post if DONOT-PUBLISH is nil."
+  ;; htmlize requires to to access hl-line's font faces when rendering diff
+  (unless (featurep 'hl-line) (require 'hl-line))
+
   (let* ((org-directory default-directory)
          html-file
          ;; set title and tags
