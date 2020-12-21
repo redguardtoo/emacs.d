@@ -11,12 +11,37 @@
           company-complete-number)))
 
 (with-eval-after-load 'company
+
+  (defun my-company-number ()
+    "Forward to `company-complete-number'.
+Unless the number is potentially part of the candidate.
+In that case, insert the number."
+    (interactive)
+    (let* ((k (this-command-keys))
+           (re (concat "^" company-prefix k)))
+      (if (cl-find-if (lambda (s) (string-match re s))
+                      company-candidates)
+          (self-insert-command 1)
+        (company-complete-number (string-to-number k)))))
+
   ;; @see https://github.com/company-mode/company-mode/issues/348
   (company-statistics-mode)
   (push 'company-cmake company-backends)
   (push 'company-c-headers company-backends)
   ;; can't work with TRAMP
   (setq company-backends (delete 'company-ropemacs company-backends))
+
+  ;; @see https://oremacs.com/2017/12/27/company-numbers/
+  ;; Using digits to select company-mode candidates
+  (let ((map company-active-map))
+    (mapc
+     (lambda (x)
+       (define-key map (format "%d" x) 'my-company-number))
+     (number-sequence 0 9)))
+
+  (setq company-auto-commit t)
+  ;; characters "/ ) . , ;"to trigger auto commit
+  (setq company-auto-commit-chars '(92  41 46 44 59))
 
   ;; company-ctags is much faster out of box. No further optimiation needed
   (unless (featurep 'company-ctags) (local-require 'company-ctags))
