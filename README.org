@@ -72,6 +72,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
   - [[#python-environment][Python environment]]
   - [[#set-up-lsp-mode][Set up lsp-mode]]
+  - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
   - [[#emacs-23][Emacs 23]]
   - [[#emacs-243][Emacs 24.3]]
@@ -691,6 +692,8 @@ lsp-on-touch-time) 120) ;; 2 mins
 #+end_src
 
 Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
+** Enable typewriter sounds when typing
+Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 * Support legacy Emacs versions
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.

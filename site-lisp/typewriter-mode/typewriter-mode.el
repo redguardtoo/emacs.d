@@ -23,7 +23,6 @@
 ;; Minor mode for playing typewriter sounds when typing.
 
 ;;; Code:
-(require 'cl-lib)
 
 (defcustom twm/sound-file
   "typewriter-key-modern.wav"
@@ -32,11 +31,14 @@
   :group 'typewriter-mode)
 
 (defcustom twm/play-command
-  (cl-case system-type
-    ('darwin "afplay %s")
-    ('windows-nt "powershell -c (New-Object Media.SoundPlayer \"%s\").PlaySync();")
-    ('gnu/linux "aplay %s"))
-  "Command to play sound file."
+  nil
+  "Command to play sound file.  It's automatically set if nil."
+  :type 'string
+  :group 'typewriter-mode)
+
+(defcustom twm/quiet-major-modes
+  nil
+  "Major modes to be quiet."
   :type '(repeat sexp)
   :group 'typewriter-mode)
 
@@ -46,9 +48,23 @@
 
 (defun twm/play-typewriter-sound ()
   "Play sound."
-  (start-process-shell-command
-   "*play-typewriter-sound*" nil
-   (format twm/play-command (concat twm/sound-file-dir twm/sound-file))))
+  (unless (and twm/quiet-major-modes
+               (apply 'derived-mode-p twm/quiet-major-modes))
+    (let* ((cmd twm/play-command))
+      ;; guess player
+      (unless cmd
+        (setq cmd
+              (cond
+               ((eq system-type 'darwin)
+                "afplay %s")
+               ((eq system-type 'windows-nt)
+                "powershell -c (New-Object Media.SoundPlayer \"%s\").PlaySync();")
+               ((eq system-type 'gnu/linux)
+                ;; pulseaudio or alsa
+                (if (executable-find "paplay") "paplay %s" "aplay %s")))))
+      (start-process-shell-command
+       "*play-typewriter-sound*" nil
+       (format cmd (concat twm/sound-file-dir twm/sound-file))))))
 
 (defun twm/toggle-sound-style ()
   "Change typewriter sound between vintage and modern."
