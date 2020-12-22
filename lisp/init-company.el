@@ -10,6 +10,9 @@
           company-complete-selection
           company-complete-number)))
 
+(defvar my-company-zero-key-for-filter nil
+  "If t, pressing 0 calls `company-filter-candidates' per company's status.")
+
 (with-eval-after-load 'company
 
   (defun my-company-number ()
@@ -18,11 +21,19 @@ Unless the number is potentially part of the candidate.
 In that case, insert the number."
     (interactive)
     (let* ((k (this-command-keys))
-           (re (concat "^" company-prefix k)))
-      (if (cl-find-if (lambda (s) (string-match re s))
-                      company-candidates)
-          (self-insert-command 1)
-        (company-complete-number (string-to-number k)))))
+           (re (concat "^" company-prefix k))
+           (n (if (equal k "0") 10 (string-to-number k))))
+      (cond
+       ((or (cl-find-if (lambda (s) (string-match re s)) company-candidates)
+            (> n (length company-candidates))
+            (looking-back "[0-9]+\\.[0-9]*" (line-beginning-position)))
+        (self-insert-command 1))
+
+       ((and (eq n 10) my-company-zero-key-for-filter)
+        (company-filter-candidates))
+
+       (t
+        (company-complete-number n)))))
 
   ;; @see https://github.com/company-mode/company-mode/issues/348
   (company-statistics-mode)

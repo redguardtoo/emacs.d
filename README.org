@@ -714,6 +714,7 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[http
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
 - You can run =optimize-emacs-startup= to compile "*.el" under =lisp/=
+- Many advanced features in this configuration is only enabled in my personal =~/.custom.el=. Grep =defvar my-.*= in =~/.emacs.d/lisp/= to find them.  You can start from =init-company.el= and =init-spelling.el=.
 * Report bug
 Please check [[http://www.emacswiki.org/emacs/][EmacsWiki]] and my FAQ first.
 
