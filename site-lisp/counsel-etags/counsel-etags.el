@@ -1,4 +1,4 @@
-;;; counsel-etags.el ---  Fast and complete Ctags/Etags solution using ivy  -*- lexical-binding: t -*-
+;;; counsel-etags.el --- Fast and complete Ctags/Etags solution using ivy -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2018-2020 Chen Bin
 
@@ -24,23 +24,17 @@
 
 ;;; Commentary:
 
-;;  Setup:
+;;  Configuration,
+;;
 ;;   "Ctags" (Universal Ctags is recommended) should exist.
-;;   "GNU Find" is used if it's installed but it's optional.
 ;;   Or else, customize `counsel-etags-update-tags-backend' to generate tags file.
 ;;   Please note etags bundled with Emacs is not supported any more.
 ;;
-;; Usage:
+;; Usage,
 ;;
 ;;   `counsel-etags-find-tag-at-point' to navigate.  This command will also
-;;   run `counsel-etags-scan-code' AUTOMATICALLY if tags file is not built yet.
+;;   run `counsel-etags-scan-code' AUTOMATICALLY if tags file does not exist.
 ;;   It also calls `counsel-etags-fallback-grep-function' if not tag is found.
-;;
-;;   Run `counsel-etags-list-tag-in-current-file' to list tags in current file.
-;;
-;;   Or just use native imenu with below setup,
-;;      (setq imenu-create-index-function
-;;            'counsel-etags-imenu-default-create-index-function)
 ;;
 ;;   Use `counsel-etags-imenu-excluded-names' to exclude tags by name.
 ;;   Use `counsel-etags-imenu-excluded-types' to exclude tags by type
@@ -57,8 +51,14 @@
 ;;   (".gitignore", ".hgignore", etc).  Path is either absolute or relative to the tags file.
 ;;   `counsel-etags-universal-ctags-p' to detect if Universal Ctags is used.
 ;;   `counsel-etags-exuberant-ctags-p' to detect if Exuberant Ctags is used.
+;;   See documentation of `counsel-etags-use-ripgrep-force' on using ripgrep.
+;;   If it's not set, correct grep program is autmatically detected.
 ;;
-;; Tips:
+;; Tips,
+;; - The grep program path on Native Windows Emacs uses either forward slash or
+;;   backward slash.  Like "C:/rg.exe" or "C:\\\\rg.exe".
+;;   If grep program path is added to environment variable PATH, you don't need
+;;   worry about slash problem.
 ;;
 ;; - Add below code into "~/.emacs" to AUTOMATICALLY update tags file:
 ;;
@@ -94,6 +94,7 @@
 ;;  - Rust programming language is supported.
 ;;    The easiest setup is to use ".dir-locals.el".
 ;;   in root directory.  The content of .dir-locals.el" is as below,
+;;
 ;;   ((nil . ((counsel-etags-update-tags-backend . (lambda (src-dir) (shell-command "rusty-tags Emacs")))
 ;;            (counsel-etags-tags-file-name . "rusty-tags.emacs"))))
 ;;
@@ -110,19 +111,19 @@
 ;;  - `counsel-etags-find-tag-name-function' finds tag name at point.  If it returns nil,
 ;;    `find-tag-default' is used.  `counsel-etags-word-at-point' gets word at point.
 ;;
-;;  - User could append the extra content into tags file in `counsel-etags-after-update-tags-hook'.
+;;  - You can append extra content into tags file in `counsel-etags-after-update-tags-hook'.
 ;;    The parameter of hook is full path of the tags file.
-;;    `counsel-etags-tag-line' and `counsel-etags-append-to-tags-file' are helper functions to
-;;    update tags file in the hook.
+;;    `counsel-etags-tag-line' and `counsel-etags-append-to-tags-file' are helper functions
+;;    to update tags file in the hook.
 ;;
 ;;  - The ignore files (.gitignore, etc) are automatically detected and append to ctags
 ;;    cli options as "--exclude="@/ignore/file/path".
 ;;    Set `counsel-etags-ignore-config-files' to nil to turn off this feature.
 ;;
-;;  - If base configuration file  "~/.ctags.exuberant" exists, it's used to
+;;  - If base configuration file "~/.ctags.exuberant" exists, it's used to
 ;;    generate "~/.ctags" automatically.
-;;    "~/.ctags.exuberant" is in Exuberant Ctags format, but the "~/.ctags" is
-;;    in Universal Ctags format if Universal Ctags is used.
+;;    "~/.ctags.exuberant" is Exuberant Ctags format, but the "~/.ctags" could be
+;;    Universal Ctags format if Universal Ctags is used.
 ;;    You can customize `counsel-etags-ctags-options-base' to change the path of
 ;;    base configuration file.
 
@@ -130,6 +131,11 @@
 ;;    The sorting happens in Emacs 27+.
 ;;    You can set `counsel-etags-sort-grep-result-p' to nil to disable sorting.
 
+;;  - Run `counsel-etags-list-tag-in-current-file' to list tags in current file.
+;;    You can also use native imenu with below setup,
+;;      (setq imenu-create-index-function
+;;            'counsel-etags-imenu-default-create-index-function)
+;;
 ;; See https://github.com/redguardtoo/counsel-etags/ for more tips.
 
 ;;; Code:
@@ -525,11 +531,7 @@ Return nil if it's not found."
         (counsel-etags-win-path executable-name "f")
         (counsel-etags-win-path executable-name "g")
         (counsel-etags-win-path executable-name "h")
-        ;; There is "find.exe" in Windows which could be wrongly
-        ;; used as GNU/BSD Find. So don't use "find" at all
-        ;; in this case.
-        (unless (string-match "find" executable-name)
-          executable-name)))
+        executable-name))
    (t
     (if (executable-find executable-name) (executable-find executable-name)))))
 
@@ -1613,7 +1615,7 @@ Extended regex is used, like (pattern1|pattern2)."
    ((counsel-etags-has-quick-grep-p)
     ;; "--hidden" force ripgrep to search hidden files/directories, that's default
     ;; behavior of grep
-    (format "%s %s %s --hidden %s \"%s\" --"
+    (format "\"%s\" %s %s --hidden %s \"%s\" --"
             ;; if rg is not in $PATH, then it's in `counsel-etags-grep-program'
             (or (executable-find "rg") counsel-etags-grep-program)
             ;; (if counsel-etags-debug " --debug")
@@ -1623,7 +1625,7 @@ Extended regex is used, like (pattern1|pattern2)."
             keyword))
    (t
     ;; use extended regex always
-    (format "%s -rsnE %s %s \"%s\" *"
+    (format "\"%s\" -rsnE %s %s \"%s\" *"
             (or counsel-etags-grep-program (counsel-etags-guess-program "grep"))
             counsel-etags-grep-extra-arguments
             (counsel-etags-exclude-opts use-cache)
