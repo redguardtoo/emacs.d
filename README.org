@@ -653,9 +653,11 @@ On macOS/Linux/Cygwin, run =make githooks= to install hooks into =.git/hooks=.
 
 Then unit test is run automatically before =git commit=.
 ** Python environment
-This setup used [[https://github.com/jorgenschaefer/elpy][elpy (Emacs Python Development Environment)]].
+We use [[https://github.com/jorgenschaefer/elpy][Elpy (Emacs Python Development Environment)]]. See its official documentation on its usage.
 
-See elpy official documentation on how to use elpy.
+The flag =elpy-disable-backend-error-display= is set to =nil= so you can easily report any error to its developers.
+
+If you don't use Elpy, please set this flag to =t=.
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
