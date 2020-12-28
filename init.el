@@ -95,7 +95,6 @@
   (require-init 'init-ibuffer t)
   (require-init 'init-ivy)
   (require-init 'init-windows)
-  (require-init 'init-markdown t)
   (require-init 'init-javascript t)
   (require-init 'init-org t)
   (require-init 'init-css t)
