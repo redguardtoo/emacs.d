@@ -103,29 +103,31 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
   (define-key rjsx-mode-map "<" nil))
 
 ;; {{ js-beautify
-(defun js-beautify (&optional indent-size)
+(defun my-js-beautify (&optional indent-size)
   "Beautify selected region or whole buffer with js-beautify.
 INDENT-SIZE decide the indentation level.
 `sudo pip install jsbeautifier` to install js-beautify.'"
   (interactive "P")
-  (let* ((js-beautify (if (executable-find "js-beautify") "js-beautify"
-                        "jsbeautify")))
+  (let* ((executable (if (executable-find "js-beautify") "js-beautify"
+                       "jsbeautify")))
     ;; detect indentation level
     (unless indent-size
-      (setq indent-size (cond
-                         ((memq major-mode '(js-mode javascript-mode))
-                          js-indent-level)
+      (setq indent-size
+            (cond
+             ((memq major-mode '(js-mode javascript-mode))
+              js-indent-size)
 
-                         ((memq major-mode '(web-mode))
-                          web-mode-code-indent-offset)
+             ((memq major-mode '(web-mode))
+              web-mode-code-indent-offset)
 
-                         ((memq major-mode '(typescript-mode))
-                          typescript-indent-level)
+             ((memq major-mode '(typescript-mode))
+              typescript-indent-size)
 
-                         (t
-                          2))))
+             (t
+              2))))
+    (message "executable=%s indent-size=%s" executable indent-size)
     ;; do it!
-    (run-cmd-and-replace-region (concat "js-beautify"
+    (run-cmd-and-replace-region (concat executable
                                         " --stdin "
                                         " --jslint-happy --brace-style=end-expand --keep-array-indentation "
                                         (format " --indent-size=%d " indent-size)))))

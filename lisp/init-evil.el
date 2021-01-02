@@ -509,6 +509,20 @@ If N > 0, only occurrences in current N lines are renamed."
     ;; simple string search/replace in function scope
     (evilmr-replace-in-defun))))
 
+(defun my-beautfiy-code (&optional indent-offset)
+  "Beautify code using INDENT-OFFSET."
+  (interactive "P")
+  (cond
+   ((derived-mode-p 'js-mode)
+    (my-js-beautify indent-offset))
+
+   ((derived-mode-p 'python-mode)
+    (when (and (boundp 'elpy-enabled-p) elpy-enabled-p))
+    (elpy-format-code))
+
+   (t
+    (message "Can only beautify code written in python/javascript"))))
+
 (my-comma-leader-def
   "," 'evilnc-comment-operator
   "bf" 'beginning-of-defun
@@ -599,7 +613,7 @@ If N > 0, only occurrences in current N lines are renamed."
   "db" 'diff-region-compare-with-b
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
-  "jb" 'js-beautify
+  "jb" 'my-beautfiy-code
   "jp" 'my-print-json-path
   ;; {{ @see http://ergoemacs.org/emacs/emacs_pinky_2020.html
   ;; `keyfreq-show' proved sub-window operations happen most.
