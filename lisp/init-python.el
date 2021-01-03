@@ -7,6 +7,7 @@
               (not buffer-file-name)
               ;; embed python code in org file
               (string= (file-name-extension buffer-file-name) "org"))
+    (setq elpy-shell-command-prefix-key "C-c C-f")
     (elpy-enable)
     ;; If you don't like any hint or error report from elpy,
     ;; set `elpy-disable-backend-error-display' to t.

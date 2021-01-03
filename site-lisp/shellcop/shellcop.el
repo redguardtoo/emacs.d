@@ -301,9 +301,9 @@ Keep latest N cli program output if it's not nil."
 Or else erase current buffer."
   (interactive)
   (cond
-   ((memq major-mode '(shell-mode message-buffer-mode))
+   ((memq major-mode '(shell-mode message-buffer-mode inferior-python-mode))
     (shellcop-erase-one-visible-buffer (buffer-name (current-buffer)))
-    (when (eq major-mode 'shell-mode)
+    (unless (eq major-mode 'message-buffer-mode)
       (comint-send-input)))
 
    (t
