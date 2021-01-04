@@ -637,8 +637,7 @@ If N > 0, only occurrences in current N lines are renamed."
   "xt" 'toggle-two-split-window
   "uu" 'my-transient-winner-undo
   "fs" 'ffip-save-ivy-last
-  "fr" 'ffip-ivy-resume
-  "fc" 'cp-ffip-ivy-last
+  "fr" 'ivy-resume
   "ss" 'my-swiper
   "fb" '(lambda ()
           (interactive)

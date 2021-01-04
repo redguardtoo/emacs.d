@@ -25,18 +25,6 @@ If N is not nil, copy file name and line number."
       (copy-yank-str s)
       (message "%s => clipboard&kill-ring" s))))
 
-(defun cp-ffip-ivy-last ()
-  "Copy visible keys of `ivy-last' into `kill-ring' and clipboard."
-  (interactive)
-  (my-ensure 'find-file-in-project)
-  (when ffip-ivy-last-saved
-    (copy-yank-str
-     (mapconcat (lambda (e)
-                  (format "%S" (if (consp e) (car e) e)))
-                (ivy-state-collection ffip-ivy-last-saved)
-                "\n"))
-    (message "%d items from ivy-last => clipboard & yank ring" (length ivy-last))))
-
 (defun cp-fullpath-of-current-buffer ()
   "Copy full path into the yank ring and OS clipboard"
   (interactive)
