@@ -41,6 +41,7 @@
 (autoload 'counsel-etags-list-tag-in-current-file "counsel-etags" "" t nil)
 (autoload 'counsel-etags-push-marker-stack "counsel-etags" "" t nil)
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
+(autoload 'counsel-etags-filename-p "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
 (autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
 (autoload 'lazyflymake-start "lazyflymake" "" t nil)
