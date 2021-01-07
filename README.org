@@ -120,6 +120,10 @@ No worries. You could answer "YES" to the question "Switch to faster package rep
 Now you are using local package repository =~/myelpa=.
 
 You can switch to online repositories like http://elpa.gnu.org or http://melpa.org by modifying =lisp/init-elpa.el=.
+** Install everything in one step (OPTIONAL)
+Download content of [[https://github.com/redguardtoo/my-emacs.d-snapshot]] into =~/.emacs.d=. That's it.
+
+It's not recommdned for daily usage because the third party packages are not optimized for latest Emacs.
 ** Third party programs (OPTIONAL)
 *** Install
 Most command line programs can be installed through =default package manager=.
