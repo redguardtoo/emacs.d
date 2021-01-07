@@ -5,7 +5,7 @@
 - Fast. Only *one second* to start up
 - Robust. Never crash after package upgrade. Packages could be installed without network
 - Support Windows. You can find&grep files on Windows with minimum setup
-- Tested with Emacs 25.3, 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
+- Tested with Emacs 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
 Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
 
@@ -81,12 +81,11 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
 - [[#report-bug][Report bug]]
 
 * Checklist
-- Emacs 26.1 is strongly recommended. It is faster and easier to set up
+- Emacs 26.1 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
 - If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download full version which works out of box
 - Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced user could under-estimate the risk of unstable packages
-- Emacs 25 support will be dropped on January 2021. Check "Support legacy Emacs versions" if you use old versions
 - Other issues are covered in FAQ
 * Installation
 Most users should follow the section "Install in normal way".
@@ -738,6 +737,18 @@ Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/em
 ** Enable typewriter sounds when typing
 Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 * Support legacy Emacs versions
+** Emacs 25.1
+Version 3.1 is the last version to support =Emacs 25.1+=
+
+Please use [[https://github.com/redguardtoo/emacs.d/archive/3.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.1.zip]].
+** Emacs 24.4 and 24.5
+Version 2.9 is the last version to support =Emacs 24.4+=
+
+Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.9.zip]].
+** Emacs 24.3
+Version 2.6 is the last version to support =Emacs 24.3=.
+
+Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.6.zip]] and you are good to go.
 ** Emacs 23
 Version 1.2 of this setup is the last version to support Emacs v23.
 
@@ -745,14 +756,6 @@ Here are the steps to use that setup:
 - Download [[https://github.com/redguardtoo/emacs.d/archive/1.2.zip]]
 - Download [[https://github.com/redguardtoo/myelpa/archive/1.2.zip]]
 - Follow the section =Install stable version in easiest way= but skip the download steps
-** Emacs 24.3
-Version 2.6 is the last version to support =Emacs 24.3=.
-
-Download [[https://github.com/redguardtoo/emacs.d/archive/2.6.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.6.zip]] and you are good to go.
-** Emacs 24.4 and 24.5
-Version 2.9 is the last version to support =Emacs 24.4+=
-
-Please use [[https://github.com/redguardtoo/emacs.d/archive/2.9.zip]] and [[https://github.com/redguardtoo/myelpa/archive/2.9.zip]].
 * Tips
 - Never turn off any bundled mode if it's on by default. Future version of Emacs may assume it's on. Tweak its flag in mode hook instead!
 - Git skills are *extremely useful*. Please read the chapters "Git Basics", "Git Branching", "Git Tools" from [[https://git-scm.com/book/en/][Pro Git]]
