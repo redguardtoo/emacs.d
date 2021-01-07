@@ -34,6 +34,11 @@
 
 ;; {{ git-gutter
 (with-eval-after-load 'git-gutter
+  (unless (fboundp 'global-display-line-numbers-mode)
+    ;; git-gutter's workaround for linum-mode bug.
+    ;; should not be used in `display-line-number-mode'
+    (git-gutter:linum-setup))
+
   (setq git-gutter:update-interval 2)
   ;; nobody use bzr
   ;; I could be forced to use subversion or hg which has higher priority
@@ -91,11 +96,6 @@ Show the diff between current working code and git head."
   (message "git-gutter reset"))
 
 (my-run-with-idle-timer 2 #'global-git-gutter-mode)
-
-(unless (fboundp 'global-display-line-numbers-mode)
- ;; git-gutter's workaround for linum-mode bug.
- ;; should not be used in `display-line-number-mode'
- (git-gutter:linum-setup))
 
 (global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
 (global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
