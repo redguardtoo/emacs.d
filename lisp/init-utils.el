@@ -355,7 +355,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
       (xclip-set-selection 'clipboard str-val)))))
 ;; }}
 
-(defun should-use-minimum-resource ()
+(defun my-should-use-minimum-resource ()
   "Some files should use minimum resource (no syntax highlight, no line number display)."
   (and buffer-file-name
        (string-match-p "\.\\(mock\\|min\\|bundle\\)\.js" buffer-file-name)))

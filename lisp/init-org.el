@@ -102,9 +102,8 @@ ARG is ignored."
 
   (my-ensure 'org-clock)
 
-  ;; org-re-reveal requires org 8.3 while Emacs 25 uses org 8.2
-  (when *emacs26*
-    (my-ensure 'org-re-reveal))
+  ;; org-re-reveal requires org 8.3
+  (my-ensure 'org-re-reveal)
 
   ;; odt export
   (add-to-list 'org-export-backends 'odt)

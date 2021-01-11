@@ -75,7 +75,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#set-up-lsp-mode][Set up lsp-mode]]
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
-  - [[#emacs-251][Emacs 25.1]]
+  - [[#emacs-25][Emacs 25]]
   - [[#emacs-244-and-245][Emacs 24.4 and 24.5]]
   - [[#emacs-243][Emacs 24.3]]
   - [[#emacs-23][Emacs 23]]
@@ -743,8 +743,8 @@ Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/em
 ** Enable typewriter sounds when typing
 Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 * Support legacy Emacs versions
-** Emacs 25.1
-Version 3.1 is the last version to support =Emacs 25.1+=
+** Emacs 25
+Version 3.2 is the last version to support =Emacs 25=
 
 Please use [[https://github.com/redguardtoo/emacs.d/archive/3.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.1.zip]].
 ** Emacs 24.4 and 24.5

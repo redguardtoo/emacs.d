@@ -300,7 +300,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'company-native-complete)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
-(if *emacs26* (require-package 'lsp-mode))
+(require-package 'lsp-mode)
 (require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
@@ -352,9 +352,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'gnu-elpa-keyring-update)
 ;; }}
 
-(when *emacs26*
-  ;; org => ppt, org v8.3 is required (Emacs 25 uses org v8.2)
-  (require-package 'org-re-reveal))
+;; org => ppt
+(require-package 'org-re-reveal)
 
 (defun my-install-popular-themes (popular-themes)
   "Install POPULAR-THEMES from melpa."

@@ -10,10 +10,7 @@ EVENT is ignored."
 ;; {{ @see https://coredumped.dev/2020/01/04/native-shell-completion-in-emacs/
 ;; Enable auto-completion in `shell'.
 (with-eval-after-load 'shell
-  ;; `comint-terminfo-terminal' is invented in Emacs 26
-  (unless (and (boundp 'comint-terminfo-terminal)
-               comint-terminfo-terminal)
-    (setq comint-terminfo-terminal "dumb"))
+  (unless comint-terminfo-terminal (setq comint-terminfo-terminal "dumb"))
   (native-complete-setup-bash))
 
 ;; `bash-completion-tokenize' can handle garbage output of "complete -p"

@@ -79,7 +79,6 @@
     (setq pyim-dcache-backend 'pyim-dregcache)
 
     ;; automatically load pinyin dictionaries "*.pyim" under "~/.eim/"
-    ;; `directory-files-recursively' requires Emacs 25
     (let* ((files (and (file-exists-p my-pyim-directory)
                        (directory-files-recursively my-pyim-directory "\.pyim$")))
            disable-basedict)

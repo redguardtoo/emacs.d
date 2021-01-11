@@ -184,7 +184,7 @@ FN checks these characters belong to normal word characters."
   (when (buffer-too-big-p)
     ;; Turn off `linum-mode' when there are more than 5000 lines
     (linum-mode -1)
-    (when (should-use-minimum-resource)
+    (when (my-should-use-minimum-resource)
       (font-lock-mode -1)))
 
   (company-ispell-setup)

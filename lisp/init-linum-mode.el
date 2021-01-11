@@ -41,12 +41,11 @@
   "Major modes without line number.")
 
 ;; I don't care Emacs 25 performance any more
-(when (fboundp 'global-display-line-numbers-mode)
-  (defun display-line-numbers-mode-hook-setup ()
-    (setq display-line-numbers (not (or (memq major-mode my-linum-inhibit-modes)
-                                        ;; don't show line number for certain file extensions
-                                        (should-use-minimum-resource)))))
-  (add-hook 'display-line-numbers-mode-hook 'display-line-numbers-mode-hook-setup)
-  (my-run-with-idle-timer 2 #'global-display-line-numbers-mode))
+(defun display-line-numbers-mode-hook-setup ()
+  (setq display-line-numbers (not (or (memq major-mode my-linum-inhibit-modes)
+                                      ;; don't show line number for certain file extensions
+                                      (my-should-use-minimum-resource)))))
+(add-hook 'display-line-numbers-mode-hook 'display-line-numbers-mode-hook-setup)
+(my-run-with-idle-timer 2 #'global-display-line-numbers-mode)
 
 (provide 'init-linum-mode)
