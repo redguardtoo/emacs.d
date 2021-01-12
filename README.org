@@ -703,7 +703,7 @@ typing-extensions==3.7.4.3
 yapf==0.30.0
 #+end_example
 
-I'm actually not a python developer so above suggestions are optional.
+You might want to modify =include-system-site-packages= in =~/.emacs.d/elpy/rpc-venv/pyvenv.cfg=
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
