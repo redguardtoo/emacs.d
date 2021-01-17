@@ -201,6 +201,14 @@ If rg is not in $PATH, then it should be defined in `counsel-etags-grep-program'
   :group 'counsel-etags
   :type 'boolean)
 
+;; @see https://github.com/abo-abo/swiper/issues/2351
+(defcustom counsel-etags-ripgrep-default-options
+  (concat "-n -M 1024 --no-heading --color never -s --path-separator "
+          (if (eq system-type 'windows-nt) "//" "/"))
+  "Default options passed to ripgrep command line program."
+  :group 'counsel-etags
+  :type 'boolean)
+
 (defcustom counsel-etags-grep-extra-arguments ""
   "Extra arguments passed to grep program."
   :group 'counsel-etags
@@ -1619,7 +1627,7 @@ Extended regex is used, like (pattern1|pattern2)."
             ;; if rg is not in $PATH, then it's in `counsel-etags-grep-program'
             (or (executable-find "rg") counsel-etags-grep-program)
             ;; (if counsel-etags-debug " --debug")
-            "-n -M 1024 --no-heading --color never -s --path-separator /"
+            counsel-etags-ripgrep-default-options
             counsel-etags-grep-extra-arguments
             (counsel-etags-exclude-opts use-cache)
             keyword))
