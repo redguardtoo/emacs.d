@@ -173,20 +173,8 @@
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(org-re-reveal lsp-mode zerodark-theme zenburn-theme zen-and-art-theme yasnippet-snippets yaml-mode writeroom-mode winum white-sand-theme which-key wgrep websocket web-mode w3m vscode-dark-plus-theme visual-regexp vimrc-mode unfill undo-fu underwater-theme ujelly-theme typescript-mode twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme toc-org textile-mode tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit sunny-day-theme sublime-themes subatomic256-theme subatomic-theme srcery-theme spacemacs-theme spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme simple-httpd shackle seti-theme session scss-mode scratch rvm rust-mode rjsx-mode reverse-theme request regex-tool rebecca-theme rainbow-delimiters railscasts-theme pyim-wbdict purple-haze-theme professional-theme pomodoro planet-theme phoenix-dark-pink-theme phoenix-dark-mono-theme pdf-tools paredit organic-green-theme omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme nvm nov nord-theme noctilux-theme neotree naquadah-theme mustang-theme monokai-theme monochrome-theme molokai-theme moe-theme minimal-theme material-theme markdown-mode majapahit-theme magit madhat2r-theme lush-theme lua-mode light-soap-theme leuven-theme legalese keyfreq kaolin-themes jump js-doc jbeans-theme jazz-theme jade-mode ivy-hydra ir-black-theme inkpot-theme iedit htmlize heroku-theme hemisu-theme hc-zenburn-theme haml-mode gruvbox-theme gruber-darker-theme groovy-mode grandshell-theme gotham-theme gnu-elpa-keyring-update gitignore-mode gitconfig-mode git-timemachine git-link gandalf-theme fringe-helper flatui-theme flatland-theme find-file-in-project find-by-pinyin-dired farmhouse-theme fantom-theme eziam-theme expand-region exotica-theme exec-path-from-shell evil-visualstar evil-surround evil-nerd-commenter evil-matchit evil-mark-replace evil-find-char-pinyin evil-exchange evil-escape esup espresso-theme emms emmet-mode elpy elpa-mirror dracula-theme doom-themes django-theme diredfl diminish dictionary darktooth-theme darkokai-theme darkmine-theme darkburn-theme dakrone-theme cyberpunk-theme csv-mode cpputils-cmake counsel-gtags counsel-css counsel-bbdb company-statistics company-native-complete company-c-headers command-log-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-theme cmake-mode clues-theme cliphist cherry-blossom-theme busybee-theme buffer-move bubbleberry-theme birds-of-paradise-plus-theme bbdb base16-theme badwolf-theme auto-yasnippet auto-package-update atom-one-dark-theme atom-dark-theme apropospriate-theme anti-zenburn-theme amx ample-zen-theme ample-theme alect-themes afternoon-theme adoc-mode ace-window ace-pinyin)))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
- ;;; Local Variables:
+
+;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
 (put 'erase-buffer 'disabled nil)
