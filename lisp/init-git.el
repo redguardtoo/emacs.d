@@ -110,7 +110,7 @@ Show the diff between current working code and git head."
   "Select commit id from current branch."
   (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
          (collection (nonempty-lines (shell-command-to-string git-cmd)))
-         (item (ffip-completing-read "git log:" collection)))
+         (item (completing-read "git log:" collection)))
     (when item
       (car (split-string item "|" t)))))
 
