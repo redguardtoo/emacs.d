@@ -32,6 +32,8 @@
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
+    pos-tip
+    racket-mode
     auto-package-update
     nov
     bbdb
