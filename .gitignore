@@ -1,4 +1,5 @@
 request/
+.cache
 .depend
 pyim/
 anaconda-mode/
