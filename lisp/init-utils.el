@@ -78,18 +78,18 @@
     (my-write-to-file str file)))
 
 ;; Handier way to add modes to auto-mode-alist
-(defun add-auto-mode (mode &rest patterns)
+(defun my-add-auto-mode (mode &rest patterns)
   "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."
   (dolist (pattern patterns)
-    (add-to-list 'auto-mode-alist (cons pattern mode))))
+    (push (cons pattern mode) auto-mode-alist)))
 
-(defun add-interpreter-mode (mode &rest patterns)
+(defun my-add-interpreter-mode (mode &rest patterns)
   "Add entries to `interpreter-mode-alist' to use `MODE' for all given file `PATTERNS'."
   (dolist (pattern patterns)
-    (add-to-list 'interpreter-mode-alist (cons pattern mode))))
+    (push (cons pattern mode) interpreter-mode-alist )))
 
 (defun my-what-face (&optional position)
-  "Shows all faces at POSITION."
+  "Show all faces at POSITION."
   (let* ((face (get-text-property (or position (point)) 'face)))
     (unless (keywordp (car-safe face)) (list face))))
 

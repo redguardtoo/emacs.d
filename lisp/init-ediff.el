@@ -12,7 +12,7 @@ Also remove buffers whose binding files already merged in `buffer-list'."
   ;; remove `org-mode' from `auto-mode-alist'. So nodes in org file do NOT collapse at all
   (setq auto-mode-alist  (rassq-delete-all 'org-mode auto-mode-alist))
   ;; associate simpler major mode with org file instead
-  (add-auto-mode 'outline-mode "\\.org\\(_archive\\)?$")
+  (my-add-auto-mode 'outline-mode "\\.org\\(_archive\\)?$")
 
   (defmacro my-ediff-command (cmd &optional no-arg)
     `(lambda (&optional arg)

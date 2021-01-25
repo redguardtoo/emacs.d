@@ -42,7 +42,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
-  - [[#react-and-jsx][React and JSX]]
+  - [[#set-auto-mode-alist][Set =auto-mode-alist=]]
   - [[#git-gutter][git-gutter]]
   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
@@ -470,12 +470,18 @@ You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
 You can input =:pinyin1 pinyin2 !pinyin3 pinyin4= in ivy UI to search by Chinese Pinyin. The key point is to make sure the first character of input is ":".
-** React and JSX
-I use =rjsx-mode= with Emacs v25+. It's based on =js2-mode= so it has excellent imenu support.
+** Set =auto-mode-alist=
+The =auto-mode-alist= associates major modes with files.
 
-But =web-mode= is also very popular to edit jsx files.
+For example, associate =rjsx-mode= file with extension "*.jsx",
+#+begin_src elisp
+(push "\\.jsx\\'" auto-mode-alist)
+#+end_src
 
-You can add =(add-auto-mode 'rjsx-mode "\\.jsx\\'")= into =~/.custome.el= to use =web-mode= for jsx files.
+Or you can use function =my-add-auto-mode= provided by this configuration,
+#+begin_src elisp
+(my-add-auto-mode 'rjsx-mode "\\.jsx\\'")
+#+end_src
 ** git-gutter
 I use modified version of =git-gutter= for now until my pull request is merged into official repository.
 
