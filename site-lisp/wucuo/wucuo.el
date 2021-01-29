@@ -429,24 +429,18 @@ This is slow because new shell process is created."
       (let* ((overlays (overlays-at (point-min))))
         (and overlays (flyspell-overlay-p (car overlays)))))))
 
-(defun wucuo-char (position)
-  "Return character at POSITION."
-  (save-excursion
-    (goto-char position)
-    (following-char)))
-
 (defun wucuo-aspell-incorrect-typo-p (word)
   "Aspell wrongly regards a WORD near single quote as typo."
   (let* ((typo-p t))
     (when (and (string-match "aspell\\(\\.exe\\)?$" ispell-program-name)
                (memq (wucuo-sdk-get-font-face (point)) wucuo-double-check-font-faces))
       (let* ((pos (- (point) (length word)))
-             (ch (wucuo-char (- pos 2))))
+             (ch (char-before (1- pos))))
         ;; aspell regard symbol as part of word
         ;; @see http://aspell.net/0.61/man-html/Words-With-Symbols-in-Them.html#Words-With-Symbols-in-Them
         ;; @see https://github.com/redguardtoo/emacs.d/issues/892
         (when (and (memq (wucuo-sdk-get-font-face pos) wucuo-double-check-font-faces)
-                   (eq (wucuo-char (1- pos)) ?')
+                   (eq (char-before pos) ?')
                    (<= ?a ch)
                    (>= ?z ch))
           (setq typo-p (wucuo-typo-p word)))))
@@ -591,23 +585,23 @@ Returns t to continue checking, nil otherwise."
     ;; do nothing, wucuo only works with aspell or hunspell
     (if wucuo-debug (message "aspell/hunspell missing in `ispell-program-name' or not installed.")))
 
-   ((not wucuo-timer)
+   ((or (not wucuo-timer)
+        (> (- (float-time (current-time)) (float-time wucuo-timer))
+           wucuo-update-interval))
     ;; start timer if not started yet
-    (setq wucuo-timer (current-time)))
-
-   ((< (- (float-time (current-time)) (float-time wucuo-timer))
-       wucuo-update-interval)
-    ;; do nothing, avoid `flyspell-buffer' too often
-    )
-
-   (t
-    ;; real spell checking
     (setq wucuo-timer (current-time))
+
+    (if wucuo-debug (message "wucuo-spell-check-buffer actually happened."))
+
     (when (and (wucuo-buffer-windows-visible-p)
                (or (null wucuo-spell-check-buffer-predicate)
                    (and (functionp wucuo-spell-check-buffer-predicate)
                         (funcall wucuo-spell-check-buffer-predicate))))
-      (wucuo-spell-check-internal)))))
+      (wucuo-spell-check-internal)))
+
+   (t
+    ;; do nothing, avoid `flyspell-buffer' too often
+    (if wucuo-debug (message "wucuo-spell-check-buffer actually skipped.")))))
 
 ;;;###autoload
 (defun wucuo-start (&optional arg)
