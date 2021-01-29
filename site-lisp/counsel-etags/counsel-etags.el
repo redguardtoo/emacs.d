@@ -1534,20 +1534,23 @@ The tags updating might not happen."
                (string-match-p (file-name-directory (file-truename tags-file))
                                (file-truename dir)))
       (cond
-       ((not counsel-etags-timer)
+       ((or (not counsel-etags-timer)
+            (> (- (float-time (current-time)) (float-time counsel-etags-timer))
+               counsel-etags-update-interval))
+
         ;; start timer if not started yet
-        (setq counsel-etags-timer (current-time)))
-
-       ((< (- (float-time (current-time)) (float-time counsel-etags-timer))
-           counsel-etags-update-interval)
-        ;; do nothing, can't run ctags too often
-        )
-
-       (t
         (setq counsel-etags-timer (current-time))
+
+        ;; start updating
+        (if counsel-etags-debug (message "counsel-etags-virtual-update-tags actually happened."))
+
         (let* ((dir (file-name-directory (file-truename (counsel-etags-locate-tags-file)))))
           (if counsel-etags-debug (message "update tags in %s" dir))
-          (funcall counsel-etags-update-tags-backend dir)))))))
+          (funcall counsel-etags-update-tags-backend dir)))
+
+       (t
+        ;; do nothing, can't run ctags too often
+        (if counsel-etags-debug (message "counsel-etags-virtual-update-tags is actually skipped.")))))))
 
 (defun counsel-etags-unquote-regex-parens (str)
   "Unquote regexp parentheses in STR."

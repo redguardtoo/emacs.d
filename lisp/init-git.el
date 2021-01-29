@@ -344,7 +344,7 @@ If nothing is selected, use the word under cursor as function name to look up."
                                     (line-number-at-pos (region-beginning))
                                     (line-number-at-pos (1- (region-end)))))
         (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
-      ;; (message cmd)
+
       (my-ensure 'find-file-in-project)
       (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
 
