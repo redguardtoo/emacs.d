@@ -201,10 +201,12 @@ If rg is not in $PATH, then it should be defined in `counsel-etags-grep-program'
   :group 'counsel-etags
   :type 'boolean)
 
-;; @see https://github.com/abo-abo/swiper/issues/2351
 (defcustom counsel-etags-ripgrep-default-options
-  (concat "-n -M 1024 --no-heading --color never -s --path-separator "
-          (if (eq system-type 'windows-nt) "//" "/"))
+  ;; @see https://github.com/BurntSushi/ripgrep/issues/501
+  ;; some shell will expand "/" to a complete file path.
+  ;; so try to avoid "/" in shell
+  (format "-n -M 1024 --no-heading --color never -s %s"
+          (if (eq system-type 'windows-nt) "--path-separator \"\x2f\"" ""))
   "Default options passed to ripgrep command line program."
   :group 'counsel-etags
   :type 'boolean)
@@ -1594,6 +1596,11 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   "Test if ripgrep program exist."
   (or counsel-etags-use-ripgrep-force (executable-find "rg")))
 
+(defun counsel-etags-shell-quote (argument)
+  "Quote ARGUMENT."
+  (if (eq system-type 'windows-nt) argument
+    (shell-quote-argument argument)))
+
 (defun counsel-etags-exclude-opts (use-cache)
   "Grep CLI options.  IF USE-CACHE is t, the options is read from cache."
   (let* ((ignore-dirs (if use-cache (plist-get counsel-etags-opts-cache :ignore-dirs)
@@ -1604,19 +1611,19 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
     (cond
      ((counsel-etags-has-quick-grep-p)
       (concat (mapconcat (lambda (e)
-                           (format "-g=\"!%s/*\"" (shell-quote-argument e)))
+                           (format "-g=\"!%s/*\"" (counsel-etags-shell-quote e)))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "-g=\"!%s\"" (shell-quote-argument e)))
+                           (format "-g=\"!%s\"" (counsel-etags-shell-quote e)))
                          ignore-file-names " ")))
      (t
       (concat (mapconcat (lambda (e)
-                           (format "--exclude-dir=\"%s\"" (shell-quote-argument e)))
+                           (format "--exclude-dir=\"%s\"" (counsel-etags-shell-quote e)))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "--exclude=\"%s\"" (shell-quote-argument e)))
+                           (format "--exclude=\"%s\"" (counsel-etags-shell-quote e)))
                          ignore-file-names " "))))))
 
 (defun counsel-etags-grep-cli (keyword use-cache)
