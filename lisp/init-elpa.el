@@ -217,6 +217,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 ;; On-demand installation of packages
 (defun require-package (package &optional min-version no-refresh)
   "Ask elpa to install given PACKAGE."
+  (my-ensure 'package)
   (cond
    ((package-installed-p package min-version)
     t)
