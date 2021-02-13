@@ -13,23 +13,21 @@
 (remove-hook 'find-file-hooks 'vc-find-file-hook)
 ;; }}
 
-;; ;; {{ Solution 3: setup vc-handled-backends per project
-;; (setq vc-handled-backends ())
+;; ;; {{ Solution 3: setup `vc-handled-backends' per project
+;; (setq vc-handled-backends nil)
 ;; (defun my-setup-develop-environment ()
+;;   "Default setup for project under vcs."
 ;;   (interactive)
 ;;   (cond
-;;    ((string-match-p (file-truename my-emacs-d) (file-name-directory (buffer-file-name))
-;;     (setq vc-handled-backends '(Git)))
-;;    (t (setq vc-handled-backends nil)))))
-;; (add-hook 'java-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'emacs-lisp-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'org-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'js2-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'js-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'javascript-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'web-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'c++-mode-hook 'my-setup-develop-environment)
-;; (add-hook 'c-mode-hook 'my-setup-develop-environment)
+;;     ((string-match-p (file-truename user-emacs-directory)
+;;                      (file-name-directory (buffer-file-name)))
+;;       (setq vc-handled-backends '(Git)))
+;;     (t
+;;       (setq vc-handled-backends nil))))
+;; (dolist (hook '(java-mode-hook emacs-lisp-mode-hook org-mode-hook
+;;                 js-mode-hook javascript-mode-hook web-mode-hook
+;;                 c++-mode-hook c-mode-hook))
+;;   (add-hook hook #'my-setup-develop-environment))
 ;; ;; }}
 
 ;; {{ git-gutter
