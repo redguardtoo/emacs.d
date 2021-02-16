@@ -8,15 +8,11 @@
 (defun my-transient-winner-undo ()
   "Transient version of `winner-undo'."
   (interactive)
-  (let ((echo-keystrokes nil))
-    (winner-undo)
-    (message "Winner: [u]ndo [r]edo [q]uit")
-    (set-transient-map
-     (let ((map (make-sparse-keymap)))
-       (define-key map [?u] #'winner-undo)
-       (define-key map [?r] #'winner-redo)
-       map)
-     t)))
+  (my-setup-extra-keymap '(("u" winner-undo)
+                           ("r" winner-redo))
+                         "Winner: [u]ndo [r]edo [q]uit"
+                         'winner-undo))
+
 (global-set-key (kbd "C-x 4 u") 'my-transient-winner-undo)
 
 (global-set-key (kbd "C-x 2") 'split-window-vertically)

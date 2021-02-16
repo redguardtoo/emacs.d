@@ -189,8 +189,12 @@ Show the diff between current working code and git head."
       (shell-command (concat "git add " filename))
       (message "DONE! git add %s" filename))))
 
-;; {{ goto next/previous hunk
-(defun my-goto-conflict-hunk-internal (forward-p)
+;; {{ look up merge conflict
+(defvar my-goto-merge-conflict-fns
+  '(("n" my-next-merge-conflict)
+    ("p" my-prev-merge-conflict)))
+
+(defun my-goto-merge-conflict-internal (forward-p)
   "Goto specific hunk.  If forward-p is t, go in forward direction."
   ;; @see https://emacs.stackexchange.com/questions/63413/finding-git-conflict-in-the-same-buffer-if-cursor-is-at-end-of-the-buffer#63414
   (my-ensure 'smerge-mode)
@@ -205,27 +209,51 @@ Show the diff between current working code and git head."
             (goto-char prev-pos)
             (message "No conflicts found")))))))
 
-(defun my-setup-keymap (forward-p)
-  "Set keymap by FORWARD-P."
-  (let ((echo-keystrokes nil))
-    (my-goto-conflict-hunk-internal forward-p)
-    (message "Goto conflict hunk: [n]ext [p]revious [q]uit")
-    (set-transient-map
-     (let ((map (make-sparse-keymap)))
-       (define-key map (kbd "n") #'my-next-conflict-hunk)
-       (define-key map (kbd "p") #'my-prev-conflict-hunk)
-       map)
-     t)))
-
-(defun my-next-conflict-hunk ()
-  "Go to next conflict hunk."
+(defun my-next-merge-conflict ()
+  "Go to next merge conflict."
   (interactive)
-  (my-setup-keymap t))
+  (my-goto-merge-conflict-internal t))
 
-(defun my-prev-conflict-hunk ()
-  "Go to previous conflict hunk."
+(defun my-prev-merge-conflict ()
+  "Go to previous merge conflict."
   (interactive)
-  (my-setup-keymap nil))
+  (my-goto-merge-conflict-internal nil))
+
+(defun my-search-next-merge-conflict ()
+  "Search next merge conflict."
+  (interactive)
+  (my-setup-extra-keymap my-goto-merge-conflict-fns
+                         "Goto merge conflict: [n]ext [p]revious [q]uit"
+                         'my-goto-merge-conflict-internal
+                         t))
+
+(defun my-search-prev-merge-conflict ()
+  "Search previous merge conflict."
+  (interactive)
+  (my-setup-extra-keymap my-goto-merge-conflict-fns
+                         "Goto merge conflict: [n]ext [p]revious [q]uit"
+                         'my-goto-merge-conflict-internal
+                         nil))
+;; }}
+
+;; {{ look up diff hunk
+(defvar my-goto-diff-hunk-fns
+  '(("n" diff-hunk-next)
+    ("p" diff-hunk-prev)))
+
+(defun my-search-next-diff-hunk ()
+  "Search next diff hunk."
+  (interactive)
+  (my-setup-extra-keymap my-goto-diff-hunk-fns
+                         "Goto diff hunk: [n]ext [p]revious [q]uit"
+                         'diff-hunk-next))
+
+(defun my-search-prev-diff-hunk ()
+  "Search previous diff hunk."
+  (interactive)
+  (my-setup-extra-keymap my-goto-diff-hunk-fns
+                         "Goto diff hunk: [n]ext [p]revious [q]uit"
+                         'diff-hunk-prev))
 ;; }}
 
 ;; {{

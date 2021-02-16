@@ -709,8 +709,14 @@ If N > 0, only occurrences in current N lines are renamed."
 
 ;; Please check "init-ediff.el" which contains `my-space-leader-def' code too
 (my-space-leader-def
-  "n" 'my-next-conflict-hunk
-  "p" 'my-prev-conflict-hunk
+  "n" (lambda ()
+        (interactive)
+        (if (derived-mode-p 'diff-mode) (my-search-next-diff-hunk)
+          (my-search-next-merge-conflict)))
+  "p" (lambda ()
+        (interactive)
+        (if (derived-mode-p 'diff-mode) (my-search-prev-diff-hunk)
+          (my-search-prev-merge-conflict)))
   "ch" 'my-dired-redo-from-commands-history
   "dd" 'pwd
   "mm" 'counsel-evil-goto-global-marker
