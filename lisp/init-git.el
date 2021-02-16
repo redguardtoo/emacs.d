@@ -190,27 +190,42 @@ Show the diff between current working code and git head."
       (message "DONE! git add %s" filename))))
 
 ;; {{ goto next/previous hunk
-(defun my-goto-next-hunk (arg)
-  "Goto next hunk."
-  (interactive "p")
-  (if (memq major-mode '(diff-mode))
-      (diff-hunk-next)
-    (forward-line)
-    (if (re-search-forward "\\(^<<<<<<<\\|^=======\\|^>>>>>>>\\)" (point-max) t)
-        (goto-char (line-beginning-position))
-      (forward-line -1)
-      (git-gutter:next-hunk arg))))
+(defun my-goto-conflict-hunk-internal (forward-p)
+  "Goto specific hunk.  If forward-p is t, go in forward direction."
+  ;; @see https://emacs.stackexchange.com/questions/63413/finding-git-conflict-in-the-same-buffer-if-cursor-is-at-end-of-the-buffer#63414
+  (my-ensure 'smerge-mode)
+  (let ((buffer (current-buffer))
+        (hunk-fn (if forward-p 'smerge-next 'smerge-prev)))
+    (unless (funcall hunk-fn)
+      (vc-find-conflicted-file)
+      (when (eq buffer (current-buffer))
+        (let ((prev-pos (point)))
+          (goto-char (if forward-p (point-min) (1- (point-max))))
+          (unless (funcall hunk-fn)
+            (goto-char prev-pos)
+            (message "No conflicts found")))))))
 
-(defun my-goto-previous-hunk (arg)
-  "Goto previous hunk."
-  (interactive "p")
-  (if (memq major-mode '(diff-mode))
-      (diff-hunk-prev)
-    (forward-line -1)
-    (if (re-search-backward "\\(^>>>>>>>\\|^=======\\|^<<<<<<<\\)" (point-min) t)
-        (goto-char (line-beginning-position))
-      (forward-line -1)
-      (git-gutter:previous-hunk arg))))
+(defun my-setup-keymap (forward-p)
+  "Set keymap by FORWARD-P."
+  (let ((echo-keystrokes nil))
+    (my-goto-conflict-hunk-internal forward-p)
+    (message "Goto conflict hunk: [n]ext [p]revious [q]uit")
+    (set-transient-map
+     (let ((map (make-sparse-keymap)))
+       (define-key map (kbd "n") #'my-next-conflict-hunk)
+       (define-key map (kbd "p") #'my-prev-conflict-hunk)
+       map)
+     t)))
+
+(defun my-next-conflict-hunk ()
+  "Go to next conflict hunk."
+  (interactive)
+  (my-setup-keymap t))
+
+(defun my-prev-conflict-hunk ()
+  "Go to previous conflict hunk."
+  (interactive)
+  (my-setup-keymap nil))
 ;; }}
 
 ;; {{
