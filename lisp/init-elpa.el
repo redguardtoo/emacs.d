@@ -346,6 +346,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'pdf-tools)
 (require-package 'pyim)
 (require-package 'pyim-wbdict) ; someone may use wubi IME, not me
+(require-package 'pyim-basedict)
 (require-package 'esup)
 
 ;; {{ Fixed expiring GNU ELPA keys
