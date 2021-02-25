@@ -33,6 +33,7 @@
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
     pos-tip
+    web-mode
     racket-mode
     auto-package-update
     nov
