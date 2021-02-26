@@ -522,19 +522,23 @@ Copied from 3rd party package evil-textobj."
    (t
     (run-with-idle-timer seconds nil func))))
 
+(defun my-imenu-item-position (item)
+  "Handle some strange imenu ITEM."
+  (if (markerp item) (marker-position item) item))
+
 (defun my-get-closest-imenu-item (cands)
-  "Return closest imen item from CANDS."
+  "Return closest imenu item from CANDS."
   (let* ((pos (point))
          closest)
     (dolist (c cands)
       (let* ((item (cdr c))
              (m (cdr item)))
-        (when (and m (<= (marker-position m) pos))
+        (when (and m (<= (my-imenu-item-position m) pos))
           (cond
            ((not closest)
             (setq closest item))
-           ((< (- pos (marker-position m))
-               (- pos (marker-position (cdr closest))))
+           ((< (- pos (my-imenu-item-position m))
+               (- pos (my-imenu-item-position (cdr closest))))
             (setq closest item))))))
     closest))
 
