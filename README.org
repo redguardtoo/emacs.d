@@ -312,21 +312,21 @@ The programming syntax check is done by [[https://github.com/redguardtoo/lazyfly
 Insert below code to =~/.custom.el= to increase the interval of check,
 #+begin_src elisp
 (with-eval-after-load 'wucuo
-;; 4 second
-(setq wucuo-update-interval 4))
+  ;; 4 second
+  (setq wucuo-update-interval 4))
 (with-eval-after-load 'lazyflymake
-;; 2 seconds
-(setq lazyflymake-update-interval 3))
+  ;; 2 seconds
+  (setq lazyflymake-update-interval 3))
 #+end_src
 *** Why opening file is slow
 Insert below code into =~/.custom.el=, replace "/home/user1/your-file-path" with the file you want to open,
 #+begin_src elisp
 (defun profile-open-file ()
-(interactive)
-(profiler-start 'cpu)
-(find-file "/home/user1/your-file-path")
-(profiler-report)
-(profiler-stop))
+  (interactive)
+  (profiler-start 'cpu)
+  (find-file "/home/user1/your-file-path")
+  (profiler-report)
+  (profiler-stop))
 #+end_src
 
 Run =M-x profile-open-file= and read the report.
@@ -406,10 +406,10 @@ So you can use any functions defined in my emacs configuration.
 Here is a sample to override keybindings defined in =lisp/init-evil.el=,
 #+begin_src elisp
 (with-eval-after-load 'evil
-(my-space-leader-def
-"ss" 'pwd
-"ll" 'pwd
-"pp" 'pwd))
+  (my-space-leader-def
+    "ss" 'pwd
+    "ll" 'pwd
+    "pp" 'pwd))
 #+end_src
 ** Code navigation and auto-completion
 It's usable out of box if Ctags is installed
@@ -488,8 +488,8 @@ I use modified version of =git-gutter= for now until my pull request is merged i
 You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS (Perforce, for example),
 #+begin_src elisp
 (setq git-gutter:exp-to-create-diff
-(shell-command-to-string (format "p4 diff -du -db %s"
-(file-relative-name buffer-file-name))))
+      (shell-command-to-string (format "p4 diff -du -db %s"
+                                       (file-relative-name buffer-file-name))))
 #+end_src
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
@@ -617,14 +617,14 @@ Please run =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz |
 The default pinyin scheme is =quanpin= but you can insert below code into =~/.custom.el= to switch to a different pinyin scheme,
 #+begin_src elisp
 (with-eval-after-load 'pyim
-(setq pyim-default-scheme 'xiaohe-shuangpin))
+  (setq pyim-default-scheme 'xiaohe-shuangpin))
 #+end_src
 *** Use Wubi
 Dictionary for wubi is already installed. Please insert below code into =~/.custom.el= to enable wubi dictionary and use wubi scheme,
 #+begin_src elisp
 (setq my-pyim-enable-wubi-dict t)
 (with-eval-after-load 'pyim
-(setq pyim-default-scheme 'wubi))
+  (setq pyim-default-scheme 'wubi))
 #+end_src
 ** Install multiple versions of Emacs
 Run below commands in shell:
@@ -713,36 +713,35 @@ You might want to modify =include-system-site-packages= in =~/.emacs.d/elpy/rpc-
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
 #+begin_src elisp
-
 (with-eval-after-load 'lsp-mode
-;; enable log only for debug
-(setq lsp-log-io nil)
-;; use `evil-matchit' instead
-(setq lsp-enable-folding nil)
-;; no real time syntax check
-(setq lsp-diagnostic-package :none)
-;; handle yasnippet by myself
-(setq lsp-enable-snippet nil)
-;; use `company-ctags' only.
-;; Please note `company-lsp' is automatically enabled if it's installed
-(setq lsp-enable-completion-at-point nil)
-;; turn off for better performance
-(setq lsp-enable-symbol-highlighting nil)
-;; use find-fine-in-project instead
-(setq lsp-enable-links nil)
-;; auto restart lsp
-(setq lsp-restart 'auto-restart)
-;; don't watch 3rd party javascript libraries
-(push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
-;; don't ping LSP language server too frequently
-(defvar lsp-on-touch-time 0)
-(defun my-lsp-on-change-hack (orig-fun &rest args)
-;; do NOT run `lsp-on-change' too frequently
-(when (> (- (float-time (current-time))
-lsp-on-touch-time) 120) ;; 2 mins
-(setq lsp-on-touch-time (float-time (current-time)))
-(apply orig-fun args)))
-(advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
+  ;; enable log only for debug
+  (setq lsp-log-io nil)
+  ;; use `evil-matchit' instead
+  (setq lsp-enable-folding nil)
+  ;; no real time syntax check
+  (setq lsp-diagnostic-package :none)
+  ;; handle yasnippet by myself
+  (setq lsp-enable-snippet nil)
+  ;; use `company-ctags' only.
+  ;; Please note `company-lsp' is automatically enabled if it's installed
+  (setq lsp-enable-completion-at-point nil)
+  ;; turn off for better performance
+  (setq lsp-enable-symbol-highlighting nil)
+  ;; use find-fine-in-project instead
+  (setq lsp-enable-links nil)
+  ;; auto restart lsp
+  (setq lsp-restart 'auto-restart)
+  ;; don't watch 3rd party javascript libraries
+  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
+  ;; don't ping LSP language server too frequently
+  (defvar lsp-on-touch-time 0)
+  (defun my-lsp-on-change-hack (orig-fun &rest args)
+    ;; do NOT run `lsp-on-change' too frequently
+    (when (> (- (float-time (current-time))
+                lsp-on-touch-time) 120) ;; 2 mins
+      (setq lsp-on-touch-time (float-time (current-time)))
+      (apply orig-fun args)))
+  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 #+end_src
 
 Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
