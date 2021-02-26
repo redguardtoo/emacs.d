@@ -445,15 +445,17 @@ _SPC_ cancel _o_nly this     _d_elete
                      :color blue)
 "
 Git:
-[_dd_] Diff         [_ri_] Rebase closest
-[_dc_] Diff staged  [_s_] Show commit
-[_dr_] Diff range   [_rr_] Reset gutter
-[_au_] Add modified [_rh_] Gutter => HEAD
-[_cc_] Commit       [_l_] Log selected/file
-[_ca_] Amend        [_b_] Branches
-[_ja_] Amend silent [_k_] Git commit link
-[_tt_] Stash        [_Q_] Quit gutter
-[_ta_] Apply Stash  [_f_] Find file in commit
+[_dd_] Diff               [_ri_] Rebase closest
+[_dc_] Diff staged        [_s_] Show commit
+[_dr_] Diff range         [_rr_] Reset gutter
+[_au_] Add modified       [_rh_] Gutter => HEAD
+[_cc_] Commit             [_l_] Log selected/file
+[_ca_] Amend              [_b_] Branches
+[_ja_] Amend silent       [_k_] Git commit link
+[_tt_] Stash              [_Q_] Quit gutter
+[_ta_] Apply stash        [_cr_] Cherry pick from reflog
+[_f_] Find file in commit
+
 "
   ("ri" my-git-rebase-interactive)
   ("rr" git-gutter-reset-to-default)
@@ -474,6 +476,7 @@ Git:
   ("au" magit-stage-modified)
   ("Q" git-gutter-toggle)
   ("f" my-git-find-file-in-commit)
+  ("cr" my-git-cherry-pick-from-reflog)
   ("q" nil))
 (global-set-key (kbd "C-c C-g") 'hydra-git/body)
 ;; }}

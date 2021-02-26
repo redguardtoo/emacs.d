@@ -305,6 +305,17 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
       (magit-rebase-interactive based nil))))
 ;; }}
 
+(defun my-git-cherry-pick-from-reflog ()
+  "Cherry pick a commit from git reflog."
+  (interactive)
+  (let* ((cmd "git --no-pager reflog --date=short")
+         (lines (my-lines-from-command-output cmd))
+         (selected (completing-read "Commit to cherry pick:" lines))
+         (commit-id (and selected (car (split-string selected)))))
+    (when commit-id
+      (my-ensure 'magit)
+      (magit-cherry-copy commit-id))))
+
 ;; {{ git-gutter use ivy
 (defun my-reshape-git-gutter (gutter)
   "Re-shape gutter for `ivy-read'."
