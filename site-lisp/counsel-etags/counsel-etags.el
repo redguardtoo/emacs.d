@@ -1678,7 +1678,8 @@ If SHOW-KEYWORD-P is t, show the keyword in the minibuffer."
                   (counsel-etags-read-keyword "Regular expression for grep: ")))
          (keyword (funcall counsel-etags-convert-grep-keyword text))
          (default-directory (file-truename (or root
-                                               (counsel-etags-locate-project))))
+                                               (counsel-etags-locate-project)
+                                               default-directory)))
          (time (current-time))
          (cmd (counsel-etags-grep-cli keyword nil))
          (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))

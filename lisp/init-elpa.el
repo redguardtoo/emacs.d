@@ -36,6 +36,7 @@
     web-mode
     racket-mode
     auto-package-update
+    web-mode
     nov
     bbdb
     esup ; Emacs start up profiler
