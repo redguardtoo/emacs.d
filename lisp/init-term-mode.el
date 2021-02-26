@@ -89,6 +89,7 @@ EVENT is ignored."
       (setq rlt
             (delq nil (mapcar
                        `(lambda (s)
+                          (unless (stringp s) (setq s (car s)))
                           (if (string-match (regexp-quote ,input) s) s))
                        rlt))))
     (when (and rlt (> (length rlt) 0)))
