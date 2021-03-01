@@ -42,7 +42,7 @@ If no files marked, always operate on current line in dired-mode."
 (with-eval-after-load 'dired-x
   (dolist (file `(((if *unix* "zathura" "open") "pdf" "dvi" "pdf.gz" "ps" "eps")
                   ("7z x" "rar" "zip" "7z") ; "e" to extract, "x" to extract with full path
-                  ((if (not *is-a-mac*) (my-guess-mplayer-path) "open") "ogm"
+                  ((if *is-a-mac* "open" (my-guess-mplayer-path)) "ogm"
                    "avi"
                    "mpg"
                    "rmvb"
@@ -59,7 +59,7 @@ If no files marked, always operate on current line in dired-mode."
                    "3gp"
                    "crdownload"
                    "mp3")
-                  ((concat (my-guess-mplayer-path) " -playlist") "list" "pls")
+                  ((concat (my-guess-mplayer-path) "-playlist") "list" "pls" "m3u")
                   ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                   ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
                   ("djview" "djvu")
