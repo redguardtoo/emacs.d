@@ -101,7 +101,7 @@ In that case, insert the number."
     (cond
      ((and (derived-mode-p 'prog-mode)
            (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
-               (not (evilnc-is-pure-comment (point))))) ; auto-complete in comment only
+               (not (evilnc-pure-comment-p (point))))) ; auto-complete in comment only
       ;; only use company-ispell in comment when coding
       nil)
      (t
