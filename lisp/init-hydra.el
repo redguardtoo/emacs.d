@@ -470,7 +470,7 @@ Git:
   ("dd" magit-diff-dwim)
   ("dc" magit-diff-staged)
   ("dr" (progn (magit-diff-range (my-git-commit-id))))
-  ("cc" magit-commit-popup)
+  ("cc" magit-commit-create)
   ("ca" magit-commit-amend)
   ("ja" (magit-commit-amend "--reuse-message=HEAD --no-verify"))
   ("au" magit-stage-modified)
