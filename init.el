@@ -103,7 +103,7 @@
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
   (require-init 'init-linum-mode)
-  (require-init 'init-git t)
+  (require-init 'init-git)
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
   (require-init 'init-ctags t)
