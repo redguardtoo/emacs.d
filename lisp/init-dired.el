@@ -59,7 +59,7 @@ If no files marked, always operate on current line in dired-mode."
                    "3gp"
                    "crdownload"
                    "mp3")
-                  ((concat (my-guess-mplayer-path) "-playlist") "list" "pls" "m3u")
+                  ((concat (my-guess-mplayer-path) "-fs -playlist") "list" "pls" "m3u")
                   ((if *unix* "feh" "open") "gif" "jpeg" "jpg" "tif" "png" )
                   ((if *unix* "libreoffice" "open") "doc" "docx" "xls" "xlsx" "odt")
                   ("djview" "djvu")
