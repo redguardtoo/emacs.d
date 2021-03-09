@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;; Please note functions here could be used in ~/.custom.el
+
 (defun local-require (pkg)
   "Require PKG in site-lisp directory."
   (unless (featurep pkg)
@@ -553,6 +555,29 @@ Copied from 3rd party package evil-textobj."
          (define-key map (kbd (nth 0 item)) (nth 1 item)))
        map)
      t)))
+
+;; @see http://emacs.stackexchange.com/questions/14129/which-keyboard-shortcut-to-use-for-navigating-out-of-a-string
+(defun my-font-face-similar-p (f1 f2)
+  "Font face F1 and F2 are similar or same."
+  ;; (message "f1=%s f2=%s" f1 f2)
+  ;; in emacs-lisp-mode, the '^' from "^abde" has list of faces:
+  ;;   (font-lock-negation-char-face font-lock-string-face)
+  (if (listp f1) (setq f1 (nth 1 f1)))
+  (if (listp f2) (setq f2 (nth 1 f2)))
+
+  (or (eq f1 f2)
+      ;; C++ comment has different font face for limit and content
+      ;; f1 or f2 could be a function object because of rainbow mode
+      (and (string-match "-comment-" (format "%s" f1))
+           (string-match "-comment-" (format "%s" f2)))))
+
+(defun my-font-face-at-point-similar-p (font-face-list)
+  "Test if font face at point is similar to any font in FONT-FACE-LIST."
+  (let* ((f (get-text-property (point) 'face))
+         rlt)
+    (dolist (ff font-face-list)
+      (if (my-font-face-similar-p f ff) (setq rlt t)))
+    rlt))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here
