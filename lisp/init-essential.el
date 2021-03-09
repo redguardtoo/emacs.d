@@ -201,4 +201,24 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
         try-expand-dabbrev-from-kill))
 (global-set-key (kbd "M-/") 'hippie-expand)
 
+(defun my-compile (&optional arg)
+  "Call `compile' command with ARG."
+  (interactive "P")
+  (when arg
+    ;; prepare extra option and cc it to `kill-ring'
+    (my-ensure 'which-func)
+    (let* ((extra-opt (which-function)))
+      (setq extra-opt (replace-regexp-in-string "tdd\\.it\\." "" extra-opt))
+
+      (cond
+       ;; jest unit test
+       ((and buffer-file-name (string-match-p "\\.[tj]s$" buffer-file-name))
+        (setq extra-opt (format " -t \"%s\" " extra-opt)))
+
+       ;; do nothing
+       (t
+        (setq extra-opt (format "\"%s\" " extra-opt))))
+      (if extra-opt (kill-new extra-opt))))
+  (call-interactively 'compile))
+
 (provide 'init-essential)
