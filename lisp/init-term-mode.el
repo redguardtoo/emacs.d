@@ -82,15 +82,16 @@ EVENT is ignored."
   (setq my-comint-full-input nil))
 (advice-add 'counsel-shell-history :around #'my-counsel-shell-history-hack)
 (defun my-ivy-history-contents-hack (orig-func &rest args)
+  "Make sure `ivy-history-contents' returns items matching `my-comint-full-input'."
   (let* ((rlt (apply orig-func args))
          (input my-comint-full-input))
     (when (and input (not (string= input "")))
       ;; filter shell history with current input
       (setq rlt
             (delq nil (mapcar
-                       `(lambda (s)
-                          (unless (stringp s) (setq s (car s)))
-                          (if (string-match (regexp-quote ,input) s) s))
+                       `(lambda (item)
+                          (let* ((cli (if (stringp item) item (car item))))
+                            (and (string-match (regexp-quote ,input) cli) item)))
                        rlt))))
     (when (and rlt (> (length rlt) 0)))
     rlt))
