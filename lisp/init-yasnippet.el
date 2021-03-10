@@ -12,7 +12,6 @@
 ;; {{ modes do NOT inherit from prog-mode
 (add-hook 'cmake-mode-hook 'my-enable-yas-minor-mode)
 (add-hook 'web-mode-hook 'my-enable-yas-minor-mode)
-(add-hook 'scss-mode-hook 'my-enable-yas-minor-mode)
 ;; }}
 
 (defun my-yas-expand-from-trigger-key-hack (orig-func &rest args)

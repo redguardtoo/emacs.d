@@ -30,7 +30,6 @@
                              (mode . lua-mode)
                              (mode . cmake-mode)
                              (mode . ruby-mode)
-                             (mode . scss-mode)
                              (mode . css-mode)
                              (mode . objc-mode)
                              (mode . sql-mode)

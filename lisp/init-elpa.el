@@ -257,7 +257,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'nvm)
 (require-package 'writeroom-mode)
 (require-package 'haml-mode)
-(require-package 'scss-mode)
 (require-package 'markdown-mode)
 (require-package 'link)
 (require-package 'connection)

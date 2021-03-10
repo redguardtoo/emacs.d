@@ -16,11 +16,8 @@
     (setq imenu-create-index-function 'counsel-css--imenu-create-index-function)))
 (add-hook 'css-mode-hook 'css-mode-hook-setup)
 
-;; compile *.scss to *.css on the pot could break the project build
-(setq scss-compile-at-save nil)
-(defun scss-mode-hook-setup ()
-  (unless (is-buffer-file-temp)
-    (setq imenu-create-index-function 'my-css-imenu-make-index)))
-(add-hook 'scss-mode-hook 'scss-mode-hook-setup)
+;; `css-mode' has better imenu support and won't force flymake to create rubbish files.
+;; besides, scss/sass is outdated. We use postcss or css in js these days.
+(my-add-auto-mode 'css-mode "\\.scss$")
 
 (provide 'init-css)
