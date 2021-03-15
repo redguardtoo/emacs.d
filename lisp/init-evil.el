@@ -936,4 +936,11 @@ If N > 0, only occurrences in current N lines are renamed."
   ;; Here is the workaround
   (setq evil-default-cursor t))
 
+(with-eval-after-load 'web-mode
+  (mapc #'evil-declare-change-repeat
+        '(web-mode-element-rename))
+  ;; (mapc #'evil-declare-repeat
+  ;;       '(web-mode-element-rename))
+  )
+
 (provide 'init-evil)

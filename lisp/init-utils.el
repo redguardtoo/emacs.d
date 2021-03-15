@@ -31,8 +31,9 @@
           rev
           (make-string level ?^)))
 
-(defun nonempty-lines (s)
-  (split-string s "[\r\n]+" t))
+(defun nonempty-lines (str)
+  "Split STR into lines."
+  (split-string str "[\r\n]+" t))
 
 (defun my-lines-from-command-output (command)
   "Return lines of COMMAND output."
@@ -52,7 +53,7 @@
   "Can use tags file to build imenu function"
   (my-ensure 'counsel-etags)
   (and (locate-dominating-file default-directory "TAGS")
-       ;; latest universal ctags has built in parser for javacript/typescript
+       ;; latest universal ctags has built in parser for javascript/typescript
        (counsel-etags-universal-ctags-p "ctags")
        (memq major-mode '(typescript-mode js-mode javascript-mode))))
 
@@ -257,45 +258,49 @@ If HINT is empty, use symbol at point."
 
 (defvar my-mplayer-extra-opts ""
   "Extra options for mplayer (ao or vo setup).
-For example, you can '(setq my-mplayer-extra-opts \"-ao alsa -vo vdpau\")'.")
+For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'.")
 
 (defun my-guess-mplayer-path ()
   "Guess cli program mplayer's path."
-  (let* ((rlt "mplayer"))
+  (let* ((program "mplayer")
+         (common-opts "-fs -quiet"))
     (cond
      (*is-a-mac*
-      (setq rlt "mplayer -quiet"))
+      (setq program "mplayer"))
 
      (*linux*
-      (setq rlt (format "mplayer -quiet -stop-xscreensaver %s"
-                        my-mplayer-extra-opts)))
+      (setq program "mplayer -stop-xscreensaver"))
+
      (*cygwin*
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
-          (setq rlt "/cygdrive/c/mplayer/mplayer.exe -quiet")
-        (setq rlt "/cygdrive/d/mplayer/mplayer.exe -quiet")))
+          (setq program "/cygdrive/c/mplayer/mplayer.exe")
+        (setq program "/cygdrive/d/mplayer/mplayer.exe")))
 
-     (t ; windows
+     ;; windows
+     (t
       (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-          (setq rlt "c:\\\\mplayer\\\\mplayer.exe -quiet")
-        (setq rlt "d:\\\\mplayer\\\\mplayer.exe -quiet"))))
-    rlt))
+          (setq program "c:\\\\mplayer\\\\mplayer.exe")
+        (setq program "d:\\\\mplayer\\\\mplayer.exe"))))
 
-(defun my-guess-image-viewer-path (file &optional is-stream)
-  (let* ((rlt "mplayer"))
-    (cond
-     (*is-a-mac*
-      (setq rlt
-            (format "open %s &" file)))
-     (*linux*
-      (setq rlt
-            (if is-stream (format "curl -L %s | feh -F - &" file) (format "feh -F %s &" file))))
-     (*cygwin* (setq rlt "feh -F"))
-     (t ; windows
-      (setq rlt
-            (format "rundll32.exe %s\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &"
-                    (getenv "SystemRoot")
-                    file))))
-    rlt))
+    (format "%s %s %s" program common-opts my-mplayer-extra-opts)))
+
+(defun my-guess-image-viewer-path (image &optional stream-p)
+  "How to open IMAGE which could be STREAM-P."
+  (cond
+   (*is-a-mac*
+    (format "open %s &" image))
+
+   (*linux*
+    (if stream-p (format "curl -L %s | feh -F - &" image)
+      (format "feh -F %s &" image)))
+
+   (*cygwin*
+    "feh -F")
+
+   (t ; windows
+    (format "rundll32.exe %s\\\\System32\\\\\shimgvw.dll, ImageView_Fullscreen %s &"
+            (getenv "SystemRoot")
+            image))))
 
 (defun my-gclip ()
   "Get clipboard content."
