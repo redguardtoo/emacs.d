@@ -2,13 +2,7 @@
 
 (add-hook 'after-init-hook 'global-company-mode)
 
-(when (fboundp 'evil-declare-change-repeat)
-  (mapc #'evil-declare-change-repeat
-        '(company-complete-common
-          company-select-next
-          company-select-previous
-          company-complete-selection
-          company-complete-number)))
+;; evil has already integrated company-mode, see evil-integration.el
 
 (defvar my-company-zero-key-for-filter nil
   "If t, pressing 0 calls `company-filter-candidates' per company's status.")
