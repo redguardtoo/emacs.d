@@ -88,8 +88,8 @@
       (let* ((name (symbol-name (car p))))
         (when (and (< i topNum)
                    (string-match-p "-themes?$" name)
-                   (not (member '("color-theme"
-                                  "smart-mode-line-powerline-theme"))))
+                   (not (member name '("color-theme"
+                                       "smart-mode-line-powerline-theme"))))
           (push name rlt)
           (setq i (1+ i)))))
     rlt))
