@@ -203,13 +203,28 @@ FN checks these characters belong to normal word characters."
     (setq compilation-finish-functions
           '(compilation-finish-hide-buffer-on-success))
 
-    ;; fic-mode has performance issue on 5000 line C++, we can always use swiper instead
+    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
+
     ;; don't spell check double words
     (setq-local wucuo-flyspell-check-doublon nil)
-    ;; enable for all programming modes
-    ;; http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+    ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
     (unless (derived-mode-p 'js2-mode)
       (subword-mode 1))
+
+    ;; now css-mode derives from prog-mode
+    ;; see the code of `counsel-css-imenu-setup'
+    (when (counsel-css-imenu-setup)
+      ;; css color
+      (rainbow-mode 1)
+      (imenu-extra-auto-setup
+       ;; post-css mixin
+       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
+      (setq beginning-of-defun-function
+            (lambda (arg)
+              (ignore arg)
+              (let* ((closest (my-closest-imenu-item)))
+                (when closest
+                  (goto-char (cdr closest)))))))
 
     (electric-pair-mode 1)
 
@@ -219,10 +234,8 @@ FN checks these characters belong to normal word characters."
     (setq show-trailing-whitespace t)))
 
 (add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
-;; some major-modes NOT inherited from prog-mode
-(add-hook 'css-mode-hook 'generic-prog-mode-hook-setup)
 
-;; {{ display long lines in truncated style (end line with $)
+;;; {{ display long lines in truncated style (end line with $)
 (defun truncate-lines-setup ()
   (toggle-truncate-lines 1))
 (add-hook 'grep-mode-hook 'truncate-lines-setup)

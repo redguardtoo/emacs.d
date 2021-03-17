@@ -210,10 +210,7 @@ INDENT-SIZE decide the indentation level.
   (ignore orig-func)
   (ignore args)
   (when (my-use-tags-as-imenu-function-p)
-    (let* ((cands (counsel--imenu-candidates))
-           closest
-           )
-      (setq closest (my-get-closest-imenu-item cands))
+    (let* ((closest (my-closest-imenu-item)))
       (when closest
         (imenu closest)))))
 (advice-add 'typescript-beginning-of-defun :around #'my-typescript-beginning-of-defun-hack)

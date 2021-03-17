@@ -129,4 +129,9 @@
 ;; roblox studio
 (my-add-auto-mode 'roblox-mode "\\.rbxlx\\'")
 ;; }}
+
+;; `css-mode' has better imenu support and won't force flymake to create rubbish files.
+;; besides, scss/sass is outdated. We use postcss or css in js these days.
+(my-add-auto-mode 'css-mode "\\.scss$")
+
 (provide 'init-file-type)

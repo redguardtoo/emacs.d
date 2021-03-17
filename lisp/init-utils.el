@@ -533,7 +533,7 @@ Copied from 3rd party package evil-textobj."
   "Handle some strange imenu ITEM."
   (if (markerp item) (marker-position item) item))
 
-(defun my-get-closest-imenu-item (cands)
+(defun my-closest-imenu-item-internal (cands)
   "Return closest imenu item from CANDS."
   (let* ((pos (point))
          closest)
@@ -548,6 +548,11 @@ Copied from 3rd party package evil-textobj."
                (- pos (my-imenu-item-position (cdr closest))))
             (setq closest item))))))
     closest))
+
+(defun my-closest-imenu-item ()
+  "Return the closest imenu item."
+  (my-ensure 'counsel)
+  (my-closest-imenu-item-internal (counsel--imenu-candidates)))
 
 (defun my-setup-extra-keymap (extra-fn-list hint fn &rest args)
   "Map EXTRA-FN-LIST to new keymap and show HINT after calling FN with ARGS."
