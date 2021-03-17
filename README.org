@@ -86,8 +86,8 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
 - Emacs 26.1 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to [[https://emacs.stackexchange.com/questions/27202/how-do-i-install-gnutls-for-emacs-25-1-on-windows][install GnuTLS Dlls manually]] to install packages from remote repositories. Or else you got error message like =error: Package `async-' is unavailable= on Windows. Please note since =Emacs 26.1=, you can download full version which works out of box
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced user could under-estimate the risk of unstable packages
+- If you use Windows Emacs, you have to download full version to avoid error message  =error: Package `async-' is unavailable= when install 3rd party package from remote repositories
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced users often under-estimate the risk of unstable packages
 - Other issues are covered in FAQ
 * Installation
 Most users should follow the section "Install in normal way".
@@ -243,16 +243,17 @@ For hunspell, please read my comment in =init-spelling.el=.
 **** ffmpeg
 - Some dired commands use ffmpeg to process video/audio
 **** LanguageTool
-It's Grammar, Style and Spell Checker
+Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
 - Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
+- Read the head of =site-lisp/langtool/langtool.el= for more customization because I patched it and added more features
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
 - Required by =lazyflymake=
 **** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
 Please install corresponding Chrome/Firefox addons.
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
-- Used by hydra command in dired
+- Used by hydra in dired buffer
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Basic tutorial
