@@ -844,6 +844,8 @@ If the shell is already opened in some buffer, switch to that buffer."
 ;; {{ emms
 (with-eval-after-load 'emms
   (emms-all)
+  ;; use mplayer to play video in full screen mode
+  (push "-fs" emms-player-mplayer-parameters)
   (setq emms-player-list '(emms-player-mplayer-playlist
                            emms-player-mplayer
                            emms-player-mpg321
