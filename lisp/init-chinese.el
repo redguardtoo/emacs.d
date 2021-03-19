@@ -100,68 +100,17 @@
 ;; }}
 
 ;; {{ cal-china-x setup
-(defun chinese-calendar (&optional args)
-  "Open Chinese Lunar calendar."
+(defun chinese-calendar (&optional arg)
+  "Open Chinese Lunar calendar with ARG."
   (interactive "P")
-  (local-require 'cal-china-x)
-  (let* ((calendar-date-display-form
-          '((cal-china-x-calendar-display-form
-             (mapcar (lambda (el) (string-to-number el))
-                     (list month day year)))))
-         (diary-date-forms chinese-date-diary-pattern)
-
-         ;; chinese month and year
-         (calendar-font-lock-keywords
-          (append calendar-font-lock-keywords
-                  '(("[0-9]+年\\ *[0-9]+月" . font-lock-function-name-face))))
-
-         (calendar-chinese-celestial-stem cal-china-x-celestial-stem)
-         (calendar-chinese-terrestrial-branch cal-china-x-terrestrial-branch)
-         (calendar-month-header '(propertize (format "%d年%2d月" year month)
-                                             'font-lock-face
-                                             'calendar-month-header))
-
-         ;; if chinese font width equals to twice of ascii font
-         (calendar-day-header-array cal-china-x-days)
-
-         (calendar-mode-line-format
-          (list
-           (calendar-mode-line-entry 'calendar-scroll-right "previous month" "<")
-           "Calendar"
-
-           '(cal-china-x-get-holiday date)
-
-           '(concat " " (calendar-date-string date t)
-                    (format " 第%d周"
-                            (funcall (if cal-china-x-custom-week-start-date
-                                         'cal-china-x-custom-week-of-date
-                                       'cal-china-x-week-of-date)
-                                     date)))
-
-           '(cal-china-x-chinese-date-string date)
-
-           ;; (concat
-           ;;  (calendar-mode-line-entry 'calendar-goto-info-node "read Info on Calendar"
-           ;;                            nil "info")
-           ;;  " / "
-           ;;  (calendar-mode-line-entry 'calendar-other-month "choose another month"
-           ;;                            nil "other")
-           ;;  " / "
-           ;;  (calendar-mode-line-entry 'calendar-goto-today "go to today's date"
-           ;;                            nil "today"))
-
-           (calendar-mode-line-entry 'calendar-scroll-left "next month" ">")))
-
-         other-holidays
-         (mark-holidays-in-calendar t)
-         (cal-china-x-important-holidays cal-china-x-chinese-holidays)
-         (cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")))
-         (calendar-holidays
-          (append cal-china-x-important-holidays
-                  cal-china-x-general-holidays
-                  other-holidays)))
-    (advice-add 'calendar-mark-holidays :around #'cal-china-x-mark-holidays)
-    (calendar args)))
+  (unless (featurep 'cal-china-x) (local-require 'cal-china-x))
+  (setq mark-holidays-in-calendar t)
+  (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
+  (setq cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")))
+  (setq calendar-holidays
+        (append cal-china-x-important-holidays
+                cal-china-x-general-holidays))
+  (calendar arg))
 
 (defun my-calendar-exit-hack (&optional arg)
   "Clean the cal-chinese-x setup."

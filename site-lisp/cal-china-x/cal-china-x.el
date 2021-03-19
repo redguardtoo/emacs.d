@@ -3,7 +3,7 @@
 ;; Copyright (C) 2006-2013, 2015 William Xu
 
 ;; Author: William Xu <william.xwl@gmail.com>
-;; Version: 2.5
+;; Version: 2.6b
 ;; Url: https://github.com/xwl/cal-china-x
 ;; Package-Requires: ((cl-lib "0.5"))
 
@@ -74,7 +74,7 @@
 (defvar displayed-year)
 
 (defconst cal-china-x-celestial-stem
-  ["甲" "乙" "丙" "丁" "戊" "已" "庚" "辛" "壬" "癸"])
+  ["甲" "乙" "丙" "丁" "戊" "己" "庚" "辛" "壬" "癸"])
 
 (defconst cal-china-x-terrestrial-branch
   ["子" "丑" "寅" "卯" "辰" "巳" "午" "未" "申" "酉" "戌" "亥"])
@@ -219,25 +219,51 @@ as schools, where people may use some specific school diary."
   :type 'symbol
   :group 'cal-china-x)
 
+(defcustom cal-china-x-force-chinese-week-day nil
+  "Force using chinese week day, even though it may not align nicely.
+
+Default is nil. The chinese week day will be enabled automatically if
+the package 'cnfonts (old name: 'chinese-fonts-setup) is loaded."
+  :type 'boolean
+  :group 'cal-china-x)
+
+(defcustom cal-china-x-always-show-jieqi nil
+  "When t, always show Jieqi on the mode line; else only on the starting day."
+  :type 'boolean
+  :group 'cal-china-x)
+
+;; cached solar terms for two neighbour years at most.
+(defvar cal-china-x-solar-term-alist nil) ; e.g., '(((1 20 2008) "春分") ...)
+(defvar cal-china-x-solar-term-years nil)
+
 ;;;###autoload
 (defun cal-china-x-birthday-from-chinese (lunar-month lunar-day)
-  "Return birthday date this year in Gregorian form.
+  "Return next birthday date in Gregorian form.
 
 LUNAR-MONTH and LUNAR-DAY are date number used in chinese lunar
 calendar."
   (interactive "nlunar month: \nnlunar day: ")
-  (let* ((birthday-chinese (list lunar-month lunar-day))
-	 (current-chinese-date (calendar-chinese-from-absolute
-				(calendar-absolute-from-gregorian
-				 (calendar-current-date))))
-	 (cycle (car current-chinese-date))
-	 (year (cadr current-chinese-date))
-	 (birthday-chinese-full `(,cycle ,year ,@birthday-chinese))
-	 (birthday-gregorian-full (calendar-gregorian-from-absolute
-				   (calendar-chinese-to-absolute
-				    birthday-chinese-full))))
+  (let* ((current-chinese-date (calendar-chinese-from-absolute
+                                (calendar-absolute-from-gregorian
+                                 (calendar-current-date))))
+         (cycle (car current-chinese-date))
+         (year (cadr current-chinese-date))
+         (birthday-gregorian-full
+          (cal-china-x-birthday-from-chinese-1
+           cycle year lunar-month lunar-day)))
+    ;; If it is before current date, calculate next year.
+    (when (calendar-date-compare (list birthday-gregorian-full)
+                                 (list (calendar-current-date)))
+      (setq birthday-gregorian-full
+            (cal-china-x-birthday-from-chinese-1
+             cycle (1+ year) lunar-month lunar-day)))
     (message "Your next birthday in gregorian is on %s"
-	     (calendar-date-string birthday-gregorian-full))))
+             (calendar-date-string birthday-gregorian-full))))
+
+(defun cal-china-x-birthday-from-chinese-1 (cycle year lunar-month lunar-day)
+  (calendar-gregorian-from-absolute
+   (calendar-chinese-to-absolute
+    (list cycle year lunar-month lunar-day))))
 
 ;;;###autoload
 (defun holiday-lunar (lunar-month lunar-day string &optional num)
@@ -340,14 +366,14 @@ See `cal-china-x-solar-term-name' for a list of solar term names ."
          (cn-year  (cadr   cn-date))
          (cn-month (cl-caddr  cn-date))
          (cn-day   (cl-cadddr cn-date)))
-    (format "%s%s年%s%s%s(%s)%s"
+    (format "%s%s年%s%s%s%s(%s)"
             (calendar-chinese-sexagesimal-name cn-year)
             (aref cal-china-x-zodiac-name (% (1- cn-year) 12))
             (aref cal-china-x-month-name (1-  (floor cn-month)))
             (if (integerp cn-month) "" "(闰月)")
             (aref cal-china-x-day-name (1- cn-day))
-            (cal-china-x-get-horoscope (car date) (cadr date))
-            (cal-china-x-get-solar-term date))))
+            (cal-china-x-get-solar-term date)
+            (cal-china-x-get-horoscope (car date) (cadr date)))))
 
 (defun cal-china-x-setup ()
   (setq calendar-date-display-form
@@ -357,11 +383,6 @@ See `cal-china-x-solar-term-name' for a list of solar term names ."
 
   (setq diary-date-forms chinese-date-diary-pattern)
 
-  ;; chinese month and year
-  (setq calendar-font-lock-keywords
-        (append calendar-font-lock-keywords
-                '(("[0-9]+年\\ *[0-9]+月" . font-lock-function-name-face))))
-
   (setq calendar-chinese-celestial-stem cal-china-x-celestial-stem
         calendar-chinese-terrestrial-branch cal-china-x-terrestrial-branch)
 
@@ -369,11 +390,18 @@ See `cal-china-x-solar-term-name' for a list of solar term names ."
                                            'font-lock-face
                                            'calendar-month-header))
 
-  ;; if chinese font width equals to twice of ascii font
-  (eval-after-load 'chinese-fonts-setup
-    '(progn
-       (setq calendar-day-header-array cal-china-x-days)
-       ))
+  (if cal-china-x-force-chinese-week-day
+      (setq calendar-day-header-array cal-china-x-days)
+
+    (eval-after-load 'chinese-fonts-setup ; older name of cnfonts, to be removed
+      '(progn
+         (setq calendar-day-header-array cal-china-x-days)
+         ))
+
+    (eval-after-load 'cnfonts
+      '(progn
+         (setq calendar-day-header-array cal-china-x-days)
+         )))
 
   (setq calendar-mode-line-format
         (list
@@ -405,6 +433,13 @@ See `cal-china-x-solar-term-name' for a list of solar term names ."
 
   (add-hook 'calendar-move-hook 'calendar-update-mode-line)
   (add-hook 'calendar-initial-window-hook 'calendar-update-mode-line)
+
+  (add-hook 'calendar-mode-hook
+            (lambda ()
+              (set (make-local-variable 'font-lock-defaults)
+                   ;; chinese month and year
+                   '((("[0-9]+年\\ *[0-9]+月" . font-lock-function-name-face)) t))
+              ))
 
   (advice-add 'calendar-mark-holidays :around 'cal-china-x-mark-holidays)
   (advice-add 'mouse-set-point :after 'cal-china-x-mouse-set-point)
@@ -450,9 +485,15 @@ in a week."
                            (+ y 57))))))))))
 
 (defun cal-china-x-get-solar-term (date)
-  (let ((year (calendar-extract-year date)))
+  (let ((year (calendar-extract-year date))
+        (absolute-date (calendar-absolute-from-gregorian date)))
     (cal-china-x-sync-solar-term year)
-    (or (cdr (assoc date cal-china-x-solar-term-alist)) "")))
+    (if cal-china-x-always-show-jieqi
+        ;; Hmm, better binary search, but need to use vec then.
+        (cl-loop for i in cal-china-x-solar-term-alist
+              until (>= absolute-date (calendar-absolute-from-gregorian (car i)))
+              finally return (cdr i))
+      (or (cdr (assoc date cal-china-x-solar-term-alist)) ""))))
 
 (defun cal-china-x-solar-term-alist-new (year)
   "Return a solar-term alist for YEAR."
@@ -516,10 +557,6 @@ extra day appended."
           (setq str (concat str " " (cadr i)))))
       str)))
 
-;; cached solar terms for two neighbour years at most.
-(defvar cal-china-x-solar-term-alist nil) ; e.g., '(((1 20 2008) "春分") ...)
-(defvar cal-china-x-solar-term-years nil)
-
 (defun cal-china-x-sync-solar-term (year)
   "Sync `cal-china-x-solar-term-alist' and `cal-china-x-solar-term-years' to YEAR."
   (cond ((or (not cal-china-x-solar-term-years)
@@ -538,7 +575,11 @@ extra day appended."
                 (cal-china-x-solar-term-alist-new year)))
          (setq cal-china-x-solar-term-years
                (cons year (cl-remove-if-not (lambda (i) (eq i displayed-year))
-                                            cal-china-x-solar-term-years))))))
+                                            cal-china-x-solar-term-years)))))
+  (setq cal-china-x-solar-term-alist
+        (sort cal-china-x-solar-term-alist
+              (lambda (a b) (> (calendar-absolute-from-gregorian (car a))
+                          (calendar-absolute-from-gregorian (car b)))))))
 
 ;; When months are: '(11 12 1), '(12 1 2)
 (defun cal-china-x-cross-year-view-p ()
@@ -609,7 +650,7 @@ N congruent to 1 gives the first name, N congruent to 2 gives the second name,
 
 
 ;; setup
-;; (cal-china-x-setup) ; I want to use western calendar at the same time
+(cal-china-x-setup)
 
 (provide 'cal-china-x)
 
