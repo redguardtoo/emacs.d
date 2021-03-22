@@ -912,18 +912,11 @@ If the shell is already opened in some buffer, switch to that buffer."
   (beginning-of-buffer))
 
 ;; {{ unique lines
-(defun uniq-lines ()
-  "Delete duplicate lines in region or buffer."
-  (interactive)
-  (let* ((a (region-active-p))
-         (start (if a (region-beginning) (point-min)))
-         (end (if a (region-end) (point-max))))
-    (save-excursion
-      (while
-          (progn
-            (goto-char start)
-            (re-search-forward "^\\(.*\\)\n\\(\\(.*\n\\)*\\)\\1\n" end t))
-        (replace-match "\\1\n\\2")))))
+;; https://gist.github.com/ramn/796527
+;; uniq-lines
+(defun uniq-lines (start end)
+  (interactive "*r")
+  (delete-duplicate-lines start end))
 ;; }}
 
 (defun my-insert-file-link-from-clipboard ()
