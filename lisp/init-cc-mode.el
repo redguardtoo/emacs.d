@@ -43,7 +43,7 @@
   (setq cc-search-directories '("." "/usr/include" "/usr/local/include/*" "../*/include" "$WXWIN/include"))
 
   ;; {{ @see https://github.com/redguardtoo/cpputils-cmake
-  ;; In theory, you can write your own Makefile for `flyamke-mode' without cmake.
+  ;; In theory, you can write your own Makefile for `flymake-mode' without cmake.
   ;; Nobody actually does it in real world.
 
   ;; debugging Emacs c code

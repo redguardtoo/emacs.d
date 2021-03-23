@@ -125,7 +125,7 @@ You can switch to online repositories like http://elpa.gnu.org or http://melpa.o
 ** Install everything in one step (OPTIONAL)
 Download content of [[https://github.com/redguardtoo/my-emacs.d-snapshot]] into =~/.emacs.d=. That's it.
 
-It's not recommdned for daily usage because the third party packages are not optimized for latest Emacs.
+It's not recommended for daily usage because the third party packages are not optimized for latest Emacs.
 ** Third party programs (OPTIONAL)
 *** Install
 Most command line programs can be installed through =default package manager=.
@@ -201,10 +201,6 @@ For hunspell, please read my comment in =init-spelling.el=.
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip
 - Required by =org-mode= to export org file to odt file
-**** jshint
-- Install =node.js= through OS package manager, then =npm install -g jshint=
-- Required by js-mode
-- I use js2-mode which does NOT need jshint
 **** xsel or xclip
 - Required by my clipboard command =copy-to-x-clipboard= and =paste-from-x-clipboard= under Linux
 **** [[http://www.cmake.org][CMake]]
@@ -250,8 +246,6 @@ Grammar, Style and Spell Checker
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
 - Required by =lazyflymake=
-**** [[https://github.com/stsquad/emacs_chrome][Edit browser's text area with Emacs]]
-Please install corresponding Chrome/Firefox addons.
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 * Tutorial (OPTIONAL)
@@ -347,7 +341,7 @@ Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's
 ** Spell check camel case code
 This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode=. I strongly recommend you reading the section "aspell or hunspell" at least once.
 
-Wucuo is fast, reliable, and powerful. It's better than any spell checking solutions of other text and IDE (VSCode, Sublime Text 3, IntelliJ IDEA ...).
+Wucuo is fast, reliable, and powerful. It's better than any spell checking solutions of other text and IDE.
 
 Please don't disable it simply because it's a new package.
 ** Locked packages
@@ -556,7 +550,7 @@ By default, environment variable =HOME= points to the directory =C:\Users\<usern
 - You can add your snippets into =snippets/=.
 - Run =grep -rns --exclude='.yas*' 'key:' *= in =snippets/= to see my own snippets
 ** Non-English users
-Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output "zh_CN.UTF-8".
+Locale must be *UTF-8 compatible*. For example, as I type =locale= in shell, I got the output =zh_CN.UTF-8=.
 ** Behind corporate firewall
 Run below command in shell:
 #+begin_src bash
