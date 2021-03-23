@@ -1,11 +1,13 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; Without this comment emacs25 adds (package-initialize) here
 ;; (package-initialize)
 
 (let* ((minver "26.1"))
   (when (version< emacs-version minver)
-    (error "Emacs v%s or higher is required." minver)))
+    (error "Emacs v%s or higher is required" minver)))
 
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))

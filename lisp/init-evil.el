@@ -31,10 +31,6 @@
       undo-strong-limit 8000000
       undo-outer-limit 8000000)
 
-(defvar my-use-m-for-matchit nil
-  "If t, use \"m\" key for `evil-matchit-mode'.
-And \"%\" key is also restored to `evil-jump-item'.")
-
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (my-run-with-idle-timer 2 #'global-evil-surround-mode)
 (with-eval-after-load 'evil-surround
