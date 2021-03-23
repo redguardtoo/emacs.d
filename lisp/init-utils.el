@@ -549,6 +549,11 @@ Copied from 3rd party package evil-textobj."
             (setq closest item))))))
     closest))
 
+(defun my-mark-to-position (&optional position)
+  "Mark text from point to POSITION or end of of line."
+  (set-mark (or position (line-end-position)))
+  (activate-mark))
+
 (defun my-closest-imenu-item ()
   "Return the closest imenu item."
   (my-ensure 'counsel)
