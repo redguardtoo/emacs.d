@@ -25,7 +25,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
   - [[#quick-start][Quick start]]
-  - [[#get-better-performance][Get better performance]]
+  - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
   - [[#spell-check-camel-case-code][Spell check camel case code]]
@@ -293,13 +293,25 @@ Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find f
 Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
-** Get better performance
-*** Adjust interval of spell check and syntax check
-This configuration is already optimized for low specification machines on Windows/Linux/macOS.
+** Better runtime performance
+*** Use flycheck to syntax check code
+If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
+
+Install and set up =flycheck= and insert below code to disable =lazyflymake=,
+#+begin_src elisp
+(setq my-disable-lazyflymake t)
+#+end_src
+*** Use your own spell check solution
+Insert below code to disable builtin =wucuo= before using =flyspell-mode= or =flyspell-prog-mode=,
+#+begin_src elisp
+(setq my-disable-wucuo t)
+#+end_src
+*** Interval of spell check and syntax check
+This configuration is already optimized for low specification machines on Windows/Linux/macOS by using =lazyflymake= and =wucuo=.
 
 But you could still squeeze more performance by decreasing the frequency of spell checking and programming syntax check.
 
-The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is lightweight alternative of =flyspell-mode=.
+The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is lightweight alternative of =flyspell-mode= and =flyspell-prog-mode=.
 
 The programming syntax check is done by [[https://github.com/redguardtoo/lazyflymake][lazyflymake]] which is alternative of =flymake-mode=.
 

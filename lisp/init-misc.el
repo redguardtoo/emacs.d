@@ -180,7 +180,11 @@ FN checks these characters belong to normal word characters."
 (with-eval-after-load 'flymake
   (setq flymake-gui-warnings-enabled nil))
 
+(defvar my-disable-lazyflymake nil
+  "Disable lazyflymake.")
+
 (defun generic-prog-mode-hook-setup ()
+  "Generic programming mode set up."
   (when (buffer-too-big-p)
     ;; Turn off `linum-mode' when there are more than 5000 lines
     (linum-mode -1)
@@ -192,12 +196,14 @@ FN checks these characters belong to normal word characters."
   (unless (is-buffer-file-temp)
 
     (unless (featurep 'esup-child)
-      (my-ensure 'lazyflymake)
-      (lazyflymake-start)
+      (unless my-disable-lazyflymake
+        (my-ensure 'lazyflymake)
+        (lazyflymake-start))
 
-      (my-ensure 'wucuo)
-      (setq-local ispell-extra-args (my-detect-ispell-args t))
-      (wucuo-start))
+      (unless my-disable-wucuo
+        (my-ensure 'wucuo)
+        (setq-local ispell-extra-args (my-detect-ispell-args t))
+        (wucuo-start)))
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
     (setq compilation-finish-functions
