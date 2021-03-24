@@ -28,8 +28,8 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
-  - [[#spell-check-camel-case-code][Spell check camel case code]]
-  - [[#locked-packages][Locked packages]]
+  - [[#spell-check-code][Spell check code]]
+  - [[#lock-packages][Lock packages]]
   - [[#how-to-install-new-packages][How to install new packages?]]
   - [[#git-blame-current-line][Git blame current line]]
   - [[#saveload-windows-layout][Save/Load windows layout]]
@@ -61,6 +61,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#email][Email]]
   - [[#cannot-download-packages][Cannot download packages?]]
   - [[#use-packages-on-gnu-elpa][Use packages on GNU ELPA]]
+  - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
   - [[#c-auto-completion-doesnt-work][C++ auto-completion doesn't work?]]
@@ -157,43 +158,6 @@ You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML
 But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** aspell or hunspell
 - Required by =flyspell=
-- =hunspell= is the alternative of =aspell=. You need only one of them.
-- For =aspell=, you may need its dictionary =aspell-en=
-- Default language for spell check is "en_US" in =init-spelling.el=. It can be changed
-- I recommend =aspell= for programmers. Non-programmers find =hunspell= is better on typo correction
-
-If you use hunspell, check [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]]. Please note the hunspell executable understands either unix format path or windows format path but not both. You need figure out hunspell version you are using.
-
-You can set =my-force-to-use-hunspell= in =init-spelling.el= if you prefer hunspell.
-
-[[https://github.com/redguardtoo/wucuo][Wucuo]] is used to spell check camel case words. It supports both aspell and hunspell.
-
-Please check =wucuo-start= in =~/.emacs.d/lisp= to see how it's used.
-
-You can comment out the line containing =wucuo-start= to disable the spell checking in Emacs.
-
-Wucuo is based on Flyspell and it's alternative of =flyspell-mode=.
-
-Spelling check just works out of box with wucuo. You don't need any extra configuration. For example, there is no reason you need enable =flyspell-mode= at all.
-
-Some people like to run =M-x flyspell-buffer= to manually check current buffer.
-
-Aspell's default personal English dictionary is =$HOME/.aspell.en.pws=. Its content is like:
-#+begin_src conf
-personal_ws-1.1 en 4
-ABN
-ACC
-ACN
-ACT
-#+end_src
-
-The content of personal dictionary can be cleaned by =M-x my-clean-aspell-dict=.
-
-Hunspell's default personal English dictionary is =$HOME/.hunspell_en_US=. The file format is same as aspell.
-
-Flyspell configuration is actually simple. Aspell uses =ispell-extra-args=. Hunspell uses =ispell-local-dictionary= and =ispell-local-dictionary=. That's it.
-
-For hunspell, please read my comment in =init-spelling.el=.
 **** xmlstarlet or xml
 - Required by =lazyflymake= for HTML syntax check.
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
@@ -294,36 +258,6 @@ Code auto-completion works out of box by using tags file created by Ctags. You n
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Better runtime performance
-*** Use flycheck to syntax check code
-If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
-
-Install and set up =flycheck= and insert below code to disable =lazyflymake=,
-#+begin_src elisp
-(setq my-disable-lazyflymake t)
-#+end_src
-*** Use your own spell check solution
-Insert below code to disable builtin =wucuo= before using =flyspell-mode= or =flyspell-prog-mode=,
-#+begin_src elisp
-(setq my-disable-wucuo t)
-#+end_src
-*** Interval of spell check and syntax check
-This configuration is already optimized for low specification machines on Windows/Linux/macOS by using =lazyflymake= and =wucuo=.
-
-But you could still squeeze more performance by decreasing the frequency of spell checking and programming syntax check.
-
-The spell check is done by [[https://github.com/redguardtoo/wucuo][wucuo]] which is lightweight alternative of =flyspell-mode= and =flyspell-prog-mode=.
-
-The programming syntax check is done by [[https://github.com/redguardtoo/lazyflymake][lazyflymake]] which is alternative of =flymake-mode=.
-
-Insert below code to =~/.custom.el= to increase the interval of check,
-#+begin_src elisp
-(with-eval-after-load 'wucuo
-  ;; 4 second
-  (setq wucuo-update-interval 4))
-(with-eval-after-load 'lazyflymake
-  ;; 2 seconds
-  (setq lazyflymake-update-interval 3))
-#+end_src
 *** Why opening file is slow
 Insert below code into =~/.custom.el=, replace "/home/user1/your-file-path" with the file you want to open,
 #+begin_src elisp
@@ -349,13 +283,18 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
-** Spell check camel case code
-This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode=. I strongly recommend you reading the section "aspell or hunspell" at least once.
+** Spell check code
+This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode= and =flyspell-prog-mode=.
 
 Wucuo is fast, reliable, and powerful. It's better than any spell checking solutions of other text and IDE.
 
-Please don't disable it simply because it's a new package.
-** Locked packages
+If you prefer your own spell check solution, insert below code to disable wucuo first,
+#+begin_src elisp
+(setq my-disable-wucuo t)
+#+end_src
+
+For further knowledge on spell checking, you could read [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]] and code in =init-spelling.el=.
+** Lock packages
 Some packages are so important to my workflow that they are locked.
 
 Those packages are placed at =site-lisp/=.
@@ -566,6 +505,13 @@ Run =M-x package-refresh-content=, restart Emacs, reinstall package.
 By default, packages from GNU ELPA are NOT available. Search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= if you want to access GNU ELPA.
 
 For example, [[https://github.com/flycheck/flycheck][flycheck]] requires packages from GNU ELPA.
+** Use flycheck to syntax check code
+If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
+
+Install and set up =flycheck= and insert below code to disable =lazyflymake=,
+#+begin_src elisp
+(setq my-disable-lazyflymake t)
+#+end_src
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
