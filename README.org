@@ -509,20 +509,19 @@ Press =M-x org-version=, then read corresponding online manual to set up.
 
 For example, =org-capture= requires [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 
-Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by the embedded =emacs-w3m= is used. `C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
+Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by =emacs-w3m=. =C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
 ** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 
 The easiest way is change [[https://en.wikipedia.org/wiki/PATH_(variable)][Environment variable PATH]].
 ** Customize global variables
-Some variables are hard coded so you cannot =M-x customize= to modify them.
+Some variables are set by this configuration so you can't =M-x customize= to modify them.
 
-Here are the steps to change their values:
-- Find the variable description by =M-x customize=
-- For text "Company Clang Insert Arguments", search =company-clang-insert-argument= in =lisp/=
-- You will find =lisp/init-company.el= and modify =company-clang-insert-argument=
+Here are the steps to set these variables:
+- Find the variable description by =M-x customize=. For example, if the description of a variable is "Company Clang Insert Arguments", then the variable name is =company-clang-insert-argument=
+-  Find the variable =company-clang-insert-argument= in =lisp/init-company.el= and change its value
 
-BTW, please *read my comments* above the code at first.
+BTW, please *read my code comment* first before changing my code.
 ** Open/Save files with Counsel/Ivy
 Keep pressing =C-M-j= to ignore candidates and open/save files using current input.
 
