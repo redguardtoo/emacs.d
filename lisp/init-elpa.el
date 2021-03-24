@@ -37,6 +37,8 @@
     racket-mode
     auto-package-update
     web-mode
+    kv
+    esxml ; nov is dependent on latest esxml
     nov
     bbdb
     esup ; Emacs start up profiler
