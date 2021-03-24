@@ -51,7 +51,7 @@
       (push '(?` . ("`" . "'")) evil-surround-pairs-alist))
 
     (when (or (derived-mode-p 'js-mode)
-              (memq major-mode '(typescript-mode)))
+              (memq major-mode '(typescript-mode web-mode)))
       (push '(?j . ("JSON.stringify(" . ")")) evil-surround-pairs-alist)
       (push '(?> . ("(e) => " . "(e)")) evil-surround-pairs-alist))
 
