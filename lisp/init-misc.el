@@ -1190,10 +1190,10 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
     (mybigword-show-big-words-from-current-buffer)))
 ;; }}
 
-;; {{ use pdf-tools to view pdf
-(when (and (display-graphic-p) *linux*)
-  (pdf-loader-install))
-;; }}
+;; ;; {{ use pdf-tools to view pdf
+;; (when (and (display-graphic-p) *linux*)
+;;   (pdf-loader-install))
+;; ;; }}
 
 ;; {{ exe path
 (with-eval-after-load 'exec-path-from-shell
