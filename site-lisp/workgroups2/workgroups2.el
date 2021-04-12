@@ -2476,7 +2476,7 @@ If a workgroup with the same name exists, overwrite it."
         index)
     (when group
       (setq index (cl-position group (wg-workgroup-list-or-error)))
-      (wg-delete-workgroup it))
+      (wg-delete-workgroup group))
 
     (wg-asetf (wg-workgroup-list)
               (wg-insert-before workgroup it (or index (length it))))
