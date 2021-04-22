@@ -373,7 +373,8 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'ace-pinyin)
 (require-package 'which-key)
 (require-package 'highlight-symbol)
-(require-package 'org-roam)
+;; org-roam requires new version of org-mode bundled with Emacs 27
+(when *emacs27* (require-package 'org-roam))
 
 ;; speed up CI
 (unless my-disable-idle-timer
