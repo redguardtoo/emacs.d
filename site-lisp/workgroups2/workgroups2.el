@@ -51,13 +51,12 @@
 ;;
 ;; By default prefix is: "C-c z"
 ;;
-;; <prefix> <key>
-;;
 ;; <prefix> C-c    - create new workgroup
 ;; <prefix> C-v    - open existing workgroup
 ;;
 ;; Change workgroups session file,
-;; (setq wg-session-file "~/.emacs.d/.emacs_workgroups"
+;;
+;;   (setq wg-session-file "~/.emacs.d/.emacs_workgroups")
 ;;
 ;;; Code:
 
@@ -80,15 +79,6 @@ Setting this variable requires that `workgroups-mode' be turned
 off and then on again to take effect."
   :type 'string
   :group 'workgroups)
-
-(defvar workgroups-mode-map nil "Workgroups Mode's keymap.")
-
-(defvar wg-incorrectly-restored-bufs nil
-  "FIXME: docstring this.")
-;; TODO: check it on switching WG
-
-(defvar wg-record-incorrectly-restored-bufs nil
-  "FIXME: docstring this.")
 
 (defcustom wg-session-load-on-start (not (daemonp))
   "Load a session file on Workgroups start.
@@ -113,13 +103,8 @@ Don't do it with Emacs --daemon option."
   :group 'workgroups
   :type 'boolean)
 
-(defcustom workgroups-mode-hook nil
-  "Hook run when `workgroups-mode' is turned on."
-  :type 'hook
-  :group 'workgroups)
-
 (defcustom wg-after-switch-to-workgroup-hook nil
-  "Hook run by `wg-switch-to-workgroup'."
+  "Hook run by `wg-switch-to-workgroup-internal'."
   :type 'hook
   :group 'workgroups)
 
@@ -186,37 +171,6 @@ it to `major-mode'."
   :type 'boolean
   :group 'workgroups)
 
-(defcustom wg-restore-fringes t
-  "Non-nil means restore fringe settings on workgroup restore."
-  :type 'boolean
-  :group 'workgroups)
-
-(defcustom wg-restore-margins t
-  "Non-nil means restore margin settings on workgroup restore."
-  :type 'boolean
-  :group 'workgroups)
-
-(defcustom wg-restore-point t
-  "Non-nil means restore `point' on workgroup restore.
-This is included mainly so point restoration can be suspended
-during `wg-morph' -- you probably want this non-nil."
-  :type 'boolean
-  :group 'workgroups)
-
-(defcustom wg-restore-point-max t
-  "Controls point restoration when point is at `point-max'.
-If `point' is at `point-max' when a wconfig is created, put
-`point' back at `point-max' when the wconfig is restored, even if
-`point-max' has increased in the meantime.  This is useful in,
-say, irc buffers where `point-max' is constantly increasing."
-  :type 'boolean
-  :group 'workgroups)
-
-(defcustom wg-restore-mark t
-  "Non-nil means restore mark data on workgroup restore."
-  :type 'boolean
-  :group 'workgroups)
-
 (defcustom wg-restore-window-dedicated-p t
   "Non-nil means restore `window-dedicated-p' on workgroup restore."
   :type 'boolean
@@ -230,9 +184,6 @@ corresponding to a wg-buf, it tags it with the wg-buf's uid to
 unambiguously pair the two.")
 (make-variable-buffer-local 'wg-buffer-uid)
 
-(defvar wg-already-updated-working-wconfig nil
-  "Flag set by `wg-update-working-wconfig-hook'.")
-
 (defvar wg-undoify-window-configuration-change t
   "Should windows undo info be updated or not.
 When you change window configuration.")
@@ -245,27 +196,8 @@ When you change window configuration.")
 (defvar wg-window-min-height 1
   "Bound to `window-min-height' when restoring wtrees.")
 
-(defvar wg-window-min-pad 2
-  "Added to `wg-window-min-foo' to produce the actual minimum window size.")
-
-(defvar wg-actual-min-width (+ wg-window-min-width wg-window-min-pad)
-  "Actual minimum window width when creating windows.")
-
-(defvar wg-actual-min-height (+ wg-window-min-height wg-window-min-pad)
-  "Actual minimum window height when creating windows.")
-
-(defvar wg-min-edges `(0 0 ,wg-actual-min-width ,wg-actual-min-height)
-  "Smallest allowable edge list of windows created by Workgroups.")
-
-(defvar wg-null-edges '(0 0 0 0) "Null edge list.")
-
 (defvar wg-window-tree-selected-window nil
   "Used during wconfig restoration to hold the selected window.")
-
-(defvar wg-buffer-workgroup nil
-  "A workgroup in which this buffer most recently appeared.
-Buffer-local.")
-(make-variable-buffer-local 'wg-buffer-workgroup)
 
 (defcustom wg-default-buffer "*scratch*"
   "Show this in case everything else fails.
@@ -276,10 +208,10 @@ When a buffer can't be restored, when creating a blank wg."
 ;; {{ crazy stuff to delete soon
 (defconst wg-buffer-list-original (symbol-function 'buffer-list))
 (defalias 'wg-buffer-list-emacs wg-buffer-list-original)
+(defalias 'wg-switch-to-workgroup #'wg-open-workgroup)
 
 (defun buffer-list (&optional frame)
-  "Redefinition of `buffer-list'.
-Pass FRAME to it.
+  "Redefinition of `buffer-list'.  Pass FRAME to it.
 Remove file and dired buffers that are not associated with workgroup."
   (let ((res (wg-buffer-list-emacs frame))
         (wg-buf-uids (wg-workgroup-associated-buf-uids)))
@@ -328,27 +260,22 @@ Abbreviation of `destructuring-bind'."
   (wg-dbind (key val table &optional result) spec
     `(progn (maphash (lambda (,key ,val) ,@body) ,table) ,result)))
 
-(eval-and-compile
-  ;; wg-partition has been used in macro.
-  (defun wg-partition (items)
-    "Take ITEMS, return a list of N length sublists, offset by STEP.
-Iterative to prevent stack overflow."
-    (let* (acc first-2-items)
-      (while items
-        (setq first-2-items (if (> (length items) 1) (list (nth 0 items) (nth 1 items))
-                              (list (nth 1 items))))
-        (push first-2-items acc)
-        (setq items (nthcdr 2 items)))
-      (nreverse acc))))
-
-(defmacro wg-asetf (&rest places-and-values)
+(defmacro wg-asetf (&rest items)
   "Anaphoric `setf'."
   `(progn ,@(mapcar (lambda (pv)
                       `(let ((it ,(car pv)))
                          ;; Fix compile warn
                          (ignore it)
                          (setf ,@pv)))
-                    (wg-partition places-and-values))))
+                    ;; Take ITEMS, return a list of N length sublists, offset by STEP.
+                    ;; Iterative to prevent stack overflow.
+                    (let* (acc first-2-items)
+                      (while items
+                        (setq first-2-items (if (> (length items) 1) (list (nth 0 items) (nth 1 items))
+                                              (list (nth 1 items))))
+                        (push first-2-items acc)
+                        (setq items (nthcdr 2 items)))
+                      (nreverse acc)))))
 
 (defmacro wg-destructuring-dolist (spec &rest body)
   "Loop over a list.
@@ -369,19 +296,12 @@ into a var, like so: (a (b c) . rest)
                (setq ,list-sym ,rest)))
            ,result)))))
 
-;;; numbers
-(defun wg-within (num lo hi &optional hi-inclusive)
-  "Return t when NUM is within bounds LO and HI.
-HI-INCLUSIVE non-nil means the HI bound is inclusive."
-  (and (>= num lo) (if hi-inclusive (<= num hi) (< num hi))))
-
 (defun wg-int-to-b36-one-digit (i)
   "Return a character in 0..9 or A..Z from I, and integer 0<=I<32.
 Cribbed from `org-id-int-to-b36-one-digit'."
-  (cond ((not (wg-within i 0 36))
-         (error "%s out of range" i))
-        ((< i 10) (+ ?0 i))
-        ((< i 36) (+ ?A i -10))))
+  (cond
+   ((< i 10) (+ ?0 i))
+   ((< i 36) (+ ?A i -10))))
 
 (defun wg-b36-to-int-one-digit (i)
   "Turn a character 0..9, A..Z, a..z into a number 0..61.
@@ -392,16 +312,14 @@ Cribbed from `org-id-b36-to-int-one-digit'."
         ((and (>= i ?A) (<= i ?Z)) (+ (- i ?A) 10))
         (t (error "Invalid b36 character"))))
 
-(defun wg-int-to-b36 (i &optional length)
+(defun wg-int-to-b36 (i)
   "Return a base 36 string from I."
   (let ((base 36) b36)
     (cl-labels ((add-digit () (push (wg-int-to-b36-one-digit (mod i base)) b36)
                            (setq i (/ i base))))
       (add-digit)
       (while (> i 0) (add-digit))
-      (setq b36 (cl-map 'string 'identity b36))
-      (if (not length) b36
-        (concat (make-string (max 0 (- length (length b36))) ?0) b36)))))
+      (cl-map 'string 'identity b36))))
 
 (defun wg-b36-to-int (str)
   "Convert STR, a base-36 string, into the corresponding integer.
@@ -412,19 +330,6 @@ Cribbed from `org-id-b36-to-int'."
                             (wg-b36-to-int-one-digit i))))
           str)
     result))
-
-(defmacro wg-removef-p (item seq-place &rest keys)
-  "If ITEM is a `member
-*' of SEQ-PLACE, remove it from SEQ-PLACE and return t.
-Otherwise return nil.  KEYS can be any keywords accepted by `remove*'."
-  `(> (length ,seq-place)
-      (length (setf ,seq-place (cl-remove ,item ,seq-place ,@keys)))))
-
-(defmacro wg-pushnew-p (item seq-place &rest keys)
-  "If ITEM is not a `member' of SEQ-PLACE, push it to SEQ-PLACE and return t.
-Otherwise return nil.  KEYS can be any keyword args accepted by `pushnew'."
-  `(< (length ,seq-place)
-      (length (cl-pushnew ,item ,seq-place ,@keys))))
 
 (defun wg-insert-before (elt list index)
   "Insert ELT into LIST before INDEX."
@@ -455,8 +360,7 @@ If PARAM is not found, return DEFAULT which defaults to nil."
 
 (defmacro wg-defstruct (name-form &rest slot-defs)
   "`defstruct' wrapper that namespace-prefixes all generated functions.
-Note: this doesn't yet work with :conc-name, and possibly other
-options."
+Note: this doesn't yet work with :conc-name, and possibly other options."
   (declare (indent 1))
   (let* ((prefix "wg")
          (name (symbol-name name-form)) ; string type
@@ -545,7 +449,6 @@ options."
   (gc))
 ;; }}
 
-
 (defmacro wg-with-slots (obj slot-bindings &rest body)
   "Bind OBJ's slot values to symbols in BINDS, then eval BODY.
 The car of each element of SLOT-BINDINGS is the bound symbol, and
@@ -556,12 +459,6 @@ the cadr as the accessor function."
             ,@(wg-docar (slot slot-bindings)
                 `(,(car slot) (,(cadr slot) ,objsym))))
        ,@body)))
-
-(defun wg-add-or-remove-hooks (remove &rest pairs)
-  "Add FUNCTION to or remove it from HOOK, depending on REMOVE."
-  (dolist (pair (wg-partition pairs))
-    (funcall (if remove 'remove-hook 'add-hook)
-             (car pair) (cadr pair))))
 
 (defmacro wg-set-parameter (place parameter value)
   "Set PARAMETER to VALUE at PLACE.
@@ -576,13 +473,12 @@ This needs to be a macro to allow specification of a setf'able place."
 (defun wg-time-to-b36 ()
   "Convert `current-time' into a b36 string."
   (apply 'concat (wg-docar (time (current-time))
-                   (wg-int-to-b36 time 4))))
+                   (wg-int-to-b36 time))))
 
 (defun wg-b36-to-time (b36)
   "Parse the time in B36 string from UID."
   (cl-loop for i from 0 to 8 by 4
            collect (wg-b36-to-int (cl-subseq b36 i (+ i 4)))))
-(defalias 'wg-uid-to-time 'wg-b36-to-time)
 
 (defun wg-generate-uid ()
   "Return a new uid."
@@ -645,7 +541,7 @@ Saves some variables to restore a BUFFER later."
      ))
 
 (defvar wg-current-session nil "Current session object.")
-(defun wg-current-session (&optional noerror)
+(defun wg-get-current-session (&optional noerror)
   "Return `wg-current-session' or error unless NOERROR."
   (or wg-current-session
       (if workgroups-mode
@@ -724,10 +620,6 @@ If not - try to go to the parent dir and do the same."
     (v . wg-pickel-vector-link-deserializer)
     (h . wg-pickel-hash-table-link-deserializer))
   "Alist mapping type keys to link deserialization functions.")
-
-
-
-;;; errors and predicates
 
 (put 'wg-pickel-unpickelable-type-error
      'error-conditions
@@ -858,13 +750,12 @@ If not - try to go to the parent dir and do the same."
         (gethash cons binds)
         (gethash (car cons) binds)
         (gethash (cdr cons) binds)))
+
 (defun wg-pickel-cons-link-deserializer (cons-id car-id cdr-id binds)
   "Relink a cons cell with its car and cdr in BINDS."
   (let ((cons (gethash cons-id binds)))
     (setcar cons (gethash car-id binds))
     (setcdr cons (gethash cdr-id binds))))
-
-
 
 ;; vector - http://www.gnu.org/software/emacs/manual/html_node/elisp/Vector-Functions.html
 ;; (wg-unpickel (wg-pickel (make-vector 9 'Z)))
@@ -993,41 +884,22 @@ Before selecting a new frame."
 Used to avoid associating the old workgroup's buffers with the
 new workgroup during a switch.")
 
+(defvar workgroups-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c") 'wg-create-workgroup)
+    (define-key map (kbd "C-v") 'wg-open-workgroup)
+    map)
+    "Mode map for `workgroups-mode'.")
+
 (defun wg-add-workgroups-mode-minor-mode-entries ()
   "Add Workgroups' minor-mode entries.
 Adds entries to `minor-mode-list', `minor-mode-alist' and
 `minor-mode-map-alist'."
   (cl-pushnew 'workgroups-mode minor-mode-list)
   (setq minor-mode-map-alist
-        (cons (cons 'workgroups-mode (wg-make-workgroups-mode-map))
+        (cons (cons 'workgroups-mode workgroups-mode-map)
               (delete (assoc 'workgroups-mode minor-mode-map-alist)
                       minor-mode-map-alist))))
-
-(defun wg-fill-keymap (keymap &rest binds)
-  "Return KEYMAP after defining in it all keybindings in BINDS."
-  (while binds
-    (define-key keymap (car binds) (cadr binds))
-    (setq binds (cddr binds)))
-  keymap)
-
-(defvar wg-prefixed-map
-  (wg-fill-keymap
-   (make-sparse-keymap)
-   (kbd "C-c")        'wg-create-workgroup
-   (kbd "C-v")        'wg-open-workgroup)
-  "The keymap that sits on `wg-prefix-key'.")
-
-(defun wg-make-workgroups-mode-map ()
-  "Return Workgroups' minor-mode-map.
-This map includes `wg-prefixed-map' on `wg-prefix-key'"
-  (let ((map (make-sparse-keymap)))
-    (define-key map wg-prefix-key
-      wg-prefixed-map)
-    (setq workgroups-mode-map map)))
-
-(defun wg-min-size (dir)
-  "Return the minimum window size in split direction DIR."
-  (if dir wg-window-min-height wg-window-min-width))
 
 (defmacro wg-with-edges (w spec &rest body)
   "Bind W's edge list to SPEC and eval BODY."
@@ -1055,23 +927,6 @@ This map includes `wg-prefixed-map' on `wg-prefix-key'"
   (wg-with-edges w (l1 t1 r1 b1)
     (if height (- b1 t1) (- r1 l1))))
 
-(defun wg-adjust-w-size (w width-fn height-fn &optional new-left new-top)
-  "Adjust W's width and height with WIDTH-FN and HEIGHT-FN."
-  (wg-with-edges w (left top right bottom)
-    (let ((left (or new-left left)) (top (or new-top top)))
-      (wg-set-edges (wg-copy-w w)
-                    (list left
-                          top
-                          (+ left (funcall width-fn  (- right  left)))
-                          (+ top  (funcall height-fn (- bottom top))))))))
-
-(defun wg-scale-w-size (w width-scale height-scale)
-  "Scale W's size by WIDTH-SCALE and HEIGHT-SCALE."
-  (cl-labels
-      ((wscale (width)  (truncate (* width  width-scale)))
-       (hscale (height) (truncate (* height height-scale))))
-    (wg-adjust-w-size w #'wscale #'hscale)))
-
 (defun wg-win-parameter (win parameter &optional default)
   "Return WIN's value for PARAMETER.
 If PARAMETER is not found, return DEFAULT which defaults to nil.
@@ -1097,9 +952,9 @@ SESSION nil defaults to the current session."
             (set-window-hscroll window win-hscroll)
             (set-window-point
              window
-             (cond ((not wg-restore-point) win-start)
-                   ((eq win-point :max) (point-max))
-                   (t win-point)))
+             (cond
+              ((eq win-point :max) (point-max))
+              (t win-point)))
             (when (>= win-start (point-max)) (recenter))))
 
         (when wg-restore-window-dedicated-p
@@ -1116,10 +971,9 @@ SESSION nil defaults to the current session."
 
 
 (defun wg-window-point (ewin)
-  "Return `point' or :max.  See `wg-restore-point-max'.
-EWIN should be an Emacs window object."
+  "Return `point' or :max.  EWIN should be an Emacs window object."
   (let ((p (window-point ewin)))
-    (if (and wg-restore-point-max (= p (point-max))) :max p)))
+    (if (= p (point-max)) :max p)))
 
 (defun wg-set-win-parameter (win parameter value)
   "Set WIN's value of PARAMETER to VALUE.
@@ -1186,7 +1040,7 @@ new wlist, return it instead of a new wtree."
     (wg-with-slots wtree ((dir wg-wtree-dir)
                           (wlist wg-wtree-wlist))
       (wg-with-bounds wtree dir (ls1 hs1 lb1 hb1)
-        (let* ((min-size (wg-min-size dir))
+        (let* ((min-size (if dir wg-window-min-height wg-window-min-width))
                (max (- hb1 1 min-size))
                (lastw (car (last wlist))))
           (cl-labels
@@ -1208,7 +1062,12 @@ new wlist, return it instead of a new wtree."
 (defun wg-scale-wtree (wtree wscale hscale)
   "Return a copy of WTREE with its dimensions scaled by WSCALE and HSCALE.
 All WTREE's subwins are scaled as well."
-  (let ((scaled (wg-scale-w-size wtree wscale hscale)))
+  (let ((scaled (wg-with-edges wtree (left top right bottom)
+                               (wg-set-edges (wg-copy-w wtree)
+                                             (list left
+                                                   top
+                                                   (+ left (truncate (* (- right  left) wscale)))
+                                                   (+ top  (truncate (* (- bottom top) hscale))))))))
     (if (wg-win-p wtree) scaled
       (wg-asetf (wg-wtree-wlist scaled)
                 (wg-docar (sw it) (wg-scale-wtree sw wscale hscale)))
@@ -1390,9 +1249,7 @@ Return a scaled copy of WCONFIG."
   "Restore a workgroup configuration WCONFIG in a FRAME.
 Runs each time you're switching workgroups."
   (unless frame (setq frame (selected-frame)))
-  (let ((wg-record-incorrectly-restored-bufs t)
-        (wg-incorrectly-restored-bufs nil)
-        (params (wg-wconfig-parameters wconfig)))
+  (let ((params (wg-wconfig-parameters wconfig)))
     (wg-barf-on-active-minibuffer)
     (when wg-restore-scroll-bars
       (wg-wconfig-restore-scroll-bars wconfig))
@@ -1409,17 +1266,10 @@ Runs each time you're switching workgroups."
       (wg-wconfig-restore-frame-position wconfig frame))
 
     ;; Restore buffers
-    (wg-restore-window-tree (wg-scale-wconfig-to-frame wconfig))
+    (wg-restore-window-tree (wg-scale-wconfig-to-frame wconfig))))
 
-    (when wg-incorrectly-restored-bufs
-      (message "Unable to restore these buffers: %S\
-If you want, restore them manually and try again."
-               (mapcar 'wg-buf-name wg-incorrectly-restored-bufs)))))
-
-;; specialbufs
 (defcustom wg-special-buffer-serdes-functions
-  '(wg-serialize-comint-buffer
-    )
+  '(wg-serialize-comint-buffer)
   "Functions providing serialization/deserialization for complex buffers.
 
 Use `wg-support' macro and this variable will be filled
@@ -1465,7 +1315,7 @@ how to write your own."
                       ;;    (get-buffer-create (wg-buf-name buffer))
                       (if vars
                           (if (fboundp 'Info-find-node)
-                              (apply #'Info-find-node var))
+                              (apply #'Info-find-node vars))
                         (info)
                         (get-buffer (wg-buf-name buffer)))))))
 
@@ -1829,11 +1679,11 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
 
 (defmacro wg-workgroup-list ()
   "Setf'able `wg-current-session' modified slot accessor."
-  `(wg-session-workgroup-list (wg-current-session)))
+  `(wg-session-workgroup-list (wg-get-current-session)))
 
 (defmacro wg-buf-list ()
   "Setf'able `wg-current-session' buf-list slot accessor."
-  `(wg-session-buf-list (wg-current-session)))
+  `(wg-session-buf-list (wg-get-current-session)))
 
 (defun wg-restore-default-buffer (&optional switch)
   "Return `wg-default-buffer' and maybe SWITCH to it."
@@ -1866,9 +1716,11 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'"
                    (with-current-buffer b
                      (rename-buffer (wg-buf-name buf) t)
                      (wg-set-buffer-uid-or-error (wg-buf-uid buf))
-                     (when wg-restore-mark
-                       (set-mark (wg-buf-mark buf))
-                       (deactivate-mark))
+
+                     ;; restore mark
+                     (set-mark (wg-buf-mark buf))
+                     (deactivate-mark)
+
                      (wg-deserialize-buffer-local-variables buf)
                      )
                    (if switch (switch-to-buffer b))
@@ -2245,8 +2097,8 @@ WCONFIG-OR-NAME is resolved with `wg-workgroup-get-saved-wconfig'."
 (defun wg-workgroup-list-or-error (&optional noerror)
   "Return the value of `wg-current-session's :workgroup-list slot.
 Or scream unless NOERROR."
-  (if (wg-current-session noerror)
-      (or (wg-session-workgroup-list (wg-current-session noerror))
+  (if (wg-get-current-session noerror)
+      (or (wg-session-workgroup-list (wg-get-current-session noerror))
           (unless noerror (error "No workgroups are defined")))
     (unless noerror (error "Current session is nil.  No workgroups are defined"))))
 
@@ -2260,17 +2112,22 @@ Or scream unless NOERROR."
           (error "There are no workgroups with a %S of %S"
                  accessor value)))))
 
-(defun wg-workgroup-names (&optional noerror)
-  "Return a list of workgroup names or scream unless NOERROR."
-  (mapcar 'wg-workgroup-name (wg-workgroup-list-or-error noerror)))
+(defun wg-workgroup-names ()
+  "Get all workgroup names."
+  (when (and wg-session-file
+             (file-exists-p wg-session-file))
+    (mapcar (lambda (group)
+              ;; re-shape group for `completing-read'
+              (cons (wg-workgroup-name group) group))
+            (wg-session-workgroup-list
+             (read (wg-read-text wg-session-file))))))
 
-(defun wg-read-workgroup-name (&optional require-match)
-  "Read a workgroup name from `wg-workgroup-names'.
-REQUIRE-MATCH to match."
+(defun wg-read-workgroup-name ()
+  "Read a workgroup name from `wg-workgroup-names'."
   (completing-read "Workgroup: "
                    (wg-workgroup-names)
                    nil
-                   require-match
+                   nil
                    nil
                    nil
                    (and (wg-current-workgroup t)
@@ -2278,24 +2135,20 @@ REQUIRE-MATCH to match."
 
 (defun wg-new-default-workgroup-name ()
   "Return a new, unique, default workgroup name."
-  (let ((names (wg-workgroup-names t)) (index -1) result)
+  (let ((names (wg-workgroup-names)) (index -1) result)
     (while (not result)
       (let ((new-name (format "wg%s" (cl-incf index))))
         (unless (member new-name names)
           (setq result new-name))))
     result))
 
-(defun wg-read-saved-wconfig-name (workgroup &optional prompt require-match)
-  "Read the name of a saved wconfig, completing on the names of
-WORKGROUP's saved wconfigs."
-  (completing-read (or prompt "Saved wconfig name: ")
-                   (wg-workgroup-saved-wconfig-names workgroup)
-                   nil require-match))
-
 (defun wg-read-saved-wconfig (workgroup)
   "Read the name of and return one of WORKGROUP's saved wconfigs."
   (wg-workgroup-get-saved-wconfig
-   (wg-read-saved-wconfig-name workgroup nil t)
+   (completing-read "Saved wconfig name: "
+                    (wg-workgroup-saved-wconfig-names workgroup)
+                    nil
+                    t)
    workgroup))
 
 (defun wg-query-and-save-if-modified ()
@@ -2304,37 +2157,10 @@ WORKGROUP's saved wconfigs."
       (when (y-or-n-p "Save modified workgroups? ")
         (wg-save-session))))
 
-(defun wg-create-workgroup (name &optional blank)
-  "Create and add a workgroup named NAME.
-Optional argument BLANK non-nil (set interactively with a prefix
-arg) means use a blank, one window window-config.  Otherwise use
-the current window-configuration."
-  (interactive (list (wg-read-new-workgroup-name) current-prefix-arg))
-
-  (unless (file-exists-p (wg-get-session-file))
-    (wg-reset-internal (wg-make-session))
-    (wg-save-session))
-
-  (unless wg-current-session
-    ;; code extracted from `wg-open-session'.
-    ;; open session but do NOT load any workgroup.
-    (let* ((session (read (wg-read-text wg-session-file))))
-      (setf (wg-session-file-name session) wg-session-file)
-      (wg-reset-internal (wg-unpickel-session-parameters session))))
-
-  (wg-switch-to-workgroup (wg-make-and-add-workgroup name blank))
-
-  ;; save the session file in real time
-  (wg-save-session)
-
-  ;; I prefer simpler UI
-  (message "Workgroup \"%s\" was created and saved." name))
-
-(defun wg-switch-to-workgroup (workgroup)
-  "Switch to WORKGROUP."
-  (interactive (list (wg-read-workgroup-name)))
+(defun wg-switch-to-workgroup-internal (workgroup-name)
+  "Switch to workgroup with WORKGROUP-NAME."
   (fset 'buffer-list wg-buffer-list-original)
-  (let ((workgroup (wg-get-workgroup-create workgroup))
+  (let ((workgroup (wg-get-workgroup-create workgroup-name))
         (current (wg-current-workgroup t)))
     (unless (and (eq workgroup current))
       (when current (push current wg-deactivation-list))
@@ -2355,6 +2181,28 @@ the current window-configuration."
             (run-hooks 'wg-after-switch-to-workgroup-hook))
         (when current (pop wg-deactivation-list))))))
 
+(defun wg-create-workgroup (name)
+  "Create and add a workgroup named NAME."
+  (interactive (list (wg-read-new-workgroup-name)))
+
+  (unless (file-exists-p (wg-get-session-file))
+    (wg-reset-internal (wg-make-session))
+    (wg-save-session))
+
+  (unless wg-current-session
+    ;; code extracted from `wg-open-session'.
+    ;; open session but do NOT load any workgroup.
+    (let* ((session (read (wg-read-text wg-session-file))))
+      (setf (wg-session-file-name session) wg-session-file)
+      (wg-reset-internal (wg-unpickel-session-parameters session))))
+
+  (wg-switch-to-workgroup-internal (wg-make-and-add-workgroup name))
+
+  ;; save the session file in real time
+  (wg-save-session)
+
+  ;; I prefer simpler UI
+  (message "Workgroup \"%s\" was created and saved." name))
 
 (defun wg-workgroup-state-table (&optional frame)
   "Return FRAME's workgroup table, creating it first if necessary."
@@ -2413,14 +2261,6 @@ return WORKGROUP's current undo state."
   "Update `selected-frame's current workgroup's working-wconfig with `wg-current-wconfig'."
   (and (wg-current-workgroup t)
        (wg-set-workgroup-working-wconfig (wg-current-workgroup t) (wg-current-wconfig))))
-
-(defun wg-update-working-wconfig-hook ()
-  "Used in before advice on all functions that trigger `window-configuration-change-hook'.
-To save up to date undo info before the change."
-  (when (and (not wg-already-updated-working-wconfig)
-             (wg-minibuffer-inactive-p))
-    (wg-update-current-workgroup-working-wconfig)
-    (setq wg-already-updated-working-wconfig t)))
 
 (defun wg-workgroup-gc-buf-uids (workgroup)
   "Remove buf uids from WORKGROUP that have no referent in `wg-buf-list'."
@@ -2496,15 +2336,13 @@ Ask to overwrite if a workgroup with the same name exists."
         (error "Cancelled"))))
   (wg-add-workgroup workgroup))
 
-(defun wg-make-and-add-workgroup (name &optional blank)
+(defun wg-make-and-add-workgroup (name)
   "Create a workgroup named NAME with current `window-tree'.
-If BLANK - then just scratch buffer.
 Add it with `wg-check-and-add-workgroup'."
   (wg-check-and-add-workgroup
    (wg-make-workgroup
     :name name
-    :base-wconfig (if blank (wg-make-blank-wconfig)
-                    (wg-current-wconfig)))))
+    :base-wconfig (wg-current-wconfig))))
 
 (defun wg-get-workgroup-create (workgroup)
   "Return the workgroup specified by WORKGROUP, creating a new one if needed.
@@ -2541,8 +2379,8 @@ that name and return it.  Otherwise error."
 
          (when (wg-workgroup-list)
            (if (member (wg-session-parameter 'last-workgroup) (wg-workgroup-names))
-               (wg-switch-to-workgroup (wg-session-parameter 'last-workgroup))
-             (wg-switch-to-workgroup (car (wg-workgroup-list))))
+               (wg-switch-to-workgroup-internal (wg-session-parameter 'last-workgroup))
+             (wg-switch-to-workgroup-internal (car (wg-workgroup-list))))
            (let ((prev (wg-session-parameter 'prev-workgroup)))
              (when prev
                (when (and (member prev (wg-workgroup-names))
@@ -2593,8 +2431,8 @@ This makes the session visit that file, and marks it as not modified."
   (unless (file-writable-p filename)
     (error "File %s can't be written to" filename))
   (wg-perform-session-maintenance)
-  (setf (wg-session-file-name (wg-current-session)) filename)
-  (setf (wg-session-version (wg-current-session)) wg-version)
+  (setf (wg-session-file-name (wg-get-current-session)) filename)
+  (setf (wg-session-version (wg-get-current-session)) wg-version)
 
   ;; Save opened frames as a session parameter "frame-list".
   ;; Exclude `selected-frame' and daemon one (if any).
@@ -2633,7 +2471,7 @@ object, etc.  SESSION nil defaults to a new, blank session."
 (defun wg-all-buf-uids ()
   "Return the union of all buf-uids."
   (cl-union (cl-reduce 'wg-string-list-union
-                       (wg-session-workgroup-list (wg-current-session))
+                       (wg-session-workgroup-list (wg-get-current-session))
                        :key 'wg-workgroup-all-buf-uids)
             (delq nil (mapcar 'wg-buffer-uid (wg-buffer-list-emacs)))
             :test 'string=))
@@ -2656,7 +2494,7 @@ object, etc.  SESSION nil defaults to a new, blank session."
   "Return session's value for PARAMETER.
 If PARAMETER is not found, return DEFAULT which defaults to nil.
 SESSION nil defaults to the current session."
-  (wg-aget (wg-session-parameters (or session (wg-current-session)))
+  (wg-aget (wg-session-parameters (or session (wg-get-current-session)))
            parameter default))
 
 (defun wg-set-session-parameter (parameter value)
@@ -2686,7 +2524,7 @@ resolved by Emacs."
 (defun wg-pickel-all-session-parameters (&optional session)
   "Return a copy of SESSION after pickeling its parameters.
 And the parameters of all its workgroups."
-  (let ((copy (wg-copy-session (or session (wg-current-session)))))
+  (let ((copy (wg-copy-session (or session (wg-get-current-session)))))
     (when (wg-session-parameters copy)
       (wg-asetf (wg-session-parameters copy) (wg-pickel it)))
     (wg-asetf (wg-session-workgroup-list copy)
@@ -2734,32 +2572,23 @@ ARG is anything else, turn on `workgroups-mode'."
                (file-exists-p wg-session-file))
       (condition-case err
           (wg-open-session wg-session-file)
-        (error (message "Error finding `wg-session-file': %s" err))))
-    (run-hooks 'workgroups-mode-hook))
+        (error (message "Error finding `wg-session-file': %s" err)))))
    (t
     (wg-save-session)))
   (wg-create-first-wg)
   workgroups-mode)
 
-(defun wg-all-group-names ()
-  "Get all group names."
-  (mapcar (lambda (group)
-            ;; re-shape group for `completing-read'
-            (cons (wg-workgroup-name group) group))
-          (wg-session-workgroup-list
-           (read (wg-read-text wg-session-file)))))
-
 ;;;###autoload
 (defun wg-open-workgroup ()
   "Open specific workgroup."
   (interactive)
-  (let* ((group-names (wg-all-group-names))
+  (let* ((group-names (wg-workgroup-names))
          selected-group)
     (when (and group-names
                (setq selected-group
                      (completing-read "Select work group: " group-names)))
       (wg-open-session wg-session-file)
-      (wg-switch-to-workgroup selected-group))))
+      (wg-switch-to-workgroup-internal selected-group))))
 
 (provide 'workgroups2)
 ;;; workgroups2.el ends here
