@@ -81,6 +81,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#emacs-23][Emacs 23]]
 - [[#tips][Tips]]
 - [[#report-bug][Report bug]]
+- [[#license][License]]
 
 * Checklist
 - Emacs 26.1 or higher version is required
@@ -728,3 +729,7 @@ Send error messages to the original developer if it's third party package's prob
 If *you are sure* it's this my bug, file report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
 Bug report should include *environment details*.
+* License
+This program is free software: you can redistribute it and/or modify it under the terms of the [[file:LICENSE][GNU General Public License]] as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the [[file:LICENSE][GNU General Public License]] for more details.
