@@ -37,7 +37,8 @@
     speedbar-mode
     gnus-summary-mode
     gnus-article-mode
-    calendar-mode)
+    calendar-mode
+    dashboard-mode)
   "Major modes without line number.")
 
 ;; I don't care Emacs 25 performance any more

@@ -181,12 +181,12 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (scroll-bar-mode -1)
     (tool-bar-mode -1)
     (horizontal-scroll-bar-mode -1)))
-(my-run-with-idle-timer 2 #'my-mini-ui)
+;; (my-run-with-idle-timer 2 #'my-mini-ui)
 ;; }}
 
 ;; no menu bar
 (menu-bar-mode -1)
-
+(my-mini-ui)
 ;; Nicer naming of buffers for files with identical names
 (setq uniquify-buffer-name-style 'reverse)
 (setq uniquify-separator " • ")

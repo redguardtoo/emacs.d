@@ -86,7 +86,7 @@
   (require-init 'init-utils)
   (require-init 'init-file-type)
   (require-init 'init-elpa)
-
+  (require-init 'init-ui)
   ;; for unit test
   (when my-disable-idle-timer
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
