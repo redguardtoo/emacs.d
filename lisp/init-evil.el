@@ -738,7 +738,33 @@ If N > 0, only occurrences in current N lines are renamed."
   "us" 'gud-step
   "ui" 'gud-stepi
   "uc" 'gud-cont
-  "uf" 'gud-finish)
+  "uf" 'gud-finish
+  ;;files
+  "SPC" 'find-file-in-project
+  "ff" 'find-file
+  "fr" 'my-counsel-recentf
+  "/" 'counsel-rg
+  ;;buffer
+  "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
+  "bk" 'kill-this-buffer
+  "."  'ivy-switch-buffer 
+  ;;window
+  "wh" 'split-window-horizontally
+  "wv" 'split-window-vertically
+  "wf" 'my-toggle-full-window
+  "0" 'winum-select-window-0-or-10
+  "1" 'winum-select-window-1
+  "2" 'winum-select-window-2
+  "3" 'winum-select-window-3
+  "4" 'winum-select-window-4
+  "5" 'winum-select-window-5
+  "6" 'winum-select-window-6
+  "7" 'winum-select-window-7
+  "8" 'winum-select-window-8
+  "9" 'winum-select-window-9
+  )
+
+
 
 ;; per-major-mode setup
 
