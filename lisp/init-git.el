@@ -66,7 +66,7 @@
     (message "git-gutter:set-start-revision HEAD^")))
 
 ;; {{ speed up magit, @see https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
-(defvar my-prefer-lightweight-magit t)
+(defvar my-prefer-lightweight-magit nil)
 (with-eval-after-load 'magit
   (when my-prefer-lightweight-magit
     (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)

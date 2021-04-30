@@ -49,6 +49,7 @@
  (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
 (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line))
 
+(advice-add #'display-startup-echo-area-message :override #'ignore)
 ;;init font
 ;; (cnfonts-enable)
 
