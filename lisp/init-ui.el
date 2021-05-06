@@ -22,7 +22,7 @@
 
 (load-theme 'tsdh-dark)
 ;;改变emacs标题栏的标题
-(setq frame-title-format "MATRIX-EMACS")
+;; (setq frame-title-format "MATRIX-EMACS")
 
 (dashboard-setup-startup-hook)
 (add-hook 'dashboard-mode-hook '(lambda () (setq mode-line-format nil)))
@@ -44,10 +44,10 @@
 (advice-add #'dashboard-insert-footer :after #'my-dashboard-insert-copyright)
 
 
-(with-eval-after-load 'ivy
- (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
- (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
-(define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line))
+;; (with-eval-after-load 'ivy
+;;  (define-key ivy-minibuffer-map (kbd "C-j") 'ivy-next-line)
+;;  (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
+;; (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line))
 
 (advice-add #'display-startup-echo-area-message :override #'ignore)
 ;;init font

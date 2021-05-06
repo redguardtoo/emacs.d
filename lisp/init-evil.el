@@ -743,15 +743,14 @@ If N > 0, only occurrences in current N lines are renamed."
   "SPC" 'find-file-in-project
   "ff" 'find-file
   "fr" 'my-counsel-recentf
-  "/" 'counsel-rg
+  "/" 'my-counsel-rg
   ;;buffer
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
-  "bk" 'kill-this-buffer
-  "."  'ivy-switch-buffer 
+  "bk" 'kill-this-Buffer
+  "."  'ivy-switch-buffer
   ;;window
   "wh" 'split-window-horizontally
   "wv" 'split-window-vertically
-  "wf" 'my-toggle-full-window
   "0" 'winum-select-window-0-or-10
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
@@ -762,12 +761,16 @@ If N > 0, only occurrences in current N lines are renamed."
   "7" 'winum-select-window-7
   "8" 'winum-select-window-8
   "9" 'winum-select-window-9
+  ;;toggle
+  "tF" 'toggle-frame-fullscreen
+  "tf" 'my-toggle-full-window
+  ;;code
+
   )
 
 
 
 ;; per-major-mode setup
-
 (general-create-definer my-javascript-leader-def
   :prefix "SPC"
   :non-normal-prefix "M-SPC"

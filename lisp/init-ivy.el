@@ -196,6 +196,13 @@ If N is not nil, only list directories in current project."
      (t
       (counsel-git-grep str)))))
 
+(defun my-counsel-rg ()
+  "Ripgrep in project."
+  (interactive)
+  (let* ((str (if (region-active-p) (my-selected-str))))
+      (counsel-rg str)))
+
+
 (defun counsel-browse-kill-ring (&optional n)
   "If N > 1, assume just yank the Nth item in `kill-ring'.
 If N is nil, use `ivy-mode' to browse `kill-ring'."
