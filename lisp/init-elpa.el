@@ -67,9 +67,10 @@
     undo-tree
     js-doc
     ;; {{ since stable v0.13.0 released, we go back to stable version
-    ;; ivy
-    ;; counsel
-    ;; swiper
+    ivy
+    counsel
+    swiper
+    ivy-rich
     ;; }}
     wgrep
     ;; {{ themes in melpa unstable
@@ -275,6 +276,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'ivy)
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
+(require-package 'ivy-rich)
 (require-package 'find-file-in-project)
 (require-package 'counsel-bbdb)
 (require-package 'command-log-mode)
@@ -330,6 +332,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
+(require-package 'evil-snipe)
 (require-package 'undo-fu)
 (require-package 'counsel-css)
 (require-package 'auto-package-update)

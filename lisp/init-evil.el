@@ -4,7 +4,13 @@
 
 ;; enable evil-mode
 (evil-mode 1)
+(ivy-rich-mode 1)
 
+;; evil-snipe-scope (default: line)
+;; evil-snipe-repeat-scope (default: whole-line) Scope while repeating searches with evil-snipe-repeat or evil-snipe-repeat-reverse.
+;; evil-snipe-spillover-scope (default: nil) Scope to expand to when a snipe fails. Only useful if set to a broader scope than evil-snipe-scope.
+(evil-snipe-mode +1)
+(evil-snipe-override-mode +1)
 ;; {{ replace undo-tree with undo-fu
 ;; @see https://github.com/emacs-evil/evil/issues/1074
 ;; copied from doom-emacs
