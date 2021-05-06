@@ -746,7 +746,7 @@ If N > 0, only occurrences in current N lines are renamed."
   "/" 'my-counsel-rg
   ;;buffer
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
-  "bk" 'kill-this-Buffer
+  "bk" 'kill-this-buffer
   "."  'ivy-switch-buffer
   ;;window
   "wh" 'split-window-horizontally
