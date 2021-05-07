@@ -177,7 +177,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
           ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/"))))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
-(setq package-archives '(("myelpa" . "https://raw.githubusercontent.com/donneyluck/myelpa/master/")))
+;; (setq package-archives '(("myelpa" . "https://raw.githubusercontent.com/donneyluck/myelpa/master/")))
 
 ;; my local repository is always needed.
 (push (cons "localelpa" (concat my-emacs-d "localelpa/")) package-archives)

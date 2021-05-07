@@ -1,0 +1,10 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("main_node"
+ (filename . "~/work/rillserver/service/main_node.lua")
+ (front-context-string . "    INFO(\"Server")
+ (rear-context-string . "art(function()\n\n")
+ (position . 4624))
+)

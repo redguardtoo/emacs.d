@@ -123,7 +123,7 @@ When fixing a typo, avoid pass camel case option to cli program."
 (advice-add 'ispell-word :around #'my-ispell-word-hack)
 (advice-add 'flyspell-auto-correct-word :around #'my-ispell-word-hack)
 
-(defvar my-disable-wucuo nil
+(defvar my-disable-wucuo t
   "Disable wucuo.")
 
 (defun text-mode-hook-setup ()
