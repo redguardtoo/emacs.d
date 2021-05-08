@@ -66,6 +66,14 @@
 ;;init font
 ;; (cnfonts-enable)
 
-;;ivy-rich
-;;(ivy-rich-mode 1)
+;; Enable Cache
+(setq url-automatic-caching t)
+;; Example Key binding
+(global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
+
+;; (require 'google-translate)
+;; (require 'google-translate-default-ui)
+;; (global-set-key "\C-ct" 'google-translate-at-point)
+;; (global-set-key "\C-cT" 'google-translate-query-translate)
+
 (provide 'init-ui)

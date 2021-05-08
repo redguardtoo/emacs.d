@@ -355,7 +355,10 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'pyim-wbdict) ; someone may use wubi IME, not me
 (require-package 'pyim-basedict)
 (require-package 'esup)
-(require-package 'dashboard)
+;; Great truths are always simple
+;; (require-package 'dashboard)
+;; (require-package 'google-translate)
+(require-package 'youdao-dictionary)
 ;; {{ Fixed expiring GNU ELPA keys
 ;; GNU ELPA GPG key will expire on Sep-2019. So we need install this package to
 ;; update key or else users can't install packages from GNU ELPA.
