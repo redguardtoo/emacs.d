@@ -1,12 +1,17 @@
 ;; ITERM2 MOUSE SUPPORT
+;; Enable mouse support
 (unless window-system
   (require 'mouse)
   (xterm-mouse-mode t)
+  (global-set-key [mouse-4] (lambda ()
+                              (interactive)
+                              (scroll-down 1)))
+  (global-set-key [mouse-5] (lambda ()
+                              (interactive)
+                              (scroll-up 1)))
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
-  (global-set-key (kbd "<mouse-4>") 'scroll-up-line)
-  (global-set-key (kbd "<mouse-5>") 'scroll-down-line))
-
+)
 
 
 (when window-system

@@ -27,9 +27,9 @@
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397
-(with-eval-after-load 'enriched
-  (defun enriched-decode-display-prop (start end &optional param)
-    (list start end)))
+;; (with-eval-after-load 'enriched
+;;   (defun enriched-decode-display-prop (start end &optional param)
+;;     (list start end)))
 ;; }}
 
 (setq *no-memory* (cond
@@ -37,7 +37,7 @@
                     ;; @see https://discussions.apple.com/thread/1753088
                     ;; "sysctl -n hw.physmem" does not work
                     (<= (string-to-number (shell-command-to-string "sysctl -n hw.memsize"))
-                        (* 4 1024 1024)))
+                        (* 4 1024 1024 1024)))
                    (*linux* nil)
                    (t nil)))
 
@@ -88,8 +88,8 @@
   (require-init 'init-elpa)
   (require-init 'init-ui)
   ;; for unit test
-  (when my-disable-idle-timer
-    (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
+  ;; (when my-disable-idle-timer
+  ;;   (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling t)
