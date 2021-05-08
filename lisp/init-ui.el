@@ -4,7 +4,8 @@
   (xterm-mouse-mode t)
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
-  )
+  (global-set-key (kbd "<mouse-4>") 'scroll-up-line)
+  (global-set-key (kbd "<mouse-5>") 'scroll-down-line))
 
 
 
@@ -69,7 +70,7 @@
 ;; Enable Cache
 (setq url-automatic-caching t)
 ;; Example Key binding
-(global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
+(global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point+)
 
 ;; (require 'google-translate)
 ;; (require 'google-translate-default-ui)
