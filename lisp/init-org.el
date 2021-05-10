@@ -95,8 +95,7 @@ ARG is ignored."
       (setq my-org-src--saved-temp-window-config nil)))
 
 
-  ;; org 9.3 do not restore windows layout when editing special element
-  (advice-add 'org-edit-special :before 'my-org-edit-special)
+  ;; org 9.3 do not restore windows layout when editing special element (advice-add 'org-edit-special :before 'my-org-edit-special)
   (advice-add 'org-edit-src-exit :after 'my-org-edit-src-exit)
   ;; }}
 
@@ -181,6 +180,57 @@ skip user's own code in `org-mode-hook'."
           "xelatex -interaction nonstopmode -output-directory %o %f"
           "xelatex -interaction nonstopmode -output-directory %o %f")) ;; org v8
   ;; }}
+  ;; agenda
+  (setq org-agenda-files '("~/org")
+        org-agenda-breadcrumbs-separator " ❱ "
+        org-agenda-current-time-string "⏰ ┈┈┈┈┈┈┈┈┈┈┈ now"
+        org-agenda-time-grid '((weekly today require-timed)
+                               (800 1000 1200 1400 1600 1800 2000)
+                               "---" "┈┈┈┈┈┈┈┈┈┈┈┈┈")
+        org-agenda-prefix-format '((agenda . "%i %-12:c%?-12t%b% s")
+                                   (todo . " %i %-12:c")
+                                   (tags . " %i %-12:c")
+                                   (search . " %i %-12:c")))
+  ;;capture
+  (setq org-capture-templates
+      '(("n" "Notes" entry
+         ;; (file "~/org/inbox.org") "* %^{Description} %^g\n Added: %U\n%?")
+         (file "~/org/inbox.org") "* Notes %^{Title}")
+        ;; ("m" "Meeting notes" entry
+        ;;  (file "~/org/meetings.org") "* TODO %^{Title} %t\n- %?")
+        ("t" "TODO" entry
+         (file "~/org/inbox.org") "* TODO %^{Title}")
+        ;; ("e" "Event" entry
+        ;;  (file "~/org/calendar.org") "* %^{Is it a todo?||TODO |NEXT }%^{Title}\n%^t\n%?")
+        ("p" "PROJECT TODO" entry
+         (file "~/org/project.org") "* PROJECT %^{Title}")))
+
+  (require 'org-superstar)
+  ;; Hide away leading stars on terminal.
+  (setq org-superstar-leading-fallback ?\s)
+  (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
+
+  ;; (with-eval-after-load 'org-superstar
+  ;;   ;; Every non-TODO headline now have no bullet
+  ;;   ;; (setq org-superstar-headline-bullets-list '("\u200b"))
+  ;;   ;; (setq org-superstar-leading-bullet "\u200b")
+  ;;   (setq org-superstar-item-bullet-alist
+  ;;         '((?* . ?•)
+  ;;           (?+ . ?➤)
+  ;;           (?- . ?•)))
+  ;;   ;; Enable custom bullets for TODO items
+  ;;   (setq org-superstar-headline-bullets-list '(?\s))
+  ;;   (setq org-superstar-special-todo-items t)
+  ;;   ;; (setq org-superstar-remove-leading-stars t)
+  ;;   (setq org-superstar-todo-bullet-alist
+  ;;         '(("TODO" . ?☐)
+  ;;           ("STARTED" . ?✒)
+  ;;           ("PROJECT" . ?📚)
+  ;;           ("SOMEDAY" . ?⏳)
+  ;;           ("WAITING" . ?☕)
+  ;;           ("CANCELLED" . ?✘)
+  ;;           ("DONE" . ?✔)))
+  ;;   (org-superstar-restart))
 
   ;; misc
   (setq org-log-done t
@@ -206,9 +256,21 @@ skip user's own code in `org-mode-hook'."
         ;; Refile targets include this file and any file contributing to the agenda - up to 5 levels deep
         org-refile-targets '((nil :maxlevel . 5) (org-agenda-files :maxlevel . 5))
         org-refile-use-outline-path 'file
+        org-refile-allow-creating-parent-nodes 'confirm
         org-outline-path-complete-in-steps nil
+        ;; https://endlessparentheses.com/changing-the-org-mode-ellipsis.html
+        ;; org-ellipsis " ▼ "
+        org-ellipsis "⤵"
         org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
                                   (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
+        org-todo-keyword-faces (quote (("TODO" :foreground "red" :weight bold)
+                                       ("STARTED" :foreground "yellow" :weight bold)
+                                       ("DONE" :foreground "forest green" :weight bold)
+                                       ("WAITING" :foreground "orange" :weight bold)
+                                       ("SOMEDAY" :foreground "magenta" :weight bold)
+                                       ("CANCELLED" :foreground "forest green" :weight bold)
+                                       ("PROJECT" :foreground "blue" :weight bold)))
+
         org-imenu-depth 9
         ;; @see http://irreal.org/blog/1
         org-src-fontify-natively t))

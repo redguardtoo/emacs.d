@@ -1,5 +1,4 @@
 ;; ITERM2 MOUSE SUPPORT
-;; Enable mouse support
 (unless window-system
   (require 'mouse)
   (xterm-mouse-mode t)
@@ -12,6 +11,16 @@
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
 )
+
+
+
+;; (when (boundp 'display-fill-column-indicator)
+;;   (setq-default indicate-buffer-boundaries 'left)
+;;   (setq-default fill-column 80)
+;;   ;;(setq-default display-fill-column-indicator-character ?\u254e)
+;;   (setq-default display-fill-column-indicator-character ?\u007c)
+;;   (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
+
 
 
 (when window-system
@@ -35,8 +44,8 @@
   )
 ;; change init frame size
 ;; (pushnew! initial-frame-alist '(width . 280) '(height . 75))
-(add-hook 'window-setup-hook #'toggle-frame-maximized)
-;; (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
+;;(add-hook 'window-setup-hook #'toggle-frame-maximized)
+(add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 
 (load-theme 'tsdh-dark)
 ;;改变emacs标题栏的标题
@@ -81,5 +90,8 @@
 ;; (require 'google-translate-default-ui)
 ;; (global-set-key "\C-ct" 'google-translate-at-point)
 ;; (global-set-key "\C-cT" 'google-translate-query-translate)
+
+
+
 
 (provide 'init-ui)
