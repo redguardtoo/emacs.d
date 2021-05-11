@@ -1,19 +1,3 @@
-;; ITERM2 MOUSE SUPPORT
-(unless window-system
-  (require 'mouse)
-  (xterm-mouse-mode t)
-  (global-set-key [mouse-4] (lambda ()
-                              (interactive)
-                              (scroll-down 1)))
-  (global-set-key [mouse-5] (lambda ()
-                              (interactive)
-                              (scroll-up 1)))
-  (defun track-mouse (e))
-  (setq mouse-sel-mode t)
-)
-
-
-
 ;; (when (boundp 'display-fill-column-indicator)
 ;;   (setq-default indicate-buffer-boundaries 'left)
 ;;   (setq-default fill-column 80)
@@ -91,17 +75,15 @@
 ;; (global-set-key "\C-ct" 'google-translate-at-point)
 ;; (global-set-key "\C-cT" 'google-translate-query-translate)
 
-(defun move-region (start end n)
-  "Move the current region up or down by N lines."
-  (interactive "r\np")
-  (let ((line-text (delete-and-extract-region start end)))
-    (forward-line n)
-    (let ((start (point)))
-      (insert line-text)
-      (setq deactivate-mark nil)
-      (set-mark start))))
-
-
+;; (defun move-region (start end n)
+;;   "Move the current region up or down by N lines."
+;;   (interactive "r\np")
+;;   (let ((line-text (delete-and-extract-region start end)))
+;;     (forward-line n)
+;;     (let ((start (point)))
+;;       (insert line-text)
+;;       (setq deactivate-mark nil)
+;;       (set-mark start))))
 ;; evil not need
 ;; use kill/yank up&down
 ;; use < >       left&right
