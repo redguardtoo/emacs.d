@@ -1,4 +1,5 @@
-;; iterm2 mouse support
+;; https://www.emacswiki.org/emacs/iTerm2
+;; ITERM2 MOUSE SUPPORT
 (unless window-system
   (require 'mouse)
   (xterm-mouse-mode t)
@@ -17,7 +18,7 @@
   (let ((map (if (boundp 'input-decode-map)
                  input-decode-map
                function-key-map)))
-    (define-key map "\e[1;P9"  (kbd "<C-return>")) 
+    (define-key map "\e[1;P9"  (kbd "<C-return>"))
     (define-key map "\e[1;P10" (kbd "H-b"))
     (define-key map "\e[1;P11" (kbd "H-c"))
     (define-key map "\e[1;P12" (kbd "H-d"))
