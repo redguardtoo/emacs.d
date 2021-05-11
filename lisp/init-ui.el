@@ -101,39 +101,44 @@
       (setq deactivate-mark nil)
       (set-mark start))))
 
-(defun move-region-up (start end n)
-  "Move the current line up by N lines."
-  (interactive "r\np")
-  (move-region start end (if (null n) -1 (- n))))
 
-(defun move-region-down (start end n)
-  "Move the current line down by N lines."
-  (interactive "r\np")
-  (move-region start end (if (null n) 1 n)))
+;; evil not need
+;; use kill/yank up&down
+;; use < >       left&right
 
-(global-set-key (kbd "M-<up>") 'move-region-up)
-(global-set-key (kbd "M-<down>") 'move-region-down)
+;; (defun move-region-up (start end n)
+;;   "Move the current line up by N lines."
+;;   (interactive "r\np")
+;;   (move-region start end (if (null n) -1 (- n))))
 
-(defun shift-text (distance)
-  (if (use-region-p)
-      (let ((mark (mark)))
-        (save-excursion
-          (indent-rigidly (region-beginning)
-                          (region-end)
-                          distance)
-          (push-mark mark t t)
-          (setq deactivate-mark nil)))
-    (indent-rigidly (line-beginning-position)
-                    (line-end-position)
-                    distance)))
+;; (defun move-region-down (start end n)
+;;   "Move the current line down by N lines."
+;;   (interactive "r\np")
+;;   (move-region start end (if (null n) 1 n)))
 
-(defun shift-right (count)
-  (interactive "p")
-  (shift-text (if (null count) 1 count)))
+;; (global-set-key (kbd "M-<up>") 'move-region-up)
+;; (global-set-key (kbd "M-<down>") 'move-region-down)
 
-(defun shift-left (count)
-  (interactive "p")
-  (shift-text (if (null count) -1 (- count))))
+;; (defun shift-text (distance)
+;;   (if (use-region-p)
+;;       (let ((mark (mark)))
+;;         (save-excursion
+;;           (indent-rigidly (region-beginning)
+;;                           (region-end)
+;;                           distance)
+;;           (push-mark mark t t)
+;;           (setq deactivate-mark nil)))
+;;     (indent-rigidly (line-beginning-position)
+;;                     (line-end-position)
+;;                     distance)))
+
+;; (defun shift-right (count)
+;;   (interactive "p")
+;;   (shift-text (if (null count) 1 count)))
+
+;; (defun shift-left (count)
+;;   (interactive "p")
+;;   (shift-text (if (null count) -1 (- count))))
 
 
 (provide 'init-ui)
