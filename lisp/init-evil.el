@@ -736,6 +736,7 @@ If N > 0, only occurrences in current N lines are renamed."
   "yy" 'hydra-launcher/body
   "ii" 'my-toggle-indentation
   "g" 'hydra-git/body
+  "o" 'hydra-org/body
   "ur" 'gud-remove
   "ub" 'gud-break
   "uu" 'gud-run

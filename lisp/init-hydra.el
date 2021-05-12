@@ -481,6 +481,20 @@ Git:
 (global-set-key (kbd "C-c C-g") 'hydra-git/body)
 ;; }}
 
+
+;; hydra org
+(defhydra hydra-org (:color blue)
+"
+^Code^
+--------------------------------------------------------------------------
+[_i_] Insert Code
+[_e_] Edit Code
+[_q_] Quit
+"
+  ("i" org-insert-src-block)
+  ("e" org-edit-src-code)
+  ("q" nil))
+
 (defhydra hydra-search ()
   "
  ^Search^         ^Dictionary^
