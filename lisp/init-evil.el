@@ -806,8 +806,9 @@ If N > 0, only occurrences in current N lines are renamed."
   ";" 'ace-pinyin-jump-char-2
   "w" 'avy-goto-word-or-subword-1
   "a" 'avy-goto-char-timer
-  "db" 'sdcv-search-input ; details
+  ;; "db" 'sdcv-search-input ; details
   "dt" 'sdcv-search-input+ ; summary
+  "tt" 'sdcv-search-pointer+;
   "dd" 'my-lookup-dict-org
   "mm" 'lookup-doc-in-man
   "gg" 'w3m-google-search
