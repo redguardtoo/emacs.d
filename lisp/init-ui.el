@@ -6,6 +6,8 @@
 ;;   (add-hook 'prog-mode-hook 'display-fill-column-indicator-mode))
 
 
+;; (setq mac-command-modifier 'super)
+;; (setq mac-option-modifier 'meta)
 
 (when window-system
 ;;set font
