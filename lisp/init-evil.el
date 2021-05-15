@@ -540,6 +540,34 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
    (t
     (message "Can only beautify code written in python/javascript"))))
 
+(defun my-open-pdf-from-history ()
+  "Open pdf and go to page from history."
+  (interactive)
+  (let* ((link (completing-read "Open pdf:::page: " my-pdf-view-from-history)))
+    (when link
+      (let* ((items (split-string link ":::"))
+             (pdf-file (nth 0 items))
+             (pdf-page (string-to-number (nth 1 items))))
+        (my-ensure 'org)
+        (my-focus-on-pdf-window-then-back
+         (lambda (pdf-file)
+           (when (string= (file-name-base pdf-file) (file-name-base pdf-file))
+             (my-pdf-view-goto-page pdf-page))))))))
+
+(defun my-open-pdf-next-page (&optional n)
+  "Open pdf and go to next N page."
+  (interactive "p")
+  (my-focus-on-pdf-window-then-back
+   (lambda (pdf-file)
+     (pdf-view-next-page n))))
+
+(defun my-open-pdf-previous-page (&optional n)
+  "Open pdf and go to next N page."
+  (interactive "p")
+  (my-focus-on-pdf-window-then-back
+   (lambda (pdf-file)
+     (pdf-view-previous-page n))))
+
 (my-comma-leader-def
   "," 'evilnc-comment-operator
   "bf" 'beginning-of-defun
@@ -787,6 +815,9 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   ;;    (set-face-attribute 'avy-lead-face-0 nil :foreground "black")
   ;;    (set-face-attribute 'avy-lead-face-0 nil :background "#f86bf3"))
   ";" 'ace-pinyin-jump-char-2
+  "f" 'my-open-pdf-from-history
+  "n" 'my-open-pdf-next-page
+  "p" 'my-open-pdf-previous-page
   "w" 'avy-goto-word-or-subword-1
   "a" 'avy-goto-char-timer
   "db" 'sdcv-search-input ; details

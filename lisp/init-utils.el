@@ -91,6 +91,10 @@
   (dolist (pattern patterns)
     (push (cons pattern mode) interpreter-mode-alist )))
 
+(defmacro my-push-if-uniq (item items)
+  "Push ITEM into ITEMS if it's unique."
+  `(unless (member ,item ,items) (push ,item ,items)))
+
 (defun my-what-face (&optional position)
   "Show all faces at POSITION."
   (let* ((face (get-text-property (or position (point)) 'face)))
@@ -593,6 +597,38 @@ Copied from 3rd party package evil-textobj."
     (dolist (ff font-face-list)
       (if (my-font-face-similar-p f ff) (setq rlt t)))
     rlt))
+
+(defun my-pdf-view-goto-page (page)
+  "Go to pdf file's specific PAGE."
+  (cond
+   ((eq major-mode 'pdf-view-mode)
+    (pdf-view-goto-page page))
+   (t
+    (doc-view-goto-page page))))
+
+(defun my-focus-on-pdf-window-then-back (fn)
+  "Focus on pdf window and call function FN then move focus back."
+  (let* ((pdf-window (cl-find-if (lambda (w)
+                                   (let ((file (buffer-file-name (window-buffer w))))
+                                     (and file (string= (file-name-extension file) "pdf"))))
+                                 (my-visible-window-list)))
+         (pdf-file (buffer-file-name (window-buffer pdf-window)))
+         (original-window (get-buffer-window)))
+    (when (and pdf-window pdf-file)
+      ;; select pdf-window
+      (select-window pdf-window)
+      ;; do something
+      (funcall fn pdf-file)
+      ;; back home
+      (select-window original-window))))
+
+(defun my-list-windows-in-frame (&optional frame)
+  "List windows in FRAME."
+  (window-list frame 0 (frame-first-window frame)))
+
+(defun my-visible-window-list ()
+  "Visible window list."
+  (cl-mapcan #'my-list-windows-in-frame (visible-frame-list)))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here
