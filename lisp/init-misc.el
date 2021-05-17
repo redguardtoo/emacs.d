@@ -66,7 +66,8 @@
       (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
                                             (read-string "Regex: ")))))
   (push 'my-search-git-reflog-code ffip-diff-backends)
-  (setq ffip-match-path-instead-of-filename t))
+  (setq ffip-match-path-instead-of-filename t)
+  (setq ffip-use-rust-fd t))
 
 (defun neotree-project-dir ()
   "Open NeoTree using the git root."
