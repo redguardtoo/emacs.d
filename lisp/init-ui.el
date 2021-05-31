@@ -125,6 +125,18 @@
 ;; (defun shift-left (count)
 ;;   (interactive "p")
 ;;   (shift-text (if (null count) -1 (- count))))
+;;set transparent effect
 
+(setq alpha-list '((100 100) (95 65) (85 55) (75 45) (65 35)))
+(defun loop-alpha ()
+  (interactive)
+  (let ((h (car alpha-list)))                ;; head value will set to
+    ((lambda (a ab)
+       (set-frame-parameter (selected-frame) 'alpha (list a ab))
+       (add-to-list 'default-frame-alist (cons 'alpha (list a ab)))
+       ) (car h) (car (cdr h)))
+    (setq alpha-list (cdr (append alpha-list (list h))))
+    )
+)
 
 (provide 'init-ui)

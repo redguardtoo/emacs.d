@@ -2,7 +2,12 @@
 ;;; This format is meant to be slightly human-readable;
 ;;; nevertheless, you probably don't want to edit it.
 ;;; -*- End Of Bookmark File Format Version Stamp -*-
-(("main_node"
+(("org-capture-last-stored"
+ (filename . "~/org/project.org")
+ (front-context-string . "* PROJECT 关于服务器架")
+ (rear-context-string . "点日志的，做数据统计和分析用的\n")
+ (position . 191554))
+("main_node"
  (filename . "~/work/rillserver/service/main_node.lua")
  (front-context-string . "    INFO(\"Server")
  (rear-context-string . "art(function()\n\n")

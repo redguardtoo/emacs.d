@@ -487,12 +487,13 @@ Git:
 "
 ^Code^
 --------------------------------------------------------------------------
-[_i_] Insert Code
+[_i_] Insert Code       [_n_] Narrow
 [_e_] Edit Code
 [_q_] Quit
 "
   ("i" org-insert-src-block)
   ("e" org-edit-src-code)
+  ("n" org-narrow-to-element)
   ("q" nil))
 
 (defhydra hydra-search ()

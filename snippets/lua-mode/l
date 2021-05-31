@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: local  
+# key: l 
+# --
+local ${1:var} = $0
