@@ -123,6 +123,12 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     ;; more flexible
     (swiper keyword)))
 
+(defun my-swiper-hack (&optional arg)
+  "Undo region selection before swiper.  ARG is ingored."
+  (ignore arg)
+  (if (region-active-p) (deactivate-mark)))
+(advice-add 'swiper :before #'my-swiper-hack)
+
 (with-eval-after-load 'cliphist
   (defun cliphist-routine-before-insert-hack (&optional arg)
     (ignore arg)
