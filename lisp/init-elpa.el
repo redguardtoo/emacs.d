@@ -4,10 +4,14 @@
   ;; optimization, no need to activate all the packages so early
   (cond
    (*emacs27*
-    ;; you need run `M-x package-quickstart-refresh' at least once
-    ;; to generate file "package-quickstart.el'.
-    ;; It contains the `autoload' statements for all packages.
-    (setq package-quickstart t)
+    ;; "package-quickstart.el" converts path in `load-path' into
+    ;; os dependent path, make it impossible to share same emacs.d between
+    ;; Windows and Cygwin.
+    (unless (or *win64* *cygwin*)
+      ;; you need run `M-x package-quickstart-refresh' at least once
+      ;; to generate file "package-quickstart.el'.
+      ;; It contains the `autoload' statements for all packages.
+      (setq package-quickstart t))
 
     ;; esup need call `package-initialize'
     ;; @see https://github.com/jschaf/esup/issues/84
