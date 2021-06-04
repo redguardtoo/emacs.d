@@ -3,6 +3,27 @@
 (defun my-initialize-package ()
   ;; optimization, no need to activate all the packages so early
   (cond
+   ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
+   ;; ** Installed packages are now activated *before* loading the init file.
+   ;; As a result of this change, it is no longer necessary to call
+   ;; 'package-initialize' in your init file.
+
+   ;; Previously, a call to 'package-initialize' was automatically inserted
+   ;; into the init file when Emacs was started.  This call can now safely
+   ;; be removed.  Alternatively, if you want to ensure that your init file
+   ;; is still compatible with earlier versions of Emacs, change it to:
+
+   ;; (when (< emacs-major-version 27)
+   ;;   (package-initialize))
+
+   ;; However, if your init file changes the values of 'package-load-list'
+   ;; or 'package-user-dir', or sets 'package-enable-at-startup' to nil then
+   ;; it won't work right without some adjustment:
+   ;; - You can move that code to the early init file (see above), so those
+   ;;   settings apply before Emacs tries to activate the packages.
+   ;; - You can use the new 'package-quickstart' so activation of packages
+   ;;   does not need to pay attention to 'package-load-list' or
+   ;;   'package-user-dir' any more.
    (*emacs27*
     ;; "package-quickstart.el" converts path in `load-path' into
     ;; os dependent path, make it impossible to share same emacs.d between
@@ -17,34 +38,13 @@
     ;; @see https://github.com/jschaf/esup/issues/84
     (when (or (featurep 'esup-child)
               (fboundp 'profile-dotemacs)
-              ;; (not (file-exists-p (concat my-emacs-d "elpa")))
+              (daemonp)
               (my-vc-merge-p)
               noninteractive)
       (package-initialize)))
    (t
-    ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
-    ;; ** Installed packages are now activated *before* loading the init file.
-    ;; As a result of this change, it is no longer necessary to call
-    ;; 'package-initialize' in your init file.
-
-    ;; Previously, a call to 'package-initialize' was automatically inserted
-    ;; into the init file when Emacs was started.  This call can now safely
-    ;; be removed.  Alternatively, if you want to ensure that your init file
-    ;; is still compatible with earlier versions of Emacs, change it to:
-
-    ;; (when (< emacs-major-version 27)
-    ;;   (package-initialize))
-
-    ;; However, if your init file changes the values of 'package-load-list'
-    ;; or 'package-user-dir', or sets 'package-enable-at-startup' to nil then
-    ;; it won't work right without some adjustment:
-    ;; - You can move that code to the early init file (see above), so those
-    ;;   settings apply before Emacs tries to activate the packages.
-    ;; - You can use the new 'package-quickstart' so activation of packages
-    ;;   does not need to pay attention to 'package-load-list' or
-    ;;   'package-user-dir' any more.
-    ;;(package-initialize)
-    )))
+    ;; emacs 26
+    (package-initialize))))
 
 (my-initialize-package)
 
