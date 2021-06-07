@@ -107,6 +107,11 @@ If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen conte
    (t (error "Please select a region to narrow to"))))
 ;; }}
 
+(defun my-swiper-hack (&optional arg)
+  (ignore arg)
+  (if (region-active-p) (deactivate-mark)))
+(advice-add 'swiper :before #'my-swiper-hack)
+
 (defun my-swiper (&optional other-source)
   "Search current file.
 If OTHER-SOURCE is 1, get keyword from clipboard.

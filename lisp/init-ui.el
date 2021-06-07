@@ -33,6 +33,7 @@
 ;;(add-hook 'window-setup-hook #'toggle-frame-maximized)
 (add-hook 'window-setup-hook #'toggle-frame-fullscreen)
 
+;; (load-theme 'grandshell)
 (load-theme 'tsdh-dark)
 ;;改变emacs标题栏的标题
 ;; (setq frame-title-format "MATRIX-EMACS")
