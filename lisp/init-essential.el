@@ -129,6 +129,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (if (region-active-p) (deactivate-mark)))
 (advice-add 'swiper :before #'my-swiper-hack)
 
+(with-eval-after-load 'shellcop
+  (setq shellcop-string-search-function 'swiper))
+
 (with-eval-after-load 'cliphist
   (defun cliphist-routine-before-insert-hack (&optional arg)
     (ignore arg)

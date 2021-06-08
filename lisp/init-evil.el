@@ -656,6 +656,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "fs" 'ffip-save-ivy-last
   "fr" 'ivy-resume
   "ss" 'my-swiper
+  "sf" 'shellcop-search-in-shell-buffer-of-other-window
   "fb" '(lambda ()
           (interactive)
           (my-ensure 'wucuo)

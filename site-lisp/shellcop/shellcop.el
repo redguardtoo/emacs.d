@@ -1,8 +1,8 @@
-;;; shellcop.el --- analyze errors reported in Emacs builtin shell  -*- lexical-binding: t -*-
+;;; shellcop.el --- Analyze info&error in shell-mode  -*- lexical-binding: t -*-
 
-;; Copyright (C) 2020 Chen Bin
+;; Copyright (C) 2020-2021 Chen Bin
 ;;
-;; Version: 0.0.3
+;; Version: 0.0.4
 ;; Keywords: unix tools
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/shellcop
@@ -27,20 +27,25 @@
 
 ;;  Open the file from command line error report,
 ;;   - Insert "(add-hook 'shell-mode-hook 'shellcop-start)" into ~/.emacs
-;;   - Start shell by "M-x shell"
+;;   - Start shell-mode by "M-x shell"
 ;;   - Run any command line program in shell
-;;   - Press ENTER in the program's output which contains file and line number
+;;   - Press ENTER in the program's output containing file and line number
+;;   - Cursor is NOT required to be on the same line containing file path.
 ;;
 ;; `shellcop-reset-with-new-command' will,
 ;;   - kill current running process
 ;;   - erase the content in shell buffer
-;;   - If `shellcop-sub-window-has-error-function' return nil in all sub-windows, run `shellcop-insert-shell-command-function'.
+;;   - If `shellcop-sub-window-has-error-function' return nil in all sub-windows,
+;;     run `shellcop-insert-shell-command-function'.
 ;;
 ;; `shellcop-erase-buffer' erases the content buffer with below names,
 ;;   - "*Messages*" (default)
 ;;   - "*shell*" (if parameter 1 is passed)
 ;;   - "*Javascript REPL*" (if parameter 2 is passed)
 ;;   - "*eshell*" (if parameter 3 is passed)
+;;
+;; `shellcop-search-in-shell-buffer-of-other-window' uses current word or selected text
+;; to search in *shell* buffer of the other window.
 ;;
 
 ;;; Code:
@@ -84,6 +89,11 @@ If there is error, it returns t."
 (defcustom shellcop-wait-time-after-kill-running-job 2
   "Seconds to wait after kill running job in shell."
   :type 'number
+  :group 'shellcop)
+
+(defcustom shellcop-string-search-function 'search-backward
+  "The string search function used in `shellcop-search-in-shell-buffer-of-other-window'."
+  :type 'function
   :group 'shellcop)
 
 (defun shellcop-location-detail (str)
@@ -308,6 +318,40 @@ Or else erase current buffer."
 
    (t
     (shellcop-erase-one-visible-buffer "*Messages*"))))
+
+;;;###autoload
+(defun shellcop-visible-window-list ()
+  "Visible window list."
+  (cl-mapcan (lambda (frame)
+               (window-list frame 0 (frame-first-window frame)))
+             (visible-frame-list)))
+
+;;;###autoload
+(defun shellcop-focus-window (buffer-name fn)
+  "Focus on window with BUFFER-NAME and run function FN."
+  (let* ((sub-window (cl-find-if `(lambda (w)
+                                    (string= (buffer-name (window-buffer w)) ,buffer-name))
+                                 (shellcop-visible-window-list)))
+         (keyword (cond
+                   ((region-active-p)
+                    (buffer-substring (region-beginning) (region-end)))
+                   (t
+                    (thing-at-point 'word)))))
+    (when sub-window
+      ;; select sub-window
+      (select-window sub-window)
+      ;; do something
+      (funcall fn keyword))))
+
+;;;###autoload
+(defun shellcop-search-in-shell-buffer-of-other-window ()
+  "Search symbol or selected text in *shell* buffer of the other window."
+  (interactive)
+  (shellcop-focus-window
+   "*shell*"
+   (lambda (keyword)
+     (when keyword
+       (funcall shellcop-string-search-function keyword)))))
 
 (provide 'shellcop)
 ;;; shellcop.el ends here
