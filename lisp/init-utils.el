@@ -630,5 +630,20 @@ Copied from 3rd party package evil-textobj."
   "Visible window list."
   (cl-mapcan #'my-list-windows-in-frame (visible-frame-list)))
 
+(defun my-lisp-find-file-or-directory (root regexp prefer-directory-p)
+  "Find files or directories in ROOT whose names match REGEXP.
+If PREFER-DIRECTORY-P is t, return directory; or else, returns file.
+This function is written in pure Lisp and slow."
+  (my-ensure 'find-lisp)
+  (find-lisp-find-files-internal
+   root
+   (lambda (file dir)
+     (let* ((directory-p (file-directory-p (expand-file-name file dir)))
+            (rlt (and (if prefer-directory-p directory-p (not directory-p))
+                      (not (or (string= file ".") (string= file "..")))
+                      (string-match regexp file))))
+       rlt))
+   'find-lisp-default-directory-predicate))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here
