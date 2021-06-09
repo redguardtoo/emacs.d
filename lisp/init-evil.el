@@ -654,10 +654,10 @@ If N > 0, only occurrences in current N lines are renamed."
   "ll" 'langtool-goto-next-error
   "pe" 'lazyflymake-goto-prev-error
   "ne" 'lazyflymake-goto-next-error
-  "og" 'org-agenda
-
+  "oa" 'org-agenda
+  "oc" 'org-capture
   "otl" 'org-toggle-link-display
-  "oa" '(lambda ()
+  "oh" '(lambda ()
           (interactive)
           (my-ensure 'org)
           (counsel-org-agenda-headlines))

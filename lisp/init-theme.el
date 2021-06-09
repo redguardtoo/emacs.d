@@ -16,7 +16,8 @@
     (message "Color theme [%s] loaded." theme)))
 
 (defvar my-favourite-color-themes '(grandshell
-                                    tsdh-dark)
+                                    tsdh-dark
+                                    occidental)
   "Color themes to use by `random-color-theme'.")
 
 ;; random color theme

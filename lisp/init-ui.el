@@ -64,6 +64,18 @@
 ;;  (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
 ;; (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line))
 
+
+;; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+(global-hl-todo-mode)
+(setq hl-todo-keyword-faces
+      '(("TODO"   . "#FF0000")
+        ("FIXME"  . "#FF0000")
+        ("HACK"  . "#FF0000")
+        ("REVIEW"  . "#A020F0")
+        ("DEPRECATE" . "#FF4500")
+        ("NOTE"   . "#1e90ff")
+        ("DONE"   . "#00FF00")))
+
 (advice-add #'display-startup-echo-area-message :override #'ignore)
 ;;init font
 ;; (cnfonts-enable)

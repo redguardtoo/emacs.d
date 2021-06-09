@@ -134,7 +134,8 @@
     workgroups2
     zoutline
     company-c-headers
-    company-statistics)
+    company-statistics
+    hl-todo)
   "Packages to install from melpa-unstable.")
 
 (defvar melpa-stable-banned-packages nil
@@ -355,6 +356,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'pyim-wbdict) ; someone may use wubi IME, not me
 (require-package 'pyim-basedict)
 (require-package 'esup)
+(require-package 'hl-todo)
 ;; Great truths are always simple
 ;; (require-package 'dashboard)
 ;; (require-package 'google-translate)
