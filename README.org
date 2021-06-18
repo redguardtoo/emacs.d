@@ -28,6 +28,7 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#hardcore-debug-technique][Hardcore debug technique]]
   - [[#spell-check-code][Spell check code]]
   - [[#lock-packages][Lock packages]]
   - [[#how-to-install-new-packages][How to install new packages?]]
@@ -285,6 +286,22 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Hardcore debug technique
+This Emacs configuration is fast and robust.
+
+So most tricky problems come from extra third party packages you installed.
+
+Try [[https://en.wikipedia.org/wiki/Strace][Strace]] if you can't resolve the issue by grepping the Emacs Lisp code.
+
+Debug network request sent by Emacs,
+#+begin_src sh
+strace -f -e trace=network -s 10000 -o ~/emacs-err.txt /usr/bin/emacs -nw
+#+end_src
+
+Debug system API call sent by Emacs,
+#+begin_src sh
+strace -o ~/emacs-err.txt /usr/bin/emacs -nw
+#+end_src
 ** Spell check code
 This configuration uses [[https://github.com/redguardtoo/wucuo][wucuo]] which is alternative of =flyspell-mode= and =flyspell-prog-mode=.
 
