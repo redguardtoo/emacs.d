@@ -1,0 +1,6 @@
+(when (or (featurep 'esup-child)
+          (fboundp 'profile-dotemacs)
+          (daemonp)
+          (boundp 'startup-now)
+          noninteractive)
+  (setq package-enable-at-startup nil))

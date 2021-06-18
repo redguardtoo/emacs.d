@@ -9,6 +9,14 @@
 
 (with-eval-after-load 'company
 
+  ;; company changed the default key bindings, un-comment below code to restore original key bindings
+  ;; @see https://github.com/company-mode/company-mode/wiki/Tips-%26-tricks/_compare/5ea840d^...5ea840d
+
+  ;; (define-key company-active-map (kbd "C-n") nil)
+  ;; (define-key company-active-map (kbd "C-p") nil)
+  ;; (define-key company-active-map (kbd "M-n") #'company-select-next)
+  ;; (define-key company-active-map (kbd "M-p") #'company-select-previous)
+
   (defun my-company-number ()
     "Forward to `company-complete-number'.
 Unless the number is potentially part of the candidate.

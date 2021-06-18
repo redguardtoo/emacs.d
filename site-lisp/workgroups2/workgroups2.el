@@ -47,7 +47,7 @@
 ;; You can change it before activating workgroups.
 ;; Change prefix key (before activating WG)
 ;;
-;; (setq wg-prefix-key (kbd "C-c z"))
+;; (setq wg-prefix-key "C-c z")
 ;;
 ;; By default prefix is: "C-c z"
 ;;
@@ -73,7 +73,7 @@
   :type 'file
   :group 'workgroups)
 
-(defcustom wg-prefix-key (kbd "C-c z")
+(defcustom wg-prefix-key "C-c z"
   "Workgroups' prefix key.
 Setting this variable requires that `workgroups-mode' be turned
 off and then on again to take effect."
@@ -245,12 +245,6 @@ Remove file and dired buffers that are not associated with workgroup."
 Abbreviation of `destructuring-bind'."
   (declare (indent 2))
   `(cl-destructuring-bind ,args ,expr ,@body))
-
-(defmacro wg-when-boundp (symbols &rest body)
-  "When all SYMBOLS are bound, `eval' BODY."
-  (declare (indent 1))
-  `(when (and ,@(mapcar (lambda (sym) `(boundp ',sym)) symbols))
-     ,@body))
 
 (defmacro wg-dohash (spec &rest body)
   "do-style wrapper for `maphash'.
@@ -474,11 +468,6 @@ This needs to be a macro to allow specification of a setf'able place."
   "Convert `current-time' into a b36 string."
   (apply 'concat (wg-docar (time (current-time))
                    (wg-int-to-b36 time))))
-
-(defun wg-b36-to-time (b36)
-  "Parse the time in B36 string from UID."
-  (cl-loop for i from 0 to 8 by 4
-           collect (wg-b36-to-int (cl-subseq b36 i (+ i 4)))))
 
 (defun wg-generate-uid ()
   "Return a new uid."
@@ -886,8 +875,8 @@ new workgroup during a switch.")
 
 (defvar workgroups-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c") 'wg-create-workgroup)
-    (define-key map (kbd "C-v") 'wg-open-workgroup)
+    (define-key map (kbd (format "%s %s" wg-prefix-key "C-c")) 'wg-create-workgroup)
+    (define-key map (kbd (format "%s %s" wg-prefix-key "C-v")) 'wg-open-workgroup)
     map)
     "Mode map for `workgroups-mode'.")
 
@@ -1331,9 +1320,8 @@ how to write your own."
                           (error (message "%s" err)))
                         (when (get-buffer "*Help*")
                           (set-buffer (get-buffer "*Help*"))
-                          (wg-when-boundp (help-xref-stack help-xref-forward-stack)
-                                          (setq help-xref-stack stack
-                                                help-xref-forward-stack forward-stack))))))))
+                          (setq help-xref-stack stack
+                                help-xref-forward-stack forward-stack)))))))
 
 ;; ielm
 (wg-support 'inferior-emacs-lisp-mode 'ielm
@@ -2003,7 +1991,6 @@ If OBJ is nil, return the current workgroup, or error unless NOERROR."
 ;;
 ;; Quick test:
 ;; (wg-workgroup-parameters (wg-current-workgroup))
-;; (wg-set-workgroup-parameter (wg-current-workgroup) 'test1 t)
 ;; (wg-workgroup-parameter (wg-current-workgroup) 'test1)
 (defun wg-workgroup-parameter (workgroup parameter &optional default)
   "Return WORKGROUP's value for PARAMETER.
@@ -2011,66 +1998,6 @@ If PARAMETER is not found, return DEFAULT which defaults to nil.
 WORKGROUP should be accepted by `wg-get-workgroup'."
   (wg-aget (wg-workgroup-parameters (wg-get-workgroup workgroup))
            parameter default))
-
-(defun wg-set-workgroup-parameter (parameter value &optional workgroup)
-  "Set PARAMETER to VALUE in a WORKGROUP.
-WORKGROUP should be a value accepted by `wg-get-workgroup'.
-Return VALUE."
-  (let* ((workgroup (wg-get-workgroup (or workgroup (wg-current-workgroup t)) t)))
-    (when workgroup
-      (wg-set-parameter (wg-workgroup-parameters workgroup) parameter value)
-      (wg-flag-workgroup-modified workgroup)
-      value)))
-
-(defun wg-workgroup-local-value (variable &optional workgroup)
-  "Return the value of VARIABLE in WORKGROUP.
-WORKGROUP nil defaults to the current workgroup.  If there is no
-current workgroup, or if VARIABLE does not have a workgroup-local
-binding in WORKGROUP, resolve VARIABLE with `wg-session-local-value'."
-  (let ((workgroup (wg-get-workgroup workgroup t)))
-    (if (not workgroup) (wg-session-local-value variable)
-      (let* ((undefined (cl-gensym))
-             (value (wg-workgroup-parameter workgroup variable undefined)))
-        (if (not (eq value undefined)) value
-          (wg-session-local-value variable))))))
-
-(defun wg-workgroup-saved-wconfig-names (workgroup)
-  "Return a new list of the names of all WORKGROUP's saved wconfigs."
-  (mapcar 'wg-wconfig-name (wg-workgroup-saved-wconfigs workgroup)))
-
-(defun wg-workgroup-get-saved-wconfig (wconfig-or-name &optional workgroup)
-  "Return the wconfig by WCONFIG-OR-NAME from WORKGROUP's saved wconfigs.
-WCONFIG-OR-NAME must be either a string or a wconfig.  If
-WCONFIG-OR-NAME is a string and there is no saved wconfig with
-that name, return nil.  If WCONFIG-OR-NAME is a wconfig, and it
-is a member of WORKGROUP's saved wconfigs, return is as given.
-Otherwise return nil."
-  (let ((wconfigs (wg-workgroup-saved-wconfigs (or workgroup (wg-current-workgroup)))))
-    (cl-etypecase wconfig-or-name
-      (wg-wconfig (car (memq wconfig-or-name wconfigs)))
-      (string (cl-find wconfig-or-name wconfigs
-                       :key 'wg-wconfig-name
-                       :test 'string=)))))
-
-(defun wg-workgroup-save-wconfig (wconfig &optional workgroup)
-  "Add WCONFIG to WORKGROUP's saved wconfigs.
-WCONFIG must have a name.  If there's already a wconfig with the
-same name in WORKGROUP's saved wconfigs, replace it."
-  (let ((name (wg-wconfig-name wconfig)))
-    (unless name (error "Attempt to save a nameless wconfig"))
-    (setf (wg-workgroup-modified workgroup) t)
-    (wg-asetf (wg-workgroup-saved-wconfigs workgroup)
-              (cons wconfig (cl-remove name it
-                                       :key 'wg-wconfig-name
-                                       :test 'string=)))))
-
-(defun wg-workgroup-kill-saved-wconfig (workgroup wconfig-or-name)
-  "Delete WCONFIG-OR-NAME from WORKGROUP's saved wconfigs.
-WCONFIG-OR-NAME is resolved with `wg-workgroup-get-saved-wconfig'."
-  (let* ((wconfig (wg-workgroup-get-saved-wconfig wconfig-or-name workgroup)))
-    (when wconfig
-      (wg-asetf (wg-workgroup-saved-wconfigs workgroup) (remq wconfig it)
-                (wg-workgroup-modified workgroup) t))))
 
 (defun wg-workgroup-base-wconfig-buf-uids (workgroup)
   "Return a new list of all unique buf uids in WORKGROUP's working wconfig."
@@ -2122,17 +2049,6 @@ Or scream unless NOERROR."
             (wg-session-workgroup-list
              (read (wg-read-text wg-session-file))))))
 
-(defun wg-read-workgroup-name ()
-  "Read a workgroup name from `wg-workgroup-names'."
-  (completing-read "Workgroup: "
-                   (wg-workgroup-names)
-                   nil
-                   nil
-                   nil
-                   nil
-                   (and (wg-current-workgroup t)
-                        (wg-workgroup-name (wg-current-workgroup t)))))
-
 (defun wg-new-default-workgroup-name ()
   "Return a new, unique, default workgroup name."
   (let ((names (wg-workgroup-names)) (index -1) result)
@@ -2142,20 +2058,14 @@ Or scream unless NOERROR."
           (setq result new-name))))
     result))
 
-(defun wg-read-saved-wconfig (workgroup)
-  "Read the name of and return one of WORKGROUP's saved wconfigs."
-  (wg-workgroup-get-saved-wconfig
-   (completing-read "Saved wconfig name: "
-                    (wg-workgroup-saved-wconfig-names workgroup)
-                    nil
-                    t)
-   workgroup))
-
 (defun wg-query-and-save-if-modified ()
-  "Query for save when `wg-modified-p'."
-  (or (not (wg-modified-p))
-      (when (y-or-n-p "Save modified workgroups? ")
-        (wg-save-session))))
+  "Query for save when current session or any of its workgroups are modified."
+  (let ((wg-modified-p (and wg-current-session
+                            (or (wg-session-modified wg-current-session)
+                                (cl-some 'wg-workgroup-modified (wg-workgroup-list))))))
+    (or (not wg-modified-p)
+        (when (y-or-n-p "Save modified workgroups? ")
+          (wg-save-session)))))
 
 (defun wg-switch-to-workgroup-internal (workgroup-name)
   "Switch to workgroup with WORKGROUP-NAME."
@@ -2364,33 +2274,34 @@ that name and return it.  Otherwise error."
      (buffer-substring-no-properties (point-min) (point-max)))
    'utf-8))
 
-(defun wg-open-session (filename)
-  "Load a session visiting FILENAME, creating one if none already exists."
-  (interactive "FFind session file: ")
-  (cond ((file-exists-p filename)
-         ;; TODO: handle errors when reading object
-         (let ((session (read (wg-read-text filename))))
-           (unless (wg-session-p session)
-             (error "%S is not a Workgroups session file" filename))
-           (setf (wg-session-file-name session) filename)
-           (wg-reset-internal (wg-unpickel-session-parameters session)))
+(defun wg-open-session ()
+  "Load a session visiting `wg-session-file', creating one if none already exists."
+  (cond
+   ((file-exists-p wg-session-file)
+    ;; TODO: handle errors when reading object
+    (let ((session (read (wg-read-text wg-session-file))))
+      (unless (wg-session-p session)
+        (error "%S is not a Workgroups session file" wg-session-file))
+      (setf (wg-session-file-name session) wg-session-file)
+      (wg-reset-internal (wg-unpickel-session-parameters session)))
 
-         (if wg-control-frames (wg-restore-frames))
+    (if wg-control-frames (wg-restore-frames))
 
-         (when (wg-workgroup-list)
-           (if (member (wg-session-parameter 'last-workgroup) (wg-workgroup-names))
-               (wg-switch-to-workgroup-internal (wg-session-parameter 'last-workgroup))
-             (wg-switch-to-workgroup-internal (car (wg-workgroup-list))))
-           (let ((prev (wg-session-parameter 'prev-workgroup)))
-             (when prev
-               (when (and (member prev (wg-workgroup-names))
-                          (wg-get-workgroup prev t))
-                 (wg-set-previous-workgroup (wg-get-workgroup prev t))))))
-         (wg-mark-everything-unmodified))
-        (t
-         (wg-query-and-save-if-modified)
-         (wg-reset-internal (wg-make-session :file-name filename))
-         (message "(New Workgroups session file)"))))
+    (when (wg-workgroup-list)
+      (if (member (wg-session-parameter 'last-workgroup) (wg-workgroup-names))
+          (wg-switch-to-workgroup-internal (wg-session-parameter 'last-workgroup))
+        (wg-switch-to-workgroup-internal (car (wg-workgroup-list))))
+      (let ((prev (wg-session-parameter 'prev-workgroup)))
+        (when prev
+          (when (and (member prev (wg-workgroup-names))
+                     (wg-get-workgroup prev t))
+            (wg-set-previous-workgroup (wg-get-workgroup prev t))))))
+    (wg-mark-everything-unmodified))
+
+   (t
+    (wg-query-and-save-if-modified)
+    (wg-reset-internal (wg-make-session :file-name wg-session-file))
+    (message "(New Workgroups session file)"))))
 
 (defun wg-write-sexp-to-file (sexp file)
   "Write the printable representation of SEXP to FILE."
@@ -2457,7 +2368,6 @@ This makes the session visit that file, and marks it as not modified."
 (defun wg-save-session ()
   "Save the current Workgroups session if it's been modified.
 When FORCE - save session regardless of whether it's been modified."
-  (interactive)
   (wg-save-session-as (wg-get-session-file)))
 
 (defun wg-reset-internal (session)
@@ -2475,12 +2385,6 @@ object, etc.  SESSION nil defaults to a new, blank session."
                        :key 'wg-workgroup-all-buf-uids)
             (delq nil (mapcar 'wg-buffer-uid (wg-buffer-list-emacs)))
             :test 'string=))
-
-(defun wg-modified-p ()
-  "Return t when the current session or any of its workgroups are modified."
-  (and wg-current-session
-       (or (wg-session-modified wg-current-session)
-           (cl-some 'wg-workgroup-modified (wg-workgroup-list)))))
 
 (defun wg-mark-everything-unmodified ()
   "Mark the session and all workgroups as unmodified."
@@ -2564,14 +2468,14 @@ ARG is anything else, turn on `workgroups-mode'."
    (workgroups-mode
     (if (boundp 'desktop-restore-frames)
         (setq desktop-restore-frames nil))
-    (wg-reset-internal (wg-make-session))                              ; creates a new `wg-current-session'
+    (wg-reset-internal (wg-make-session)) ; creates a new `wg-current-session'
     (wg-add-workgroups-mode-minor-mode-entries)
 
     ;; Load session
     (when (and wg-session-load-on-start
                (file-exists-p wg-session-file))
       (condition-case err
-          (wg-open-session wg-session-file)
+          (wg-open-session)
         (error (message "Error finding `wg-session-file': %s" err)))))
    (t
     (wg-save-session)))
@@ -2579,16 +2483,20 @@ ARG is anything else, turn on `workgroups-mode'."
   workgroups-mode)
 
 ;;;###autoload
-(defun wg-open-workgroup ()
-  "Open specific workgroup."
+(defun wg-open-workgroup (&optional group-name)
+  "Open specific workgroup by GROUP-NAME."
   (interactive)
-  (let* ((group-names (wg-workgroup-names))
-         selected-group)
-    (when (and group-names
-               (setq selected-group
-                     (completing-read "Select work group: " group-names)))
-      (wg-open-session wg-session-file)
-      (wg-switch-to-workgroup-internal selected-group))))
+  (let ((group-names (wg-workgroup-names)))
+    (cond
+     (group-names
+      (unless group-name
+        (setq group-name
+              (completing-read "Select work group: " group-names)))
+      (when group-name
+        (wg-open-session)
+        (wg-switch-to-workgroup-internal group-name)))
+     (t
+      (message "No workgroup is created yet.")))))
 
 (provide 'workgroups2)
 ;;; workgroups2.el ends here
