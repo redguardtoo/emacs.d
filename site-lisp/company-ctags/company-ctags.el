@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/company-ctags
-;; Version: 0.0.4
+;; Version: 0.0.6
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "25.1") (company "0.9.0"))
 
@@ -56,6 +56,8 @@
 ;; - Set `company-ctags-fuzzy-match-p' to fuzzy match the candidates.
 ;;   The input could match any part of the candidate instead of the beginning of
 ;;   the candidate.
+;;
+;; - Set `company-ctags-ignore-case' to ignore case when fetching candidates
 ;;
 ;; - Use rusty-tags to generate tags file for Rust programming language.
 ;;   Add below code into ~/.emacs,
@@ -189,13 +191,18 @@ the candidate."
           (setq company-ctags-buffer-table (company-ctags-find-table))
         company-ctags-buffer-table)))
 
-(defun company-ctags-tag-name-character-p (c)
-  "Test if character C is in `company-ctags-tag-name-valid-characters'."
-  (let (rlt (i 0) (len (length company-ctags-tag-name-valid-characters)))
+(defun company-ctags-char-in-string-p (character string)
+  "Test if CHARACTER is in STRING."
+  (let (rlt (i 0) (len (length string)))
     (while (and (not rlt) (< i len))
-      (setq rlt (eq (elt company-ctags-tag-name-valid-characters i) c))
+      (setq rlt (eq (elt string i) character))
       (setq i (1+ i)))
     rlt))
+
+(defun company-ctags-tag-name-character-p (character)
+  "Test if CHARACTER is in `company-ctags-tag-name-valid-characters'."
+  (company-ctags-char-in-string-p character
+                                  company-ctags-tag-name-valid-characters))
 
 (defmacro company-ctags-push-tagname (tagname tagname-dict)
   "Push TAGNAME into TAGNAME-DICT."
@@ -291,23 +298,35 @@ If `company-ctags-fuzzy-match-p' is t, check if the match contains STRING."
    (t
     (all-completions string collection))))
 
+(defun company-ctags-fetch-by-first-char (c prefix tagname-dict)
+  "Fetch candidates by first character C of PREFIX from TAGNAME-DICT."
+  (let* ((rlt (company-ctags-all-completions prefix (gethash c tagname-dict))))
+    (when company-ctags-ignore-case
+      (let (c2 (offset (- ?a ?A)))
+        (cond
+         ((company-ctags-char-in-string-p c "abcdefghijklmnopqrstuvwxyz")
+          (setq c2 (- c offset)))
+
+         ((company-ctags-char-in-string-p c "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+          (setq c2 (+ c offset))))
+
+        (when c2
+          (setq rlt (nconc rlt (company-ctags-all-completions prefix (gethash c2 tagname-dict)))))))
+    rlt))
+
 (defun company-ctags-all-candidates (prefix tagname-dict)
   "Search for partial match to PREFIX in TAGNAME-DICT."
   (cond
    (company-ctags-fuzzy-match-p
     (let* ((keys (hash-table-keys tagname-dict))
-           arr
            rlt)
       ;; search all hash tables
       ;; don't care the first character of prefix
       (dolist (c keys)
-        (setq arr (gethash c tagname-dict))
-        (setq rlt (nconc rlt (company-ctags-all-completions prefix arr))))
+        (setq rlt (nconc rlt (company-ctags-fetch-by-first-char c prefix tagname-dict))))
       rlt))
    (t
-    (let* ((c (elt prefix 0))
-           (arr (gethash c tagname-dict)))
-      (company-ctags-all-completions prefix arr)))))
+    (company-ctags-fetch-by-first-char (elt prefix 0) prefix tagname-dict))))
 
 (defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog quiet)
   "Load tags from FILE.
@@ -351,19 +370,18 @@ If QUIET is t, don not output any message."
         (setq raw-content (plist-get file-info :raw-content))
 
         ;; use diff to find the new tags
-        (let* ((tmp-file (make-temp-file "company-ctags-diff"))
-               (cmd (format "%s -ab %s %s" diff-command tmp-file file)))
-          ;; create old tags file
+        (let (diff-output)
           (with-temp-buffer
             (insert (plist-get file-info :raw-content))
-            (write-region (point-min) (point-max) tmp-file nil :silent))
+            ;; when process finished, replace temp buffer with program output
+            (call-process-region (point-min) (point-max) diff-command t t nil "-ab" file "-")
+            (setq diff-output (buffer-string)))
+
           ;; compare old and new tags file, extract tag names from diff output which
           ;; should be merged with old tag names
           (setq tagname-dict
-                (company-ctags-parse-tags (shell-command-to-string cmd)
-                                          (plist-get file-info :tagname-dict)))
-          ;; clean up
-          (delete-file tmp-file)))
+                (company-ctags-parse-tags diff-output
+                                          (plist-get file-info :tagname-dict)))))
        (t
         (setq raw-content (with-temp-buffer
                             (insert-file-contents file)
