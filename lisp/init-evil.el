@@ -599,7 +599,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "gf" 'counsel-git ; find file
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
-  "gt" 'my-evil-goto-definition ; "gt" is occupied by evil
+  "vv" 'my-evil-goto-definition ; frequently used
   "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
   "rjs" 'run-js
@@ -707,7 +707,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "va" 'git-add-current-file
   "vk" 'git-checkout-current-file
   "vg" 'vc-annotate ; 'C-x v g' in original
-  "vv" 'vc-msg-show
+  "vm" 'vc-msg-show
   "v=" 'git-gutter:popup-hunk
   "hh" 'cliphist-paste-item
   "yu" 'cliphist-select-item
