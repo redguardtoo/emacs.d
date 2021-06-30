@@ -34,10 +34,11 @@
         dired ; nothing to optimize in dired
         dired-do-async-shell-command
         dired-find-file
+        dired-next-line
+        dired-previous-line
         diredp-next-line
         diredp-previous-line
         electric-pair-delete-pair
-        shellcop-erase-buffer
         eval-buffer
         evil-a-WORD
         evil-append
@@ -115,6 +116,7 @@
         ffip
         forward-char
         forward-word
+        general-dispatch-self-insert-command-4
         gnus
         gnus-summary-exit
         gnus-summary-next-page
@@ -158,6 +160,8 @@
         keyfreq-show
         kill-sentence
         left-char
+        magit-next-line
+        magit-previous-line
         markdown-exdent-or-delete
         markdown-outdent-or-delete
         minibuffer-complete
@@ -194,6 +198,7 @@
         push-button
         pwd
         quit-window
+        recenter-top-bottom
         right-char
         rjsx-electric-gt
         rjsx-electric-lt
@@ -212,11 +217,15 @@
         select-window-8
         select-window-9
         self-insert-command
+        shellcop-erase-buffer
         smarter-move-beginning-of-line
         suspend-frame
         term-send-raw
         turnon-keyfreq-mode
+        typescript-insert-and-indent
         undefined ;; lambda function
+        undo-fu-only-redo
+        undo-fu-only-undo
         undo-tree-redo
         undo-tree-undo
         w3m-goto-url
