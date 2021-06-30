@@ -125,7 +125,6 @@ INDENT-SIZE decide the indentation level.
 
              (t
               2))))
-    (message "executable=%s indent-size=%s" executable indent-size)
     ;; do it!
     (run-cmd-and-replace-region (concat executable
                                         " --stdin "
