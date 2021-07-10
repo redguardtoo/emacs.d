@@ -1,3 +1,5 @@
+
 #name : println (...)
 # --
-println("${1:var}" + $1);
+/* suah debug */
+printf("\r\n == == ==${1:} func:%s line:%d file:%s== == \r\n", __func__, __LINE__,__FILE__);

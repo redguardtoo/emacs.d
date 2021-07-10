@@ -3,7 +3,7 @@
 ;; My frequently used commands are listed here
 
 ;; enable evil-mode
-(evil-mode 1)
+(evil-mode 0)
 
 ;; {{ replace undo-tree with undo-fu
 ;; @see https://github.com/emacs-evil/evil/issues/1074

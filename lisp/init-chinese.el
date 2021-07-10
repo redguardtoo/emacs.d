@@ -59,7 +59,7 @@
     ;; load wubi dictionary
     (let* ((dir (file-name-directory
                  (locate-library "pyim-wbdict.el")))
-           (file (concat dir "pyim-wbdict-v98.pyim")))
+           (file (concat dir "pyim-wbdict-v86.pyim")))
       (when (and (file-exists-p file) (featurep 'pyim))
         (setq pyim-dicts
               (list (list :name "wbdict-v98-elpa" :file file :elpa t))))))
