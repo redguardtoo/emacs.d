@@ -323,6 +323,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (forward-line 1)
     (evil-search search t t (point))))
 
+;; store all projects xref ring
+(setq xref-marker-ring-hash (make-hash-table :test 'equal))
+
 ;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
 ;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
@@ -332,7 +335,17 @@ If the character before and after CH is space or tab, CH is NOT slash"
   :type exclusive
   (let* ((string (evil-find-symbol t))
          (search (format "\\_<%s\\_>" (regexp-quote string)))
+         (get-project-root (lambda () (or (ffip-project-root) "global")))
+         (project-root (or (ffip-project-root) "global"))
          ientry ipos)
+
+    ;; init xref ring if not exists
+    (if (not (gethash project-root xref-marker-ring-hash))
+      (puthash project-root (make-ring xref-marker-ring-length) xref-marker-ring-hash))
+    ;; set xref ring to local variable
+    (make-local-variable 'xref--marker-ring)
+    (setq xref--marker-ring (gethash project-root xref-marker-ring-hash))
+
     ;; load imenu if available
     (my-ensure 'imenu)
 
@@ -358,7 +371,13 @@ If the character before and after CH is space or tab, CH is NOT slash"
         (my-search-defun-from-pos search (if (numberp ipos) ipos (point-min))))
        ;; otherwise just go to first occurrence in buffer
        (t
-        (my-search-defun-from-pos search (point-min)))))))
+        (my-search-defun-from-pos search (point-min)))))
+
+    ;; store xref ring to target buffer (if exists)
+    (make-local-variable 'xref--marker-ring)
+    (setq xref--marker-ring (gethash project-root xref-marker-ring-hash))
+    (if (not (eq project-root (funcall get-project-root)))
+      (puthash (funcall get-project-root) xref--marker-ring xref-marker-ring-hash))))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
