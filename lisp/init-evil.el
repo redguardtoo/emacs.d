@@ -919,7 +919,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
-  (setq expand-region-contract-fast-key "char")
+  (setq expand-region-contract-fast-key "z")
   ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
   ;; evil 1.0.8 search word instead of symbol
   (setq evil-symbol-word-search t)
