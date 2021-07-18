@@ -427,7 +427,7 @@ The =auto-mode-alist= associates major modes with files.
 
 For example, associate =rjsx-mode= file with extension "*.jsx",
 #+begin_src elisp
-(push "\\.jsx\\'" auto-mode-alist)
+(push ("\\.jsx\\'" . rsjx-mode) auto-mode-alist)
 #+end_src
 
 Or you can use function =my-add-auto-mode= provided by this configuration,
