@@ -1253,14 +1253,14 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
-     (pdf-view-next-page n))))
+     (pdf-view-scroll-up-or-next-page n))))
 
 (defun my-open-pdf-previous-page (&optional n)
   "Open pdf and go to next N page."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
-     (pdf-view-previous-page n))))
+     (pdf-view-scroll-down-or-previous-page n))))
 
 (defun my-open-pdf-goto-page (&optional n)
   "Open pdf and go to page N.
