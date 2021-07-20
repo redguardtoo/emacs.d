@@ -236,31 +236,26 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; Press "q" in evil-mode or "C-c C-c" to exit the diff output buffer
 (defun diff-region-format-region-boundary (b e)
   "Make sure lines are selected and B is less than E."
-  (let* (tmp rlt)
-    ;; swap b e, make sure b < e
-    (when (> b e)
-      (setq tmp b)
-      (setq b e)
-      (set e tmp))
+  (if (> b e) (cl-rotatef b e))
 
-    ;; select lines
-    (save-excursion
-      ;; Another workaround for evil-visual-line bug:
-      ;; In evil-mode, if we use hotkey V or `M-x evil-visual-line` to select line,
-      ;; the (line-beginning-position) of the line which is after the last selected
-      ;; line is always (region-end)! Don't know why.
-      (if (and (> e b)
+  ;; select lines
+  (save-excursion
+    ;; Another workaround for evil-visual-line bug:
+    ;; In evil-mode, if we use hotkey V or `M-x evil-visual-line` to select line,
+    ;; the (line-beginning-position) of the line which is after the last selected
+    ;; line is always (region-end)! Don't know why.
+    (when (and (> e b)
                (save-excursion (goto-char e) (= e (line-beginning-position)))
                (boundp 'evil-state) (eq evil-state 'visual))
-          (setq e (1- e)))
-      (goto-char b)
-      (setq b (line-beginning-position))
-      (goto-char e)
-      (setq e (line-end-position)))
-    (setq rlt (list b e))
-    rlt))
+      (setq e (1- e)))
+    (goto-char b)
+    (setq b (line-beginning-position))
+    (goto-char e)
+    (setq e (line-end-position)))
+  (list b e))
 
 (defmacro diff-region-open-diff-output (content buffer-name)
+  "Insert CONTENT into a buffer named BUFFER-NAME."
   `(let ((rlt-buf (get-buffer-create ,buffer-name)))
     (save-current-buffer
       (switch-to-buffer-other-window rlt-buf)
@@ -274,16 +269,19 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (defun diff-region-tag-selected-as-a ()
   "Select a region to compare."
   (interactive)
-  (when (region-active-p)
-    (let* (tmp buf)
+  (cond
+   ((region-active-p)
+    (let* ((tmp (diff-region-format-region-boundary (region-beginning) (region-end)))
+           (buf (get-buffer-create "*Diff-regionA*")))
       ;; select lines
-      (setq tmp (diff-region-format-region-boundary (region-beginning) (region-end)))
-      (setq buf (get-buffer-create "*Diff-regionA*"))
       (save-current-buffer
         (set-buffer buf)
         (erase-buffer))
-      (append-to-buffer buf (car tmp) (cadr tmp))))
-  (message "Now select other region to compare and run `diff-region-compare-with-b'"))
+      (append-to-buffer buf (car tmp) (cadr tmp)))
+    (message "Now select the other text to compare and run `diff-region-compare-with-b'"))
+
+   (t
+    (message "Please select the text first."))))
 
 (defun diff-region-compare-with-b ()
   "Compare current region with region from `diff-region-tag-selected-as-a'.
