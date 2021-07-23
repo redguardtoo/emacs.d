@@ -105,7 +105,7 @@ They will be replaced by their definitions.  If a variable does
 not exist, it is replaced (silently) with an empty string."
   :type '(repeat 'string))
 
-(defcustom company-ctags-quiet t
+(defcustom company-ctags-quiet nil
   "Be quiet and do not notify user tags file status."
   :type 'boolean)
 
@@ -158,7 +158,7 @@ the candidate."
 
 (defvar company-backends) ; avoid compiling warning
 
-(defvar-local company-ctags-buffer-table 'unknown)
+(defvar-local company-ctags-buffer-table-internal nil)
 
 (defvar company-ctags-tags-file-caches nil
   "The cached tags files.")
@@ -187,9 +187,9 @@ the candidate."
 (defun company-ctags-buffer-table ()
   "Find buffer table."
   (or (and company-ctags-use-main-table-list tags-table-list)
-      (if (eq company-ctags-buffer-table 'unknown)
-          (setq company-ctags-buffer-table (company-ctags-find-table))
-        company-ctags-buffer-table)))
+      (or company-ctags-buffer-table-internal
+          (setq company-ctags-buffer-table-internal
+                (company-ctags-find-table)))))
 
 (defun company-ctags-char-in-string-p (character string)
   "Test if CHARACTER is in STRING."
@@ -328,13 +328,12 @@ If `company-ctags-fuzzy-match-p' is t, check if the match contains STRING."
    (t
     (company-ctags-fetch-by-first-char (elt prefix 0) prefix tagname-dict))))
 
-(defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog quiet)
+(defun company-ctags-load-tags-file (file static-p &optional force no-diff-prog)
   "Load tags from FILE.
 If STATIC-P is t, the corresponding tags file is read only once.
 If FORCE is t, tags file is read without `company-ctags-tags-file-caches'.
 If NO-DIFF-PROG is t, do NOT use diff on tags file.
-This function return t if any tag file is reloaded.
-If QUIET is t, don not output any message."
+This function return t if any tag file is reloaded."
   (let* (raw-content
          (file-info (and company-ctags-tags-file-caches
                          (gethash file company-ctags-tags-file-caches)))
@@ -363,7 +362,6 @@ If QUIET is t, don not output any message."
 
       ;; Read file content
       (setq reloaded t)
-      (unless quiet (message "Loading %s ..." file))
       (cond
        (use-diff
         ;; actually don't change raw-content attached to file-info
@@ -383,11 +381,13 @@ If QUIET is t, don not output any message."
                 (company-ctags-parse-tags diff-output
                                           (plist-get file-info :tagname-dict)))))
        (t
+        (unless company-ctags-quiet (message "Please be patient when loading %s" file))
         (setq raw-content (with-temp-buffer
                             (insert-file-contents file)
                             (buffer-string)))
         ;; collect all tag names
-        (setq tagname-dict (company-ctags-parse-tags raw-content))))
+        (setq tagname-dict (company-ctags-parse-tags raw-content))
+        (unless company-ctags-quiet (message "%s is loaded." file))))
 
       ;; initialize hash table if needed
       (unless company-ctags-tags-file-caches
@@ -403,8 +403,7 @@ If QUIET is t, don not output any message."
                      :static-p static-p
                      :timestamp (float-time (current-time))
                      :filesize (nth 7 (file-attributes file)))
-               company-ctags-tags-file-caches)
-      (unless quiet (message "%s is loaded." file)))
+               company-ctags-tags-file-caches))
     reloaded))
 
 (defun company-ctags--test-cached-candidates (prefix)
@@ -436,8 +435,7 @@ If QUIET is t, don not output any message."
           (when (company-ctags-load-tags-file f
                                               nil ; primary tags file, not static
                                               nil
-                                              nil ; only for debug
-                                              company-ctags-quiet)
+                                              nil)
             ;; invalidate cached candidates if any tags file is reloaded
             (setq company-ctags-cached-candidates nil))))
 
@@ -448,8 +446,7 @@ If QUIET is t, don not output any message."
             (company-ctags-load-tags-file f
                                           t ; static tags file, read only once
                                           nil
-                                          nil ; only for debug
-                                          company-ctags-quiet))))
+                                          nil))))
 
       (cond
        ;; re-use cached candidates
