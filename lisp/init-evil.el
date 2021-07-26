@@ -966,10 +966,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   :keymaps 'org-mode-map)
 
 (my-org-leader-def
-  "f" 'my-open-pdf-from-history
-  "n" 'my-open-pdf-next-page
-  "g" 'my-open-pdf-goto-page
-  "p" 'my-open-pdf-previous-page)
+  "f" 'my-navigate-in-pdf
+  "g" 'my-open-pdf-goto-page)
 ;; }}
 
 (provide 'init-evil)

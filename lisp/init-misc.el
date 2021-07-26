@@ -1128,19 +1128,33 @@ See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
            (when (string= (file-name-base pdf-file) (file-name-base pdf-file))
              (my-pdf-view-goto-page pdf-page))))))))
 
-(defun my-open-pdf-next-page (&optional n)
-  "Open pdf and go to next N page."
+(defun my-open-pdf-scroll-or-next-page (&optional n)
+  "Open pdf, scroll or go to next N page."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
      (pdf-view-scroll-up-or-next-page n))))
 
-(defun my-open-pdf-previous-page (&optional n)
-  "Open pdf and go to next N page."
+(defun my-open-pdf-scroll-or-previous-page (&optional n)
+  "Open pdf, scroll or go to previous N page."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
      (pdf-view-scroll-down-or-previous-page n))))
+
+(defun my-open-pdf-next-page (&optional n)
+  "Open pdf, go to next N page."
+  (interactive "p")
+  (my-focus-on-pdf-window-then-back
+   (lambda (pdf-file)
+     (pdf-view-next-page n))))
+
+(defun my-open-pdf-previous-page (&optional n)
+  "Open pdf, go to previous N page."
+  (interactive "p")
+  (my-focus-on-pdf-window-then-back
+   (lambda (pdf-file)
+     (pdf-view-previous-page n))))
 
 (defun my-open-pdf-goto-page (&optional n)
   "Open pdf and go to page N.
@@ -1153,6 +1167,18 @@ Org node property PDF_PAGE_OFFSET is used to calculate physical page number."
     (my-focus-on-pdf-window-then-back
      (lambda (pdf-file)
        (pdf-view-goto-page n)))))
+
+(defun my-navigate-in-pdf ()
+  "Navigate in PDF."
+  (interactive)
+  (my-setup-extra-keymap '(("k" my-open-pdf-scroll-or-previous-page)
+                           ("j" my-open-pdf-scroll-or-next-page)
+                           ("p" my-open-pdf-previous-page)
+                           ("n" my-open-pdf-next-page)
+                           ("g" (lambda () (interactive) (my-open-pdf-goto-page (read-number "Page number: " 1))))
+                           ("f" my-open-pdf-from-history))
+                         "PDF: [k]up [j]down [p]revious-page [n]ext-page [g]oto [f]rom-history [q]uit"
+                         nil))
 ;; }}
 
 (provide 'init-misc)
