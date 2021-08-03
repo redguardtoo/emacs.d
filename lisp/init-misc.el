@@ -1181,4 +1181,29 @@ Org node property PDF_PAGE_OFFSET is used to calculate physical page number."
                          nil))
 ;; }}
 
+;; {{ count words
+(setq wc-idle-wait most-positive-fixnum)
+;; minor mode sets up hotkey&modeline&timer
+;; I don't use any of them
+(unless (featurep 'init-modeline) (add-hook 'text-mode-hook 'wc-mode))
+
+(defvar my-lazy-before-save-timer nil "Timer for `before-save-hook'.")
+(defvar  my-lazy-before-save-update-interval 16
+  "The interval (seconds) routines happen in `before-save-hook'.")
+(defun lazy-before-save-hook-setup ()
+  "Do something when saving current buffer.
+It's also controlled by `my-lazy-before-save-timer'."
+  (when (or (not my-lazy-before-save-timer)
+            (> (- (float-time (current-time)) (float-time my-lazy-before-save-timer))
+               my-lazy-before-save-update-interval))
+    (setq my-lazy-before-save-timer (current-time))
+    ;; do something
+    (when (derived-mode-p 'text-mode)
+      (my-ensure 'wc-mode)
+      (setq wc-buffer-stats (wc-mode-update))
+      (when (featurep 'init-modeline)
+        (setq my-extra-mode-line-info wc-buffer-stats)))))
+(add-hook 'before-save-hook 'lazy-before-save-hook-setup)
+;; }}
+
 (provide 'init-misc)

@@ -392,6 +392,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'ace-pinyin)
 (require-package 'which-key)
 (require-package 'highlight-symbol)
+(require-package 'wc-mode)
 
 ;; speed up CI
 (unless my-disable-idle-timer
