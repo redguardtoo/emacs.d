@@ -49,7 +49,7 @@
 
     '(:eval my-extra-mode-line-info)
 
-    ;; "%-" ;; fill with '-'
+    " %-" ;; fill with '-'
     ))
 
 (with-eval-after-load 'time
