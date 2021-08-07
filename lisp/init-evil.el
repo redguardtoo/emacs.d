@@ -657,8 +657,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "sd" 'split-window-horizontally
   "oo" 'delete-other-windows
   ;; }}
-  "xr" 'my-rotate-windows
-  "xt" 'toggle-two-split-window
+  "xr" 'my-subwindow-setup
   "uu" 'my-transient-winner-undo
   "fs" 'ffip-save-ivy-last
   "fr" 'ivy-resume
