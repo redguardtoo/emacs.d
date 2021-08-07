@@ -113,7 +113,8 @@
                            ("d" evil-window-decrease-height)
                            ("b" balance-windows)
                            ("t" my-toggle-two-split-window)
+                           ("k" (lambda () (interactive) (kill-buffer (current-buffer))))
                            ("r" my-rotate-windows))
-                         "Window: [r]oate [t]oggle-split [i]ncrease [d]crease [b]alance [q]uit"
+                         "Window: [r]oate [t]oggle-split [i]ncrease [d]crease [b]alance [k]ill [q]uit"
                          nil))
 (provide 'init-windows)
