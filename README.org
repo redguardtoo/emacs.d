@@ -667,6 +667,8 @@ typing-extensions==3.7.4.3
 yapf==0.30.0
 #+end_example
 
+After above setup, you can run =M-x elpy-config= to double check elpy status.
+
 You might want to modify =include-system-site-packages= in =~/.emacs.d/elpy/rpc-venv/pyvenv.cfg=
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
 You could insert below code into =~/.custom.el=,
