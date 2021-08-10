@@ -65,17 +65,49 @@
     (git-gutter:set-start-revision parent)
     (message "git-gutter:set-start-revision HEAD^")))
 
-;; {{ speed up magit, @see https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
 (defvar my-prefer-lightweight-magit t)
+(defun my-hint-untracked-files ()
+  "If untracked files and committed files share same extension, warn users."
+
+  ;; don't scan whole home directory
+  (unless (string= (file-truename default-directory) (file-truename "~/"))
+    (let* ((exts (mapcar 'file-name-extension (my-lines-from-command-output "git diff-tree --no-commit-id --name-only -r HEAD")))
+           (untracked-files (my-lines-from-command-output "git --no-pager ls-files --others --exclude-standard"))
+           (lookup-ext (make-hash-table :test #'equal))
+           rlt)
+      ;; file extensions of files in HEAD commit
+      (dolist (ext exts)
+        (puthash ext t lookup-ext))
+      ;; If untracked file has same file extension as committed files
+      ;; maybe they should be staged too?
+      (dolist (file untracked-files)
+        (when (gethash (file-name-extension file) lookup-ext)
+          (push (file-name-nondirectory file) rlt)))
+      (when rlt
+        (message "Stage files? %s" (mapconcat 'identity rlt " "))))))
+
 (with-eval-after-load 'magit
+  ;; {{speed up magit, @see https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
   (when my-prefer-lightweight-magit
     (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
     (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
     (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
     (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
     (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent)))
-;; }}
+    (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent))
+  ;; }}
+
+  ;; "Continue listing the history of a file beyond renames (works only for a single file)."
+  ;; - quoted from "git help log"
+  (setq-default magit-buffer-log-args '("--follow"))
+
+  ;; extra check&report after commit
+  (defun my-git-check-status ()
+    "Check git repo status."
+    ;; use timer here to wait magit cool down
+    (my-run-with-idle-timer 1 #'my-hint-untracked-files))
+  (add-hook 'magit-post-commit-hook #'my-git-check-status)
+  (add-hook 'git-commit-post-finish-hook #'my-git-check-status))
 
 (defun git-gutter-toggle ()
   "Toggle git gutter."
@@ -368,65 +400,5 @@ If LEVEL > 0, find file in previous LEVEL commit."
          (file (completing-read prompt (my-lines-from-command-output cmd))))
     (when file
       (find-file file))))
-
-(defun my-git-log-trace-definition ()
-  "Similar to `magit-log-trace-definition' but UI is simpler.
-If multi-lines are selected, trace the definition of line range.
-If only one line is selected, use current selection as function name to look up.
-If nothing is selected, use the word under cursor as function name to look up."
-  (interactive)
-  (when buffer-file-name
-    (let* ((range-or-func (cond
-                           ((region-active-p)
-                            (cond
-                             ((my-is-in-one-line (region-beginning) (region-end))
-                              (format ":%s" (my-selected-str)))
-                             (t
-                              (format "%s,%s"
-                                      (line-number-at-pos (region-beginning))
-                                      (line-number-at-pos (1- (region-end)))))))
-                           (t
-                            (format ":%s" (thing-at-point 'symbol)))))
-           (cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name)))
-           (content (shell-command-to-string cmd)))
-      (when (string-match-p "no match" content)
-        ;; mark current function and try again
-        (mark-defun)
-        (setq range-or-func (format "%s,%s"
-                                    (line-number-at-pos (region-beginning))
-                                    (line-number-at-pos (1- (region-end)))))
-        (setq cmd (format "git log -L%s:%s" range-or-func (file-truename buffer-file-name))))
-
-      (my-ensure 'find-file-in-project)
-      (ffip-show-content-in-diff-mode (shell-command-to-string cmd)))))
-
-
-(defun my-hint-untracked-files ()
-  "If untracked files and committed files share same extension, warn users."
-
-  ;; don't scan whole home directory
-  (unless (string= (file-truename default-directory) (file-truename "~/"))
-    (let* ((exts (mapcar 'file-name-extension (my-lines-from-command-output "git diff-tree --no-commit-id --name-only -r HEAD")))
-           (untracked-files (my-lines-from-command-output "git --no-pager ls-files --others --exclude-standard"))
-           (lookup-ext (make-hash-table :test #'equal))
-           rlt)
-      ;; file extensions of files in HEAD commit
-      (dolist (ext exts)
-        (puthash ext t lookup-ext))
-      ;; If untracked file has same file extension as committed files
-      ;; maybe they should be staged too?
-      (dolist (file untracked-files)
-        (when (gethash (file-name-extension file) lookup-ext)
-          (push (file-name-nondirectory file) rlt)))
-      (when rlt
-        (message "Stage files? %s" (mapconcat 'identity rlt " "))))))
-
-(with-eval-after-load 'magit
-  (defun my-git-check-status ()
-    "Check git repo status."
-    ;; use timer here to wait magit cool down
-    (my-run-with-idle-timer 1 #'my-hint-untracked-files))
-  (add-hook 'magit-post-commit-hook #'my-git-check-status)
-  (add-hook 'git-commit-post-finish-hook #'my-git-check-status))
 
 (provide 'init-git)

@@ -607,7 +607,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "vv" 'my-evil-goto-definition ; frequently used
-  "gl" 'my-git-log-trace-definition ; find history of a function or range
   "sh" 'my-select-from-search-text-history
   "rjs" 'run-js
   "jsr" 'js-comint-send-region
