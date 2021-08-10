@@ -70,6 +70,7 @@
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
+  (evil-local-set-key 'normal "u" 'diff-undo)
   (evil-local-set-key 'normal "a" 'ffip-diff-apply-hunk)
   (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
