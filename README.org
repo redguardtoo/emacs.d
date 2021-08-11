@@ -2,12 +2,12 @@
 
 [[https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml][https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml/badge.svg]]
 
-- Fast. Only *one second* to start up
-- Robust. Never crash after package upgrade. Packages could be installed without network
-- Support Windows. You can find&grep files on Windows with minimum setup
+- Fast
+- Robust. Never crash after upgrading packages. Packages could be installed without network
+- Support Windows. Find&Grep files on Windows with minimum setup
 - Tested with Emacs 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
-Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
+- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
 
 [[file:demo.png]]
 
@@ -89,15 +89,15 @@ Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[ht
 - Emacs 26.1 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- If you use Windows Emacs, you have to download full version to avoid error message  =error: Package `async-' is unavailable= when install 3rd party package from remote repositories
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. You can modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages. Please choose stable packages if possible. Even advanced users often under-estimate the risk of unstable packages
+- Windows users had better download the version all the optional dependencies). For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
+- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation
-Most users should follow the section "Install in normal way".
-
 Please remove =~/.emacs= first. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
-You need the section "Install stable version" *if and only if*,
+Most users should follow the section "Install in normal way".
+
+Section "Install stable version" is useful *if and only if*,
 - You don't have network access
 - You have never used any command line program
 
@@ -112,7 +112,7 @@ By default, packages are installed automatically during Emacs startup.
 
 Someone reported that package repository [[http://melpa.org]] is not responsive in China.
 
-No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" when firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
+No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" after firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
 ** Install stable version (OPTIONAL)
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
 - Extract its content into empty directory =~/.emacs.d=
@@ -570,7 +570,7 @@ The default dictionary for pinyin might not be big enough. So you need install b
 
 Dictionaries with ".pyim" extension under the directory =~/.eim/= are automatically loaded.
 
-Please run =curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim= to install extra dictionaries.
+Please run =curl -L https://raw.githubusercontent.com/redguardtoo/pyim-tsinghua-dict/master/pyim-tsinghua-dict.pyim > ~/.eim/pyim-tsinghua-dict.pyim= to install extra dictionaries.
 
 The default pinyin scheme is =quanpin= but you can insert below code into =~/.custom.el= to switch to a different pinyin scheme,
 #+begin_src elisp
@@ -585,17 +585,15 @@ Dictionary for wubi is already installed. Please insert below code into =~/.cust
   (setq pyim-default-scheme 'wubi))
 #+end_src
 ** Install multiple versions of Emacs
-Run below commands in shell:
+Run below commands to install Emacs 26.3 into the directory "~/myemacs/26.3":
 #+begin_src bash
 mkdir -p ~/tmp;
-curl http://ftp.gnu.org/gnu/emacs/emacs-24.4.tar.gz | tar xvz -C ~/tmp/emacs-24.4
-cd ~/tmp/emacs-24.4;
-mkdir -p ~/myemacs/24.4;
-rm -rf ~/myemacs/24.4/*;
-./configure --prefix=~/myemacs/24.4 --without-x --without-dbus --without-sound && make && make install
+curl http://ftp.gnu.org/gnu/emacs/emacs-26.3.tar.gz | tar xvz -C ~/tmp/emacs-26.3
+cd ~/tmp/emacs-26.3;
+mkdir -p ~/myemacs/26.3;
+rm -rf ~/myemacs/26.3/*;
+./configure --prefix=~/myemacs/26.3 --without-x --without-dbus --without-sound && make && make install
 #+end_src
-
-Feel free to replace 24.4 with other version number.
 ** Change Time Locale
 Insert below code into =~/.emacs= or =~/.custom.el=,
 #+begin_src elisp
@@ -608,7 +606,7 @@ Insert below code into =~/.emacs= or =~/.custom.el=,
 
 =lisp/init-elpa.el= defines what packages will be installed from [[http://melpa.org][MELPA]].
 
-Packages are installed into =elpa/=.
+Packages are installed into the directory =elpa/=.
 
 I also manually download and extract some packages into =site-lisp/=. Packages in =site-lisp/= are *not visible* to the package manager.
 
@@ -704,7 +702,7 @@ You could insert below code into =~/.custom.el=,
   (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 #+end_src
 
-Then run `M-x lsp` to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
+Then run =M-x lsp= to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
 ** Enable typewriter sounds when typing
 Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 ** pdf-tools
