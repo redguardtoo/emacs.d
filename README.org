@@ -585,7 +585,7 @@ Dictionary for wubi is already installed. Please insert below code into =~/.cust
   (setq pyim-default-scheme 'wubi))
 #+end_src
 ** Install multiple versions of Emacs
-Run below commands to install Emacs 26.3 into the directory "~/myemacs/26.3":
+Run below commands to install Emacs 26.3 into the directory =~/myemacs/26.3=:
 #+begin_src bash
 mkdir -p ~/tmp;
 curl http://ftp.gnu.org/gnu/emacs/emacs-26.3.tar.gz | tar xvz -C ~/tmp/emacs-26.3
