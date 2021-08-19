@@ -115,7 +115,7 @@ INDENT-SIZE decide the indentation level.
       (setq indent-size
             (cond
              ((memq major-mode '(js-mode javascript-mode))
-              js-indent-size)
+              js-indent-level)
 
              ((memq major-mode '(web-mode))
               web-mode-code-indent-offset)
