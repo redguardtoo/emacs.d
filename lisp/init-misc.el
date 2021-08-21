@@ -1206,4 +1206,18 @@ It's also controlled by `my-lazy-before-save-timer'."
 (add-hook 'before-save-hook 'lazy-before-save-hook-setup)
 ;; }}
 
+(defvar my-gdb-history-file "~/.gdb_history")
+(defun gud-gdb-mode-hook-setup ()
+  "GDB setup."
+
+  ;; Content of my "~/.gdbinit":
+  ;;   set history save on
+  ;;   set history filename ~/.gdb_history
+  ;;   set history remove-duplicates 2048
+  (when (and (ring-empty-p comint-input-ring)
+             (file-exists-p my-gdb-history-file))
+    (setq comint-input-ring-file-name my-gdb-history-file)
+    (comint-read-input-ring t)))
+(add-hook 'gud-gdb-mode-hook 'gud-gdb-mode-hook-setup)
+
 (provide 'init-misc)
