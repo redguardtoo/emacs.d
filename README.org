@@ -42,7 +42,7 @@
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
-  - [[#set-auto-mode-alist][Set =auto-mode-alist=]]
+  - [[#set-auto-mode-alist][Set "auto-mode-alist"]]
   - [[#git-gutter][git-gutter]]
   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
@@ -422,7 +422,7 @@ You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
 You can input =:pinyin1 pinyin2 !pinyin3 pinyin4= in ivy UI to search by Chinese Pinyin. The key point is to make sure the first character of input is ":".
-** Set =auto-mode-alist=
+** Set "auto-mode-alist"
 The =auto-mode-alist= associates major modes with files.
 
 For example, associate =rjsx-mode= file with extension "*.jsx",
