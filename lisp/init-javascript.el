@@ -121,7 +121,7 @@ INDENT-SIZE decide the indentation level.
               web-mode-code-indent-offset)
 
              ((memq major-mode '(typescript-mode))
-              typescript-indent-size)
+              typescript-indent-level)
 
              (t
               2))))
