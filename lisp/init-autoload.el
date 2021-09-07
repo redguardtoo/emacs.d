@@ -100,6 +100,8 @@
 (autoload 'dropdown-list "dropdown-list" "")
 (autoload 'magit-commit-popup "magit" "")
 (autoload 'global-git-gutter-mode "git-gutter" "" t)
+(autoload 'diff-lisp-mark-selected-text-as-a "diff-lisp" "" t)
+(autoload 'diff-lisp-compare-with-b "diff-lisp" "" t)
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

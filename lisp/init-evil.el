@@ -633,8 +633,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "qq" 'my-multi-purpose-grep
   "dd" 'counsel-etags-grep-current-directory
   "rr" 'my-counsel-recentf
-  "da" 'diff-region-tag-selected-as-a
-  "db" 'diff-region-compare-with-b
+  "da" 'diff-lisp-mark-selected-text-as-a
+  "db" 'diff-lisp-diff-a-and-b
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'my-beautfiy-code
