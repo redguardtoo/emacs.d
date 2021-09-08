@@ -87,7 +87,8 @@
   (w3m-customized-search-api "f" t))
 
 (defun w3m-mode-hook-setup ()
-  (w3m-lnum-mode 1))
+  (w3m-lnum-mode 1)
+  (local-set-key (kbd ";") 'w3m-lnum-follow))
 
 (add-hook 'w3m-mode-hook 'w3m-mode-hook-setup)
 

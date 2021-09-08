@@ -32,6 +32,7 @@
 (autoload 'ivy-recentf "ivy" "" t)
 (autoload 'ivy-read "ivy")
 (autoload 'rainbow-mode "rainbow-mode" nil t)
+(autoload 'ffip-diff-mode "find-file-in-project" nil t)
 (autoload 'workgroups-mode "workgroups2" nil t)
 (autoload 'wg-create-workgroup "workgroups2" nil t)
 (autoload 'wg-open-workgroup "workgroups2" nil t)
@@ -100,6 +101,8 @@
 (autoload 'dropdown-list "dropdown-list" "")
 (autoload 'magit-commit-popup "magit" "")
 (autoload 'global-git-gutter-mode "git-gutter" "" t)
+(autoload 'diff-lisp-mark-selected-text-as-a "diff-lisp" "" t)
+(autoload 'diff-lisp-compare-with-b "diff-lisp" "" t)
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here

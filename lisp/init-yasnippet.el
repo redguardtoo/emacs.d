@@ -5,7 +5,9 @@
 
 (defun my-enable-yas-minor-mode ()
   "Enable `yas-minor-mode'."
-  (unless (is-buffer-file-temp) (yas-minor-mode 1)))
+  (when (or (not (is-buffer-file-temp))
+            (derived-mode-p 'prog-mode))
+    (yas-minor-mode 1)))
 
 (add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
 (add-hook 'text-mode-hook 'my-enable-yas-minor-mode)

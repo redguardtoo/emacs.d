@@ -19,10 +19,11 @@
 (global-set-key (kbd "C-x 3") 'split-window-horizontally)
 
 (defun scroll-other-window-up ()
+  "Scroll window up."
   (interactive)
   (scroll-other-window '-))
 
-(defun toggle-two-split-window ()
+(defun my-toggle-two-split-window ()
   "Toggle two window layout vertically or horizontally."
   (interactive)
   (when (= (count-windows) 2)
@@ -105,4 +106,15 @@
       (delete-other-windows)
     (winner-undo)))
 
+(defun my-subwindow-setup ()
+  "Setup subwindow"
+  (interactive)
+  (my-setup-extra-keymap '(("i" evil-window-increase-height)
+                           ("d" evil-window-decrease-height)
+                           ("b" balance-windows)
+                           ("t" my-toggle-two-split-window)
+                           ("k" (lambda () (interactive) (kill-buffer (current-buffer))))
+                           ("r" my-rotate-windows))
+                         "Window: [r]oate [t]oggle-split [i]ncrease [d]crease [b]alance [k]ill [q]uit"
+                         nil))
 (provide 'init-windows)

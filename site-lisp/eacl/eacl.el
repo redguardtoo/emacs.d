@@ -1,8 +1,8 @@
 ;;; eacl.el --- Auto-complete lines by grepping project
 
-;; Copyright (C) 2017-2020 Chen Bin
+;; Copyright (C) 2017-2021 Chen Bin
 ;;
-;; Version: 2.0.4
+;; Version: 2.1.0
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
@@ -35,9 +35,10 @@
 ;;
 ;; List of commands,
 ;;
-;; `eacl-complete-line' complete single line.
-;; Line candidates are extracted in project root or N level of parent directory.
-;; N is the optional parameter of `eacl-complete-line'.
+;; `eacl-complete-line' completes single line.
+;; Line candidates are extracted in project root.
+;; "C-u M-x eacl-complete-line" completes single line from deleted code
+;; if current project is tracked by Git.
 ;;
 ;; `eacl-complete-multiline' completes multiline code or html tag.
 ;;
@@ -76,8 +77,9 @@
 ;; "git grep" is automatically used for grepping in git repository.
 ;; Please note "git grep" does NOT use `grep-find-ignored-directories' OR
 ;; `grep-find-ignored-files'.
+;; To use "git grep", Git should be added into environment variable "PATH".
 ;;
-;; Set `eacl-git-grep-untracked' if untracked files should be git grepped.
+;; Set `eacl-git-grep-untracked' if untracked files should be git grepped too.
 ;;
 
 ;;; Code:
@@ -114,6 +116,11 @@ The callback is expected to return the path of project root."
   :type 'function
   :group 'eacl)
 
+(defcustom eacl-use-git-grep-p nil
+  "Use git grep even current file is not tracked by Git."
+  :type 'boolean
+  :group 'eacl)
+
 (defvar eacl-keyword-start nil
   "The start position of multiline keyword.  Internal variable.")
 
@@ -123,6 +130,10 @@ The callback is expected to return the path of project root."
 (defalias 'eacl-complete-statement 'eacl-complete-multiline)
 (defalias 'eacl-complete-snippet 'eacl-complete-multiline)
 (defalias 'eacl-complete-tag 'eacl-complete-multiline)
+
+;; {{ make linter happy
+(defvar evil-state)
+;; }}
 
 (defun eacl-relative-path ()
   "Relative path of current file."
@@ -135,8 +146,8 @@ The callback is expected to return the path of project root."
   (or eacl-project-root
       ;; use projectile to find project root
       (and (fboundp 'projectile-find-file)
-           (if (featurep 'projectile) t (require 'projectile))
-           (projectile-project-root))
+           (unless (featurep 'projectile) (require 'projectile))
+           (funcall 'projectile-project-root))
       ;; use find-file-in-project to find project root
       (and (fboundp 'ffip-project-root) (ffip-project-root))
       ;; find project root manually
@@ -246,14 +257,22 @@ Original text from END is preserved."
         (setq key (concat "..." (substring key from to))))))
     (cons key s)))
 
-(defun eacl-get-candidates (cmd sep keyword)
+(defun eacl-get-candidates (cmd sep keyword &optional deleted-p)
   "Create candidates by running CMD.
 Use SEP to split output into lines.
-Candidates same as KEYWORD in current file is excluded."
-  (if eacl-debug (message "cmd=%s" cmd))
+Candidates same as KEYWORD in current file is excluded.
+If DELETED-P is t and git grep is used, grep only from deleted code."
+  (when eacl-debug
+    (message "eacl-get-candidates called. cmd=%s deleted-p" cmd deleted-p))
+
   (let* ((cands (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+"))
          (str (format "%s:1:%s" (eacl-relative-path) keyword))
          rlt)
+
+    ;; the candidate match pattern "^-" if delete-p is t
+    (when deleted-p
+      (setq cands (mapcar (lambda (cand) (replace-regexp-in-string "^-" "" cand)) cands)))
+
     (setq rlt (cl-remove-if `(lambda (e) (string= ,str e)) cands))
     (when eacl-debug (message "cands=%s" cands))
     cands))
@@ -262,73 +281,67 @@ Candidates same as KEYWORD in current file is excluded."
   "Remove duplicated lines from CANDS."
   (delq nil (delete-dups cands)))
 
-(defun eacl-git-p (path)
-  "Return non-nil if PATH is in a git repository."
-  (zerop (call-process "git" nil nil nil "ls-files" "--error-unmatch" path)))
+(defun eacl-git-p ()
+  "Return non-nil if current file is in a git repository."
+  (let ((path (buffer-file-name)))
+    (or eacl-use-git-grep-p
+        (and path
+             (zerop (call-process "git" nil nil nil "ls-files" "--error-unmatch" path))))))
 
-(defun eacl-search-command (search-regex multiline-p)
+(defun eacl-search-command (search-regex multiline-p &optional deleted-p)
   "Return a shell command searching for SEARCH-REGEX.
-If MULTILINE-P is t, command is for multiline matching."
-  (let* ((git-p (and (buffer-file-name)
-                     (eacl-git-p (buffer-file-name))))
+If MULTILINE-P is t, command is for multiline matching.
+If DELETED-P is t and git grep is used, grep only from deleted code."
+  (let* ((git-p (eacl-git-p))
          (git-grep-opts (concat "-I --no-color"
                                 (if eacl-git-grep-untracked " --untracked"))))
     ;; (setq git-p nil) ; debug
     (cond
+
+     ;; auto-complete multiple lines
      (multiline-p
       (cond
+       ;; use git grep
        (git-p
-        (format "git grep -n %s \"%s\"" git-grep-opts search-regex))
+        (format "git --no-pager grep -n %s \"%s\"" git-grep-opts search-regex))
+
+       ;; use grep
        (t
         (format "%s -rsnI %s -- \"%s\" ."
                 eacl-grep-program
                 (eacl-grep-exclude-opts)
                 search-regex))))
 
-     ;; git-grep does not support multiline searches.
-     ((and (buffer-file-name) (eacl-git-p (buffer-file-name)))
-      (format "git grep -h %s \"%s\"" git-grep-opts search-regex))
-
+     ;; auto-complete single line
      (t
       (cond
+       ;; use git grep
        (git-p
-        (format "git grep -h %s \"%s\"" git-grep-opts search-regex))
+        (if deleted-p (format "git --no-pager log -p --all -G \"%s\" | %s \"^-.*%s\"" search-regex eacl-grep-program search-regex)
+            (format "git --no-pager grep -h %s \"%s\"" git-grep-opts search-regex)))
+
+       ;; use grep
        (t
         (format "%s -rshI %s -- \"%s\" ."
                 eacl-grep-program
                 (eacl-grep-exclude-opts)
                 search-regex)))))))
 
-
-(defun eacl-parent-directory (n directory)
-  "Return N - 1 level parent directory of DIRECTORY."
-  (let* ((rlt directory))
-    (while (and (> n 1) (not (string= "" rlt)))
-      (setq rlt (file-name-directory (directory-file-name rlt)))
-      (setq n (1- n)))
-    (if (string= "" rlt) (setq rlt nil))
-    rlt))
-
-(defun eacl-complete-line-directory (&optional n)
+(defun eacl-root-directory ()
   "Get directory to grep text with N."
-  (cond
-   ((and n (> n 0))
-    (eacl-parent-directory n default-directory))
-
-   (t
-    (or (funcall eacl-project-root-callback)
-        default-directory))))
+  (or (funcall eacl-project-root-callback) default-directory))
 
 (defun eacl-hint (time)
   "Hint for candidates since TIME."
   (format "candidates (%.01f seconds): "
           (float-time (time-since time))))
 
-(defun eacl-complete-line-internal (keyword extra &optional n)
-  "Grep with KEYWORD, EXTRA information and N level parent directory."
-  (let* ((default-directory (eacl-complete-line-directory n))
-         (cmd (eacl-search-command (eacl-shell-quote-argument keyword) nil))
-         (orig-collection (eacl-get-candidates cmd "[\r\n]+" keyword))
+(defun eacl-complete-line-internal (keyword extra &optional deleted-p)
+  "Complete line(s) by grepping with KEYWORD, EXTRA information.
+If DELETED-P is t and git grep is used, grep only from deleted code."
+  (let* ((default-directory (eacl-root-directory))
+         (cmd (eacl-search-command (eacl-shell-quote-argument keyword) nil deleted-p))
+         (orig-collection (eacl-get-candidates cmd "[\r\n]+" keyword deleted-p))
          (line (eacl-trim-string (cdr extra)))
          (collection (delq nil (mapcar `(lambda (s) (unless (string= s ,line) s))
                                        (eacl-clean-candidates orig-collection))))
@@ -336,7 +349,8 @@ If MULTILINE-P is t, command is for multiline matching."
          (line-end (line-end-position))
          (time (current-time)))
 
-    (if eacl-debug (message "cmd=%s" cmd))
+    (when eacl-debug
+      (message "eacl-complete-line-internal called. cmd=%s" cmd))
 
     (cond
      ((or (not collection) (= 0 (length collection)))
@@ -373,11 +387,12 @@ If MULTILINE-P is t, command is for multiline matching."
       (goto-char (line-end-position)))))
 
 ;;;###autoload
-(defun eacl-complete-line (&optional n)
-  "Complete line by grepping in root or N level parent directory.
+(defun eacl-complete-line (&optional deleted-p)
+  "Complete line by grepping in root.
 The selected region will replace current line first.
 The text from line beginning to current point is used as grep keyword.
-Whitespace in the keyword could match any characters."
+Whitespace in the keyword could match any characters.
+If DELETED-P is t and current file is tracked by Git, complete from deleted code."
   (eacl-ensure-no-region-selected)
   (interactive "P")
   (let* ((cur-line-info (eacl-current-line-info))
@@ -385,11 +400,7 @@ Whitespace in the keyword could match any characters."
          (eacl-keyword-start (eacl-line-beginning-position))
          (keyword (eacl-get-keyword cur-line)))
 
-    ;; Run "C-u eacl-complete-line"
-    (when (and n (not (numberp n)))
-      (setq n 1))
-
-    (eacl-complete-line-internal keyword cur-line-info n)
+    (eacl-complete-line-internal keyword cur-line-info deleted-p)
     (setq eacl-keyword-start nil)))
 
 (defmacro eacl-find-multiline-end (indentation)
@@ -406,7 +417,8 @@ Whitespace in the keyword could match any characters."
   "Extract matched lines start from LINE at LINENUM in FILE.
 If HTML-P is not t, current `major-mode' support html tags.
 Return (cons multiline-text end-line-text) or nil."
-  (if eacl-debug (message "eacl-extract-matched-multiline called => %s %s %s %s" line linenum file html-p))
+  (when eacl-debug
+    (message "eacl-extract-matched-multiline called => %s %s %s %s" line linenum file html-p))
   (let* ((beg (line-beginning-position))
          end
          rlt)
@@ -437,7 +449,10 @@ Return (cons multiline-text end-line-text) or nil."
                 ;; candidate found!
                 (setq rlt (buffer-substring-no-properties beg end))
                 (setq continue nil))))))))
-    (if eacl-debug (message "rlt=%s" rlt))
+
+    (when eacl-debug
+      (message "eacl-extract-matched-multiline rlt=%s" rlt))
+
     rlt))
 
 ;;;###autoload
@@ -452,7 +467,7 @@ Whitespace in keyword could match any characters."
          (orig-file (and buffer-file-name (file-truename buffer-file-name)))
          (eacl-keyword-start (eacl-line-beginning-position))
          (keyword (eacl-get-keyword (car (eacl-current-line-info))))
-         (default-directory (or (funcall eacl-project-root-callback) default-directory))
+         (default-directory (eacl-root-directory))
          (cmd (eacl-search-command (eacl-shell-quote-argument keyword) t))
          (time (current-time))
          (orig-collection (eacl-get-candidates cmd "[\r\n]+" keyword))

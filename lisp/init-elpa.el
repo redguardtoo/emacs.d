@@ -140,9 +140,6 @@
     regex-tool
     legalese
     htmlize
-    pyim-basedict
-    pyim-wbdict
-    pyim
     scratch
     session
     inflections
@@ -342,7 +339,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'hydra)
 (require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'web-mode)
-(require-package 'emms)
 (require-package 'iedit)
 (require-package 'websocket) ; for debug debugging of browsers
 (require-package 'undo-tree)
@@ -404,8 +400,10 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'which-key)
 (require-package 'highlight-symbol)
 (require-package 'org-superstar)
+
 ;; org-roam requires new version of org-mode bundled with Emacs 27
 (when *emacs27* (require-package 'org-roam))
+(require-package 'wc-mode)
 
 ;; speed up CI
 (unless my-disable-idle-timer
@@ -517,6 +515,10 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
      zerodark-theme
      )))
 
+;; }}
+
+;; {{ trivial packages which has extra dependency
+(require-package 'emms)
 ;; }}
 
 ;; kill buffer without my confirmation
