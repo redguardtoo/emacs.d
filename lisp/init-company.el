@@ -112,11 +112,6 @@ In that case, insert the number."
       (apply orig-func args))))
   (advice-add 'company-ispell-available :around #'my-company-ispell-available-hack))
 
-(defun my-add-ispell-to-company-backends ()
-  "Add ispell to the last of `company-backends'."
-  (setq company-backends
-        (add-to-list 'company-backends 'company-ispell)))
-
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
   "Toggle company-ispell."
@@ -126,14 +121,14 @@ In that case, insert the number."
     (setq company-backends (delete 'company-ispell company-backends))
     (message "company-ispell disabled"))
    (t
-    (my-add-ispell-to-company-backends)
+    (push 'company-ispell company-backends)
     (message "company-ispell enabled!"))))
 
 (defun company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
-    (my-add-ispell-to-company-backends)
+    (push 'company-ispell company-backends)
     ;; @see https://github.com/redguardtoo/emacs.d/issues/473
     (cond
      ((and (boundp 'ispell-alternate-dictionary)

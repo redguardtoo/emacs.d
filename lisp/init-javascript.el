@@ -115,17 +115,16 @@ INDENT-SIZE decide the indentation level.
       (setq indent-size
             (cond
              ((memq major-mode '(js-mode javascript-mode))
-              js-indent-size)
+              js-indent-level)
 
              ((memq major-mode '(web-mode))
               web-mode-code-indent-offset)
 
              ((memq major-mode '(typescript-mode))
-              typescript-indent-size)
+              typescript-indent-level)
 
              (t
               2))))
-    (message "executable=%s indent-size=%s" executable indent-size)
     ;; do it!
     (run-cmd-and-replace-region (concat executable
                                         " --stdin "

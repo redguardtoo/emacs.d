@@ -31,6 +31,7 @@ cookies
 \#*
 /elpa
 eshell/
+eln-cache/
 semanticdb/
 *.swp
 *~

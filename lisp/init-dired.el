@@ -84,6 +84,10 @@ If no files marked, always operate on current line in dired-mode."
   "Recent directories accessed by dired.")
 
 (with-eval-after-load 'dired
+  ;; re-use dired buffer, available in Emacs 28
+  ;; @see https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20598
+  (setq dired-kill-when-opening-new-dired-buffer t)
+
   ;; search file name only when focus is over file
   (setq dired-isearch-filenames 'dwim)
 
@@ -159,7 +163,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     "Detect subtitles for mplayer."
     (let* ((rlt (apply orig-func args)))
       (when (and (stringp rlt)
-                 (string-match-p "^mplayer -quiet" rlt))
+                 (string-match-p "^mplayer .*-quiet" rlt))
         ;; append subtitle to mplayer cli
         (setq rlt
               (format "%s %s"

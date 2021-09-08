@@ -14,9 +14,21 @@
           ;; list all the subscribed groups even they contain zero un-read messages
           (lambda () (local-set-key "o" 'my-gnus-group-list-subscribed-groups )))
 
-(setq message-send-mail-function 'smtpmail-send-it
-      smtpmail-default-smtp-server "smtp.gmail.com"
-      smtpmail-smtp-service 587)
+(defun my-use-gmail-smtp-server ()
+  "Use Gmail SMTP server"
+  (interactive)
+  (setq smtpmail-default-smtp-server "smtp.gmail.com")
+  (setq smtpmail-smtp-service 587))
+
+(defun my-use-hotmail-smtp-server ()
+  "Use hotmail SMTP server"
+  (interactive)
+  (setq smtpmail-default-smtp-server "smtp.office365.com")
+  (setq smtpmail-smtp-service 587))
+
+(setq message-send-mail-function 'smtpmail-send-it)
+;; feel free to override this smtp set up in "~/.custom.el" or "~/.gnus.el"
+(my-use-gmail-smtp-server)
 
 ;; @see http://www.fnal.gov/docs/products/emacs/emacs/gnus_3.html#SEC60
 ;; QUOTED: If you are using an unthreaded display for some strange reason ...

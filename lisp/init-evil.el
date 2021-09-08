@@ -76,6 +76,7 @@
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
+  (evil-local-set-key 'normal "u" 'diff-undo)
   (evil-local-set-key 'normal "a" 'ffip-diff-apply-hunk)
   (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
@@ -333,7 +334,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
 (evil-define-motion my-evil-goto-definition ()
-  "Go to definition or first occurrence of symbol under point in current buffer."
+  "Go to local definition or first occurrence of symbol under point in current buffer."
   :jump t
   :type exclusive
   (let* ((string (evil-find-symbol t))
@@ -345,6 +346,10 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (if (null string)
         (user-error "No symbol under cursor")
       (setq isearch-forward t)
+
+      (my-ensure 'counsel-etags)
+      (counsel-etags-push-marker-stack)
+
       ;; if imenu is available, try it
       (cond
        ((and (derived-mode-p 'js2-mode)
@@ -365,6 +370,9 @@ If the character before and after CH is space or tab, CH is NOT slash"
        ;; otherwise just go to first occurrence in buffer
        (t
         (my-search-defun-from-pos search (point-min)))))))
+
+;; Use below line to restore old vim "gd"
+;; (define-key evil-normal-state-map "gd" 'my-evil-goto-definition)
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
@@ -605,8 +613,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "gf" 'counsel-git ; find file
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
-  "gt" 'my-evil-goto-definition ; "gt" is occupied by evil
-  "gl" 'my-git-log-trace-definition ; find history of a function or range
+  "vv" 'my-evil-goto-definition ; frequently used
   "sh" 'my-select-from-search-text-history
   "rjs" 'run-js
   "jsr" 'js-comint-send-region
@@ -632,8 +639,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "qq" 'my-multi-purpose-grep
   "dd" 'counsel-etags-grep-current-directory
   "rr" 'my-counsel-recentf
-  "da" 'diff-region-tag-selected-as-a
-  "db" 'diff-region-compare-with-b
+  "da" 'diff-lisp-mark-selected-text-as-a
+  "db" 'diff-lisp-diff-a-and-b
   "di" 'evilmi-delete-items
   "si" 'evilmi-select-items
   "jb" 'my-beautfiy-code
@@ -656,8 +663,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "sd" 'split-window-horizontally
   "oo" 'delete-other-windows
   ;; }}
-  "xr" 'my-rotate-windows
-  "xt" 'toggle-two-split-window
+  "xr" 'my-subwindow-setup
   "uu" 'my-transient-winner-undo
   "fs" 'ffip-save-ivy-last
   "fr" 'ivy-resume
@@ -713,7 +719,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "va" 'git-add-current-file
   "vk" 'git-checkout-current-file
   "vg" 'vc-annotate ; 'C-x v g' in original
-  "vv" 'vc-msg-show
+  "vm" 'vc-msg-show
   "v=" 'git-gutter:popup-hunk
   "hh" 'cliphist-paste-item
   "yu" 'cliphist-select-item
@@ -962,7 +968,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command
   (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
-  (setq expand-region-contract-fast-key "char")
+  (setq expand-region-contract-fast-key "z")
   ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
   ;; evil 1.0.8 search word instead of symbol
   (setq evil-symbol-word-search t)
@@ -1009,10 +1015,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   :keymaps 'org-mode-map)
 
 (my-org-leader-def
-  "f" 'my-open-pdf-from-history
-  "n" 'my-open-pdf-next-page
-  "g" 'my-open-pdf-goto-page
-  "p" 'my-open-pdf-previous-page)
+  "f" 'my-navigate-in-pdf
+  "g" 'my-open-pdf-goto-page)
 ;; }}
 
 (provide 'init-evil)
