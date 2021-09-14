@@ -21,6 +21,10 @@
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
 (setq *emacs27* (>= emacs-major-version 27))
 
+(setq inhibit-startup-message t
+      ;; speed startup, learned from doom emacs
+      initial-major-mode 'fundamental-mode)
+
 ;; don't GC during startup to save time
 (setq gc-cons-percentage 0.6)
 (setq gc-cons-threshold most-positive-fixnum)
