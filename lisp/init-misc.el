@@ -115,7 +115,7 @@
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
-(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "s-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
 ;; hide the compilation buffer automatically is not a good idea.
@@ -416,7 +416,9 @@ FN checks these characters belong to normal word characters."
 
 (defun my-minibuffer-setup-hook ()
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
-  (local-set-key (kbd "C-k") 'kill-line)
+  (local-set-key (kbd "C-l") 'kill-line)
+  (local-set-key (kbd "C-j") 'next-line)
+  (local-set-key (kbd "C-k") 'previous-line)
   (subword-mode 1) ; enable subword movement in minibuffer
   (setq gc-cons-threshold most-positive-fixnum))
 
