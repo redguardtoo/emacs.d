@@ -33,7 +33,7 @@
 ;;(add-hook 'window-setup-hook #'toggle-frame-maximized)
 
 ;;set font
-(set-frame-font "-Mono-Courier New-normal-normal-normal-*-18-*-*-*-m-0-iso10646-1")
+(set-frame-font "-Mono-Courier New-bold-normal-normal-*-16-*-*-*-m-0-iso10646-1")
 ;; (set-frame-font "Courier New 15")
 
 ;;(add-hook 'window-setup-hook #'toggle-frame-fullscreen)

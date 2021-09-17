@@ -242,6 +242,7 @@ skip user's own code in `org-mode-hook'."
   (require 'org-superstar)
   ;; Hide away leading stars on terminal.
   (setq org-superstar-leading-fallback ?\s)
+  (setq org-superstar-leading-bullet "  ")
   (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 
   ;; (with-eval-after-load 'org-superstar
@@ -277,6 +278,7 @@ skip user's own code in `org-mode-hook'."
         org-agenda-window-setup 'current-window
         org-fast-tag-selection-single-key 'expert
         org-export-kill-product-buffer-when-displayed t
+        org-startup-folded t
         ;; org-startup-indented t
         ;; {{ org 8.2.6 has some performance issue. Here is the workaround.
         ;; @see http://punchagan.muse-amuse.in/posts/how-i-learnt-to-use-emacs-profiler.html
