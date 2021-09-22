@@ -69,6 +69,7 @@
 ;;  (define-key ivy-minibuffer-map (kbd "C-w") 'ivy-backward-kill-word)
 ;; (define-key ivy-minibuffer-map (kbd "C-k") 'ivy-previous-line))
 
+(setq ring-bell-function 'ignore)
 
 ;; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
 (global-hl-todo-mode)
