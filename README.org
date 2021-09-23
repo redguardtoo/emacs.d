@@ -537,6 +537,14 @@ By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(
 It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
 You could visit [[https://github.com/emacs-evil/evil/][its website]] to download its free ebook there.
+
+You can set =my-initial-evil-state-setup= to customize the initial evil state per major mode,
+#+begin_src elisp
+;; `diff-mode' uses Emacs original key bindings
+(push '(diff-mode . emacs) my-initial-evil-state-setup)
+;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
+(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-setup)
+#+end_src
 ** C++ auto-completion doesn't work?
 I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
 
