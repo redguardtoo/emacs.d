@@ -1220,4 +1220,10 @@ It's also controlled by `my-lazy-before-save-timer'."
     (comint-read-input-ring t)))
 (add-hook 'gud-gdb-mode-hook 'gud-gdb-mode-hook-setup)
 
+(defun my-emms-play-current-directory ()
+  "Play all media files of current directory."
+  (interactive)
+  (my-ensure 'emms)
+  (emms-play-directory default-directory))
+
 (provide 'init-misc)
