@@ -956,6 +956,10 @@ CURRENT-FILE is used to compare with candidate path."
                       (counsel-etags-levenshtein-distance b ,ref ,h))))))))))
 
 
+(defun counsel-etags-cache-invalidate (tags-file)
+  "Invalidate the cache of TAGS-FILE."
+  (plist-put counsel-etags-cache (intern tags-file) nil))
+
 (defun counsel-etags-cache-content (tags-file)
   "Read cache using TAGS-FILE as key."
   (let* ((info (plist-get counsel-etags-cache (intern tags-file))))
@@ -1745,6 +1749,10 @@ If FORCED-TAGS-FILE is nil, the updating process might now happen."
   (let* ((tags-file (or forced-tags-file
                         (counsel-etags-locate-tags-file))))
     (when tags-file
+      ;; @see https://github.com/redguardtoo/counsel-etags/issues/82
+      ;; If code file is moved and TAGS is updated, invalidate the cache.
+      (counsel-etags-cache-invalidate tags-file)
+      ;; scan the code now
       (counsel-etags-scan-dir (file-name-directory (expand-file-name tags-file)))
       (unless counsel-etags-quiet-when-updating-tags
         (message "%s is updated!" tags-file)))))
