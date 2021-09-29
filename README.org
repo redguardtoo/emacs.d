@@ -144,10 +144,10 @@ These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
 **** fortune-zh or fortune
-- Show ancient Chinese poem or quotes from random sources
+Show ancient Chinese poem or quotes from random sources. Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS.
 
-Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
-- install fortune
+But there is a simple workaround:
+- Install fortune
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
