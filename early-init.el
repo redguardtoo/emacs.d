@@ -9,6 +9,4 @@
 ;; 10% speed up of startup for my configuration
 (setq gc-cons-threshold most-positive-fixnum)
 
-(setq inhibit-startup-message t
-      ;; speed startup, learned from doom emacs
-      initial-major-mode 'fundamental-mode)
+(setq inhibit-startup-message t)
