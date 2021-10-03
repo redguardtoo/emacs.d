@@ -11,7 +11,7 @@
        (replace-regexp-in-string
         "\n" "\n;; " ; comment each line
         (replace-regexp-in-string
-         "\\(\n$\\|\\|\\[m *\\|\\[[0-9][0-9]m *\\)" ""    ; remove trailing line break
+         "\\(\n$\\|\\|\\[m *\\|\\[[0-9][0-9];?[0-9]?m *\\|\\[;m\\)" ""    ; remove trailing line break
          (shell-command-to-string fortune-prog)))))
      (t
       (concat ";; Happy hacking "
