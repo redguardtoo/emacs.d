@@ -6,7 +6,7 @@
 ;; URL: http://github.com/redguardtoo/counsel-etags
 ;; Package-Requires: ((emacs "25.1") (counsel "0.13.4"))
 ;; Keywords: tools, convenience
-;; Version: 1.9.17
+;; Version: 1.10.0
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -462,6 +462,18 @@ The parameter of hook is full path of the tags file."
   :group 'counsel-etags
   :type 'hook)
 
+(defcustom counsel-etags-org-property-name-for-grepping
+  "GREP_PROJECT_ROOT"
+  "Org node property name for get grepping project root."
+  :group 'counsel-etags
+  :type 'string)
+
+(defcustom counsel-etags-org-extract-project-root-from-node-p
+  t
+  "Extract project root directory from org node."
+  :group 'counsel-etags
+  :type 'boolean)
+
 (defcustom counsel-etags-update-interval 300
   "The interval (seconds) to update tags file.
 Used by `counsel-etags-virtual-update-tags'.
@@ -524,6 +536,33 @@ The file is also used by tags file auto-update process.")
 (defvar counsel-etags-last-tagname-at-point nil
   "Last tagname queried at point.")
 
+(defun counsel-etags-org-entry-get-project-root ()
+  "Get org property from current node or parent node recursively."
+  (when (and (derived-mode-p 'org-mode)
+             counsel-etags-org-extract-project-root-from-node-p)
+    (unless (featurep 'org) (require 'org))
+    (unless (featurep 'outline) (require 'outline))
+    (let* ((pos (point))
+           (prop-name counsel-etags-org-property-name-for-grepping)
+           (rlt (org-entry-get pos prop-name))
+           (loop t)
+           old-pos)
+
+      (save-excursion
+        (unless rlt
+          (setq old-pos (point))
+          (condition-case nil (outline-up-heading 1))
+          (while loop
+            (cond
+             ((or (setq rlt (org-entry-get (point) prop-name))
+                  (eq (point) old-pos))
+              (setq loop nil))
+             (t
+              (setq old-pos (point))
+              (condition-case nil (outline-up-heading 1)))))
+          (goto-char pos))
+        rlt))))
+
 (defun counsel-etags-win-path (executable-name drive)
   "Guess EXECUTABLE-NAME's full path in Cygwin on DRIVE."
   (let* ((path (concat drive ":\\\\cygwin64\\\\bin\\\\" executable-name ".exe")))
@@ -551,7 +590,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.9.17"))
+  (message "1.10.0"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1673,20 +1712,22 @@ Extended regex is used, like (pattern1|pattern2)."
 
 ;;;###autoload
 (defun counsel-etags-grep (&optional default-keyword hint root show-keyword-p)
-  "Grep at project root directory or current directory.
-Try to find best grep program (ripgrep, grep...) automatically.
+  "Grep at project with best grep program (ripgrep, grep...) automatically.
 Extended regex like (pattern1|pattern2) is used.
 If DEFAULT-KEYWORD is not nil, it's used as grep keyword.
 If HINT is not nil, it's used as grep hint.
-ROOT is root directory to grep.
+ROOT is the directory to grep.  It's automatically detected.
+If current file is org file, current node or parent node's property
+\"GREP_PROJECT_ROOT\" is read to get the root directory to grep.
 If SHOW-KEYWORD-P is t, show the keyword in the minibuffer."
   (interactive)
   (let* ((text (if default-keyword default-keyword
                   (counsel-etags-read-keyword "Regular expression for grep: ")))
          (keyword (funcall counsel-etags-convert-grep-keyword text))
          (default-directory (expand-file-name (or root
-                                               (counsel-etags-locate-project)
-                                               default-directory)))
+                                                  (counsel-etags-org-entry-get-project-root)
+                                                  (counsel-etags-locate-project)
+                                                  default-directory)))
          (time (current-time))
          (cmd (counsel-etags-grep-cli keyword nil))
          (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))
