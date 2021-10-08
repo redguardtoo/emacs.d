@@ -975,4 +975,37 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "g" 'my-open-pdf-goto-page)
 ;; }}
 
+
+;; {{ my personal evil optimization which need be manually enabled.
+(defun my-evil-ex-command-completion-at-point ()
+  "Completion function for ex command history."
+  (let* ((start (or (get-text-property 0 'ex-index evil-ex-cmd)
+                    (point)))
+         (end (point)))
+    (list start end evil-ex-history :exclusive 'no)))
+
+(defun my-search-evil-ex-history ()
+  "Search `evil-ex-history' to complete ex command."
+  (interactive)
+  (let (after-change-functions
+        (completion-styles '(substring))
+        (completion-at-point-functions '(my-evil-ex-command-completion-at-point)))
+    (evil-ex-update)
+    (completion-at-point)
+    (remove-text-properties (minibuffer-prompt-end) (point-max) '(face nil evil))))
+
+(defun my-optimize-evil ()
+  "I prefer mixed Emacs&Vi style.  Run this function in \"~/.custom.el\"."
+  (with-eval-after-load 'evil
+    ;; TAB key still triggers `evil-ex-completion'.
+    (define-key evil-ex-completion-map (kbd "C-d") 'delete-char)
+
+    ;; use `my-search-evil-ex-history' to replace `evil-ex-command-window'
+    (define-key evil-ex-completion-map (kbd "C-f") 'forward-char)
+    (define-key evil-ex-completion-map (kbd "C-s") 'evil-ex-command-window)
+    ;; I use Emacs in terminal which may not support keybinding "C-r" or "M-n"
+    (define-key evil-ex-completion-map (kbd "C-r") 'my-search-evil-ex-history)
+    (define-key evil-ex-completion-map (kbd "M-n") 'my-search-evil-ex-history)))
+;; }}
+
 (provide 'init-evil)

@@ -28,6 +28,7 @@
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#vim-vs-emacs][Vim vs Emacs]]
   - [[#backup-packages][Backup packages]]
   - [[#hardcore-debug-technique][Hardcore debug technique]]
   - [[#spell-check-code][Spell check code]]
@@ -287,6 +288,12 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Vim vs Emacs
+I prefer default hotkeys&commands from EVIL and Emacs.
+
+But sometimes a mixed style could be better for my personal workflow. See the function =my-optimize-evil= in =init-evil.el=.
+
+You can insert =(my-optimize-evil)= into =~/.custom.el= to enable it.
 ** Backup packages
 Run =M-x elpamr-create-mirror-for-installed= create a local repository from installed packages. See [[https://github.com/redguardtoo/elpa-mirror]] for more details.
 ** Hardcore debug technique
