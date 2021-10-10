@@ -265,8 +265,13 @@ If candidates number is bigger than this value, show raw candidates without clea
   :group 'counsel-etags
   :type 'integer)
 
-;; (defvar counsel-etags-unit-test-p nil
-;;   "Running unit test.  This is internal variable.")
+(defcustom counsel-etags-major-modes-to-strip-default-tag-name
+  '(org-mode
+    markdown-mode)
+  "Major mode where default tag name need be stripped.
+It's used by `counsel-etags-find-tag-name-default'."
+  :group 'counsel-etags
+  :type '(repeat 'sexp))
 
 (defcustom counsel-etags-ignore-directories
   '(;; VCS
@@ -1303,7 +1308,12 @@ Focus on TAGNAME if it's not nil."
 ;;;###autoload
 (defun counsel-etags-find-tag-name-default ()
   "Find tag at point."
-  (find-tag-default))
+  (let ((tag-name (find-tag-default)))
+    (when (and (memq major-mode
+                     counsel-etags-major-modes-to-strip-default-tag-name)
+           (string-match "^\\(`.*`\\|=.*=\\|~.*~\\|\".*\"\\|'.*'\\)$" tag-name))
+      (setq tag-name (substring tag-name 1 (1- (length tag-name)))))
+    tag-name))
 
 ;;;###autoload
 (defun counsel-etags-word-at-point (predicate)
