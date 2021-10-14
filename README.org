@@ -137,6 +137,7 @@ Most command line programs can be installed through =default package manager=.
 
 =Default package manager= could be:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
+- package manager of [[https://www.msys2.org/docs/package-management/][MSYS2]]
 - [[https://github.com/mxcl/homebrew][homebrew]] at macOS
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
@@ -453,6 +454,8 @@ You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS
       (shell-command-to-string (format "p4 diff -du -db %s"
                                        (file-relative-name buffer-file-name))))
 #+end_src
+
+Please note =git-gutter= assumes the cli program [[https://www.gnu.org/software/diffutils/][diff]] is added into environment variable PATH.  You might need install it through MSYS2 or Cygwin on Windows.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
