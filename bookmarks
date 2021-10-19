@@ -1,0 +1,70 @@
+;;;; Emacs Bookmark Format Version 1 ;;;; -*- coding: utf-8-emacs -*-
+;;; This format is meant to be slightly human-readable;
+;;; nevertheless, you probably don't want to edit it.
+;;; -*- End Of Bookmark File Format Version Stamp -*-
+(("k210"
+ (filename . "~/repo/k210/")
+ (front-context-string . "kendryte-standal")
+ (rear-context-string . "0K Nov  1 16:30 ")
+ (position . 197))
+("mtk_hk_ms110"
+ (filename . "~/meross/mtk/mt7686_homekit_mss110/middleware/third_party/meross/src/meross_main.c")
+ (front-context-string . "#include \"task.h")
+ (rear-context-string . "de \"FreeRTOS.h\"\n")
+ (position . 82))
+("cf_msl320cp"
+ (filename . "~/meross/rtl/rtl8710cf_lights/project/msl320cp_un_v6/main/meross_main.c")
+ (front-context-string . "#include <stdlib")
+ (rear-context-string)
+ (position . 1))
+("mod100"
+ (filename . "~/meross/mtk/mt7686_homekit_mod100/middleware/third_party/meross/src/meross_main.c")
+ (front-context-string . "#include <stdlib")
+ (rear-context-string)
+ (position . 1))
+("cf_socket"
+ (filename . "~/meross/rtl/rtl8710cf_sockets/project/mss310_un_v6/main/meross_main.c")
+ (front-context-string . "#include \"FreeRT")
+ (rear-context-string . "clude <stdio.h>\n")
+ (position . 60))
+("va2"
+ (filename . "~/meross/rtl/rtl8710cf_va2_socket/project/meross_iot/meross_main/meross_main.c")
+ (front-context-string . "\n#include \"wifi_")
+ (rear-context-string . "oss_task_def.h\"\n")
+ (position . 148))
+("inbox_suah"
+ (filename . "~/Nutstore Files/Nutstore/note/suah-note/inbox.org")
+ (front-context-string)
+ (rear-context-string . "<2022-07-18 Mon>")
+ (position . 202))
+("suah_note"
+ (filename . "~/Nutstore Files/Nutstore/note/suah_note.org")
+ (front-context-string . "\n     1. 初始状态是否闪")
+ (rear-context-string . "需求：\n**** 不明确的需求:")
+ (position . 69075))
+("430"
+ (filename . "~/meross/rtl/rtl8710cm_lights/project/msl430_un_v7/main/meross_main.c")
+ (front-context-string . "#include \"FreeRT")
+ (rear-context-string . "clude <stdio.h>\n")
+ (position . 60))
+("mtk_86_bak"
+ (filename . "~/meross/mtk/mt7686_homekit_bak/middleware/third_party/meross/src/meross_main.c")
+ (front-context-string . "\nint32_t mrs_mai")
+ (rear-context-string . "handle = NULL;\n\n")
+ (position . 782))
+("cm_810"
+ (filename . "~/meross/rtl/rtl8710cm_sockets/project/mss810_un_v7/main/meross_main.c")
+ (front-context-string . "#include \"meross")
+ (rear-context-string . "meross_event.h\"\n")
+ (position . 343))
+("mtk_86"
+ (filename . "~/meross/mtk/mt7686_homekit/middleware/third_party/meross/src/meross_main.c")
+ (front-context-string . "#include <stdlib")
+ (rear-context-string)
+ (position . 1))
+("450"
+ (filename . "~/meross/rtl/rtl8710cm_lights/project/msl450_un_v7/main/meross_main.c")
+ (front-context-string . "#include \"queue.")
+ (rear-context-string . "nclude \"task.h\"\n")
+ (position . 100))
+)
