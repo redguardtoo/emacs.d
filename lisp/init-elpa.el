@@ -452,6 +452,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
      majapahit-theme
      material-theme
      minimal-theme
+     modus-themes
      moe-theme
      molokai-theme
      monochrome-theme
