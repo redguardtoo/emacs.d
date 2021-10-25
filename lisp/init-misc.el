@@ -283,9 +283,6 @@ FN checks these characters belong to normal word characters."
 
 (defalias 'list-buffers 'ibuffer)
 
-(defun my-download-subtitles ()
-  (interactive)
-  (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
 ;; {{ show email sent by `git send-email' in gnus
 (with-eval-after-load 'gnus
@@ -1022,29 +1019,6 @@ might be bad."
   (setq eldoc-idle-delay 1)
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
-
-;; {{ fetch subtitles
-(defvar my-fetch-subtitles-proxy nil
-  "http proxy to fetch subtitles, like http://127.0.0.1:8118 (privoxy).")
-
-(defun my-fetch-subtitles (&optional video-file)
-  "Fetch subtitles of VIDEO-FILE.
-See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
-  (let* ((cmd-prefix "subgrab -l EN"))
-    (when my-fetch-subtitles-proxy
-      (setq cmd-prefix (format "http_proxy=%s https_proxy=%s %s"
-                               my-fetch-subtitles-proxy
-                               my-fetch-subtitles-proxy
-                               cmd-prefix)))
-    (cond
-     (video-file
-      (let* ((default-directory (file-name-directory video-file)))
-        (shell-command (format "%s -m \"%s\" &"
-                               cmd-prefix
-                               (file-name-base video-file)))))
-     (t
-      (shell-command (format "%s --dir . &" cmd-prefix))))))
-;; }}
 
 (defvar my-sdcv-org-head-level 2)
 ;; {{ use sdcv dictionary to find big word definition

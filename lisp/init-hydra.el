@@ -269,19 +269,17 @@
     "
 ^Misc^                      ^File^              ^Copy Info^
 -----------------------------------------------------------------
-[_vv_] video2mp3            [_R_] Move          [_pp_] Path
-[_aa_] Record by mp3        [_cf_] New          [_nn_] Name
-[_zz_] Play wav&mp3         [_rr_] Rename       [_bb_] Base
-[_cc_] Last command         [_ff_] Find         [_dd_] directory
-[_sa_] Fetch all subtitles  [_C_]  Copy
-[_s1_] Fetch on subtitle    [_rb_] Change base
-[_vv_] Video => Mp3         [_df_] Diff 2 files
-[_aa_] Recording Wav
+[_vv_] video2mp3           [_R_] Move           [_pp_] Path
+[_aa_] Record by mp3       [_cf_] New           [_nn_] Name
+[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base
+[_cc_] Last command        [_ff_] Find          [_dd_] directory
+[_sa_] Fetch subtitle(s)   [_C_]  Copy
+[_vv_] Video => Mp3        [_rb_] Change base
+[_aa_] Recording Wav       [_df_] Diff 2 files
 [_ee_] Mkv => Srt
 [_+_] Create directory
 "
-    ("sa" (my-fetch-subtitles))
-    ("s1" (my-fetch-subtitles (dired-file-name-at-point)))
+    ("sa" shenshou-download-subtitle)
     ("pp" (my-copy-file-info 'file-truename))
     ("nn" (my-copy-file-info 'file-name-nondirectory))
     ("bb" (my-copy-file-info 'file-name-base))
