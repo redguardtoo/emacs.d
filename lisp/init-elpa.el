@@ -264,8 +264,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'csv-mode)
 (require-package 'expand-region) ; I prefer stable version
 (require-package 'fringe-helper)
-(require-package 'gitignore-mode)
-(require-package 'gitconfig-mode)
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
@@ -387,6 +385,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
   (dolist (theme popular-themes)
     (require-package theme)))
 
+(require-package 'git-modes)
 (require-package 'magit)
 (require-package 'ace-pinyin)
 (require-package 'which-key)
