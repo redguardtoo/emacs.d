@@ -1,4 +1,4 @@
-;;; shenshou.el --- download subtitles from opensubtitles.org
+;;; shenshou.el --- Download subtitles from opensubtitles.org -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021 Chen Bin
 ;;
@@ -190,14 +190,17 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 
 (defun shenshou-xml-rpc-post-data (method params)
   "Create post data from METHOD and PARAMS."
-  (concat "<?xml version='1.0' encoding='UTF-8'?>"
-          "<methodCall><methodName>"
-          method
-          "</methodName>"
-          "<params>"
-          params
-          "</params>"
-          "</methodCall>"))
+  (let* ((rlt (concat "<?xml version='1.0' encoding='UTF-8'?>"
+                      "<methodCall><methodName>"
+                      method
+                      "</methodName>"
+                      "<params>"
+                      params
+                      "</params>"
+                      "</methodCall>")))
+    (when shenshou-debug
+      (message "shenshou-xml-rpc-post-data called => %s" rlt))
+    rlt))
 
 (defun shenshou-xml-node-children (node xpath)
   "Get NODE's children matching XPATH."
@@ -228,16 +231,25 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 (defun shenshou-xml-rpc-call (post-data)
   "Call remote api with POST-DATA."
   (let* ((cmd (concat shenshou-curl-program
-                      " --silent --insecure https://api.opensubtitles.org:443/xml-rpc "
+                      " --silent -b --insecure https://api.opensubtitles.org:443/xml-rpc "
                       shenshou-curl-extra-options
                       " -H \"Content-Type: text/xml\" "
                       (format " -d \"%s\" " post-data)))
          (cmd-output (shell-command-to-string cmd))
-         (xml-tree (car (with-temp-buffer
-                          (insert cmd-output)
-                          (xml-parse-region)))))
+         xml-tree)
     (when shenshou-debug
       (message "shenshou-xml-rpc-call called => post-data=%s cmd=%s cmd-output=%s" post-data cmd cmd-output))
+
+    (cond
+     ((string-match "<span>Your IP</span>: *\\([0-9.]+\\)" cmd-output)
+      (message "Your IP %s is blocked.  Maybe switch to another proxy server?"
+               (match-string 1 cmd-output)))
+
+     (t
+      (setq xml-tree (car (with-temp-buffer
+                            (insert cmd-output)
+                            (xml-parse-region))))))
+
     xml-tree))
 
 (defun shenshou-format-param (param)
@@ -276,17 +288,19 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                          "LogIn"
                          (mapconcat (lambda (p)
                                       (shenshou-format-param (format "<string>%s</string>" p)))
-                                    '(shenshou-login-user-name
-                                      shenshou-login-password
-                                      "en"
-                                      "shenshou")
+                                    (list shenshou-login-user-name
+                                          shenshou-login-password
+                                          "en"
+                                          "shenshou")
                                     "")))
              (xml-tree (shenshou-xml-rpc-call post-data))
-             (response-props (shenshou-xml-node-children xml-tree '(params param value struct member)))
-             (token (shenshou-xml-get-value-by-name response-props "token")))
-        ;; @see https://trac.opensubtitles.org/projects/opensubtitles/wiki/XmlRpcIntro
-        (when token
-          (setq shenshou-token (cons token (current-time)))))))))
+             response-props
+             token)
+        (when xml-tree
+          (setq response-props (shenshou-xml-node-children xml-tree '(params param value struct member)))
+          ;; @see https://trac.opensubtitles.org/projects/opensubtitles/wiki/XmlRpcIntro
+          (when (setq token (shenshou-xml-get-value-by-name response-props "token"))
+            (setq shenshou-token (cons token (current-time))))))))))
 
 ;;;###autoload
 (defun shenshou-logout-now ()
@@ -326,7 +340,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 
 (defun shenshou-params-from-videos (video-file)
   "Generate rpc parameters from VIDEO-FILE."
-  (let* (rlt video-info extra moviekind hash-and-size)
+  (let* (rlt video-info extra hash-and-size)
 
     (cond
      ((not (file-exists-p video-file))
@@ -352,7 +366,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                                                  (format "<string>%s</string>"
                                                          (plist-get video-info :query))))
 
-      (when (string= (setq moviekind (plist-get video-info :moviekind)) "tv")
+      (when (string= (plist-get video-info :moviekind) "tv")
         (setq extra (concat extra
                             (shenshou-format-struct-member "episode"
                                                            (format "<double>%s</double>"
@@ -378,37 +392,43 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
   (let* ((post-data (shenshou-xml-rpc-post-data "SearchSubtitles"
                                                 (concat (shenshou-format-param (format "<string>%s</string>" (car shenshou-token)))
                                                         (shenshou-params-from-videos video-file))))
-         (xml-tree (shenshou-xml-rpc-call post-data))
-         (all-items (shenshou-xml-node-children xml-tree '(params param value struct member value array data value struct)))
+         xml-tree
+         all-items
          movie-release-name
          movie-year
          all-props
          sub
-         i
          video-info
          movie-fuzzy-name
          lang
          subfilename
          subtitles)
 
-    (dolist (item all-items)
-      (setq all-props (shenshou-xml-node-children item '(member)))
-      ;; OpenSubtitles hash function is not robust ... We'll use the MovieReleaseName to help us select the best candidate
-      (setq movie-release-name (shenshou-xml-get-value-by-name all-props "MovieReleaseName"))
-      (setq movie-year (shenshou-xml-get-value-by-name all-props "MovieYear"))
-      (setq video-info (shenshou-guess-video-info (downcase (file-name-base video-file))))
-      (setq movie-fuzzy-name (replace-regexp-in-string "[.\[\] ()]+" ".*" (plist-get video-info :query)))
-      (when (and movie-release-name
-                 (string-match (concat "^" movie-fuzzy-name) (downcase movie-release-name))
-                 (or (not (plist-get video-info :movieyear))
-                     (string= movie-year (plist-get video-info :movieyear))))
-        (setq sub nil)
-        (setq sub (plist-put sub :moviereleasename movie-release-name))
-        (setq sub (plist-put sub :subfilename (setq subfilename (shenshou-xml-get-value-by-name all-props "SubFileName"))))
-        (setq sub (plist-put sub :sublanguageid (setq lang (shenshou-xml-get-value-by-name all-props "SubLanguageID"))))
-        (setq sub (plist-put sub :subdownloadlink (shenshou-xml-get-value-by-name all-props "SubDownloadLink")))
-        (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
-        (push (cons (format "%s => %s(%s)" movie-release-name subfilename lang) sub) subtitles)))
+    (when shenshou-debug
+      (message "shenshou-search-subtitles to be called => video-file=%s post-data=%s" video-file post-data))
+
+    (when (setq xml-tree (shenshou-xml-rpc-call post-data))
+      (setq all-items
+            (shenshou-xml-node-children xml-tree
+                                        '(params param value struct member value array data value struct)))
+      (dolist (item all-items)
+        (setq all-props (shenshou-xml-node-children item '(member)))
+        ;; OpenSubtitles hash function is not robust ... We'll use the MovieReleaseName to help us select the best candidate
+        (setq movie-release-name (shenshou-xml-get-value-by-name all-props "MovieReleaseName"))
+        (setq movie-year (shenshou-xml-get-value-by-name all-props "MovieYear"))
+        (setq video-info (shenshou-guess-video-info (downcase (file-name-base video-file))))
+        (setq movie-fuzzy-name (replace-regexp-in-string "[.\[\] ()]+" ".*" (plist-get video-info :query)))
+        (when (and movie-release-name
+                   (string-match (concat "^" movie-fuzzy-name) (downcase movie-release-name))
+                   (or (not (plist-get video-info :movieyear))
+                       (string= movie-year (plist-get video-info :movieyear))))
+          (setq sub nil)
+          (setq sub (plist-put sub :moviereleasename movie-release-name))
+          (setq sub (plist-put sub :subfilename (setq subfilename (shenshou-xml-get-value-by-name all-props "SubFileName"))))
+          (setq sub (plist-put sub :sublanguageid (setq lang (shenshou-xml-get-value-by-name all-props "SubLanguageID"))))
+          (setq sub (plist-put sub :subdownloadlink (shenshou-xml-get-value-by-name all-props "SubDownloadLink")))
+          (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
+          (push (cons (format "%s => %s(%s)" movie-release-name subfilename lang) sub) subtitles))))
 
     subtitles))
 
@@ -416,37 +436,44 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 (defun shenshou-download-subtitle-internal (video-file)
   "Download subtitle of VIDEO-FILE."
   ;; @see http://blog.likewise.org/2013/09/using-curl-to-access-bugzillas-xml-rpc-api/
-  (let* (subtitles selected)
+  (let* (subtitles selected token-p)
 
+    (when shenshou-debug
+      (message "shenshou-download-subtitle-internal called => %s" video-file))
+
+    (setq token-p t)
     (unless (shenshou-login-token-valid-p)
-      (shenshou-login-now))
+      (setq token-p (shenshou-login-now)))
 
-    ;; search subtitles
-    (setq subtitles (shenshou-search-subtitles video-file))
+    (when token-p
+      ;; search subtitles
+      (setq subtitles (shenshou-search-subtitles video-file))
 
-    (cond
-     ((> (length subtitles) 0)
-      (when (setq selected (completing-read (format "Download subtitle of \"%s\": "
-                                                    (file-name-nondirectory video-file))
-                                            subtitles))
-        (let* ((default-directory (if (eq major-mode 'dired-mode) default-directory
-                                    (file-name-directory video-file)))
-               (sub (cdr (assoc selected subtitles)))
-               (subfilename (plist-get sub :subfilename))
-               (download-link (plist-get sub :subdownloadlink))
-               (output-file (concat (file-name-base video-file)
-                                    "."
-                                    (if subfilename (file-name-extension subfilename) "srt")))
-               (cmd (format "%s --silent --insecure %s %s | %s -q -d -c > %s &"
-                            shenshou-curl-program
-                            shenshou-curl-extra-options
-                            download-link
-                            shenshou-gzip-program
-                            output-file)))
-          (shell-command cmd))))
+      (cond
+       ((> (length subtitles) 0)
+        (when (setq selected (completing-read (format "Download subtitle of \"%s\": "
+                                                      (file-name-nondirectory video-file))
+                                              subtitles))
+          (let* ((default-directory (if (eq major-mode 'dired-mode) default-directory
+                                      (file-name-directory video-file)))
+                 (sub (cdr (assoc selected subtitles)))
+                 (subfilename (plist-get sub :subfilename))
+                 (download-link (plist-get sub :subdownloadlink))
+                 (output-file (concat (file-name-base video-file)
+                                      "."
+                                      (if subfilename (file-name-extension subfilename)
+                                        "srt")))
+                 (cmd (format "%s --silent -b --insecure %s %s | %s -q -d -c > %s &"
+                              shenshou-curl-program
+                              shenshou-curl-extra-options
+                              download-link
+                              shenshou-gzip-program
+                              output-file)))
+            (shell-command cmd))))
 
-     (t
-      (message "No subtitle is found for \"%s\"" (file-name-nondirectory video-file))))))
+       (t
+        (message "No subtitle is found for \"%s\""
+                 (file-name-nondirectory video-file)))))))
 
 ;;;###autoload
 (defun shenshou-download-subtitle ()
