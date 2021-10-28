@@ -569,9 +569,18 @@ Copied from 3rd party package evil-textobj."
     (when fn (apply fn args))
     (message hint)
     (set-transient-map
-     (let ((map (make-sparse-keymap)))
+     (let ((map (make-sparse-keymap))
+           cmd)
        (dolist (item extra-fn-list)
-         (define-key map (kbd (nth 0 item)) (nth 1 item)))
+         (setq cmd (nth 1 item))
+         (setq cmd (cond
+                    ((commandp cmd)
+                     cmd)
+                    (t
+                     `(lambda ()
+                        (interactive)
+                        (if (functionp ,cmd) (funcall ,cmd) ,cmd)))))
+         (define-key map (kbd (nth 0 item)) cmd))
        map)
      t)))
 

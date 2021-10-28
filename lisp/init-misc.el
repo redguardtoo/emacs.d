@@ -1147,7 +1147,7 @@ Org node property PDF_PAGE_OFFSET is used to calculate physical page number."
                            ("j" my-open-pdf-scroll-or-next-page)
                            ("p" my-open-pdf-previous-page)
                            ("n" my-open-pdf-next-page)
-                           ("g" (lambda () (interactive) (my-open-pdf-goto-page (read-number "Page number: " 1))))
+                           ("g" (my-open-pdf-goto-page (read-number "Page number: " 1)))
                            ("f" my-open-pdf-from-history))
                          "PDF: [k]up [j]down [p]revious-page [n]ext-page [g]oto [f]rom-history [q]uit"
                          nil))
