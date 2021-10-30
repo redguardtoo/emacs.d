@@ -219,14 +219,16 @@
         (setq trunks (split-string (shell-command-to-string (format "mkvinfo \"%s\"" file))
                                    "| ?\\+ [A-Z][^\n]+[\n]*"))
         ;; only interested english subtitle trunk
-        (setq trunks (delq nil (mapcar
-                                (lambda (trunk)
-
-                                  (when (and (string-match "Track type: subtitles" trunk)
-                                             (or (not (string-match "Language: " trunk))
-                                                 (string-match "Language: eng" trunk)))
-                                    trunk))
-                                trunks)))
+        (setq trunks (cl-remove-if-not
+                      (lambda (trunk)
+                        (string-match "Track type: subtitles" trunk))
+                      trunks))
+        ;; If there is more than one subtitle, process English track only
+        (when (> (length trunks) 1)
+          (setq trunks (cl-remove-if-not
+                        (lambda (trunk)
+                          (string-match "Language: eng" trunk))
+                        trunks)))
         (when (and (> (length trunks) 0)
                    (string-match "Track number: \\([0-9]+\\)" (car trunks)))
 
