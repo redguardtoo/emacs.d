@@ -41,7 +41,7 @@
 ;;   - Run `shenshou-download-subtitle' in dired buffer or anywhere.
 ;;   - Run `shenshou-logout-now' to logout.
 ;;
-;  Tips,
+;;  Tips,
 ;;   - See `shenshou-curl-extra-options' on how to set SOCKS5 or HTTP proxy
 ;;   - This program gives you the freedom to select the right subtitle.
 ;;     For example, a DVD ripped video might match the DVD ripped subtitle.
@@ -188,7 +188,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
     (when rlt
       (list :moviehash rlt :moviebytesize fsize))))
 
-(defun shenshou-xml-rpc-post-data (method params)
+(defun shenshou-xml-rpc-post-data (method &optional params)
   "Create post data from METHOD and PARAMS."
   (let* ((rlt (concat "<?xml version='1.0' encoding='UTF-8'?>"
                       "<methodCall><methodName>"
@@ -228,29 +228,42 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                                   node-list)))
     (nth 2 (car (shenshou-xml-node-children member-node '(value string))))))
 
-(defun shenshou-xml-rpc-call (post-data)
-  "Call remote api with POST-DATA."
+(defun shenshou-xml-rpc-call (post-data &optional raw-response-p)
+  "Call remote api with POST-DATA.  If RAW-RESPONSE-P is t, return raw response."
   (let* ((cmd (concat shenshou-curl-program
                       " --silent -b --insecure https://api.opensubtitles.org:443/xml-rpc "
                       shenshou-curl-extra-options
                       " -H \"Content-Type: text/xml\" "
-                      (format " -d \"%s\" " post-data)))
+                      (and post-data (format " -d \"%s\" " post-data))))
          (cmd-output (shell-command-to-string cmd))
          xml-tree)
     (when shenshou-debug
       (message "shenshou-xml-rpc-call called => post-data=%s cmd=%s cmd-output=%s" post-data cmd cmd-output))
 
     (cond
-     ((string-match "<span>Your IP</span>: *\\([0-9.]+\\)" cmd-output)
-      (message "Your IP %s is blocked.  Maybe switch to another proxy server?"
-               (match-string 1 cmd-output)))
+     ((string-match "Your IP.*[^0-9.]\\([0-9.]+\\)<" cmd-output)
+      (let ((ip (match-string 1 cmd-output))
+            (id "unknown"))
+        (when (string-match "Cloudflare Ray ID:.*>\\([0-9a-z]+\\)<" cmd-output)
+          (setq id (match-string 1 cmd-output)))
+
+        ;; output html output for debugging
+        (when shenshou-debug
+          (with-temp-buffer
+            (insert cmd-output)
+            ;; write buffer content into file
+            (write-region (point-min) (point-max) "opensubtitles-captcha.html")))
+        ;; some security setup only OpenSubtitles guy can help
+        (message "Error: Report IP \"%s\" and Cloudflare Ray ID \"%s\" at forum.opensubtitles.org to solve the problem!"
+                 ip
+                 id)))
 
      (t
       (setq xml-tree (car (with-temp-buffer
                             (insert cmd-output)
                             (xml-parse-region))))))
 
-    xml-tree))
+    (if raw-response-p cmd-output xml-tree)))
 
 (defun shenshou-format-param (param)
   "Format PARAM."
