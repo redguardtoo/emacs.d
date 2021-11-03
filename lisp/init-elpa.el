@@ -392,6 +392,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'highlight-symbol)
 (require-package 'wc-mode)
 (require-package 'qrencode)
+(require-package 'ws-butler)
 
 ;; speed up CI
 (unless my-disable-idle-timer
