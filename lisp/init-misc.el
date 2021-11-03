@@ -474,6 +474,7 @@ FN checks these characters belong to normal word characters."
   (memq major-mode my-auto-save-exclude-major-mode-list))
 
 (with-eval-after-load 'auto-save
+  (push 'file-remote-p auto-save-exclude)
   (push 'my-file-too-big-p auto-save-exclude)
   (push 'my-check-major-mode-for-auto-save auto-save-exclude)
   (setq auto-save-idle 2) ; 2 seconds
