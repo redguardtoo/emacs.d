@@ -5,9 +5,7 @@
 ;; enable evil-mode
 (evil-mode 1)
 (ivy-rich-mode 1)
-
-;; evil-snipe-scope (default: line)
-;; evil-snipe-repeat-scope (default: whole-line) Scope while repeating searches with evil-snipe-repeat or evil-snipe-repeat-reverse.
+;; evil-snipe-scope (default: line) ;; evil-snipe-repeat-scope (default: whole-line) Scope while repeating searches with evil-snipe-repeat or evil-snipe-repeat-reverse.
 ;; evil-snipe-spillover-scope (default: nil) Scope to expand to when a snipe fails. Only useful if set to a broader scope than evil-snipe-scope.
 (evil-snipe-mode +1)
 (evil-snipe-override-mode +1)
@@ -31,6 +29,24 @@
 (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
 (define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo)
 ;; }}
+;; @see https://emacs-china.org/t/evil/851
+;; (defun evil-paste-after-from-0 ()
+;;   (interactive)
+;;   (let ((evil-this-register ?0))
+;;     (call-interactively 'evil-paste-after)))
+
+;; (define-key evil-visual-state-map "p" 'evil-paste-from-register)
+(delete-selection-mode 1)
+
+
+;;-------------------------------------------------------------
+;; highlight yank region
+;;-------------------------------------------------------------
+
+
+
+
+
 
 ;; Store more undo history to prevent loss of data
 (setq undo-limit 8000000

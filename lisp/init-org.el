@@ -1,5 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+
 ;; some cool org tricks
 ;; @see http://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 
@@ -269,11 +270,12 @@ skip user's own code in `org-mode-hook'."
 
   ;; misc
   (setq org-log-done t
+        org-log-into-drawer t
         org-completion-use-ido t
         org-edit-src-content-indentation 0
         org-edit-timestamp-down-means-later t
         org-agenda-start-on-weekday nil
-        org-agenda-span 14
+        org-agenda-span 1
         org-agenda-include-diary t
         org-agenda-window-setup 'current-window
         org-fast-tag-selection-single-key 'expert
@@ -297,10 +299,13 @@ skip user's own code in `org-mode-hook'."
         ;; https://endlessparentheses.com/changing-the-org-mode-ellipsis.html
         ;; org-ellipsis " ▼ "
         org-ellipsis "⤵"
-        org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
-                                  (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
+        org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "KEEP(k)" "|" "DONE(d)")
+                                  (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P)" "|" "CANCELLED(c)")))
+        ;; org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "KEEP(k)" "|" "DONE(d!/!)")
+        ;;                           (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
         org-todo-keyword-faces (quote (("TODO" :foreground "red" :weight bold)
                                        ("STARTED" :foreground "yellow" :weight bold)
+                                       ("KEEP" :foreground "purple" :weight bold)
                                        ("DONE" :foreground "forest green" :weight bold)
                                        ("WAITING" :foreground "orange" :weight bold)
                                        ("SOMEDAY" :foreground "magenta" :weight bold)

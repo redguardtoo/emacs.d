@@ -99,7 +99,7 @@
         "open")
        (*unix* ; linux or unix
         ;; prefer Chrome than Firefox
-        (or (executable-find "google-chrome")
+        (or (executable-find "chromium")
             (executable-find "firefox")))
        (t
         ;; Windows: you need add "firefox.exe" to environment variable PATH
