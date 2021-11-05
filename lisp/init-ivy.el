@@ -164,13 +164,19 @@ If N is not nil, only list directories in current project."
 
 (defun ivy-occur-grep-mode-hook-setup ()
   "Set up ivy occur grep mode."
+  ;; turn on wgrep right now
+  ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
+
+  (when evil-mode
+    (evil-local-set-key 'normal (kbd "RET") #'ivy-occur-press-and-switch)
+    ;; In ivy original key bindings, "w" changes to `wgrep-mode'
+    ;; Use same key binding in EVIL.
+    (evil-local-set-key 'normal "w" #'ivy-wgrep-change-to-wgrep-mode))
+
   ;; no syntax highlight, I only care performance when searching/replacing
   (font-lock-mode -1)
   ;; @see https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
-  (column-number-mode -1)
-  ;; turn on wgrep right now
-  ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
-  (local-set-key (kbd "RET") #'ivy-occur-press-and-switch))
+  (column-number-mode -1))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
 (defun my-counsel-git-grep (&optional level)

@@ -28,7 +28,7 @@ In that case, insert the number."
       (cond
        ((or (cl-find-if (lambda (s) (string-match re s)) company-candidates)
             (> n (length company-candidates))
-            (looking-back "[0-9]+\\.[0-9]*" (line-beginning-position)))
+            (looking-back "[0-9]" (line-beginning-position)))
         (self-insert-command 1))
 
        ((and (eq n 10) my-company-zero-key-for-filter)

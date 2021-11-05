@@ -28,6 +28,8 @@
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#vim-vs-emacs][Vim vs Emacs]]
+  - [[#backup-packages][Backup packages]]
   - [[#hardcore-debug-technique][Hardcore debug technique]]
   - [[#spell-check-code][Spell check code]]
   - [[#lock-packages][Lock packages]]
@@ -135,6 +137,7 @@ Most command line programs can be installed through =default package manager=.
 
 =Default package manager= could be:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
+- package manager of [[https://www.msys2.org/docs/package-management/][MSYS2]]
 - [[https://github.com/mxcl/homebrew][homebrew]] at macOS
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
@@ -144,10 +147,10 @@ These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
 **** fortune-zh or fortune
-- Show ancient Chinese poem or quotes from random sources
+Show ancient Chinese poem or quotes from random sources. Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS.
 
-Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
-- install fortune
+But there is a simple workaround:
+- Install fortune
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
@@ -286,6 +289,14 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Vim vs Emacs
+I prefer default hotkeys&commands from EVIL and Emacs.
+
+But sometimes a mixed style could be better for my personal workflow. See the function =my-optimize-evil= in =init-evil.el=.
+
+You can insert =(my-optimize-evil)= into =~/.custom.el= to enable it.
+** Backup packages
+Run =M-x elpamr-create-mirror-for-installed= create a local repository from installed packages. See [[https://github.com/redguardtoo/elpa-mirror]] for more details.
 ** Hardcore debug technique
 This Emacs configuration is fast and robust.
 
@@ -443,6 +454,8 @@ You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS
       (shell-command-to-string (format "p4 diff -du -db %s"
                                        (file-relative-name buffer-file-name))))
 #+end_src
+
+Please note =git-gutter= assumes the cli program [[https://www.gnu.org/software/diffutils/][diff]] is added into environment variable PATH.  You might need install it through MSYS2 or Cygwin on Windows.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
@@ -537,6 +550,14 @@ By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(
 It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
 You could visit [[https://github.com/emacs-evil/evil/][its website]] to download its free ebook there.
+
+You can set =my-initial-evil-state-setup= to customize the initial evil state per major mode,
+#+begin_src elisp
+;; `diff-mode' uses Emacs original key bindings
+(push '(diff-mode . emacs) my-initial-evil-state-setup)
+;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
+(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-setup)
+#+end_src
 ** C++ auto-completion doesn't work?
 I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
 

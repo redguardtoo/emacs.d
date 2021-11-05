@@ -195,6 +195,8 @@ FN checks these characters belong to normal word characters."
   (company-ispell-setup)
 
   (unless (is-buffer-file-temp)
+    ;;  trim spaces from end of changed line
+    (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
       (unless my-disable-lazyflymake
@@ -284,9 +286,6 @@ FN checks these characters belong to normal word characters."
 
 (defalias 'list-buffers 'ibuffer)
 
-(defun my-download-subtitles ()
-  (interactive)
-  (shell-command "periscope.py -l en *.mkv *.mp4 *.avi &"))
 
 ;; {{ show email sent by `git send-email' in gnus
 (with-eval-after-load 'gnus
@@ -480,6 +479,7 @@ FN checks these characters belong to normal word characters."
   (memq major-mode my-auto-save-exclude-major-mode-list))
 
 (with-eval-after-load 'auto-save
+  (push 'file-remote-p auto-save-exclude)
   (push 'my-file-too-big-p auto-save-exclude)
   (push 'my-check-major-mode-for-auto-save auto-save-exclude)
   (setq auto-save-idle 2) ; 2 seconds
@@ -739,8 +739,6 @@ If the shell is already opened in some buffer, switch to that buffer."
 ;; {{ emms
 (with-eval-after-load 'emms
   (emms-all)
-  ;; use mplayer to play video in full screen mode
-  (push "-fs" emms-player-mplayer-parameters)
   (setq emms-player-list '(emms-player-mplayer-playlist
                            emms-player-mplayer
                            emms-player-mpg321
@@ -1028,29 +1026,6 @@ might be bad."
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
-;; {{ fetch subtitles
-(defvar my-fetch-subtitles-proxy nil
-  "http proxy to fetch subtitles, like http://127.0.0.1:8118 (privoxy).")
-
-(defun my-fetch-subtitles (&optional video-file)
-  "Fetch subtitles of VIDEO-FILE.
-See https://github.com/RafayGhafoor/Subscene-Subtitle-Grabber."
-  (let* ((cmd-prefix "subgrab -l EN"))
-    (when my-fetch-subtitles-proxy
-      (setq cmd-prefix (format "http_proxy=%s https_proxy=%s %s"
-                               my-fetch-subtitles-proxy
-                               my-fetch-subtitles-proxy
-                               cmd-prefix)))
-    (cond
-     (video-file
-      (let* ((default-directory (file-name-directory video-file)))
-        (shell-command (format "%s -m \"%s\" &"
-                               cmd-prefix
-                               (file-name-base video-file)))))
-     (t
-      (shell-command (format "%s --dir . &" cmd-prefix))))))
-;; }}
-
 (defvar my-sdcv-org-head-level 2)
 ;; {{ use sdcv dictionary to find big word definition
 (defun my-sdcv-format-bigword (word zipf)
@@ -1178,7 +1153,7 @@ Org node property PDF_PAGE_OFFSET is used to calculate physical page number."
                            ("j" my-open-pdf-scroll-or-next-page)
                            ("p" my-open-pdf-previous-page)
                            ("n" my-open-pdf-next-page)
-                           ("g" (lambda () (interactive) (my-open-pdf-goto-page (read-number "Page number: " 1))))
+                           ("g" (my-open-pdf-goto-page (read-number "Page number: " 1)))
                            ("f" my-open-pdf-from-history))
                          "PDF: [k]up [j]down [p]revious-page [n]ext-page [g]oto [f]rom-history [q]uit"
                          nil))
@@ -1222,5 +1197,11 @@ It's also controlled by `my-lazy-before-save-timer'."
     (setq comint-input-ring-file-name my-gdb-history-file)
     (comint-read-input-ring t)))
 (add-hook 'gud-gdb-mode-hook 'gud-gdb-mode-hook-setup)
+
+(defun my-emms-play-current-directory ()
+  "Play all media files of current directory."
+  (interactive)
+  (my-ensure 'emms)
+  (emms-play-directory default-directory))
 
 (provide 'init-misc)

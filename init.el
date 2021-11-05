@@ -101,7 +101,6 @@
   (require-init 'init-org t)
   (require-init 'init-python t)
   (require-init 'init-lisp t)
-  (require-init 'init-elisp t)
   (require-init 'init-yasnippet t)
   (require-init 'init-cc-mode t)
   (require-init 'init-linum-mode)

@@ -1,0 +1,9 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: write file
+# key: file
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+(with-temp-buffer
+  (insert ${1:"contents"})
+  ;; write buffer content into file
+  (write-region (point-min) (point-max) $0))
