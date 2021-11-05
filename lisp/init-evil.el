@@ -35,9 +35,6 @@
 ;;   (let ((evil-this-register ?0))
 ;;     (call-interactively 'evil-paste-after)))
 
-;; (define-key evil-visual-state-map "p" 'evil-paste-from-register)
-(delete-selection-mode 1)
-
 
 ;;-------------------------------------------------------------
 ;; highlight yank region
