@@ -393,6 +393,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'wc-mode)
 (require-package 'qrencode)
 (require-package 'ws-butler)
+(require-package 'sage-shell-mode)
 
 ;; speed up CI
 (unless my-disable-idle-timer
