@@ -6,7 +6,7 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.2.1
+;; Version: 0.2.3
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -467,13 +467,49 @@ CURRENT-FILE is used to calculate full path of images."
     (goto-char (point-max))
     (re-search-backward org-mime-mail-signature-separator nil t nil)))
 
+
+(defun org-mime-extract-non-org ()
+  "Extract content not in org format (gpg signature, attachments ...)."
+  (unless (org-region-active-p)
+    (let* (rlt str b e (old-pos (point)))
+      (goto-char (point-min))
+      (while (re-search-forward "<#secure \\|<#part " (point-max) t)
+        (setq str (match-string 0))
+        (setq b (match-beginning 0))
+        (cond
+         ;; one line gpg signature tag
+         ((string-match "^<#secure " str)
+          (setq e (line-end-position)))
+
+         ;; multi-lines attachment
+         ((string-match "^<#part " str)
+          (save-excursion
+            (unless (re-search-forward "<#/part>" (point-max) t)
+              (error (format "\"%s\" should have end tag." str)))
+            (setq e (match-end 0)))))
+
+        ;; delete tag
+        (when (and b e (< b e))
+          (push (buffer-substring-no-properties b e) rlt)
+          (delete-region b e))
+
+        ;; search next tag
+        (goto-char (point-min)))
+
+      ;; move cursor back to its original position
+      (goto-char old-pos)
+
+      (nreverse rlt))))
+
 ;;;###autoload
 (defun org-mime-htmlize ()
   "Export a portion of an email to html using `org-mode'.
 If called with an active region only export that region, otherwise entire body."
   (interactive)
   (when org-mime-debug (message "org-mime-htmlize called"))
+
   (let* ((region-p (org-region-active-p))
+         (tags (org-mime-extract-non-org))
          (html-start (funcall org-mime-find-html-start
                               (or (and region-p (region-beginning))
                                   (org-mime-mail-body-begin))))
@@ -493,8 +529,13 @@ If called with an active region only export that region, otherwise entire body."
     ;; delete current region
     (delete-region html-start html-end)
     (goto-char html-start)
-    ;; insert new current
-    (org-mime-insert-html-content plain file html opts)))
+
+    ;; insert converted html
+    (org-mime-insert-html-content plain file html opts)
+
+    ;; restore non-org tags
+    (dolist (tag tags)
+      (insert (concat "\n" tag "\n")))))
 
 (defun org-mime-apply-html-hook (html)
   "Apply HTML hook."
