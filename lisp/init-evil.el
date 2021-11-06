@@ -1008,4 +1008,14 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
     (define-key evil-ex-completion-map (kbd "M-n") 'my-search-evil-ex-history)))
 ;; }}
 
+;; workaround an EVIL bug in GUI Emacs
+;; @see https://github.com/redguardtoo/emacs.d/issues/955
+(defvar my-evil-enable-visual-update-x-selection nil
+  "Automatically copy the selected text into evil register.
+I'm not sure this is good idea.")
+(defun my-evil-visual-update-x-selection-hack (orig-func &rest args)
+  (when my-evil-enable-visual-update-x-selection
+    (apply orig-func args)))
+(advice-add 'evil-visual-update-x-selection :around #'my-evil-visual-update-x-selection-hack)
+
 (provide 'init-evil)
