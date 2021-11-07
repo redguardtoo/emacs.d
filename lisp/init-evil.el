@@ -1008,8 +1008,13 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
     (define-key evil-ex-completion-map (kbd "M-n") 'my-search-evil-ex-history)))
 ;; }}
 
-;; workaround an EVIL bug in GUI Emacs
 ;; @see https://github.com/redguardtoo/emacs.d/issues/955
+;; `evil-paste-after' => `current-kill' => `interprogram-paste-function'=> `gui-selection-value'
+;; `gui-selection-value' returns clipboard text from CLIPBOARD or "PRIMARY" clipboard which are
+;; also controlled by `select-enable-clipboard' and `select-enable-primary'.
+;; Please note `evil-visual-update-x-selection' automatically updates PRIMARY clipboard with
+;; visual selection.
+;; I set `my-evil-enable-visual-update-x-selection' to nil to avoid all those extra "features".
 (defvar my-evil-enable-visual-update-x-selection nil
   "Automatically copy the selected text into evil register.
 I'm not sure this is good idea.")
