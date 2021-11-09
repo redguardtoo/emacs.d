@@ -22,8 +22,9 @@
 (setq *emacs27* (>= emacs-major-version 27))
 
 ;; don't GC during startup to save time
-(setq gc-cons-percentage 0.6)
-(setq gc-cons-threshold most-positive-fixnum)
+(unless (bound-and-true-p my-computer-has-smaller-memory-p)
+  (setq gc-cons-percentage 0.6)
+  (setq gc-cons-threshold most-positive-fixnum))
 
 ;; {{ emergency security fix
 ;; https://bugs.debian.org/766397

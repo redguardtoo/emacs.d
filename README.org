@@ -28,6 +28,7 @@
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#computers-with-smaller-memory][Computers with smaller memory]]
   - [[#vim-vs-emacs][Vim vs Emacs]]
   - [[#backup-packages][Backup packages]]
   - [[#hardcore-debug-technique][Hardcore debug technique]]
@@ -289,6 +290,11 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Computers with smaller memory
+Make sure you have this line in =early-init.el= (Emacs 27.1+) or at the beginning of =init.el= (Emacs 26),
+#+begin_src elisp
+(setq my-computer-has-smaller-memory-p nil)
+#+end_src
 ** Vim vs Emacs
 I prefer default hotkeys&commands from EVIL and Emacs.
 
