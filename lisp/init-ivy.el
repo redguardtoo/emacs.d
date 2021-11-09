@@ -318,7 +318,19 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   ;; when `ivy-dynamic-exhibit-delay-ms' is a non-zero value
   ;; Setting it to a bigger value in ALL OSs is also more green energy btw.
   ;; @see https://github.com/abo-abo/swiper/issues/1218
-  (setq ivy-dynamic-exhibit-delay-ms (if (or *unix* *is-a-mac*) 0 250))
+  (setq ivy-dynamic-exhibit-delay-ms 250)
+
+  ;; @see https://github.com/abo-abo/swiper/issues/1218#issuecomment-962516670
+  ;; Thanks to Umar Ahmad (Gleek)
+  (defvar my-ivy--queue-last-input nil)
+  (defun my-ivy-queue-exhibit-a(f &rest args)
+    (cond
+     ((equal my-ivy--queue-last-input (ivy--input))
+      (ivy--exhibit))
+     (t
+      (apply f args)))
+    (setq my-ivy--queue-last-input (ivy--input)))
+  (advice-add 'ivy--queue-exhibit :around #'my-ivy-queue-exhibit-a)
 
   ;; Press C-p and Enter to select current input as candidate
   ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
