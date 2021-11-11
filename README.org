@@ -40,7 +40,8 @@
   - [[#use-this-configuration-as-merge-tool-for-git][Use this configuration as merge tool for Git]]
   - [[#default-terminal-shell][Default terminal shell]]
   - [[#override-default-setup][Override default setup]]
-  - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
+  - [[#code-navigation][Code navigation]]
+  - [[#code-auto-completion][Code auto-completion]]
   - [[#color-theme][Color theme]]
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
@@ -68,8 +69,6 @@
   - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
-  - [[#c-auto-completion-doesnt-work][C++ auto-completion doesn't work?]]
-  - [[#auto-completion-for-other-languages][Auto-completion for other languages]]
   - [[#chinese-input-method-editor][Chinese Input Method Editor]]
   - [[#install-multiple-versions-of-emacs][Install multiple versions of Emacs]]
   - [[#change-time-locale][Change Time Locale]]
@@ -392,8 +391,8 @@ Here is a sample to override keybindings defined in =lisp/init-evil.el=,
     "ll" 'pwd
     "pp" 'pwd))
 #+end_src
-** Code navigation and auto-completion
-It's usable out of box if Ctags is installed
+** Code navigation
+It's usable out of box if Ctags is installed.
 
 To navigate, =M-x counsel-etags-find-tag-at-point=.
 
@@ -402,6 +401,31 @@ To enable code auto-completion, =M-x counsel-etags-scan-code= at least once.
 Optionally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
 
 No further setup is required.
+** Code auto-completion
+I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. In this setup, users can press digit key to select the candidate from =company-mode=. To disabled this feature, =(setq my-company-select-by-number-p nil)=. Please see =my-company-zero-key-for-filter= for more tips.
+
+*** C++ auto-completion doesn't work?
+There are many ways to scan the C++ source files. =company-clang= from =company-mode= and =Clang= is good at handling C++.
+
+If you use clang to parse the C++ code:
+- Make sure code is syntax correct
+- assign reasonable value into =company-clang-arguments=
+
+Here is sample setup:
+#+begin_src elisp
+(setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
+#+end_src
+
+In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
+
+You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
+
+*** Auto-completion for other languages
+It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
+
+For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
+
+You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Color theme
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
@@ -564,30 +588,6 @@ You can set =my-initial-evil-state-setup= to customize the initial evil state pe
 ;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
 (push '(ivy-occur-grep-mode . normal) my-initial-evil-state-setup)
 #+end_src
-** C++ auto-completion doesn't work?
-I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
-
-There are many ways to scan the C++ source files. =company-clang= from =company-mode= and =Clang= is good at handling C++.
-
-If you use clang to parse the C++ code:
-- Make sure code is syntax correct
-- assign reasonable value into company-clang-arguments
-
-Here is sample setup:
-#+begin_src elisp
-(setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
-#+end_src
-
-In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
-
-You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
-
-** Auto-completion for other languages
-It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
-
-For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
-
-You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
 Please note pyim is already built into this setup. You need not install it through ELPA.
 
@@ -707,9 +707,6 @@ You could insert below code into =~/.custom.el=,
   (setq lsp-diagnostic-package :none)
   ;; handle yasnippet by myself
   (setq lsp-enable-snippet nil)
-  ;; use `company-ctags' only.
-  ;; Please note `company-lsp' is automatically enabled if it's installed
-  (setq lsp-enable-completion-at-point nil)
   ;; turn off for better performance
   (setq lsp-enable-symbol-highlighting nil)
   ;; use find-fine-in-project instead
