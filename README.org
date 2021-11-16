@@ -292,7 +292,7 @@ Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's
 ** Computers with smaller memory
 Make sure you have this line in =early-init.el= (Emacs 27.1+) or at the beginning of =init.el= (Emacs 26),
 #+begin_src elisp
-(setq my-computer-has-smaller-memory-p nil)
+(setq my-computer-has-smaller-memory-p t)
 #+end_src
 ** Vim vs Emacs
 I prefer default hotkeys&commands from EVIL and Emacs.
