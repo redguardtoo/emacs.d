@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020-2021 Chen Bin
 ;;
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Keywords: unix tools
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/shellcop
@@ -29,7 +29,8 @@
 ;;   - Insert "(add-hook 'shell-mode-hook 'shellcop-start)" into ~/.emacs
 ;;   - Start shell-mode by "M-x shell"
 ;;   - Run any command line program in shell
-;;   - Press ENTER in the program's output containing file and line number
+;;   - Press ENTER in the program's output containing file and line number.
+;;     Or run `shellcop-goto-location-near-point'.
 ;;   - Cursor is NOT required to be on the same line containing file path.
 ;;
 ;; `shellcop-reset-with-new-command' will,
@@ -74,7 +75,6 @@ If there is error, it returns t."
 
 (defcustom shellcop-excluded-file-patterns
   '("\\.\\(bundle\\|min\\)\\.[tj]sx?$"
-    "/node_modules/"
     "/\\.svn/"
     "/\\.hg/"
     "/\\.git/")
@@ -177,6 +177,29 @@ If ABOVE is t, extract locations above current point; or else below current poin
     (goto-char (point-min))
     (forward-line (1- n))))
 
+(defun shellcop-goto-location-near-point ()
+  "Goto location (file, line, column) near current point."
+  (interactive)
+  (let* ((locations (shellcop-extract-all-locations))
+         location-detail
+         location)
+
+    (when shellcop-debug
+      (message "shellcop-goto-location-near-point (%s)" locations))
+
+    (when (and (> (length locations) 0)
+               (setq location (completing-read "Go to: " locations))
+               (setq location-detail (assoc location locations)))
+      (find-file-other-window (nth 1 location-detail))
+      (goto-char (point-min))
+      ;; forward N lines
+      (shellcop-forward-line (string-to-number (nth 2 location-detail)))
+      ;; move to specific column
+      (when (nth 3 location-detail)
+        (goto-char (line-beginning-position))
+        (forward-char (string-to-number (nth 3 location-detail)))))
+    locations))
+
 (defun shellcop-comint-send-input-hack (orig-func &rest args)
   "Advice `comint-send-input' with ORIG-FUNC and ARGS.
 Extract file paths when user presses enter key shell."
@@ -189,20 +212,8 @@ Extract file paths when user presses enter key shell."
       ;; do nothing
       (apply orig-func args))
 
-     ((setq locations (shellcop-extract-all-locations))
-      (let* (location-detail
-             location)
-        (when (and (> (length locations) 0)
-                   (setq location (completing-read "Go to: " locations))
-                   (setq location-detail (assoc location locations)))
-          (find-file-other-window (nth 1 location-detail))
-          (goto-char (point-min))
-          ;; forward N lines
-          (shellcop-forward-line (string-to-number (nth 2 location-detail)))
-          ;; move to specific column
-          (when (nth 3 location-detail)
-            (goto-char (line-beginning-position))
-            (forward-char (string-to-number (nth 3 location-detail)))))))
+     ((shellcop-goto-location-near-point))
+
      (t
       (apply orig-func args)))))
 
