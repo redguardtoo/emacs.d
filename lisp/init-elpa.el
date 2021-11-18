@@ -152,6 +152,7 @@
     workgroups2
     zoutline
     company-c-headers
+    graphql-mode
     company-statistics)
   "Packages to install from melpa-unstable.")
 
@@ -389,6 +390,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (require-package 'qrencode)
 (require-package 'ws-butler)
 (require-package 'sage-shell-mode)
+(require-package 'graphql-mode)
 
 (defvar my-color-themes
   '(afternoon-theme
