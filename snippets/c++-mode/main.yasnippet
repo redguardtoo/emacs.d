@@ -1,0 +1,42 @@
+# -*- mode: snippet -*-
+# name: main in C++
+# key: main
+# --
+#include <iostream>
+#include <vector>
+#include <list>
+#include <map>
+#include <string>
+
+using namespace std;
+
+int main() {
+    int n0{};     // value-initialization (to zero)
+    int n1{1};    // direct-list-initialization
+    string s1{'a', 'b', 'c', 'd'}; // initializer-list constructor call
+
+    map<int, string> m = { // nested list-initialization
+        {1, "a"},
+        {2, {'a', 'b', 'c'} },
+        {3, s1}
+    };
+    vector<int> a1{1,2,3};
+    list<int> l1{4,5,6};
+
+    cout << "n0=" << n0 << " n1=" << n1 << " s1=" << s1 << endl;
+
+    cout << "m: " << endl;
+    for(auto p: m) {
+        cout << p.first << ' ' << p.second << endl;
+    }
+
+    cout << "a1: " << endl;
+    for(auto p: a1) {
+        cout << p << endl;
+    }
+
+    cout << "l1: " << endl;
+    for(auto p: l1) {
+        cout << p << endl;
+    }
+}
