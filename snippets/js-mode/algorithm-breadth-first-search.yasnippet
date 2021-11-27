@@ -1,0 +1,46 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: breadth first search (BFS)
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// breadth first search (BFS)
+// @see https://en.wikipedia.org/wiki/Breadth-first_search
+function bfs(start, adjacentFn = (cur) => []) {
+  const q = []; // queue
+  const visited = {}; // visited notes
+
+  q.push(start); // add the start point into queue
+  visited[start] = 1;
+
+  let step = 0;
+  while (q.length) {
+    const sz = q.length;
+    // reach out from ALL items int current queue
+    // The "for" loop is NOT necessary if we don't need record "step".
+    // We can just pop one node push its adjacent nodes immediately.
+    for (let i = 0; i < sz; i++) {
+      const cur = q.pop();
+      console.log('Shortest distance from ' + start + ' to ' + cur + ' is ' + step);
+      // add children or adjacent nodes of cur
+      for(const x of adjacentFn(cur)) {
+        if(!visited[x]) {
+          q.push(x);
+          visited[x] = 1;
+        }
+      }
+    }
+    step++;
+  }
+}
+
+// const a = [ null, 'a', 'b1', 'b2', 'c1', 'c2', 'c3', 'c4'];
+// bfs(1, (cur) => {
+//   const result = [];
+//   if(cur * 2 < a.length)  {
+//     result.push(cur*2);
+//   };
+//   if(cur * 2 + 1 < a.length)  {
+//     result.push(cur * 2 + 1);
+//   };
+//   return result;
+// });

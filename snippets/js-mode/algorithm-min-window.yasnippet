@@ -1,0 +1,61 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: binary search
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// find a minimum substring of string s which contain all the characters of string t
+// for example, if t is "hood", then the result should contain one "h", two "o", one "d"
+function checkInclusion(s, t) {
+  const need = {};
+  const window = {};
+  for (let i = 0; i < t.length; i++) {
+    const c =t.charAt(i);
+    if(!need[c]) {
+      need[c] = 1;
+    } else {
+      need[c]++;
+    }
+  }
+  console.log('need=', need);
+  let left = 0, right = 0;
+  let valid = 0;
+  let start = 0, len = Number.MAX_VALUE;
+  while (right < s.length) {
+    const c = s.charAt(right);
+    right++;
+    // update window after insert a character from right side
+    if (need[c]) {
+      if(!window[c]) {
+        window[c] = 1;
+      } else {
+        window[c]++;
+      }
+      if (window[c] == need[c]) {
+        valid++;
+      }
+    }
+
+    // add debug code here
+    // console.log('left=', left, 'right=', right, 'need', need, 'window=', window);
+
+    // shrink window from left side?
+    while (valid === Object.keys(need).length) {
+      // record the smaller substring
+      if (right - left < len) {
+        start = left;
+        len = right - left;
+      }
+      const d = s.charAt(left);
+      left++;
+      // update window after delete a character in window's left edge
+      if (need[d]) {
+        if (window[d] == need[d]) {
+          valid--;
+        }
+        window[d]--;
+      }
+    }
+  }
+  // return result
+  return len === Number.MAX_VALUE ? '' : s.substring(start, start + len);
+}

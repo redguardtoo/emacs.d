@@ -6,5 +6,5 @@
 const ${1:arr} = new Array(${2:rowCount});
 for(let i = 0; i < ${1:$(yas/substr yas-text "[^ ]*")}.length; i++) {
   // please note only primitive value can be filled in
-  ${1:$(yas/substr yas-text "[^ ]*")}[i].push(new Array(${3:colCount}).fill($0));
+  ${1:$(yas/substr yas-text "[^ ]*")}[i] = new Array(${3:colCount}).fill($0);
 }

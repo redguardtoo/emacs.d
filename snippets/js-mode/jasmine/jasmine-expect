@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# group: jasmine
-# name: jasmine expect
-# key: jas
-# --
-expect(true).toBe(true);

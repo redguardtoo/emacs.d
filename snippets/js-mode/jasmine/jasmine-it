@@ -1,8 +1,0 @@
-# -*- mode: snippet -*-
-# group: jasmine
-# name: jasmine it
-# key: jas
-# --
-it('$0', function(){
-  expect(true).toBe(true);
-});
