@@ -182,8 +182,8 @@
         ;; ;; {{ Option 2: tsinghua mirror repository
         ;; ;; @see https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
         ;; ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-         ("melpa" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
-         ("melpa-stable" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa-stable/")
+         ("melpa" . "http://elpa.emacs-china.org/melpa/")
+         ("melpa-stable" . "http://elpa.emacs-china.org/stable-melpa/")
         ;; }}
         ))
 
