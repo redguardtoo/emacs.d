@@ -153,7 +153,7 @@
     zoutline
     company-c-headers
     company-statistics
-    jenkinsfile-mode)
+    jenkinsfile-mode
     graphql-mode
     company-statistics)
   "Packages to install from melpa-unstable.")
