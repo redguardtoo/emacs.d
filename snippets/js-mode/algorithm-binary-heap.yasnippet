@@ -1,0 +1,102 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: Binary Heap - J. W. J. Williams(1964)
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// @see https://en.wikipedia.org/wiki/Binary_heap
+class BinaryHeap {
+  constructor(size /*optional*/, compareFn /*optional*/) {
+    this.store = new Array((size || 64 )+ 1);
+    this.length = 0;
+    this.compareFn = compareFn;
+  }
+
+  parent(k) {
+    return Math.floor(k/2);
+  }
+
+  left(k) {
+    return k * 2;
+  }
+
+  right(k) {
+    return k * 2 + 1;
+  }
+
+  compare(i, j) {
+    if(this.compareFn) {
+      return this.compareFn(this.store[i], this.store[j]);
+    }
+    // '<' => biggest is root note
+    // '>' => smallest is root note
+    return this.store[i] < this.store[j];
+  }
+
+  swap(i, j) {
+    const tmp = this.store[i];
+    this.store[i] = this.store[j];
+    this.store[j] = tmp;
+  }
+
+  swim(k) {
+    while(k > 1 && this.compare(this.parent(k), k) ) {
+      // If k is bigger it should swim up
+      this.swap(this.parent(k), k);
+      k = this.parent(k);
+    }
+  }
+
+  sink(k) {
+    // sink until it's left node
+    while(this.left(k) <= this.length) {
+      // find the bigger one of two children
+      let item = this.left(k);
+      if(this.right(k) <= this.length && this.compare(item, this.right(k))) {
+        // if right child exists and is greater than left child
+        item = this.right(k);
+      }
+      if(this.compare(item, k)) {
+        // k is already bigger one, so it should stay on the top
+        break;
+      }
+      // sinking...
+      this.swap(k, item);
+      k = item;
+    }
+  }
+
+  push(e) {
+    const idx = ++this.length;
+    if(idx >= this.store.length) {
+      this.store.push(e);
+    } else {
+      this.store[idx] = e;
+    }
+    this.swim(this.length);
+  }
+
+  pop() {
+    const max =  this.store[1];
+    this.swap(1, this.length);
+    this.store[this.length--] = null;
+    this.sink(1);
+    return max;
+  }
+
+  print() {
+    let msg = 'Binary Heap has ' + this.length + ' items:\n';
+    for (let i = 1; i <= this.length; i++) {
+      msg += this.store[i] + ' ';
+    }
+    console.log(msg);
+  }
+}
+
+// const h = new BinaryHeap();
+// h.push(4);
+// h.push(9);
+// h.push(3);
+// h.push(11);
+// h.print();
+// console.log('h.pop()=', h.pop());
+// h.print();

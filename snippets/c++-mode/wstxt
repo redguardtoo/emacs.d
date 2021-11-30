@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: wxStaticText
-# key: wstxt
-# --
-wxStaticText(this,${1:wxID_ANY},_("${2:Default}"))

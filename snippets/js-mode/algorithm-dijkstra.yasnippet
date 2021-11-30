@@ -1,0 +1,58 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: Dijkstra's algorithm
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+function dijkstra(start, graph) {
+  // Binary Heap is optional, simple queue also works
+  const q = [];
+
+  q.push({id: start, distFromStart: 0}); // add the start point into queue
+
+  const distTo = new Array(graph.length).fill(Number.MAX_VALUE);
+  distTo[start] = 0;
+
+  while (q.length) {
+    // reach out from ALL items int current queue
+    // The "for" loop is NOT necessary if we don't need record "step".
+    // We can just pop one node push its adjacent nodes immediately.
+    const cur = q.pop();
+    // a shorter distance from "start" to "cur" exists
+    if(cur.distFromStart > distTo[cur.id]) {
+      continue;
+    }
+    // add children or adjacent nodes of cur
+    const otherNodesWeight = graph[cur.id];
+    for (let nextNodeId = 0; nextNodeId < otherNodesWeight.length; nextNodeId++) {
+      // weight is -1 => there is no way to next node
+      if(nextNodeId === cur.id || otherNodesWeight[nextNodeId] === -1) {
+        continue;
+      }
+      const distToNextNode = distTo[cur.id] + otherNodesWeight[nextNodeId];
+      if(distTo[nextNodeId] > distToNextNode) {
+        // update distTo (dp table)
+        distTo[nextNodeId] = distToNextNode;
+        q.push({id: nextNodeId, distFromStart: distToNextNode});
+      }
+    }
+  }
+  return distTo;
+}
+
+console.time('Shortest distance');
+// Three ways from node 0 to node 5 (number embedded in the arrow is weight):
+//   0 --5-->  4 --6--> 5
+//   0 --8-->  3 --2--> 5
+//   0 --9-->  1 --2--> 2 --1--> 5
+// shortest distance from node 0 to node 5 is 10 (through node 3)
+const myGraph = [
+  [ 0 , 9, -1, 8, 5, -1],
+  [ 9 , 0, 2, -1, -1, -1],
+  [ -1, 2, 0, -1, -1, 1],
+  [ 8, -1, -1, 0, -1, 2],
+  [ 5, -1, -1, -1, 0, 6],
+  [ -1, -1, 1, 2, 6, 0],
+];
+const result = dijkstra(0, myGraph);
+console.log('result=', result);
+console.timeEnd('Shortest distance');

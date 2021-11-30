@@ -3,10 +3,6 @@
 ;; some cool org tricks
 ;; @see http://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Org clock
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 (with-eval-after-load 'org-clock
   ;; Change task state to STARTED when clocking in
   (setq org-clock-in-switch-to-state "STARTED")
@@ -16,15 +12,15 @@
   (setq org-clock-out-remove-zero-time-clocks t)
 
   ;; Show the clocked-in task - if any - in the header line
-  (defun sanityinc/show-org-clock-in-header-line ()
+  (defun my-show-org-clock-in-header-line ()
     (setq-default header-line-format '((" " org-mode-line-string " "))))
 
-  (defun sanityinc/hide-org-clock-from-header-line ()
+  (defun my-hide-org-clock-from-header-line ()
     (setq-default header-line-format nil))
 
-  (add-hook 'org-clock-in-hook 'sanityinc/show-org-clock-in-header-line)
-  (add-hook 'org-clock-out-hook 'sanityinc/hide-org-clock-from-header-line)
-  (add-hook 'org-clock-cancel-hook 'sanityinc/hide-org-clock-from-header-line)
+  (add-hook 'org-clock-in-hook 'my-show-org-clock-in-header-line)
+  (add-hook 'org-clock-out-hook 'my-hide-org-clock-from-header-line)
+  (add-hook 'org-clock-cancel-hook 'my-hide-org-clock-from-header-line)
 
   (define-key org-clock-mode-line-map [header-line mouse-2] 'org-clock-goto)
   (define-key org-clock-mode-line-map [header-line mouse-1] 'org-clock-menu))
@@ -199,8 +195,7 @@ It's value could be customized liked \"/usr/bin/firefox\".
   ;; }}
 
   (defun my-org-refile-hack (orig-func &rest args)
-    "When `org-refile' scans org files,
-skip user's own code in `org-mode-hook'."
+    "When `org-refile' scans org files, skip user's own code in `org-mode-hook'."
     (let* ((my-force-buffer-file-temp-p t))
       (apply orig-func args)))
   (advice-add 'org-refile :around #'my-org-refile-hack)

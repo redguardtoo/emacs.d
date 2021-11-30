@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: boost_require
-# key: req
-# --
-BOOST_REQUIRE( ${1:condition} );
-$0

@@ -96,7 +96,7 @@
   (setq winum-mode-line-position 0)
   (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold))
 ;; }}
-(winum-mode 1)
+(my-run-with-idle-timer 0.5 #'winum-mode)
 
 (defun my-toggle-full-window()
   "Toggle full view of selected window."
@@ -106,15 +106,19 @@
       (delete-other-windows)
     (winner-undo)))
 
-(defun my-subwindow-setup ()
-  "Setup subwindow"
+(defun my-windows-setup ()
+  "Setup windows."
   (interactive)
-  (my-setup-extra-keymap '(("i" evil-window-increase-height)
-                           ("d" evil-window-decrease-height)
+  (my-setup-extra-keymap '(("k" enlarge-window)
+                           ("j" shrink-window)
+                           ("l" enlarge-window-horizontally)
+                           ("h" shrink-window-horizontally)
                            ("b" balance-windows)
                            ("t" my-toggle-two-split-window)
-                           ("k" (lambda () (interactive) (kill-buffer (current-buffer))))
+                           ("c" (kill-buffer (current-buffer)))
                            ("r" my-rotate-windows))
-                         "Window: [r]oate [t]oggle-split [i]ncrease [d]crease [b]alance [k]ill [q]uit"
+                         "Window: [r]oate [t]oggle-split [hjkl]resize [b]alance [c]lose [q]uit"
                          nil))
+(global-set-key (kbd "C-c C-r") 'my-windows-setup)
+
 (provide 'init-windows)

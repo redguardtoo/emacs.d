@@ -1,5 +1,0 @@
-# -*- mode: snippet -*-
-# name: iterator
-# key: iter
-# --
-${1:std::}${2:vector<int>}::iterator ${3:iter};

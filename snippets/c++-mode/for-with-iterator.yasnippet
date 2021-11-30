@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: for(iterator...)
+# key: for
+# --
+for (${1:iter} = ${2:mylist}.begin(); ${1:$(yas/substr yas-text "[^ ]*")} != ${2:$(yas/substr yas-text "[^ ]*")}.end(); ++$1) {
+    $0
+}

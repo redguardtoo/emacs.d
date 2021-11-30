@@ -28,6 +28,9 @@
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#computers-with-smaller-memory][Computers with smaller memory]]
+  - [[#vim-vs-emacs][Vim vs Emacs]]
+  - [[#backup-packages][Backup packages]]
   - [[#hardcore-debug-technique][Hardcore debug technique]]
   - [[#spell-check-code][Spell check code]]
   - [[#lock-packages][Lock packages]]
@@ -37,12 +40,13 @@
   - [[#use-this-configuration-as-merge-tool-for-git][Use this configuration as merge tool for Git]]
   - [[#default-terminal-shell][Default terminal shell]]
   - [[#override-default-setup][Override default setup]]
-  - [[#code-navigation-and-auto-completion][Code navigation and auto-completion]]
+  - [[#code-navigation][Code navigation]]
+  - [[#code-auto-completion][Code auto-completion]]
   - [[#color-theme][Color theme]]
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
   - [[#grepreplace-text-in-project][Grep/Replace text in project]]
   - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
-  - [[#set-auto-mode-alist][Set =auto-mode-alist=]]
+  - [[#set-auto-mode-alist][Set "auto-mode-alist"]]
   - [[#git-gutter][git-gutter]]
   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
@@ -65,8 +69,6 @@
   - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
-  - [[#c-auto-completion-doesnt-work][C++ auto-completion doesn't work?]]
-  - [[#auto-completion-for-other-languages][Auto-completion for other languages]]
   - [[#chinese-input-method-editor][Chinese Input Method Editor]]
   - [[#install-multiple-versions-of-emacs][Install multiple versions of Emacs]]
   - [[#change-time-locale][Change Time Locale]]
@@ -135,6 +137,7 @@ Most command line programs can be installed through =default package manager=.
 
 =Default package manager= could be:
 - [[https://github.com/transcode-open/apt-cyg][apt-cyg]] at Cygwin
+- package manager of [[https://www.msys2.org/docs/package-management/][MSYS2]]
 - [[https://github.com/mxcl/homebrew][homebrew]] at macOS
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
@@ -144,10 +147,10 @@ These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
 **** fortune-zh or fortune
-- Show ancient Chinese poem or quotes from random sources
+Show ancient Chinese poem or quotes from random sources. Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS.
 
-Please note you can't install =fortune-zh= through [[https://brew.sh/][homebrew]] on macOS but there is a simple workaround:
-- install fortune
+But there is a simple workaround:
+- Install fortune
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
@@ -286,6 +289,19 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Computers with smaller memory
+Make sure you have this line in =early-init.el= (Emacs 27.1+) or at the beginning of =init.el= (Emacs 26),
+#+begin_src elisp
+(setq my-computer-has-smaller-memory-p t)
+#+end_src
+** Vim vs Emacs
+I prefer default hotkeys&commands from EVIL and Emacs.
+
+But sometimes a mixed style could be better for my personal workflow. See the function =my-optimize-evil= in =init-evil.el=.
+
+You can insert =(my-optimize-evil)= into =~/.custom.el= to enable it.
+** Backup packages
+Run =M-x elpamr-create-mirror-for-installed= create a local repository from installed packages. See [[https://github.com/redguardtoo/elpa-mirror]] for more details.
 ** Hardcore debug technique
 This Emacs configuration is fast and robust.
 
@@ -375,8 +391,8 @@ Here is a sample to override keybindings defined in =lisp/init-evil.el=,
     "ll" 'pwd
     "pp" 'pwd))
 #+end_src
-** Code navigation and auto-completion
-It's usable out of box if Ctags is installed
+** Code navigation
+It's usable out of box if Ctags is installed.
 
 To navigate, =M-x counsel-etags-find-tag-at-point=.
 
@@ -385,6 +401,31 @@ To enable code auto-completion, =M-x counsel-etags-scan-code= at least once.
 Optionally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
 
 No further setup is required.
+** Code auto-completion
+I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. In this setup, users can press digit key to select the candidate from =company-mode=. To disabled this feature, =(setq my-company-select-by-number-p nil)=. Please see =my-company-zero-key-for-filter= for more tips.
+
+*** C++ auto-completion doesn't work?
+There are many ways to scan the C++ source files. =company-clang= from =company-mode= and =Clang= is good at handling C++.
+
+If you use clang to parse the C++ code:
+- Make sure code is syntax correct
+- assign reasonable value into =company-clang-arguments=
+
+Here is sample setup:
+#+begin_src elisp
+(setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
+#+end_src
+
+In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
+
+You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
+
+*** Auto-completion for other languages
+It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
+
+For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
+
+You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Color theme
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
@@ -422,7 +463,7 @@ You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
 I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
 
 You can input =:pinyin1 pinyin2 !pinyin3 pinyin4= in ivy UI to search by Chinese Pinyin. The key point is to make sure the first character of input is ":".
-** Set =auto-mode-alist=
+** Set "auto-mode-alist"
 The =auto-mode-alist= associates major modes with files.
 
 For example, associate =rjsx-mode= file with extension "*.jsx",
@@ -443,6 +484,8 @@ You can set =git-gutter:exp-to-create-diff= to make git gutter support other VCS
       (shell-command-to-string (format "p4 diff -du -db %s"
                                        (file-relative-name buffer-file-name))))
 #+end_src
+
+Please note =git-gutter= assumes the cli program [[https://www.gnu.org/software/diffutils/][diff]] is added into environment variable PATH.  You might need install it through MSYS2 or Cygwin on Windows.
 ** Setup fonts in GUI Emacs
 Non-Chinese can use [[https://github.com/rolandwalker/unicode-fonts][unicode-fonts]].
 
@@ -537,30 +580,14 @@ By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(
 It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
 You could visit [[https://github.com/emacs-evil/evil/][its website]] to download its free ebook there.
-** C++ auto-completion doesn't work?
-I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. Other packages have similar setup.
 
-There are many ways to scan the C++ source files. =company-clang= from =company-mode= and =Clang= is good at handling C++.
-
-If you use clang to parse the C++ code:
-- Make sure code is syntax correct
-- assign reasonable value into company-clang-arguments
-
-Here is sample setup:
+You can set =my-initial-evil-state-setup= to customize the initial evil state per major mode,
 #+begin_src elisp
-(setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
+;; `diff-mode' uses Emacs original key bindings
+(push '(diff-mode . emacs) my-initial-evil-state-setup)
+;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
+(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-setup)
 #+end_src
-
-In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
-
-You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
-
-** Auto-completion for other languages
-It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
-
-For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
-
-You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Chinese Input Method Editor
 Please note pyim is already built into this setup. You need not install it through ELPA.
 
@@ -680,9 +707,6 @@ You could insert below code into =~/.custom.el=,
   (setq lsp-diagnostic-package :none)
   ;; handle yasnippet by myself
   (setq lsp-enable-snippet nil)
-  ;; use `company-ctags' only.
-  ;; Please note `company-lsp' is automatically enabled if it's installed
-  (setq lsp-enable-completion-at-point nil)
   ;; turn off for better performance
   (setq lsp-enable-symbol-highlighting nil)
   ;; use find-fine-in-project instead

@@ -164,13 +164,19 @@ If N is not nil, only list directories in current project."
 
 (defun ivy-occur-grep-mode-hook-setup ()
   "Set up ivy occur grep mode."
+  ;; turn on wgrep right now
+  ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
+
+  (when evil-mode
+    (evil-local-set-key 'normal (kbd "RET") #'ivy-occur-press-and-switch)
+    ;; In ivy original key bindings, "w" changes to `wgrep-mode'
+    ;; Use same key binding in EVIL.
+    (evil-local-set-key 'normal "w" #'ivy-wgrep-change-to-wgrep-mode))
+
   ;; no syntax highlight, I only care performance when searching/replacing
   (font-lock-mode -1)
   ;; @see https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
-  (column-number-mode -1)
-  ;; turn on wgrep right now
-  ;; (ivy-wgrep-change-to-wgrep-mode) ; doesn't work, don't know why
-  (local-set-key (kbd "RET") #'ivy-occur-press-and-switch))
+  (column-number-mode -1))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
 (defun my-counsel-git-grep (&optional level)
@@ -312,7 +318,19 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   ;; when `ivy-dynamic-exhibit-delay-ms' is a non-zero value
   ;; Setting it to a bigger value in ALL OSs is also more green energy btw.
   ;; @see https://github.com/abo-abo/swiper/issues/1218
-  (setq ivy-dynamic-exhibit-delay-ms (if (or *unix* *is-a-mac*) 0 250))
+  (setq ivy-dynamic-exhibit-delay-ms 250)
+
+  ;; @see https://github.com/abo-abo/swiper/issues/1218#issuecomment-962516670
+  ;; Thanks to Umar Ahmad (Gleek)
+  (defvar my-ivy--queue-last-input nil)
+  (defun my-ivy-queue-exhibit-a(f &rest args)
+    (cond
+     ((equal my-ivy--queue-last-input (ivy--input))
+      (ivy--exhibit))
+     (t
+      (apply f args)))
+    (setq my-ivy--queue-last-input (ivy--input)))
+  (advice-add 'ivy--queue-exhibit :around #'my-ivy-queue-exhibit-a)
 
   ;; Press C-p and Enter to select current input as candidate
   ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
