@@ -384,6 +384,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'which-key)
 (require-package 'highlight-symbol)
 (require-package 'wc-mode)
+(require-package 'helpful)
 (require-package 'qrencode)
 (require-package 'ws-butler)
 (require-package 'sage-shell-mode)
