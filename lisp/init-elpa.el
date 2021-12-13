@@ -154,6 +154,7 @@
     company-c-headers
     company-statistics
     jenkinsfile-mode
+    powershell
     graphql-mode
     company-statistics)
   "Packages to install from melpa-unstable.")
