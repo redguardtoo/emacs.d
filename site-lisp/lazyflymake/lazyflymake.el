@@ -164,8 +164,8 @@ If FORCE is t, the existing set up in `flymake-proc-allowed-file-name-masks' is 
 
 (defun lazyflymake-proc-buffer (&optional force-erase-p)
   "Get process buffer.  Erase its content if FORCE-ERASE-P is t."
-  (let* ((buf (or (get-buffer "lazyflymake-stdout")
-                  (generate-new-buffer "lazyflymake-stdout"))))
+  (let* ((buf (or (get-buffer " *lazyflymake-stdout*")
+                  (generate-new-buffer " *lazyflymake-stdout*"))))
     (when force-erase-p
       (with-current-buffer buf
         (erase-buffer)))
