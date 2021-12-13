@@ -195,7 +195,7 @@ FN checks these characters belong to normal word characters."
 
   (unless (is-buffer-file-temp)
     ;;  trim spaces from end of changed line
-    (ws-butler-mode 1)
+    ;; (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
       (unless my-disable-lazyflymake
