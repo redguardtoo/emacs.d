@@ -20,6 +20,7 @@
 (my-add-auto-mode 'emacs-lisp-mode
                "\\.emacs-project\\'"
                "archive-contents\\'"
+               "\\.emacs_workgroups\\'"
                "\\.emacs\\.bmk\\'" )
 ;; }}
 
