@@ -46,7 +46,7 @@ deserialization function."
       `(defun ,(intern (format "wg-deserialize-%s-buffer" mode-str)) (buffer)
          "DeSerialization function created with `wg-support'.
 Gets saved variables and runs code to restore a BUFFER."
-         (when (require ',,pkg nil 'noerror)
+         (when (require ',,pkg nil (unless wg-debug 'noerror))
            (wg-dbind (this-function variables) (wg-buf-special-data buffer)
              (let ((default-directory (car variables))
                    (df (cdr (assoc 'deserialize ',,params)))
@@ -560,6 +560,17 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
                            (error
                             (wg-file-buffer-error file (error-message-string err)))))
                        buffer)))))
+
+(wg-support
+ 'speedbar-mode
+ 'speedbar
+  `((deserialize . ,(lambda (_buffer vars)
+                      (ignore vars)
+                      (setq speedbar-buffer (switch-to-buffer (wg-buf-name _buffer)))
+                      (speedbar-reconfigure-keymaps)
+                      (speedbar-update-contents)
+                      (speedbar-set-timer dframe-update-speed)
+                      speedbar-buffer))))
 
 (provide 'workgroups2-support)
 ;;; workgroups2-support.el ends here
