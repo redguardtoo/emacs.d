@@ -206,8 +206,7 @@ Remove file and dired buffers that are not associated with workgroup."
 ;; }}
 
 (defmacro wg-defstruct (name-form &rest slot-defs)
-  "`defstruct' wrapper that namespace-prefixes all generated functions.
-Note: this doesn't yet work with :conc-name, and possibly other options."
+  "`defstruct' wrapper that namespace-prefixes all generated functions."
   (declare (indent 1))
   (let* ((prefix "wg")
          (name (symbol-name name-form)) ; string type
@@ -326,10 +325,6 @@ This needs to be a macro to allow specification of a setf'able place."
   "Return a new uid."
   (concat (wg-time-to-b36) "-" (wg-int-to-b36 string-chars-consed)))
 
-(defun wg-get-value (arg)
-  "Get a value of ARG if it exists."
-  (if (boundp `,arg) arg))
-
 (defvar wg-current-session nil "Current session object.")
 (defun wg-get-current-session (&optional noerror)
   "Return `wg-current-session' or error unless NOERROR."
@@ -388,7 +383,7 @@ If not - try to go to the parent dir and do the same."
   "Alist mapping types to object serialization functions.")
 
 (defvar wg-pickel-object-deserializers
-  '((s . wg-pickel-deserialize-uninterned-symbol)
+  '((s . wg-pickel-deserialize-symbol)
     (c . wg-pickel-deserialize-cons)
     (v . wg-pickel-deserialize-vector)
     (h . wg-pickel-deserialize-hash-table)
@@ -397,7 +392,7 @@ If not - try to go to the parent dir and do the same."
     (d . wg-pickel-deserialize-default)
     ;;(f . wg-pickel-deserialize-frame)
     )
-  "Alist mapping type keys to object deserialization functions.")
+  "Alist mapping type keys to object deserializing functions.")
 
 (defvar wg-pickel-link-serializers
   '((cons       . wg-pickel-cons-link-serializer)
@@ -409,7 +404,7 @@ If not - try to go to the parent dir and do the same."
   `((c . wg-pickel-cons-link-deserializer)
     (v . wg-pickel-vector-link-deserializer)
     (h . wg-pickel-hash-table-link-deserializer))
-  "Alist mapping type keys to link deserialization functions.")
+  "Alist mapping type keys to link deserializing functions.")
 
 (put 'wg-pickel-unpickelable-type-error
      'error-conditions
@@ -465,7 +460,7 @@ If not - try to go to the parent dir and do the same."
 
 ;;; bindings
 (defun wg-pickel-make-bindings-table (obj)
-  "Return a table binding unique subobjects of OBJ to ids."
+  "Return a table binding unique sub-objects of OBJ to ids."
   (let ((binds (make-hash-table :test 'eq))
         (id -1))
     (cl-labels
@@ -494,8 +489,8 @@ If not - try to go to the parent dir and do the same."
         ((intern-soft symbol) symbol)
         (t (list 's (symbol-name symbol)))))
 
-(defun wg-pickel-deserialize-uninterned-symbol (name)
-  "Return a new uninterned symbol from NAME."
+(defun wg-pickel-deserialize-symbol (name)
+  "Return a new symbol from NAME."
   (make-symbol name))
 
 
@@ -607,7 +602,7 @@ If not - try to go to the parent dir and do the same."
                    result)))))
 
 (defun wg-pickel-deserialize-objects (serial-objects)
-  "Return a hash-table of objects deserialized from SERIAL-OBJECTS."
+  "Return a hash-table of objects to deserialize from SERIAL-OBJECTS."
   (let ((binds (make-hash-table)))
     (wg-destructuring-dolist ((id obj . rest) serial-objects binds)
       (puthash id
@@ -624,21 +619,25 @@ If not - try to go to the parent dir and do the same."
                  (setq result (nconc (funcall fn obj binds) result))))))
 
 (defun wg-pickel-deserialize-links (serial-links binds)
-  "Return BINDS after relinking all its objects according to SERIAL-LINKS."
+  "Return BINDS after re-linking all its objects according to SERIAL-LINKS."
   (wg-destructuring-dolist ((key arg1 arg2 arg3 . rest) serial-links binds)
     (funcall (wg-pickel-link-deserializer key) arg1 arg2 arg3 binds)))
 
 (defun wg-pickel (obj)
   "Return the serialization of OBJ."
   (wg-pickelable-or-error obj)
-  (let ((binds (wg-pickel-make-bindings-table obj)))
-    (list wg-pickel-identifier
-          (wg-pickel-serialize-objects binds)
-          (wg-pickel-serialize-links binds)
-          (gethash obj binds))))
+  (let ((binds (wg-pickel-make-bindings-table obj))
+        rlt)
+    (setq rlt (list wg-pickel-identifier
+                    (wg-pickel-serialize-objects binds)
+                    (wg-pickel-serialize-links binds)
+                    (gethash obj binds)))
+    (when wg-debug
+      (message "wg-pickel called => %s" rlt))
+    rlt))
 
 (defun wg-unpickel (pickel)
-  "Return the deserialization of PICKEL."
+  "Deserialize PICKEL."
   (unless (wg-pickel-p pickel)
     (error "Attempt to unpickel a non-pickel"))
   (wg-dbind (_id serial-objects serial-links result) pickel
@@ -714,7 +713,6 @@ SESSION nil defaults to the current session."
     (if (not buf) (wg-restore-default-buffer)
       (when (wg-restore-buffer buf t)
         ;; Restore various positions in WINDOW from their values in WIN
-        ;; (wg-restore-window-positions win selwin)
         (let ((window (or selwin (selected-window))))
           (wg-with-slots win
               ((win-point wg-win-point)
@@ -742,9 +740,9 @@ SESSION nil defaults to the current session."
           (set-window-parameter selwin param value))))))
 
 
-(defun wg-window-point (ewin)
-  "Return `point' or :max.  EWIN should be an Emacs window object."
-  (let ((p (window-point ewin)))
+(defun wg-window-point (window)
+  "Return `point' or :max.  WINDOW is an window object."
+  (let ((p (window-point window)))
     (if (= p (point-max)) :max p)))
 
 (defun wg-set-win-parameter (win parameter value)
@@ -805,7 +803,7 @@ Return value."
 
 (defun wg-normalize-wtree (wtree)
   "Clean up and return a new wtree from WTREE.
-Recalculate the edge lists of all subwins, and remove subwins
+Recalculate the edge lists of all sub-wins, and remove sub-wins
 outside of WTREE's bounds.  If there's only one element in the
 new wlist, return it instead of a new wtree."
   (if (wg-win-p wtree) wtree
@@ -833,7 +831,7 @@ new wlist, return it instead of a new wtree."
 
 (defun wg-scale-wtree (wtree wscale hscale)
   "Return a copy of WTREE with its dimensions scaled by WSCALE and HSCALE.
-All WTREE's subwins are scaled as well."
+All WTREE's sub-wins are scaled as well."
   (let ((scaled (wg-with-edges wtree (left top right bottom)
                                (wg-set-edges (wg-copy-w wtree)
                                              (list left
@@ -905,8 +903,7 @@ various parameters of that window in preparation for restoring a wtree."
 (defun wg-flatten-wtree (wtree &optional key)
   "Return a new list by flattening WTREE.
 KEY non returns returns a list of WTREE's wins.
-KEY non-nil returns a l
-ist of the results of calling KEY on each win."
+KEY non-nil returns a list of the results of calling KEY on each win."
   (cl-labels
       ((inner (w) (if (wg-win-p w) (list (if key (funcall key w) w))
                     (cl-mapcan #'inner (wg-wtree-wlist w)))))
@@ -1022,7 +1019,7 @@ Runs each time you're switching workgroups."
 ;;; buffer-local variable serdes
 
 (defun wg-serialize-buffer-mark-ring ()
-  "Return a new list of the positions of the marks in `mark-ring'."
+  "Return a new list of the positions of the mark in `mark-ring'."
   (mapcar 'marker-position mark-ring))
 
 (defun wg-deserialize-buffer-mark-ring (positions)
@@ -1032,7 +1029,7 @@ Runs each time you're switching workgroups."
                 positions)))
 
 (defun wg-deserialize-buffer-major-mode (major-mode-symbol)
-  "Conditionally retore MAJOR-MODE-SYMBOL in `current-buffer'."
+  "Conditionally restore MAJOR-MODE-SYMBOL in `current-buffer'."
   (and (fboundp major-mode-symbol)
        (not (eq major-mode-symbol major-mode))
        (funcall major-mode-symbol)))
@@ -1074,41 +1071,39 @@ Runs each time you're switching workgroups."
   "Restore BUF by finding its file and maybe SWITCH to it.
 Return the created buffer.
 If BUF's file doesn't exist, call `wg-restore-default-buffer'."
-  (let ((file-name (wg-buf-file-name buf)))
+  (let ((file-name (wg-buf-file-name buf))
+        buffer)
     (when (and file-name
                (or wg-restore-remote-buffers
                    (not (file-remote-p file-name))))
-      (cond ((file-exists-p file-name)
-             ;; jit ignore errors
-             ;;(ignore-errors
-             (condition-case err
-                 (let ((b (find-file-noselect file-name nil nil nil)))
-                   (with-current-buffer b
-                     (rename-buffer (wg-buf-name buf) t)
-                     (wg-set-buffer-uid-or-error (wg-buf-uid buf))
+      (cond
+       ((file-exists-p file-name)
+        (condition-case err
+            (progn
+              (setq buffer (find-file-noselect file-name nil nil nil))
+              (with-current-buffer buffer
+                (rename-buffer (wg-buf-name buf) t)
+                (wg-set-buffer-uid-or-error (wg-buf-uid buf))
 
-                     ;; restore mark
-                     (set-mark (wg-buf-mark buf))
-                     (deactivate-mark)
+                ;; restore mark
+                (set-mark (wg-buf-mark buf))
+                (deactivate-mark)
 
-                     (wg-deserialize-buffer-local-variables buf)
-                     )
-                   (if switch (switch-to-buffer b))
-                   b)
-               (error
-                (message "Error while restoring a file %s:\n  %s" file-name (error-message-string err))
-                nil)))
-            (t
-             ;; try directory
-             (if (file-directory-p (file-name-directory file-name))
-                 (dired (file-name-directory file-name))
-               (progn
-                 (message "Attempt to restore nonexistent file: %S" file-name)
-                 nil))
-             )))))
+                (wg-deserialize-buffer-local-variables buf))
+              (if switch (switch-to-buffer buffer)))
+          (error
+           (wg-file-buffer-error file-name (error-message-string err)))))
+
+       ;; try directory
+       ((file-directory-p (file-name-directory file-name))
+        (dired (file-name-directory file-name)))
+
+       (t
+        (message "Attempt to restore nonexistent file: %S" file-name))))
+    buffer))
 
 (defun wg-restore-special-buffer (buf &optional switch)
-  "Restore a buffer BUF with DESERIALIZER-FN and maybe SWITCH to it."
+  "Restore a buffer BUF and maybe SWITCH to it."
   (let* ((special-data (wg-buf-special-data buf))
          (buffer (save-window-excursion
                    (condition-case err
@@ -1126,12 +1121,23 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'."
   "Restore BUF, return it and maybe SWITCH to it."
   (when buf
     (fset 'buffer-list wg-buffer-list-original)
-    (or (wg-restore-existing-buffer buf switch)
-        (wg-restore-special-buffer buf switch)  ;; non existent dired problem
-        (wg-restore-file-buffer buf switch)
-        (progn (wg-restore-default-buffer switch) nil))))
+    (cond
+     ((wg-restore-existing-buffer buf switch)
+      (when wg-debug
+        (message "wg-restore-existing-buffer succeeded.")))
 
-;;; buffer object utils
+     ((wg-restore-special-buffer buf switch)
+      (when wg-debug
+        (message "wg-restore-special-buffer succeeded.")))
+
+     ((wg-restore-file-buffer buf switch)
+      (when wg-debug
+        (message "wg-restore-file-buffer succeeded.")))
+     (t
+      (wg-restore-default-buffer switch)
+      (when wg-debug
+        (message "wg-restore-default-buffer called.")))))
+    nil)
 
 (defun wg-buffer-uid (buffer-or-name)
   "Return BUFFER-OR-NAME's buffer-local value of `wg-buffer-uid'."
@@ -1197,7 +1203,17 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'."
 
 (defun wg-buffer-special-data (buffer)
   "Return BUFFER's auxiliary serialization, or nil."
-  (cl-some (lambda (fn) (funcall fn buffer)) wg-special-buffer-serdes-functions))
+  (when wg-debug
+    (message "wg-buffer-special-data is called => %s" buffer))
+  (let* ((rlt (cl-some (lambda (fn)
+                         (let ((special-data (funcall fn buffer)))
+                           (when wg-debug
+                             (message "fn=%s special-data=%s" fn special-data))
+                           special-data))
+                       wg-special-buffer-serdes-functions)))
+    (when wg-debug
+      (message "wg-buffer-special-data was called => %s" rlt))
+    rlt))
 
 (defun wg-serialize-buffer-local-variables ()
   "Return an alist of buffer-local variable symbols and their values.
@@ -1558,13 +1574,13 @@ that name and return it.  Otherwise error."
   (wg-with-undo workgroup (state undo-pointer undo-list)
     (setcar (nthcdr undo-pointer undo-list) wconfig)))
 
-(defun wg-workgroup-working-wconfig (workgroup &optional noupdate)
+(defun wg-workgroup-working-wconfig (workgroup &optional no-update)
   "Return WORKGROUP's working-wconfig.
 If WORKGROUP is the current workgroup in `selected-frame', and
-NOUPDATE is nil, set its working wconfig in `selected-frame' to
+NO-UPDATE is nil, set its working wconfig in `selected-frame' to
 `wg-current-wconfig' and return the updated wconfig.  Otherwise
 return WORKGROUP's current undo state."
-  (if (and (not noupdate) (wg-current-workgroup-p workgroup))
+  (if (and (not no-update) (wg-current-workgroup-p workgroup))
       (wg-set-workgroup-working-wconfig workgroup (wg-current-wconfig))
     (wg-with-undo workgroup (state undo-pointer undo-list)
       (nth undo-pointer undo-list))))
@@ -1600,7 +1616,7 @@ WORKGROUP."
 
 (defun wg-unpickel-workgroup-parameters (workgroup)
   "If WORKGROUP's parameters are non-nil, return a copy of
-WORKGROUP after unpickeling its parameters. Otherwise return
+WORKGROUP after unpickeling its parameters.  Otherwise return
 WORKGROUP."
   (if (not (wg-workgroup-parameters workgroup)) workgroup
     (let ((copy (wg-copy-workgroup workgroup)))
@@ -1669,7 +1685,7 @@ Also delete all references to it by `wg-workgroup-state-table',
 
 ;; FIXME: Duplicate buf names probably shouldn't be allowed.  An unrelated error
 ;; causes two *scratch* buffers to be present, triggering the "uids don't match"
-;; error.  Write something to remove bufs with duplicate names.
+;; error.  Write something to remove buffers with duplicate names.
 (defun wg-perform-session-maintenance ()
   "Perform various maintenance operations on the current Workgroups session."
   (wg-update-current-workgroup-working-wconfig)

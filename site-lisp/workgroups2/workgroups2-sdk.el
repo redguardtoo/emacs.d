@@ -22,6 +22,8 @@
 ;;; Code:
 (require 'cl-lib)
 
+(defvar wg-debug nil "For debugging.")
+
 (defvar wg-special-buffer-serdes-functions
   '(wg-serialize-comint-buffer)
   "Functions providing serialization/deserialization for complex buffers.
@@ -176,6 +178,12 @@ If PARAM is not found, return DEFAULT which defaults to nil."
                 (if (not (eq key (car kvp))) kvp
                   (setq found (cons key value))))))
     (if found new (cons (cons key value) new))))
+
+(defun wg-file-buffer-error (file error)
+  "When restoring FILE's buffer fails, report ERROR."
+  (message "Error while restoring a file %s:\n  %s"
+           file
+           (error-message-string error)))
 
 (provide 'workgroups2-sdk)
 ;;; workgroups2-sdk.el ends here
