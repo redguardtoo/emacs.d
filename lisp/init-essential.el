@@ -230,4 +230,13 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
       (if extra-opt (kill-new extra-opt))))
   (call-interactively 'compile))
 
+;; {{ eacl - emacs auto complete line(s)
+(global-set-key (kbd "C-x C-l") 'eacl-complete-line-from-buffer-or-project)
+(global-set-key (kbd "C-c C-l") 'eacl-complete-line-from-buffer)
+(global-set-key (kbd "C-c C-;") 'eacl-complete-multiline)
+(with-eval-after-load 'eacl
+  ;; not interested in untracked files in git repository
+  (setq eacl-git-grep-untracked nil))
+;; }}
+
 (provide 'init-essential)

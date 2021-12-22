@@ -606,15 +606,6 @@ FN checks these characters belong to normal word characters."
 (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
 ;; }}
 
-;; {{ eacl - emacs auto complete line(s)
-(global-set-key (kbd "C-x C-l") 'eacl-complete-line-from-buffer-or-project)
-(global-set-key (kbd "C-c C-l") 'eacl-complete-line-from-buffer)
-(global-set-key (kbd "C-c ;") 'eacl-complete-multiline)
-(with-eval-after-load 'eacl
-  ;; not interested in untracked files in git repository
-  (setq eacl-git-grep-untracked nil))
-;; }}
-
 ;; {{
 (defun my-toggle-typewriter ()
   "Turn on/off typewriter."
