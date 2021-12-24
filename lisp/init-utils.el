@@ -654,5 +654,37 @@ This function is written in pure Lisp and slow."
        rlt))
    'find-lisp-default-directory-predicate))
 
+(defvar my-media-file-extensions
+  '("3gp"
+    "avi"
+    "crdownload"
+    "flac"
+    "flv"
+    "m4v"
+    "mid"
+    "mkv"
+    "mov"
+    "mp3"
+    "mp4"
+    "mpg"
+    "ogm"
+    "part"
+    "rmvb"
+    "wav"
+    "wmv"
+    "webm")
+  "File extensions of media files.")
+
+(defun my-file-extensions-to-regexp (extensions)
+  "Convert file EXTENSIONS to one regex."
+  (concat "\\." (regexp-opt extensions t) "$"))
+
+(defun my-binary-file-p (file)
+  "Test if it's binary FILE."
+  (let* ((other-exts '("pyim" "recentf"))
+         (exts (append my-media-file-extensions other-exts))
+         (regexp (my-file-extensions-to-regexp exts)))
+    (string-match-p regexp file)))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here

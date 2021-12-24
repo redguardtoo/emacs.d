@@ -140,14 +140,10 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 ;; {{ Write backup files to its own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
-(defvar my-binary-file-name-regexp
-  "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\|pyim\\|\\.recentf\\)$"
-  "Is binary file name?")
-
 (setq backup-enable-predicate
-      (lambda (name)
-        (and (normal-backup-enable-predicate name)
-             (not (string-match-p my-binary-file-name-regexp name)))))
+      (lambda (file-name)
+        (and (normal-backup-enable-predicate file-name)
+             (not (my-binary-file-p file-name)))))
 
 (let* ((backup-dir (expand-file-name "~/.backups")))
   (unless (file-exists-p backup-dir) (make-directory backup-dir))
