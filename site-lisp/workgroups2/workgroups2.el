@@ -35,8 +35,9 @@
 ;;
 ;; Quick start,
 ;;
-;; - `wg-create-workgroup' to save current windows layout
-;; - `wg-open-workgroup' to open saved windows layout
+;; - `wg-create-workgroup' to save window&buffer layout as a work group
+;; - `wg-open-workgroup' to open an existing work group
+;; - `wg-kill-workgroup' to delete an existing work group
 ;;
 ;; Optionally, you can use minor-mode `workgroups-mode' by put below
 ;; line into .emacs ,
@@ -53,6 +54,7 @@
 ;;
 ;; <prefix> C-c    - create new workgroup
 ;; <prefix> C-v    - open existing workgroup
+;; <prefix> C-k    - delete existing workgroup
 ;;
 ;; Change workgroups session file,
 ;;
@@ -661,6 +663,7 @@ new workgroup during a switch.")
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd (format "%s %s" wg-prefix-key "C-c")) 'wg-create-workgroup)
     (define-key map (kbd (format "%s %s" wg-prefix-key "C-v")) 'wg-open-workgroup)
+    (define-key map (kbd (format "%s %s" wg-prefix-key "C-k")) 'wg-kill-workgroup)
     map)
     "Mode map for `workgroups-mode'.")
 
@@ -945,6 +948,8 @@ If frame is nil then `selected-frame'."
          (top (wg-wconfig-top wconfig)))
     ;; Check that arguments are integers
     ;; Problem: https://github.com/pashinin/workgroups2/issues/15
+    (when wg-debug
+      (message "wg-wconfig-restore-frame-position called => %s %s %s" wconfig left top))
     (when (and (integerp left)
                (integerp top))
       (set-frame-position frame left top))))
@@ -961,6 +966,10 @@ If frame is nil then `selected-frame'."
 Return a copy WCONFIG's wtree scaled with `wg-scale-wtree' by the
 ratio or NEW-WIDTH to WCONFIG's width, and NEW-HEIGHT to
 WCONFIG's height."
+  (when wg-debug
+    (message "wg-scale-wconfigs-wtree called => %s %s %s %s"
+             new-width new-height
+             (wg-wconfig-width wconfig) (wg-wconfig-height wconfig)))
   (wg-normalize-wtree
    (wg-scale-wtree
     (wg-wconfig-wtree wconfig)
@@ -982,10 +991,11 @@ Return a scaled copy of WCONFIG."
   (when wg-current-session
     (let ((fl (wg-session-parameter 'frame-list nil wg-current-session))
           (frame (selected-frame)))
+      (when wg-debug
+        (message "wg-restore-frames called => %s" fl))
       (mapc (lambda (wconfig)
               (with-selected-frame (make-frame)
-                (wg-restore-wconfig wconfig)
-                ))
+                (wg-restore-wconfig wconfig)))
             fl)
       (select-frame-set-input-focus frame))))
 
@@ -997,10 +1007,15 @@ Runs each time you're switching workgroups."
   (let ((params (wg-wconfig-parameters wconfig)))
     (wg-barf-on-active-minibuffer)
 
+    (when wg-debug
+      (message "wg-restore-wconfig called => %s" params))
+
     ;; restore scroll bars
     (wg-wconfig-restore-scroll-bars wconfig)
 
     (when (null (wg-get-current-workgroup t))
+      (when wg-debug
+        (message "set frame fullscreen parameters"))
       (set-frame-parameter frame 'fullscreen
                            (if (assoc 'fullscreen params)
                                (cdr (assoc 'fullscreen params))
@@ -1009,6 +1024,8 @@ Runs each time you're switching workgroups."
     ;; Restore frame position
     (when (and (not (frame-parameter nil 'fullscreen))
                (null (wg-get-current-workgroup t)))
+      (when wg-debug
+        (message "restore frame position"))
       (wg-wconfig-restore-frame-position wconfig frame))
 
     ;; Restore buffers
@@ -1850,6 +1867,28 @@ ARG is anything else, turn on `workgroups-mode'."
       (when group-name
         (wg-open-session)
         (wg-switch-to-workgroup-internal group-name)))
+     (t
+      (message "No workgroup is created yet.")))))
+
+;;;###autoload
+(defun wg-kill-workgroup ()
+  "Delete existing workgroup."
+  (interactive)
+  (let ((group-names (wg-workgroup-names))
+        group-name
+        group)
+    (cond
+     ((and group-names
+           (setq group-name
+                 (completing-read "Select work group: " group-names))
+           (y-or-n-p (format "Will the work group \"%s\" be deleted?"
+                             group-name)))
+      (wg-open-session)
+      (when (setq group (wg-find-workgroup-by :name group-name t))
+        (wg-delete-workgroup group)
+        (message "Work group %s was deleted." group-name)
+        (wg-save-session)))
+
      (t
       (message "No workgroup is created yet.")))))
 

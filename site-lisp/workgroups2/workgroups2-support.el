@@ -107,7 +107,9 @@ Saves some variables to restore a BUFFER later."
                    ;; Only need first two items.
                    ;; Other items could be file buffers which breaks the session file
                    ;; See bug #29
-                   (list (and help-xref-stack-item (cl-subseq help-xref-stack-item 0 2))
+                   (list (and help-xref-stack-item
+                              (if (> (length help-xref-stack-item) 2) (cl-subseq help-xref-stack-item 0 2)
+                                help-xref-stack-item))
                          help-xref-stack
                          help-xref-forward-stack)))
    (deserialize . ,(lambda (_buffer vars)
