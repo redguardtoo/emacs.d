@@ -150,11 +150,6 @@ it to `major-mode'."
   :type 'alist
   :group 'workgroups)
 
-(defcustom wg-restore-remote-buffers t
-  "Restore buffers that get \"t\" with `file-remote-p'."
-  :type 'boolean
-  :group 'workgroups)
-
 (defvar wg-buffer-uid nil
   "Symbol for the current buffer's wg-buf's uid.
 Every Workgroups buffer object (wg-buf) has a uid.  When
@@ -1114,11 +1109,21 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'."
 
 (defun wg-restore-special-buffer (buf &optional switch)
   "Restore a buffer BUF and maybe SWITCH to it."
+  (when wg-debug
+    (message "wg-restore-special-buffer => %s %s %s" (wg-buf-name buf) buf switch))
   (let* ((special-data (wg-buf-special-data buf))
          (buffer (save-window-excursion
                    (condition-case err
-                       (let ((fn (car special-data)))
-                         (and fn (funcall fn buf)))
+                       (let ((fn (car special-data))
+                             created-buffer)
+                         (cond
+                          ((null fn)
+                           (when wg-debug
+                             (message "fn is null. special-data=%s" special-data)))
+                          ((null (setq created-buffer (funcall fn buf)))
+                           (when wg-debug
+                             (message "(funcall fn buf) is null. special-data=%s" special-data))))
+                         created-buffer)
                      (error (message "Error deserializing %S: %S" (wg-buf-name buf) err)
                             nil)))))
     (when (and special-data buffer)

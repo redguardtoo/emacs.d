@@ -23,12 +23,18 @@
 ;;; Code:
 
 (require 'workgroups2-sdk)
+(require 'dframe)
+
+(defmacro wg-switch-to-buffer (buffer &rest body)
+  "Switch to BUFFER and eval BODY."
+  `(let ((new-buffer (switch-to-buffer ,buffer)))
+     ,@body
+     new-buffer))
 
 (defun wg-switch-to-shell-buffer (buffer)
   "Switch to a shell BUFFER."
-  (switch-to-buffer buffer)
-  (goto-char (point-max))
-  (current-buffer))
+  (wg-switch-to-buffer buffer
+                       (goto-char (point-max))))
 
 (defmacro wg-support (mode pkg params)
   "Macro to create (de)serialization functions for a buffer.
@@ -76,81 +82,82 @@ Saves some variables to restore a BUFFER later."
       t)))
 
 ;; Dired
-(wg-support
- 'dired-mode
- 'dired
- `((deserialize . ,(lambda (_buffer)
-                     (ignore _buffer)
-                     (when (or wg-restore-remote-buffers
-                               (not (file-remote-p default-directory)))
-                       (let ((d (wg-get-first-existing-dir)))
-                         (if (file-directory-p d) (dired d))))))))
+(wg-support 'dired-mode
+            'dired
+            `((deserialize . ,(lambda (_buffer)
+                                (ignore _buffer)
+                                (when (or wg-restore-remote-buffers
+                                          (not (file-remote-p default-directory)))
+                                  (let ((d (wg-get-first-existing-dir)))
+                                    (if (file-directory-p d) (dired d))))))))
 
-(wg-support
- 'Info-mode
- 'info
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (list Info-current-file Info-current-node)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (if vars
-                         (if (fboundp 'Info-find-node)
-                             (apply #'Info-find-node vars))
-                       (info)
-                       (get-buffer (wg-buf-name _buffer)))))))
+(wg-support 'Info-mode
+            'info
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list Info-current-file Info-current-node)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (if vars
+                                    (if (fboundp 'Info-find-node)
+                                        (apply #'Info-find-node vars))
+                                  (info)
+                                  (wg-switch-to-buffer (wg-buf-name _buffer)))))))
 
-(wg-support
- 'help-mode
- 'help-mode
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   ;; Only need first two items.
-                   ;; Other items could be file buffers which breaks the session file
-                   ;; See bug #29
-                   (list (and help-xref-stack-item
-                              (if (> (length help-xref-stack-item) 2) (cl-subseq help-xref-stack-item 0 2)
-                                help-xref-stack-item))
-                         help-xref-stack
-                         help-xref-forward-stack)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer)
-                     (wg-dbind (item stack forward-stack) vars
-                               (condition-case err
-                                   (apply (car item) (cdr item))
-                                 (error (message "%s" err)))
-                               (when (get-buffer "*Help*")
-                                 (set-buffer (get-buffer "*Help*"))
-                                 (setq help-xref-stack stack
-                                       help-xref-forward-stack forward-stack)
-                                 (current-buffer)))))))
+(defun wg-support-help-mode-serialize (_buffer)
+  "Serialize `help-mode' data in _BUFFER."
+  (ignore _buffer)
+  (list (mapcar (lambda (e)
+                  (cond
+                   ((and (functionp e) (not (symbolp e)))
+                    ;; convert compiled function into symbol
+                    (wg-symbol-of-compiled-function e))
+                   (t
+                    e)))
+                ;; Only need first two items.
+                ;; Other items could be file buffers which breaks the session file
+                ;; See bug #29
+                (and help-xref-stack-item
+                     (if (> (length help-xref-stack-item) 2) (cl-subseq help-xref-stack-item 0 2)
+                       help-xref-stack-item)))))
+
+(defun wg-support-help-mode-deserialize (_buffer vars)
+  "Deserialize `help-mode' data in _BUFFER with VARS."
+  (ignore _buffer)
+  (wg-dbind (item) vars
+            (condition-case err
+                (funcall (nth 0 item) (nth 1 item))
+              (error (message "error=%s" err)))
+            (wg-switch-to-buffer "*Help*")))
+
+(wg-support 'help-mode
+            'help-mode
+            `((serialize . wg-support-help-mode-serialize)
+              (deserialize . wg-support-help-mode-deserialize)))
 
 ;; ielm
-(wg-support
- 'inferior-emacs-lisp-mode
- 'ielm
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer vars)
-                     (ielm)
-                     (get-buffer "*ielm*")))))
+(wg-support 'inferior-emacs-lisp-mode
+            'ielm
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer vars)
+                                (ielm)
+                                (wg-switch-to-buffer "*ielm*")))))
 
 ;; Magit status
-(wg-support
- 'magit-status-mode
- 'magit
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer vars)
-                     (if (file-directory-p default-directory)
-                         (magit-status-setup-buffer default-directory)
-                       (let ((d (wg-get-first-existing-dir)))
-                         (if (file-directory-p d) (dired d))))))))
+(wg-support 'magit-status-mode
+            'magit
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer vars)
+                                (if (file-directory-p default-directory)
+                                    (magit-status-setup-buffer default-directory)
+                                  (let ((d (wg-get-first-existing-dir)))
+                                    (if (file-directory-p d) (dired d))))))))
 
 ;; Shell
-(wg-support
- 'shell-mode
- 'shell
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore vars)
-                     (shell (wg-buf-name _buffer))))))
+(wg-support 'shell-mode
+            'shell
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (shell (wg-buf-name _buffer))))))
 
 ;; org-agenda buffer
 (defun wg-get-org-agenda-view-commands ()
@@ -159,7 +166,7 @@ Can be restored using \"(eval commands)\"."
   (interactive)
   (when (boundp 'org-agenda-buffer-name)
     (if (get-buffer org-agenda-buffer-name)
-        (with-current-buffer org-agenda-buffer-name
+        (wg-switch-to-buffer org-agenda-buffer-name
           (let* ((p (or (and (looking-at "\\'") (1- (point))) (point)))
                  (series-redo-cmd (get-text-property p 'org-series-redo-cmd)))
             (if series-redo-cmd
@@ -174,27 +181,24 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
              (fboundp 'org-goto-line))
     (if (get-buffer org-agenda-buffer-name)
         (save-window-excursion
-          (with-current-buffer org-agenda-buffer-name
+          (wg-switch-to-buffer org-agenda-buffer-name
             (let* ((line (org-current-line)))
               (if f (eval f t))
               (org-goto-line line)))))))
 
-(wg-support
-  'org-agenda-mode
-  'org-agenda
-  '((serialize . (lambda (_buffer)
-                   (ignore _buffer)
-                   (wg-get-org-agenda-view-commands)))
-    (deserialize . (lambda (_buffer vars)
-                     (ignore _buffer)
-                     (org-agenda-list)
-                     (switch-to-buffer org-agenda-buffer-name)
-                     (wg-run-agenda-cmd vars)
-                     (current-buffer)))))
+(wg-support 'org-agenda-mode
+            'org-agenda
+            '((serialize . (lambda (_buffer)
+                             (ignore _buffer)
+                             (wg-get-org-agenda-view-commands)))
+              (deserialize . (lambda (_buffer vars)
+                               (ignore _buffer)
+                               (org-agenda-list)
+                               (wg-switch-to-buffer org-agenda-buffer-name
+                                                    (wg-run-agenda-cmd vars))))))
 
 ;; eshell
-(wg-support
- 'eshell-mode
+(wg-support 'eshell-mode
  'esh-mode
  '((deserialize . (lambda (_buffer vars)
                     (ignore vars)
@@ -208,129 +212,120 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
 ;; be any difference between the two except how the name of the
 ;; buffer is generated.
 ;;
-(wg-support
- 'term-mode
- 'term
- `((serialize . ,(lambda (_buffer)
-                   (if (get-buffer-process _buffer)
-                       (car (last (process-command (get-buffer-process _buffer))))
-                     "/bin/bash")))
-   (deserialize . ,(lambda (_buffer vars)
-                     (cl-labels ((term-window-width () 80)
-                                 (window-height () 24))
-                       (prog1 (term vars)
-                         (rename-buffer (wg-buf-name _buffer) t)))))))
+(wg-support 'term-mode
+            'term
+            `((serialize . ,(lambda (_buffer)
+                              (if (get-buffer-process _buffer)
+                                  (car (last (process-command (get-buffer-process _buffer))))
+                                "/bin/bash")))
+              (deserialize . ,(lambda (_buffer vars)
+                                (cl-labels ((term-window-width () 80)
+                                            (window-height () 24))
+                                  (prog1 (term vars)
+                                    (rename-buffer (wg-buf-name _buffer) t)))))))
 
 ;; `inferior-python-mode'
-(wg-support
-  'inferior-python-mode
-  'python
-  `((serialize . ,(lambda (_buffer)
-                    (ignore _buffer)
-                    (list python-shell-interpreter python-shell-interpreter-args)))
-    (deserialize . ,(lambda (_buffer vars)
-                      (ignore _buffer)
-                      (wg-dbind (pythoncmd pythonargs) vars
-                        (python-shell-make-comint (concat pythoncmd " " pythonargs)
-                                                  (python-shell-get-process-name nil)
-                                                  t)
-                        (wg-switch-to-shell-buffer (process-buffer (python-shell-get-process))))))))
+(wg-support 'inferior-python-mode
+            'python
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list python-shell-interpreter python-shell-interpreter-args)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer)
+                                (wg-dbind (pythoncmd pythonargs) vars
+                                          (python-shell-make-comint (concat pythoncmd " " pythonargs)
+                                                                    (python-shell-get-process-name nil)
+                                                                    t)
+                                          (wg-switch-to-shell-buffer (process-buffer (python-shell-get-process))))))))
 
 
 ;; Sage shell ;;
-(wg-support
- 'inferior-sage-mode
- 'sage-mode
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore vars)
-                     (save-window-excursion
-                       (if (boundp' sage-command)
-                           (run-sage t sage-command t)))
-                     (when (and (boundp 'sage-buffer) sage-buffer)
-                       (set-buffer sage-buffer)
-                       (wg-switch-to-shell-buffer sage-buffer))))))
+(wg-support 'inferior-sage-mode
+            'sage-mode
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (save-window-excursion
+                                  (if (boundp' sage-command)
+                                      (run-sage t sage-command t)))
+                                (when (and (boundp 'sage-buffer) sage-buffer)
+                                  (set-buffer sage-buffer)
+                                  (wg-switch-to-shell-buffer sage-buffer))))))
 
 ;; `inferior-ess-mode'     M-x R
 (defvar ess-history-file)
 (defvar ess-ask-about-transfile)
 (defvar ess-ask-for-ess-directory)
 
-(wg-support
- 'inferior-ess-mode
- 'ess-inf
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (list inferior-ess-program)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (wg-dbind (_cmd) vars
-                               (let ((ess-ask-about-transfile nil)
-                                     (ess-ask-for-ess-directory nil)
-                                     (ess-history-file nil))
-                                 (R)
-                                 (get-buffer (wg-buf-name _buffer))))))))
+(wg-support 'inferior-ess-mode
+            'ess-inf
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list inferior-ess-program)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (wg-dbind (_cmd) vars
+                                          (let ((ess-ask-about-transfile nil)
+                                                (ess-ask-for-ess-directory nil)
+                                                (ess-history-file nil))
+                                            (R)
+                                            (get-buffer (wg-buf-name _buffer))))))))
 
 ;; `inferior-octave-mode'
-(wg-support
- 'inferior-octave-mode
- 'octave
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore vars)
-                     (prog1 (run-octave)
-                       (rename-buffer (wg-buf-name _buffer) t))))))
+(wg-support 'inferior-octave-mode
+            'octave
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (prog1 (run-octave)
+                                  (rename-buffer (wg-buf-name _buffer) t))))))
 
 ;; `prolog-inferior-mode'
-(wg-support
- 'prolog-inferior-mode
- 'prolog
- `((deserialize . ,(lambda (_buffer vars)
-                     (save-window-excursion
-                       (run-prolog nil))
-                     (wg-switch-to-shell-buffer "*prolog*")))))
+(wg-support 'prolog-inferior-mode
+            'prolog
+            `((deserialize . ,(lambda (_buffer vars)
+                                (save-window-excursion
+                                  (run-prolog nil))
+                                (wg-switch-to-shell-buffer "*prolog*")))))
 
 ;; `ensime-inf-mode'
-(wg-support
- 'ensime-inf-mode
- 'ensime
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer vars)
-                     (save-window-excursion
-                       (ensime-inf-switch))
-                     (when (boundp 'ensime-inf-buffer-name)
-                       (wg-switch-to-shell-buffer ensime-inf-buffer-name))))))
+(wg-support 'ensime-inf-mode
+            'ensime
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer vars)
+                                (save-window-excursion
+                                  (ensime-inf-switch))
+                                (when (boundp 'ensime-inf-buffer-name)
+                                  (wg-switch-to-shell-buffer ensime-inf-buffer-name))))))
 
 ;; compilation-mode
 ;;
 ;; I think it's not a good idea to compile a program just to switch
 ;; workgroups. So just restoring a buffer name.
-(wg-support
- 'compilation-mode
- 'compile
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (if (boundp' compilation-arguments) compilation-arguments)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (save-window-excursion
-                       (get-buffer-create (wg-buf-name _buffer)))
-                     (with-current-buffer (wg-buf-name _buffer)
-                       (when (boundp' compilation-arguments)
-                         (make-local-variable 'compilation-arguments)
-                         (setq compilation-arguments vars)))
-                     (wg-switch-to-shell-buffer (wg-buf-name _buffer))))))
+(wg-support 'compilation-mode
+            'compile
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (if (boundp' compilation-arguments) compilation-arguments)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (save-window-excursion
+                                  (get-buffer-create (wg-buf-name _buffer)))
+                                (with-current-buffer (wg-buf-name _buffer)
+                                  (when (boundp' compilation-arguments)
+                                    (make-local-variable 'compilation-arguments)
+                                    (setq compilation-arguments vars)))
+                                (wg-switch-to-shell-buffer (wg-buf-name _buffer))))))
 
 ;; grep-mode
 ;; see grep.el - `compilation-start' - it is just a compilation buffer
 ;; local variables:
 ;; `compilation-arguments' == (cmd mode nil nil)
-(wg-support
- 'grep-mode
- 'grep
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (if (boundp' compilation-arguments) compilation-arguments)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer)
-                     (compilation-start (car vars) (nth 1 vars))
-                     (switch-to-buffer "*grep*")))))
+(wg-support 'grep-mode
+            'grep
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (if (boundp' compilation-arguments) compilation-arguments)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer)
+                                (compilation-start (car vars) (nth 1 vars))
+                                (wg-switch-to-buffer "*grep*")))))
 
 (defun wg-deserialize-slime-buffer (buf)
   "Deserialize `slime' buffer BUF."
@@ -342,8 +337,7 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
                    (fboundp 'slime-process))
           (save-window-excursion
             (slime-start* arguments))
-          (switch-to-buffer (process-buffer (slime-process)))
-          (current-buffer))))))
+          (wg-switch-to-buffer (process-buffer (slime-process))))))))
 
 ;; `comint-mode'  (general mode for all shells)
 ;;
@@ -356,30 +350,28 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
 (defun wg-serialize-comint-buffer (buffer)
   "Serialize comint BUFFER."
   (with-current-buffer buffer
-    (if (fboundp 'comint-mode)
-        (when (eq major-mode 'comint-mode)
-          ;; `slime-inferior-lisp-args' var is used when in `slime'
-          (when (and (boundp 'slime-inferior-lisp-args)
-                     slime-inferior-lisp-args)
-            (list 'wg-deserialize-slime-buffer
-                  (list default-directory slime-inferior-lisp-args)))))))
+    (when (eq major-mode 'comint-mode)
+      ;; `slime-inferior-lisp-args' var is used when in `slime'
+      (when (and (boundp 'slime-inferior-lisp-args)
+                 slime-inferior-lisp-args)
+        (list 'wg-deserialize-slime-buffer
+              (list default-directory slime-inferior-lisp-args))))))
 
 ;; inf-mongo
 ;; https://github.com/tobiassvn/inf-mongo
 ;; `mongo-command' - command used to start inferior mongo
-(wg-support
- 'inf-mongo-mode
- 'inf-mongo
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (if (boundp 'inf-mongo-command) inf-mongo-command)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (ignore _buffer)
-                     (save-window-excursion
-                       (when (fboundp 'inf-mongo)
-                         (inf-mongo vars)))
-                     (when (get-buffer "*mongo*")
-                       (wg-switch-to-shell-buffer "*mongo*"))))))
+(wg-support 'inf-mongo-mode
+            'inf-mongo
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (if (boundp 'inf-mongo-command) inf-mongo-command)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer)
+                                (save-window-excursion
+                                  (when (fboundp 'inf-mongo)
+                                    (inf-mongo vars)))
+                                (when (get-buffer "*mongo*")
+                                  (wg-switch-to-shell-buffer "*mongo*"))))))
 
 (defun wg-temporarily-rename-buffer-if-exists (buffer)
   "Rename BUFFER if it exists."
@@ -392,187 +384,174 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
 ;; `inf-sml-program' is the program run as inferior sml, is the
 ;; `inf-sml-args' are the extra parameters passed, `inf-sml-host'
 ;; is the host on which sml was running when serialized
-(wg-support
- 'inferior-sml-mode
- 'sml-mode
-  `((serialize . ,(lambda (_buffer)
-                    (ignore _buffer)
-                    (list (if (boundp 'sml-program-name) sml-program-name)
-                          (if (boundp 'sml-default-arg) sml-default-arg)
-                          (if (boundp 'sml-host-name) sml-host-name))))
-    (deserialize . ,(lambda (_buffer vars)
-                      (wg-dbind (program args host) vars
-                        (save-window-excursion
-                          ;; If a inf-sml buffer already exists rename it temporarily
-                          ;; otherwise `run-sml' will simply switch to the existing
-                          ;; buffer, however we want to create a separate buffer with
-                          ;; the serialized name
-                          (let* ((inf-sml-buffer-name (concat "*"
-                                                              (file-name-nondirectory program)
-                                                              "*"))
-                                 (existing-sml-buf (wg-temporarily-rename-buffer-if-exists
-                                                    inf-sml-buffer-name)))
-                            (with-current-buffer (run-sml program args host)
-                              (rename-buffer (wg-buf-name _buffer) t)
+(wg-support 'inferior-sml-mode
+            'sml-mode
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list (if (boundp 'sml-program-name) sml-program-name)
+                                    (if (boundp 'sml-default-arg) sml-default-arg)
+                                    (if (boundp 'sml-host-name) sml-host-name))))
+              (deserialize . ,(lambda (_buffer vars)
+                                (wg-dbind (program args host) vars
+                                          (save-window-excursion
+                                            ;; If a inf-sml buffer already exists rename it temporarily
+                                            ;; otherwise `run-sml' will simply switch to the existing
+                                            ;; buffer, however we want to create a separate buffer with
+                                            ;; the serialized name
+                                            (let* ((inf-sml-buffer-name (concat "*"
+                                                                                (file-name-nondirectory program)
+                                                                                "*"))
+                                                   (existing-sml-buf (wg-temporarily-rename-buffer-if-exists
+                                                                      inf-sml-buffer-name)))
+                                              (with-current-buffer (run-sml program args host)
+                                                (rename-buffer (wg-buf-name _buffer) t)
 
-                              ;; re-rename the previously renamed buffer
-                              (when existing-sml-buf
-                                (with-current-buffer existing-sml-buf
-                                  (rename-buffer inf-sml-buffer-name t))))))
-                        (wg-switch-to-shell-buffer (wg-buf-name _buffer)))))))
+                                                ;; re-rename the previously renamed buffer
+                                                (when existing-sml-buf
+                                                  (with-current-buffer existing-sml-buf
+                                                    (rename-buffer inf-sml-buffer-name t))))))
+                                          (wg-switch-to-shell-buffer (wg-buf-name _buffer)))))))
 
 ;; Geiser repls
 ;; http://www.nongnu.org/geiser/
-(wg-support
- 'geiser-repl-mode
- 'geiser
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   (list geiser-impl--implementation)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (when (fboundp 'run-geiser)
-                       (wg-dbind (impl) vars
-                                 (run-geiser impl)
-                                 (goto-char (point-max))))
-                     (wg-switch-to-shell-buffer (wg-buf-name _buffer))))))
+(wg-support 'geiser-repl-mode
+            'geiser
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list geiser-impl--implementation)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (when (fboundp 'run-geiser)
+                                  (wg-dbind (impl) vars
+                                            (run-geiser impl)
+                                            (goto-char (point-max))))
+                                (wg-switch-to-shell-buffer (wg-buf-name _buffer))))))
 
 ;; w3m-mode
-(wg-support
- 'w3m-mode
- 'w3m
-  `((serialize . ,(lambda (_buffer)
-                    (ignore _buffer)
-                    (list w3m-current-url)))
-    (deserialize . ,(lambda (_buffer vars)
-                      (ignore _buffer)
-                      (wg-dbind (url) vars
-                        (w3m-goto-url url)
-                        (current-buffer))))))
+(wg-support 'w3m-mode
+            'w3m
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list w3m-current-url)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer)
+                                (wg-dbind (url) vars
+                                          (w3m-goto-url url))))))
 
-(wg-support
- 'eww-mode
- 'eww
-  `((serialize . ,(lambda (_buffer)
-                    (ignore _buffer)
-                    (list (plist-get eww-data :url))))
-    (deserialize . ,(lambda (_buffer vars)
-                      (ignore _buffer)
-                      (wg-dbind (url) vars
-                        (eww url)
-                        (current-buffer))))))
-;; notmuch
-(wg-support
- 'notmuch-hello-mode
- 'notmuch
- `((deserialize . ,(lambda (_buffer vars)
-                     (ignore vars)
-                     (notmuch)
-                     (get-buffer (wg-buf-name _buffer))))))
+(wg-support 'eww-mode
+            'eww
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              (list (plist-get eww-data :url))))
+              (deserialize . ,(lambda (_buffer vars)
+                                (ignore _buffer)
+                                (wg-dbind (url) vars
+                                          (eww url))))))
 
-;; dired-sidebar
+(wg-support 'notmuch-hello-mode
+            'notmuch
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (notmuch)
+                                (wg-switch-to-buffer (wg-buf-name _buffer))))))
+
 (defvar dired-sidebar-display-alist)
-(wg-support
- 'dired-sidebar-mode
- 'dired-sidebar
- `((serialize . ,(lambda (_buffer)
-                   (ignore _buffer)
-                   dired-sidebar-display-alist))
-   (deserialize . ,(lambda (_buffer saved-display-alist)
-                     (ignore _buffer)
-                     (when (and (or wg-restore-remote-buffers
-                                    (not (file-remote-p default-directory)))
-                                ;; Restore buffer only if `dired-sidebar-show-sidebar'
-                                ;; will place it in the same side window as before.
-                                (equal dired-sidebar-display-alist saved-display-alist))
-                       (let ((dir (wg-get-first-existing-dir)))
-                         (when (file-directory-p dir)
-                           (let ((buffer (dired-sidebar-get-or-create-buffer dir)))
-                             ;; Set up the buffer by calling `dired-sidebar-show-sidebar'
-                             ;; for side effects only, discarding the created window. We
-                             ;; don't want to add extra new windows during the session
-                             ;; restoration process.
-                             (save-window-excursion (dired-sidebar-show-sidebar buffer))
-                             ;; HACK: Replace the just-restored window after session is
-                             ;; restored. This ensures that we perform any additional
-                             ;; window setup that was not done by deserialization. The
-                             ;; point is to avoid depending too closely on the
-                             ;; implementation details of dired-sidebar. Rather than
-                             ;; serialize every detail, we let `dired-sidebar-show-sidebar'
-                             ;; do the work.
-                             (let ((frame (selected-frame)))
-                               (run-at-time 0 nil
-                                            (lambda ()
-                                              (with-selected-frame frame
-                                                (dired-sidebar-hide-sidebar)
-                                                (dired-sidebar-show-sidebar buffer)))))
-                             buffer))))))))
+(wg-support 'dired-sidebar-mode
+            'dired-sidebar
+            `((serialize . ,(lambda (_buffer)
+                              (ignore _buffer)
+                              dired-sidebar-display-alist))
+              (deserialize . ,(lambda (_buffer saved-display-alist)
+                                (ignore _buffer)
+                                (when (and (or wg-restore-remote-buffers
+                                               (not (file-remote-p default-directory)))
+                                           ;; Restore buffer only if `dired-sidebar-show-sidebar'
+                                           ;; will place it in the same side window as before.
+                                           (equal dired-sidebar-display-alist saved-display-alist))
+                                  (let ((dir (wg-get-first-existing-dir)))
+                                    (when (file-directory-p dir)
+                                      (let ((buffer (dired-sidebar-get-or-create-buffer dir)))
+                                        ;; Set up the buffer by calling `dired-sidebar-show-sidebar'
+                                        ;; for side effects only, discarding the created window. We
+                                        ;; don't want to add extra new windows during the session
+                                        ;; restoration process.
+                                        (save-window-excursion (dired-sidebar-show-sidebar buffer))
+                                        ;; HACK: Replace the just-restored window after session is
+                                        ;; restored. This ensures that we perform any additional
+                                        ;; window setup that was not done by deserialization. The
+                                        ;; point is to avoid depending too closely on the
+                                        ;; implementation details of dired-sidebar. Rather than
+                                        ;; serialize every detail, we let `dired-sidebar-show-sidebar'
+                                        ;; do the work.
+                                        (let ((frame (selected-frame)))
+                                          (run-at-time 0 nil
+                                                       (lambda ()
+                                                         (with-selected-frame frame
+                                                           (dired-sidebar-hide-sidebar)
+                                                           (dired-sidebar-show-sidebar buffer)))))
+                                        buffer))))))))
 
-(wg-support
- 'ivy-occur-grep-mode
- 'ivy
- `((serialize . ,(lambda (_buffer)
-                   (when wg-debug
-                     (message "ivy-occur-grep-mode serialize is called => %s" _buffer))
-                   (list (base64-encode-string (buffer-string) t))))
-   (deserialize . ,(lambda (_buffer vars)
-                     (when wg-debug
-                       (message "ivy-occur-grep-mode deserialize is called => %s" file))
-                     (switch-to-buffer (wg-buf-name _buffer))
-                     (insert (base64-decode-string (nth 0 vars)))
-                     (goto-char (point-min))
-                     ;; easier than `ivy-occur-grep-mode' to set up
-                     (grep-mode)
-                     (current-buffer)))))
+(wg-support 'ivy-occur-grep-mode
+            'ivy
+            `((serialize . ,(lambda (_buffer)
+                              (when wg-debug
+                                (message "ivy-occur-grep-mode serialize is called => %s" _buffer))
+                              (list (base64-encode-string (buffer-string) t))))
+              (deserialize . ,(lambda (_buffer vars)
+                                (when wg-debug
+                                  (message "ivy-occur-grep-mode deserialize is called => %s" file))
+                                (wg-switch-to-buffer (wg-buf-name _buffer)
+                                                     (insert (base64-decode-string (nth 0 vars)))
+                                                     (goto-char (point-min))
+                                                     ;; easier than `ivy-occur-grep-mode' to set up
+                                                     (grep-mode))))))
 
-(wg-support
- 'pdf-view-mode
- 'pdf-tools
- `((serialize . ,(lambda (_buffer)
-                   (when wg-debug
-                     (message "pdf-view-mode serialize is called => %s" _buffer))
-                   (list (pdf-view-current-page) pdf-view-display-size)))
-   (deserialize . ,(lambda (_buffer vars)
-                     (let ((file (wg-buf-file-name _buffer))
-                           buffer)
-                       (when wg-debug
-                         (message "pdf-view-mode deserialize is called => %s" file))
-                       (when (and file (file-exists-p file))
-                         (condition-case err
-                             (progn
-                               (when (setq buffer (find-file-noselect file nil nil nil))
-                                 (with-current-buffer buffer
-                                   (rename-buffer (wg-buf-name _buffer) t)
-                                   (wg-set-buffer-uid-or-error (wg-buf-uid _buffer)))
-                                 (switch-to-buffer buffer)
-                                 (let* ((page (nth 0 vars))
-                                        (view-display-size (nth 1 vars)))
-                                   (when page
-                                     (pdf-view-goto-page page))
-                                   (when view-display-size
-                                     (setq pdf-view-display-size view-display-size)
-                                     (cond
-                                      ((eq pdf-view-display-size 'fit-height)
-                                       (image-set-window-vscroll 0))
-                                      ((eq pdf-view-display-size 'fit-width)
-                                       (image-set-window-hscroll 0))
-                                      (t
-                                       (image-set-window-vscroll 0)
-                                       (image-set-window-hscroll 0)))
-                                     (pdf-view-redisplay t)))))
-                           (error
-                            (wg-file-buffer-error file (error-message-string err)))))
-                       buffer)))))
+(wg-support 'pdf-view-mode
+            'pdf-tools
+            `((serialize . ,(lambda (_buffer)
+                              (when wg-debug
+                                (message "pdf-view-mode serialize is called => %s" _buffer))
+                              (list (pdf-view-current-page) pdf-view-display-size)))
+              (deserialize . ,(lambda (_buffer vars)
+                                (let ((file (wg-buf-file-name _buffer))
+                                      buffer)
+                                  (when wg-debug
+                                    (message "pdf-view-mode deserialize is called => %s" file))
+                                  (when (and file (file-exists-p file))
+                                    (condition-case err
+                                        (progn
+                                          (when (setq buffer (find-file-noselect file nil nil nil))
+                                            (with-current-buffer buffer
+                                              (rename-buffer (wg-buf-name _buffer) t)
+                                              (wg-set-buffer-uid-or-error (wg-buf-uid _buffer)))
+                                            (switch-to-buffer buffer)
+                                            (let* ((page (nth 0 vars))
+                                                   (view-display-size (nth 1 vars)))
+                                              (when page
+                                                (pdf-view-goto-page page))
+                                              (when view-display-size
+                                                (setq pdf-view-display-size view-display-size)
+                                                (cond
+                                                 ((eq pdf-view-display-size 'fit-height)
+                                                  (image-set-window-vscroll 0))
+                                                 ((eq pdf-view-display-size 'fit-width)
+                                                  (image-set-window-hscroll 0))
+                                                 (t
+                                                  (image-set-window-vscroll 0)
+                                                  (image-set-window-hscroll 0)))
+                                                (pdf-view-redisplay t)))))
+                                      (error
+                                       (wg-file-buffer-error file (error-message-string err)))))
+                                  buffer)))))
 
-(wg-support
- 'speedbar-mode
- 'speedbar
-  `((deserialize . ,(lambda (_buffer vars)
-                      (ignore vars)
-                      (setq speedbar-buffer (switch-to-buffer (wg-buf-name _buffer)))
-                      (speedbar-reconfigure-keymaps)
-                      (speedbar-update-contents)
-                      (speedbar-set-timer dframe-update-speed)
-                      speedbar-buffer))))
+(wg-support 'speedbar-mode
+            'speedbar
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (setq speedbar-buffer (switch-to-buffer (wg-buf-name _buffer)))
+                                (speedbar-reconfigure-keymaps)
+                                (speedbar-update-contents)
+                                (speedbar-set-timer dframe-update-speed)
+                                speedbar-buffer))))
 
 (provide 'workgroups2-support)
 ;;; workgroups2-support.el ends here

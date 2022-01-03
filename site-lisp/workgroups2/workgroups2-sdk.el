@@ -21,6 +21,12 @@
 
 ;;; Code:
 (require 'cl-lib)
+(require 'disass)
+
+(defcustom wg-restore-remote-buffers t
+  "Restore buffers that get \"t\" with `file-remote-p'."
+  :type 'boolean
+  :group 'workgroups)
 
 (defvar wg-debug nil "For debugging.")
 
@@ -184,6 +190,20 @@ If PARAM is not found, return DEFAULT which defaults to nil."
   (message "Error while restoring a file %s:\n  %s"
            file
            (error-message-string error)))
+
+(defun wg-symbol-of-compiled-function (object)
+  "Return symbol of compiled function OBJECT."
+  (let (rlt a)
+    (with-temp-buffer
+      (disassemble object (current-buffer))
+      (goto-char (point-max))
+      (re-search-backward "[ \t]+constant[ \t]+" )
+      (setq a (split-string (string-trim (buffer-substring (point) (line-end-position)))
+                            "[ \t]+"
+                            t))
+      (when (> (length a) 1)
+        (setq rlt (intern (nth 1 a)))))
+    rlt))
 
 (provide 'workgroups2-sdk)
 ;;; workgroups2-sdk.el ends here
