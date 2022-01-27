@@ -540,9 +540,18 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs.
 
-By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
+Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+
+You can use set environment variables in power shell, like  =setx var_name "var_value"=.
+
+I use below cli to set the variable =HOME= to "c:\cygwin\home\cb",
+#+begin_src elisp
+setx HOME "c:\cygwin\home\cb"
+#+end_src
+
+By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
 - Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to make Emacs start up faster.
