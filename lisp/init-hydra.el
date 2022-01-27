@@ -273,7 +273,7 @@
 -----------------------------------------------------------------
 [_vv_] video2mp3           [_R_] Move           [_pp_] Path
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
-[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base
+[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
 [_cc_] Last command        [_ff_] Find          [_dd_] directory
 [_sa_] Fetch subtitle(s)   [_C_]  Copy
 [_vv_] Video => Mp3        [_rb_] Change base
