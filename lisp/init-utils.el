@@ -308,7 +308,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 
 (defun my-gclip ()
   "Get clipboard content."
-  (let* ((powershell-program (executable-find "powershell.exe")))
+  (let (powershell-program)
     (cond
      ;; Windows
      ((and *win64* (fboundp 'w32-get-clipboard-data))
@@ -316,7 +316,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
       (w32-get-clipboard-data))
 
      ;; Windows 10
-     (powershell-program
+     ((and *win64* (setq powershell-program (executable-find "powershell.exe")))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
