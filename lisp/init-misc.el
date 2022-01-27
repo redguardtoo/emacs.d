@@ -1197,8 +1197,9 @@ It's also controlled by `my-lazy-before-save-timer'."
   (let* ((items (dired-get-marked-files t current-prefix-arg))
          (regexp (my-file-extensions-to-regexp my-media-file-extensions))
          found)
-    (when (and items (> (length items) 0))
-
+    (cond
+     ;; at least two items are selected
+     ((> (length items) 1)
       ;; clear existing playlist
       (emms-playlist-current-clear)
       (sit-for 1)
@@ -1216,7 +1217,10 @@ It's also controlled by `my-lazy-before-save-timer'."
 
       (when found
         (with-current-buffer emms-playlist-buffer-name
-          (emms-start))))))
+          (emms-start))))
+
+     (t
+      (emms-play-directory default-directory)))))
 
 ;; {{ helpful (https://github.com/Wilfred/helpful)
 ;; Note that the built-in `describe-function' includes both functions
