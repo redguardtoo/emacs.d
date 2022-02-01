@@ -544,10 +544,13 @@ I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs.
 
 Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
 
-You can use set environment variables in power shell, like  =setx var_name "var_value"=.
+You can use set environment variables in power shell, like,
+#+begin_src sh
+setx var_name "var_value"
+#+end_src
 
 I use below cli to set the variable =HOME= to "c:\cygwin\home\cb",
-#+begin_src elisp
+#+begin_src sh
 setx HOME "c:\cygwin\home\cb"
 #+end_src
 
