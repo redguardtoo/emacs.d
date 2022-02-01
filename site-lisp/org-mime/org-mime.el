@@ -6,7 +6,7 @@
 ;; Maintainer: Chen Bin (redguardtoo)
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.2.3
+;; Version: 0.2.5
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -56,10 +56,12 @@
 ;;   :END:
 ;;
 ;; To avoid exporting the table of contents, you can setup
-;; `org-mime-export-options':
-;;   (setq org-mime-export-options '(:section-numbers nil
+;; `org-mime-export-options' as below,
+;;   (setq org-mime-export-options '(:with-latex dvipng
+;;                                   :section-numbers nil
 ;;                                   :with-author nil
 ;;                                   :with-toc nil))
+;; It overrides Org default settings, but still inferior to file-local settings.
 ;;
 ;; Or just setup your export options in the org buffer/subtree.  These are
 ;; overridden by `org-mime-export-options' when it is non-nil.
@@ -91,17 +93,16 @@
 ;; 1. In order to embed images into your mail, use the syntax below,
 ;; [[/full/path/to/your.jpg]]
 ;;
-;; 2. It's easy to add your own emphasis markup.  For example, to render text
-;; between "@" in a red color, you can add a function to `org-mime-html-hook':
+;; 2. It's easy to define your own emphasis markup.
+;; For example, below code renders text between "#" in red color,:
 ;;
 ;;   (add-hook 'org-mime-html-hook
 ;;             (lambda ()
-;;               (while (re-search-forward "@\\([^@]*\\)@" nil t)
+;;               (while (re-search-forward "#\\([^#]*\\)#" nil t)
 ;;                 (replace-match "<span style=\"color:red\">\\1</span>"))))
 ;;
-;; 3. Now the quoted mail uses a modern style (like Gmail), so mail replies
-;; looks clean and modern. If you prefer the old style, please set
-;; `org-mime-beautify-quoted-mail' to nil.
+;; 3. The quoted mail uses Gmail's style, so mail replies looks clean and modern.
+;; If you prefer the old style, please set `org-mime-beautify-quoted-mail' to nil.
 ;;
 ;; 4. Please note this program can only embed exported HTML into mail.
 ;;    Org-mode is responsible for rendering HTML.
@@ -168,8 +169,8 @@ Default (nil) selects the original org file."
 
 (defvar org-mime-export-options '(:with-latex dvipng)
   "Default export options which may override org buffer/subtree options.
-You avoid exporting section-number/author/toc with the setup below,
-`(setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))'")
+You could avoid exporting section-number/author/toc.
+It overrides Org default settings, but still inferior to file-local settings.")
 
 (defvar org-mime-html-hook nil
   "Hook to run over the html buffer before attachment to email.
@@ -215,11 +216,11 @@ buffer holding the text to be exported.")
                                   (line-end-position)))
 
 (defun org-mime-use-ascii-charset ()
-  "Return nil unless org-mime-export-ascii is set to a valid value."
+  "Return nil unless `org-mime-export-ascii' is set to a valid value."
   (car (memq org-mime-export-ascii '(ascii utf-8 latin1))))
 
-(defun org-mime-export-ascii-maybe (text-for-ascii text-for-plain)
-  "Export `TEXT-FOR-ASCII' to ascii format or use TEXT-FOR-PLAIN."
+(defun org-mime-export-ascii-maybe (text-for-ascii text-for-plain &optional opts)
+  "Export `TEXT-FOR-ASCII' to ascii format or use TEXT-FOR-PLAIN with OPTS."
   (let* ((ascii-charset (org-mime-use-ascii-charset)))
     (cond
      (ascii-charset
@@ -232,7 +233,7 @@ buffer holding the text to be exported.")
   "Similar to `org-html-export-as-html' and `org-org-export-as-org'.
 SUBTREEP is t if current node is subtree."
   (let* ((opts (org-mime-get-export-options subtreep))
-         (plain (org-mime-export-ascii-maybe (buffer-string) (buffer-string)))
+         (plain (org-mime-export-ascii-maybe (buffer-string) (buffer-string) opts))
          (buf (org-export-to-buffer 'html "*Org Mime Export*" nil subtreep nil t opts))
          (body (prog1
                    (with-current-buffer buf
@@ -334,7 +335,8 @@ HTML is the body of the message."
 
 (defun org-mime-multipart (plain html &optional images)
   "Markup PLAIN body a multipart/alternative with HTML alternatives.
-If html portion of message includes IMAGES they are wrapped in multipart/related part."
+If html portion of message includes IMAGES they are wrapped in
+multipart/related part."
   (cl-case org-mime-library
     (mml (concat "<#multipart type=alternative>\n<#part type=text/plain>\n"
                  plain
@@ -363,9 +365,16 @@ Or else use CURRENT-FILE to calculate path."
          (path (expand-file-name url dir)))
     (cond
      ((string-match-p "^file:///" url)
-      (replace-regexp-in-string "^file://" "" url))
+      (let* ((str (replace-regexp-in-string "^file://" "" url)))
+        (when (and (eq system-type 'windows-nt)
+                   (string-match "^/[a-zA-Z]:" str))
+          ;; remove the first character from "/C:/Windows/File.txt"
+          (setq str (substring str 1)))
+        str))
+
      ((file-exists-p path)
       path)
+
      (t
       (expand-file-name url default-directory)))))
 
@@ -468,30 +477,39 @@ CURRENT-FILE is used to calculate full path of images."
     (re-search-backward org-mime-mail-signature-separator nil t nil)))
 
 
+(defmacro org-mime-extract-tag-in-current-buffer (beginning end result)
+  "Extract the text between BEGINNING and END and insert it into RESULT."
+  `(when (and ,beginning ,end (< ,beginning ,end))
+     (push (buffer-substring-no-properties ,beginning ,end) ,result)
+     ;; delete old tag
+     (delete-region ,beginning ,end)))
+
 (defun org-mime-extract-non-org ()
   "Extract content not in org format (gpg signature, attachments ...)."
   (unless (org-region-active-p)
-    (let* (rlt str b e (old-pos (point)))
+    (let* (secure-tags
+           part-tags
+           str
+           b
+           e
+           (old-pos (point)))
       (goto-char (point-min))
-      (while (re-search-forward "<#secure \\|<#part " (point-max) t)
+      (while (re-search-forward "<#secure \\|<#part .* filename=" (point-max) t)
         (setq str (match-string 0))
         (setq b (match-beginning 0))
         (cond
          ;; one line gpg signature tag
          ((string-match "^<#secure " str)
-          (setq e (line-end-position)))
+          (setq e (line-end-position))
+          (org-mime-extract-tag-in-current-buffer b e secure-tags))
 
          ;; multi-lines attachment
-         ((string-match "^<#part " str)
+         ((string-match "^<#part .* filename=" str)
           (save-excursion
             (unless (re-search-forward "<#/part>" (point-max) t)
               (error (format "\"%s\" should have end tag." str)))
-            (setq e (match-end 0)))))
-
-        ;; delete tag
-        (when (and b e (< b e))
-          (push (buffer-substring-no-properties b e) rlt)
-          (delete-region b e))
+            (setq e (match-end 0))
+            (org-mime-extract-tag-in-current-buffer b e part-tags))))
 
         ;; search next tag
         (goto-char (point-min)))
@@ -499,7 +517,8 @@ CURRENT-FILE is used to calculate full path of images."
       ;; move cursor back to its original position
       (goto-char old-pos)
 
-      (nreverse rlt))))
+      (list :secure-tags (nreverse secure-tags)
+            :part-tags (nreverse part-tags)))))
 
 ;;;###autoload
 (defun org-mime-htmlize ()
@@ -509,7 +528,9 @@ If called with an active region only export that region, otherwise entire body."
   (when org-mime-debug (message "org-mime-htmlize called"))
 
   (let* ((region-p (org-region-active-p))
-         (tags (org-mime-extract-non-org))
+         (all-tags (org-mime-extract-non-org))
+         (secure-tags (plist-get all-tags :secure-tags))
+         (part-tags (plist-get all-tags :part-tags))
          (html-start (funcall org-mime-find-html-start
                               (or (and region-p (region-beginning))
                                   (org-mime-mail-body-begin))))
@@ -530,12 +551,17 @@ If called with an active region only export that region, otherwise entire body."
     (delete-region html-start html-end)
     (goto-char html-start)
 
+    ;; restore secure tags
+    (when secure-tags
+      (insert (mapconcat #'identity secure-tags "\n"))
+      (insert "\n"))
+
     ;; insert converted html
     (org-mime-insert-html-content plain file html opts)
 
-    ;; restore non-org tags
-    (dolist (tag tags)
-      (insert (concat "\n" tag "\n")))))
+    ;; restore part tags
+    (when part-tags
+      (insert (mapconcat #'identity part-tags "\n")))))
 
 (defun org-mime-apply-html-hook (html)
   "Apply HTML hook."
@@ -773,8 +799,7 @@ Following headline properties can determine the mail headers.
 
 (define-minor-mode org-mime-src-mode
   "Minor mode for org major mode buffers generated from mail body."
-  nil " OrgMimeSrc" nil
-  )
+  :lighter " OrgMimeSrc")
 (add-hook 'org-mime-src-mode-hook #'org-mime-src-mode-configure-edit-buffer)
 
 (defun org-mime-src--make-source-overlay (beg end)
@@ -826,7 +851,7 @@ Following headline properties can determine the mail headers.
 (defun org-mime-revert-to-plain-text-mail ()
   "Revert mail body to plain text."
   (interactive)
-  (let* ((txt-sep "<#part type=text/plain")
+  (let* ((txt-sep "<#part type=text/plain>")
          (html-sep "<#part type=text/html>")
          mail-beg
          mail-text
@@ -844,6 +869,8 @@ Following headline properties can determine the mail headers.
                                                       (- txt-end (length html-sep))))
       ;; delete html mail
       (delete-region mail-beg (point-max))
+      (when org-mime-debug
+        (message "mail-beg=%s mail-text=%s" mail-beg mail-text))
       ;; restore text mail
       (insert mail-text))
      (t
