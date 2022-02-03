@@ -20,6 +20,12 @@
         (require feature)
       (error nil))))
 
+(defun my-hostname ()
+  "Return stripped output of cli program hostname."
+  (let* ((output (shell-command-to-string "hostname")))
+    ;; Windows DOS might output some extra noise
+    (string-trim (replace-regexp-in-string "hostname" "" output))))
+
 (defun my-git-root-dir ()
   "Git root directory."
   (locate-dominating-file default-directory ".git"))
