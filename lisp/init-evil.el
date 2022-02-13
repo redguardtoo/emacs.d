@@ -634,6 +634,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "cxr" 'org-clock-report ; `C-c C-x C-r'
   "qq" 'my-multi-purpose-grep
   "dd" 'counsel-etags-grep-current-directory
+  "dc" 'my-grep-pinyin-in-current-directory
   "rr" 'my-counsel-recentf
   "da" 'diff-lisp-mark-selected-text-as-a
   "db" 'diff-lisp-diff-a-and-b

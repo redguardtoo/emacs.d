@@ -25,16 +25,19 @@
    ((= n 4)
     ;; grep js files which is imported
     (counsel-etags-grep (format "from .*%s('|\\\.js');?"
-                                (file-name-base (file-name-nondirectory buffer-file-name)))))
-   ((= n 5)
-    ;; grep Chinese using pinyinlib.
-    ;; In ivy filter, trigger key must be pressed before filter chinese
-    (let* ((counsel-etags-convert-grep-keyword
-            (lambda (keyword)
-              (if (and keyword (> (length keyword) 0))
-                  (my-pinyinlib-build-regexp-string keyword)
-                keyword))))
-      (counsel-etags-grep)))))
+                                (file-name-base (file-name-nondirectory buffer-file-name)))))))
+
+(defun my-grep-pinyin-in-current-directory ()
+  "Grep pinyin in current directory."
+  (interactive)
+  ;; grep Chinese using pinyinlib.
+  ;; In ivy filter, trigger key must be pressed before filter chinese
+  (let* ((counsel-etags-convert-grep-keyword
+          (lambda (keyword)
+            (if (and keyword (> (length keyword) 0))
+                (my-pinyinlib-build-regexp-string keyword)
+              keyword))))
+    (counsel-etags-grep-current-directory)))
 
 ;; {{ narrow region
 (defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
