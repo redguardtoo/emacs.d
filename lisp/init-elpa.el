@@ -174,7 +174,7 @@
         ;; ;; {{ Option 1: 163 mirror repository:
         ;; ;; ("gnu" . "https://mirrors.163.com/elpa/gnu/")
         ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
-        ;; ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/")
+        ;; ("melpa-stable" . "https://mirrors.163.com/elpa/stable-melpa/")
         ;; ;; }}
 
         ;; ;; {{ Option 2: tsinghua mirror repository
@@ -193,7 +193,7 @@
 You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use this ELPA mirror."))
   (setq package-archives
         '(("melpa" . "https://mirrors.163.com/elpa/melpa/")
-          ("melpa-stable" . "https://mirrors.163.com/elpa/melpa-stable/"))))
+          ("melpa-stable" . "https://mirrors.163.com/elpa/stable-melpa/"))))
 
 ;; Un-comment below line if you follow "Install stable version in easiest way"
 ;; (setq package-archives '(("myelpa" . "~/myelpa/")))
