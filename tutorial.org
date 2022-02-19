@@ -1,0 +1,107 @@
+* 简介
+主要介绍在使用[[https://github.com/redguardtoo/emacs.d][陈斌]]的emacs配置后(可选择性安装一些推荐的应用，如Universal Ctags, GNU Global)，emacs的快速使用指南。
+
+使用emacs的好处是命令行启动，不依赖GUI，可以部署在云上，方便云上代码调试。自带的orgmode相当强大，时间管理的神器，也是写文档做笔记的神器。默认使用了evil模式，无缝结合了vim的使用习惯。
+
+安装方法：
+1. apt install emacs  //最好26.1及以上
+2. cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d 
+3. apt install global  //这是装GNU Global
+4. cd ~; git clone https://github.com/universal-ctags/ctags.git; cd ctags; ./autogen.sh; ./configure --prefix=/usr; make; make install   //这是装Universal Ctags
+
+以下文档中，在表示按键的地方，C表示ctrl，M表示alt/opt，S表示shift，列出的快捷键以常用、精简为主。
+
+* 启动
+在命令行中运行TERM=xterm-256color emacs -nw
+然后C-x C-f打开文件
+然后不用建立project，git项目会自动检查和匹配，在查符号引用时，会自动生成tag
+
+* 常用快捷方式
+** 核心键
+| name          | key   | comments                                          | command |
+|---------------+-------+---------------------------------------------------+---------|
+| 万能终止键    | k j   | 替代了vim的ESC和emacs的C-g                        |         |
+| 运行emacs命令 | M-x   | 文档中command栏中的命令，可直接通过输入命令名运行 |         |
+| 查询函数功能  | C-h f | 输入command栏中的命令，查询函数功能               |         |
+| 查询快捷键    | C-h k | 查询所输入的快捷键对应的功能                      |         |
+| 查询变量      | C-h v |                                                   |         |
+| 切换模式      | C-z   | 切换vim和emacs模式                                |         |
+
+** 光标移动
+在evil模式下，光标保持vim的操作快捷键
+| name                     | key | comments | command |
+|--------------------------+-----+----------+---------|
+| 上                       | k   |          |         |
+| 下                       | j   |          |         |
+| 左                       | h   |          |         |
+| 右                       | l   |          |         |
+| 下一个单词开头           | w   | word     |         |
+| 上一个单词开头           | b   | back     |         |
+| 单词结尾                 | E/e | end      |         |
+| 向下翻页                 | C-f | forward  |         |
+| 向上翻页                 | C-b | backward |         |
+| 向上滚动                 | C-e |          |         |
+| 向下滚动                 | C-y |          |         |
+| 光标所在行居中/置顶/置底 | C-l |          |         |
+
+在emacs模式下，光标需使用emacs快捷键(在底部buffer菜单选择时/在lisp文件打开时，是默认使用emacs操作方式的)
+| name | key | comments | command |
+|------+-----+----------+---------|
+| 上   | C-p | previous |         |
+| 下   | C-n | next     |         |
+| 左   | C-b | backward |         |
+| 右   | C-f | forward  |         |
+
+** 窗口和布局
+| name             | key     | comments                                         | command                      |
+|------------------+---------+--------------------------------------------------+------------------------------|
+| 水平分割窗口     | , x 2   | 分割当前窗口                                     | my-split-window-vertically   |
+| 垂直分割窗口     | , x 3   |                                                  | my-split-window-horizontally |
+| 跳转到第一个窗口 | , 1     | 窗口名有数字索引                                 | winum-select-window-1        |
+| 跳转到第二个窗口 | , 2     | 第三第四窗口同理                                 | winum-select-window-2        |
+| 返回之前的buffer | , b b   | 在当前窗口buffer切换时，可以返回之前显示的buffer | back-to-previous-buffer      |
+| 关闭buffer       | , x k   | 关闭buffer，默认当前窗口显示的buffer             | kill-buffer                  |
+| 窗口最大化/还原  | , f f   | fullscreen                                       | toggle-full-window           |
+| 切换到终端       | , x z/c | 方便回终端运行命令，在终端按fg回到emacs          | switch-to-shell-or-ansi-term |
+| 撤销/重做布局    | , u u   | 当窗口布局改变时，可撤销或重做                   | winner-undo                  |
+| 保存当前布局     | SPC s s | save layout,连打开文件的位置都一并保存           | wg-create-workgroup          |
+| 载入布局         | SPC l l | load layout，还原回保存时的状态，包括打开的文件  | my-wg-switch-workgroup       |
+| 随机主题         | SPC h h | 随机主题配色                                     | random-healthy-color-theme   |
+
+** 代码阅读和编辑
+| name                   | key     | comments                                             | command                              |
+|------------------------+---------+------------------------------------------------------+--------------------------------------|
+| 跳转匹配的项目         | %       | 可跳转括号，函数头尾等具有前后匹配的项目             | evilmi-jump-items                    |
+| 快速选中字符/单词/行   | v       | 可多次按v来做选中，选中后也可做光标移动              |                                      |
+| 查找引用               | , q q   | 可先vv选中函数名后再查找，也可手动输入，小技巧见tips | my-multi-purpose-grep                |
+| 跳转到函数定义         | C-]     | 只要光标在函数名中就可以，不用选中                   | counsel-etags-find-tag-at-point      |
+| 返回原先位置           | C-t     | 跳转之后返回原先的位置                               | pop-tag-mark                         |
+| 向前/向后搜索          | v */#   | 用v选中关键词后，*向前，#向后搜索                    | evil-visualstar/begin-search-forward |
+| 复制到剪贴板           | , a a   | add                                                  | copy-to-x-clipboard                  |
+| 从剪贴板粘贴           | , p p   | paste                                                | paste-from-x-clipboard               |
+| 切换输入法             | C-\     | 使用emacs里的输入法插件                              | evil-toggle-input-method             |
+| 注释/取消注释          | , c i   | 可选中多行同时进行                                   | evilnc-comment-or-uncomment-lines    |
+| 查找文件（根据关键词） | , k k   | 可先v选中关键词，也可手动输入                        | find-file-in-project-by-selected     |
+| 打开文件（根据目录）   | , x f   | 会显示当前文件所在目录                               | counsel-find-file                    |
+| 查看大纲               | , i i   | 显示当前文件所有函数列表，或标题                     | counsel-imenu                        |
+| 撤销                   | C-/     | undo                                                 | undo-only                            |
+| 重做                   | M-_     | redo, 注意按键_是Shift加上-                          | undo-fu-only-redo                    |
+| 编译                   | , o p   | compile                                              | my-compile-hack                      |
+| 跳转到函数开头         | , b f   | 跳转到开头后，可按%跳转到结尾                        | beginning-of-defun                   |
+| 将当前函数独立显示     | , w w   | 适用于对当前函数查找替换，防止改到其他函数           | narrow-or-widen-dwim                 |
+| 同文件多窗口打开       | C-x 4 c | clone当前buffer到一个新窗口中                        | clone-indirect-buffer-other-window   |
+  
+
+Tips:
+1. 对于"查找引用"，其结果可以通过！str把结果中包含str的过滤掉，最终搜索结果可通过C-c C-o保存到新窗口中，在光标移动到搜索结果后Enter进入搜索结果会自动跳转 
+2. 可以包含/usr/include/下的头文件，方法为：
+   cd /usr/include; ctags -e -R --tag-relative=never .;
+   添加(setq counsel-etags-extra-tags-files '("/usr/include/TAGS")) 到~/.emacs.d/lisp/init-essential.el中，该变量可以包含多个目录
+
+** 工具
+| name                      | key     | comments                           | command              |
+|---------------------------+---------+------------------------------------+----------------------|
+| git add                   | , v a   | 对当前文件调用git add              | git-add-current-file |
+| 查看光标所在行git提交信息 | , v v   |                                    | vc-msg-show          |
+| 小工具                    | SPC y y | 实用小工具的菜单，里面有番茄时间等 | hydra-launcher/body  |
+  
