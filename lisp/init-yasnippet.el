@@ -1,7 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; my private snippets, should be placed before enabling yasnippet
-(setq my-yasnippets (expand-file-name "~/my-yasnippets"))
+(defvar my-yasnippets-dir nil
+  "The directory of my own yasnippets, like \"~/my-yasnippetsi\".")
 
 (defun my-enable-yas-minor-mode ()
   "Enable `yas-minor-mode'."
@@ -125,10 +126,10 @@
       (apply orig-func args)))
   (advice-add 'yas-insert-snippet :around #'my-yas-insert-snippet-hack)
 
-  (when (and  (file-exists-p my-yasnippets)
-              (not (member my-yasnippets yas-snippet-dirs)))
-    (add-to-list 'yas-snippet-dirs my-yasnippets))
-
-  (yas-reload-all))
+  (when (and  my-yasnippets-dir
+              (file-exists-p my-yasnippets-dir)
+              (not (member my-yasnippets-dir yas-snippet-dirs)))
+    (push my-yasnippets-dir yas-snippet-dirs)
+    (yas-reload-all)))
 
 (provide 'init-yasnippet)
