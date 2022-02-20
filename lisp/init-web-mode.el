@@ -7,8 +7,6 @@
   (unless (is-buffer-file-temp)
     (setq-local wucuo-flyspell-check-doublon nil)
     (remove-hook 'yas-after-exit-snippet-hook
-                 'web-mode-yasnippet-exit-hook t)
-    (remove-hook 'yas/after-exit-snippet-hook
                  'web-mode-yasnippet-exit-hook t)))
 
 (add-hook 'web-mode-hook 'web-mode-hook-setup)

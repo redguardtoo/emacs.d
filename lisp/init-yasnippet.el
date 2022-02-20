@@ -2,13 +2,19 @@
 
 ;; my private snippets, should be placed before enabling yasnippet
 (defvar my-yasnippets-dir nil
-  "The directory of my own yasnippets, like \"~/my-yasnippetsi\".")
+  "The directory of my own yasnippets, \"~/my-yasnippets\", for example.")
 
 (defun my-enable-yas-minor-mode ()
   "Enable `yas-minor-mode'."
   (when (or (not (is-buffer-file-temp))
             (derived-mode-p 'prog-mode))
-    (yas-minor-mode 1)))
+    (cond
+     ((eq major-mode 'lisp-interaction-mode)
+      ;; The *Message* buffer is the first buffer to display during startup
+      ;; lazy load yasnippet to speed up startup
+      (my-run-with-idle-timer 2 (lambda () (yas-minor-mode 1))))
+     (t
+      (yas-minor-mode 1)))))
 
 (add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
 (add-hook 'text-mode-hook 'my-enable-yas-minor-mode)
