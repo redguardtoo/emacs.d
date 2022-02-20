@@ -45,6 +45,7 @@
 (autoload 'counsel-etags-scan-code "counsel-etags" "" t nil)
 (autoload 'counsel-etags-filename-p "counsel-etags" "" t nil)
 (autoload 'counsel-etags-grep "counsel-etags" "" t nil)
+(autoload 'counsel-etags-grep-current-directory "counsel-etags" "" t nil)
 (autoload 'counsel-etags-recent-tag "counsel-etags" "" t nil)
 (autoload 'imenu-extra-auto-setup "imenu-extra" "" t nil)
 (autoload 'lazyflymake-start "lazyflymake" "" t nil)
