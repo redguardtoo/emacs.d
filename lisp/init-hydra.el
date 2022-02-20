@@ -4,7 +4,7 @@
 ;; color could: red, blue, amaranth, pink, teal
 
 ;; use similar key bindings as init-evil.el
-(defhydra hydra-launcher (:color blue)
+(defhydra my-hydra-launcher (:color blue)
   "
 ^Misc^                    ^Study^                    ^Audio^
 --------------------------------------------------------------------------
@@ -57,13 +57,13 @@
   ("q" nil :color red))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
-(global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+(global-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
 (defun org-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
 (with-eval-after-load 'find-file-in-project
-  (defhydra hydra-ffip-diff-group (:color blue)
+  (defhydra my-hydra-diff (:color blue)
     "
 [_k_] Previous hunk
 [_j_] Next hunk
@@ -76,12 +76,12 @@
     ("n" diff-file-next)
     ("q" nil)))
 (defun ffip-diff-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-ffip-diff-group/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-diff/body))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
 ;; gnus-summary-mode
 (with-eval-after-load 'gnus-sum
-  (defhydra hydra-gnus-summary (:color blue)
+  (defhydra my-hydra-gnus-summary (:color blue)
     "
 [_F_] Forward (C-c C-f)             [_s_] Show thread
 [_e_] Resend (S D e)                [_h_] Hide thread
@@ -110,11 +110,11 @@
     ("G" dianyou-group-make-nnir-group)
     ("q" nil))
   ;; y is not used by default
-  (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))
+  (define-key gnus-summary-mode-map "y" 'my-hydra-gnus-summary/body))
 
 ;; gnus-article-mode
 (with-eval-after-load 'gnus-art
-  (defhydra hydra-gnus-article (:color blue)
+  (defhydra my-hydra-gnus-article (:color blue)
     "
 [_o_] Save attachment        [_F_] Forward
 [_v_] Play video/audio       [_r_] Reply
@@ -137,11 +137,11 @@
     ("b" dianyou-switch-gnus-buffer)
     ("q" nil))
   ;; y is not used by default
-  (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body))
+  (define-key gnus-article-mode-map "y" 'my-hydra-gnus-article/body))
 
 ;; message-mode
 (with-eval-after-load 'message
-  (defhydra hydra-message (:color blue)
+  (defhydra my-hydra-message (:color blue)
     "
 [_c_] Complete mail address [_H_] convert to html mail
 [_a_] Attach file           [_p_] Paste image from clipboard
@@ -159,9 +159,8 @@
     ("q" nil)))
 
 (defun message-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-message/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-message/body))
 (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
-;; }}
 
 ;; {{ dired
 ;; -*- coding: utf-8; lexical-binding: t; -*-
@@ -267,7 +266,7 @@
   (defun my-copy-file-info (fn)
     (message "%s => clipboard & yank ring"
              (copy-yank-str (funcall fn (dired-file-name-at-point)))))
-  (defhydra hydra-dired (:color blue)
+  (defhydra my-hydra-dired (:color blue)
     "
 ^Misc^                      ^File^              ^Copy Info^
 -----------------------------------------------------------------
@@ -304,7 +303,7 @@
     ("q" nil)))
 
 (defun dired-mode-hook-hydra-setup ()
-  (local-set-key (kbd "y") 'hydra-dired/body))
+  (local-set-key (kbd "y") 'my-hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
 ;; }}
 
@@ -312,7 +311,7 @@
 ;; @see https://oremacs.com/download/london.pdf
 (when (display-graphic-p)
   ;; Since we already use GUI Emacs, f2 is definitely available
-  (defhydra hydra-zoom (global-map "<f2>")
+  (defhydra my-hydra-zoom (global-map "<f2>")
     "Zoom"
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
@@ -322,9 +321,9 @@
 (defvar whitespace-mode nil)
 
 ;; {{ @see https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
-(defhydra hydra-toggle (:color pink)
+(defhydra my-hydra-toggle (:color pink)
   "
-_u_ company-ispell     %(if (memq 'company-ispell company-backends) t)
+_u_ company-ispell     %(and (boundp 'company-backends (memq 'company-ispell company-backends))
 _a_ abbrev-mode:       %`abbrev-mode
 _d_ debug-on-error:    %`debug-on-error
 _f_ auto-fill-mode:    %`auto-fill-function
@@ -341,45 +340,45 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
   ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
-(global-set-key (kbd "C-c C-t") 'hydra-toggle/body)
+(global-set-key (kbd "C-c C-t") 'my-hydra-toggle/body)
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
 
 ;; helpers from https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
-(defun hydra-move-splitter-left (arg)
-  "Move window splitter left."
+(defun hydra-move-split-left (arg)
+  "Move window split left."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (shrink-window-horizontally arg)
     (enlarge-window-horizontally arg)))
 
-(defun hydra-move-splitter-right (arg)
-  "Move window splitter right."
+(defun hydra-move-split-right (arg)
+  "Move window split right."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (enlarge-window-horizontally arg)
     (shrink-window-horizontally arg)))
 
-(defun hydra-move-splitter-up (arg)
-  "Move window splitter up."
+(defun hydra-move-split-up (arg)
+  "Move window split up."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (enlarge-window arg)
     (shrink-window arg)))
 
-(defun hydra-move-splitter-down (arg)
-  "Move window splitter down."
+(defun hydra-move-split-down (arg)
+  "Move window split down."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (shrink-window arg)
     (enlarge-window arg)))
 
-(defhydra hydra-window ()
+(defhydra my-hydra-window ()
   "
 Movement^^   ^Split^         ^Switch^     ^Resize^
 -----------------------------------------------------
@@ -394,10 +393,10 @@ _SPC_ cancel _o_nly this     _d_elete
   ("j" windmove-down )
   ("k" windmove-up )
   ("l" windmove-right )
-  ("q" hydra-move-splitter-left)
-  ("w" hydra-move-splitter-down)
-  ("e" hydra-move-splitter-up)
-  ("r" hydra-move-splitter-right)
+  ("q" hydra-move-split-left)
+  ("w" hydra-move-split-down)
+  ("e" hydra-move-split-up)
+  ("r" hydra-move-split-right)
   ("b" ivy-switch-buffer)
   ("f" counsel-find-file)
   ("F" follow-mode)
@@ -405,7 +404,7 @@ _SPC_ cancel _o_nly this     _d_elete
          (interactive)
          (ace-window 1)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("v" (lambda ()
          (interactive)
          (split-window-right)
@@ -418,14 +417,14 @@ _SPC_ cancel _o_nly this     _d_elete
          (interactive)
          (ace-window 4)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("S" save-buffer)
   ("d" delete-window)
   ("D" (lambda ()
          (interactive)
          (ace-window 16)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("o" delete-other-windows)
   ("i" ace-delete-other-windows)
   ("z" (progn
@@ -433,11 +432,11 @@ _SPC_ cancel _o_nly this     _d_elete
          (setq this-command 'winner-undo)))
   ("Z" winner-redo)
   ("SPC" nil))
-(global-set-key (kbd "C-c C-w") 'hydra-window/body)
+(global-set-key (kbd "C-c C-w") 'my-hydra-window/body)
 ;; }}
 
 ;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
-(defhydra hydra-git (:body-pre
+(defhydra my-hydra-git (:body-pre
                      (progn
                        (git-gutter-mode 1)
                        (setq git-link-use-commit t))
@@ -478,10 +477,10 @@ Git:
   ("f" my-git-find-file-in-commit)
   ("cr" my-git-cherry-pick-from-reflog)
   ("q" nil))
-(global-set-key (kbd "C-c C-g") 'hydra-git/body)
+(global-set-key (kbd "C-c C-g") 'my-hydra-git/body)
 ;; }}
 
-(defhydra hydra-search ()
+(defhydra my-hydra-search ()
   "
  ^Search^         ^Dictionary^
 -----------------------------------------
@@ -500,9 +499,9 @@ _m_ Man
   ("h" w3mext-hacker-search)
   ("m" lookup-doc-in-man)
   ("q" nil))
-(global-set-key (kbd "C-c C-s") 'hydra-search/body)
+(global-set-key (kbd "C-c C-s") 'my-hydra-search/body)
 
-(defhydra hydra-describe (:color blue :hint nil)
+(defhydra my-hydra-describe (:color blue :hint nil)
   "
 Describe Something: (q to quit)
 _a_ all help for everything screen
@@ -556,7 +555,7 @@ _w_ where is something defined
   ("t" describe-theme)
   ("v" describe-variable)
   ("w" where-is))
-(global-set-key (kbd "C-c C-q") 'hydra-describe/body)
+(global-set-key (kbd "C-c C-q") 'my-hydra-describe/body)
 
 (provide 'init-hydra)
 ;;; init-hydra.el ends here
