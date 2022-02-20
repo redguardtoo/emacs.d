@@ -5,7 +5,7 @@
 - Fast
 - Robust. Never crash after upgrading packages. Packages could be installed without network
 - Support Windows. Find&Grep files on Windows with minimum setup
-- Tested with Emacs 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
+- Tested with Emacs 26.3, 27.1, 28 on Linux/Windows10/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
 - Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
@@ -20,7 +20,7 @@
   - [[#install-everything-in-one-step-optional][Install everything in one step (OPTIONAL)]]
   - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
-  - [[#basic-tutorial][Basic tutorial]]
+  - [[#tutorial][Tutorial]]
   - [[#evil-mode-tutorial][Evil-mode tutorial]]
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
@@ -219,9 +219,9 @@ Grammar, Style and Spell Checker
 - Used by hydra in dired buffer
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
-** Basic tutorial
+** Tutorial
 Please read this tutorial at least for once.
-*** Step 1, learn OS basic
+*** Step 1, learn basics
 At minimum you need know how Emacs interacts with other command line programs,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]]
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
@@ -240,6 +240,8 @@ At minimum, you need learn:
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 *** Step 4, start from a real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
+*** Step 5 (optional), improve your shell/cli skills
+You could read free books/guides at [[https://tldp.org/][The Linux Documentation Project]].
 ** Evil-mode tutorial
 Required for vim user,
 - Must read [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
@@ -540,21 +542,31 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] Emacs.
 
-Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+If you use Windows Emacs, you need help Emacs to find third party command line programs from Cygwin. So you'd better add  =C:\Cygwin64\bin= to environment variable =PATH=.
 
-You can use set environment variables in power shell, like,
+Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping text or searching file, the Windows Emacs need run the command line programs in Command Prompt which only uses UTF-16 encoded text. So you might need [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
+
+Below Emacs commands do not require external command line programs, so they works out of box on Windows,
+- `M-x swiper`
+- `M-x ffip-lisp-find-file-in-project`
+- `M-x find-lisp-find-dired`
+- `M-x find-by-pinyin-dired`
+- `M-x find-by-pinyin-in-project-dired`
+
+You can set environment variables in PowerShell, like,
 #+begin_src sh
 setx var_name "var_value"
 #+end_src
+
+Environment variable =HOME= points to the directory =C:\Users\<username>= on Windows by default. You need copy the folder =.emacs.d= into that directory. Or you can change the value of =HOME=.
 
 I use below cli to set the variable =HOME= to "c:\cygwin\home\cb",
 #+begin_src sh
 setx HOME "c:\cygwin\home\cb"
 #+end_src
 
-By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
 - Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to make Emacs start up faster.
