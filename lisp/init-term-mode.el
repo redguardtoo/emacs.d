@@ -57,7 +57,7 @@ EVENT is ignored."
 
 (defun eshell-mode-hook-setup ()
   "Set up `eshell-mode'."
-  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+  (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
   (local-set-key (kbd "M-n") 'counsel-esh-history))
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 

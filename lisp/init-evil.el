@@ -756,9 +756,9 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
   "hh" 'random-healthy-color-theme
-  "yy" 'hydra-launcher/body
+  "yy" 'my-hydra-zoom/body
   "ii" 'my-toggle-indentation
-  "g" 'hydra-git/body
+  "g" 'my-hydra-git/body
   "ur" 'gud-remove
   "ub" 'gud-break
   "uu" 'gud-run

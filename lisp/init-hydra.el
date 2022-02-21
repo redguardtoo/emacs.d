@@ -316,11 +316,12 @@
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
     ("r" (text-scale-set 0) "reset")
-    ("0" (text-scale-set 0) :bind nil :exit t)
-    ("1" (text-scale-set 0) nil :bind nil :exit t)))
-(defvar whitespace-mode nil)
+    ("q" nil "quit")))
+
+
 
 ;; {{ @see https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
+(defvar whitespace-mode nil)
 (defhydra my-hydra-toggle (:color pink)
   "
 _u_ company-ispell     %(and (boundp 'company-backends (memq 'company-ispell company-backends))
