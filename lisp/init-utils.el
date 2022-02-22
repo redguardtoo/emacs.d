@@ -338,11 +338,11 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 (defvar my-ssh-client-user nil
   "User name of ssh client.")
 
-(defun my-send-string-to-cli-stdin (string program &rest args)
-  "Send STRING to cli PROGRAM's stdin with its ARGS."
+(defun my-send-string-to-cli-stdin (string program)
+  "Send STRING to cli PROGRAM's stdin."
   (with-temp-buffer
     (insert string)
-    (call-process-region (point-min) (point-max) program nil nil nil args)))
+    (call-process-region (point-min) (point-max) program)))
 
 (defun my-write-string-to-file (string file)
   "Write STRING to FILE."
