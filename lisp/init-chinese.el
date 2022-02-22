@@ -49,6 +49,14 @@
   "Use Pinyin dictionary for Pyim IME.")
 
 (with-eval-after-load 'pyim
+  (defun my-pyim-clear-and-off ()
+    "Clear and off."
+    (interactive)
+    (pyim-quit-clear)
+    (my-toggle-input-method))
+  ;; press "/" to turn off pyim
+  (define-key pyim-mode-map (kbd "/") 'my-pyim-clear-and-off)
+
   ;; use western punctuation
   (setq pyim-punctuation-dict nil)
 

@@ -550,8 +550,14 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
    (t
     (message "Can only beautify code written in python/javascript"))))
 
+(general-imap ","
+              (general-key-dispatch 'self-insert-command
+                :timeout 0.5
+                "/" 'my-toggle-input-method))
+
 (my-comma-leader-def
   "," 'evilnc-comment-operator
+  "/" 'my-toggle-input-method
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
   "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
