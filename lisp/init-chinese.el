@@ -1,7 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; {{ make IME compatible with evil-mode
-(defun evil-toggle-input-method ()
+(defun my-toggle-input-method ()
   "When input method is on, goto `evil-insert-state'."
   (interactive)
 
@@ -38,7 +38,7 @@
   (if current-input-method (message "IME on!")))
 (advice-add 'evil-insert-state :around #'my-evil-insert-state-hack)
 
-(global-set-key (kbd "C-\\") 'evil-toggle-input-method)
+(global-set-key (kbd "C-\\") 'my-toggle-input-method)
 ;; }}
 
 ;; {{ pyim
