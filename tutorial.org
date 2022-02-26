@@ -5,7 +5,7 @@
 
 安装方法：
 1. apt install emacs  //最好26.1及以上
-2. cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d 
+2. cd ~; git clone -b feature_mortimer http://github.com/mortimerzhu/emacs.d.git .emacs.d
 3. apt install global  //这是装GNU Global
 4. cd ~; git clone https://github.com/universal-ctags/ctags.git; cd ctags; ./autogen.sh; ./configure --prefix=/usr; make; make install   //这是装Universal Ctags
 
