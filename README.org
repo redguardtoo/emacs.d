@@ -210,7 +210,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** LanguageTool
 Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
-- Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]]. Check its README for usage
+- Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]]. Check its README for usage. My setup is just one liner =(setq langtool-language-tool-jar "/path/to/languagetool-commandline.jar")=
 - Read the head of =site-lisp/langtool/langtool.el= for more customization because I patched it and added more features
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
