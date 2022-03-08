@@ -191,7 +191,7 @@ FN checks these characters belong to normal word characters."
     (when (my-should-use-minimum-resource)
       (font-lock-mode -1)))
 
-  (company-ispell-setup)
+  (my-company-ispell-setup)
 
   (unless (is-buffer-file-temp)
     ;;  trim spaces from end of changed line

@@ -129,7 +129,7 @@ In that case, insert the number."
     (push 'company-ispell company-backends)
     (message "company-ispell enabled!"))))
 
-(defun company-ispell-setup ()
+(defun my-company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
@@ -144,7 +144,7 @@ In that case, insert the number."
 
 ;; message-mode use company-bbdb.
 ;; So we should NOT turn on company-ispell
-(add-hook 'org-mode-hook 'company-ispell-setup)
+(add-hook 'org-mode-hook 'my-company-ispell-setup)
 ;; }}
 
 (provide 'init-company)
