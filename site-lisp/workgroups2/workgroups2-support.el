@@ -69,10 +69,17 @@ Saves some variables to restore a BUFFER later."
          (when (get-buffer buffer)
            (with-current-buffer buffer
              (when (eq major-mode ',,mode)
-               (let ((sf (cdr (assoc 'serialize ',,params))))
+               (let ((sf (cdr (assoc 'serialize ',,params)))
+                     rlt)
                  (list ',(intern (format "wg-deserialize-%s-buffer" mode-str))
                        (list default-directory
-                             (if sf (funcall sf buffer)))))))))
+                             (when sf
+                               (setq rlt (funcall sf buffer))
+                               (cond
+                                ((bufferp rlt)
+                                 (buffer-name rlt))
+                                (t
+                                 rlt))))))))))
       t)
 
      ;; Add function to `wg-special-buffer-serdes-functions'
@@ -164,14 +171,17 @@ Saves some variables to restore a BUFFER later."
   "Return commands to restore the state of Agenda buffer.
 Can be restored using \"(eval commands)\"."
   (interactive)
-  (when (boundp 'org-agenda-buffer-name)
-    (if (get-buffer org-agenda-buffer-name)
-        (wg-switch-to-buffer org-agenda-buffer-name
-          (let* ((p (or (and (looking-at "\\'") (1- (point))) (point)))
-                 (series-redo-cmd (get-text-property p 'org-series-redo-cmd)))
-            (if series-redo-cmd
-                (get-text-property p 'org-series-redo-cmd)
-              (get-text-property p 'org-redo-cmd)))))))
+  (when (and  (boundp 'org-agenda-buffer-name)
+              (get-buffer org-agenda-buffer-name))
+    (wg-switch-to-buffer
+     org-agenda-buffer-name
+     (let* ((p (or (and (looking-at "\\'") (1- (point))) (point)))
+            (series-redo-cmd (get-text-property p 'org-series-redo-cmd))
+            (rlt (or series-redo-cmd
+                     (get-text-property p 'org-redo-cmd))))
+       (when wg-debug
+         (message "wg-get-org-agenda-view-commands called rlt=%s" rlt))
+       rlt))))
 
 (defun wg-run-agenda-cmd (f)
   "Run commands F in Agenda buffer.
