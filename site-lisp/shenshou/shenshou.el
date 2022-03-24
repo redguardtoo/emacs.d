@@ -476,7 +476,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                                       "."
                                       (if subfilename (file-name-extension subfilename)
                                         "srt")))
-                 (cmd (format "%s --silent -b --insecure %s %s | %s -q -d -c > %s &"
+                 (cmd (format "%s --silent -b --insecure %s %s | %s -q -d -c > \"%s\" &"
                               shenshou-curl-program
                               shenshou-curl-extra-options
                               download-link
