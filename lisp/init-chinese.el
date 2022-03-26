@@ -54,6 +54,14 @@
     (interactive)
     (pyim-quit-clear)
     (my-toggle-input-method))
+
+  ;; select second word
+  (define-key pyim-mode-map ";" (lambda ()
+                                  (interactive)
+                                  (pyim-page-select-word-by-number 2)))
+  ;;next/previous page
+  (define-key pyim-mode-map "." 'pyim-page-next-page)
+  (define-key pyim-mode-map "," 'pyim-page-previous-page)
   ;; press "/" to turn off pyim
   (define-key pyim-mode-map (kbd "/") 'my-pyim-clear-and-off)
 
