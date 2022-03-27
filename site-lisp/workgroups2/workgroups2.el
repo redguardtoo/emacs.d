@@ -1110,24 +1110,27 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'."
 (defun wg-restore-special-buffer (buf &optional switch)
   "Restore a buffer BUF and maybe SWITCH to it."
   (when wg-debug
-    (message "wg-restore-special-buffer => %s %s %s" (wg-buf-name buf) buf switch))
+    (message "wg-restore-special-buffer => buf-name=%s buf=%s switch=%s"
+             (wg-buf-name buf) buf switch))
   (let* ((special-data (wg-buf-special-data buf))
-         (buffer (save-window-excursion
-                   (condition-case err
-                       (let ((fn (car special-data))
-                             created-buffer)
-                         (cond
-                          ((null fn)
-                           (when wg-debug
-                             (message "fn is null. special-data=%s" special-data)))
-                          ((null (setq created-buffer (funcall fn buf)))
-                           (when wg-debug
-                             (message "(funcall fn buf) is null. special-data=%s" special-data))))
-                         created-buffer)
-                     (error (message "Error deserializing %S: %S" (wg-buf-name buf) err)
-                            nil)))))
-    (when (and special-data buffer)
-      (if switch (switch-to-buffer buffer t))
+         buffer)
+
+    (when (and special-data
+               (setq buffer (save-window-excursion
+                              (condition-case err
+                                  (let ((fn (car special-data))
+                                        created-buffer)
+                                    (cond
+                                     ((null fn)
+                                      (when wg-debug
+                                        (message "fn is null. special-data=%s" special-data)))
+                                     ((null (setq created-buffer (funcall fn buf)))
+                                      (when wg-debug
+                                        (message "(funcall fn buf) is null. special-data=%s" special-data))))
+                                    created-buffer)
+                                (error (message "Error deserializing %S: %S" (wg-buf-name buf) err)
+                                       nil)))))
+      (when switch (switch-to-buffer buffer t))
       (with-current-buffer buffer
         (wg-set-buffer-uid-or-error (wg-buf-uid buf)))
       buffer)))
@@ -1144,7 +1147,7 @@ If BUF's file doesn't exist, call `wg-restore-default-buffer'."
         (when wg-debug
           (message "wg-restore-existing-buffer succeeded.")))
 
-       ((set rlt (wg-restore-special-buffer buf switch))
+       ((setq rlt (wg-restore-special-buffer buf switch))
         (when wg-debug
           (message "wg-restore-special-buffer succeeded.")))
 
