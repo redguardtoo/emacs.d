@@ -106,7 +106,7 @@
   (my-add-auto-mode 'js2-mode "\\.js\\(\\.erb\\)?\\'")
   ;; JSX
   (my-add-auto-mode 'rjsx-mode
-                 "\\.jsx\\'"
+                 "\\.[tj]sx\\'"
                  "components\\/.*\\.js\\'")
   ;; mock file
   (my-add-auto-mode 'js-mode "\\.mock.js\\'")
