@@ -282,6 +282,7 @@ It's used by `counsel-etags-find-tag-name-default'."
     ".hg"
     ;; project misc
     "bin"
+    "dist"
     "fonts"
     "images"
     ;; Mac
