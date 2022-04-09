@@ -17,6 +17,7 @@
 [_r_] Erase this buffer   [_st_] Pomodoro stop       [_E_] Typewriter on
 [_f_] Recent file         [_sr_] Pomodoro resume     [_V_] Old typewriter
 [_d_] Recent directory    [_sp_] Pomodoro pause
+[_z_] Jump around (z.sh)
 [_bh_] Bash history
 [_hr_] Dired CMD history
 [_hh_] Random theme
@@ -36,6 +37,7 @@
 
   ("e" shellcop-erase-buffer)
   ("r" shellcop-reset-with-new-command)
+  ("z" shellcop-jump-around)
   ("E" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
   ("s1" (pomodoro-start 15))
