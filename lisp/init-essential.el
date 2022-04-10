@@ -239,4 +239,19 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (setq eacl-git-grep-untracked nil))
 ;; }}
 
+(defun my-switch-to-previous-buffer ()
+  "Switch to previous buffer."
+  (interactive)
+  (switch-to-buffer nil))
+
+(defun my-current-string-beginning ()
+  "Goto current string's beginning."
+  (interactive)
+  (goto-char (car (my-create-range t))))
+
+(defun my-current-string-end ()
+  "Goto current string's end."
+  (interactive)
+  (goto-char (1- (cdr (my-create-range t)))))
+
 (provide 'init-essential)

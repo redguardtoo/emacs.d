@@ -560,20 +560,18 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "/" 'my-toggle-input-method
   "bf" 'beginning-of-defun
   "bu" 'backward-up-list
-  "bb" (lambda () (interactive) (switch-to-buffer nil)) ; to previous buffer
   "ef" 'end-of-defun
   "m" 'evil-set-marker
   "em" 'shellcop-erase-buffer
   "eb" 'eval-buffer
-  "sc" 'scratch
   "ee" 'eval-expression
   "aa" 'copy-to-x-clipboard ; used frequently
   "aw" 'ace-swap-window
   "af" 'ace-maximize-window
   "ac" 'aya-create
   "pp" 'paste-from-x-clipboard ; used frequently
-  "bs" '(lambda () (interactive) (goto-char (car (my-create-range t))))
-  "es" '(lambda () (interactive) (goto-char (1- (cdr (my-create-range t)))))
+  "sb" 'my-current-string-beginning
+  "se" 'my-current-string-end
   "vj" 'my-validate-json-or-js-expression
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
@@ -586,7 +584,9 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "jj" 'find-file-in-project-at-point
   "kk" 'find-file-in-project-by-selected
   "kn" 'find-file-with-similar-name ; ffip v5.3.1
-  "fd" 'find-directory-in-project-by-selected
+  "kd" 'find-directory-in-project-by-selected
+  "kf" 'find-file
+  "k/" 'find-file-other-window
   "trm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
@@ -620,10 +620,9 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "rjs" 'run-js
   "jsr" 'js-comint-send-region
   "jsb" 'my-js-clear-send-buffer
-  "kb" 'kill-buffer-and-window ;; "k" is preserved to replace "C-g"
-  "ls" 'highlight-symbol
-  "lq" 'highlight-symbol-query-replace
-  "ln" 'highlight-symbol-nav-mode ; use M-n/M-p to navigation between symbols
+  "bb" 'my-switch-to-previous-buffer
+  "kb" 'kill-buffer-and-window
+  "bk" 'kill-buffer-and-window
   "ii" 'my-imenu-or-list-tag-in-current-file
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
@@ -693,10 +692,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "ar" 'align-regexp
   "wrn" 'httpd-restart-now
   "wrd" 'httpd-restart-at-default-directory
-  "bk" 'buf-move-up
-  "bj" 'buf-move-down
-  "bh" 'buf-move-left
-  "bl" 'buf-move-right
   "0" 'winum-select-window-0-or-10
   "1" 'winum-select-window-1
   "2" 'winum-select-window-2
@@ -709,7 +704,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "9" 'winum-select-window-9
   "xm" 'counsel-M-x
   "xx" 'er/expand-region
-  "xf" 'counsel-find-file
+  "xf" 'find-file
+  "x/" 'find-file-other-window
   "xb" 'ivy-switch-buffer-by-pinyin
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
