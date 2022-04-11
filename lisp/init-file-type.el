@@ -135,4 +135,7 @@
 ;; besides, scss/sass is outdated. We use postcss or css in js these days.
 (my-add-auto-mode 'css-mode "\\.scss$")
 
+;; ".env" or ".env.local"
+(my-add-auto-mode 'conf-mode "^\\.env\\([-.][0-9a-z]+\\)?$")
+
 (provide 'init-file-type)
