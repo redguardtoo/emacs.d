@@ -146,22 +146,6 @@ If N is 2, list files in my recent 20 commits."
       (message "%s => kill-ring" val)
       (insert val))))
 
-(defun my-recent-directory (&optional n)
-  "Goto recent directories.
-If N is not nil, only list directories in current project."
-  (interactive "P")
-  (unless recentf-mode (recentf-mode 1))
-  (let* ((cands (delete-dups
-                 (append my-dired-directory-history
-                         (mapcar 'file-name-directory recentf-list)
-                         ;; fasd history
-                         (and (executable-find "fasd")
-                              (nonempty-lines (shell-command-to-string "fasd -ld"))))))
-         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
-    (when (and n root-dir)
-      (setq cands (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) cands))))
-    (dired (completing-read "Directories: " cands))))
-
 (defun ivy-occur-grep-mode-hook-setup ()
   "Set up ivy occur grep mode."
   ;; turn on wgrep right now

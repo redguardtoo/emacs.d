@@ -361,13 +361,13 @@ FN checks these characters belong to normal word characters."
 ;; {{ music
 (defun mpc-which-song ()
   (interactive)
-  (let* ((msg (car (nonempty-lines (shell-command-to-string "mpc")))))
+  (let* ((msg (car (my-nonempty-lines (shell-command-to-string "mpc")))))
     (message msg)
     (copy-yank-str msg)))
 
 (defun mpc-next-prev-song (&optional prev)
   (interactive)
-  (message (car (nonempty-lines (shell-command-to-string
+  (message (car (my-nonempty-lines (shell-command-to-string
                                  (concat "mpc "
                                          (if prev "prev" "next")))))))
 
@@ -507,7 +507,7 @@ FN checks these characters belong to normal word characters."
   (let* ((str (if (region-active-p) (my-selected-str)
                 (my-buffer-str)))
          (total-hours 0)
-         (lines (nonempty-lines str)))
+         (lines (my-nonempty-lines str)))
     (dolist (l lines)
       (if (string-match " \\([0-9][0-9.]*\\)h[ \t]*$" l)
           (setq total-hours (+ total-hours (string-to-number (match-string 1 l))))))

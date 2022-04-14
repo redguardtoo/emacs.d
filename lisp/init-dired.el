@@ -1,4 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
+
 (defun diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
 If no files marked, always operate on current line in dired-mode."
@@ -100,6 +101,40 @@ If no files marked, always operate on current line in dired-mode."
 ;; If the variable is named like "*-history", it will be *automatically* saved.
 (defvar my-dired-directory-history nil
   "Recent directories accessed by dired.")
+
+(defvar my-dired-exclude-directory-regexp nil
+  "Dired directories matching this regexp are not added into directory history.")
+
+(defvar my-shell-directory-history-function
+  (lambda ()
+    ;; fasd history
+    (and (executable-find "fasd")
+         (my-nonempty-lines (shell-command-to-string "fasd -ld"))))
+  "Function to return directory history in shell.  It's used by `my-recent-directory'.")
+
+(defun my-recent-directory (&optional n)
+  "Goto recent directories.
+If N is not nil, only list directories in current project."
+  (interactive "P")
+  (unless recentf-mode (recentf-mode 1))
+  (let* ((cands (delete-dups
+                 (append my-dired-directory-history
+                         (mapcar 'file-name-directory recentf-list)
+                         (and my-shell-directory-history-function
+                              (funcall my-shell-directory-history-function)))))
+         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
+
+    (when (and n root-dir)
+      ;; return directories in project root
+      (setq cands
+            (cl-remove-if-not (lambda (f) (path-in-directory-p f root-dir)) cands)))
+
+    (when my-dired-exclude-directory-regexp
+      (setq cands
+            (cl-remove-if (lambda (f) (string-match my-dired-exclude-directory-regexp f))
+                          cands)))
+
+    (dired (completing-read "Directories: " cands))))
 
 (with-eval-after-load 'dired
   ;; re-use dired buffer, available in Emacs 28
@@ -209,7 +244,9 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
         (when (and (file-directory-p file)
                    ;; don't add directory when user pressing "^" in `dired-mode'
                    (not (string-match-p "\\.\\." file)))
-          (add-to-list 'my-dired-directory-history file))
+          (unless (and my-dired-exclude-directory-regexp
+                       (string-match my-dired-exclude-directory-regexp file))
+            (push file my-dired-directory-history)))
         (apply orig-func args)))))
   (advice-add 'dired-find-file :around #'my-dired-find-file-hack)
 

@@ -37,14 +37,14 @@
           rev
           (make-string level ?^)))
 
-(defun nonempty-lines (str)
+(defun my-nonempty-lines (str)
   "Split STR into lines."
   (split-string str "[\r\n]+" t))
 
 (defun my-lines-from-command-output (command)
   "Return lines of COMMAND output."
   (let* ((output (string-trim (shell-command-to-string command)))
-         (cands (nonempty-lines output)))
+         (cands (my-nonempty-lines output)))
     (delq nil (delete-dups cands))))
 
 (defun run-cmd-and-replace-region (cmd)
