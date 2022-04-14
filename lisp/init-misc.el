@@ -1252,4 +1252,8 @@ It's also controlled by `my-lazy-before-save-timer'."
   (setq counsel-describe-variable-function #'helpful-variable))
 ;; }}
 
+(with-eval-after-load 'yaml-mode
+  (setq yaml-imenu-generic-expression
+        '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1))))
+
 (provide 'init-misc)
