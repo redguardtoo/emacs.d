@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020-2021 Chen Bin
 ;;
-;; Version: 0.0.8
+;; Version: 0.0.9
 ;; Keywords: unix tools
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/shellcop
@@ -396,11 +396,8 @@ Or else erase current buffer."
        (funcall shellcop-string-search-function keyword)))))
 
 ;;;###autoload
-(defun shellcop-jump-around ()
-  "Jump to directories recorded by https://github.com/rupa/z.
-If shell is visible, \"cd destination-dir\" is inserted into shell.
-Or else, the directory is opened in `dired-mode'."
-  (interactive)
+(defun shellcop-directories-from-z ()
+  "Get directories from z's data file."
   (when (file-exists-p shellcop-jump-around-data-file)
     ;; Emacs use gzip to extract plain text file "~/.z"
     (let* ((content (shell-command-to-string (format "cat %s" shellcop-jump-around-data-file)))
@@ -408,12 +405,25 @@ Or else, the directory is opened in `dired-mode'."
                            ;; line's format: "dir | score | timestamp"
                            (let* ((a (split-string line "|")))
                              (cons (nth 0 a) (string-to-number (nth 2 a)))))
-                         (split-string (string-trim content))))
+                         (split-string (string-trim content)))))
+
+      ;; sort by timestamp in descending order
+      (setq dirs (sort dirs (lambda (a b) (> (cdr a) (cdr b)))))
+      dirs)))
+
+;;;###autoload
+(defun shellcop-jump-around ()
+  "Jump to directories recorded by https://github.com/rupa/z.
+If shell is visible, \"cd destination-dir\" is inserted into shell.
+Or else, the directory is opened in `dired-mode'."
+  (interactive)
+  (when (file-exists-p shellcop-jump-around-data-file)
+    ;; Emacs use gzip to extract plain text file "~/.z"
+    (let* ((dirs (shellcop-directories-from-z))
            dest
            pattern
            shell-window)
-      ;; sort by timestamp in descending order
-      (setq dirs (sort dirs (lambda (a b) (> (cdr a) (cdr b)))))
+
       (when (> (length dirs) 0)
         (setq pattern
               (read-string "pattern to filter directory (or leave it empty): "))
@@ -431,9 +441,6 @@ Or else, the directory is opened in `dired-mode'."
         (when dest
           (cond
            ((derived-mode-p 'comint-mode)
-            ;; press return key to clear up current input
-            (comint-send-input)
-            ;; cd into "dest" directory
             (insert "cd " dest))
 
            ;; jump to the shell
