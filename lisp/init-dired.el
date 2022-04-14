@@ -105,12 +105,17 @@ If no files marked, always operate on current line in dired-mode."
 (defvar my-dired-exclude-directory-regexp nil
   "Dired directories matching this regexp are not added into directory history.")
 
-(defvar my-shell-directory-history-function
-  (lambda ()
-    ;; fasd history
-    (and (executable-find "fasd")
-         (my-nonempty-lines (shell-command-to-string "fasd -ld"))))
-  "Function to return directory history in shell.  It's used by `my-recent-directory'.")
+(defun my-shell-directories-from-fasd ()
+  "Directories from fasd (https://github.com/clvv/fasd) in shell."
+  (and (executable-find "fasd")
+       (my-nonempty-lines (shell-command-to-string "fasd -ld"))))
+
+(defun my-shell-directories-from-z ()
+  "Directories from z (https://github.com/rupa/z) in shell."
+  (mapcar #'car (shellcop-directories-from-z)))
+
+(defvar my-shell-directory-history-function #'my-shell-directories-from-fasd
+  "Return directory history in shell.  Used by `my-recent-directory'.")
 
 (defun my-recent-directory (&optional n)
   "Goto recent directories.

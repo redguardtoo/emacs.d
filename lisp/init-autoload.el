@@ -23,6 +23,7 @@
 (autoload 'shellcop-erase-buffer "shellcop" "" t)
 (autoload 'shellcop-reset-with-new-command "shellcop" "" t)
 (autoload 'shellcop-start "shellcop" "" t)
+(autoload 'shellcop-directories-from-z "shellcop" "" t)
 (autoload 'shellcop-jump-around "shellcop" "" t)
 (autoload 'shellcop-search-in-shell-buffer-of-other-window "shellcop" "" t)
 (autoload 'mybigword-video2mp3 "mybigword" "" t)
