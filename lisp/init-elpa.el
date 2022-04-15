@@ -41,10 +41,10 @@
               (daemonp)
               (my-vc-merge-p)
               noninteractive)
-      (package-initialize)))
+      (unless package--initialized (package-initialize t))))
    (t
     ;; emacs 26
-    (package-initialize))))
+    (unless package--initialized (package-initialize t)))))
 
 (my-initialize-package)
 
