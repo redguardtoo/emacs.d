@@ -8,24 +8,52 @@
 ;; (blink-cursor-mode -1)
 
 (defun my-pickup-random-color-theme (themes)
-  "Pickup random color theme from themes."
+  "Pickup random color theme from THEMES."
   (my-ensure 'counsel)
   (let* ((available-themes (mapcar 'symbol-name themes))
          (theme (nth (random (length available-themes)) available-themes)))
     (counsel-load-theme-action theme)
     (message "Color theme [%s] loaded." theme)))
 
-(defvar my-favourite-color-themes nil
-  "Color themes to use by `random-color-theme'.")
+(defvar my-favorite-color-themes
+  '(srcery
+    doom-dracula
+    doom-gruvbox
+    doom-molokai
+    doom-monokai-classic
+    doom-monokai-machine
+    doom-monokai-octagon
+    doom-monokai-pro
+    doom-monokai-ristretto
+    doom-monokai-spectrum
+    doom-material-dark
+    doom-moonlight
+    doom-gruvbox
+    doom-xcode
+    doom-nova
+    doom-nord
+    doom-material-dark
+    doom-zenburn
+    deeper-blue
+    tango-dark
+    leuven-dark
+    solarized-dark-high-contrast
+    sanityinc-solarized-dark
+    sanityinc-tomorrow-blue
+    sanityinc-tomorrow-day
+    sanityinc-tomorrow-eighties
+    sanityinc-tomorrow-night
+    spacemacs-dark)
+  "My favorite color themes.")
 
 ;; random color theme
-(defun my-random-color-theme ()
+(defun my-random-favorite-color-theme ()
   "Random color theme."
   (interactive)
-  (my-pickup-random-color-theme (or my-favourite-color-themes
+  (my-pickup-random-color-theme (or my-favorite-color-themes
                                     (custom-available-themes))))
 
-(defun random-healthy-color-theme (&optional join-dark-side)
+(defun my-random-healthy-color-theme (&optional join-dark-side)
   "Random healthy color theme.  If JOIN-DARK-SIDE is t, use dark theme only."
   (interactive "P")
   (let* (themes
@@ -114,6 +142,13 @@
       (my-delete-selected-region)
       ;; insert theme package names
       (insert (mapconcat 'identity names "\n")))))
+
+(defvar my-enable-startup-color-theme-p t
+  "Enable color theme during Emacs startup.")
+;; load color theme
+(my-run-with-idle-timer 1 (lambda ()
+                            (when my-enable-startup-color-theme-p
+                              (my-random-favorite-color-theme))))
 
 (provide 'init-theme)
 ;;; init-theme.el ends here

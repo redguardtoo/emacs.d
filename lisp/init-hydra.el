@@ -19,18 +19,18 @@
 [_d_] Recent directory    [_sp_] Pomodoro pause
 [_z_] Jump around (z.sh)
 [_bh_] Bash history
-[_hr_] Dired CMD history
-[_hh_] Random theme
+[_hh_] Favorite theme
+[_hr_] Random theme
 [_ii_] Imenu
 [_q_] Quit
 "
-  ("hr" my-dired-redo-from-commands-history)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" my-recent-directory)
   ("bh" my-insert-bash-history)
-  ("hh" random-healthy-color-theme)
+  ("hh" my-random-favorite-color-theme)
+  ("hr" my-random-healthy-color-theme)
   ("ss" wg-create-workgroup)
   ("ii" my-counsel-imenu)
   ("ll" wg-open-workgroup)

@@ -745,7 +745,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
         (interactive)
         (if (derived-mode-p 'diff-mode) (my-search-prev-diff-hunk)
           (my-search-prev-merge-conflict)))
-  "ch" 'my-dired-redo-from-commands-history
   "dd" 'pwd
   "mm" 'counsel-evil-goto-global-marker
   "mf" 'mark-defun
@@ -757,7 +756,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
 
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
-  "hh" 'random-healthy-color-theme
+  "hh" 'my-random-favorite-color-theme
+  "hr" 'my-random-healthy-color-theme
   "yy" 'my-hydra-zoom/body
   "ii" 'my-toggle-indentation
   "g" 'my-hydra-git/body
