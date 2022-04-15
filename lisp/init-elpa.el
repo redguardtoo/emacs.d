@@ -1,29 +1,31 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defun my-initialize-package-internal ()
+  "Initialize package system."
+  (unless (and (boundp 'package--initialized) package--initialized)
+    (package-initialize t)))
+
 (defun my-initialize-package ()
-  ;; optimization, no need to activate all the packages so early
+  "Package loading optimization.  No need to activate all the packages so early."
   (cond
    ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
    ;; ** Installed packages are now activated *before* loading the init file.
    ;; As a result of this change, it is no longer necessary to call
-   ;; 'package-initialize' in your init file.
+   ;; `package-initialize' in your init file.
 
-   ;; Previously, a call to 'package-initialize' was automatically inserted
+   ;; Previously, a call to `package-initialize' was automatically inserted
    ;; into the init file when Emacs was started.  This call can now safely
    ;; be removed.  Alternatively, if you want to ensure that your init file
    ;; is still compatible with earlier versions of Emacs, change it to:
 
-   ;; (when (< emacs-major-version 27)
-   ;;   (package-initialize))
-
-   ;; However, if your init file changes the values of 'package-load-list'
-   ;; or 'package-user-dir', or sets 'package-enable-at-startup' to nil then
+   ;; However, if your init file changes the values of `package-load-list'
+   ;; or `package-user-dir', or sets `package-enable-at-startup' to nil then
    ;; it won't work right without some adjustment:
    ;; - You can move that code to the early init file (see above), so those
    ;;   settings apply before Emacs tries to activate the packages.
-   ;; - You can use the new 'package-quickstart' so activation of packages
-   ;;   does not need to pay attention to 'package-load-list' or
-   ;;   'package-user-dir' any more.
+   ;; - You can use the new `package-quickstart' so activation of packages
+   ;;   does not need to pay attention to `package-load-list' or
+   ;;   `package-user-dir' any more.
    (*emacs27*
     ;; "package-quickstart.el" converts path in `load-path' into
     ;; os dependent path, make it impossible to share same emacs.d between
@@ -41,10 +43,10 @@
               (daemonp)
               (my-vc-merge-p)
               noninteractive)
-      (unless package--initialized (package-initialize t))))
+      (package-initialize)))
    (t
     ;; emacs 26
-    (unless package--initialized (package-initialize t)))))
+    (my-initialize-package-internal))))
 
 (my-initialize-package)
 
