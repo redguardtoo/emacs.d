@@ -133,22 +133,6 @@ ARG is ignored."
     (interactive "P")
     (org-agenda arg "n"))
 
-
-  (defun my-org-open-at-point-hack (orig-func &rest args)
-    "\"C-u M-x org-open-at-point\" to open link with `browse-url-generic-program'.
-It's value could be customized liked \"/usr/bin/firefox\".
-\"M-x org-open-at-point\" to open the url with embedded emacs-w3m."
-    (let* ((arg (nth 0 args))
-           (reference-buffer (nth 1 args))
-           (browse-url-browser-function
-            (cond
-             ;; open with `browse-url-generic-program'
-             ((equal arg '(4)) 'browse-url-generic)
-             ;; open with w3m
-             (t 'w3m-browse-url))))
-      (apply orig-func args)))
-  (advice-add 'org-open-at-point :around #'my-org-open-at-point-hack)
-
   ;; {{ org pdf link
   (defun my-org-docview-open-hack (orig-func &rest args)
     (let* ((link (car args)) path page)
