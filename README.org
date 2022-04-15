@@ -680,8 +680,10 @@ If you don't use Elpy, please set this flag to =t=.
 To enable the virtual environment created by Elpy as its official guide has suggested, you can add below code into =~/.custom.el=,
 #+begin_src elisp
 (with-eval-after-load 'elpy
-  (let ((venv-dir "~/.emacs.d/elpy/rpc-venv"))
-    (if (file-exists-p venv-dir) (pyvenv-activate venv-dir))))
+  (let* ((venv-dir "~/.emacs.d/elpy/rpc-venv"))
+    (when (and (file-exists-p venv-dir)
+               (executable-find pyvenv-virtualenvwrapper-python))
+      (pyvenv-activate venv-dir))))
 #+end_src
 
 After activating the virtual environment created by Elpy, you could also backup its required packages,
