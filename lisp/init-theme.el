@@ -40,7 +40,6 @@
     solarized-dark-high-contrast
     sanityinc-solarized-dark
     sanityinc-tomorrow-blue
-    sanityinc-tomorrow-day
     sanityinc-tomorrow-eighties
     sanityinc-tomorrow-night
     spacemacs-dark)
