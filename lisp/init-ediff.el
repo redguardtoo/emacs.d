@@ -8,7 +8,7 @@ Also remove buffers whose binding files already merged in `buffer-list'."
   (mapc 'kill-buffer (buffer-list)))
 (advice-add 'server-save-buffers-kill-terminal :after #'my-server-save-buffers-kill-terminal-hack)
 
-(when (my-vc-merge-p)
+(when (my-lightweight-mode-p)
   ;; remove `org-mode' from `auto-mode-alist'. So nodes in org file do NOT collapse at all
   (setq auto-mode-alist  (rassq-delete-all 'org-mode auto-mode-alist))
   ;; associate simpler major mode with org file instead

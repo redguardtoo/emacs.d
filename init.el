@@ -43,21 +43,21 @@
                    (t nil)))
 
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
-  "Directory of emacs.d")
+  "Directory of emacs.d.")
 
 (defconst my-site-lisp-dir (concat my-emacs-d "site-lisp")
-  "Directory of site-lisp")
+  "Directory of site-lisp.")
 
 (defconst my-lisp-dir (concat my-emacs-d "lisp")
-  "Directory of lisp.")
+  "Directory of personal configuration.")
 
-(defun my-vc-merge-p ()
-  "Use Emacs for git merge only?"
+(defun my-lightweight-mode-p ()
+  "Light weight mode, fewer packages are used."
   (boundp 'startup-now))
 
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
-  (when (or (not maybe-disabled) (not (my-vc-merge-p)))
+  (when (or (not maybe-disabled) (not (my-lightweight-mode-p)))
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
 (defun my-add-subdirs-to-load-path (lisp-dir)
@@ -152,7 +152,7 @@
 
   (require-init 'init-flymake t)
 
-  (unless (my-vc-merge-p)
+  (unless (my-lightweight-mode-p)
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
     (setq custom-file (expand-file-name (concat my-emacs-d "custom-set-variables.el")))

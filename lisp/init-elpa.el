@@ -41,7 +41,7 @@
     (when (or (featurep 'esup-child)
               (fboundp 'profile-dotemacs)
               (daemonp)
-              (my-vc-merge-p)
+              (my-lightweight-mode-p)
               noninteractive)
       (package-initialize)))
    (t
