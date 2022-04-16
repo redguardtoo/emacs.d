@@ -142,8 +142,9 @@
       ;; insert theme package names
       (insert (mapconcat 'identity names "\n")))))
 
-(defvar my-enable-startup-color-theme-p t
+(defvar my-enable-startup-color-theme-p nil
   "Enable color theme during Emacs startup.")
+
 ;; load color theme
 (my-run-with-idle-timer 1 (lambda ()
                             (when my-enable-startup-color-theme-p

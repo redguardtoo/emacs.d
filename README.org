@@ -429,6 +429,12 @@ For languages GNU Global doesn't support, you can fall back to =company-ctags= a
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Color theme
+*** Auto load classic color theme
+Add below code to =~/.custom.el= to load a random classic dark color theme during startup,
+#+begin_src elisp
+(setq my-enable-startup-color-theme-p t)
+#+end_src
+
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
 
