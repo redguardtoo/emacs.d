@@ -545,7 +545,7 @@ Copied from 3rd party package evil-textobj."
       (setq i (1+ i)))
     rlt))
 
-(defvar my-disable-idle-timer nil
+(defvar my-disable-idle-timer (daemonp)
   "Function passed to `my-run-with-idle-timer' is run immediately.")
 
 (defun my-run-with-idle-timer (seconds func)
