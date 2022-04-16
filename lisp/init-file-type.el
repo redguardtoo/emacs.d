@@ -5,6 +5,7 @@
                "\\.[^b][^a][a-zA-Z]*rc$"
                "\\.aspell\\.en\\.pws$"
                "\\.i3/config-base$"
+               "\\.config/systemd/user/.*\\.service$"
                "\\mimeapps\\.list$"
                "\\mimeapps\\.list$"
                "\\.editorconfig$"
