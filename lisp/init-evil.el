@@ -712,8 +712,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "xs" 'save-buffer
   "xc" 'my-switch-to-shell
   "xz" 'my-switch-to-shell
-  "vf" 'vc-rename-file-and-buffer
-  "vc" 'vc-copy-file-and-rename-buffer
+  "vf" 'my-vc-rename-file-and-buffer
+  "vc" 'my-vc-copy-file-and-rename-buffer
   "xv" 'vc-next-action ; 'C-x v v' in original
   "va" 'git-add-current-file
   "vk" 'git-checkout-current-file
@@ -789,7 +789,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "db" 'sdcv-search-input ; details
   "dt" 'sdcv-search-input+ ; summary
   "dd" 'my-lookup-dict-org
-  "mm" 'lookup-doc-in-man
+  "mm" 'my-lookup-doc-in-man
   "gg" 'w3m-google-search
   "gd" 'w3m-search-financial-dictionary
   "ga" 'w3m-java-search

@@ -3,7 +3,7 @@
 ;; Avoid potential lag:
 ;; https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746
 ;; `next-line' triggers the `format-mode-line' which triggers `projectile-project-name'
-;; I use find-file-in-project instead of projectile. So I don't have this issue at all.
+;; I use find-file-in-project instead of projectile. So I don't have this issue.
 ;; Set `auto-window-vscroll' to nil to avoid triggering `format-mode-line'.
 (setq auto-window-vscroll nil)
 
@@ -43,7 +43,7 @@
               mouse-yank-at-point t
               set-mark-command-repeat-pop t
               tooltip-delay 1.5
-              ;; void problems with crontabs, etc.
+              ;; avoid problems with crontab, etc.
               ;; require-final-newline t ; bad idea, could accidentally edit others' code
               truncate-lines nil
               truncate-partial-width-windows nil
@@ -52,12 +52,7 @@
               visible-bell nil)
 
 ;; @see http://www.emacswiki.org/emacs/SavePlace
-(cond
- ((fboundp 'save-place-mode)
-  (save-place-mode 1))
- (t
-  (require 'saveplace)
-  (setq-default save-place t)))
+(save-place-mode 1)
 
 ;; {{ find-file-in-project (ffip)
 (with-eval-after-load 'find-file-in-project
@@ -68,7 +63,7 @@
   (push 'my-search-git-reflog-code ffip-diff-backends)
   (setq ffip-match-path-instead-of-filename t))
 
-(defun neotree-project-dir ()
+(defun my-neotree-project-dir ()
   "Open NeoTree using the git root."
   (interactive)
   (let* ((project-dir (ffip-get-project-root-directory))
@@ -80,22 +75,14 @@
       (message "Could not find git project root."))))
 ;; }}
 
-
-;; {{ gradle
-(defun my-run-gradle-in-shell (cmd)
-  (interactive "sEnter a string:")
-  (let* ((root-dir (locate-dominating-file default-directory
-                                           "build.gradle")))
-    (if root-dir
-        (let* ((default-directory root-dir))
-          (shell-command (concat "gradle " cmd "&"))))))
-;; }}
-
 ;; {{ dictionary setup
 (defun my-lookup-dict-org ()
+  "Look up word in dict.org."
   (interactive)
-  (dictionary-new-search (cons (my-use-selected-string-or-ask "Input word for dict.org:")
-                               dictionary-default-dictionary)))
+  (let* ((word (my-use-selected-string-or-ask "Input word for dict.org:")))
+    (when word
+      (dictionary-new-search (cons word
+                                   dictionary-default-dictionary)))))
 ;; }}
 
 ;; {{ bookmark
@@ -105,7 +92,7 @@
       (setq bookmark-file (file-truename "~/.emacs.bmk"))))
 ;; }}
 
-(defun lookup-doc-in-man ()
+(defun my-lookup-doc-in-man ()
   "Read man by querying keyword at point."
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
@@ -138,8 +125,10 @@ This function can be re-used by other major modes after compilation."
       (winner-undo)
       (message "NO COMPILATION ERRORS!"))))
 
+;; {{ electric pair
 (defun my-normal-word-before-point-p (position n fn)
-  "A normal word exists before POSITION.  N characters before current point is checked.
+  "A normal word exists before POSITION.
+N characters before current point is checked.
 FN checks these characters belong to normal word characters."
   (save-excursion
     (goto-char position)
@@ -176,6 +165,10 @@ FN checks these characters belong to normal word characters."
       (setq rlt (electric-pair-default-inhibit char))))
 
     rlt))
+
+(with-eval-after-load 'elec-pair
+  (setq electric-pair-inhibit-predicate 'my-electric-pair-inhibit))
+;; }}
 
 (with-eval-after-load 'flymake
   (setq flymake-gui-warnings-enabled nil))
@@ -281,7 +274,7 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 ;;a no-op function to bind to if you want to set a keystroke to null
-(defun void () "this is a no-op" (interactive))
+(defun void () "This is a no-op." (interactive))
 
 (defalias 'list-buffers 'ibuffer)
 
@@ -294,7 +287,7 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 (defun add-pwd-into-load-path ()
-  "add current directory into load-path, useful for elisp developers"
+  "Add current directory into `load-path', useful for elisp developers."
   (interactive)
   (let* ((dir (expand-file-name default-directory)))
     (if (not (memq dir load-path))
@@ -360,19 +353,21 @@ FN checks these characters belong to normal word characters."
 
 ;; {{ music
 (defun mpc-which-song ()
+  "Copy mpc song's name."
   (interactive)
   (let* ((msg (car (my-nonempty-lines (shell-command-to-string "mpc")))))
     (message msg)
     (copy-yank-str msg)))
 
-(defun mpc-next-prev-song (&optional prev)
+(defun mpc-next-prev-song (&optional previous)
+  "Select PREVIOUS song if it's not nil; or else select next song."
   (interactive)
   (message (car (my-nonempty-lines (shell-command-to-string
                                  (concat "mpc "
-                                         (if prev "prev" "next")))))))
+                                         (if previous "prev" "next")))))))
 
 (defun lyrics()
-  "Prints the lyrics for the current song"
+  "Prints the lyrics for the current song."
   (interactive)
   (let* ((song (shell-command-to-string "lyrics")))
     (if (equal song "")
@@ -413,13 +408,15 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 (defun my-minibuffer-setup-hook ()
+  "Set up mini buffer."
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
   (local-set-key (kbd "C-k") 'kill-line)
-  (subword-mode 1) ; enable subword movement in minibuffer
+  (subword-mode 1) ; enable sub-word movement in minibuffer
   (setq gc-cons-threshold most-positive-fixnum))
 
 (defun my-minibuffer-exit-hook ()
-  ;; evil-mode also use minibuf
+  "Hook when exist mini buffer."
+  ;; evil-mode also use mini buffer
   (setq gc-cons-threshold 67108864))
 
 ;; @see http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
@@ -428,8 +425,11 @@ FN checks these characters belong to normal word characters."
 
 ;; {{ cliphist.el
 (setq cliphist-use-ivy t)
-(defun my-select-cliphist-item (num str)
-  (my-pclip str))
+(defun my-select-cliphist-item (num item)
+  "NUM is ignored.  Paste selected clipboard ITEM into clipboard.
+So it's at the top of clipboard manager."
+  (ignore num.)
+  (my-pclip item))
 (setq cliphist-select-item-callback 'my-select-cliphist-item)
 ;; }}
 
@@ -461,6 +461,7 @@ FN checks these characters belong to normal word characters."
 
 ;; indention management
 (defun my-toggle-indentation ()
+  "Toggle indentation."
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "indent-tabs-mode=%s" indent-tabs-mode))
@@ -502,17 +503,6 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 
-(defun my-get-total-hours ()
-  (interactive)
-  (let* ((str (if (region-active-p) (my-selected-str)
-                (my-buffer-str)))
-         (total-hours 0)
-         (lines (my-nonempty-lines str)))
-    (dolist (l lines)
-      (if (string-match " \\([0-9][0-9.]*\\)h[ \t]*$" l)
-          (setq total-hours (+ total-hours (string-to-number (match-string 1 l))))))
-    (message "total-hours=%s" total-hours)))
-
 ;; {{ emmet (auto-complete html tags)
 ;; @see https://github.com/rooney/zencoding for original tutorial
 ;; @see https://github.com/smihica/emmet for new tutorial
@@ -524,19 +514,21 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 (defun sgml-mode-hook-setup ()
-  "sgml/html mode setup."
-  ;; let web-mode handle indentation by itself since it does not derive from `sgml-mode'
+  "Sgml/html mode setup."
+  ;; let `web-mode' handle indentation by itself..
+  ;; It does not derives from `sgml-mode'.
   (setq-local indent-region-function 'sgml-pretty-print))
 (add-hook 'sgml-mode-hook 'sgml-mode-hook-setup)
 
 
 ;; {{ xterm
-(defun run-after-make-frame-hooks (frame)
+(defun my-run-after-make-frame-hook (frame)
+  "Hook after create new FRAME."
   (select-frame frame)
   (unless window-system
     ;; Mouse in a terminal (Use shift to paste with middle button)
     (xterm-mouse-mode 1)))
-(add-hook 'after-make-frame-functions 'run-after-make-frame-hooks)
+(add-hook 'after-make-frame-functions 'my-run-after-make-frame-hook)
 ;; }}
 
 ;; flymake
@@ -573,18 +565,21 @@ FN checks these characters belong to normal word characters."
   (when (and (my-message-says-attachment-p)
              (not (my-message-has-attachment-p)))
     (unless
-        (y-or-n-p "The message suggests that you may want to attach something, but no attachment is found. Send anyway?")
-      (error "It seems that an attachment is needed, but none was found. Aborting sending."))))
+        (y-or-n-p "The message suggests that you may want to attach something, but no attachment is found.  Send anyway?")
+      (error "It seems that an attachment is needed, but none was found.  Aborting sending!"))))
 (add-hook 'message-send-hook 'my-message-pre-send-check-attachment)
 
 ;; }}
 
 ;; @see https://stackoverflow.com/questions/3417438/closing-all-other-buffers-in-emacs
-(defun kill-all-but-current-buffer ()
+(defun my-kill-all-but-current-buffer ()
+  "Kill all other buffers, but not current buffer."
   (interactive)
-  (mapc 'kill-buffer (cdr (buffer-list (current-buffer)))))
+  (mapc 'kill-buffer (cdr (buffer-list (current-buffer))))
+  "All other buffers have been killed!")
 
 (defun minibuffer-inactive-mode-hook-setup ()
+  "Set up mini buffer so auto complete works."
   ;; Make `try-expand-dabbrev' from `hippie-expand' work in mini-buffer.
   ;; @see `he-dabbrev-beg', so we need re-define syntax for '/'.
   (set-syntax-table (let* ((table (make-syntax-table)))
@@ -594,6 +589,7 @@ FN checks these characters belong to normal word characters."
 
 ;; {{ vc-msg
 (defun vc-msg-hook-setup (vcs-type commit-info)
+  "Set up vc with VCS-TYPE and COMMIT-INFO."
   ;; copy commit id to clipboard
   (my-pclip (plist-get commit-info :id)))
 (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
@@ -602,7 +598,6 @@ FN checks these characters belong to normal word characters."
   "Use `ffip-diff-mode' instead of `diff-mode'."
   (my-ensure 'find-file-in-project)
   (ffip-diff-mode))
-
 (add-hook 'vc-msg-show-code-hook 'vc-msg-show-code-setup)
 ;; }}
 
@@ -675,11 +670,13 @@ ARG is ignored."
 
 ;; {{
 (defun adoc-imenu-index ()
+  "Set up imenu for `adoc-mode'."
   (let* ((patterns '((nil "^=\\([= ]*[^=\n\r]+\\)" 1))))
     (save-excursion
       (imenu--generic-function patterns))))
 
 (defun adoc-mode-hook-setup ()
+  "Set up `adoc-mode'."
   ;; Don't wrap lines because there is table in `adoc-mode'.
   (setq truncate-lines t)
   (setq imenu-create-index-function 'adoc-imenu-index))
@@ -763,25 +760,19 @@ If the shell is already opened in some buffer, switch to that buffer."
         (lambda ()
           (concat (getenv "USER") " $ "))))
 
-;; I'm in Australia now, so I set the locale to "en_AU"
-(defun my-insert-date (prefix)
-  "Insert the current date. With prefix-argument, use ISO format. With
-   two prefix arguments, write out the day and month name."
-  (interactive "P")
-  (let* ((format (cond
-                  ((not prefix) "%d.%m.%Y")
-                  ((equal prefix '(4)) "%Y-%m-%d")
-                  ((equal prefix '(16)) "%d %B %Y"))))
-    (insert (format-time-string format))))
+(defun my-insert-date ()
+  "Insert current date."
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d")))
 
-;;compute the length of the marked region
-(defun region-length ()
+;; compute the length of the marked region
+(defun my-region-length ()
   "Length of a selected region."
   (interactive)
   (message (format "%d" (- (region-end) (region-beginning)))))
 
 ;; show ascii table
-(defun ascii-table ()
+(defun my-ascii-table ()
   "Print the ascii table."
   (interactive)
   (switch-to-buffer "*ASCII*")
@@ -796,7 +787,8 @@ If the shell is already opened in some buffer, switch to that buffer."
 ;; {{ unique lines
 ;; https://gist.github.com/ramn/796527
 ;; uniq-lines
-(defun uniq-lines (start end)
+(defun my-uniq-lines (start end)
+  "Unique line of select region from START to END."
   (interactive "*r")
   (delete-duplicate-lines start end))
 ;; }}
@@ -809,7 +801,8 @@ Then insert it as a local file link in `org-mode'."
   (insert (format "[[file:%s]]" (file-relative-name (my-gclip)))))
 
 (defun my-dired-copy-filename-as-kill-hack (&optional arg)
-  "Copy the file name or file path from dired into clipboard.
+  "Copy file name/path from Dired buffer into clipboard.
+If ARG is not nil, copy full path.
 Press \"w\" to copy file name.
 Press \"C-u 0 w\" to copy full path."
   (let* ((str (current-kill 0)))
@@ -818,7 +811,7 @@ Press \"C-u 0 w\" to copy full path."
 (advice-add 'dired-copy-filename-as-kill :after #'my-dired-copy-filename-as-kill-hack)
 
 ;; from http://emacsredux.com/blog/2013/05/04/rename-file-and-buffer/
-(defun vc-rename-file-and-buffer ()
+(defun my-vc-rename-file-and-buffer ()
   "Rename the current buffer and file it is visiting."
   (interactive)
   (let* ((filename (buffer-file-name)))
@@ -835,7 +828,7 @@ Press \"C-u 0 w\" to copy full path."
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))))
 
-(defun vc-copy-file-and-rename-buffer ()
+(defun my-vc-copy-file-and-rename-buffer ()
   "Copy the current buffer and file it is visiting.
 If the old file is under version control, the new file is added into
 version control automatically."
@@ -853,7 +846,7 @@ version control automatically."
         (when (vc-backend filename)
           (vc-register)))))))
 
-(defun toggle-env-http-proxy ()
+(defun my-toggle-env-http-proxy ()
   "Set/unset the environment variable http_proxy used by w3m."
   (interactive)
   (let* ((proxy "http://127.0.0.1:8000"))
@@ -879,7 +872,7 @@ version control automatically."
 
 (defun cleanup-buffer-safe ()
   "Perform a bunch of safe operations on the whitespace content of a buffer.
-Does not indent buffer, because it is used for a before-save-hook, and that
+Does not indent buffer, because it is used for a `before-save-hook', and that
 might be bad."
   (interactive)
   (untabify (point-min) (point-max))
@@ -905,7 +898,6 @@ might be bad."
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
-;; {{ pomodoro
 (with-eval-after-load 'pomodoro
   (setq pomodoro-play-sounds nil) ; *.wav is not installed
   (setq pomodoro-break-time 2)
@@ -984,11 +976,11 @@ might be bad."
 (my-run-with-idle-timer 2 #'which-key-mode)
 ;; }}
 
-;; {{ Answer Yes/No programmically when asked by `y-or-n-p'
+;; {{ Answer Yes/No automatically when asked by `y-or-n-p'
 (defvar my-default-yes-no-answers nil
     "Usage: (setq my-default-yes-no-answers '((t . \"question1\") (t . \"question2\")))).")
 (defun my-y-or-n-p-hack (orig-func &rest args)
-  "Answer yes or no automatically for some questions."
+  "Answer yes or no automatically for some questions with ORIG-FUNC and ARGS."
   (let* ((prompt (car args))
          rlt)
     (cond
@@ -1059,13 +1051,11 @@ might be bad."
   (my-run-with-idle-timer 4 #'exec-path-from-shell-initialize))
 ;; }}
 
-(with-eval-after-load 'elec-pair
-  (setq electric-pair-inhibit-predicate 'my-electric-pair-inhibit))
-
 ;; {{ markdown
 (defun markdown-mode-hook-setup ()
+  "Set up markdown."
+  ;; makes markdown tables saner via `orgtbl-mode'
   ;; Stolen from http://stackoverflow.com/a/26297700
-  ;; makes markdown tables saner via orgtbl-mode
   ;; Insert org table and it will be automatically converted
   ;; to markdown table
   (my-ensure 'org-table)
@@ -1257,3 +1247,4 @@ It's also controlled by `my-lazy-before-save-timer'."
         '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1))))
 
 (provide 'init-misc)
+;;; init-misc.el ends here

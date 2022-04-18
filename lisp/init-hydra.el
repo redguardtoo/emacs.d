@@ -17,11 +17,13 @@
 [_r_] Erase this buffer   [_st_] Pomodoro stop       [_E_] Typewriter on
 [_f_] Recent file         [_sr_] Pomodoro resume     [_V_] Old typewriter
 [_d_] Recent directory    [_sp_] Pomodoro pause
-[_z_] Jump around (z.sh)
+[_z_] Jump around (z.sh)  [_as_] Ascii table
 [_bh_] Bash history
 [_hh_] Favorite theme
 [_hr_] Random theme
+[_ka_] Kill other buffers
 [_ii_] Imenu
+[_id_] Insert date string
 [_q_] Quit
 "
   ("B" bookmark-set)
@@ -33,6 +35,9 @@
   ("hr" my-random-healthy-color-theme)
   ("ss" wg-create-workgroup)
   ("ii" my-counsel-imenu)
+  ("ka" my-kill-all-but-current-buffer)
+  ("id" my-insert-date)
+  ("as" my-ascii-table)
   ("ll" wg-open-workgroup)
 
   ("e" shellcop-erase-buffer)
@@ -498,7 +503,7 @@ _m_ Man
   ("f" w3m-search-financial-dictionary)
   ("s" w3m-stackoverflow-search)
   ("h" w3mext-hacker-search)
-  ("m" lookup-doc-in-man)
+  ("m" my-lookup-doc-in-man)
   ("q" nil))
 (global-set-key (kbd "C-c C-s") 'my-hydra-search/body)
 
