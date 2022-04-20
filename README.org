@@ -5,7 +5,7 @@
 - Fast
 - Robust. Never crash after upgrading packages. Packages could be installed without network
 - Support Windows. Find&Grep files on Windows with minimum setup
-- Tested with Emacs 26.3, 27.1, 28 on Linux/Windows10/Cygwin/macOS/WSL(Windows Subsystem for Linux)
+- Tested with Emacs 26.3, 27.2, 28.1 on Linux/Windows10/Cygwin/macOS/WSL(Windows Subsystem for Linux)
 - Emacs vanilla key bindings and directory layout is respected
 - Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
@@ -91,13 +91,13 @@
 - Emacs 26.1 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- Windows users had better download the version all the optional dependencies). For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
+- Windows users had better download the version with dependencies bundled. For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
+- Unstable packages from [[http://melpa.org][MELPA]] are *invisible* but stable packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation
 Please remove =~/.emacs= first. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
-Most users should follow the section "Install in normal way".
+Most users need follow the section "Install in normal way".
 
 Section "Install stable version" is useful *if and only if*,
 - You don't have network access
@@ -218,7 +218,7 @@ Grammar, Style and Spell Checker
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 * Tutorial (OPTIONAL)
-Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
+Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Tutorial
 Please read this tutorial at least for once.
 *** Step 1, learn basics
@@ -817,7 +817,7 @@ Send error messages to the original developer if it's third party package's prob
 
 If *you are sure* it's this my bug, file report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
-Bug report should include *environment details*.
+Bug report need include *environment details*.
 * License
 This program is free software: you can redistribute it and/or modify it under the terms of the [[file:LICENSE][GNU General Public License]] as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
