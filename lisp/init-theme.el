@@ -1,20 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; someone mentioned that blink cursor could slow Emacs24.4
-;; I couldn't care less about cursor, so turn it off explicitly
-;; https://github.com/redguardtoo/emacs.d/issues/208
-;; but somebody mentioned that blink cursor is needed in dark theme
-;; so it should not be turned off by default
-;; (blink-cursor-mode -1)
-
-(defun my-pickup-random-color-theme (themes)
-  "Pickup random color theme from THEMES."
-  (my-ensure 'counsel)
-  (let* ((available-themes (mapcar 'symbol-name themes))
-         (theme (nth (random (length available-themes)) available-themes)))
-    (counsel-load-theme-action theme)
-    (message "Color theme [%s] loaded." theme)))
-
 (defvar my-favorite-color-themes
   '(srcery
     doom-dracula
@@ -42,8 +27,62 @@
     sanityinc-tomorrow-blue
     sanityinc-tomorrow-eighties
     sanityinc-tomorrow-night
+    modus-vivendi
     spacemacs-dark)
   "My favorite color themes.")
+
+(defvar my-random-color-themes
+  '(adwaita
+    aliceblue
+    bharadwaj
+    black-on-gray
+    blippblopp
+    emacs-21
+    emacs-nw
+    fischmeister
+    github
+    greiner
+    gtk-ide
+    high-contrast
+    jb-simple
+    kaolin-breeze
+    katester
+    leuven
+    marquardt
+    mccarthy
+    montz
+    occidental
+    oldlace
+    scintilla
+    sitaramv-nt
+    snowish
+    soft-stone
+    standard
+    tango
+    tango-plus
+    tangotango
+    tao-yang
+    vim-colors
+    whateveryouwant
+    wheat
+    xemacs
+    xp)
+  "Random color themes.")
+
+;; someone mentioned that blink cursor could slow Emacs24.4
+;; I couldn't care less about cursor, so turn it off explicitly
+;; https://github.com/redguardtoo/emacs.d/issues/208
+;; but somebody mentioned that blink cursor is needed in dark theme
+;; so it should not be turned off by default
+;; (blink-cursor-mode -1)
+
+(defun my-pickup-random-color-theme (themes)
+  "Pickup random color theme from THEMES."
+  (my-ensure 'counsel)
+  (let* ((available-themes (mapcar 'symbol-name themes))
+         (theme (nth (random (length available-themes)) available-themes)))
+    (counsel-load-theme-action theme)
+    (message "Color theme [%s] loaded." theme)))
 
 ;; random color theme
 (defun my-random-favorite-color-theme ()
@@ -64,41 +103,7 @@
                                      (not (member theme '(twilight
                                                           avk-darkblue-white
                                                           sanityinc-tomorrow-bright))))
-                                (member theme '(adwaita
-                                                aliceblue
-                                                bharadwaj
-                                                black-on-gray
-                                                blippblopp
-                                                emacs-21
-                                                emacs-nw
-                                                fischmeister
-                                                github
-                                                greiner
-                                                gtk-ide
-                                                high-contrast
-                                                jb-simple
-                                                kaolin-breeze
-                                                katester
-                                                leuven
-                                                marquardt
-                                                mccarthy
-                                                montz
-                                                occidental
-                                                oldlace
-                                                scintilla
-                                                sitaramv-nt
-                                                snowish
-                                                soft-stone
-                                                standard
-                                                tango
-                                                tango-plus
-                                                tangotango
-                                                tao-yang
-                                                vim-colors
-                                                whateveryouwant
-                                                wheat
-                                                xemacs
-                                                xp)))))
+                                (member theme my-random-color-themes))))
         (when (if prefer-light-p light-theme-p (not light-theme-p))
           (push theme themes))))
   (my-pickup-random-color-theme themes)))
