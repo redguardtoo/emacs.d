@@ -122,11 +122,13 @@ If no files marked, always operate on current line in dired-mode."
 If N is not nil, only list directories in current project."
   (interactive "P")
   (unless recentf-mode (recentf-mode 1))
-  (let* ((cands (delete-dups
-                 (append my-dired-directory-history
-                         (mapcar 'file-name-directory recentf-list)
-                         (and my-shell-directory-history-function
-                              (funcall my-shell-directory-history-function)))))
+  (let* ((cands (cl-remove-if-not
+                 #'file-exists-p
+                 (delete-dups
+                  (append my-dired-directory-history
+                          (mapcar 'file-name-directory recentf-list)
+                          (and my-shell-directory-history-function
+                               (funcall my-shell-directory-history-function))))))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
 
     (when (and n root-dir)
@@ -251,6 +253,12 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
                    (not (string-match-p "\\.\\." file)))
           (unless (and my-dired-exclude-directory-regexp
                        (string-match my-dired-exclude-directory-regexp file))
+            ;; clean up old items in `my-dired-directory-history'
+            ;; before adding new item
+            (setq my-dired-directory-history
+                  (cl-remove-if-not #'file-exists-p my-dired-directory-history))
+
+            ;; add current directory into history
             (push file my-dired-directory-history)))
         (apply orig-func args)))))
   (advice-add 'dired-find-file :around #'my-dired-find-file-hack)
