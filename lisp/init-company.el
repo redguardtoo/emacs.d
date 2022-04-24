@@ -117,6 +117,15 @@ In that case, insert the number."
       (apply orig-func args))))
   (advice-add 'company-ispell-available :around #'my-company-ispell-available-hack))
 
+(with-eval-after-load 'ispell
+  ;; `ispell-alternate-dictionary' is a plain text dictionary if it exists
+  (let* ((dict (concat my-emacs-d "misc/english-words.txt")))
+    (when (and (null ispell-alternate-dictionary)
+               (file-exists-p dict))
+      ;; @see https://github.com/redguardtoo/emacs.d/issues/977
+      ;; fallback to built in dictionary
+      (setq ispell-alternate-dictionary dict))))
+
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
   "Toggle company-ispell."
@@ -134,13 +143,17 @@ In that case, insert the number."
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
     (push 'company-ispell company-backends)
-    ;; @see https://github.com/redguardtoo/emacs.d/issues/473
+
     (cond
+     ;; @see https://github.com/redguardtoo/emacs.d/issues/473
+     ;; Windows users never load ispell module
      ((and (boundp 'ispell-alternate-dictionary)
            ispell-alternate-dictionary)
       (setq company-ispell-dictionary ispell-alternate-dictionary))
+
      (t
-       (setq company-ispell-dictionary (file-truename (concat my-emacs-d "misc/english-words.txt")))))))
+      (setq company-ispell-dictionary
+            (concat my-emacs-d "misc/english-words.txt"))))))
 
 ;; message-mode use company-bbdb.
 ;; So we should NOT turn on company-ispell
