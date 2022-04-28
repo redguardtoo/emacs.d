@@ -95,10 +95,15 @@ Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `pr
    ;; use hunspell
    ((executable-find "hunspell")
     (setq ispell-program-name "hunspell")
-    (setq ispell-local-dictionary "hunspelldict")
+    (setq ispell-local-dictionary my-default-spell-check-language)
     (setq ispell-local-dictionary-alist
-          (list (list "hunspelldict" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil (list "-d" my-default-spell-check-language) nil 'utf-8)))
-    ;; new variable `ispell-hunspell-dictionary-alist' is defined in Emacs
+          (list (list my-default-spell-check-language
+                      "[[:alpha:]]" "[^[:alpha:]]" "[']"
+                      nil
+                      (list "-d" my-default-spell-check-language)
+                      nil
+                      'utf-8)))
+    ;; New variable `ispell-hunspell-dictionary-alist' is defined in Emacs
     ;; If it's nil, Emacs tries to automatically set up the dictionaries.
     (when (boundp 'ispell-hunspell-dictionary-alist)
       (setq ispell-hunspell-dictionary-alist ispell-local-dictionary-alist)))
