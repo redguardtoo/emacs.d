@@ -106,6 +106,8 @@
 (autoload 'diff-lisp-compare-with-b "diff-lisp" "" t)
 (autoload 'shenshou-download-subtitle "shenshou" "" t)
 (autoload 'shenshou-logout-now "shenshou" "" t)
+(autoload 'my-chinese-sort-words "my-chinese" "" t)
+(autoload 'my-chinese-compare "my-chinese" "" t)
 
 (provide 'init-autoload)
 ;;; init-autoload.el ends here
