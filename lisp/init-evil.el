@@ -612,7 +612,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "ft" 'counsel-etags-find-tag
   "yy" 'counsel-browse-kill-ring
   "cf" 'counsel-grep ; grep current buffer
-  "gf" 'counsel-git ; find file
+  "gf" 'my-counsel-git-find-file ; find file
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "vv" 'my-evil-goto-definition ; frequently used

@@ -163,6 +163,11 @@ If N is 2, list files in my recent 20 commits."
   (column-number-mode -1))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
 
+(defun my-counsel-git-find-file ()
+  "Use git to find file."
+  (interactive)
+  (counsel-git (and (region-active-p) (my-selected-str))))
+
 (defun my-counsel-git-grep (&optional level)
   "Git grep in project.  If LEVEL is not nil, grep files in parent commit."
   (interactive "P")
