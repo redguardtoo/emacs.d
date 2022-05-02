@@ -110,7 +110,6 @@
   (require-init 'init-bbdb t)
   (require-init 'init-gnus t)
   (require-init 'init-lua-mode t)
-  (require-init 'init-workgroups2 t) ; use native API in lightweight mode
   (require-init 'init-term-mode)
   (require-init 'init-web-mode t)
   (require-init 'init-company t)
