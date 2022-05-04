@@ -54,7 +54,7 @@
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
   ("im" mybigword-show-image-of-word)
-  ("W" my-lookup-big-word-definition-in-buffer)
+  ("W" my-lookup-bigword-definition-in-buffer)
   ("v" mybigword-play-video-of-word-at-point)
   ("p" emms-previous)
   ("P" emms-pause)

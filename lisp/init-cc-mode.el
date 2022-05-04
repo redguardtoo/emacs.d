@@ -45,7 +45,7 @@
 
 (defun c-mode-common-hook-setup ()
   "C/C++ setup."
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     (my-common-cc-mode-setup)
     (unless (or (derived-mode-p 'java-mode) (derived-mode-p 'groovy-mode))
       (my-c-mode-setup))))

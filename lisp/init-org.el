@@ -65,7 +65,7 @@
     (nreverse rlt)))
 
 (defun org-mode-hook-setup ()
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     (setq evil-auto-indent nil)
 
     ;; org-mime setup, run this command in org-file, than yank in `message-mode'

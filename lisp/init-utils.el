@@ -235,7 +235,7 @@ If HINT is empty, use symbol at point."
      (* 5000 64)))
 
 (defvar my-force-buffer-file-temp-p nil)
-(defun is-buffer-file-temp ()
+(defun my-buffer-file-temp-p ()
   "If (buffer-file-name) is nil or a temp file or HTML file converted from org file."
   (interactive)
   (let* ((f (buffer-file-name)) (rlt t))

@@ -4,7 +4,7 @@
 ;; No extra setup is required.
 
 (defun web-mode-hook-setup ()
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     (setq-local wucuo-flyspell-check-doublon nil)
     (remove-hook 'yas-after-exit-snippet-hook
                  'web-mode-yasnippet-exit-hook t)))

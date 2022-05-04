@@ -33,7 +33,7 @@
 
 (setq-default buffers-menu-max-size 30
               case-fold-search t
-              compilation-scroll-output t
+              compilation-scroll-output 'first-error
               ediff-split-window-function 'split-window-horizontally
               ediff-window-setup-function 'ediff-setup-windows-plain
               grep-highlight-matches t
@@ -88,8 +88,8 @@
 ;; {{ bookmark
 ;; use my own bookmark if it exists
 (with-eval-after-load 'bookmark
-  (if (file-exists-p (file-truename "~/.emacs.bmk"))
-      (setq bookmark-file (file-truename "~/.emacs.bmk"))))
+  (when (file-exists-p "~/.emacs.bmk")
+    (setq bookmark-file "~/.emacs.bmk")))
 ;; }}
 
 (defun my-lookup-doc-in-man ()
@@ -99,7 +99,8 @@
 
 ;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
-(setq minibuffer-prompt-properties (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+(setq minibuffer-prompt-properties
+      (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 (global-set-key (kbd "M-x") 'counsel-M-x)
 (global-set-key (kbd "C-x C-m") 'counsel-M-x)
@@ -110,20 +111,23 @@
 (defvar my-do-bury-compilation-buffer nil
   "Hide compilation buffer if compile successfully.")
 
-(defun compilation-finish-hide-buffer-on-success (buffer str)
+(defun my-compilation-finish-hide-buffer-on-success (buffer str)
   "Bury BUFFER whose name marches STR.
 This function can be re-used by other major modes after compilation."
-  (if (string-match "exited abnormally" str)
-      ;;there were errors
-      (message "compilation errors, press C-x ` to visit")
-    ;;no errors, make the compilation window go away in 0.5 seconds
+  (cond
+   ;;there were errors
+   ((string-match "exited abnormally" str)
+    (message "There IS compilation errors, press C-x ` to visit!"))
+
+   ;;no errors, make the compilation window go away in 0.5 seconds
+   (t
     (when (and my-do-bury-compilation-buffer
                (buffer-name buffer)
                (string-match "*compilation*" (buffer-name buffer)))
       ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
       (bury-buffer "*compilation*")
       (winner-undo)
-      (message "NO COMPILATION ERRORS!"))))
+      (message "NO compilation error.")))))
 
 ;; {{ electric pair
 (defun my-normal-word-before-point-p (position n fn)
@@ -176,7 +180,7 @@ FN checks these characters belong to normal word characters."
 (defvar my-disable-lazyflymake nil
   "Disable lazyflymake.")
 
-(defun generic-prog-mode-hook-setup ()
+(defun my-generic-prog-mode-hook-setup ()
   "Generic programming mode set up."
   (when (buffer-too-big-p)
     ;; Turn off `linum-mode' when there are more than 5000 lines
@@ -186,7 +190,7 @@ FN checks these characters belong to normal word characters."
 
   (my-company-ispell-setup)
 
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     ;;  trim spaces from end of changed line
     (ws-butler-mode 1)
 
@@ -202,7 +206,7 @@ FN checks these characters belong to normal word characters."
 
     ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
     (setq compilation-finish-functions
-          '(compilation-finish-hide-buffer-on-success))
+          '(my-compilation-finish-hide-buffer-on-success))
 
     ;; fic-mode has performance issue on 5000 line C++, use swiper instead
 
@@ -234,13 +238,13 @@ FN checks these characters belong to normal word characters."
     ;; show trailing spaces in a programming mod
     (setq show-trailing-whitespace t)))
 
-(add-hook 'prog-mode-hook 'generic-prog-mode-hook-setup)
+(add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
 ;;; {{ display long lines in truncated style (end line with $)
-(defun truncate-lines-setup ()
+(defun my-truncate-lines-setup ()
   (toggle-truncate-lines 1))
-(add-hook 'grep-mode-hook 'truncate-lines-setup)
-;; (add-hook 'org-mode-hook 'truncate-lines-setup)
+(add-hook 'grep-mode-hook 'my-truncate-lines-setup)
+;; (add-hook 'org-mode-hook 'my-truncate-lines-setup)
 ;; }}
 
 ;; turn on auto-fill-mode, don't use `text-mode-hook' because for some
@@ -273,11 +277,7 @@ FN checks these characters belong to normal word characters."
 (my-run-with-idle-timer 2 #'display-time)
 ;; }}
 
-;;a no-op function to bind to if you want to set a keystroke to null
-(defun void () "This is a no-op." (interactive))
-
 (defalias 'list-buffers 'ibuffer)
-
 
 ;; {{ show email sent by `git send-email' in gnus
 (with-eval-after-load 'gnus
@@ -286,7 +286,7 @@ FN checks these characters belong to normal word characters."
         '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )))
 ;; }}
 
-(defun add-pwd-into-load-path ()
+(defun my-add-pwd-into-load-path ()
   "Add current directory into `load-path', useful for elisp developers."
   (interactive)
   (let* ((dir (expand-file-name default-directory)))
@@ -386,15 +386,16 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 ;; {{start dictionary lookup
-;; use below commands to create dictionary
-;; mkdir -p ~/.stardict/dic
-;; # wordnet English => English
-;; curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
-;; # Langdao Chinese => English
-;; curl http://abloz.com/huzheng/stardict-dic/zh_CN/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
-;;
-(setq sdcv-dictionary-simple-list '("朗道英汉字典5.0"))
-(setq sdcv-dictionary-complete-list '("WordNet"))
+(with-eval-after-load 'sdcv
+  ;; use below commands to create dictionary
+  ;; mkdir -p ~/.stardict/dic
+  ;; # wordnet English => English
+  ;; curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
+  ;; # Langdao Chinese => English
+  ;; curl http://abloz.com/huzheng/stardict-dic/zh_CN/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
+  ;;
+  (setq sdcv-dictionary-simple-list '("朗道英汉字典5.0"))
+  (setq sdcv-dictionary-complete-list '("WordNet")))
 ;; }}
 
 ;; ANSI-escape coloring in compilation-mode
@@ -415,7 +416,7 @@ FN checks these characters belong to normal word characters."
   (setq gc-cons-threshold most-positive-fixnum))
 
 (defun my-minibuffer-exit-hook ()
-  "Hook when exist mini buffer."
+  "Hook when exiting mini buffer."
   ;; evil-mode also use mini buffer
   (setq gc-cons-threshold 67108864))
 
@@ -424,7 +425,6 @@ FN checks these characters belong to normal word characters."
 (add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
 ;; {{ cliphist.el
-(setq cliphist-use-ivy t)
 (defun my-select-cliphist-item (num item)
   "NUM is ignored.  Paste selected clipboard ITEM into clipboard.
 So it's at the top of clipboard manager."
@@ -433,7 +433,7 @@ So it's at the top of clipboard manager."
 (setq cliphist-select-item-callback 'my-select-cliphist-item)
 ;; }}
 
-(defun extract-list-from-package-json ()
+(defun my-extract-list-from-package-json ()
   "Extract package list from package.json."
   (interactive)
   (let* ((str (my-use-selected-string-or-ask)))
@@ -1007,8 +1007,8 @@ might be bad."
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
-(defvar my-sdcv-org-head-level 2)
 ;; {{ use sdcv dictionary to find big word definition
+(defvar my-sdcv-org-head-level 2)
 (defun my-sdcv-format-bigword (word zipf)
   "Format WORD and ZIPF using sdcv dictionary."
   (let* (rlt def)
@@ -1027,7 +1027,7 @@ might be bad."
       (error nil))
     rlt))
 
-(defun my-lookup-big-word-definition-in-buffer ()
+(defun my-lookup-bigword-definition-in-buffer ()
   "Look up big word definitions."
   (interactive)
   (local-require 'mybigword)

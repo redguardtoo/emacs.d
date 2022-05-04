@@ -6,7 +6,7 @@
 
 (defun my-enable-yas-minor-mode ()
   "Enable `yas-minor-mode'."
-  (when (or (not (is-buffer-file-temp))
+  (when (or (not (my-buffer-file-temp-p))
             (derived-mode-p 'prog-mode))
     (cond
      ((eq major-mode 'lisp-interaction-mode)
