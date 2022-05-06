@@ -195,9 +195,13 @@ FN checks these characters belong to normal word characters."
     (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
-      (unless my-disable-lazyflymake
+      (cond
+       ((and (not my-disable-lazyflymake) *emacs27*)
+        ;; lazyflymake v0.5 requires emacs27
         (my-ensure 'lazyflymake)
         (lazyflymake-start))
+       (t
+        (flymake-mode 1)))
 
       (unless my-disable-wucuo
         (my-ensure 'wucuo)
@@ -244,7 +248,6 @@ FN checks these characters belong to normal word characters."
 (defun my-truncate-lines-setup ()
   (toggle-truncate-lines 1))
 (add-hook 'grep-mode-hook 'my-truncate-lines-setup)
-;; (add-hook 'org-mode-hook 'my-truncate-lines-setup)
 ;; }}
 
 ;; turn on auto-fill-mode, don't use `text-mode-hook' because for some
