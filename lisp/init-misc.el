@@ -727,13 +727,10 @@ If the shell is already opened in some buffer, switch to that buffer."
 
 ;; {{ emms
 (with-eval-after-load 'emms
-  (emms-all)
-  (setq emms-player-list '(emms-player-mplayer-playlist
-                           emms-player-mplayer
-                           emms-player-mpg321
-                           emms-player-ogg123
-                           emms-player-vlc
-                           emms-player-vlc-playlist)))
+  ;; minimum setup is more robust
+  (emms-minimalistic)
+  (setq emms-player-list '(emms-player-mplayer
+                           emms-player-vlc)))
 ;; }}
 
 (transient-mark-mode t)
