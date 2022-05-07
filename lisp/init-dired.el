@@ -197,6 +197,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
        ((and search-in-dir
              (file-exists-p subtitle-dir)
              (fboundp 'string-distance))
+        (my-ensure 'find-lisp)
         (let* ((files (find-lisp-find-files-internal subtitle-dir
                                                      (lambda (file dir)
                                                        (and (not (file-directory-p (expand-file-name file dir)))
