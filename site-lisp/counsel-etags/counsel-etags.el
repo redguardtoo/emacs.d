@@ -557,7 +557,7 @@ The file is also used by tags file auto-update process.")
       (save-excursion
         (unless rlt
           (setq old-pos (point))
-          (condition-case nil (outline-up-heading 1))
+          (condition-case nil (outline-up-heading 1) (error nil))
           (while loop
             (cond
              ((or (setq rlt (org-entry-get (point) prop-name))
@@ -565,7 +565,7 @@ The file is also used by tags file auto-update process.")
               (setq loop nil))
              (t
               (setq old-pos (point))
-              (condition-case nil (outline-up-heading 1)))))
+              (condition-case nil (outline-up-heading 1) (error nil)))))
           (goto-char pos))
         rlt))))
 
