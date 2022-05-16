@@ -729,6 +729,14 @@ If the shell is already opened in some buffer, switch to that buffer."
 (with-eval-after-load 'emms
   ;; minimum setup is more robust
   (emms-minimalistic)
+  ;; only show file track's base name
+  (setq emms-track-description-function
+        (lambda (track)
+          (let ((desc (emms-track-simple-description track))
+                (type (emms-track-type track)))
+            (when (eq 'file type)
+              (setq desc (file-name-base desc)))
+            desc)))
   (setq emms-player-list '(emms-player-mplayer
                            emms-player-vlc)))
 ;; }}

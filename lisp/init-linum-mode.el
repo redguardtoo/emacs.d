@@ -28,6 +28,7 @@
     calc-trail-mode
     comint-mode
     gnus-group-mode
+    emms-playlist-mode
     gud-mode
     org-mode
     vc-git-log-edit-mode
