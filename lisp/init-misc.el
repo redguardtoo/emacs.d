@@ -735,7 +735,7 @@ If the shell is already opened in some buffer, switch to that buffer."
           (let ((desc (emms-track-simple-description track))
                 (type (emms-track-type track)))
             (when (eq 'file type)
-              (setq desc (file-name-base desc)))
+              (setq desc (my-strip-path desc 2)))
             desc)))
 
   (setq emms-source-file-exclude-regexp

@@ -709,5 +709,17 @@ This function is written in pure Lisp and slow."
          (regexp (my-file-extensions-to-regexp exts)))
     (string-match-p regexp file)))
 
+(defun my-strip-path (path strip-count)
+  "Strip PATH with STRIP-COUNT."
+  (let* ((i (1- (length path)))
+         str)
+    (while (and (> strip-count 0)
+                (> i 0))
+      (when (= (aref path i) ?/)
+        (setq strip-count (1- strip-count)))
+      (setq i (1- i)))
+    (setq str (if (= 0 strip-count) (substring path (1+ i)) path))
+    (replace-regexp-in-string "^/" "" str)))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here
