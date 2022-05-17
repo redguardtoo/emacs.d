@@ -50,7 +50,7 @@
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
-  ("R" emms-random)
+  ("R" (progn (emms-shuffle) (emms-random)))
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
   ("im" mybigword-show-image-of-word)
