@@ -737,6 +737,10 @@ If the shell is already opened in some buffer, switch to that buffer."
             (when (eq 'file type)
               (setq desc (file-name-base desc)))
             desc)))
+
+  (setq emms-source-file-exclude-regexp
+        (concat "\\`\\(#.*#\\|.*,v\\|.*~\\|\\.\\.?\\|\\.#.*\\|,.*\\)\\'\\|"
+                "/\\(CVS\\|RCS\\|\\.dropbox.attr\\|\\.git\\|,.*\\|\\.svn\\)\\(/\\|\\'\\)"))
   (setq emms-player-list '(emms-player-mplayer
                            emms-player-vlc)))
 ;; }}

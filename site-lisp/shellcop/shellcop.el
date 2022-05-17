@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020-2021 Chen Bin
 ;;
-;; Version: 0.0.9
+;; Version: 0.1.0
 ;; Keywords: unix tools
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/shellcop
@@ -405,7 +405,7 @@ Or else erase current buffer."
                            ;; line's format: "dir | score | timestamp"
                            (let* ((a (split-string line "|")))
                              (cons (nth 0 a) (string-to-number (nth 2 a)))))
-                         (split-string (string-trim content)))))
+                         (split-string (string-trim content) "[\n\r]+"))))
 
       ;; sort by timestamp in descending order
       (setq dirs (sort dirs (lambda (a b) (> (cdr a) (cdr b)))))
