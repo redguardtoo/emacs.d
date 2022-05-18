@@ -1,9 +1,9 @@
-;;; org-mime.el --- org html export for text/html MIME emails
+;;; org-mime.el --- org html export for text/html MIME emails  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2010-2015 Eric Schulte, 2016-2021 Chen Bin
 
 ;; Author: Eric Schulte
-;; Maintainer: Chen Bin (redguardtoo)
+;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
 ;; Version: 0.3.0
@@ -126,6 +126,8 @@
 (require 'outline)
 (require 'org)
 (require 'ox-org)
+(require 'message)
+(require 'sendmail)
 
 (defcustom org-mime-use-property-inheritance nil
   "Non-nil means al MAIL_ properties apply also for sub-levels."
@@ -169,11 +171,12 @@ Default (nil) selects the original org file."
   :group 'org-mime
   :type 'string)
 
-(defcustom org-mime-mail-quoted-separator
-  "^>>>>>[^>=]+==\\([^=\r\n]+\\)"
-  "Below this separator is mostly quoted mail."
+(defcustom org-mime-mail-quoted-separators
+  '("^>>>>>[^>=]+==\\([^=\r\n]+\\)$"
+    "^\\(On [^\r\n]+ wrote:\\)$")
+  "Possible separators.  Below the separator is mostly quoted mail."
   :group 'org-mime
-  :type 'string)
+  :type '(repeat string))
 
 (defvar org-mime-export-options '(:with-latex dvipng)
   "Default export options which may override org buffer/subtree options.
@@ -403,12 +406,14 @@ CURRENT-FILE is used to calculate full path of images."
         (buffer-string))
     html))
 
-(defun org-mime-insert-html-content (plain file html opts)
-  "Insert PLAIN into FILE with HTML content and OPTS."
+
+(defun org-mime-insert-html-content (plain file html)
+  "Insert PLAIN into FILE with HTML content."
+  (defvar org-export-htmlize-output-type)
   (let* ((files (org-mime-extract-non-image-files))
-         ;; dvipng for inline latex because MathJax doesn't work in mail
+         ;; Use dvipng for inline latex because MathJax doesn't work in mail
          ;; Also @see https://github.com/org-mime/org-mime/issues/16
-         ;; (setq org-html-with-latex nil) sometimes useful
+         ;; Looks "(setq org-html-with-latex nil)" may be useful
          (org-html-with-latex org-mime-org-html-with-latex-default)
          ;; we don't want to convert org file links to html
          (org-html-link-org-files-as-html nil)
@@ -436,7 +441,7 @@ CURRENT-FILE is used to calculate full path of images."
 
     (insert (org-mime-multipart (org-mime-apply-plain-text-hook plain)
                                 html
-                                (if images (mapconcat 'identity images "\n"))))
+                                (if images (mapconcat #'identity images "\n"))))
 
     ;; Attach any residual files
     (when files
@@ -495,9 +500,19 @@ CURRENT-FILE is used to calculate full path of images."
       (list :secure-tags (nreverse secure-tags)
             :part-tags (nreverse part-tags)))))
 
+(defun org-mime-find-quoted-separator (content)
+  "Find correct separator to extract quoted mail from CONTENT."
+  (let ((rlt (cl-find-if (lambda (p)
+                          (string-match p content))
+                        org-mime-mail-quoted-separators)))
+    (when org-mime-debug
+      (message "org-mime-find-quoted-separator called => %s" rlt))
+    rlt))
+
 (defun org-mime-extract-my-reply (content)
   "Extract my reply from CONTENT (no quoted content)."
-  (let* ((arr (split-string content org-mime-mail-quoted-separator))
+  (let* ((quoted-separator (org-mime-find-quoted-separator content))
+         (arr (split-string content quoted-separator))
          rlt)
 
     ;; extract reply
@@ -505,7 +520,7 @@ CURRENT-FILE is used to calculate full path of images."
 
     ;; extract quoted mail
     (when (> (length arr) 1)
-      (when (string-match org-mime-mail-quoted-separator content)
+      (when (string-match quoted-separator content)
         (setq rlt (plist-put rlt
                              'REPLY-QUOTED-TITLE
                              (string-trim (match-string 1 content)))))
@@ -593,7 +608,7 @@ If called with an active region only export that region, otherwise entire body."
                          "</div>\n")))
 
     ;; insert converted html
-    (org-mime-insert-html-content plain file html opts)
+    (org-mime-insert-html-content plain file html)
 
     ;; restore part tags
     (when part-tags
@@ -608,13 +623,11 @@ If called with an active region only export that region, otherwise entire body."
         (set-text-properties 0 (length txt) nil txt)
         txt))))
 
-(defun org-mime-compose (exported file to subject headers subtreep)
-  "Create mail body from EXPORTED in FILE with TO, SUBJECT, HEADERS.
-If SUBTREEP is t, current org node is subtree."
+(defun org-mime-compose (exported file to subject headers)
+  "Create mail body from EXPORTED in FILE with TO, SUBJECT, HEADERS."
   ;; start composing mail
   (let* ((html (car exported))
          (plain (cdr exported))
-         (export-opts (org-mime-get-export-options subtreep))
          patched-html)
     (compose-mail to subject headers nil)
     (message-goto-body)
@@ -624,7 +637,7 @@ If SUBTREEP is t, current org node is subtree."
                          (run-hooks 'org-mime-pre-html-hook)
                          (buffer-string)))
     ;; insert text
-    (org-mime-insert-html-content plain file patched-html export-opts)))
+    (org-mime-insert-html-content plain file patched-html))) ; export-opts
 
 (defun org-mime-buffer-properties ()
   "Extract buffer properties."
@@ -667,7 +680,7 @@ The cursor ends in the TO field."
   (interactive)
   (run-hooks 'org-mime-send-buffer-hook)
   (let* ((org-html-klipsify-src nil)
-         (region-p (org-region-active-p))
+         ;; (region-p (org-region-active-p))
          (file (buffer-file-name (current-buffer)))
          (props (org-mime-buffer-properties))
          (subject (or (plist-get props :MAIL_SUBJECT)
@@ -683,7 +696,7 @@ The cursor ends in the TO field."
          (other-headers (org-mime-build-mail-other-headers cc
                                                            bcc
                                                            from)))
-    (org-mime-compose exported file to subject other-headers nil)
+    (org-mime-compose exported file to subject other-headers) ; nil
     (message-goto-to)))
 
 (defun org-mime-org-major-version ()
@@ -719,6 +732,7 @@ Following headline properties can determine the mail headers.
       (org-back-to-heading))
 
     (when (outline-on-heading-p nil)
+      (defvar org-major-version)
       (let* ((file (buffer-file-name (current-buffer)))
              (props (org-mime-buffer-properties))
              (subject (or (org-mime-attr "MAIL_SUBJECT")
@@ -735,9 +749,6 @@ Following headline properties can determine the mail headers.
              ;; Thanks to Matt Price improving handling of cc & bcc headers
              (other-headers (org-mime-build-mail-other-headers cc bcc from))
              (org-export-show-temporary-export-buffer nil)
-             (subtree-opts (when (fboundp 'org-export--get-subtree-options)
-                             (org-export--get-subtree-options)))
-             (org-export-show-temporary-export-buffer nil)
              (org-major-version (org-mime-org-major-version))
              ;; I wrap these bodies in export blocks because in org-mime-compose
              ;; they get exported again. This makes each block conditionally
@@ -746,7 +757,7 @@ Following headline properties can determine the mail headers.
                                          (org-mime-export-buffer-or-subtree t))))
         (save-restriction
           (org-narrow-to-subtree)
-          (org-mime-compose exported file to subject other-headers t))
+          (org-mime-compose exported file to subject other-headers)) ; t
         (message-goto-to)))))
 
 (defun org-mime-src--remove-overlay ()
@@ -819,8 +830,8 @@ Following headline properties can determine the mail headers.
 
 (defvar org-mime-src-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "C-c C-c") 'org-mime-edit-src-exit)
-    (define-key map (kbd "C-x C-s") 'org-mime-edit-src-save)
+    (define-key map (kbd "C-c C-c") #'org-mime-edit-src-exit)
+    (define-key map (kbd "C-x C-s") #'org-mime-edit-src-save)
     map))
 
 (define-minor-mode org-mime-src-mode
