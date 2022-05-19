@@ -10,8 +10,9 @@
                "\\mimeapps\\.list$"
                "\\.editorconfig$"
                "\\.meta$"
-               "^\\.env\\([-.][0-9a-z]+\\)?$" ; ".env" or ".env.local"
+               "^\\.env\\([-.0-9a-z]+\\)?$" ; ".env" or ".env.local"
                "PKGBUILD$" ; archlinux
+               "\\.pgpass$"
                "\\.?muttrc$"
                "\\.mailcap$")
 ;; }}
