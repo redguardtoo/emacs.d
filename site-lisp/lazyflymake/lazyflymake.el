@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020-2022 Chen Bin
 ;;
-;; Version: 0.0.5
+;; Version: 0.0.6
 ;; Keywords: convenience, languages, tools
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/lazyflymake
@@ -53,7 +53,7 @@
 ;; Customize `lazyflymake-ignore-error-function' to ignore errors extracted
 ;; from linter output.
 ;;
-;; `lazyflymake-program-extra-args' contains the extra arguments passed
+;; `lazyflymake-program-extra-args' contains extra arguments passed
 ;; to linter cli program.  It could be converted to buffer local variable.
 ;;
 ;; This program also sets up flymake for Shell script, Emacs Lisp, Octave/Matlab,
@@ -584,15 +584,16 @@ If FORCE is t, the buffer is checked always."
     (lazyflymake-load "\\.m$" 'octave))
 
   ;; html/xml
-  (lazyflymake-load "\\.html?\\'" 'html t)
-  (lazyflymake-load "\\.xml\\'" 'html t)
+  (lazyflymake-load "\\.\\(lhtml?\\|xml\\)\\'" 'html t)
 
   (when lazyflymake-debug
     (message "flymake-proc-allowed-file-name-masks=%s" flymake-proc-allowed-file-name-masks))
 
   ;; eslint is always used even `js2-mode' has its builtin linter
-  (unless (derived-mode-p 'js-mode)
-    (lazyflymake-load "\\.[jt]sx?$" 'eslint))
+  (lazyflymake-load "\\.[jt]sx?$" 'eslint)
+
+  (when (derived-mode-p 'yaml-mode)
+    (lazyflymake-load "\\.ya?ml$" 'yamllint))
 
   ;; initialize some internal variables of `flymake-mode'
   (flymake-mode 1)

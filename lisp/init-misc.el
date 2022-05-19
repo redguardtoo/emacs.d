@@ -243,6 +243,7 @@ FN checks these characters belong to normal word characters."
     (setq show-trailing-whitespace t)))
 
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
+(add-hook 'text-mode-hook #'lazyflymake-start)
 
 ;;; {{ display long lines in truncated style (end line with $)
 (defun my-truncate-lines-setup ()
