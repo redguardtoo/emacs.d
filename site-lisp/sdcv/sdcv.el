@@ -172,6 +172,11 @@
   "Interface for sdcv (StartDict console version)."
   :group 'edit)
 
+(defcustom sdcv-program "sdcv"
+  "The cli program sdcv."
+  :type 'string
+  :group 'sdcv)
+
 (defcustom sdcv-buffer-name "*SDCV*"
   "The name of the buffer of sdcv."
   :type 'string
@@ -259,7 +264,7 @@ Turning on Text mode runs the normal hook `sdcv-mode-hook'."
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Interactive Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun sdcv-search-pointer (&optional word)
-  "Get current word.
+  "Get current WORD.
 And display complete translations in other buffer."
   (interactive)
   ;; Display details translate result.
@@ -286,7 +291,7 @@ And show information use tooltip."
   (interactive)
   ;; Display simple translate result.
   (sdcv-search-simple (or word (sdcv-prompt-input)))
-  ;; I set this delay for fast finger. ;)
+  ;; I set this delay for fast finger.
   (sit-for 0.5))
 
 (defun sdcv-quit ()
@@ -302,7 +307,7 @@ And show information use tooltip."
 (defun sdcv-next-dictionary ()
   "Jump to next dictionary."
   (interactive)
-  (show-all)
+  (outline-show-all)
   (if (search-forward-regexp "^-->.*\n-" nil t) ;don't show error when search failed
       (progn
         (call-interactively 'previous-line)
@@ -312,7 +317,7 @@ And show information use tooltip."
 (defun sdcv-previous-dictionary ()
   "Jump to previous dictionary."
   (interactive)
-  (show-all)
+  (outline-show-all)
   (if (search-backward-regexp "^-->.*\n-" nil t) ;don't show error when search failed
       (progn
         (forward-char 1)
@@ -337,7 +342,7 @@ And show information use tooltip."
     (save-excursion
       (beginning-of-line nil)
       (when (looking-at outline-regexp)
-        (show-entry)))))
+        (outline-show-entry)))))
 
 (defun sdcv-prev-line (arg)
   "Previous ARG line."
@@ -345,7 +350,28 @@ And show information use tooltip."
   (ignore-errors
     (call-interactively 'previous-line arg)))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Utilities Functions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun sdcv-search-with-dictionary (word dictionary-list)
+  "Search some WORD with dictionary list.
+Argument DICTIONARY-LIST the word that need transform."
+  ;; Get translate object.
+  (or word (setq word (sdcv-region-or-word)))
+  ;; Record current translate object.
+  (setq sdcv-current-translate-object word)
+
+  (cond
+   ((executable-find sdcv-program)
+    ;; Return translate result.
+    (sdcv-filter
+     (mapconcat
+      (lambda (dict)
+        (shell-command-to-string (format "%s -n -u \"%s\" \"%s\""
+                                         sdcv-program
+                                         dict
+                                         word)))
+      dictionary-list "\n")))
+   (t
+    (error "Program \"%s\" is NOT installed!" sdcv-program))))
+
 (defun sdcv-search-detail (&optional word)
   "Search WORD through the `command-line' tool sdcv.
 The result will be displayed in buffer named with
@@ -354,7 +380,7 @@ The result will be displayed in buffer named with
   (with-current-buffer (get-buffer-create sdcv-buffer-name)
     (setq buffer-read-only nil)
     (erase-buffer)
-    (insert (sdcv-search-witch-dictionary
+    (insert (sdcv-search-with-dictionary
              word
              sdcv-dictionary-complete-list)))
   (unless (eq (current-buffer) (sdcv-get-buffer))
@@ -364,25 +390,7 @@ The result will be displayed in buffer named with
 (defun sdcv-search-simple (&optional word)
   "Search WORD simple translate result."
   (popup-tip
-   (sdcv-search-witch-dictionary word sdcv-dictionary-simple-list)))
-
-(defun sdcv-search-witch-dictionary (word dictionary-list)
-  "Search some WORD with dictionary list.
-Argument DICTIONARY-LIST the word that need transform."
-  ;; Get translate object.
-  (or word (setq word (sdcv-region-or-word)))
-  ;; Record current translate object.
-  (setq sdcv-current-translate-object word)
-
-  ;; Return translate result.
-  (let (cmd)
-    (sdcv-filter
-     (mapconcat
-      (lambda (dict)
-        (setq cmd (format "sdcv -n -u \"%s\" \"%s\"" dict word))
-        (shell-command-to-string cmd))
-      dictionary-list "\n")
-     )))
+   (sdcv-search-with-dictionary word sdcv-dictionary-simple-list)))
 
 (defun sdcv-filter (sdcv-string)
   "This function is for filter sdcv output string,.
@@ -421,7 +429,7 @@ the beginning of the buffer."
     (setq buffer-read-only t)
     (goto-char (point-min))
     (sdcv-next-dictionary)
-    (show-all)
+    (outline-show-all)
     (message "Have search finished with `%s'." sdcv-current-translate-object)))
 
 (defun sdcv-prompt-input ()

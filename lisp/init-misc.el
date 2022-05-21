@@ -1029,7 +1029,7 @@ might be bad."
     ;; 2 level org format
     (condition-case nil
         (progn
-          (setq def (sdcv-search-witch-dictionary word sdcv-dictionary-complete-list))
+          (setq def (sdcv-search-with-dictionary word sdcv-dictionary-complete-list) )
           (setq def (replace-regexp-in-string "^-->.*" "" def))
           (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
           (setq rlt (format "%s %s (%s)\n%s\n"
