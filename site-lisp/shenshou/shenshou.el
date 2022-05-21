@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2021 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.0.2
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: convenience, tools
 
 ;; This file is not part of GNU Emacs.
@@ -38,7 +38,7 @@
 ;;
 ;; Usage,
 ;;   - Set `shenshou-login-user-name' and `shenshou-login-password'.
-;;   - Run `shenshou-download-subtitle' in dired buffer or anywhere.
+;;   - Run `shenshou-download-subtitle' in Dired buffer or anywhere.
 ;;   - Run `shenshou-logout-now' to logout.
 ;;
 ;;  Tips,
@@ -55,7 +55,7 @@
 (require 'dired)
 
 (defgroup shenshou nil
-  "Download subtitles from opensubtitles.org"
+  "Download subtitles from opensubtitles.org."
   :group 'tools)
 
 (defcustom shenshou-curl-program "curl"
@@ -78,7 +78,7 @@ See https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes for details."
   "Extra options pass to curl program.
 Option for SOCKS proxy,  \"-x socks5h://127.0.0.1:9050\".
 Option for HTTP proxy, \"-x http://username:password@127.0.0.1:8081\".
-Please read curl's manul for more options."
+Please read curl's manual for more options."
   :type 'string
   :group 'shenshou)
 
@@ -399,6 +399,18 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                         "</struct></value></data>")))
     (shenshou-format-param (concat "<array>" rlt "</array>"))))
 
+(defun shenshou-sort-subtitles (subtitles video-name)
+  "Sort SUBTITLES by measuring its string distance to VIDEO-NAME."
+  (when (> (length subtitles) 1)
+    (setq subtitles
+          (sort subtitles
+                `(lambda (a b)
+                   (< (string-distance (plist-get (cdr a) :moviereleasename) ,video-name)
+                      (string-distance (plist-get (cdr b) :moviereleasename) ,video-name)))))
+    (when shenshou-debug
+      (message "shenshou-sort-subtitles called. subtitles=" subtitles))
+    subtitles))
+
 (defun shenshou-search-subtitles (video-file)
   "Search subtitles of VIDEO-FILE."
   ;; @see https://trac.opensubtitles.org/projects/opensubtitles/wiki/XmlRpcSearchSubtitles
@@ -443,7 +455,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
           (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
           (push (cons (format "%s => %s(%s)" movie-release-name subfilename lang) sub) subtitles))))
 
-    subtitles))
+    (shenshou-sort-subtitles subtitles (file-name-base video-file))))
 
 ;;;###autoload
 (defun shenshou-download-subtitle-internal (video-file)
@@ -491,7 +503,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 ;;;###autoload
 (defun shenshou-download-subtitle ()
   "Download subtitles of video files.
-If current buffer is dired buffer, marked videos will be processed.
+If current buffer is Dired buffer, marked videos will be processed.
 Or else user need specify the video to process."
   (interactive)
   (let* (file
