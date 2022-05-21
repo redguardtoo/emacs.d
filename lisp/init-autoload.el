@@ -78,6 +78,8 @@
 (autoload 'srt-offset-subtitles "subtitles" "" t)
 (autoload 'srt-mult-subtitles "subtitles" "" t)
 (autoload 'srt-convert-sub-to-srt "subtitles" "" t)
+(autoload 'srt-slow-down "subtitles" "" t)
+(autoload 'srt-speed-up "subtitles" "" t)
 (autoload 'fastdef-insert "fastdef" nil t)
 (autoload 'fastdef-insert-from-history "fastdef" nil t)
 (autoload 'org-mime-htmlize "org-mime" nil t)
