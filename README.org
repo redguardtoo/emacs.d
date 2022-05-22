@@ -435,6 +435,8 @@ Add below code to =~/.custom.el= to load a random classic dark color theme durin
 (setq my-enable-startup-color-theme-p t)
 #+end_src
 
+If you prefer using your own color theme, you don't need above line.
+
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
 
