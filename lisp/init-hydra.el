@@ -12,11 +12,11 @@
 [_ll_] Load workgroup     [_W_] Big words definition [_n_] Emms Next
 [_B_] New bookmark        [_v_] Play big word video  [_p_] Emms Previous
 [_m_] Goto bookmark       [_im_] Image of word       [_P_] Emms Pause
-[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_O_] Emms Open
-[_e_] Erase buffer        [_s2_] Pomodoro big task   [_L_] Emms Playlist
-[_r_] Erase this buffer   [_st_] Pomodoro stop       [_E_] Typewriter on
-[_f_] Recent file         [_sr_] Pomodoro resume     [_V_] Old typewriter
-[_d_] Recent directory    [_sp_] Pomodoro pause
+[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_S_] Emms Stop
+[_e_] Erase buffer        [_s2_] Pomodoro big task   [_O_] Emms Open
+[_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Emms Playlist
+[_f_] Recent file         [_sr_] Pomodoro resume     [_E_] Typewriter on
+[_d_] Recent directory    [_sp_] Pomodoro pause      [_V_] Old typewriter
 [_z_] Jump around (z.sh)  [_as_] Ascii table
 [_bh_] Bash history
 [_hh_] Favorite theme
@@ -58,6 +58,7 @@
   ("v" mybigword-play-video-of-word-at-point)
   ("p" emms-previous)
   ("P" emms-pause)
+  ("S" emms-stop)
   ("O" emms-play-playlist)
   ("bb" dianyou-switch-gnus-buffer)
   ("L" emms-playlist-mode-go)
