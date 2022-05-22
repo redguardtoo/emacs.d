@@ -254,4 +254,15 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (interactive)
   (goto-char (1- (cdr (my-create-range t)))))
 
+(defun my-switch-to-shell ()
+  "Switch to built in or 3rd party shell."
+  (interactive)
+  (cond
+   ((or (display-graphic-p) (daemonp))
+    (switch-to-builtin-shell))
+   (t
+    (suspend-frame))))
+
+(global-set-key (kbd "C-x C-z") #'my-switch-to-shell)
+
 (provide 'init-essential)

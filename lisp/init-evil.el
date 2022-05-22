@@ -710,7 +710,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xc" 'my-switch-to-shell
   "xz" 'my-switch-to-shell
   "vf" 'my-vc-rename-file-and-buffer
   "vc" 'my-vc-copy-file-and-rename-buffer
@@ -907,15 +906,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
 ;;   (general-key-dispatch 'self-insert-command
 ;;     :timeout 0.3
 ;;     "g" 'my-counsel-company))
-
-(defun my-switch-to-shell ()
-  "Switch to built in or 3rd party shell."
-  (interactive)
-  (cond
-   ((display-graphic-p)
-    (switch-to-builtin-shell))
-   (t
-    (suspend-frame))))
 
 ;; press ",xx" to expand region
 ;; then press "char" to contract, "x" to expand
