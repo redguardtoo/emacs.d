@@ -138,15 +138,15 @@ You could narrow down region at first"
     (goto-char svd-pos)))
 
 ;;;###autoload
-(defun srt-slow-down ()
-  "Slow down loading subtitles.
+(defun srt-speed-up ()
+  "Speed up loading subtitles.
 Convert all subtitles time from 25 fps to 23.976 fps."
   (interactive)
   (srt-mult-subtitles 0.95904))
 
 ;;;###autoload
-(defun srt-speed-up ()
-  "Speed up loading subtitles.
+(defun srt-slow-down ()
+  "Slow down loading subtitles.
 Convert all subtitles time from 23.976 fps to 25 fps."
   (interactive)
   (srt-mult-subtitles 1.042709376))
