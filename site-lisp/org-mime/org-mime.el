@@ -6,7 +6,7 @@
 ;; Maintainer: Chen Bin <chenbin.sh@gmail.com>
 ;; Keywords: mime, mail, email, html
 ;; Homepage: http://github.com/org-mime/org-mime
-;; Version: 0.3.0
+;; Version: 0.3.1
 ;; Package-Requires: ((emacs "25.1"))
 
 ;; This file is not part of GNU Emacs.
@@ -127,7 +127,11 @@
 (require 'org)
 (require 'ox-org)
 (require 'message)
-(require 'sendmail)
+
+(defcustom org-mime-beautify-quoted-mail-p t
+  "Beautify quoted mail in more clean HTML, like Gmail."
+  :group 'org-mime
+  :type 'boolean)
 
 (defcustom org-mime-use-property-inheritance nil
   "Non-nil means al MAIL_ properties apply also for sub-levels."
@@ -170,13 +174,6 @@ Default (nil) selects the original org file."
   "Default mail signature separator."
   :group 'org-mime
   :type 'string)
-
-(defcustom org-mime-mail-quoted-separators
-  '("^>>>>>[^>=]+==\\([^=\r\n]+\\)$"
-    "^\\(On [^\r\n]+ wrote:\\)$")
-  "Possible separators.  Below the separator is mostly quoted mail."
-  :group 'org-mime
-  :type '(repeat string))
 
 (defvar org-mime-export-options '(:with-latex dvipng)
   "Default export options which may override org buffer/subtree options.
@@ -300,6 +297,47 @@ SUBTREEP is t if current node is subtree."
               (buffer-string)))))
     (vm "?")))
 
+(defun org-mime-beautify-quoted (html)
+  "Beautify quoted mail in modern UI style.
+HTML is the body of the message."
+  (when org-mime-debug
+    (message "org-mime-beautify-quoted called => %s" html))
+  (let ((quote-depth 0)
+        (line-depth 0)
+        (in-quote-p nil)
+        (quote-opening "<blockquote class=\"gmail_quote\" style=\"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex\">\n\n<div>")
+        (quote-closing "\n</div></blockquote>\n"))
+    (with-temp-buffer
+      ;; clean title of quoted
+      (insert (replace-regexp-in-string
+               "<p>[\n\r]*&gt;&gt;&gt;&gt;&gt; .* == \\([^\r\n]*\\)[\r\n]*</p>"
+               "<div class=\"gmail_quote\">\\1</div>"
+               html))
+      (goto-char (point-min))
+      (while (not (eobp))
+        (setq line-depth 0)
+        (setq in-quote-p nil)
+        (while (looking-at "&gt;[ \t]*")
+          (setq in-quote-p t)
+          (replace-match "")
+          (cl-incf line-depth))
+        (cond
+         ((< quote-depth line-depth)
+          (while (< quote-depth line-depth)
+            (insert quote-opening)
+            (cl-incf quote-depth)))
+         ((> quote-depth line-depth)
+          (while (> quote-depth line-depth)
+            (insert quote-closing)
+            (cl-decf quote-depth))))
+        (if (and in-quote-p (looking-at "^[ \t]*$"))
+            (progn
+              (insert "</div>\n<div>")
+              (forward-line)
+              (insert "<br /></div>\n<div>"))
+          (forward-line)))
+      (buffer-substring (point-min) (point-max)))))
+
 (defun org-mime-multipart (plain html &optional images)
   "Markup PLAIN body a multipart/alternative with HTML alternatives.
 If html portion of message includes IMAGES they are wrapped in
@@ -309,7 +347,9 @@ multipart/related part."
                  plain
                  (when images "<#multipart type=related>")
                  "<#part type=text/html>\n"
-                 html
+                 (if org-mime-beautify-quoted-mail-p
+                     (org-mime-beautify-quoted html)
+                   html)
                  images
                  (when images "<#/multipart>\n")
                  "<#/multipart>\n"))
@@ -406,14 +446,12 @@ CURRENT-FILE is used to calculate full path of images."
         (buffer-string))
     html))
 
-
 (defun org-mime-insert-html-content (plain file html)
   "Insert PLAIN into FILE with HTML content."
-  (defvar org-export-htmlize-output-type)
   (let* ((files (org-mime-extract-non-image-files))
-         ;; Use dvipng for inline latex because MathJax doesn't work in mail
+         ;; dvipng for inline latex because MathJax doesn't work in mail
          ;; Also @see https://github.com/org-mime/org-mime/issues/16
-         ;; Looks "(setq org-html-with-latex nil)" may be useful
+         ;; (setq org-html-with-latex nil) sometimes useful
          (org-html-with-latex org-mime-org-html-with-latex-default)
          ;; we don't want to convert org file links to html
          (org-html-link-org-files-as-html nil)
@@ -441,7 +479,7 @@ CURRENT-FILE is used to calculate full path of images."
 
     (insert (org-mime-multipart (org-mime-apply-plain-text-hook plain)
                                 html
-                                (if images (mapconcat #'identity images "\n"))))
+                                (if images (mapconcat 'identity images "\n"))))
 
     ;; Attach any residual files
     (when files
@@ -456,6 +494,13 @@ CURRENT-FILE is used to calculate full path of images."
     (goto-char (point-min))
     (search-forward mail-header-separator)
     (+ (point) 1)))
+
+(defun org-mime-mail-signature-begin ()
+  "Find start of signature line in email."
+  (save-excursion
+    (goto-char (point-max))
+    (re-search-backward org-mime-mail-signature-separator nil t nil)))
+
 
 (defmacro org-mime-extract-tag-in-current-buffer (beginning end result)
   "Extract the text between BEGINNING and END and insert it into RESULT."
@@ -500,48 +545,6 @@ CURRENT-FILE is used to calculate full path of images."
       (list :secure-tags (nreverse secure-tags)
             :part-tags (nreverse part-tags)))))
 
-(defun org-mime-find-quoted-separator (content)
-  "Find correct separator to extract quoted mail from CONTENT."
-  (let ((rlt (cl-find-if (lambda (p)
-                          (string-match p content))
-                        org-mime-mail-quoted-separators)))
-    (when org-mime-debug
-      (message "org-mime-find-quoted-separator called => %s" rlt))
-    rlt))
-
-(defun org-mime-extract-my-reply (content)
-  "Extract my reply from CONTENT (no quoted content)."
-  (let* ((quoted-separator (org-mime-find-quoted-separator content))
-         (arr (split-string content quoted-separator))
-         rlt)
-
-    ;; extract reply
-    (setq rlt (plist-put rlt 'REPLY-MAIN (car arr)))
-
-    ;; extract quoted mail
-    (when (> (length arr) 1)
-      (when (string-match quoted-separator content)
-        (setq rlt (plist-put rlt
-                             'REPLY-QUOTED-TITLE
-                             (string-trim (match-string 1 content)))))
-      (setq arr (split-string (nth 1 arr)
-                              org-mime-mail-signature-separator))
-      (setq rlt (plist-put rlt
-                           'REPLY-QUOTED-MAIN
-                           (car arr))))
-
-    ;; extract signature and other stuff
-    (when (> (length arr) 1)
-      (setq rlt (plist-put rlt
-                           'REPLY-SIGNATURE
-                           (mapconcat 'identity (cdr arr) "--"))))
-
-    (when org-mime-debug
-      (message "org-mime-extract-my-reply called. content=%s rlt=%s"
-               content
-               rlt))
-    rlt))
-
 ;;;###autoload
 (defun org-mime-htmlize ()
   "Export a portion of an email to html using `org-mode'.
@@ -557,17 +560,14 @@ If called with an active region only export that region, otherwise entire body."
                               (or (and region-p (region-beginning))
                                   (org-mime-mail-body-begin))))
          (html-end (or (and region-p (region-end))
-                       (point-max)))
-         (parsed-reply (org-mime-extract-my-reply (buffer-substring html-start
-                                                                    html-end)))
-         (reply-main (plist-get parsed-reply 'REPLY-MAIN))
-         (reply-quoted-title (plist-get parsed-reply 'REPLY-QUOTED-TITLE))
-         (reply-quoted-main (plist-get parsed-reply 'REPLY-QUOTED-MAIN))
-         (reply-signature (plist-get parsed-reply 'REPLY-SIGNATURE))
+                       (or
+                        (org-mime-mail-signature-begin)
+                        (point-max))))
+         (org-text (buffer-substring html-start html-end))
 ;; to hold attachments for inline html images
          (opts (org-mime-get-buffer-export-options))
-         (plain (org-mime-export-ascii-maybe reply-main))
-         html
+         (plain (org-mime-export-ascii-maybe org-text))
+         (html (org-mime-export-string org-text opts))
          (file (make-temp-name (expand-file-name
                                 "mail" temporary-file-directory))))
 
@@ -579,33 +579,6 @@ If called with an active region only export that region, otherwise entire body."
     (when secure-tags
       (insert (mapconcat #'identity secure-tags "\n"))
       (insert "\n"))
-
-    (setq html (org-mime-export-string reply-main opts))
-
-    (when (and reply-quoted-title reply-quoted-main)
-      (setq html (concat html
-                         ;; class name is magic in google mail?
-                         "<div class=\"im\">\n"
-                         "  <div class=\"gmail_quote\">\n"
-                         "    <div class=\"gmail_attr\">\n"
-                         reply-quoted-title
-                         "\n"
-                         "      <br>\n"
-                         "    </div>\n"
-                         "    <blockquote class=\"gmail_quote\">\n"
-                         (org-mime-export-string reply-quoted-main opts)
-                         "\n"
-                         "    </blockquote>\n"
-                         "  </div>\n"
-                         "</div>\n")))
-
-    (when reply-signature
-      (setq html (concat html
-                         "<br clear=\"all\">\n"
-                         "<div class=\"gmail_signature\">\n"
-                         "  <br>--<br>\n"
-                         (replace-regexp-in-string "^--\s*\\|[\r\n]+" "<br>\n" reply-signature)
-                         "</div>\n")))
 
     ;; insert converted html
     (org-mime-insert-html-content plain file html)
@@ -637,7 +610,7 @@ If called with an active region only export that region, otherwise entire body."
                          (run-hooks 'org-mime-pre-html-hook)
                          (buffer-string)))
     ;; insert text
-    (org-mime-insert-html-content plain file patched-html))) ; export-opts
+    (org-mime-insert-html-content plain file patched-html)))
 
 (defun org-mime-buffer-properties ()
   "Extract buffer properties."
@@ -680,7 +653,6 @@ The cursor ends in the TO field."
   (interactive)
   (run-hooks 'org-mime-send-buffer-hook)
   (let* ((org-html-klipsify-src nil)
-         ;; (region-p (org-region-active-p))
          (file (buffer-file-name (current-buffer)))
          (props (org-mime-buffer-properties))
          (subject (or (plist-get props :MAIL_SUBJECT)
@@ -696,7 +668,7 @@ The cursor ends in the TO field."
          (other-headers (org-mime-build-mail-other-headers cc
                                                            bcc
                                                            from)))
-    (org-mime-compose exported file to subject other-headers) ; nil
+    (org-mime-compose exported file to subject other-headers)
     (message-goto-to)))
 
 (defun org-mime-org-major-version ()
@@ -732,7 +704,6 @@ Following headline properties can determine the mail headers.
       (org-back-to-heading))
 
     (when (outline-on-heading-p nil)
-      (defvar org-major-version)
       (let* ((file (buffer-file-name (current-buffer)))
              (props (org-mime-buffer-properties))
              (subject (or (org-mime-attr "MAIL_SUBJECT")
@@ -749,7 +720,7 @@ Following headline properties can determine the mail headers.
              ;; Thanks to Matt Price improving handling of cc & bcc headers
              (other-headers (org-mime-build-mail-other-headers cc bcc from))
              (org-export-show-temporary-export-buffer nil)
-             (org-major-version (org-mime-org-major-version))
+             (org-export-show-temporary-export-buffer nil)
              ;; I wrap these bodies in export blocks because in org-mime-compose
              ;; they get exported again. This makes each block conditionally
              ;; exposed depending on the backend.
@@ -757,7 +728,7 @@ Following headline properties can determine the mail headers.
                                          (org-mime-export-buffer-or-subtree t))))
         (save-restriction
           (org-narrow-to-subtree)
-          (org-mime-compose exported file to subject other-headers)) ; t
+          (org-mime-compose exported file to subject other-headers))
         (message-goto-to)))))
 
 (defun org-mime-src--remove-overlay ()
