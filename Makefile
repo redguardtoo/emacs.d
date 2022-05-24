@@ -9,6 +9,7 @@ clean:
 	@rm -f *~
 	@rm -f \#*\#
 	@rm -f *.elc
+	@rm -f lisp/*.elc
 
 githooks:
 	cd `git rev-parse --show-toplevel`/.git/hooks && ln -s ../../githooks/pre-commit pre-commit && cd -
