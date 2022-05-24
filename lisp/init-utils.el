@@ -286,12 +286,28 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
           (setq program "/cygdrive/c/mplayer/mplayer.exe")
         (setq program "/cygdrive/d/mplayer/mplayer.exe")))
 
-     ;; windows
-     (t
-      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-          (setq program "c:\\\\mplayer\\\\mplayer.exe")
-        (setq program "d:\\\\mplayer\\\\mplayer.exe"))))
+     (*win64*
+      (cond
+       ((file-executable-p "c:/mplayer/mplayer.exe")
+        (setq program "c:/mplayer/mplayer.exe"))
+       ((file-executable-p "d:/mplayer/mplayer.exe")
+        (setq program "d:/mplayer/mplayer.exe"))
+       ((file-executable-p "c:/mpv/mpv.exe")
+        (setq program "c:/mpv/mpv.exe"))
+       ((file-executable-p "d:/mpv/mpv.exe")
+        (setq program "d:/mpv/mpv.exe"))
+       (t
+        (error "Can't find media player.")))
 
+      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
+
+        (setq program "d:\\\\mplayer\\\\mplayer.exe")))
+
+     (t
+      (error "Platform is not supported. Can't find any media player.")))
+
+    (unless (string-match "mplayer" program)
+      (setq common-opts ""))
     (format "%s %s %s" program common-opts my-mplayer-extra-opts)))
 
 (defun my-guess-image-viewer-path (image &optional stream-p)
