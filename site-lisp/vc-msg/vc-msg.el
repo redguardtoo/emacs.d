@@ -1,8 +1,8 @@
 ;;; vc-msg.el --- Show commit information of current line
 
-;; Copyright (C) 2017-2020 Chen Bin
+;; Copyright (C) 2017-2022 Chen Bin
 ;;
-;; Version: 1.1.0
+;; Version: 1.1.1
 ;; Keywords: git vc svn hg messenger
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/vc-msg
@@ -85,11 +85,13 @@
 ;;                                   (concat git-dir (plist-get info :filename))))))
 ;;            vc-msg-git-extra)))
 ;;
+;; If git-link is installed, a new menu item to copy the git link is displayed.
+;;
 
 ;;; Code:
 
 (require 'cl-lib)
-(require 'popup nil t)
+(require 'popup)
 (require 'vc-msg-sdk)
 
 (defgroup vc-msg nil

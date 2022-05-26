@@ -45,10 +45,11 @@
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-hg-execute (file line-num version)
+(defun vc-msg-hg-execute (file line-num &optional version)
   "Use FILE, LINE-NUM and VERSION to produce hg command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
+  (ignore version)
   ;; there is no one command to get the commit information for current line
   (setq file (file-name-nondirectory file))
   (let* ((cmd (vc-msg-hg-generate-cmd (format "blame -wc %s" file)))
