@@ -4,9 +4,9 @@
 
 ;; Author: Chen Bin <chenbin dot sh AT gmail dot com>
 ;; URL: http://github.com/redguardtoo/counsel-etags
-;; Package-Requires: ((emacs "25.1") (counsel "0.13.4"))
+;; Package-Requires: ((emacs "26.1") (counsel "0.13.4"))
 ;; Keywords: tools, convenience
-;; Version: 1.10.0
+;; Version: 1.10.1
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -200,7 +200,7 @@ A CLI to create tags file:
 
 (defcustom counsel-etags-use-ripgrep-force nil
   "Force use ripgrep as grep program.
-If rg is not in $PATH, then it should be defined in `counsel-etags-grep-program'."
+If rg is not in $PATH, then it need be defined in `counsel-etags-grep-program'."
   :group 'counsel-etags
   :type 'boolean)
 
@@ -261,7 +261,7 @@ The definition of word is customized by the user."
 
 (defcustom counsel-etags-maximum-candidates-to-clean 1024
   "Maximum candidates to clean up before displaying to users.
-If candidates number is bigger than this value, show raw candidates without cleanup."
+If candidates number is greater than this value, show all raw candidates."
   :group 'counsel-etags
   :type 'integer)
 
@@ -397,16 +397,16 @@ You can set up it in \".dir-locals.el\"."
 Universal Ctags won't read options from \"~/.ctags\" by default.
 So we force Universal Ctags to load \"~/.ctags\".
 
-Exuberant Ctags actually can NOT open option file \".ctags\" through cli option.
+Exuberant Ctags can NOT read option file \".ctags\" through cli option.
 
-But path \"~/.ctags\" is OK because we use Emacs Lisp to load \"~.ctags\".
+So we use Emacs Lisp to load \"~.ctags\".
 
-Please use file name like \"ctags.cnf\" instead \".ctags\" when customize this variable.
+Use file name \"ctags.cnf\" instead \".ctags\" if it needs change.
 
 Universal Ctags does NOT have this bug.
 
-Please do NOT exclude system temporary folder in ctags configuration because imenu
-related functions need create and scan files in this folder."
+Please do NOT exclude system temporary folder in ctags configuration
+because imenu functions need create and scan files in this folder."
   :group 'counsel-etags
   :type 'string)
 
@@ -447,7 +447,7 @@ Run 'ctags -x some-file' to see the type in second column of output."
   "Sort candidates if its size is less than this variable's value.
 Candidates whose file path has Levenshtein distance to current file/directory.
 You may set it to nil to disable re-ordering for performance reason.
-If `string-distance' exists, sorting always happens and this variable is ignored."
+If `string-distance' exists, sorting happens and this variable is ignored."
   :group 'counsel-etags
   :type 'integer)
 
@@ -542,6 +542,9 @@ The file is also used by tags file auto-update process.")
 (defvar counsel-etags-last-tagname-at-point nil
   "Last tagname queried at point.")
 
+(declare-function outline-up-heading "outline")
+(declare-function org-entry-get "outline")
+
 (defun counsel-etags-org-entry-get-project-root ()
   "Get org property from current node or parent node recursively."
   (when (and (derived-mode-p 'org-mode)
@@ -596,7 +599,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.10.0"))
+  (message "1.10.1"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1685,7 +1688,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
                            (format "--exclude=\"%s\"" (counsel-etags-shell-quote e)))
                          ignore-file-names " "))))))
 
-(defun counsel-etags-grep-cli (keyword use-cache)
+(defun counsel-etags-grep-cli (keyword &optional use-cache)
   "Use KEYWORD and USE-CACHE to build CLI.
 Extended regex is used, like (pattern1|pattern2)."
   (cond
@@ -1738,10 +1741,13 @@ matching \"define.*key\", then removes everything matching \"ivy\",
 and finally removes everything matching \"quit\". What remains is the
 final result set of the negation regexp."
   (interactive)
-  (let* ((hint (if (eq counsel-etags-convert-grep-keyword 'identity)
+
+  (unless hint
+    (setq hint (if (eq counsel-etags-convert-grep-keyword 'identity)
                    "Regular expression for grep: "
-                 "Keyword for searching: ") )
-         (text (if default-keyword default-keyword
+                 "Keyword for searching: ")))
+
+  (let* ((text (if default-keyword default-keyword
                   (counsel-etags-read-keyword hint)))
          (keyword (funcall counsel-etags-convert-grep-keyword text))
          (default-directory (expand-file-name (or root
