@@ -1,8 +1,8 @@
 ;;; shenshou.el --- Download subtitles from opensubtitles.org -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021 Chen Bin
+;; Copyright (C) 2021-2022 Chen Bin
 ;;
-;; Version: 0.0.2
+;; Version: 0.0.3
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -44,8 +44,6 @@
 ;;  Tips,
 ;;   - See `shenshou-curl-extra-options' on how to set SOCKS5 or HTTP proxy
 ;;   - This program gives you the freedom to select the right subtitle.
-;;     For example, a DVD ripped video might match the DVD ripped subtitle.
-;;
 
 ;;; Code:
 ;;
@@ -228,6 +226,13 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                                   node-list)))
     (nth 2 (car (shenshou-xml-node-children member-node '(value string))))))
 
+(defun shenshou-extract-xml-tree (cmd-output)
+  "Extract xml tree from CMD-OUTPUT."
+  (let* ((xml-tree (car (with-temp-buffer
+                          (insert cmd-output)
+                          (xml-parse-region)))))
+    xml-tree))
+
 (defun shenshou-xml-rpc-call (post-data &optional raw-response-p)
   "Call remote api with POST-DATA.  If RAW-RESPONSE-P is t, return raw response."
   (let* ((cmd (concat shenshou-curl-program
@@ -259,9 +264,7 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                  id)))
 
      (t
-      (setq xml-tree (car (with-temp-buffer
-                            (insert cmd-output)
-                            (xml-parse-region))))))
+      (setq xml-tree (shenshou-extract-xml-tree cmd-output))))
 
     (if raw-response-p cmd-output xml-tree)))
 
@@ -321,27 +324,32 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
   (interactive)
   (setq shenshou-token nil))
 
+(defun shenshou-process-query (name)
+  "Get query from video file NAME."
+  (let ((query (match-string 1 name)))
+    (replace-regexp-in-string " *([^)]*$" "" query)))
+
 (defun shenshou-guess-video-info (name)
   "Guess information from NAME of video."
   (let* (video-info)
     (cond
      ((string-match shenshou-tvshow-regex-1 name)
       (setq video-info (plist-put video-info :moviekind "tv"))
-      (setq video-info (plist-put video-info :query (match-string 1 name)))
+      (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :season (match-string 2 name)))
       (setq video-info (plist-put video-info :episode (match-string 3 name)))
       (setq video-info (plist-put video-info :team (match-string 4 name))))
 
      ((string-match shenshou-tvshow-regex-2 name)
       (setq video-info (plist-put video-info :moviekind "tv"))
-      (setq video-info (plist-put video-info :query (match-string 1 name)))
+      (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :season (match-string 2 name)))
       (setq video-info (plist-put video-info :episode (match-string 3 name)))
       (setq video-info (plist-put video-info :team (match-string 4 name))))
 
      ((string-match shenshou-movie-regex-1 name)
       (setq video-info (plist-put video-info :moviekind "movie"))
-      (setq video-info (plist-put video-info :query (match-string 1 name)))
+      (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :movieyear (match-string 2 name)))
       (setq video-info (plist-put video-info :team (match-string 3 name))))
 
@@ -408,7 +416,68 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
                    (< (string-distance (plist-get (cdr a) :moviereleasename) ,video-name)
                       (string-distance (plist-get (cdr b) :moviereleasename) ,video-name)))))
     (when shenshou-debug
-      (message "shenshou-sort-subtitles called. subtitles=" subtitles))
+      (message "shenshou-sort-subtitles called. subtitles=%s" subtitles))
+    subtitles))
+
+(defun shenshou-filter-subtitles (candidates video-file filter-level)
+  "Filter subtitle CANDIDATES with VIDEO-FILE and FILTER-LEVEL.
+If FILTER-LEVEL is 0, all candidates are accepted.
+If FILTER-LEVEL is 1, movie name should exist.
+If FILTER-LEVEL is 2, do more checking on movie name."
+
+  (let (subtitles
+        ok-p
+        movie-release-name
+        movie-year
+        all-props
+        sub
+        movie-fuzzy-name
+        lang
+        subfilename
+        video-info
+        movie-year-match-p)
+    (dolist (item candidates)
+      (setq all-props (shenshou-xml-node-children item '(member)))
+      ;; OpenSubtitles hash function is not robust.
+      ;; Use the MovieReleaseName to select the best candidate
+      (setq movie-release-name
+            (shenshou-xml-get-value-by-name all-props "MovieReleaseName"))
+      (setq movie-year
+            (shenshou-xml-get-value-by-name all-props "MovieYear"))
+      (setq video-info
+            (shenshou-guess-video-info (downcase (file-name-base video-file))))
+      (setq movie-fuzzy-name
+            (replace-regexp-in-string "[.\[\] ()]+" ".*" (plist-get video-info :query)))
+      (setq movie-year-match-p
+            (or (not (plist-get video-info :movieyear))
+                (string= movie-year (plist-get video-info :movieyear))))
+      (cond
+       ((eq filter-level 0)
+        (setq ok-p t))
+       ((eq filter-level 1)
+        (setq ok-p (and movie-release-name movie-year-match-p)))
+       ((eq filter-level 2)
+        (setq ok-p (and movie-release-name
+                        (string-match (concat "^" movie-fuzzy-name)
+                                      (downcase movie-release-name))
+                        movie-year-match-p))))
+
+      (when ok-p
+        (setq sub nil)
+        (setq sub (plist-put sub :moviereleasename movie-release-name))
+        (setq sub (plist-put sub :subfilename (setq subfilename (shenshou-xml-get-value-by-name all-props "SubFileName"))))
+        (setq sub (plist-put sub :sublanguageid (setq lang (shenshou-xml-get-value-by-name all-props "SubLanguageID"))))
+        (setq sub (plist-put sub :subdownloadlink (shenshou-xml-get-value-by-name all-props "SubDownloadLink")))
+        (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
+        (push (cons (format "%s(%s)" subfilename lang) sub) subtitles)))
+
+  (when shenshou-debug
+    (message "shenshou-filter-subtitles: candidates=%s video-file=%s filter-level=%s subtitles=%s"
+             (length candidates)
+             video-file
+             filter-level
+             (length subtitles)))
+
     subtitles))
 
 (defun shenshou-search-subtitles (video-file)
@@ -417,43 +486,35 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
   (let* ((post-data (shenshou-xml-rpc-post-data "SearchSubtitles"
                                                 (concat (shenshou-format-param (format "<string>%s</string>" (car shenshou-token)))
                                                         (shenshou-params-from-videos video-file))))
-         xml-tree
-         all-items
-         movie-release-name
-         movie-year
-         all-props
-         sub
-         video-info
-         movie-fuzzy-name
-         lang
-         subfilename
+         (xml-tree (shenshou-xml-rpc-call post-data))
+         candidates
          subtitles)
 
     (when shenshou-debug
       (message "shenshou-search-subtitles to be called => video-file=%s post-data=%s" video-file post-data))
 
-    (when (setq xml-tree (shenshou-xml-rpc-call post-data))
-      (setq all-items
+    (when xml-tree
+      (setq candidates
             (shenshou-xml-node-children xml-tree
                                         '(params param value struct member value array data value struct)))
-      (dolist (item all-items)
-        (setq all-props (shenshou-xml-node-children item '(member)))
-        ;; OpenSubtitles hash function is not robust ... We'll use the MovieReleaseName to help us select the best candidate
-        (setq movie-release-name (shenshou-xml-get-value-by-name all-props "MovieReleaseName"))
-        (setq movie-year (shenshou-xml-get-value-by-name all-props "MovieYear"))
-        (setq video-info (shenshou-guess-video-info (downcase (file-name-base video-file))))
-        (setq movie-fuzzy-name (replace-regexp-in-string "[.\[\] ()]+" ".*" (plist-get video-info :query)))
-        (when (and movie-release-name
-                   (string-match (concat "^" movie-fuzzy-name) (downcase movie-release-name))
-                   (or (not (plist-get video-info :movieyear))
-                       (string= movie-year (plist-get video-info :movieyear))))
-          (setq sub nil)
-          (setq sub (plist-put sub :moviereleasename movie-release-name))
-          (setq sub (plist-put sub :subfilename (setq subfilename (shenshou-xml-get-value-by-name all-props "SubFileName"))))
-          (setq sub (plist-put sub :sublanguageid (setq lang (shenshou-xml-get-value-by-name all-props "SubLanguageID"))))
-          (setq sub (plist-put sub :subdownloadlink (shenshou-xml-get-value-by-name all-props "SubDownloadLink")))
-          (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
-          (push (cons (format "%s => %s(%s)" movie-release-name subfilename lang) sub) subtitles))))
+      (cond
+       ;; nothing can be done if there is no candidate
+       ((eq (length candidates) 0))
+
+       ;; donot filter candidates
+       ((eq (length candidates) 1)
+        (setq subtitles (shenshou-filter-subtitles candidates video-file 0)))
+
+       ;; try most strict algorithm
+       ((> (length (setq subtitles (shenshou-filter-subtitles candidates video-file 2)))
+           0))
+
+       ;; then go easy
+       ((> (length (setq subtitles (shenshou-filter-subtitles candidates video-file 1)))
+           0))
+
+       (t
+        (setq subtitles (shenshou-filter-subtitles candidates video-file 0)))))
 
     (shenshou-sort-subtitles subtitles (file-name-base video-file))))
 
