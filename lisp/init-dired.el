@@ -245,9 +245,9 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     (let* ((file (dired-get-file-for-visit)))
       (cond
        ((my-binary-file-p file)
-        ;; confirm before opening big file
-        (when (yes-or-no-p "Edit binary file?")
-          (apply orig-func args)))
+        ;; play media file instead of editing it
+        (call-interactively 'dired-do-async-shell-command))
+
        (t
         (when (and (file-directory-p file)
                    ;; don't add directory when user pressing "^" in `dired-mode'
