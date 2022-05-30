@@ -130,7 +130,7 @@
 ;; }}
 
 (defun w3mext-open-link-or-image-or-url ()
-  "Opens the current link or image or current page's uri or any url-like text under cursor in firefox."
+  "Opens current link or image or current page's uri in other browser."
   (interactive)
   (let* (url)
     (when (or (string= major-mode "w3m-mode") (string= major-mode "gnus-article-mode"))

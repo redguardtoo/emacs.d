@@ -66,11 +66,6 @@ EVENT is ignored."
 
 ;; always use bash
 (defvar my-term-program "/bin/bash")
-
-;; utf8
-(defun my-term-use-utf8 ()
-  (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))
-(add-hook 'term-exec-hook 'my-term-use-utf8)
 ;; }}
 
 ;; {{ hack counsel-browser-history
@@ -93,7 +88,6 @@ EVENT is ignored."
                           (let* ((cli (if (stringp item) item (car item))))
                             (and (string-match (regexp-quote ,input) cli) item)))
                        rlt))))
-    (when (and rlt (> (length rlt) 0)))
     rlt))
 (advice-add 'ivy-history-contents :around #'my-ivy-history-contents-hack)
 ;; }}

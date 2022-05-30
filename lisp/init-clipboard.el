@@ -37,7 +37,7 @@ If N is not nil, copy file name and line number."
                                      (hint " => clipboard" )
                                      (msg (if (string-match-p "\.\.\.$" summary)
                                               (substring summary 0 (- (length summary) (length hint)))
-                                            msg)))
+                                            s)))
                                 ;; cc actual string
                                 (my-pclip (cdr s))
                                 ;; echo
@@ -87,7 +87,7 @@ If N is 4, rectangle paste."
 
     (when (> (length str) (* 256 1024))
       ;; use light weight `major-mode' like `js-mode'
-      (when (derived-mode-p 'js2-mode) (js-mode 1))
+      (when (derived-mode-p 'js2-mode) (js-mode))
       ;; turn off syntax highlight
       (font-lock-mode -1))
 

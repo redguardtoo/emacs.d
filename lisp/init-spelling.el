@@ -24,7 +24,8 @@
 ;; @see http://lists.gnu.org/archive/html/aspell-announce/2011-09/msg00000.html
 (defun my-detect-ispell-args (&optional run-together)
   "If RUN-TOGETHER is true, spell check the CamelCase words.
-Please note RUN-TOGETHER makes aspell less capable.  So it should be used in `prog-mode-hook' only."
+RUN-TOGETHER makes aspell less capable to find plain English typo.
+So it should be used in `prog-mode-hook' only."
   (let* (args)
     (when ispell-program-name
       (cond

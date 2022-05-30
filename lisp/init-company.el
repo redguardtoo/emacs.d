@@ -101,20 +101,19 @@ In that case, insert the number."
           rcirc-mode
           minibuffer-inactive-mode)))
 
-(with-eval-after-load 'company-ispell
-  (defun my-company-ispell-available-hack (orig-func &rest args)
+(defun my-company-ispell-available-hack (orig-func &rest args)
     ;; in case evil is disabled
     (my-ensure 'evil-nerd-commenter)
     (cond
      ((and (derived-mode-p 'prog-mode)
            (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
                ;; I renamed the api in new version of evil-nerd-commenter
-               (not (if (fboundp 'evilnc-pure-comment-p) (evilnc-pure-comment-p (point))
-                      (evilnc-is-pure-comment (point)))))) ; auto-complete in comment only
+               (not  (evilnc-pure-comment-p (point))))) ; auto-complete in comment only
       ;; only use company-ispell in comment when coding
       nil)
      (t
       (apply orig-func args))))
+(with-eval-after-load 'company-ispell
   (advice-add 'company-ispell-available :around #'my-company-ispell-available-hack))
 
 (with-eval-after-load 'ispell
@@ -128,7 +127,7 @@ In that case, insert the number."
 
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
-  "Toggle company-ispell."
+  "Toggle company ispell backend."
   (interactive)
   (cond
    ((memq 'company-ispell company-backends)

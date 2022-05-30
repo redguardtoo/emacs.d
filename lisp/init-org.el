@@ -100,6 +100,7 @@
   (defvar my-org-src--saved-temp-window-config nil
     "Window layout before edit special element.")
   (defun my-org-edit-special (&optional arg)
+    (ignore arg)
     "Save current window layout before `org-edit' buffer is open.
 ARG is ignored."
     (setq my-org-src--saved-temp-window-config (current-window-configuration)))
@@ -128,14 +129,10 @@ ARG is ignored."
   (my-ensure 'ox-md)
   (add-to-list 'org-export-backends 'md)
 
-  (defun org-agenda-show-agenda-and-todo (&optional arg)
-    "Better org-mode agenda view."
-    (interactive "P")
-    (org-agenda arg "n"))
-
   ;; {{ org pdf link
   (defun my-org-docview-open-hack (orig-func &rest args)
-    (let* ((link (car args)) path page)
+    (ignore orig-func)
+    (let ((link (car args)) path page pdf-from-page)
       (string-match "\\(.*?\\)\\(?:::\\([0-9]+\\)\\)?$" link)
       (setq path (match-string 1 link))
       (setq page (and (match-beginning 2)

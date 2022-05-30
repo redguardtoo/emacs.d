@@ -132,9 +132,9 @@
 [_g_] Focus link/button      [_b_] Switch Gnus buffer
 "
     ("F" gnus-summary-mail-forward)
-    ("r" gnus-article-reply)
+    ("r" gnus-summary-reply)
     ("R" gnus-article-reply-with-original)
-    ("w" gnus-article-wide-reply)
+    ("w" gnus-summary-wide-reply)
     ("W" gnus-article-wide-reply-with-original)
     ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
     ("v" w3mext-open-with-mplayer)
@@ -213,14 +213,13 @@
     (let* ((file (file-name-nondirectory (dired-file-name-at-point)))
            (ext (file-name-extension file))
            (default-directory (file-name-directory (dired-file-name-at-point)))
-           lines
            trunks
            track-number)
       (cond
        ((not (string= "mkv" ext))
         (message "Only mkv files can be processed."))
        ((not (executable-find "mkvextract"))
-        ("Please install mkvtoolnix."))
+        (message "Please install mkvtoolnix."))
        (t
         ;; split output into trunks
         (setq trunks (split-string (shell-command-to-string (format "mkvinfo \"%s\"" file))
@@ -281,11 +280,10 @@
 [_vv_] video2mp3           [_R_] Move           [_pp_] Path
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
 [_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
-[_cc_] Last command        [_ff_] Find          [_dd_] directory
-[_sa_] Fetch subtitle(s)   [_C_]  Copy
+[_sa_] Fetch subtitle(s)   [_C_]  Copy          [_dd_] directory
 [_vv_] Video => Mp3        [_rb_] Change base
 [_aa_] Recording Wav       [_df_] Diff 2 files
-[_ee_] Mkv => Srt
+[_ee_] Mkv => Srt          [_ff_] Find
 [_+_] Create directory
 "
     ("sa" shenshou-download-subtitle)
@@ -297,7 +295,6 @@
     ("vv" my-extract-mp3-from-video)
     ("ee" my-extract-mkv-subtitle)
     ("aa" my-record-wav-by-mp3)
-    ("cc" my-dired-redo-last-command)
     ("zz" my-play-both-mp3-and-wav)
     ("C" dired-do-copy)
     ("R" dired-do-rename)
@@ -468,7 +465,7 @@ Git:
   ("rh" my-git-gutter-reset-to-head-parent)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
-  ("b" magit-show-refs-popup)
+  ("b" magit-show-refs)
   ("k" git-link)
   ("g" magit-status)
   ("ta" magit-stash-apply)
@@ -513,16 +510,13 @@ _m_ Man
 Describe Something: (q to quit)
 _a_ all help for everything screen
 _b_ bindings
-_B_ personal bindings
 _c_ char
 _C_ coding system
 _f_ function
-_F_ flycheck checker
 _i_ input method
 _k_ key briefly
 _K_ key
 _l_ language environment
-_L_ mode lineage
 _m_ major mode
 _M_ minor mode
 _n_ current coding system briefly
@@ -537,17 +531,14 @@ _v_ variable
 _w_ where is something defined
 "
   ("b" describe-bindings)
-  ("B" describe-personal-keybindings)
   ("C" describe-categories)
   ("c" describe-char)
   ("C" describe-coding-system)
   ("f" describe-function)
-  ("F" flycheck-describe-checker)
   ("i" describe-input-method)
   ("K" describe-key)
   ("k" describe-key-briefly)
   ("l" describe-language-environment)
-  ("L" help/parent-mode-display)
   ("M" describe-minor-mode)
   ("m" describe-mode)
   ("N" describe-current-coding-system)

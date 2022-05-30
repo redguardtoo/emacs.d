@@ -44,13 +44,14 @@ It could be converted to buffer local variable."
                 (flymake-proc-init-create-temp-buffer-copy
                  'flymake-proc-create-temp-inplace)))))
 
-    ;; clean up a function need delete the temporary file
-    (unless local-file-p
-      (setq lazyflymake-temp-source-file-name (file-truename rlt)))
+    (when rlt
+      ;; clean up a function need delete the temporary file
+      (unless local-file-p
+        (setq lazyflymake-temp-source-file-name (file-truename rlt)))
 
-    ;; use relative path in case running in Windows
-    (setq rlt (file-relative-name rlt))
-    (if lazyflymake-debug (message "lazyflymake-sdk-code-file => %s" rlt))
+      ;; use relative path in case running in Windows
+      (setq rlt (file-relative-name rlt))
+      (if lazyflymake-debug (message "lazyflymake-sdk-code-file => %s" rlt)))
     rlt))
 
 (defun lazyflymake-sdk-hint ()

@@ -67,7 +67,7 @@
 (defun narrow-or-widen-dwim (&optional use-indirect-buffer)
   "If the buffer is narrowed, it widens.
  Otherwise, it narrows to region, or Org subtree.
-If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen content."
+If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
   (interactive "P")
   (cond
    ((and (not use-indirect-buffer) (buffer-narrowed-p))
@@ -128,7 +128,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (swiper keyword)))
 
 (defun my-swiper-hack (&optional arg)
-  "Undo region selection before swiper.  ARG is ingored."
+  "Undo region selection before swiper.  ARG is ignored."
   (ignore arg)
   (if (region-active-p) (deactivate-mark)))
 (advice-add 'swiper :before #'my-swiper-hack)

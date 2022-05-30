@@ -58,7 +58,7 @@
 (with-eval-after-load 'find-file-in-project
   (defun my-search-git-reflog-code ()
     (let* ((default-directory (my-git-root-dir)))
-      (ffip-shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
+      (shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
                                             (read-string "Regex: ")))))
   (push 'my-search-git-reflog-code ffip-diff-backends)
   (setq ffip-match-path-instead-of-filename t))
@@ -88,8 +88,9 @@
 ;; {{ bookmark
 ;; use my own bookmark if it exists
 (with-eval-after-load 'bookmark
-  (when (file-exists-p "~/.emacs.bmk")
-    (setq bookmark-file "~/.emacs.bmk")))
+  (let ((file "~/.emacs.bmk"))
+    (when (file-exists-p file)
+      (setq bookmark-default-file file))))
 ;; }}
 
 (defun my-lookup-doc-in-man ()
@@ -172,9 +173,6 @@ FN checks these characters belong to normal word characters."
 (with-eval-after-load 'elec-pair
   (setq electric-pair-inhibit-predicate 'my-electric-pair-inhibit))
 ;; }}
-
-(with-eval-after-load 'flymake
-  (setq flymake-gui-warnings-enabled nil))
 
 (defvar my-disable-lazyflymake nil
   "Disable lazyflymake.")
@@ -368,16 +366,6 @@ FN checks these characters belong to normal word characters."
   (message (car (my-nonempty-lines (shell-command-to-string
                                  (concat "mpc "
                                          (if previous "prev" "next")))))))
-
-(defun lyrics()
-  "Prints the lyrics for the current song."
-  (interactive)
-  (let* ((song (shell-command-to-string "lyrics")))
-    (if (equal song "")
-        (message "No lyrics - Opening browser.")
-      (switch-to-buffer (create-file-buffer "Lyrics"))
-      (insert song)
-      (goto-line 0))))
 ;; }}
 
 ;; {{ avy, jump between texts, like easymotion in vim
@@ -431,7 +419,7 @@ FN checks these characters belong to normal word characters."
 (defun my-select-cliphist-item (num item)
   "NUM is ignored.  Paste selected clipboard ITEM into clipboard.
 So it's at the top of clipboard manager."
-  (ignore num.)
+  (ignore num)
   (my-pclip item))
 (setq cliphist-select-item-callback 'my-select-cliphist-item)
 ;; }}
@@ -499,7 +487,7 @@ So it's at the top of clipboard manager."
   (when (and kill-ring (> (length kill-ring) 0))
     (if (> n (length kill-ring))
         (setq n (length kill-ring)))
-    (let* ((rlt (mapconcat 'identity (subseq kill-ring 0 n) "|")))
+    (let* ((rlt (mapconcat 'identity (cl-subseq kill-ring 0 n) "|")))
       (setq rlt (replace-regexp-in-string "(" "\\\\(" rlt))
       (copy-yank-str rlt)
       (message (format "%s => kill-ring&clipboard" rlt)))))
@@ -533,10 +521,6 @@ So it's at the top of clipboard manager."
     (xterm-mouse-mode 1)))
 (add-hook 'after-make-frame-functions 'my-run-after-make-frame-hook)
 ;; }}
-
-;; flymake
-(with-eval-after-load 'flymake
-  (setq flymake-gui-warnings-enabled nil))
 
 ;; {{ check attachments
 (defun my-message-current-line-cited-p ()
@@ -594,6 +578,7 @@ So it's at the top of clipboard manager."
 (defun vc-msg-hook-setup (vcs-type commit-info)
   "Set up vc with VCS-TYPE and COMMIT-INFO."
   ;; copy commit id to clipboard
+  (ignore vcs-type)
   (my-pclip (plist-get commit-info :id)))
 (add-hook 'vc-msg-hook 'vc-msg-hook-setup)
 
@@ -794,7 +779,7 @@ If the shell is already opened in some buffer, switch to that buffer."
     (while (< i 254)
       (setq i (+ i 1))
       (insert (format "%4d %c\n" i i))))
-  (beginning-of-buffer))
+  (goto-char (point-min)))
 
 ;; {{ unique lines
 ;; https://gist.github.com/ramn/796527
@@ -817,7 +802,8 @@ Then insert it as a local file link in `org-mode'."
 If ARG is not nil, copy full path.
 Press \"w\" to copy file name.
 Press \"C-u 0 w\" to copy full path."
-  (let* ((str (current-kill 0)))
+  (ignore arg)
+  (let ((str (current-kill 0)))
     (my-pclip str)
     (message "%s => clipboard" str)))
 (advice-add 'dired-copy-filename-as-kill :after #'my-dired-copy-filename-as-kill-hack)
@@ -968,7 +954,7 @@ might be bad."
     (let* ((file (make-temp-file "my-browse-file-" nil ".html")))
       (my-write-to-file (format "<html><body>%s</body></html>" (buffer-string)) file)
       (my-browse-file file)
-      (my-run-with-idle-timer 4 (lambda (delete-file file)))))
+      (my-run-with-idle-timer 4 (lambda () (delete-file file)))))
    (t
     (my-browse-file buffer-file-name))))
 
@@ -1089,7 +1075,6 @@ might be bad."
   (let* ((link (completing-read "Open pdf:::page: " my-pdf-view-from-history)))
     (when link
       (let* ((items (split-string link ":::"))
-             (pdf-file (nth 0 items))
              (pdf-page (string-to-number (nth 1 items))))
         (my-ensure 'org)
         (my-focus-on-pdf-window-then-back
@@ -1102,6 +1087,7 @@ might be bad."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
+     (ignore pdf-file)
      (pdf-view-scroll-up-or-next-page n))))
 
 (defun my-open-pdf-scroll-or-previous-page (&optional n)
@@ -1109,6 +1095,7 @@ might be bad."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
+     (ignore pdf-file)
      (pdf-view-scroll-down-or-previous-page n))))
 
 (defun my-open-pdf-next-page (&optional n)
@@ -1116,6 +1103,7 @@ might be bad."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
+     (ignore pdf-file)
      (pdf-view-next-page n))))
 
 (defun my-open-pdf-previous-page (&optional n)
@@ -1123,6 +1111,7 @@ might be bad."
   (interactive "p")
   (my-focus-on-pdf-window-then-back
    (lambda (pdf-file)
+     (ignore pdf-file)
      (pdf-view-previous-page n))))
 
 (defun my-open-pdf-goto-page (&optional n)
@@ -1135,6 +1124,7 @@ Org node property PDF_PAGE_OFFSET is used to calculate physical page number."
     (setq n (+ n page-offset))
     (my-focus-on-pdf-window-then-back
      (lambda (pdf-file)
+       (ignore pdf-file)
        (pdf-view-goto-page n)))))
 
 (defun my-navigate-in-pdf ()

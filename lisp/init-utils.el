@@ -48,7 +48,8 @@
     (delq nil (delete-dups cands))))
 
 (defun run-cmd-and-replace-region (cmd)
-  "Run CMD in shell on selected region or whole buffer and replace it with cli output."
+  "Run CMD in shell on selected region or current buffer.
+Then replace the region or buffer with cli output."
   (let* ((orig-point (point))
          (b (if (region-active-p) (region-beginning) (point-min)))
          (e (if (region-active-p) (region-end) (point-max))))
@@ -88,12 +89,12 @@
 
 ;; Handier way to add modes to auto-mode-alist
 (defun my-add-auto-mode (mode &rest patterns)
-  "Add entries to `auto-mode-alist' to use `MODE' for all given file `PATTERNS'."
+  "Add entries to `auto-mode-alist' to use MODE for given file PATTERNS."
   (dolist (pattern patterns)
     (push (cons pattern mode) auto-mode-alist)))
 
 (defun my-add-interpreter-mode (mode &rest patterns)
-  "Add entries to `interpreter-mode-alist' to use `MODE' for all given file `PATTERNS'."
+  "Add entries to `interpreter-mode-alist' to use MODE for given file PATTERNS."
   (dolist (pattern patterns)
     (push (cons pattern mode) interpreter-mode-alist )))
 
@@ -108,7 +109,7 @@
 
 ;; String utilities missing from core emacs
 (defun string-all-matches (regex str &optional group)
-  "Find all matches for `REGEX' within `STR', returning the full match string or group `GROUP'."
+  "Find matches for REGEX in STR, returning the full match or GROUP."
   (let ((result nil)
         (pos 0)
         (group (or group 0)))
@@ -236,7 +237,7 @@ If HINT is empty, use symbol at point."
 
 (defvar my-force-buffer-file-temp-p nil)
 (defun my-buffer-file-temp-p ()
-  "If (buffer-file-name) is nil or a temp file or HTML file converted from org file."
+  "If no file or a temp file or HTML file converted from org file."
   (interactive)
   (let* ((f (buffer-file-name)) (rlt t))
     (cond
@@ -406,7 +407,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 ;; }}
 
 (defun my-should-use-minimum-resource ()
-  "Some files should use minimum resource (no syntax highlight, no line number display)."
+  "Use minimum resource (no highlight or line number)."
   (and buffer-file-name
        (string-match-p "\.\\(mock\\|min\\|bundle\\)\.js" buffer-file-name)))
 
@@ -426,6 +427,11 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 (fset 'yes-or-no-p 'y-or-n-p)
 ;; {{ code is copied from https://liu233w.github.io/2016/09/29/org-python-windows.org/
 
+(defun my-org-babel-execute:python-hack (orig-func &rest args)
+  ;; @see https://github.com/Liu233w/.spacemacs.d/issues/6
+  (let ((coding-system-for-write 'utf-8))
+    (apply orig-func args)))
+
 (defun my-setup-language-and-encode (language-name coding-system)
   "Set up LANGUAGE-NAME and CODING-SYSTEM at Windows.
 For example,
@@ -438,16 +444,7 @@ For example,
     (set-terminal-coding-system coding-system)
 
     (modify-coding-system-alist 'process "*" coding-system)
-    (defun my-windows-shell-mode-coding ()
-      (set-buffer-file-coding-system coding-system)
-      (set-buffer-process-coding-system coding-system coding-system))
-    (add-hook 'shell-mode-hook #'my-windows-shell-mode-coding)
-    (add-hook 'inferior-python-mode-hook #'my-windows-shell-mode-coding)
 
-    (defun my-org-babel-execute:python-hack (orig-func &rest args)
-      ;; @see https://github.com/Liu233w/.spacemacs.d/issues/6
-      (let* ((coding-system-for-write 'utf-8))
-        (apply orig-func args)))
     (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
 
    (t
@@ -496,9 +493,7 @@ If STEP is 1,  search in forward direction, or else in backward direction."
 Copied from 3rd party package evil-textobj."
   (let* ((point-face (my-what-face))
          (pos (point))
-         (backward-point pos) ; last char when stop, including white space
          (backward-none-space-point pos) ; last none white space char
-         (forward-point pos) ; last char when stop, including white space
          (forward-none-space-point pos) ; last none white space char
          (start pos)
          (end pos))
@@ -509,11 +504,9 @@ Copied from 3rd party package evil-textobj."
       (let ((continue t))
         (while (and continue (>= (- (point) 1) (point-min)))
           (backward-char)
-          (if (= 32 (char-after))
-              (setq backward-point (point))
+          (unless (= 32 (char-after))
             (if (equal point-face (my-what-face))
-                (progn (setq backward-point (point))
-                       (setq backward-none-space-point (point)))
+                (setq backward-none-space-point (point))
               (setq continue nil))))))
 
     ;; check chars forward,
@@ -523,11 +516,9 @@ Copied from 3rd party package evil-textobj."
         (while (and continue (< (+ (point) 1) (point-max)))
           (forward-char)
           (let ((forward-point-face (my-what-face)))
-            (if (= 32 (char-after))
-                (setq forward-point (point))
+            (unless (= 32 (char-after))
               (if (equal point-face forward-point-face)
-                  (progn (setq forward-point (point))
-                         (setq forward-none-space-point (point)))
+                  (setq forward-none-space-point (point))
                 (setq continue nil)))))))
 
     (cond
@@ -736,6 +727,11 @@ This function is written in pure Lisp and slow."
       (setq i (1- i)))
     (setq str (if (= 0 strip-count) (substring path (1+ i)) path))
     (replace-regexp-in-string "^/" "" str)))
+
+(defun my-goto-line (n)
+  "Goto line N."
+  (goto-char (point-min))
+  (forward-line (1- n)))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

@@ -10,7 +10,7 @@
 ;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
 ;; open files faster but you can't check if file is version
 ;; controlled. other VCS functionality still works.
-(remove-hook 'find-file-hooks 'vc-find-file-hook)
+(remove-hook 'find-file-hook 'vc-find-file-hook)
 ;; }}
 
 ;; ;; {{ Solution 3: setup `vc-handled-backends' per project
@@ -322,9 +322,9 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
                                 lines)))
          based)
     (cond
-     ((or (not targets) (eq (length targets) 0))
+     ((or (not targets) (null targets))
       (message "No tag or branch is found to base on."))
-     ((or (not user-select-branch)) (eq (length targets) 1)
+     ((or (not user-select-branch) (eq (length targets) 1))
       ;; select the closest/only tag or branch
       (setq based (my-git-extract-based (nth 0 targets) lines)))
      (t
@@ -359,7 +359,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
          (max-line-length 0))
     (save-excursion
       (while (<= linenum-start linenum-end)
-        (goto-line linenum-start)
+        (my-goto-line linenum-start)
         (setq tmp-line (replace-regexp-in-string "^[ \t]*" ""
                                                  (buffer-substring (line-beginning-position)
                                                                    (line-end-position))))
@@ -382,7 +382,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
                 (mapcar 'my-reshape-git-gutter git-gutter:diffinfos)
                 :action (lambda (e)
                           (unless (numberp e) (setq e (cdr e)))
-                          (goto-line e)))
+                          (my-goto-line e)))
     (message "NO git-gutters!")))
 
 ;; }}

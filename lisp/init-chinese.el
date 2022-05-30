@@ -117,11 +117,11 @@
 ;; }}
 
 ;; {{ cal-china-x setup
-(defun chinese-calendar (&optional arg)
+(defun my-chinese-calendar (&optional arg)
   "Open Chinese Lunar calendar with ARG."
   (interactive "P")
   (unless (featurep 'cal-china-x) (local-require 'cal-china-x))
-  (setq mark-holidays-in-calendar t)
+  (setq calendar-view-holidays-initially-flag t)
   (setq cal-china-x-important-holidays cal-china-x-chinese-holidays)
   (setq cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")))
   (setq calendar-holidays
@@ -130,7 +130,8 @@
   (calendar arg))
 
 (defun my-calendar-exit-hack (&optional arg)
-  "Clean the cal-chinese-x setup."
+  "Clean the cal-chinese-x setup.  ARG is ignored."
+  (ignore arg)
   (advice-remove 'calendar-mark-holidays #'cal-china-x-mark-holidays))
 (advice-add 'calendar-exit :before #'my-calendar-exit-hack)
 

@@ -75,12 +75,10 @@
 
 ;;;###autoload
 (define-minor-mode typewriter-mode
-  "Toggle typewriter-mode"
-  nil
-  "" ;; lighter
-  ;; keymap
-  nil
+  "Minor mode to generate typewriter sounds when typing."
+  :lighter ""
   :global t
+  :group 'typewriter-mode
   (cond
    (typewriter-mode
     (add-hook 'post-self-insert-hook #'twm/play-typewriter-sound))

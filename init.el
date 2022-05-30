@@ -20,6 +20,7 @@
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
 (setq *emacs27* (>= emacs-major-version 27))
+(setq *emacs28* (>= emacs-major-version 28))
 
 ;; don't GC during startup to save time
 (unless (bound-and-true-p my-computer-has-smaller-memory-p)
@@ -139,7 +140,8 @@
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
-  (require-init 'init-ediff)
+  (when my-lightweight-mode-p
+    (require-init 'init-ediff))
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
@@ -149,6 +151,7 @@
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
   (require-init 'init-flymake t)
+  (require-init 'init-no-byte-compile t)
 
   (unless my-lightweight-mode-p
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/

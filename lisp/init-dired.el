@@ -270,6 +270,8 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
            (arg (nth 1 args))
            (file-list (nth 2 args))
            (first-file (file-truename (and file-list (car file-list)))))
+      (ignore command)
+      (ignore arg)
       (cond
        ((file-directory-p first-file)
         (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"

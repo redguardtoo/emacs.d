@@ -5,27 +5,6 @@
 ;; enable evil-mode
 (evil-mode 1)
 
-;; {{ replace undo-tree with undo-fu
-;; @see https://github.com/emacs-evil/evil/issues/1074
-;; copied from doom-emacs
-(define-minor-mode undo-fu-mode
-  "Enables `undo-fu' for the current session."
-  :keymap (let ((map (make-sparse-keymap)))
-            (define-key map [remap undo] #'undo-fu-only-undo)
-            (define-key map [remap redo] #'undo-fu-only-redo)
-            (define-key map (kbd "C-_")     #'undo-fu-only-undo)
-            (define-key map (kbd "M-_")     #'undo-fu-only-redo)
-            (define-key map (kbd "C-M-_")   #'undo-fu-only-redo-all)
-            (define-key map (kbd "C-x r u") #'undo-fu-session-save)
-            (define-key map (kbd "C-x r U") #'undo-fu-session-recover)
-            map)
-  :init-value nil
-  :global t)
-(undo-fu-mode 1)
-(define-key evil-normal-state-map "u" 'undo-fu-only-undo)
-(define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo)
-;; }}
-
 ;; Store more undo history to prevent loss of data
 (setq undo-limit 8000000
       undo-strong-limit 8000000
@@ -330,7 +309,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
 (evil-define-motion my-evil-goto-definition ()
-  "Go to local definition or first occurrence of symbol under point in current buffer."
+  "Go to local definition or first occurrence of symbol in current buffer."
   :jump t
   :type exclusive
   (let* ((string (evil-find-symbol t))
@@ -382,6 +361,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defvar evil-global-markers-history nil)
 (defun my-evil-set-marker-hack (char &optional pos advance)
   "Place evil marker's position into history."
+  (ignore advance)
   (unless pos (setq pos (point)))
   ;; only remember global markers
   (when (and (>= char ?A) (<= char ?Z) buffer-file-name)
@@ -437,7 +417,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
                         (let* ((file (match-string-no-properties 1 m))
                                (linenum (match-string-no-properties 2 m)))
                           ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
-                          (counsel-etags-push-marker-stack (point-marker))
+                          (counsel-etags-push-marker-stack)
                           ;; open file, go to certain line
                           (find-file file)
                           (counsel-etags-forward-line linenum))
@@ -483,6 +463,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (defun my-text-obj-similar-font (count beg end type inclusive)
   "Get maximum range of single or double quote text object.
 If INCLUSIVE is t, the text object is inclusive."
+  (ignore count beg end type)
   (let* ((range (my-create-range inclusive)))
     (evil-range (car range) (cdr range) inclusive)))
 
@@ -506,21 +487,12 @@ If INCLUSIVE is t, the text object is inclusive."
   :states '(normal visual))
 
 (defvar my-web-mode-element-rename-previous-tag nil
-  "Used by my-rename-thing-at-point.")
-
-(defun my-detect-new-html-tag (flag)
-  (cond
-   ((eq flag 'pre)
-    (message "str=%s" (buffer-string (line-beginning-position) (line-end-position))))
-   ((eq flag 'post)
-    (message "str=%s" (buffer-string (line-beginning-position) (line-end-position))))))
-(push '(rename-html-tag my-detect-new-html-tag) evil-repeat-types)
-(evil-set-command-property #'web-mode-element-rename :repeat 'rename-html-tag)
+  "Used by `my-rename-thing-at-point'.")
 
 (defun my-rename-thing-at-point (&optional n)
   "Rename thing at point.
-If N > 0 and working on HTML, repeating previous tag name operation.
-If N > 0 and working on javascript, only occurrences in current N lines are renamed."
+If N > 0 and in html, repeating previous tag name operation.
+If N > 0 and in js, only occurrences in current N lines are renamed."
   (interactive "P")
   (cond
    ((eq major-mode 'web-mode)
@@ -549,11 +521,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
 
    (t
     (message "Can only beautify code written in python/javascript"))))
-
-(general-imap ","
-              (general-key-dispatch 'self-insert-command
-                :timeout 0.5
-                "/" 'my-toggle-input-method))
 
 (my-comma-leader-def
   "," 'evilnc-comment-operator
@@ -610,7 +577,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "ts" 'evilmr-tag-selected-region ;; recommended
   "rt" 'counsel-etags-recent-tag
   "ft" 'counsel-etags-find-tag
-  "yy" 'counsel-browse-kill-ring
+  "yy" 'my-counsel-browse-kill-ring
   "cf" 'counsel-grep ; grep current buffer
   "gf" 'my-counsel-git-find-file ; find file
   "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
@@ -749,7 +716,6 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   "mm" 'counsel-evil-goto-global-marker
   "mf" 'mark-defun
   "xc" 'save-buffers-kill-terminal ; not used frequently
-  "cc" 'my-dired-redo-last-command
   "ss" 'wg-create-workgroup ; save windows layout
   "sc" 'shell-command
   "ll" 'wg-open-workgroup ; load windows layout
@@ -809,7 +775,8 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
                       (message "%s => clipboard & yank ring" item))))
 
 (defun my-cc-isearch-string (&rest args)
-  "Add `isearch-string' inot history."
+  "Add `isearch-string' into history."
+  (ignore args)
   (and isearch-string
        (> (length isearch-string) 0)
        (push isearch-string my-search-text-history)))
@@ -844,7 +811,7 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
                                                (line-end-position)))
          (re (format "^[ \t]*\\(%s\\)?[ \t]*</?[a-zA-Z]+"
-                     (regexp-quote evilnc-html-comment-start))))
+                     (regexp-quote (evilnc-html-comment-start)))))
     ;; current paragraph does contain html tag
     (if (and (>= (point) (car paragraph-region))
              (string-match-p re line))
@@ -911,6 +878,13 @@ If N > 0 and working on javascript, only occurrences in current N lines are rena
 ;; press ",xx" to expand region
 ;; then press "char" to contract, "x" to expand
 (with-eval-after-load 'evil
+
+  ;; replace undo-tree with undo-fu
+  ;; @see https://github.com/emacs-evil/evil/issues/1074
+  (setq evil-undo-system 'undo-redo)
+  (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
+  (define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo)
+
   ;; initial evil state per major mode
   (dolist (p my-initial-evil-state-setup)
     (evil-set-initial-state (car p) (cdr p)))
