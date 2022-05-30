@@ -3,10 +3,10 @@
 [[https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml][https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml/badge.svg]]
 
 - Fast
-- Robust. Never crash after upgrading packages. Packages could be installed without network
-- Support Windows. Find&Grep files on Windows with minimum setup
+- Robust. Packages could be installed without network
+- Support Windows. Find&Grep needs only minimum setup on Windows
 - Tested with Emacs 26.3, 27.2, 28.1 on Linux/Windows10/Cygwin/macOS/WSL(Windows Subsystem for Linux)
-- Emacs vanilla key bindings and directory layout is respected
+- Vanilla key bindings and directory layout is respected
 - Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
 [[file:demo.png]]
