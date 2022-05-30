@@ -103,7 +103,6 @@
       (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
 
 (global-set-key (kbd "M-x") 'counsel-M-x)
-(global-set-key (kbd "C-x C-m") 'counsel-M-x)
 
 ;; hide the compilation buffer automatically is not a good idea.
 ;; if compiling command is a unit test command

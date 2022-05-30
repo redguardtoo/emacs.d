@@ -264,5 +264,6 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (suspend-frame))))
 
 (global-set-key (kbd "C-x C-z") #'my-switch-to-shell)
+(global-set-key (kbd "C-x C-m") 'execute-extended-command)
 
 (provide 'init-essential)
