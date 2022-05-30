@@ -98,8 +98,8 @@
          (hour (string-to-number (format-time-string "%H" (current-time))))
          (prefer-light-p (and (not join-dark-side) (>= hour 9) (<= hour 19)) ))
     (dolist (theme (custom-available-themes))
-      (let* ((light-theme-p (or (and (string-match-p "light\\|bright\\|white" (symbol-name theme))
-                                     (not (string-match-p "^base16-\\|^airline-\\|^doom=\\|^alect-" (symbol-name theme)))
+      (let* ((light-theme-p (or (and (string-match "light\\|bright\\|white" (symbol-name theme))
+                                     (not (string-match "^base16-\\|^airline-\\|^doom=\\|^alect-" (symbol-name theme)))
                                      (not (member theme '(twilight
                                                           avk-darkblue-white
                                                           sanityinc-tomorrow-bright))))
@@ -119,7 +119,7 @@
     (dolist (p sorted-packages)
       (let* ((name (symbol-name (car p))))
         (when (and (< i topNum)
-                   (string-match-p "-themes?$" name)
+                   (string-match "-themes?$" name)
                    (not (member name '("color-theme"
                                        "smart-mode-line-powerline-theme"))))
           (push name rlt)

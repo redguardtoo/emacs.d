@@ -19,7 +19,7 @@ EVENT is ignored."
   (let* ((beg (nth 0 args))
          (end (nth 1 args)))
     (cond
-     ((not (string-match-p "^complete " (buffer-substring beg end)))
+     ((not (string-match "^complete " (buffer-substring beg end)))
       ;; filter out some weird lines
       nil)
      (t

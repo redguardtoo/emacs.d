@@ -887,7 +887,7 @@ might be bad."
       (setenv "GPG_AGENT_INFO" agent)))
   (advice-add 'epg--start :around #'my-epg--start-hack)
 
-  (unless (string-match-p "^gpg (GnuPG) 1.4"
+  (unless (string-match "^gpg (GnuPG) 1.4"
                           (shell-command-to-string (format "%s --version" epg-gpg-program)))
 
     ;; "apt-get install pinentry-tty" if using emacs-nox
@@ -950,7 +950,7 @@ might be bad."
   (cond
    ((or (not buffer-file-name)
         (not (file-exists-p buffer-file-name))
-        (not (string-match-p "html?$" buffer-file-name)))
+        (not (string-match "html?$" buffer-file-name)))
     (let* ((file (make-temp-file "my-browse-file-" nil ".html")))
       (my-write-to-file (format "<html><body>%s</body></html>" (buffer-string)) file)
       (my-browse-file file)
@@ -987,7 +987,7 @@ might be bad."
       (let* ((i 0) found cand)
         (while (and (setq cand (nth i my-default-yes-no-answers))
                     (not found))
-          (when (string-match-p (cdr cand) prompt)
+          (when (string-match (cdr cand) prompt)
             (setq found t)
             (setq rlt (car cand)))
           (setq i (1+ i)))
@@ -1202,7 +1202,7 @@ It's also controlled by `my-lazy-before-save-timer'."
           (emms-add-directory-tree item)
           (setq found t))
 
-         ((string-match-p regexp item)
+         ((string-match regexp item)
           ;; add media file to the playlist
           (emms-add-file item)
           (setq found t))))

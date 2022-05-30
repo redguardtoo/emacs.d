@@ -226,7 +226,7 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
       (setq add-to-p
             (or (member pkg-name melpa-include-packages)
                 ;; color themes are welcomed
-                (string-match-p "-theme" (format "%s" pkg-name))))))
+                (string-match "-theme" (format "%s" pkg-name))))))
 
     (when my-debug
       (message "package name=%s version=%s package=%s" pkg-name version package))

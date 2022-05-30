@@ -35,7 +35,7 @@ If N is not nil, copy file name and line number."
   (my-select-from-kill-ring (lambda (s)
                               (let* ((summary (car s))
                                      (hint " => clipboard" )
-                                     (msg (if (string-match-p "\.\.\.$" summary)
+                                     (msg (if (string-match "\.\.\.$" summary)
                                               (substring summary 0 (- (length summary) (length hint)))
                                             s)))
                                 ;; cc actual string

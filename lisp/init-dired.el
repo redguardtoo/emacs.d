@@ -224,7 +224,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     "Detect subtitles for mplayer."
     (let* ((rlt (apply orig-func args)))
       (when (and (stringp rlt)
-                 (string-match-p "^mplayer .*-quiet" rlt))
+                 (string-match "^mplayer .*-quiet" rlt))
         ;; append subtitle to mplayer cli
         (setq rlt
               (format "%s %s"
@@ -251,7 +251,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
        (t
         (when (and (file-directory-p file)
                    ;; don't add directory when user pressing "^" in `dired-mode'
-                   (not (string-match-p "\\.\\." file)))
+                   (not (string-match "\\.\\." file)))
           (unless (and my-dired-exclude-directory-regexp
                        (string-match my-dired-exclude-directory-regexp file))
             ;; clean up old items in `my-dired-directory-history'

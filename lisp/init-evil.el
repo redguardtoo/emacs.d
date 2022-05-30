@@ -299,7 +299,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   (evil-search search t t pos)
   ;; ignore this.f1 = this.fn.bind(this) code
   (when (and (memq major-mode '(js-mode js2-mode rjsx-mode))
-             (string-match-p "^[ \t]*this\.[a-zA-Z0-9]+[ \t]*=[ \t]*this\.[a-zA-Z0-9]*\.bind(this);"
+             (string-match "^[ \t]*this\.[a-zA-Z0-9]+[ \t]*=[ \t]*this\.[a-zA-Z0-9]*\.bind(this);"
                              (my-line-str)))
 
     (forward-line 1)
@@ -814,7 +814,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
                      (regexp-quote (evilnc-html-comment-start)))))
     ;; current paragraph does contain html tag
     (if (and (>= (point) (car paragraph-region))
-             (string-match-p re line))
+             (string-match re line))
         t)))
 
 (defun my-evilnc-comment-or-uncomment-paragraphs (&optional num)

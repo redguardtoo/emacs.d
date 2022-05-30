@@ -36,7 +36,7 @@
     (beginning-of-line)
     (unless (or (region-active-p)
                 (let ((line (thing-at-point 'line t)))
-                  (and (string-match-p "^\\*+ $" line) ;; is node only one spaced
+                  (and (string-match "^\\*+ $" line) ;; is node only one spaced
                        (= (point) (- (point-max) (length line))) ;; is line at EOF
                        )))
       (org-mark-subtree)))

@@ -19,7 +19,7 @@
 ;;   "Default setup for project under vcs."
 ;;   (interactive)
 ;;   (cond
-;;     ((string-match-p (file-truename user-emacs-directory)
+;;     ((string-match (file-truename user-emacs-directory)
 ;;                      (file-name-directory (buffer-file-name)))
 ;;       (setq vc-handled-backends '(Git)))
 ;;     (t
@@ -168,7 +168,7 @@ Show the diff between current working code and git head."
               collection
               :action (lambda (rev)
                         ;; compatible with ivy 8+ and later ivy version
-                        (unless (string-match-p "^[a-z0-9]*$" (car rev))
+                        (unless (string-match "^[a-z0-9]*$" (car rev))
                           (setq rev (cdr rev)))
                         (git-timemachine-show-revision rev)))))
 

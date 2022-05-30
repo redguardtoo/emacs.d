@@ -41,7 +41,7 @@ So it should be used in `prog-mode-hook' only."
           (cond
            ;; Kevin Atkinson said now aspell supports camel case directly
            ;; https://github.com/redguardtoo/emacs.d/issues/796
-           ((string-match-p "--.*camel-case"
+           ((string-match "--.*camel-case"
                             (shell-command-to-string (concat ispell-program-name " --help")))
             (setq args (append args '("--camel-case"))))
 

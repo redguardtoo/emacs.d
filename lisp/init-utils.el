@@ -121,7 +121,7 @@ Then replace the region or buffer with cli output."
 (defun path-in-directory-p (file directory)
   "FILE is in DIRECTORY."
   (let* ((pattern (concat "^" (file-name-as-directory directory))))
-    (if (string-match-p pattern file) file)))
+    (if (string-match pattern file) file)))
 
 (defun my-prepare-candidate-fit-into-screen (s)
   (let* ((w (frame-width))
@@ -141,7 +141,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   (let* ((candidates (cl-remove-if
                        (lambda (s)
                          (or (< (length s) 5)
-                             (string-match-p "\\`[\n[:blank:]]+\\'" s)))
+                             (string-match "\\`[\n[:blank:]]+\\'" s)))
                        (delete-dups kill-ring)))
           (ivy-height (/ (frame-height) 2)))
      (ivy-read "Browse `kill-ring':"
@@ -409,7 +409,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 (defun my-should-use-minimum-resource ()
   "Use minimum resource (no highlight or line number)."
   (and buffer-file-name
-       (string-match-p "\.\\(mock\\|min\\|bundle\\)\.js" buffer-file-name)))
+       (string-match "\.\\(mock\\|min\\|bundle\\)\.js" buffer-file-name)))
 
 (defun my-async-shell-command (command)
   "Execute string COMMAND asynchronously."
@@ -714,7 +714,7 @@ This function is written in pure Lisp and slow."
   (let* ((other-exts '("pyim" "recentf"))
          (exts (append my-media-file-extensions other-exts))
          (regexp (my-file-extensions-to-regexp exts)))
-    (string-match-p regexp file)))
+    (string-match regexp file)))
 
 (defun my-strip-path (path strip-count)
   "Strip PATH with STRIP-COUNT."

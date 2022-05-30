@@ -221,7 +221,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
       (cond
        ;; jest unit test
-       ((and buffer-file-name (string-match-p "\\.[tj]s$" buffer-file-name))
+       ((and buffer-file-name (string-match "\\.[tj]s$" buffer-file-name))
         (setq extra-opt (format " -t \"%s\" " extra-opt)))
 
        ;; do nothing
