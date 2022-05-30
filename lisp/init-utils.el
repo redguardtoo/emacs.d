@@ -567,7 +567,7 @@ Copied from 3rd party package evil-textobj."
 (defun my-run-with-idle-timer (seconds func)
   "After SECONDS, run function FUNC once."
   (cond
-   (my-disable-idle-timer
+   ((or my-disable-idle-timer my-lightweight-mode-p)
     (funcall func))
    (t
     (run-with-idle-timer seconds nil func))))

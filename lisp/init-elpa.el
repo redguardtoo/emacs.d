@@ -1,10 +1,5 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun my-initialize-package-internal ()
-  "Initialize package system."
-  (unless (and (boundp 'package--initialized) package--initialized)
-    (package-initialize t)))
-
 (defun my-initialize-package ()
   "Package loading optimization.  No need to activate all the packages so early."
   (cond
@@ -46,7 +41,7 @@
       (package-initialize)))
    (t
     ;; emacs 26
-    (my-initialize-package-internal))))
+    (package-initialize))))
 
 (my-initialize-package)
 
