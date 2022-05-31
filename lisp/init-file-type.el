@@ -137,5 +137,4 @@
 ;; besides, scss/sass is outdated. We use postcss or css in js these days.
 (my-add-auto-mode 'css-mode "\\.scss$")
 
-
 (provide 'init-file-type)

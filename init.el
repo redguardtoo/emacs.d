@@ -108,7 +108,6 @@
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
   (require-init 'init-ctags t)
-  (require-init 'init-bbdb t)
   (require-init 'init-gnus t)
   (require-init 'init-lua-mode t)
   (require-init 'init-term-mode)
@@ -125,9 +124,9 @@
   ;; color themes are already installed in `init-elpa.el'
   (require-init 'init-theme)
 
-  ;; misc has some crucial tools I need immediately
+  ;; crucial tools
   (require-init 'init-essential)
-  ;; handy tools though not must have
+  ;; tools nice to have
   (require-init 'init-misc t)
 
   (require-init 'init-emacs-w3m t)
@@ -150,7 +149,6 @@
   (unless my-disable-idle-timer
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
-  (require-init 'init-flymake t)
   (require-init 'init-no-byte-compile t)
 
   (unless my-lightweight-mode-p
@@ -174,7 +172,6 @@
   (garbage-collect))
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
-
 
 ;;; Local Variables:
 ;;; no-byte-compile: t
