@@ -1248,5 +1248,41 @@ It's also controlled by `my-lazy-before-save-timer'."
   (setq yaml-imenu-generic-expression
         '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1))))
 
+;; {{ calendar setup
+(with-eval-after-load 'calendar
+  ;; show holiday marker in calendar
+  (setq calendar-mark-holidays-flag t)
+  ; show current month's holiday in different window
+  (setq calendar-view-holidays-initially-flag t))
+
+(defvar holiday-nsw-holidays
+  (mapcar 'purecopy
+  '((holiday-fixed  1 26 "NSW: New Year's Day")
+    (holiday-fixed  1 26 "NSW: Australia Day")
+    (holiday-fixed  4 25 "NSW: ANZAC Day")
+    ;; second Monday on June, don't know why the month
+    ;; is zero based in `holiday-float'
+    (holiday-float  5 1 7 "NSW: Queen's Birthday")
+    (holiday-float 9 1 0 "NSW: Labour Day")
+    (holiday-fixed 12 25 "NSW: Christmas Day")
+    (holiday-fixed 12 26 "NSW: Boxing Day")))
+    "NSW public holidays.")
+
+(defun my-china-calendar (&optional arg)
+  "Open Chinese Lunar calendar with ARG."
+  (interactive "P")
+  (unless (featurep 'cal-china-x) (local-require 'cal-china-x))
+  (let* ((cal-china-x-important-holidays cal-china-x-chinese-holidays)
+         (cal-china-x-general-holidays '((holiday-lunar 1 15 "元宵节")
+                                         (holiday-fixed 6 1 "儿童节")
+                                         (holiday-lunar 7 7 "七夕节")
+                                         (holiday-lunar 9 9 "重阳节")
+                                         (holiday-lunar 12 8 "腊八节")))
+         (calendar-holidays (append holiday-local-holidays
+                                    cal-china-x-important-holidays
+                                    cal-china-x-general-holidays)))
+    (calendar arg)))
+;; }}
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
