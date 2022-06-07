@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021-2022 Chen Bin
 ;;
-;; Version: 0.0.3
+;; Version: 0.0.4
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -37,11 +37,15 @@
 ;;   See `shenshou-curl-program' and `shenshou-gzip-program'.
 ;;
 ;; Usage,
-;;   - Set `shenshou-login-user-name' and `shenshou-login-password'.
+;;   - Set `shenshou-login-user-name' and `shenshou-login-password' first.
 ;;   - Run `shenshou-download-subtitle' in Dired buffer or anywhere.
 ;;   - Run `shenshou-logout-now' to logout.
 ;;
-;;  Tips,
+;; Tips,
+;;   - Use `shenshou-language-code-list' to set up subtitle's language.
+;;     See https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes.
+;;      (setq shenshou-language-code-list "eng") # English
+;;      (setq shenshou-language-code-list "eng,chi") # English, Chinese
 ;;   - See `shenshou-curl-extra-options' on how to set SOCKS5 or HTTP proxy
 ;;   - This program gives you the freedom to select the right subtitle.
 
@@ -67,7 +71,7 @@
   :group 'shenshou)
 
 (defcustom shenshou-language-code-list "eng"
-  "Language codes to search for, divided by ',' (e.g. 'chi,rus,spa,eng').
+  "Language codes to search for, divided by \",\" (e.g. \"chi,rus,spa,eng\").
 See https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes for details."
   :type 'string
   :group 'shenshou)
@@ -134,6 +138,11 @@ If it's empty, user is required to provide password during login process."
 (defvar shenshou-movie-regex-1
   "\\(.*\\)[.\[( ]\\{1\\}\\(19[0-9]\\{2\\}\\|20[0-9]\\{2\\}\\)\\(.*\\)"
   "Regex to extract movie show information (name, year, team).")
+
+(defun shenshou-trim (string)
+  "Trim STRING."
+  (setq string (replace-regexp-in-string "^[ \t_-]+" "" string))
+  (setq string (replace-regexp-in-string "[ \t_-]+$" "" string)))
 
 (defun shenshou-value (beginning str)
   "Use eight bytes from BEGINNING of STR to get hash."
@@ -327,7 +336,8 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 (defun shenshou-process-query (name)
   "Get query from video file NAME."
   (let ((query (match-string 1 name)))
-    (replace-regexp-in-string " *([^)]*$" "" query)))
+    (setq query (replace-regexp-in-string "[ \t-_]*([^)]*$" "" query))
+    (shenshou-trim query)))
 
 (defun shenshou-guess-video-info (name)
   "Guess information from NAME of video."
@@ -338,20 +348,20 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :season (match-string 2 name)))
       (setq video-info (plist-put video-info :episode (match-string 3 name)))
-      (setq video-info (plist-put video-info :team (match-string 4 name))))
+      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 4 name)))))
 
      ((string-match shenshou-tvshow-regex-2 name)
       (setq video-info (plist-put video-info :moviekind "tv"))
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :season (match-string 2 name)))
       (setq video-info (plist-put video-info :episode (match-string 3 name)))
-      (setq video-info (plist-put video-info :team (match-string 4 name))))
+      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 4 name)))))
 
      ((string-match shenshou-movie-regex-1 name)
       (setq video-info (plist-put video-info :moviekind "movie"))
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :movieyear (match-string 2 name)))
-      (setq video-info (plist-put video-info :team (match-string 3 name))))
+      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 3 name)))))
 
      (t
       (setq video-info (plist-put video-info :moviekind "unknown"))
