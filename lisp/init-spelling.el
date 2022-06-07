@@ -196,7 +196,7 @@ When fixing a typo, avoid pass camel case option to cli program."
                           (string-match "^=(" th)
                           (string-match ")=$" th)
                           (string= "w3m" th)))
-                 ;; embedded code like =code= or org-link [[http://google.com][google]] or [[www.google.com]]
+                 ;; embedded code like =code= or org-link [[https://gnu.org][GNU Operation System]] or [[www.gnu.org]]
                  ;; langtool could finish checking before major mode prepare font face for all texts
                  (setq rlt nil))
                 (t

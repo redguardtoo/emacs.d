@@ -128,7 +128,7 @@
 [_v_] Play video/audio       [_r_] Reply
 [_d_] CLI to download stream [_R_] Reply with original
 [_b_] Open external browser  [_w_] Reply all (S w)
-[_f_] Click link/button      [_W_] Reply all with original (S W)
+[_;_] Click link/button      [_W_] Reply all with original (S W)
 [_g_] Focus link/button      [_b_] Switch Gnus buffer
 "
     ("F" gnus-summary-mail-forward)
@@ -137,10 +137,10 @@
     ("w" gnus-summary-wide-reply)
     ("W" gnus-article-wide-reply-with-original)
     ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
-    ("v" w3mext-open-with-mplayer)
-    ("d" w3mext-download-rss-stream)
-    ("b" w3mext-open-link-or-image-or-url)
-    ("f" w3m-lnum-follow)
+    ("v" my-w3m-open-with-mplayer)
+    ("d" my-w3m-download-rss-stream)
+    ("b" my-w3m-open-link-or-image-or-url)
+    (";" w3m-lnum-follow)
     ("g" w3m-lnum-goto)
     ("b" dianyou-switch-gnus-buffer)
     ("q" nil))
@@ -497,10 +497,10 @@ _m_ Man
   ("b" sdcv-search-input)
   ("t" sdcv-search-input+)
   ("d" my-lookup-dict-org)
-  ("g" w3m-google-search)
-  ("f" w3m-search-financial-dictionary)
-  ("s" w3m-stackoverflow-search)
-  ("h" w3mext-hacker-search)
+  ("g" my-w3m-generic-search)
+  ("f" my-w3m-search-financial-dictionary)
+  ("s" my-w3m-stackoverflow-search)
+  ("h" my-w3m-hacker-search)
   ("m" my-lookup-doc-in-man)
   ("q" nil))
 (global-set-key (kbd "C-c C-s") 'my-hydra-search/body)

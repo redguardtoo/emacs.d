@@ -756,11 +756,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "dt" 'sdcv-search-input+ ; summary
   "dd" 'my-lookup-dict-org
   "mm" 'my-lookup-doc-in-man
-  "gg" 'w3m-google-search
-  "gd" 'w3m-search-financial-dictionary
-  "ga" 'w3m-java-search
-  "gh" 'w3mext-hacker-search ; code search in all engines with firefox
-  "gq" 'w3m-stackoverflow-search)
+  "gg" 'my-w3m-generic-search
+  "gd" 'my-w3m-search-financial-dictionary
+  "gh" 'my-w3m-hacker-search ; code search in all engines with firefox
+  "gq" 'my-w3m-stackoverflow-search)
 ;; }}
 
 ;; {{ remember what we searched
