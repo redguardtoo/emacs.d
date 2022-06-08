@@ -88,8 +88,10 @@ If no files marked, always operate on current line in dired-mode."
                                                             "epub"))))
 
 (defun dired-mode-hook-setup ()
-  "Set up dired."
+  "Set up Dired."
   (dired-hide-details-mode 1)
+  (diredfl-mode)
+  (unless dired-subdir-alist (dired-build-subdir-alist))
   (local-set-key  "r" 'dired-up-directory)
   (local-set-key  "e" 'my-ediff-files)
   (local-set-key  "/" 'dired-isearch-filenames)
@@ -297,4 +299,6 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
                 "sudo pm-suspend"))))
     (shell-command cmd)))
 
+(defun my-dired-save-current-buffer ()
+  (interactive))
 (provide 'init-dired)

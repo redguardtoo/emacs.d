@@ -12,7 +12,7 @@
      ((eq major-mode 'lisp-interaction-mode)
       ;; The *Message* buffer is the first buffer to display during startup
       ;; lazy load yasnippet to speed up startup
-      (my-run-with-idle-timer 2 (lambda () (yas-minor-mode 1))))
+      (my-run-with-idle-timer 2 #'yas-minor-mode))
      (t
       (yas-minor-mode 1)))))
 

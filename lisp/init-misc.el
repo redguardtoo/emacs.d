@@ -368,14 +368,6 @@ FN checks these characters belong to normal word characters."
                                          (if previous "prev" "next")))))))
 ;; }}
 
-;; {{ avy, jump between texts, like easymotion in vim
-;; @see http://emacsredux.com/blog/2015/07/19/ace-jump-mode-is-dead-long-live-avy/ for more tips
-;; dired
-(with-eval-after-load 'dired
-  (diredfl-global-mode 1)
-  (define-key dired-mode-map (kbd ";") 'avy-goto-subword-1))
-;; }}
-
 ;; {{start dictionary lookup
 (with-eval-after-load 'sdcv
   ;; use below commands to create dictionary
@@ -740,8 +732,7 @@ If the shell is already opened in some buffer, switch to that buffer."
   ;; Although win64 is fine. It still slows down generic performance.
   ;; @see https://stackoverflow.com/questions/3589535/why-reload-notification-slow-in-emacs-when-files-are-modified-externally
   ;; So no auto-revert-mode on Windows/Cygwin
-  (setq global-auto-revert-non-file-buffers t
-        auto-revert-verbose nil)
+  (setq auto-revert-verbose nil)
   (my-run-with-idle-timer 4 #'global-auto-revert-mode))
 
 ;;----------------------------------------------------------------------------

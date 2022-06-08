@@ -266,4 +266,28 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (global-set-key (kbd "C-x C-z") #'my-switch-to-shell)
 (global-set-key (kbd "C-x C-m") 'execute-extended-command)
 
+(defun my-save-current-buffer ()
+  "Save current buffer (Dired, Grep, ...) to re-use in the future."
+  (interactive)
+  (let* ((file (read-file-name "Save buffer to file (its extension must be \"el\"): "))
+         (content (buffer-string))
+         (can-save-p t)
+         (header (format "-*- mode:%s; default-directory: \"%s\" -*-\n"
+                         (replace-regexp-in-string "-mode" "" (format "%s" major-mode))
+                         default-directory)))
+    (when file
+      ;; double check file name extension
+      (unless (equal (file-name-extension file) "el")
+        (setq file (concat (file-name-base file) ".el")))
+
+      (when (file-exists-p file)
+        (setq can-save-p
+              (yes-or-no-p (format "File %s exists.  Override it?" fil))))
+      (when can-save-p
+        (with-temp-buffer
+          (insert header)
+          (insert content)
+          ;; write buffer content into file
+          (write-region (point-min) (point-max) file))))))
+
 (provide 'init-essential)
