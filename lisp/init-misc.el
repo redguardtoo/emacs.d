@@ -1284,5 +1284,33 @@ It's also controlled by `my-lazy-before-save-timer'."
     (calendar arg)))
 ;; }}
 
+(defun my-srt-my-player-play-video-at-point ()
+  "In srt file, play video from current time stamp.
+Emacs 27 is required."
+  (interactive)
+  (my-ensure 'mybigword)
+  (my-ensure 'find-lisp)
+  (let* ((str (thing-at-point 'paragraph))
+         (regexp  "^\\([0-9]+:[0-9]+:[0-9]+\\),[0-9]+ +-->")
+         (start-time (and (string-match regexp str)
+                          (match-string 1 str)))
+         (videos (find-lisp-find-files-internal
+                 "."
+                 (lambda (file dir)
+                   (and (not (file-directory-p (expand-file-name file dir)))
+                        (member (file-name-extension file)
+                                my-media-file-extensions)))
+                 (lambda (dir parent)
+                   (ignore parent)
+                   (not (member dir '("." ".." ".git" "sub" "Sub"))))))
+         (srt-base-name (file-name-base buffer-file-name)))
+
+    (when srt-base-name
+      (setq videos (sort videos `(lambda (a b) (< (string-distance a ,srt-base-name)
+                                   (string-distance b ,srt-base-name))))))
+    (when (and (> (length videos) 0) start-time)
+      ;; plays the matched video
+      (mybigword-run-mplayer start-time (car videos)))))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
