@@ -282,7 +282,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
       (when (file-exists-p file)
         (setq can-save-p
-              (yes-or-no-p (format "File %s exists.  Override it?" fil))))
+              (yes-or-no-p (format "File %s exists.  Override it?" file))))
       (when can-save-p
         (with-temp-buffer
           (insert header)
