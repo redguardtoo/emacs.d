@@ -85,14 +85,19 @@
           '(("en" "eng")
             ("in" "ing")))
 
-    ;;  pyim-bigdict is recommended (20M). There are many useless words in pyim-greatdict which also slows
-    ;;  down pyim performance
-    ;; `curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim`
+    ;; Dictionaries:
+    ;;   pyim-greatdict is not recommended. It has too many useless words and slows down pyim.
+    ;;
+    ;;   Download pyim-bigdict,
+    ;;   curl -L http://tumashu.github.io/pyim-bigdict/pyim-bigdict.pyim.gz | zcat > ~/.eim/pyim-bigdict.pyim
+    ;;
+    ;;   Download pyim-tsinghua (recommended),
+    ;;   curl -L https://raw.githubusercontent.com/redguardtoo/pyim-tsinghua-dict/master/pyim-tsinghua-dict.pyim > ~/.eim/pyim-tsinghua-dict.pyim
 
     ;; don's use shortcode2word
     (setq pyim-enable-shortcode nil)
 
-    ;; use memory efficient pyim engine for pinyin ime
+    ;; use memory efficient pyim engine for pinyin IME
     (setq pyim-dcache-backend 'pyim-dregcache)
 
     ;; automatically load pinyin dictionaries "*.pyim" under "~/.eim/"
@@ -104,11 +109,11 @@
               (mapcar (lambda (f)
                         (list :name (file-name-base f) :file f))
                       files))
-        ;; disable "basedict" if "pyim-bigdict" or "pyim-greatdict" or "pyim-another-dict" is used
         (dolist (f files)
-          (when (or (string= "pyim-another-dict" (file-name-base f))
-                    (string= "pyim-bigdict" (file-name-base f))
-                    (string= "pyim-greatdict" (file-name-base f)))
+          (when (member (file-name-base f) '("pyim-another-dict"
+                                             "pyim-tsinghua-dict.pyim"
+                                             "pyim-bigdict"
+                                             "pyim-greatdict"))
             (setq disable-basedict t))))
       (unless disable-basedict (pyim-basedict-enable)))))
 
