@@ -401,4 +401,27 @@ If LEVEL > 0, find file in previous LEVEL commit."
     (when file
       (find-file file))))
 
+(defun my-commit-create ()
+  "Git commit."
+  (interactive)
+  (let ((msg (read-string "Git commit message: ")))
+    (when (> (length msg) 3)
+      (shell-command (format "git commit -m \"%s\"" msg)))))
+
+(defun my-commit-amend (&optional reuse-p)
+  "Git amend.  If REUSE-P is t, commit by reusing original message."
+  (interactive)
+  (let* ((original-msg  (shell-command-to-string "git log --pretty=format:'%s' -n1"))
+         msg
+         (extra-args (if reuse-p "--reuse-message=HEAD" ""))
+         cmd)
+
+    (setq msg (unless reuse-p
+                (read-string "Git amend message: " original-msg)))
+    (when (or reuse-p (> (length msg) 3))
+      (setq cmd (format "git commit --no-verify --amend %s" extra-args))
+      (unless reuse-p
+        (setq cmd (format "%s -m \"%s\"" cmd msg)))
+      (shell-command cmd))))
+
 (provide 'init-git)

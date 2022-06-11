@@ -2,6 +2,8 @@
 
 (defvar my-favorite-color-themes
   '(srcery
+    atom-dark
+    atom-one-dark
     doom-dracula
     doom-gruvbox
     doom-molokai
