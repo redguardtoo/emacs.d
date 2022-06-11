@@ -227,7 +227,7 @@ Show the diff between current working code and git head."
     ("p" my-prev-merge-conflict)))
 
 (defun my-goto-merge-conflict-internal (forward-p)
-  "Goto specific hunk.  If forward-p is t, go in forward direction."
+  "Goto specific hunk.  If FORWARD-P is t, go in forward direction."
   ;; @see https://emacs.stackexchange.com/questions/63413/finding-git-conflict-in-the-same-buffer-if-cursor-is-at-end-of-the-buffer#63414
   (my-ensure 'smerge-mode)
   (let ((buffer (current-buffer))
@@ -290,7 +290,7 @@ Show the diff between current working code and git head."
 
 ;; {{
 (defun my-git-extract-based (target lines)
-  "Extract based version from TARGET."
+  "Extract based version from TARGET and LINES."
   (let* (based (i 0) break)
     (while (and (not break) (< i (length lines)))
       (cond
@@ -350,7 +350,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 
 ;; {{ git-gutter use ivy
 (defun my-reshape-git-gutter (gutter)
-  "Re-shape gutter for `ivy-read'."
+  "Re-shape GUTTER for `ivy-read'."
   (let* ((linenum-start (aref gutter 3))
          (linenum-end (aref gutter 4))
          (target-line "")
@@ -376,6 +376,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
           target-linenum)))
 
 (defun my-goto-git-gutter ()
+  "Go to specific git gutter."
   (interactive)
   (if git-gutter:diffinfos
       (ivy-read "git-gutters:"
@@ -425,3 +426,4 @@ If LEVEL > 0, find file in previous LEVEL commit."
       (shell-command cmd))))
 
 (provide 'init-git)
+;;; init-git.el ends here
