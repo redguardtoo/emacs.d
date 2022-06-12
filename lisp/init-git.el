@@ -406,8 +406,8 @@ If LEVEL > 0, find file in previous LEVEL commit."
   "Git commit."
   (interactive)
   (let ((msg (read-string "Git commit message: ")))
-    (when (> (length msg) 3)
-      (shell-command (format "git commit -m \"%s\"" msg)))))
+    (when (> (length msg) 0)
+      (shell-command (format "git commit --no-verify -m \"%s\"" msg)))))
 
 (defun my-commit-amend (&optional reuse-p)
   "Git amend.  If REUSE-P is t, commit by reusing original message."
@@ -419,7 +419,7 @@ If LEVEL > 0, find file in previous LEVEL commit."
 
     (setq msg (unless reuse-p
                 (read-string "Git amend message: " original-msg)))
-    (when (or reuse-p (> (length msg) 3))
+    (when (or reuse-p (> (length msg) 0))
       (setq cmd (format "git commit --no-verify --amend %s" extra-args))
       (unless reuse-p
         (setq cmd (format "%s -m \"%s\"" cmd msg)))
