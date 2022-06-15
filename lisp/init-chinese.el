@@ -98,6 +98,7 @@
     (setq pyim-enable-shortcode nil)
 
     ;; use memory efficient pyim engine for pinyin IME
+    (my-ensure 'pyim-dregcache)
     (setq pyim-dcache-backend 'pyim-dregcache)
 
     ;; automatically load pinyin dictionaries "*.pyim" under "~/.eim/"
