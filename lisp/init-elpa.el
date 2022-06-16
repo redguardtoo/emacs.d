@@ -243,6 +243,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
   (my-ensure 'package)
   (unless (package-installed-p package min-version)
     (unless (or (assoc package package-archive-contents) no-refresh)
+      (message "Missing package: %s" package)
       (package-refresh-contents))
     (package-install package)))
 
@@ -273,9 +274,11 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'writeroom-mode)
 (require-package 'haml-mode)
 (require-package 'markdown-mode)
-(require-package 'link)
-(require-package 'connection)
-(require-package 'dictionary) ; dictionary requires 'link and 'connection
+(unless *emacs28*
+  (require-package 'link)
+  (require-package 'connection)
+  ;; dictionary requires 'link and 'connection
+  (require-package 'dictionary))
 (require-package 'htmlize) ; prefer stable version
 (require-package 'jade-mode)
 (require-package 'diminish)
