@@ -290,4 +290,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
           ;; write buffer content into file
           (write-region (point-min) (point-max) file))))))
 
+(with-eval-after-load 'flymake
+  ;; if `flymake-no-changes-timeout' is nil, linting code ONLY after saving buffer.
+  ;; This might speeds up Emacs if some some kind of auto-save package is used
+  (setq flymake-no-changes-timeout 1))
+
 (provide 'init-essential)
