@@ -600,7 +600,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; org-do-demote/org-do-premote support selected region
   "c<" 'org-do-promote ; `C-c C-<'
   "c>" 'org-do-demote ; `C-c C->'
-  "cam" 'org-tags-view ; `C-c a m': search items in org-file-apps by tag
   "cxi" 'org-clock-in ; `C-c C-x C-i'
   "cxo" 'org-clock-out ; `C-c C-x C-o'
   "cxr" 'org-clock-report ; `C-c C-x C-r'
