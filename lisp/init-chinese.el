@@ -81,7 +81,7 @@
         (setq pyim-dicts
               (list (list :name "wbdict-v98-elpa" :file file :elpa t))))))
    (t
-    (setq pyim-fuzzy-pinyin-alist
+    (setq pyim-pinyin-fuzzy-alist
           '(("en" "eng")
             ("in" "ing")))
 
