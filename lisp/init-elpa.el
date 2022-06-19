@@ -67,6 +67,7 @@
     git-timemachine ; stable version is broken when git rename file
     highlight-symbol
     undo-fu
+    ob-sagemath
     command-log-mode
     evil ; @see https://github.com/emacs-evil/evil/commit/19cc5f8eef8bfffdec8082b604c7129782acb332
     ;; lsp-mode ; stable version has performance issue, but unstable version sends too many warnings
@@ -389,6 +390,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'ws-butler)
 (require-package 'sage-shell-mode)
 (require-package 'graphql-mode)
+(require-package 'ob-sagemath)
 
 (defvar my-color-themes
   '(afternoon-theme
