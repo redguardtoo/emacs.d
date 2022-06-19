@@ -367,7 +367,7 @@ If you select a region inside current line, the *correct commit which submits th
 ** Use this configuration as merge tool for Git
 This configuration might be the most efficient and most powerful merge tool for VCS.
 Insert below configuration into =~/.gitconfig=,
-#+begin_src javascript
+#+begin_src js
 [mergetool.ediff]
 # use git mergetool ediff to resolve conflicts
 cmd = emacs -nw -Q --eval \"(setq startup-now t)\" -l \"~/.emacs.d/init.el\" --eval \"(progn (setq ediff-quit-hook 'kill-emacs) (if (file-readable-p \\\"$BASE\\\") (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\") (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
