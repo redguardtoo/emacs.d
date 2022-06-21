@@ -1303,6 +1303,8 @@ Emacs 27 is required."
       ;; plays the matched video
       (mybigword-run-mplayer start-time (car videos)))))
 
+(defvar org-agenda-files)
+(defvar org-tags-match-list-sublevels)
 (defvar my-org-agenda-files '("~/blog/")
   "My org agenda files.")
 (defun my-org-tags-view ()

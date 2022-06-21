@@ -406,7 +406,7 @@ Or else erase current buffer."
                            ;; line's format: "dir | score | timestamp"
                            (let* ((a (split-string line "|")))
                              (cons (nth 0 a) (string-to-number (nth 2 a)))))
-                         (split-string (string-trim content)))))
+                         (split-string (string-trim content) "[\n\r]+"))))
 
       ;; sort by timestamp in descending order
       (setq dirs (sort dirs (lambda (a b) (> (cdr a) (cdr b)))))
