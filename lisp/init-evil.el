@@ -210,6 +210,43 @@ If the character before and after CH is space or tab, CH is NOT slash"
 (define-key evil-outer-text-objects-map "f" 'my-evil-path-outer-text-object)
 ;; }}
 
+;; {{ paren range text object
+(defun my-evil-paren-range (count beg end type inclusive)
+  "Get minimum range of paren text object.
+If INCLUSIVE is t, the text object is inclusive."
+  (let* ((parens '("()" "[]" "{}" "<>"))
+         range
+         found-range)
+    (dolist (p parens)
+      (condition-case nil
+          (setq range (evil-select-paren (aref p 0) (aref p 1) beg end type count inclusive))
+        (error nil))
+      (when range
+        (cond
+         (found-range
+          (when (< (- (nth 1 range) (nth 0 range))
+                   (- (nth 1 found-range) (nth 0 found-range)))
+            (setf (nth 0 found-range) (nth 0 range))
+            (setf (nth 1 found-range) (nth 1 range))))
+         (t
+          (setq found-range range)))))
+    found-range))
+
+(evil-define-text-object my-evil-a-paren (count &optional beg end type)
+  "Select a paren."
+  :extend-selection t
+  (my-evil-paren-range count beg end type t))
+
+(evil-define-text-object my-evil-inner-paren (count &optional beg end type)
+  "Select 'inner' paren."
+  :extend-selection nil
+  (my-evil-paren-range count beg end type nil))
+
+(define-key evil-inner-text-objects-map "g" #'my-evil-inner-paren)
+(define-key evil-outer-text-objects-map "g" #'my-evil-a-paren)
+;; }}
+
+
 ;; {{ https://github.com/syl20bnr/evil-escape
 (setq-default evil-escape-delay 0.3)
 (setq evil-escape-excluded-major-modes '(dired-mode))
