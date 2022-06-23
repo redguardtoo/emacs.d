@@ -300,10 +300,9 @@ FN checks these characters belong to normal word characters."
 (setq imenu-max-item-length 256)
 
 ;; {{ recentf-mode
-(setq recentf-keep '(file-remote-p file-readable-p))
 (setq recentf-max-saved-items 2048
       recentf-exclude '("/tmp/"
-                        "/ssh:"
+                        ;; "/ssh:"
                         "/sudo:"
                         "recentf$"
                         "company-statistics-cache\\.el$"
