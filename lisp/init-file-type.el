@@ -10,7 +10,7 @@
                "\\mimeapps\\.list$"
                "\\.editorconfig$"
                "\\.meta$"
-               "^\\.env\\([-.0-9a-z]+\\)?$" ; ".env" or ".env.local"
+               "\\.env[0-9a-z.-]*$" ; ".env" or ".env.local"
                "PKGBUILD$" ; archlinux
                "\\.pgpass$"
                "\\.?muttrc$"
@@ -61,8 +61,7 @@
 
 (my-add-auto-mode 'sh-mode
                "\\.bash\\(_profile\\|_history\\|rc\\.local\\|rc\\)?$"
-               "\\.z?sh$"
-               "\\.env$")
+               "\\.z?sh$")
 
 (my-add-auto-mode 'cmake-mode
                "CMakeLists\\.txt\\'"
