@@ -556,14 +556,14 @@ So it's at the top of clipboard manager."
   (mapc 'kill-buffer (cdr (buffer-list (current-buffer))))
   "All other buffers have been killed!")
 
-(defun minibuffer-inactive-mode-hook-setup ()
+(defun my-minibuffer-inactive-mode-hook-setup ()
   "Set up mini buffer so auto complete works."
   ;; Make `try-expand-dabbrev' from `hippie-expand' work in mini-buffer.
   ;; @see `he-dabbrev-beg', so we need re-define syntax for '/'.
   (set-syntax-table (let* ((table (make-syntax-table)))
                       (modify-syntax-entry ?/ "." table)
                       table)))
-(add-hook 'minibuffer-inactive-mode-hook 'minibuffer-inactive-mode-hook-setup)
+(add-hook 'minibuffer-inactive-mode-hook 'my-minibuffer-inactive-mode-hook-setup)
 
 ;; {{ vc-msg
 (defun vc-msg-hook-setup (vcs-type commit-info)
