@@ -277,6 +277,12 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
          (common-opts "-fs -quiet"))
     (cond
      (*is-a-mac*
+      (cond
+       ((executable-find "mplayer")
+        (setq program "mplayer"))
+       (t
+        (setq program "open")))
+
       (setq program "mplayer"))
 
      (*linux*

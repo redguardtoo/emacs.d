@@ -45,7 +45,7 @@ If no files marked, always operate on current line in dired-mode."
   (push (list pattern program) dired-guess-shell-alist-user))
 
 (with-eval-after-load 'dired-x
-  (my-dired-support-program (if *is-a-mac* "open" (my-guess-mplayer-path))
+  (my-dired-support-program (my-guess-mplayer-path)
                             (my-file-extensions-to-regexp my-media-file-extensions))
 
   (my-dired-support-program (if *unix* "zathura" "open")
