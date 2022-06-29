@@ -1313,5 +1313,43 @@ Emacs 27 is required."
          (org-tags-match-list-sublevels nil))
     (call-interactively 'org-tags-view)))
 
+(defun my-count-items ()
+  "Count items separated by SEPARATORS.  White spaces are ignored."
+  (interactive)
+  (let* ((separators (read-string "Separators (default is \",\"): "))
+         (str (string-trim (cond
+                            ((region-active-p)
+                             (buffer-substring (region-beginning) (region-end)))
+                            (t
+                             (buffer-string))))))
+    (when (equal separators "")
+      (setq separators ","))
+    (setq str (string-trim str separators separators))
+    (message "%s has %d words separated by \"%s\"."
+             (if (region-active-p) "Buffer" "Region")
+             (length (split-string str separators))
+             separators)))
+
+(defvar my-emms-playlist-random-track-keyword "mozart"
+  "Keyword to find next random track in emms playlist.")
+
+(defun my-emms-playlist-random-track (&optional ask-keyword-p)
+  "Play random track in emms playlist.
+If ASK-KEYWORD-P is t, `my-emms-playlist-random-track-keyword' is set from user input."
+  (interactive "P")
+  ;; shuffle the playlist
+  (when ask-keyword-p
+    (setq my-emms-playlist-random-track-keyword
+          (read-string "Keyword for random track: ")))
+  (emms-next)
+  (emms-shuffle)
+  (with-current-buffer emms-playlist-buffer-name
+    (goto-char (point-min))
+    (let* ((case-fold-search t))
+      (search-forward my-emms-playlist-random-track-keyword)
+      (emms-playlist-mode-play-smart)))
+  ;; show current track info
+  (emms-show))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
