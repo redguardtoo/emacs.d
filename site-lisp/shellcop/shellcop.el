@@ -114,23 +114,51 @@ If there is error, it returns t."
 
 (defvar shellcop-debug nil "Enable debug output if not nil.")
 
-(defun shellcop-location-detail (str)
-  "Get file, line and column from STR."
-  (when shellcop-debug (message "shellcop-location-details (%s)" str))
-  (when (string-match "^\\([^:]+\\):\\([0-9]+\\)+\\(:[0-9]+\\)?" str)
-    (let* ((file (match-string 1 str))
-           (line (match-string 2 str))
-           (col (match-string 3 str)))
+(defun shellcop-next-line ()
+  "Content of next line."
+  (save-excursion
+    (forward-line 1)
+    (string-trim (buffer-substring (line-beginning-position)
+                                   (line-end-position)))))
+
+(defun shellcop-location-detail ()
+  "Get file, line and column from at point."
+  (let* (rlt
+         (str (thing-at-point 'filename))
+         file
+         line
+         col
+         next-line)
+
+    (cond
+     ((not str))
+
+     ((string-match "^\\([^:]+\\):\\([0-9]+\\)+\\(:[0-9]+\\)?" str)
+      (setq file (match-string 1 str))
+      (setq line (match-string 2 str))
+      (setq col (match-string 3 str)))
+
+     ((and (setq next-line (shellcop-next-line))
+           (file-exists-p str)
+           (string-match "^\\([0-9]+\\)+\\(:[0-9]+\\)?" next-line))
+
+      (setq file str)
+      (setq line (match-string 1 next-line))
       ;; clean the column format
-      (when col
-        (setq col (replace-regexp-in-string ":" "" col)))
-      (when shellcop-debug (message "file=%s line=%s col=%s" file line col))
-      (list file line col))))
+      (when (setq col (match-string 2 next-line))
+        (setq col (replace-regexp-in-string ":" "" col)))))
+
+    (when (and file line)
+      (setq rlt (list file line col)))
+
+    (when shellcop-debug
+      (message "shellcop-location-details str=%s file=%s line=%s col=%s"
+               str file line col))
+    rlt))
 
 (defun shellcop-extract-location ()
   "Extract location from current line."
-  (let* (file
-         (end (line-end-position))
+  (let* ((end (line-end-position))
          rlt)
     (save-excursion
       (goto-char (line-beginning-position))
@@ -138,10 +166,12 @@ If there is error, it returns t."
       ;; return the first found
       (while (and (< (point) end) (not rlt))
         ;; searching
-        (when (setq file (thing-at-point 'filename))
-          (when (setq rlt (shellcop-location-detail file))
-            (setq rlt (cons (string-trim (shellcop-current-line)) rlt))))
+        (when (setq rlt (shellcop-location-detail))
+          (setq rlt (cons (string-trim (shellcop-current-line)) rlt))
+          (forward-line))
         (forward-word)))
+    (when shellcop-debug
+      (message "shellcop-extract-location called. rlt=%s" rlt))
     rlt))
 
 (defmacro shellcop-push-location (location result)
