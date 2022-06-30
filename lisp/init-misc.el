@@ -1333,12 +1333,12 @@ Emacs 27 is required."
 (defvar my-emms-playlist-random-track-keyword "mozart"
   "Keyword to find next random track in emms playlist.")
 
-(defun my-emms-playlist-random-track (&optional ask-keyword-p)
+(defun my-emms-playlist-random-track (&optional input-p)
   "Play random track in emms playlist.
-If ASK-KEYWORD-P is t, `my-emms-playlist-random-track-keyword' is set from user input."
+If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   (interactive "P")
   ;; shuffle the playlist
-  (when ask-keyword-p
+  (when input-p
     (setq my-emms-playlist-random-track-keyword
           (read-string "Keyword for random track: ")))
   (emms-next)
