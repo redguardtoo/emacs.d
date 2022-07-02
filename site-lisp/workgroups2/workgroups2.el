@@ -175,6 +175,13 @@ When a buffer can't be restored, when creating a blank wg."
   :type 'string
   :group 'workgroups)
 
+(defcustom wg-major-mode-excludes '(dired-mode
+                                    minibuffer-inactive-mode
+                                    minibuffer-mode)
+  "Buffers/frames with the major modes in this list are excluded."
+  :type '(repeat sexp)
+  :group 'workgroups)
+
 ;; {{ crazy stuff to delete soon
 (defconst wg-buffer-list-original (symbol-function 'buffer-list))
 (defalias 'wg-buffer-list-emacs wg-buffer-list-original)
@@ -182,13 +189,13 @@ When a buffer can't be restored, when creating a blank wg."
 
 (defun buffer-list (&optional frame)
   "Redefinition of `buffer-list'.  Pass FRAME to it.
-Remove file and dired buffers that are not associated with workgroup."
+Remove file and buffers that are not associated with workgroup."
   (let ((res (wg-buffer-list-emacs frame))
         (wg-buf-uids (wg-workgroup-associated-buf-uids)))
     (cl-remove-if (lambda (it)
                     (and (or (buffer-file-name it)
-                             (eq (buffer-local-value 'major-mode it) 'dired-mode))
-                         ;;(not (member b wg-buffers))
+                             (memq (buffer-local-value 'major-mode it)
+                                   wg-major-mode-excludes))
                          (not (member (wg-buffer-uid-or-add it) wg-buf-uids))) )
                   res)))
 
@@ -1251,7 +1258,7 @@ See `wg-buffer-local-variables-alist' for details."
      :name           (buffer-name)
      :file-name      (buffer-file-name)
      :point          (point)
-     :mark           (mark)
+     :mark           (mark t)
      :local-vars     (wg-serialize-buffer-local-variables)
      :special-data   (wg-buffer-special-data buffer))))
 
