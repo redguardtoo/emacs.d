@@ -17,7 +17,7 @@
 [_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Emms Playlist
 [_f_] Recent file         [_sr_] Pomodoro resume     [_E_] Typewriter on
 [_d_] Recent directory    [_sp_] Pomodoro pause      [_V_] Old typewriter
-[_z_] Jump around (z.sh)  [_as_] Ascii table
+[_z_] Jump around (z.sh)  [_as_] Ascii table         [_K_] Emms Keyword Random
 [_bh_] Bash history
 [_hh_] Favorite theme
 [_hr_] Random theme
@@ -51,6 +51,7 @@
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
   ("R" (progn (emms-shuffle) (emms-random)))
+  ("K" my-emms-playlist-random-track)
   ("n" emms-next)
   ("w" mybigword-pronounce-word)
   ("im" mybigword-show-image-of-word)

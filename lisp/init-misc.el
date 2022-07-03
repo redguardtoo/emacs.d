@@ -701,26 +701,6 @@ If the shell is already opened in some buffer, switch to that buffer."
      (t
       (ansi-term my-term-program)))))
 
-;; {{ emms
-(with-eval-after-load 'emms
-  ;; minimum setup is more robust
-  (emms-minimalistic)
-  ;; only show file track's base name
-  (setq emms-track-description-function
-        (lambda (track)
-          (let ((desc (emms-track-simple-description track))
-                (type (emms-track-type track)))
-            (when (eq 'file type)
-              (setq desc (my-strip-path desc 2)))
-            desc)))
-
-  (setq emms-source-file-exclude-regexp
-        (concat "\\`\\(#.*#\\|.*,v\\|.*~\\|\\.\\.?\\|\\.#.*\\|,.*\\)\\'\\|"
-                "/\\(CVS\\|RCS\\|\\.dropbox.attr\\|\\.git\\|,.*\\|\\.svn\\)\\(/\\|\\'\\)"))
-  (setq emms-player-list '(emms-player-mplayer
-                           emms-player-vlc)))
-;; }}
-
 (transient-mark-mode t)
 
 (unless (or *cygwin* *win64*)
@@ -1169,41 +1149,6 @@ It's also controlled by `my-lazy-before-save-timer'."
     (comint-read-input-ring t)))
 (add-hook 'gud-gdb-mode-hook 'gud-gdb-mode-hook-setup)
 
-(defun my-emms-play ()
-  "Play media files which are marked or in marked sub-directories."
-  (interactive)
-  (my-ensure 'emms)
-  (unless (eq major-mode 'dired-mode)
-    (error "This command is only used in `dired-mode'"))
-
-  (let* ((items (dired-get-marked-files t current-prefix-arg))
-         (regexp (my-file-extensions-to-regexp my-media-file-extensions))
-         found)
-    (cond
-     ;; at least two items are selected
-     ((> (length items) 1)
-      ;; clear existing playlist
-      (emms-playlist-current-clear)
-      (sit-for 1)
-
-      (dolist (item items)
-        (cond
-         ((file-directory-p item)
-          (emms-add-directory-tree item)
-          (setq found t))
-
-         ((string-match regexp item)
-          ;; add media file to the playlist
-          (emms-add-file item)
-          (setq found t))))
-
-      (when found
-        (with-current-buffer emms-playlist-buffer-name
-          (emms-start))))
-
-     (t
-      (emms-play-directory default-directory)))))
-
 ;; {{ helpful (https://github.com/Wilfred/helpful)
 ;; Note that the built-in `describe-function' includes both functions
 ;; and macros. `helpful-function' is functions only, so we provide
@@ -1329,27 +1274,6 @@ Emacs 27 is required."
              (if (region-active-p) "Buffer" "Region")
              (length (split-string str separators))
              separators)))
-
-(defvar my-emms-playlist-random-track-keyword "mozart"
-  "Keyword to find next random track in emms playlist.")
-
-(defun my-emms-playlist-random-track (&optional input-p)
-  "Play random track in emms playlist.
-If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
-  (interactive "P")
-  ;; shuffle the playlist
-  (when input-p
-    (setq my-emms-playlist-random-track-keyword
-          (read-string "Keyword for random track: ")))
-  (emms-next)
-  (emms-shuffle)
-  (with-current-buffer emms-playlist-buffer-name
-    (goto-char (point-min))
-    (let* ((case-fold-search t))
-      (search-forward my-emms-playlist-random-track-keyword)
-      (emms-playlist-mode-play-smart)))
-  ;; show current track info
-  (emms-show))
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

@@ -124,10 +124,11 @@
   ;; color themes are already installed in `init-elpa.el'
   (require-init 'init-theme)
 
-  ;; crucial tools
+  ;; essential tools
   (require-init 'init-essential)
   ;; tools nice to have
   (require-init 'init-misc t)
+  (require-init 'init-emms t)
 
   (require-init 'init-emacs-w3m t)
   (require-init 'init-shackle t)
