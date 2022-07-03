@@ -87,7 +87,10 @@ Space in the keyword matches any characters.
 Space in the keyword matches any characters.
  \"|\" means OR operator in regexp.")
 
-(defvar my-emms-track-regexp-function #'my-emms-track-regexp-internal
+(defvar my-emms-track-regexp-function
+  (lambda (str)
+    ;; can search track with Chinese information
+    (my-emms-track-regexp-internal (my-extended-regexp str)))
   "Get regexp to search track.")
 
 (defun my-emms-track-regexp-internal (keyword)
