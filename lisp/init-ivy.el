@@ -229,40 +229,9 @@ If N is 2, list files in my recent 20 commits."
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 
 ;; {{  C-o f to toggle case sensitive, @see https://github.com/abo-abo/swiper/issues/1104
-(defun re-builder-extended-pattern (str)
+(defun my-re-builder-extended-pattern (str)
   "Build regex compatible with pinyin from STR."
-  (let* ((len (length str)))
-    (cond
-     ;; do nothing
-     ((<= (length str) 1))
-
-     ;; If the first character of input in ivy is ":",
-     ;; remaining input is converted into Chinese pinyin regex.
-     ((string= (substring str 0 1) ":")
-      (setq str (my-pinyinlib-build-regexp-string (substring str 1 len))))
-
-     ;; If the first character of input in ivy is "/",
-     ;; remaining input is converted to pattern to search camel case word
-     ;; For example, input "/ic" match "isController" or "isCollapsed"
-     ((string= (substring str 0 1) "/")
-      (let* ((rlt "")
-             (i 0)
-             (subs (substring str 1 len))
-             c)
-        (when (> len 2)
-          (setq subs (upcase subs))
-          (while (< i (length subs))
-            (setq c (elt subs i))
-            (setq rlt (concat rlt (cond
-                                   ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
-                                    (format "%c" c))
-                                   (t
-                                    (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
-                                              (format "%c" c))
-                                            "[a-z]+")))))
-            (setq i (1+ i))))
-        (setq str rlt))))
-    (ivy--regex-plus str)))
+  (ivy--regex-plus (my-extended-regexp str)))
 ;; }}
 
 (defun my-counsel-imenu ()
@@ -323,7 +292,7 @@ If N is 2, list files in my recent 20 commits."
   ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
   (setq ivy-use-selectable-prompt t)
 
-  (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
+  (setq ivy-re-builders-alist '((t . my-re-builder-extended-pattern)))
   ;; set actions when running C-x b
   ;; replace "frame" with window to open in new window
   (ivy-set-actions

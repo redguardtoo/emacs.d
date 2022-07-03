@@ -558,6 +558,41 @@ Copied from 3rd party package evil-textobj."
       (setq i (1+ i)))
     rlt))
 
+(defun my-extended-regexp (str)
+  "Build regex compatible with pinyin from STR."
+  (let* ((len (length str)))
+    (cond
+     ;; do nothing
+     ((<= (length str) 1))
+
+     ;; If the first character of input in ivy is ":" or ";",
+     ;; remaining input is converted into Chinese pinyin regex.
+     ((string-match (substring str 0 1) ":;")
+      (setq str (my-pinyinlib-build-regexp-string (substring str 1 len))))
+
+     ;; If the first character of input in ivy is "/",
+     ;; remaining input is converted to pattern to search camel case word
+     ;; For example, input "/ic" match "isController" or "isCollapsed"
+     ((string= (substring str 0 1) "/")
+      (let* ((rlt "")
+             (i 0)
+             (subs (substring str 1 len))
+             c)
+        (when (> len 2)
+          (setq subs (upcase subs))
+          (while (< i (length subs))
+            (setq c (elt subs i))
+            (setq rlt (concat rlt (cond
+                                   ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
+                                    (format "%c" c))
+                                   (t
+                                    (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
+                                              (format "%c" c))
+                                            "[a-z]+")))))
+            (setq i (1+ i))))
+        (setq str rlt))))
+    str))
+
 (defvar my-disable-idle-timer (daemonp)
   "Function passed to `my-run-with-idle-timer' is run immediately.")
 
