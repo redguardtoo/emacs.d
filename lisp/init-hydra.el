@@ -15,9 +15,9 @@
 [_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_S_] Emms Stop
 [_e_] Erase buffer        [_s2_] Pomodoro big task   [_O_] Emms Open
 [_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Emms Playlist
-[_f_] Recent file         [_sr_] Pomodoro resume     [_E_] Typewriter on
-[_d_] Recent directory    [_sp_] Pomodoro pause      [_V_] Old typewriter
-[_z_] Jump around (z.sh)  [_as_] Ascii table         [_K_] Emms Keyword Random
+[_f_] Recent file         [_sr_] Pomodoro resume     [_K_] Emms Keyword Random
+[_d_] Recent directory    [_sp_] Pomodoro pause      [_E_] Typewriter on
+[_z_] Jump around (z.sh)  [_as_] Ascii table         [_V_] Old typewriter
 [_bh_] Bash history
 [_hh_] Favorite theme
 [_hr_] Random theme
