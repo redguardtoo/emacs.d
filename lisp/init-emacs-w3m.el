@@ -79,7 +79,7 @@
   (w3m-lnum-mode 1)
   (local-set-key (kbd ";") 'my-w3m-lnum-follow))
 
-(add-hook 'w3m-mode-hook 'w3m-mode-hook-setup)
+(add-hook 'w3m-mode-hook 'my-w3m-mode-hook-setup)
 
 ; {{ Search using external browser
 (setq browse-url-generic-program
