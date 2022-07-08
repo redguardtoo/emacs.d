@@ -295,4 +295,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   ;; This might speeds up Emacs if some some kind of auto-save package is used
   (setq flymake-no-changes-timeout 1))
 
+(with-eval-after-load 'paren
+  ;; better performance
+  (setq show-paren-delay 0.5))
+
 (provide 'init-essential)
+;;; init-essential.el ends here
