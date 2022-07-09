@@ -1,8 +1,8 @@
-;;; shenshou.el --- Download subtitles from opensubtitles.org -*- lexical-binding: t; -*-
+;;; shenshou.el --- Download&Extract subtitles from opensubtitles.org -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2021-2022 Chen Bin
 ;;
-;; Version: 0.0.4
+;; Version: 0.0.5
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -40,6 +40,8 @@
 ;;   - Set `shenshou-login-user-name' and `shenshou-login-password' first.
 ;;   - Run `shenshou-download-subtitle' in Dired buffer or anywhere.
 ;;   - Run `shenshou-logout-now' to logout.
+;;   - Run `shenshou-extract-subtitle-from-zip' to extract subtitle from zip file.
+;;     Subtitle is automatically renamed to match selected video file.
 ;;
 ;; Tips,
 ;;   - Use `shenshou-language-code-list' to set up subtitle's language.
@@ -54,6 +56,7 @@
 
 (require 'cl-lib)
 (require 'xml)
+(require 'arc-mode)
 (require 'dired)
 
 (defgroup shenshou nil
@@ -108,6 +111,11 @@ Please read curl's manual for more options."
 (defcustom shenshou-login-user-name nil
   "User name to login opensubtitles.  It can't be empty.
 Only logged-in user can download the subtitles."
+  :type 'string
+  :group 'shenshou)
+
+(defcustom shenshou-zip-file-directory nil
+  "Directory containing downloaded zip files."
   :type 'string
   :group 'shenshou)
 
@@ -528,6 +536,19 @@ If FILTER-LEVEL is 2, do more checking on movie name."
 
     (shenshou-sort-subtitles subtitles (file-name-base video-file))))
 
+(defun shenshou-default-directory (video-file)
+  "Get VIDEO-FILE's directory."
+  (if (eq major-mode 'dired-mode) default-directory
+    (file-name-directory video-file)))
+
+(defun shenshou-subtitle-file-name (video-file &optional subtitle)
+  "Get file name of VIDEO-FILE's SUBTITLE."
+  (when video-file
+    (concat (file-name-base video-file)
+            "."
+            (if subtitle (file-name-extension subtitle)
+              "srt"))))
+
 ;;;###autoload
 (defun shenshou-download-subtitle-internal (video-file)
   "Download subtitle of VIDEO-FILE."
@@ -550,15 +571,11 @@ If FILTER-LEVEL is 2, do more checking on movie name."
         (when (setq selected (completing-read (format "Download subtitle of \"%s\": "
                                                       (file-name-nondirectory video-file))
                                               subtitles))
-          (let* ((default-directory (if (eq major-mode 'dired-mode) default-directory
-                                      (file-name-directory video-file)))
+          (let* ((default-directory (shenshou-default-directory video-file))
                  (sub (cdr (assoc selected subtitles)))
                  (subfilename (plist-get sub :subfilename))
                  (download-link (plist-get sub :subdownloadlink))
-                 (output-file (concat (file-name-base video-file)
-                                      "."
-                                      (if subfilename (file-name-extension subfilename)
-                                        "srt")))
+                 (output-file (shenshou-subtitle-file-name video-file subfilename))
                  (cmd (format "%s --silent -b --insecure %s %s | %s -q -d -c > \"%s\" &"
                               shenshou-curl-program
                               shenshou-curl-extra-options
@@ -571,12 +588,8 @@ If FILTER-LEVEL is 2, do more checking on movie name."
         (message "No subtitle is found for \"%s\""
                  (file-name-nondirectory video-file)))))))
 
-;;;###autoload
-(defun shenshou-download-subtitle ()
-  "Download subtitles of video files.
-If current buffer is Dired buffer, marked videos will be processed.
-Or else user need specify the video to process."
-  (interactive)
+(defun shenshou-get-videos ()
+  "Get video files."
   (let* (file
          (videos (cond
                   ((eq major-mode 'dired-mode)
@@ -585,15 +598,21 @@ Or else user need specify the video to process."
                   (t
                    (when (setq file (read-file-name "Please select a video: "))
                      (list file))))))
-
     ;; filter video files by their extensions
-    (setq videos
-          (delq nil
-                (mapcar (lambda (f)
-                          (and (member (file-name-extension f)
-                                       shenshou-supported-video-format)
-                               f))
-                        videos)))
+    (delq nil
+          (mapcar (lambda (f)
+                    (and (member (file-name-extension f)
+                                 shenshou-supported-video-format)
+                         f))
+                  videos))))
+
+;;;###autoload
+(defun shenshou-download-subtitle ()
+  "Download subtitles of video files.
+If current buffer is Dired buffer, marked videos will be processed.
+Or else user need specify the video to process."
+  (interactive)
+  (let* ((videos (shenshou-get-videos)))
 
     (cond
      ((> (length videos) 0)
@@ -603,6 +622,41 @@ Or else user need specify the video to process."
 
      (t
       (message "No video files are selected.")))))
+
+;;;###autoload
+(defun shenshou-extract-subtitle-from-zip ()
+  "Extract subtitle from zip file and rename it to match selected video."
+  (interactive)
+  (let* ((video-file (car (shenshou-get-videos)))
+         (zip-file (when video-file
+                     (read-file-name "Select zip file:"
+                                     shenshou-zip-file-directory)))
+         (zip-summarize (when zip-file
+                          (with-temp-buffer
+                            (set-buffer-multibyte nil)
+                            (setq buffer-file-coding-system 'binary)
+                            (insert-file-contents-literally zip-file)
+                            (archive-zip-summarize))))
+         (enames (delq nil
+                       (mapcar (lambda (e)
+                                 (let ((ename (archive--file-desc-ext-file-name e)))
+                                   (when (string-match "\\.srt$" ename)
+                                     ename)))
+                               zip-summarize)))
+         (selected-ename (when enames
+                           (cond
+                            ((eq 1 (length enames))
+                             (car enames))
+                            (t
+                             (completing-read "Select subtitle to extract: "
+                                              enames))))))
+
+    (when selected-ename
+      (with-temp-buffer
+        (archive-zip-extract zip-file selected-ename)
+        (let* ((srt-file (shenshou-subtitle-file-name video-file)))
+          (write-region (point-min) (point-max) srt-file)
+          (message "%s is created at %s." srt-file default-directory))))))
 
 (provide 'shenshou)
 ;;; shenshou.el ends here

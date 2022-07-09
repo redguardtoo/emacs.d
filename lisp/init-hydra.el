@@ -282,12 +282,14 @@
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
 [_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
 [_sa_] Fetch subtitle(s)   [_C_]  Copy          [_dd_] directory
-[_vv_] Video => Mp3        [_rb_] Change base
-[_aa_] Recording Wav       [_df_] Diff 2 files
-[_ee_] Mkv => Srt          [_ff_] Find
+[_se_] Extract subtitle    [_rb_] Change base
+[_vv_] Video => Mp3        [_df_] Diff 2 files
+[_aa_] Recording Wav       [_ff_] Find
+[_ee_] Mkv => Srt
 [_+_] Create directory
 "
     ("sa" shenshou-download-subtitle)
+    ("se" shenshou-extract-subtitle-from-zip)
     ("pp" (my-copy-file-info 'file-truename))
     ("nn" (my-copy-file-info 'file-name-nondirectory))
     ("bb" (my-copy-file-info 'file-name-base))
