@@ -42,9 +42,10 @@
   (setq emms-player-list '(emms-player-mplayer
                            emms-player-vlc)))
 
-(defun my-emms-play ()
-  "Play media files which are marked or in marked sub-directories."
-  (interactive)
+(defun my-emms-play (&optional subdir-p)
+  "Play media files which are marked or in marked sub-directories.
+If SUBDIR-P is t, play videos in sub-directories too."
+  (interactive "P")
   (my-ensure 'emms)
   (unless (eq major-mode 'dired-mode)
     (error "This command is only used in `dired-mode'"))
@@ -52,6 +53,7 @@
   (let* ((items (dired-get-marked-files t current-prefix-arg))
          (regexp (my-file-extensions-to-regexp my-media-file-extensions))
          found)
+    (message "items=%s len=%s" items (length items))
     (cond
      ;; at least two items are selected
      ((> (length items) 1)
@@ -74,6 +76,12 @@
         (with-current-buffer emms-playlist-buffer-name
           (emms-start))))
 
+     (subdir-p
+      (emms-add-directory-tree default-directory)
+      (with-current-buffer emms-playlist-buffer-name
+        (emms-start)))
+
+     ;; play video under current directory and default directory
      (t
       (emms-play-directory default-directory)))))
 
