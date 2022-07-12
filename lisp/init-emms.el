@@ -53,7 +53,6 @@ If SUBDIR-P is t, play videos in sub-directories too."
   (let* ((items (dired-get-marked-files t current-prefix-arg))
          (regexp (my-file-extensions-to-regexp my-media-file-extensions))
          found)
-    (message "items=%s len=%s" items (length items))
     (cond
      ;; at least two items are selected
      ((> (length items) 1)
