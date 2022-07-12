@@ -67,9 +67,9 @@
           (append
            (delq nil
                  (mapcar (lambda (dir)
-                           (unless (string-match-p "^\\." dir)
+                           (unless (string-match "^\\." dir)
                              (expand-file-name dir)))
-                         (directory-files my-site-lisp-dir)))
+                         (directory-files lisp-dir)))
            load-path))))
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
