@@ -87,8 +87,22 @@ If no files marked, always operate on current line in dired-mode."
                                                             "mht"
                                                             "epub"))))
 
-(defun dired-mode-hook-setup ()
+(defvar my-dired-new-file-first-dirs
+  '("bt/finished/$"
+    "bt/torrents?/$"
+    "documents?/$"
+    "music/$"
+    "downloads?/$")
+  "Dired directory patterns where newest files are on the top.")
+
+(defun my-dired-mode-hook-setup ()
   "Set up Dired."
+  (when (cl-find-if (lambda (regexp)
+                      (let ((case-fold-search t))
+                        (string-match regexp default-directory)))
+                my-dired-new-file-first-dirs)
+    (setq dired-actual-switches "-lat"))
+
   (dired-hide-details-mode 1)
   (diredfl-mode)
   (unless dired-subdir-alist (dired-build-subdir-alist))
@@ -96,7 +110,7 @@ If no files marked, always operate on current line in dired-mode."
   (local-set-key  "e" 'my-ediff-files)
   (local-set-key  "/" 'dired-isearch-filenames)
   (local-set-key  "\\" 'diredext-exec-git-command-in-shell))
-(add-hook 'dired-mode-hook 'dired-mode-hook-setup)
+(add-hook 'dired-mode-hook 'my-dired-mode-hook-setup)
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to use
 ;; See `session-globals-regexp'
@@ -283,6 +297,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
         (apply orig-func args)))))
   (advice-add 'dired-do-async-shell-command :around #'my-dired-do-async-shell-command-hack)
 
+  ;; sort file names (numbered) in dired
   ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
   (setq dired-listing-switches "-laGh1v")
   (setq dired-recursive-deletes 'always))
