@@ -1219,7 +1219,7 @@ It's also controlled by `my-lazy-before-save-timer'."
     (calendar arg)))
 ;; }}
 
-(defun my-srt-my-player-play-video-at-point ()
+(defun my-srt-play-video-at-point ()
   "In srt file, play video from current time stamp.
 Emacs 27 is required."
   (interactive)
