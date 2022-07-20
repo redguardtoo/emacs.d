@@ -19,7 +19,7 @@
 ;; org mode
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c C-r") 'org-store-link)
-;;(setq vc-follow-symlinks nil)
+(setq vc-follow-symlinks nil)
 (setq org-agenda-files  '("~/GTD"))
 (setq org-M-RET-may-split-line nil)
 
