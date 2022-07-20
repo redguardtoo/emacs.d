@@ -128,31 +128,46 @@ Space in the keyword matches any characters.
                                                       (my-emms-track-description track))))))
     (emms-show)))
 
+(defun my-emms-search-track ()
+  "Search track."
+  (let* ((case-fold-search t)
+         (continue-p t)
+         found-p
+         track)
+    (while continue-p
+      (cond
+       ((and (setq track (emms-playlist-track-at))
+             (my-emms-track-match-p track my-emms-playlist-random-track-keyword))
+        (emms-playlist-mode-play-current-track)
+        (setq found-p t)
+        (setq continue-p nil))
+       (t
+        (forward-line 1)
+        (setq continue-p (< (point) (1- (point-max)))))))
+
+    found-p))
+
 (defun my-emms-playlist-random-track (&optional input-p)
   "Play random track in emms playlist.
 If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   (interactive "P")
-  ;; shuffle the playlist
   (when input-p
     (setq my-emms-playlist-random-track-keyword
           (read-string "Keyword for random track: ")))
+
+  ;; search below current track
   (emms-next)
-  (emms-shuffle)
   (with-current-buffer emms-playlist-buffer-name
-    (goto-char (point-min))
-    (let* ((case-fold-search t)
-           (continue-p t)
-           track)
-      (while continue-p
-        (cond
-         ((and (setq track (emms-playlist-track-at))
-               (my-emms-track-match-p track my-emms-playlist-random-track-keyword))
-            (emms-playlist-mode-play-current-track)
-            (setq continue-p nil))
-         (t
-          (forward-line 1)
-          (setq continue-p (< (point) (1- (point-max)))))))))
-  (my-emms-show))
+    (let* ((found-p (my-emms-search-track)))
+      (unless found-p
+        (goto-char (point-min))
+        (setq found-p (my-emms-search-track)))
+      (cond
+       (found-p
+        ;; show current track info
+        (my-emms-show))
+       (t
+        (message "No track is found."))))))
 
 (defun my-emms-playlist-filter (&optional input-p)
   "Filter tracks in emms playlist.
