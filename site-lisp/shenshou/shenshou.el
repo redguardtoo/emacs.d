@@ -639,7 +639,11 @@ Or else user need specify the video to process."
                             (archive-zip-summarize))))
          (enames (delq nil
                        (mapcar (lambda (e)
-                                 (let ((ename (archive--file-desc-ext-file-name e)))
+                                 (let ((ename (if (fboundp 'archive--file-desc-ext-file-name)
+                                                  ;; emacs 28
+                                                  (archive--file-desc-ext-file-name e)
+                                                ;; emacs 27
+                                                (aref e 0))))
                                    (when (string-match "\\.srt$" ename)
                                      ename)))
                                zip-summarize)))
