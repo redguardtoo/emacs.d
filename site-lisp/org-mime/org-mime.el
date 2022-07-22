@@ -170,7 +170,8 @@ Default (nil) selects the original org file."
   :group 'org-mime
   :type 'sexp)
 
-(defcustom org-mime-mail-signature-separator "^--\s?$"
+(defcustom org-mime-mail-signature-separator
+  (or message-signature-separator "^--\s?$")
   "Default mail signature separator."
   :group 'org-mime
   :type 'string)
@@ -486,7 +487,10 @@ CURRENT-FILE is used to calculate full path of images."
       (mapc (lambda (f)
               (when org-mime-debug (message "attaching: %s" f))
               (mml-attach-file f))
-            files))))
+            files))
+
+    ;; spacer
+    (insert "\n\n")))
 
 (defun org-mime-mail-body-begin ()
   "Get begin of mail body."
@@ -578,14 +582,16 @@ If called with an active region only export that region, otherwise entire body."
     ;; restore secure tags
     (when secure-tags
       (insert (mapconcat #'identity secure-tags "\n"))
-      (insert "\n"))
+      ;; spacer
+      (insert "\n\n"))
 
     ;; insert converted html
     (org-mime-insert-html-content plain file html)
 
-    ;; restore part tags
+    ;; restore part tags (attachments)
     (when part-tags
-      (insert (mapconcat #'identity part-tags "\n")))))
+      (insert (mapconcat #'identity part-tags "\n"))
+      (insert "\n\n"))))
 
 (defun org-mime--get-buffer-title ()
   "Get buffer title."
@@ -834,7 +840,7 @@ Following headline properties can determine the mail headers.
    (t
     (setq org-mime--saved-temp-window-config (current-window-configuration))
     (let* ((beg (copy-marker (org-mime-mail-body-begin)))
-           (end (copy-marker (point-max)))
+           (end (copy-marker (or (org-mime-mail-signature-begin) (point-max))))
            (bufname "OrgMimeMailBody")
            (buffer (generate-new-buffer bufname))
            (overlay (org-mime-src--make-source-overlay beg end))
