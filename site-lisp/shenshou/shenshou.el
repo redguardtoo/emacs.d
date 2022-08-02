@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021-2022 Chen Bin
 ;;
-;; Version: 0.0.6
+;; Version: 0.0.8
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -114,7 +114,7 @@ If it's empty, user is required to provide password during login process."
   :type 'string
   :group 'shenshou)
 
-(defcustom shenshou-api-key "7sCnLawJ27jMMbsaHSAgy0IVGOaqt8H1"
+(defcustom shenshou-api-key "9PEmFOnb2IzOHAbpbwRWcll01IsIjfFz"
   "Api key to access opensubtitles endpoint."
   :type 'string
   :group 'shenshou)
@@ -265,6 +265,8 @@ If USE-TOKEN-P is t, the access token is used."
 (defun shenshou-login-now ()
   "Login remote opensubtitles server and set `shenshou-token'."
   (interactive)
+  (when shenshou-debug
+    (message "shenshou-login-now called."))
   ;; sanity check
   (cond
    ((not (executable-find shenshou-curl-program))
@@ -298,7 +300,7 @@ If USE-TOKEN-P is t, the access token is used."
                    (shenshou-json-value user 'allowed_downloads)
                    (shenshou-json-value user 'level)))
          (t
-          (error "Login failed.  Please double check user name, password, and network!"))))))))
+          (error "Login failed.  Please double check user name, password, api-key and network!"))))))))
 
 ;;;###autoload
 (defun shenshou-logout-now ()
@@ -511,13 +513,15 @@ If FILTER-LEVEL is 2, do more checking on movie name."
 
 (defun shenshou-download-link (file-id)
   "Get subtitle download link from FILE-ID."
+  (when shenshou-debug
+    (message "shenshou-download-link called. file-id=%s" file-id))
   (let* ((resp (shenshou-restful-call "download"
                                      (format "{\"file_id\": %s}" file-id)
                                      nil
                                      nil
                                      t)))
     (when shenshou-debug
-      (message "shenshou-download-link called => resp=%s" resp))
+      (message "shenshou-download-link returned. resp=%s" resp))
     (shenshou-json-value resp 'link)))
 
 ;;;###autoload
