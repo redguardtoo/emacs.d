@@ -1,11 +1,11 @@
 ;;; xclip.el --- Copy&paste GUI clipboard from text terminal  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2007-2019  Free Software Foundation, Inc.
+;; Copyright (C) 2007-2022  Free Software Foundation, Inc.
 
 ;; Author: Leo Liu <sdl.web@gmail.com>
 ;; Keywords: convenience, tools
 ;; Created: 2007-12-30
-;; Version: 1.8
+;; Version: 1.11
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@
 ;;   http://www.vergenet.net/~conrad/software/xsel/ respectively).
 ;; - MacOS: `pbpaste/pbcopy'
 ;; - Cygwin: `getclip/putclip'
+;; - Under Wayland: `wl-clipboard' (https://github.com/bugaevc/wl-clipboard)
+;; - Termux: `termux-clipboard-get/set'
 ;; - Emacs: It can also use Emacs's built-in GUI support to talk to the GUI.
 ;;   This requires an Emacs built with GUI support.
 ;;   It uses `make-frame-on-display' which has been tested to work under X11,
@@ -74,7 +76,11 @@ If non-nil `xclip-program' is ignored.")
    (and (eq system-type 'cygwin) (executable-find "getclip") 'getclip)
    (and (executable-find "xclip") 'xclip)
    (and (executable-find "xsel") 'xsel)
+   (and (executable-find "wl-copy") 'wl-copy) ;github.com/bugaevc/wl-clipboard
+   (and (executable-find "termux-clipboard-get") 'termux-clipboard-get)
    (and (fboundp 'x-create-frame) (getenv "DISPLAY") 'emacs)
+   (and (eq system-type 'gnu/linux) ;FIXME: How do we detect WSL?
+        (executable-find "powershell.exe") 'powershell)
    'xclip)
   "Method to use to access the GUI's clipboard.
 Can be one of `pbpaste' for MacOS, `xclip' or `xsel' for X11,
@@ -84,6 +90,9 @@ and `getclip' under Cygwin, or `emacs' to use Emacs's GUI code for that."
           (const :tag "Cygwin: getclip/putclip" getclip)
           (const :tag "X11: xclip" xclip)
           (const :tag "X11: xsel" xsel)
+          (const :tag "Wayland: wl-copy" wl-copy)
+          (const :tag "Termux: termux-clipboard-get/set" termux-clipboard-get)
+          (const :tag "WSL: clip.exe/powershell.exe" powershell)
           (const :tag "X11: Emacs" emacs)))
 
 (defcustom xclip-program (symbol-name xclip-method)
@@ -92,10 +101,11 @@ and `getclip' under Cygwin, or `emacs' to use Emacs's GUI code for that."
 
 ;;;; Core functions.
 
+(defvar xclip-mode)
+
 (defun xclip-set-selection (type data)
   "TYPE is a symbol: primary, secondary and clipboard.
-
-See also `x-set-selection'."
+TYPE and DATA are the same as for `gui-set-selection'."
   (if (eq xclip-method 'emacs)
       (with-selected-frame (xclip--hidden-frame)
         (let ((xclip-mode nil)) ;;Just out of paranoia.
@@ -110,6 +120,9 @@ See also `x-set-selection'."
                   "pbcopy" nil
                   (replace-regexp-in-string "\\(.*\\)pbpaste" "\\1pbcopy"
                                             xclip-program 'fixedcase))))
+              (`powershell
+               (when (memq type '(clipboard CLIPBOARD))
+                 (start-process "clip.exe" nil "clip.exe")))
               (`getclip
                (when (memq type '(clipboard CLIPBOARD))
                  (start-process
@@ -128,6 +141,18 @@ See also `x-set-selection'."
                  (start-process
                   "xsel" nil xclip-program
                   "-i" (concat "--" (downcase (symbol-name type))))))
+              (`wl-copy
+               (when (and (getenv "WAYLAND_DISPLAY")
+                          (memq type '(clipboard CLIPBOARD primary PRIMARY)))
+                 (apply #'start-process
+                        "wl-copy" nil xclip-program
+                        (if (memq type '(primary PRIMARY)) '("-p")))))
+              (`termux-clipboard-get
+               (when (memq type '(clipboard CLIPBOARD))
+                 (start-process "termux-clipboard-set" nil
+                                (replace-regexp-in-string
+                                 "\\(.*\\)get" "\\1set"
+                                 xclip-program 'fixedcase))))
               (method (error "Unknown `xclip-method': %S" method)))))
       (when proc
         (process-send-string proc data)
@@ -146,6 +171,11 @@ See also `x-set-selection'."
          (when (memq type '(clipboard CLIPBOARD))
            (call-process xclip-program nil standard-output nil
                          "-Prefer" "txt")))
+        (`powershell
+         (when (memq type '(clipboard CLIPBOARD))
+           (let ((coding-system-for-read 'dos)) ;Convert CR->LF.
+             (call-process "powershell.exe" nil `(,standard-output nil) nil
+                           "-command" "Get-Clipboard"))))
         (`getclip
          (when (memq type '(clipboard CLIPBOARD))
            (call-process xclip-program nil standard-output nil)))
@@ -160,6 +190,22 @@ See also `x-set-selection'."
                                  secondary SECONDARY)))
            (call-process xclip-program nil standard-output nil
                          "-o" (concat "--" (downcase (symbol-name type))))))
+        (`wl-copy
+         (when (and (getenv "WAYLAND_DISPLAY")
+                    (memq type '(clipboard CLIPBOARD primary PRIMARY)))
+           (apply #'call-process
+                  (replace-regexp-in-string "\\(.*\\)copy" "\\1paste"
+                                            xclip-program 'fixedcase)
+                  nil standard-output nil
+                  ;; From wl-paste's doc:
+                  ;;   -n, --no-newline  Do not append a newline character
+                  ;;    after the pasted clipboard content. This option is
+                  ;;    automatically enabled for non-text content types and
+                  ;;    when using the --watch mode.
+                  "-n" (if (memq type '(primary PRIMARY)) '("-p")))))
+        (`termux-clipboard-get
+         (when (memq type '(clipboard CLIPBOARD))
+           (call-process xclip-program nil standard-output nil)))
         (method (error "Unknown `xclip-method': %S" method))))))
 
 ;;;###autoload
@@ -232,15 +278,18 @@ Emacs-NN and is then later run by Emacs>NN."
           nil))
 
       ;; BIG UGLY HACK!
-      ;; xterm.el has a defmethod to use some (poorly supported) escape
+      ;; term/xterm.el has a defmethod to use some (poorly supported) escape
       ;; sequences (code named OSC 52) for clipboard interaction, and enables
       ;; it by default.
-      ;; Problem is, that its defmethod takes precedence over our defmethod,
+      ;; Problem is that its defmethod takes precedence over our defmethod,
       ;; so we need to disable it in order to be called.
       (cl-defmethod gui-backend-set-selection :extra "xclip-override"
           (selection-symbol value
            &context (window-system nil)
-                    ((terminal-parameter nil 'xterm--set-selection) (eql t)))
+                    ((terminal-parameter nil 'xterm--set-selection) (eql t))
+                    ;; This extra test gives this method higher precedence
+                    ;; over the one in term/xterm.el.
+                    ((featurep 'term/xterm) (eql t)))
         ;; Disable this method which doesn't work anyway in 99% of the cases!
         (setf (terminal-parameter nil 'xterm--set-selection) nil)
         ;; Try again!
@@ -300,100 +349,6 @@ Emacs-NN and is then later run by Emacs>NN."
   (defun xclip--setup ()
     (setq interprogram-cut-function 'xclip-select-text)
     (setq interprogram-paste-function 'xclip-selection-value)))
-
-;;;; ChangeLog:
-
-;; 2019-03-11  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Don't use remote processes to get selection
-;; 
-;; 	(xclip-get-selection, xclip-selection-value): Avoid process-file. Fixes
-;; 	bug#34798.
-;; 
-;; 2018-12-12  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Add new `emacs` method
-;; 
-;; 	(xclip-method): Add `emacs`.
-;; 	(xclip--hidden-frame): New var and function.
-;; 	(xclip-set-selection, xclip-get-selection): Use it to handle `emacs`.
-;; 	(xclip-mode): Silence byte-compiler warning for `xclip--setup`.
-;; 
-;; 2018-12-11  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Make it work again on Emacs<25
-;; 
-;; 	(xclip-set-selection, xclip-get-selection): Avoid pcase's quote.
-;; 	(xclip--if): Generalize xclip--if-macro-fboundp. Use it to better test
-;; 	whether the cl-generic features are available.
-;; 
-;; 2018-11-18  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Fix bug#33399
-;; 
-;; 	(xclip-set-selection): Don't use start-file-process.
-;; 
-;; 2018-08-23  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Add support for `xsel` and Cygwin's `getclip`
-;; 
-;; 	Move Emacs<25 code to the end.
-;; 	(xclip): New group.
-;; 	(xclip-program): Change default to depend on xclip-use-pbcopy&paste. 
-;; 	Move accordingly.
-;; 	(xclip-select-enable-clipboard): Mark as obsolete.
-;; 	(xclip-use-pbcopy&paste): Make it into a defvar.  Mark as obsolete.
-;; 	(xclip-method): New defcustom.
-;; 	(xclip-set-selection, xclip-get-selection): Use it.
-;; 	(xclip-mode): Simplify.
-;; 
-;; 2017-11-08  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip/xclip.el: Use gui-backend-*-selection in Emacs≥25
-;; 
-;; 	(xclip-set-selection) <pbcopy>: Don't set the clipboard when primary is
-;; 	requested.
-;; 	(xclip-get-selection): New function extracted from
-;; 	xclip-selection-value.
-;; 	(turn-on-xclip): Rename to xclip--setup.
-;; 	(xclip-mode): Don't use xclip--setup in Emacs≥25. Disable the mode is
-;; 	xclip-program is not found.
-;; 	(xclip--if-macro-fboundp): New macro.
-;; 	(gui-backend-get-selection, gui-backend-set-selection): New methods.
-;; 
-;; 2013-09-06  Leo Liu  <sdl.web@gmail.com>
-;; 
-;; 	* xclip.el: Fix last change
-;; 
-;; 2013-09-06  Leo Liu  <sdl.web@gmail.com>
-;; 
-;; 	* xclip.el: Use pbcopy and pbpaste if available
-;; 
-;; 	(xclip-use-pbcopy&paste): New variable.
-;; 	(xclip-set-selection, xclip-selection-value, xclip-mode): Use it.
-;; 
-;; 2013-09-05  Leo Liu  <sdl.web@gmail.com>
-;; 
-;; 	* xclip.el: Some cleanups and fix copyright years.
-;; 
-;; 	(xclip-program, xclip-select-enable-clipboard): Use defcustom.
-;; 	(xclip-select-text): Cleanup.
-;; 	(turn-off-xclip): Remove.
-;; 	(xclip-mode): Check xclip-program here.
-;; 
-;; 2012-02-05  Stefan Monnier  <monnier@iro.umontreal.ca>
-;; 
-;; 	* xclip.el: Better follow conventions. Fix up copyright notice.
-;; 	(xclip-program): Make it work in the usual way.
-;; 	(xclip-set-selection, xclip-selection-value): Obey xclip-program.
-;; 	(turn-on-xclip, turn-off-xclip): Don't autoload, not interactive.
-;; 	(xclip-mode): New minor mode to avoid enabling it unconditionally.
-;; 
-;; 2012-02-05  Leo Liu  <sdl.web@gmail.com>
-;; 
-;; 	Add xclip.el.
-;; 
-
 
 
 (provide 'xclip)
