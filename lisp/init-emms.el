@@ -155,10 +155,11 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
     (setq my-emms-playlist-random-track-keyword
           (read-string "Keyword for random track: ")))
 
-  ;; search below current track
-  (emms-next)
   (with-current-buffer emms-playlist-buffer-name
+    ;; search below current track
+    (forward-line 1)
     (let* ((found-p (my-emms-search-track)))
+      ;; if not found, search from the beginning
       (unless found-p
         (goto-char (point-min))
         (setq found-p (my-emms-search-track)))
