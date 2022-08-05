@@ -76,7 +76,12 @@
 ;;
 ;;; Code:
 
-(require 'cl-lib)
+(if (not (featurep 'cl-lib))
+    (progn
+      (require 'cl)
+      ;; fix conflict name
+      (defalias 'cl-reduce 'reduce))
+  (require 'cl-lib))
 ;; (require 'json)?
 
 (defgroup keyfreq nil
@@ -116,11 +121,16 @@ by default."
   :group 'keyfreq
   :type 'file)
 
+
 (defcustom keyfreq-file-lock "~/.emacs.keyfreq.lock"
   "Lock file to update the `keyfreq-file'."
   :group 'keyfreq
   :type 'file)
 
+(defcustom keyfreq-excluded-regexp '()
+  "List of commands in REGEXP-FORM excluded by keyfreq."
+  :group 'keyfreq
+  :type 'file)
 
 (defvar keyfreq-table (make-hash-table :test 'equal :size 128)
   "Hash table storing number of times each command was called in each major mode
@@ -129,16 +139,25 @@ since the last time the frequencies were saved in `keyfreq-file'.")
 (defvar keyfreq-excluded-commands '()
   "List of commands excluded by keyfreq.")
 
+(defun keyfreq-match-p (cmd)
+  "Return t if CMD in `keyfreq-excluded-commands' or match `keyfreq-excluded-regexp'."
+  ;; HACK Inspire by `consult--regexp-filter'
+  (let ((filter (mapconcat (lambda (x) (concat "\\(?:" x "\\)"))
+                           keyfreq-excluded-regexp "\\|")))
+    (or (memq cmd keyfreq-excluded-commands)
+        (when keyfreq-excluded-regexp
+          (string-match filter (symbol-name cmd))))))
+
+
 (defun keyfreq-pre-command-hook ()
   "Record command execution in `keyfreq-table' hash."
   (let ((command real-last-command) count)
     (when (and command (symbolp command))
       (setq count (gethash (cons major-mode command) keyfreq-table))
-      (unless (memq command keyfreq-excluded-commands)
+      (unless (keyfreq-match-p command)
         (puthash (cons major-mode command) (if count (1+ count) 1)
                  keyfreq-table)
         ))))
-
 
 (defun keyfreq-groups-major-modes (table)
   "Group major modes in TABLE by command.
@@ -398,7 +417,7 @@ is used as MAJOR-MODE-SYMBOL argument."
 (defun keyfreq-reset ()
   "Reset all statistics including those in the file."
   (interactive)
-  (when (yes-or-no-p (concat "Delete keyfreq file? You will lost all your stats. "))
+  (when (yes-or-no-p (concat "Delete keyfreq file? You will lose all your stats. "))
     ;; clear the hash table
     (clrhash keyfreq-table)
     ;; Deal with the file
@@ -519,7 +538,7 @@ The table is not reset, so the values are appended to the table."
 	;; Add the values in the table
 	(while (and (listp l) l)
 	  (if (listp (car l))
-          (unless (memq (cdr (caar l)) keyfreq-excluded-commands)
+          (unless (keyfreq-match-p (cdr (caar l)))
             (puthash (caar l) (+ (gethash (caar l) table 0) (cdar l)) table)))
 	  (setq l (cdr l)))
 	)))
