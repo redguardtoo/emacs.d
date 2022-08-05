@@ -17,7 +17,7 @@
 [_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Playlist
 [_f_] Recent file         [_sr_] Pomodoro resume     [_K_] Search
 [_d_] Recent directory    [_sp_] Pomodoro pause      [_F_] filter
-[_z_] Jump around (z.sh)  [_as_] Ascii table
+[_z_] Jump around (z.sh)  [_as_] Ascii table         [_E_] replay
 [_bh_] Bash history       [_E_] Typewriter on/off
 [_hh_] Favorite theme     [_V_] Old typewriter
 [_hr_] Random theme
@@ -33,37 +33,44 @@
   ("bh" my-insert-bash-history)
   ("hh" my-random-favorite-color-theme)
   ("hr" my-random-healthy-color-theme)
-  ("ss" wg-create-workgroup)
   ("ii" my-counsel-imenu)
   ("ka" my-kill-all-but-current-buffer)
   ("id" my-insert-date)
   ("as" my-ascii-table)
+  ("ss" wg-create-workgroup)
   ("ll" wg-open-workgroup)
-
   ("e" shellcop-erase-buffer)
   ("r" shellcop-reset-with-new-command)
   ("z" shellcop-jump-around)
   ("E" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
+
+  ;; {{pomodoro
   ("s1" (pomodoro-start 15))
   ("s2" (pomodoro-start 60))
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
+  ;; }}
+
+  ;; {{emms
   ("R" (progn (emms-shuffle) (emms-random)))
   ("F" my-emms-playlist-filter)
   ("K" my-emms-playlist-random-track)
-  ("n" emms-next)
-  ("w" mybigword-pronounce-word)
-  ("im" mybigword-show-image-of-word)
-  ("W" my-lookup-bigword-definition-in-buffer)
-  ("v" mybigword-play-video-of-word-at-point)
+  ("E" (emms-seek-to 0))
   ("p" emms-previous)
   ("P" emms-pause)
   ("S" emms-stop)
   ("O" emms-play-playlist)
-  ("bb" dianyou-switch-gnus-buffer)
+  ("n" emms-next)
   ("L" emms-playlist-mode-go)
+  ;; }}
+
+  ("w" mybigword-pronounce-word)
+  ("im" mybigword-show-image-of-word)
+  ("W" my-lookup-bigword-definition-in-buffer)
+  ("v" mybigword-play-video-of-word-at-point)
+  ("bb" dianyou-switch-gnus-buffer)
   ("q" nil :color red))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
