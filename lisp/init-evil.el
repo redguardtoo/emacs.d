@@ -820,16 +820,25 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 (advice-add 'evil-visualstar/begin-search :after #'my-cc-isearch-string)
 ;; }}
 
-;; {{ change mode-line color by evil state
+;; {{ change modeline color by evil&ime state
 (defconst my-default-color (cons (face-background 'mode-line)
                                  (face-foreground 'mode-line)))
+
 (defun my-show-evil-state ()
-  "Change mode line color to notify user evil current state."
-  (let* ((color (cond ((minibufferp) my-default-color)
-                      ((evil-insert-state-p) '("#e80000" . "#ffffff"))
-                      ((evil-emacs-state-p)  '("#444488" . "#ffffff"))
-                      ((buffer-modified-p)   '("#006fa0" . "#ffffff"))
-                      (t my-default-color))))
+  "Change modeline color to notify user evil current state."
+  (let ((color (cond
+                ((minibufferp)
+                 my-default-color)
+                (current-input-method
+                 '("#e80074" . "#ffffff"))
+                ((evil-insert-state-p)
+                 '("#e80000" . "#ffffff"))
+                ((evil-emacs-state-p)
+                 '("#444488" . "#ffffff"))
+                ((buffer-modified-p)
+                 '("#006fa0" . "#ffffff"))
+                (t
+                 my-default-color))))
     (set-face-background 'mode-line (car color))
     (set-face-foreground 'mode-line (cdr color))))
 (add-hook 'post-command-hook #'my-show-evil-state)
