@@ -45,14 +45,14 @@
 ;; }}
 
 ;; ffip-diff-mode (read only) evil setup
-(defun ffip-diff-mode-hook-setup ()
+(defun my-ffip-diff-mode-hook-setup ()
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
   (evil-local-set-key 'normal "u" 'diff-undo)
   (evil-local-set-key 'normal "a" 'ffip-diff-apply-hunk)
   (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
-(add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-setup)
+(add-hook 'ffip-diff-mode-hook 'my-ffip-diff-mode-hook-setup)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
@@ -851,15 +851,14 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 (define-key evil-motion-state-map "gy" 'evilnc-yank-and-comment-operator)
 
 (defun my-current-line-html-p (paragraph-region)
-  "Is current line html?"
+  "Test if current line in PARAGRAPH-REGION is html."
   (let* ((line (buffer-substring-no-properties (line-beginning-position)
                                                (line-end-position)))
          (re (format "^[ \t]*\\(%s\\)?[ \t]*</?[a-zA-Z]+"
                      (regexp-quote (evilnc-html-comment-start)))))
     ;; current paragraph does contain html tag
-    (if (and (>= (point) (car paragraph-region))
-             (string-match re line))
-        t)))
+    (and (>= (point) (car paragraph-region))
+             (string-match re line))))
 
 (defun my-evilnc-comment-or-uncomment-paragraphs (&optional num)
   "Comment or uncomment NUM paragraphs which might contain html tags."
