@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021-2022 Chen Bin
 ;;
-;; Version: 0.0.5
+;; Version: 0.0.9
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -427,15 +427,18 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
 
 (defun shenshou-sort-subtitles (subtitles video-name)
   "Sort SUBTITLES by measuring its string distance to VIDEO-NAME."
+  (when shenshou-debug
+    (message "shenshou-sort-subtitles called => %s %s" subtitles video-name))
   (when (> (length subtitles) 1)
     (setq subtitles
           (sort subtitles
                 `(lambda (a b)
                    (< (string-distance (plist-get (cdr a) :moviereleasename) ,video-name)
-                      (string-distance (plist-get (cdr b) :moviereleasename) ,video-name)))))
-    (when shenshou-debug
-      (message "shenshou-sort-subtitles called. subtitles=%s" subtitles))
-    subtitles))
+                      (string-distance (plist-get (cdr b) :moviereleasename) ,video-name))))))
+
+  (when shenshou-debug
+    (message "shenshou-sort-subtitles called. subtitles=%s" subtitles))
+  subtitles)
 
 (defun shenshou-filter-subtitles (candidates video-file filter-level)
   "Filter subtitle CANDIDATES with VIDEO-FILE and FILTER-LEVEL.
@@ -489,12 +492,12 @@ If FILTER-LEVEL is 2, do more checking on movie name."
         (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
         (push (cons (format "%s(%s)" subfilename lang) sub) subtitles)))
 
-  (when shenshou-debug
-    (message "shenshou-filter-subtitles: candidates=%s video-file=%s filter-level=%s subtitles=%s"
-             (length candidates)
-             video-file
-             filter-level
-             (length subtitles)))
+    (when shenshou-debug
+      (message "shenshou-filter-subtitles: candidates=%s video-file=%s filter-level=%s subtitles=%s"
+               (length candidates)
+               video-file
+               filter-level
+               (length subtitles)))
 
     subtitles))
 
@@ -517,22 +520,27 @@ If FILTER-LEVEL is 2, do more checking on movie name."
                                         '(params param value struct member value array data value struct)))
       (cond
        ;; nothing can be done if there is no candidate
-       ((eq (length candidates) 0))
+       ((eq (length candidates) 0)
+        (when shenshou-debug
+          (message "No subtitle candidate.")))
 
        ;; donot filter candidates
        ((eq (length candidates) 1)
-        (setq subtitles (shenshou-filter-subtitles candidates video-file 0)))
+        (setq subtitles (shenshou-filter-subtitles candidates video-file 0))
+        (when shenshou-debug
+          (message "Only one subtitle candidate.  So use it anyway.")))
 
        ;; try most strict algorithm
        ((> (length (setq subtitles (shenshou-filter-subtitles candidates video-file 2)))
-           0))
+           0)
+        (when shenshou-debug
+          (message "filter-level=2 subtitles=%s" subtitles)))
 
        ;; then go easy
        ((> (length (setq subtitles (shenshou-filter-subtitles candidates video-file 1)))
-           0))
-
-       (t
-        (setq subtitles (shenshou-filter-subtitles candidates video-file 0)))))
+           0)
+        (when shenshou-debug
+          (message "filter-level=0 subtitles=%s" subtitles)))))
 
     (shenshou-sort-subtitles subtitles (file-name-base video-file))))
 
@@ -565,6 +573,8 @@ If FILTER-LEVEL is 2, do more checking on movie name."
     (when token-p
       ;; search subtitles
       (setq subtitles (shenshou-search-subtitles video-file))
+      (when shenshou-debug
+        (message "shenshou-search-subtitles returns: %s" subtitles))
 
       (cond
        ((> (length subtitles) 0)
