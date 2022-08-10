@@ -119,6 +119,7 @@
     soothe-theme
     heroku-theme
     hemisu-theme
+    pulseaudio-control
     badger-theme
     distinguished-theme
     tao-theme
@@ -390,6 +391,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'sage-shell-mode)
 (require-package 'graphql-mode)
 (require-package 'ob-sagemath)
+(require-package 'pulseaudio-control)
 
 (defvar my-color-themes
   '(afternoon-theme
