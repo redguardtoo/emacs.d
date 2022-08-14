@@ -543,21 +543,6 @@ Copied from 3rd party package evil-textobj."
     (goto-char position)
     (following-char)))
 
-(defun my-pinyinlib-build-regexp-string (str)
-  "Build pinyin regexp from STR."
-  (my-ensure 'pinyinlib)
-  (let* (rlt (i 0) ch)
-    (while (< i (length str))
-      (setq ch (elt str i))
-      (setq rlt (concat rlt
-                        (cond
-                         ((and (<= ?a ch) (<= ch ?z))
-                          (pinyinlib-build-regexp-char ch))
-                         (t
-                          (char-to-string ch)))))
-      (setq i (1+ i)))
-    rlt))
-
 (defun my-extended-regexp (str)
   "Build regex compatible with pinyin from STR."
   (let* ((len (length str)))
@@ -568,7 +553,8 @@ Copied from 3rd party package evil-textobj."
      ;; If the first character of input in ivy is ":" or ";",
      ;; remaining input is converted into Chinese pinyin regex.
      ((string-match (substring str 0 1) ":;")
-      (setq str (my-pinyinlib-build-regexp-string (substring str 1 len))))
+      (my-ensure 'pinyinlib)
+      (setq str (pinyinlib-build-regexp-string (substring str 1 len))))
 
      ;; If the first character of input in ivy is "/",
      ;; remaining input is converted to pattern to search camel case word

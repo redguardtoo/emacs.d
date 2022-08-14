@@ -202,7 +202,8 @@ If N is 2, list files in my recent 20 commits."
                                 (kill-new plain-str)))))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
-  (ivy--switch-buffer-matcher (my-pinyinlib-build-regexp-string regexp) candidates))
+  (my-ensure 'pinyinlib)
+  (ivy--switch-buffer-matcher (pinyinlib-build-regexp-string regexp) candidates))
 
 (defun ivy-switch-buffer-by-pinyin ()
   "Switch to another buffer."

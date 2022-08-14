@@ -35,9 +35,13 @@
   (my-ensure 'counsel-etags)
   (let* ((counsel-etags-convert-grep-keyword
           (lambda (keyword)
-            (if (and keyword (> (length keyword) 0))
-                (my-pinyinlib-build-regexp-string keyword)
-              keyword))))
+            (cond
+             ((> (length keyword) 0)
+              (my-ensure 'pinyinlib)
+              ;; only grep simplified Chinese
+              (pinyinlib-build-regexp-string keyword t nil t))
+             (t
+              keyword)))))
     (counsel-etags-grep-current-directory)))
 
 ;; {{ narrow region

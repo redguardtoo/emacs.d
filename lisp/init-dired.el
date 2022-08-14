@@ -92,6 +92,7 @@ If no files marked, always operate on current line in dired-mode."
     "bt/torrents?/$"
     "documents?/$"
     "music/$"
+    "dwhelper/$"
     "downloads?/$")
   "Dired directory patterns where newest files are on the top.")
 
@@ -314,6 +315,4 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
                 "sudo pm-suspend"))))
     (shell-command cmd)))
 
-(defun my-dired-save-current-buffer ()
-  (interactive))
 (provide 'init-dired)
