@@ -2,46 +2,41 @@
 
 (defun my-initialize-package ()
   "Package loading optimization.  No need to activate all the packages so early."
-  (cond
-   ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
-   ;; ** Installed packages are now activated *before* loading the init file.
-   ;; As a result of this change, it is no longer necessary to call
-   ;; `package-initialize' in your init file.
+  ;; @see https://www.gnu.org/software/emacs/news/NEWS.27.1
+  ;; ** Installed packages are now activated *before* loading the init file.
+  ;; As a result of this change, it is no longer necessary to call
+  ;; `package-initialize' in your init file.
 
-   ;; Previously, a call to `package-initialize' was automatically inserted
-   ;; into the init file when Emacs was started.  This call can now safely
-   ;; be removed.  Alternatively, if you want to ensure that your init file
-   ;; is still compatible with earlier versions of Emacs, change it to:
+  ;; Previously, a call to `package-initialize' was automatically inserted
+  ;; into the init file when Emacs was started.  This call can now safely
+  ;; be removed.  Alternatively, if you want to ensure that your init file
+  ;; is still compatible with earlier versions of Emacs, change it to:
 
-   ;; However, if your init file changes the values of `package-load-list'
-   ;; or `package-user-dir', or sets `package-enable-at-startup' to nil then
-   ;; it won't work right without some adjustment:
-   ;; - You can move that code to the early init file (see above), so those
-   ;;   settings apply before Emacs tries to activate the packages.
-   ;; - You can use the new `package-quickstart' so activation of packages
-   ;;   does not need to pay attention to `package-load-list' or
-   ;;   `package-user-dir' any more.
-   (*emacs27*
-    ;; "package-quickstart.el" converts path in `load-path' into
-    ;; os dependent path, make it impossible to share same emacs.d between
-    ;; Windows and Cygwin.
-    (unless (or *win64* *cygwin*)
-      ;; you need run `M-x package-quickstart-refresh' at least once
-      ;; to generate file "package-quickstart.el'.
-      ;; It contains the `autoload' statements for all packages.
-      (setq package-quickstart t))
+  ;; However, if your init file changes the values of `package-load-list'
+  ;; or `package-user-dir', or sets `package-enable-at-startup' to nil then
+  ;; it won't work right without some adjustment:
+  ;; - You can move that code to the early init file (see above), so those
+  ;;   settings apply before Emacs tries to activate the packages.
+  ;; - You can use the new `package-quickstart' so activation of packages
+  ;;   does not need to pay attention to `package-load-list' or
+  ;;   `package-user-dir' any more.
+  ;; "package-quickstart.el" converts path in `load-path' into
+  ;; os dependent path, make it impossible to share same emacs.d between
+  ;; Windows and Cygwin.
+  (unless (or *win64* *cygwin*)
+    ;; you need run `M-x package-quickstart-refresh' at least once
+    ;; to generate file "package-quickstart.el'.
+    ;; It contains the `autoload' statements for all packages.
+    (setq package-quickstart t))
 
-    ;; esup need call `package-initialize'
-    ;; @see https://github.com/jschaf/esup/issues/84
-    (when (or (featurep 'esup-child)
-              (fboundp 'profile-dotemacs)
-              (daemonp)
-              my-lightweight-mode-p
-              noninteractive)
-      (package-initialize)))
-   (t
-    ;; emacs 26
-    (package-initialize))))
+  ;; esup need call `package-initialize'
+  ;; @see https://github.com/jschaf/esup/issues/84
+  (when (or (featurep 'esup-child)
+            (fboundp 'profile-dotemacs)
+            (daemonp)
+            my-lightweight-mode-p
+            noninteractive)
+    (package-initialize)))
 
 (my-initialize-package)
 
@@ -416,6 +411,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     darkburn-theme
     darkmine-theme
     darkokai-theme
+    darktooth-theme
     django-theme
     doom-themes
     dracula-theme
@@ -446,6 +442,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     majapahit-theme
     material-theme
     minimal-theme
+    modus-themes
     moe-theme
     molokai-theme
     monochrome-theme
@@ -503,10 +500,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (unless my-disable-idle-timer
   ;; most popular 100 themes
   (dolist (theme my-color-themes)
-    (require-package theme))
-  (when *emacs27*
-    (require-package 'darktooth-theme)
-    (require-package 'modus-themes)))
+    (require-package theme)))
 
 ;; }}
 

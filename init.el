@@ -19,7 +19,6 @@
 (setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs27* (>= emacs-major-version 27))
 (setq *emacs28* (>= emacs-major-version 28))
 
 ;; don't GC during startup to save time

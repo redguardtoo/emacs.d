@@ -193,8 +193,7 @@ FN checks these characters belong to normal word characters."
 
     (unless (featurep 'esup-child)
       (cond
-       ((and (not my-disable-lazyflymake) *emacs27*)
-        ;; lazyflymake v0.5 requires emacs27
+       ((not my-disable-lazyflymake)
         (my-ensure 'lazyflymake)
         (lazyflymake-start))
        (t
