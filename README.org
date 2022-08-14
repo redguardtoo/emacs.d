@@ -79,6 +79,7 @@
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
+  - [[#emacs-26][Emacs 26]]
   - [[#emacs-25][Emacs 25]]
   - [[#emacs-244-and-245][Emacs 24.4 and 24.5]]
   - [[#emacs-243][Emacs 24.3]]
@@ -757,6 +758,10 @@ Here is my setup in =~/.custom.el=,
      (pdf-loader-install))))
 #+end_src
 * Support legacy Emacs versions
+** Emacs 26
+Version 4.0 is the last version to support =Emacs 26=
+Please use [[https://github.com/redguardtoo/emacs.d/archive/4.0.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.0.zip]].
+
 ** Emacs 25
 Version 3.2 is the last version to support =Emacs 25=
 

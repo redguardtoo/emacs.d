@@ -416,7 +416,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     darkburn-theme
     darkmine-theme
     darkokai-theme
-    darktooth-theme
     django-theme
     doom-themes
     dracula-theme
@@ -506,6 +505,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
   (dolist (theme my-color-themes)
     (require-package theme))
   (when *emacs27*
+    (require-package 'darktooth-theme)
     (require-package 'modus-themes)))
 
 ;; }}
