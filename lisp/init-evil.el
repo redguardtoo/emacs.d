@@ -46,6 +46,7 @@
 
 ;; ffip-diff-mode (read only) evil setup
 (defun my-ffip-diff-mode-hook-setup ()
+  "Set up key bindings in diff."
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
   (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
@@ -213,7 +214,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; {{ paren range text object
 (defun my-evil-paren-range (count beg end type inclusive)
   "Get minimum range of paren text object.
-If INCLUSIVE is t, the text object is inclusive."
+COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
   (let* ((parens '("()" "[]" "{}" "<>"))
          range
          found-range)
@@ -499,7 +500,7 @@ If INCLUSIVE is t, the text object is inclusive."
 ;; {{ I select string inside single quote frequently
 (defun my-text-obj-similar-font (count beg end type inclusive)
   "Get maximum range of single or double quote text object.
-If INCLUSIVE is t, the text object is inclusive."
+COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
   (ignore count beg end type)
   (let* ((range (my-create-range inclusive)))
     (evil-range (car range) (cdr range) inclusive)))
@@ -591,6 +592,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "kd" 'find-directory-in-project-by-selected
   "kf" 'find-file
   "k/" 'find-file-other-window
+  "hf" 'find-function
   "trm" 'get-term
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
@@ -727,8 +729,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "yu" 'cliphist-select-item
   "ih" 'my-goto-git-gutter ; use ivy-mode
   "ir" 'ivy-resume
-  "ww" 'narrow-or-widen-dwim
-  "ycr" 'my-yas-reload-all
+  "ww" 'my-narrow-or-widen-dwim
   "wf" 'popup-which-function)
 ;; }}
 
@@ -810,7 +811,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
                       (message "%s => clipboard & yank ring" item))))
 
 (defun my-cc-isearch-string (&rest args)
-  "Add `isearch-string' into history."
+  "Add `isearch-string' into history.  ARGS is ignored."
   (ignore args)
   (and isearch-string
        (> (length isearch-string) 0)
@@ -1021,7 +1022,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 
 ;; @see https://github.com/redguardtoo/emacs.d/issues/955
 ;; `evil-paste-after' => `current-kill' => `interprogram-paste-function'=> `gui-selection-value'
-;; `gui-selection-value' returns clipboard text from CLIPBOARD or "PRIMARY" clipboard which are
+;; `gui-selection-value' returns clipboard text from CLIPBOARD or "PRIMARY" which is
 ;; also controlled by `select-enable-clipboard' and `select-enable-primary'.
 ;; Please note `evil-visual-update-x-selection' automatically updates PRIMARY clipboard with
 ;; visual selection.

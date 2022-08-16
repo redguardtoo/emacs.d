@@ -68,9 +68,9 @@
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
 ;; fixed to behave correctly in org-src buffers; taken from:
 ;; https://lists.gnu.org/archive/html/emacs-orgmode/2019-09/msg00094.html
-(defun narrow-or-widen-dwim (&optional use-indirect-buffer)
+(defun my-narrow-or-widen-dwim (&optional use-indirect-buffer)
   "If the buffer is narrowed, it widens.
- Otherwise, it narrows to region, or Org subtree.
+Otherwise, it narrows to region or Org subtree.
 If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
   (interactive "P")
   (cond
@@ -169,11 +169,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 (with-eval-after-load 'tramp
   (push (cons tramp-file-name-regexp nil) backup-directory-alist)
-
-;; @see https://github.com/syl20bnr/spacemacs/issues/1921
-;; If you tramp is hanging, you can uncomment below line.
-;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-
+  ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+  ;; If you tramp is hanging, you can uncomment below line.
+  ;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   (setq tramp-chunksize 8192))
 
 
@@ -201,17 +199,18 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (menu-bar-mode -1)
 
 ;; Nicer naming of buffers for files with identical names
-(setq uniquify-buffer-name-style 'reverse)
-(setq uniquify-separator " • ")
-(setq uniquify-after-kill-buffer-p t)
-(setq uniquify-ignore-buffers-re "^\\*")
+(with-eval-after-load 'uniquify
+  (setq uniquify-buffer-name-style 'reverse)
+  (setq uniquify-separator " • ")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*"))
 
-(setq hippie-expand-try-functions-list
-      '(try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill))
+(setq-default hippie-expand-try-functions-list
+              '(try-complete-file-name-partially
+                try-complete-file-name
+                try-expand-dabbrev
+                try-expand-dabbrev-all-buffers
+                try-expand-dabbrev-from-kill))
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (defun my-compile (&optional arg)

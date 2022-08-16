@@ -1,18 +1,18 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; {{ bbdb setup
-(defun message-mode-hook-setup ()
+(defun my-message-mode-hook-setup ()
   (bbdb-initialize 'message)
   (bbdb-initialize 'gnus)
   (local-set-key (kbd "TAB") 'bbdb-complete-name))
-(add-hook 'message-mode-hook 'message-mode-hook-setup)
-
-;; import Gmail contacts in vcard format into bbdb
-(setq gmail2bbdb-bbdb-file "~/.bbdb")
-;; }}
+(add-hook 'message-mode-hook 'my-message-mode-hook-setup)
 
 (with-eval-after-load 'gmail2bbdb
+  ;; import Gmail contacts in vcard format into bbdb
+  (setq gmail2bbdb-bbdb-file "~/.bbdb")
   (setq gmail2bbdb-exclude-people-without-name t))
+;; }}
+
 (defun my-gnus-group-list-subscribed-groups ()
  "List all subscribed groups with or without un-read messages."
   (interactive)
@@ -43,13 +43,6 @@
 ;; feel free to override this smtp set up in "~/.custom.el" or "~/.gnus.el"
 (my-use-gmail-smtp-server)
 
-;; @see http://www.fnal.gov/docs/products/emacs/emacs/gnus_3.html#SEC60
-;; QUOTED: If you are using an unthreaded display for some strange reason ...
-;; Yes, when I search email in IMAP folder, emails are not threaded
-(setq gnus-article-sort-functions
-      '((not gnus-article-sort-by-date)
-        (not gnus-article-sort-by-number)))
-
 ;; Ignore certificate hostname.
 (setq starttls-extra-arguments '("--insecure"))
 
@@ -74,5 +67,18 @@
       (copy-region-as-kill (region-beginning) (region-end))
       (message "forwarded email tags copied!"))
      (t (message "NO forwarded email tags found!")))))
+
+;; {{ show email sent by `git send-email' in gnus
+(with-eval-after-load 'gnus
+  ;; @see http://www.fnal.gov/docs/products/emacs/emacs/gnus_3.html#SEC60
+  ;; QUOTED: If you are using an unthreaded display for some strange reason ...
+  ;; Yes, when I search email in IMAP folder, emails are not threaded
+  (setq gnus-article-sort-functions
+        '((not gnus-article-sort-by-date)
+          (not gnus-article-sort-by-number)))
+  (local-require 'gnus-article-treat-patch)
+  (setq gnus-article-patch-conditions
+        '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )))
+;; }}
 
 (provide 'init-gnus)

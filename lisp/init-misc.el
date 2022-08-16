@@ -266,25 +266,15 @@ FN checks these characters belong to normal word characters."
 ;; @see http://stackoverflow.com/questions/4222183/emacs-how-to-jump-to-function-definition-in-el-file
 (global-set-key (kbd "C-h C-f") 'find-function)
 
-;; {{ time format
-;; If you want to customize time format, read document of `format-time-string'
-;; and customize `display-time-format'.
-;; (setq display-time-format "%a %b %e")
-
-;; from RobinH, Time management
-(setq display-time-24hr-format t) ; the date in modeline is English too, magic!
-(setq display-time-day-and-date t)
+(with-eval-after-load 'time
+  ;; If you want to customize time format, read document of `format-time-string'
+  ;; and customize `display-time-format'.
+  ;; (setq display-time-format "%a %b %e")
+  (setq display-time-24hr-format t) ; the date in modeline is English too, magic!
+  (setq display-time-day-and-date t))
 (my-run-with-idle-timer 2 #'display-time)
-;; }}
 
 (defalias 'list-buffers 'ibuffer)
-
-;; {{ show email sent by `git send-email' in gnus
-(with-eval-after-load 'gnus
-  (local-require 'gnus-article-treat-patch)
-  (setq gnus-article-patch-conditions
-        '( "^@@ -[0-9]+,[0-9]+ \\+[0-9]+,[0-9]+ @@" )))
-;; }}
 
 (defun my-add-pwd-into-load-path ()
   "Add current directory into `load-path', useful for elisp developers."
@@ -327,11 +317,6 @@ FN checks these characters belong to normal word characters."
 ;; }}
 
 ;; {{ popup functions
-(defun my-which-file ()
-  "Return current file name for Yasnippets."
-  (if (buffer-file-name) (format "%s:" (file-name-nondirectory (buffer-file-name)))
-    ""))
-
 (defun my-which-function ()
   "Return current function name."
   ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
