@@ -44,6 +44,9 @@ If no files marked, always operate on current line in dired-mode."
   "External PROGRAM can open files matching PATTERN."
   (push (list pattern program) dired-guess-shell-alist-user))
 
+;; Run mplayer on multiple videos
+(setq async-shell-command-buffer 'new-buffer)
+
 (with-eval-after-load 'dired-x
   (my-dired-support-program (my-guess-mplayer-path)
                             (my-file-extensions-to-regexp my-media-file-extensions))
