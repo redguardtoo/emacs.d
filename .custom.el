@@ -46,7 +46,7 @@
 (defun my-setup-develop-environment ()
   "Set up my develop environment."
   (interactive)
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
 	(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags 'append 'local)))
 (add-hook 'prog-mode-hook 'my-setup-develop-environment)
 
