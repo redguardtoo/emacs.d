@@ -4,66 +4,83 @@
 ;; color could: red, blue, amaranth, pink, teal
 
 ;; use similar key bindings as init-evil.el
-(defhydra hydra-launcher (:color blue)
+(defhydra my-hydra-launcher (:color blue)
   "
-^Misc^                    ^Study^                    ^Audio^
---------------------------------------------------------------------------
-[_ss_] Save workgroup     [_w_] Pronounce word       [_R_] Emms Random
-[_ll_] Load workgroup     [_W_] Big words definition [_n_] Emms Next
-[_B_] New bookmark        [_v_] Play big word video  [_p_] Emms Previous
-[_m_] Goto bookmark       [_im_] Image of word       [_P_] Emms Pause
-[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_O_] Emms Open
-[_e_] Erase buffer        [_s2_] Pomodoro big task   [_L_] Emms Playlist
-[_r_] Erase this buffer   [_st_] Pomodoro stop       [_E_] Typewriter on
-[_f_] Recent file         [_sr_] Pomodoro resume     [_V_] Old typewriter
-[_d_] Recent directory    [_sp_] Pomodoro pause
-[_bh_] Bash history
-[_hr_] Dired CMD history
-[_hh_] Random theme
+^Misc^                    ^Study^                    ^Emms^
+-------------------------------------------------------------------
+[_ss_] Save workgroup     [_w_] Pronounce word       [_R_] Random
+[_ll_] Load workgroup     [_W_] Big words definition [_n_] Next
+[_B_] New bookmark        [_v_] Play big word video  [_p_] Previous
+[_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
+[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_S_] Stop
+[_e_] Erase buffer        [_s2_] Pomodoro big task   [_O_] Open
+[_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Playlist
+[_f_] Recent file         [_sr_] Pomodoro resume     [_K_] Search
+[_d_] Recent directory    [_sp_] Pomodoro pause      [_F_] filter
+[_z_] Jump around (z.sh)  [_as_] Ascii table         [_E_] replay
+[_bh_] Bash history       [_E_] Typewriter on/off
+[_hh_] Favorite theme     [_V_] Old typewriter
+[_hr_] Random theme
+[_ka_] Kill other buffers
 [_ii_] Imenu
+[_id_] Insert date string
 [_q_] Quit
 "
-  ("hr" my-dired-redo-from-commands-history)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" my-recent-directory)
   ("bh" my-insert-bash-history)
-  ("hh" random-healthy-color-theme)
-  ("ss" wg-create-workgroup)
+  ("hh" my-random-favorite-color-theme)
+  ("hr" my-random-healthy-color-theme)
   ("ii" my-counsel-imenu)
+  ("ka" my-kill-all-but-current-buffer)
+  ("id" my-insert-date)
+  ("as" my-ascii-table)
+  ("ss" wg-create-workgroup)
   ("ll" wg-open-workgroup)
-
   ("e" shellcop-erase-buffer)
   ("r" shellcop-reset-with-new-command)
+  ("z" shellcop-jump-around)
   ("E" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
+
+  ;; {{pomodoro
   ("s1" (pomodoro-start 15))
   ("s2" (pomodoro-start 60))
   ("st" pomodoro-stop)
   ("sr" pomodoro-resume)
   ("sp" pomodoro-pause)
-  ("R" emms-random)
-  ("n" emms-next)
-  ("w" mybigword-pronounce-word)
-  ("im" mybigword-show-image-of-word)
-  ("W" my-lookup-big-word-definition-in-buffer)
-  ("v" mybigword-play-video-of-word-at-point)
+  ;; }}
+
+  ;; {{emms
+  ("R" (progn (emms-shuffle) (emms-random)))
+  ("F" my-emms-playlist-filter)
+  ("K" my-emms-playlist-random-track)
+  ("E" (emms-seek-to 0))
   ("p" emms-previous)
   ("P" emms-pause)
+  ("S" emms-stop)
   ("O" emms-play-playlist)
-  ("bb" dianyou-switch-gnus-buffer)
+  ("n" emms-next)
   ("L" emms-playlist-mode-go)
+  ;; }}
+
+  ("w" mybigword-pronounce-word)
+  ("im" mybigword-show-image-of-word)
+  ("W" my-lookup-bigword-definition-in-buffer)
+  ("v" mybigword-play-video-of-word-at-point)
+  ("bb" dianyou-switch-gnus-buffer)
   ("q" nil :color red))
 
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
-(global-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+(global-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
 (defun org-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
 (with-eval-after-load 'find-file-in-project
-  (defhydra hydra-ffip-diff-group (:color blue)
+  (defhydra my-hydra-diff (:color blue)
     "
 [_k_] Previous hunk
 [_j_] Next hunk
@@ -76,12 +93,12 @@
     ("n" diff-file-next)
     ("q" nil)))
 (defun ffip-diff-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-ffip-diff-group/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-diff/body))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
 ;; gnus-summary-mode
 (with-eval-after-load 'gnus-sum
-  (defhydra hydra-gnus-summary (:color blue)
+  (defhydra my-hydra-gnus-summary (:color blue)
     "
 [_F_] Forward (C-c C-f)             [_s_] Show thread
 [_e_] Resend (S D e)                [_h_] Hide thread
@@ -110,38 +127,38 @@
     ("G" dianyou-group-make-nnir-group)
     ("q" nil))
   ;; y is not used by default
-  (define-key gnus-summary-mode-map "y" 'hydra-gnus-summary/body))
+  (define-key gnus-summary-mode-map "y" 'my-hydra-gnus-summary/body))
 
 ;; gnus-article-mode
 (with-eval-after-load 'gnus-art
-  (defhydra hydra-gnus-article (:color blue)
+  (defhydra my-hydra-gnus-article (:color blue)
     "
 [_o_] Save attachment        [_F_] Forward
 [_v_] Play video/audio       [_r_] Reply
 [_d_] CLI to download stream [_R_] Reply with original
 [_b_] Open external browser  [_w_] Reply all (S w)
-[_f_] Click link/button      [_W_] Reply all with original (S W)
+[_;_] Click link/button      [_W_] Reply all with original (S W)
 [_g_] Focus link/button      [_b_] Switch Gnus buffer
 "
     ("F" gnus-summary-mail-forward)
-    ("r" gnus-article-reply)
+    ("r" gnus-summary-reply)
     ("R" gnus-article-reply-with-original)
-    ("w" gnus-article-wide-reply)
+    ("w" gnus-summary-wide-reply)
     ("W" gnus-article-wide-reply-with-original)
     ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
-    ("v" w3mext-open-with-mplayer)
-    ("d" w3mext-download-rss-stream)
-    ("b" w3mext-open-link-or-image-or-url)
-    ("f" w3m-lnum-follow)
+    ("v" my-w3m-open-with-mplayer)
+    ("d" my-w3m-download-rss-stream)
+    ("b" my-w3m-open-link-or-image-or-url)
+    (";" w3m-lnum-follow)
     ("g" w3m-lnum-goto)
     ("b" dianyou-switch-gnus-buffer)
     ("q" nil))
   ;; y is not used by default
-  (define-key gnus-article-mode-map "y" 'hydra-gnus-article/body))
+  (define-key gnus-article-mode-map "y" 'my-hydra-gnus-article/body))
 
 ;; message-mode
 (with-eval-after-load 'message
-  (defhydra hydra-message (:color blue)
+  (defhydra my-hydra-message (:color blue)
     "
 [_c_] Complete mail address [_H_] convert to html mail
 [_a_] Attach file           [_p_] Paste image from clipboard
@@ -159,9 +176,8 @@
     ("q" nil)))
 
 (defun message-mode-hook-hydra-setup ()
-  (local-set-key (kbd "C-c C-y") 'hydra-message/body))
+  (local-set-key (kbd "C-c C-y") 'my-hydra-message/body))
 (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
-;; }}
 
 ;; {{ dired
 ;; -*- coding: utf-8; lexical-binding: t; -*-
@@ -206,14 +222,13 @@
     (let* ((file (file-name-nondirectory (dired-file-name-at-point)))
            (ext (file-name-extension file))
            (default-directory (file-name-directory (dired-file-name-at-point)))
-           lines
            trunks
            track-number)
       (cond
        ((not (string= "mkv" ext))
         (message "Only mkv files can be processed."))
        ((not (executable-find "mkvextract"))
-        ("Please install mkvtoolnix."))
+        (message "Please install mkvtoolnix."))
        (t
         ;; split output into trunks
         (setq trunks (split-string (shell-command-to-string (format "mkvinfo \"%s\"" file))
@@ -267,21 +282,22 @@
   (defun my-copy-file-info (fn)
     (message "%s => clipboard & yank ring"
              (copy-yank-str (funcall fn (dired-file-name-at-point)))))
-  (defhydra hydra-dired (:color blue)
+  (defhydra my-hydra-dired (:color blue)
     "
 ^Misc^                      ^File^              ^Copy Info^
 -----------------------------------------------------------------
 [_vv_] video2mp3           [_R_] Move           [_pp_] Path
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
-[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base
-[_cc_] Last command        [_ff_] Find          [_dd_] directory
-[_sa_] Fetch subtitle(s)   [_C_]  Copy
-[_vv_] Video => Mp3        [_rb_] Change base
-[_aa_] Recording Wav       [_df_] Diff 2 files
+[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
+[_sa_] Fetch subtitle(s)   [_C_]  Copy          [_dd_] directory
+[_se_] Extract subtitle    [_rb_] Change base
+[_vv_] Video => Mp3        [_df_] Diff 2 files
+[_aa_] Recording Wav       [_ff_] Find
 [_ee_] Mkv => Srt
 [_+_] Create directory
 "
     ("sa" shenshou-download-subtitle)
+    ("se" shenshou-extract-subtitle-from-zip)
     ("pp" (my-copy-file-info 'file-truename))
     ("nn" (my-copy-file-info 'file-name-nondirectory))
     ("bb" (my-copy-file-info 'file-name-base))
@@ -290,7 +306,6 @@
     ("vv" my-extract-mp3-from-video)
     ("ee" my-extract-mkv-subtitle)
     ("aa" my-record-wav-by-mp3)
-    ("cc" my-dired-redo-last-command)
     ("zz" my-play-both-mp3-and-wav)
     ("C" dired-do-copy)
     ("R" dired-do-rename)
@@ -304,7 +319,7 @@
     ("q" nil)))
 
 (defun dired-mode-hook-hydra-setup ()
-  (local-set-key (kbd "y") 'hydra-dired/body))
+  (local-set-key (kbd "y") 'my-hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
 ;; }}
 
@@ -312,19 +327,18 @@
 ;; @see https://oremacs.com/download/london.pdf
 (when (display-graphic-p)
   ;; Since we already use GUI Emacs, f2 is definitely available
-  (defhydra hydra-zoom (global-map "<f2>")
+  (defhydra my-hydra-zoom (global-map "<f2>")
     "Zoom"
     ("g" text-scale-increase "in")
     ("l" text-scale-decrease "out")
     ("r" (text-scale-set 0) "reset")
-    ("0" (text-scale-set 0) :bind nil :exit t)
-    ("1" (text-scale-set 0) nil :bind nil :exit t)))
-(defvar whitespace-mode nil)
+    ("q" nil "quit")))
 
 ;; {{ @see https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
-(defhydra hydra-toggle (:color pink)
+(defvar whitespace-mode nil)
+(defhydra my-hydra-toggle (:color pink)
   "
-_u_ company-ispell     %(if (memq 'company-ispell company-backends) t)
+_u_ company-ispell     %(and (boundp 'company-backends) (memq 'company-ispell company-backends) t)
 _a_ abbrev-mode:       %`abbrev-mode
 _d_ debug-on-error:    %`debug-on-error
 _f_ auto-fill-mode:    %`auto-fill-function
@@ -341,45 +355,45 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
   ("i" (lambda () (interactive) (setq indent-tabs-mode (not indent-tabs-mode))) nil)
   ("q" nil "quit"))
 ;; Recommended binding:
-(global-set-key (kbd "C-c C-t") 'hydra-toggle/body)
+(global-set-key (kbd "C-c C-t") 'my-hydra-toggle/body)
 ;; }}
 
 ;; {{ @see https://github.com/abo-abo/hydra/wiki/Window-Management
 
 ;; helpers from https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
-(defun hydra-move-splitter-left (arg)
-  "Move window splitter left."
+(defun hydra-move-split-left (arg)
+  "Move window split left."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (shrink-window-horizontally arg)
     (enlarge-window-horizontally arg)))
 
-(defun hydra-move-splitter-right (arg)
-  "Move window splitter right."
+(defun hydra-move-split-right (arg)
+  "Move window split right."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
       (enlarge-window-horizontally arg)
     (shrink-window-horizontally arg)))
 
-(defun hydra-move-splitter-up (arg)
-  "Move window splitter up."
+(defun hydra-move-split-up (arg)
+  "Move window split up."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (enlarge-window arg)
     (shrink-window arg)))
 
-(defun hydra-move-splitter-down (arg)
-  "Move window splitter down."
+(defun hydra-move-split-down (arg)
+  "Move window split down."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
       (shrink-window arg)
     (enlarge-window arg)))
 
-(defhydra hydra-window ()
+(defhydra my-hydra-window ()
   "
 Movement^^   ^Split^         ^Switch^     ^Resize^
 -----------------------------------------------------
@@ -394,10 +408,10 @@ _SPC_ cancel _o_nly this     _d_elete
   ("j" windmove-down )
   ("k" windmove-up )
   ("l" windmove-right )
-  ("q" hydra-move-splitter-left)
-  ("w" hydra-move-splitter-down)
-  ("e" hydra-move-splitter-up)
-  ("r" hydra-move-splitter-right)
+  ("q" hydra-move-split-left)
+  ("w" hydra-move-split-down)
+  ("e" hydra-move-split-up)
+  ("r" hydra-move-split-right)
   ("b" ivy-switch-buffer)
   ("f" counsel-find-file)
   ("F" follow-mode)
@@ -405,7 +419,7 @@ _SPC_ cancel _o_nly this     _d_elete
          (interactive)
          (ace-window 1)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("v" (lambda ()
          (interactive)
          (split-window-right)
@@ -418,14 +432,14 @@ _SPC_ cancel _o_nly this     _d_elete
          (interactive)
          (ace-window 4)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("S" save-buffer)
   ("d" delete-window)
   ("D" (lambda ()
          (interactive)
          (ace-window 16)
          (add-hook 'ace-window-end-once-hook
-                   'hydra-window/body)))
+                   'my-hydra-window/body)))
   ("o" delete-other-windows)
   ("i" ace-delete-other-windows)
   ("z" (progn
@@ -433,11 +447,11 @@ _SPC_ cancel _o_nly this     _d_elete
          (setq this-command 'winner-undo)))
   ("Z" winner-redo)
   ("SPC" nil))
-(global-set-key (kbd "C-c C-w") 'hydra-window/body)
+(global-set-key (kbd "C-c C-w") 'my-hydra-window/body)
 ;; }}
 
 ;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
-(defhydra hydra-git (:body-pre
+(defhydra my-hydra-git (:body-pre
                      (progn
                        (git-gutter-mode 1)
                        (setq git-link-use-commit t))
@@ -462,7 +476,7 @@ Git:
   ("rh" my-git-gutter-reset-to-head-parent)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
-  ("b" magit-show-refs-popup)
+  ("b" magit-show-refs)
   ("k" git-link)
   ("g" magit-status)
   ("ta" magit-stash-apply)
@@ -472,16 +486,18 @@ Git:
   ("dr" (magit-diff-range (my-git-commit-id)))
   ("cc" magit-commit-create)
   ("ca" magit-commit-amend)
-  ("ja" (magit-commit-amend '("--reuse-message=HEAD" "--no-verify")))
+  ("nn" my-commit-create)
+  ("na" my-commit-amend)
+  ("ja" (my-commit-amend t))
   ("au" magit-stage-modified)
   ("Q" git-gutter-toggle)
   ("f" my-git-find-file-in-commit)
   ("cr" my-git-cherry-pick-from-reflog)
   ("q" nil))
-(global-set-key (kbd "C-c C-g") 'hydra-git/body)
+(global-set-key (kbd "C-c C-g") 'my-hydra-git/body)
 ;; }}
 
-(defhydra hydra-search ()
+(defhydra my-hydra-search ()
   "
  ^Search^         ^Dictionary^
 -----------------------------------------
@@ -494,29 +510,26 @@ _m_ Man
   ("b" sdcv-search-input)
   ("t" sdcv-search-input+)
   ("d" my-lookup-dict-org)
-  ("g" w3m-google-search)
-  ("f" w3m-search-financial-dictionary)
-  ("s" w3m-stackoverflow-search)
-  ("h" w3mext-hacker-search)
-  ("m" lookup-doc-in-man)
+  ("g" my-w3m-generic-search)
+  ("f" my-w3m-search-financial-dictionary)
+  ("s" my-w3m-stackoverflow-search)
+  ("h" my-w3m-hacker-search)
+  ("m" my-lookup-doc-in-man)
   ("q" nil))
-(global-set-key (kbd "C-c C-s") 'hydra-search/body)
+(global-set-key (kbd "C-c C-s") 'my-hydra-search/body)
 
-(defhydra hydra-describe (:color blue :hint nil)
+(defhydra my-hydra-describe (:color blue :hint nil)
   "
 Describe Something: (q to quit)
 _a_ all help for everything screen
 _b_ bindings
-_B_ personal bindings
 _c_ char
 _C_ coding system
 _f_ function
-_F_ flycheck checker
 _i_ input method
 _k_ key briefly
 _K_ key
 _l_ language environment
-_L_ mode lineage
 _m_ major mode
 _M_ minor mode
 _n_ current coding system briefly
@@ -531,17 +544,14 @@ _v_ variable
 _w_ where is something defined
 "
   ("b" describe-bindings)
-  ("B" describe-personal-keybindings)
   ("C" describe-categories)
   ("c" describe-char)
   ("C" describe-coding-system)
   ("f" describe-function)
-  ("F" flycheck-describe-checker)
   ("i" describe-input-method)
   ("K" describe-key)
   ("k" describe-key-briefly)
   ("l" describe-language-environment)
-  ("L" help/parent-mode-display)
   ("M" describe-minor-mode)
   ("m" describe-mode)
   ("N" describe-current-coding-system)
@@ -556,7 +566,7 @@ _w_ where is something defined
   ("t" describe-theme)
   ("v" describe-variable)
   ("w" where-is))
-(global-set-key (kbd "C-c C-q") 'hydra-describe/body)
+(global-set-key (kbd "C-c C-q") 'my-hydra-describe/body)
 
 (provide 'init-hydra)
 ;;; init-hydra.el ends here

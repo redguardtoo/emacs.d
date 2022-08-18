@@ -12,6 +12,12 @@
   :type 'boolean
   :group 'lazyflymake)
 
+(defcustom lazyflymake-program-extra-args nil
+  "Extra arguments passed to linter program.
+It could be converted to buffer local variable."
+  :group 'lazyflymake
+  :type '(repeat sexp))
+
 (defvar lazyflymake-temp-source-file-name nil
   "Internal variable to store the path of temporary source file.")
 
@@ -35,16 +41,17 @@
 
                ;; create temporary source file
                (t
-                (flymake-init-create-temp-buffer-copy
-                 'flymake-create-temp-inplace)))))
+                (flymake-proc-init-create-temp-buffer-copy
+                 'flymake-proc-create-temp-inplace)))))
 
-    ;; Per chance clean up a function need delete the temporary file
-    (unless local-file-p
-      (setq lazyflymake-temp-source-file-name (file-truename rlt)))
+    (when rlt
+      ;; clean up a function need delete the temporary file
+      (unless local-file-p
+        (setq lazyflymake-temp-source-file-name (file-truename rlt)))
 
-    ;; use relative path in case running in Windows
-    (setq rlt (file-relative-name rlt))
-    (if lazyflymake-debug (message "lazyflymake-sdk-code-file => %s" rlt))
+      ;; use relative path in case running in Windows
+      (setq rlt (file-relative-name rlt))
+      (if lazyflymake-debug (message "lazyflymake-sdk-code-file => %s" rlt)))
     rlt))
 
 (defun lazyflymake-sdk-hint ()
@@ -56,6 +63,15 @@
   ;; remove overlay without binding buffer
   (sort (cl-remove-if (lambda (ov) (not (overlay-start ov))) overlays)
         (lambda (a b) (< (overlay-start a) (overlay-start b)))))
+
+(defun lazyflymake-sdk-generate-flymake-init (program args file)
+  "Generate flymake init from PROGRAM, ARGS, FILE."
+  (let* ((rlt (list program (append args
+                        lazyflymake-program-extra-args
+                        (list file)))))
+    (when lazyflymake-debug
+      (message "lazyflymake-sdk-generate-flymake-init called. rlt=%s" rlt))
+    rlt))
 
 (provide 'lazyflymake-sdk)
 ;;; lazyflymake-sdk.el ends here

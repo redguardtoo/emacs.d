@@ -104,9 +104,6 @@
 ;;; Code:
 
 (require 'find-lisp)
-(require 'dictionary nil t)
-(require 'outline)
-(require 'org)
 (require 'cl-lib)
 (require 'url)
 (require 'browse-url)
@@ -259,6 +256,10 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   (with-temp-buffer
     (insert-file-contents file)
     (buffer-string)))
+
+(declare-function dictionary-definition "dictionary")
+(declare-function outline-up-heading "outline")
+(declare-function org-entry-get "org")
 
 ;;;###autoload
 (defun mybigword-update-cache ()
@@ -530,27 +531,24 @@ The information is in current org node's \"SRT_PATH\" property."
                           :start-time start-time))))))
     rlt))
 
-(defun mybigword--word-at-point (&optional user-input-p)
-  "Get word at point or ask user to input word.
-If USER-INPUT-P is t, user need input the word."
-  (let* (word)
-    (save-excursion
+(defun mybigword--word-at-point ()
+  "Get word at point or ask user to input word."
+  (let* ((word (and (region-active-p)
+                    (buffer-substring (region-beginning) (region-end)))))
+    (unless word
       (cond
-       (user-input-p
+       ((memq major-mode '(pdf-view-mode))
         (setq word (read-string "Please input a word: ")))
 
-       ((setq word (and (region-active-p)
-                        (buffer-substring (region-beginning) (region-end))))
-        ;; selected region is a word
-        )
-
-       (t
-        ;; work around `nov-mode' issue
-        (when (memq major-mode '(nov-mode))
+       ((memq major-mode '(nov-mode))
+        (save-excursion
           ;; go to end of word to workaround `nov-mode' bug
           (forward-word)
-          (forward-char -1))
-        ;; word at point
+          (forward-char -1)
+          ;; word at point
+          (setq word (thing-at-point 'word))))
+
+       (t
         (setq word (thing-at-point 'word)))))
     word))
 
@@ -569,7 +567,8 @@ Its file name should be similar to the subtitle's file name.
 If video file is missing, the mp3 with similar name is played.
 The word is either the word at point, or selected string or string from input."
   (interactive)
-  (let* ((word (or (mybigword--word-at-point) (mybigword--word-at-point t))))
+  (let* ((word (or (mybigword--word-at-point)
+                   (read-string "Please input a word: "))))
     (when word
       (let* ((info (funcall mybigword-default-media-info-function word))
              (video (plist-get info :video-path))
@@ -634,20 +633,20 @@ The word is either the word at point, or selected string or string from input."
       (message "Sorry, can't find pronunciation for \"%s\"" word)))))
 
 ;;;###autoload
-(defun mybigword-pronounce-word (&optional user-input-p)
-  "Pronounce word.  If USER-INPUT-P is t, user need input the word."
-  (interactive "P")
-  (let* ((word (mybigword--word-at-point user-input-p)))
+(defun mybigword-pronounce-word ()
+  "Pronounce word."
+  (interactive)
+  (let* ((word (mybigword--word-at-point)))
     (when word
       (mybigword-pronounce-word-internal word))))
 
 
 ;;;###autoload
-(defun mybigword-show-image-of-word (&optional user-input-p)
-  "Show image of word.  If USER-INPUT-P is t, user need input the word.
+(defun mybigword-show-image-of-word ()
+  "Show image of word.
 Please note `browse-url-generic' is used to open external browser."
-  (interactive "P")
-  (let* ((word (mybigword--word-at-point user-input-p)))
+  (interactive)
+  (let* ((word (mybigword--word-at-point)))
     (when word
       (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
                                   (replace-regexp-in-string " " "%20" word))))))
@@ -662,8 +661,7 @@ DIR is the directory containing FILE."
   "True if DIR is not a dot file, and not a symlink.
 PARENT is the parent directory of DIR."
   ;; Skip current and parent directories
-  (not (or (string= dir ".")
-           (string= dir "..")
+  (not (or (member dir '("." ".." ".git" ".svn"))
            ;; Skip directories which are symlinks
            ;; Easy way to circumvent recursive loops
            (file-symlink-p (expand-file-name dir parent)))))

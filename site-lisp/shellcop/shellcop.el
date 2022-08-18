@@ -2,9 +2,9 @@
 
 ;; Copyright (C) 2020-2021 Chen Bin
 ;;
-;; Version: 0.0.7
+;; Version: 0.1.0
 ;; Keywords: unix tools
-;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
+;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/shellcop
 ;; Package-Requires: ((emacs "25.1"))
 
@@ -45,6 +45,10 @@
 ;;   - "*Javascript REPL*" (if parameter 2 is passed)
 ;;   - "*eshell*" (if parameter 3 is passed)
 ;;
+;; `shellcop-jump-around' jumps to directories recorded by https://github.com/rupa/z,
+;;   - If shell is visible, \"cd destination-dir\" is inserted into shell
+;;   - Or else, the directory is opened in `dired-mode'
+;;
 ;; `shellcop-search-in-shell-buffer-of-other-window' uses current word or selected text
 ;; to search in *shell* buffer of the other window.
 ;;
@@ -55,6 +59,7 @@
 
 (require 'cl-lib)
 (require 'comint)
+(require 'subr-x)
 
 (defgroup shellcop nil
   "Analyze errors reported in Emacs builtin shell."
@@ -93,7 +98,7 @@ If there is error, it returns t."
   :group 'shellcop)
 
 (defcustom shellcop-string-search-function 'search-backward
-  "The string search function used in `shellcop-search-in-shell-buffer-of-other-window'."
+  "String search function for `shellcop-search-in-shell-buffer-of-other-window'."
   :type 'function
   :group 'shellcop)
 
@@ -102,25 +107,58 @@ If there is error, it returns t."
   :type 'string
   :group 'shellcop)
 
+(defcustom shellcop-jump-around-data-file "~/.z"
+  "The data file created by z (see https://github.com/rupa/z)."
+  :type 'string
+  :group 'shellcop)
+
 (defvar shellcop-debug nil "Enable debug output if not nil.")
 
-(defun shellcop-location-detail (str)
-  "Get file, line and column from STR."
-  (when shellcop-debug (message "shellcop-location-details (%s)" str))
-  (when (string-match "^\\([^:]+\\):\\([0-9]+\\)+\\(:[0-9]+\\)?" str)
-    (let* ((file (match-string 1 str))
-           (line (match-string 2 str))
-           (col (match-string 3 str)))
+(defun shellcop-next-line ()
+  "Content of next line."
+  (save-excursion
+    (forward-line 1)
+    (string-trim (buffer-substring (line-beginning-position)
+                                   (line-end-position)))))
+
+(defun shellcop-location-detail ()
+  "Get file, line and column from at point."
+  (let* (rlt
+         (str (thing-at-point 'filename))
+         file
+         line
+         col
+         next-line)
+
+    (cond
+     ((not str))
+
+     ((string-match "^\\([^:]+\\):\\([0-9]+\\)+\\(:[0-9]+\\)?" str)
+      (setq file (match-string 1 str))
+      (setq line (match-string 2 str))
+      (setq col (match-string 3 str)))
+
+     ((and (setq next-line (shellcop-next-line))
+           (file-exists-p str)
+           (string-match "^\\([0-9]+\\)+\\(:[0-9]+\\)?" next-line))
+
+      (setq file str)
+      (setq line (match-string 1 next-line))
       ;; clean the column format
-      (when col
-        (setq col (replace-regexp-in-string ":" "" col)))
-      (when shellcop-debug (message "file=%s line=%s col=%s" file line col))
-      (list file line col))))
+      (when (setq col (match-string 2 next-line))
+        (setq col (replace-regexp-in-string ":" "" col)))))
+
+    (when (and file line)
+      (setq rlt (list file line col)))
+
+    (when shellcop-debug
+      (message "shellcop-location-details str=%s file=%s line=%s col=%s"
+               str file line col))
+    rlt))
 
 (defun shellcop-extract-location ()
   "Extract location from current line."
-  (let* (file
-         (end (line-end-position))
+  (let* ((end (line-end-position))
          rlt)
     (save-excursion
       (goto-char (line-beginning-position))
@@ -128,10 +166,12 @@ If there is error, it returns t."
       ;; return the first found
       (while (and (< (point) end) (not rlt))
         ;; searching
-        (when (setq file (thing-at-point 'filename))
-          (when (setq rlt (shellcop-location-detail file))
-            (setq rlt (cons (string-trim (shellcop-current-line)) rlt))))
+        (when (setq rlt (shellcop-location-detail))
+          (setq rlt (cons (string-trim (shellcop-current-line)) rlt))
+          (forward-line))
         (forward-word)))
+    (when shellcop-debug
+      (message "shellcop-extract-location called. rlt=%s" rlt))
     rlt))
 
 (defmacro shellcop-push-location (location result)
@@ -145,15 +185,16 @@ If there is error, it returns t."
 
 (defun shellcop-extract-locations-at-point (&optional above)
   "Extract locations in one direction into RLT.
-If ABOVE is t, extract locations above current point; or else below current point."
-  (let* (rlt
-         (line (if above -1 1))
-         location)
-    (save-excursion
-      (while (and (eq (forward-line line) 0)
-                  (setq location (shellcop-extract-location)))
-        (shellcop-push-location location rlt)))
-    rlt))
+If ABOVE is t, extract locations above current point,
+If ABOVE is nil, extract locations below current point."
+(let* (rlt
+       (line (if above -1 1))
+       location)
+  (save-excursion
+    (while (and (eq (forward-line line) 0)
+                (setq location (shellcop-extract-location)))
+      (shellcop-push-location location rlt)))
+  rlt))
 
 (defun shellcop-extract-all-locations ()
   "Extract all locations near current point."
@@ -203,8 +244,7 @@ If ABOVE is t, extract locations above current point; or else below current poin
 (defun shellcop-comint-send-input-hack (orig-func &rest args)
   "Advice `comint-send-input' with ORIG-FUNC and ARGS.
 Extract file paths when user presses enter key shell."
-  (let* ((artifical (nth 1 args))
-         locations)
+  (let* ((artifical (nth 1 args)))
     (when shellcop-debug
       (message "shellcop-comint-send-input-hack (%s)" artifical))
     (cond
@@ -352,11 +392,17 @@ Or else erase current buffer."
              (visible-frame-list)))
 
 ;;;###autoload
-(defun shellcop-focus-window (buffer-name fn)
-  "Focus on window with BUFFER-NAME and run function FN."
+(defun shellcop-get-window (buffer-name)
+  "Get window of buffer with BUFFER-NAME."
   (let* ((sub-window (cl-find-if `(lambda (w)
                                     (string= (buffer-name (window-buffer w)) ,buffer-name))
-                                 (shellcop-visible-window-list)))
+                                 (shellcop-visible-window-list))))
+    sub-window))
+
+;;;###autoload
+(defun shellcop-focus-window (buffer-name fn)
+  "Focus on window with BUFFER-NAME and run function FN."
+  (let* ((sub-window (shellcop-get-window buffer-name))
          (keyword (cond
                    ((region-active-p)
                     (buffer-substring (region-beginning) (region-end)))
@@ -379,6 +425,63 @@ Or else erase current buffer."
    (lambda (keyword)
      (when keyword
        (funcall shellcop-string-search-function keyword)))))
+
+;;;###autoload
+(defun shellcop-directories-from-z ()
+  "Get directories from z's data file."
+  (when (file-exists-p shellcop-jump-around-data-file)
+    ;; Emacs use gzip to extract plain text file "~/.z"
+    (let* ((content (shell-command-to-string (format "cat %s" shellcop-jump-around-data-file)))
+           (dirs (mapcar (lambda (line)
+                           ;; line's format: "dir | score | timestamp"
+                           (let* ((a (split-string line "|")))
+                             (cons (nth 0 a) (string-to-number (nth 2 a)))))
+                         (split-string (string-trim content) "[\n\r]+"))))
+
+      ;; sort by timestamp in descending order
+      (setq dirs (sort dirs (lambda (a b) (> (cdr a) (cdr b)))))
+      dirs)))
+
+;;;###autoload
+(defun shellcop-jump-around ()
+  "Jump to directories recorded by https://github.com/rupa/z.
+If shell is visible, \"cd destination-dir\" is inserted into shell.
+Or else, the directory is opened in `dired-mode'."
+  (interactive)
+  (when (file-exists-p shellcop-jump-around-data-file)
+    ;; Emacs use gzip to extract plain text file "~/.z"
+    (let* ((dirs (shellcop-directories-from-z))
+           dest
+           pattern)
+
+      (when (> (length dirs) 0)
+        (setq pattern
+              (read-string "pattern to filter directory (or leave it empty): "))
+        (unless (string= pattern "")
+          (setq dirs
+                (cl-remove-if-not (lambda (d) (string-match pattern (car d)))
+                                  dirs)))
+        ;; only directory candidate, select it
+        (cond
+         ((eq (length dirs) 1)
+          (setq dest (car (nth 0 dirs))))
+         (t
+          (setq dest (completing-read "Select directory: " dirs))))
+
+        (when dest
+          (cond
+           ((derived-mode-p 'comint-mode)
+            (insert "cd " dest))
+
+           ;; jump to the shell
+           ((shellcop-get-window shellcop-shell-buffer-name)
+            (shellcop-focus-window shellcop-shell-buffer-name
+                                   (lambda (keyword)
+                                     (ignore keyword)
+                                     (insert "cd " dest))))
+
+           (t
+            (dired dest))))))))
 
 (provide 'shellcop)
 ;;; shellcop.el ends here

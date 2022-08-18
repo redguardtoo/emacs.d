@@ -9,9 +9,9 @@
 
 (defun lazyflymake-eslint-err-line-pattern ()
   "Return error line pattern.
-If return a list containing the pattern, `flymake-err-line-patterns' uses the
+If return a list containing patterns, `flymake-proc-err-line-patterns' uses the
 list and is also converted into a buffer local variable.
-If return the pattern, it's is pushed to `flymake-err-line-patterns'.
+If return the pattern, it's is pushed to `flymake-proc-err-line-patterns'.
 If return nil, nothing need be done."
   nil)
 
@@ -20,9 +20,13 @@ If return nil, nothing need be done."
   (let* ((dir (locate-dominating-file default-directory "node_modules"))
          (local-eslint (concat dir "node_modules/.bin/eslint"))
          (program (if (file-exists-p local-eslint) local-eslint "eslint"))
-         (file (lazyflymake-sdk-code-file)))
-    (when (executable-find program)
-      (and file (list program (list "--format" "unix" file))))))
+         file)
+    (when (and (executable-find program)
+               (setq file (lazyflymake-sdk-code-file)))
+      (lazyflymake-sdk-generate-flymake-init
+       program
+       '("--format" "unix")
+       file))))
 
 (provide 'lazyflymake-eslint)
 ;;; lazyflymake-eslint.el ends here

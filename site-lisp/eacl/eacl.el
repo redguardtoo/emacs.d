@@ -2,11 +2,11 @@
 
 ;; Copyright (C) 2017-2021 Chen Bin
 ;;
-;; Version: 2.1.0
+;; Version: 2.2.0
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/eacl
-;; Package-Requires: ((emacs "24.4"))
+;; Package-Requires: ((emacs "25.1"))
 ;; Keywords: abbrev, convenience, matching
 
 ;; This file is not part of GNU Emacs.
@@ -29,18 +29,28 @@
 
 ;; Multiple commands are provided to grep files in the project to get
 ;; auto complete candidates.
-;; The keyword to grep is text from line beginning to current cursor.
+;;
+;; The keyword to grep is text from the line beginning to current cursor.
+;;
 ;; Project is *automatically* detected if Git/Mercurial/Subversion is used.
 ;; You can override the project root by setting `eacl-project-root',
 ;;
 ;; List of commands,
 ;;
-;; `eacl-complete-line' completes single line.
-;; Line candidates are extracted in project root.
+;; `eacl-complete-line' completes single line by grepping the project root.
+;; Line candidates are extracted from the files in the project root.
 ;; "C-u M-x eacl-complete-line" completes single line from deleted code
 ;; if current project is tracked by Git.
 ;;
 ;; `eacl-complete-multiline' completes multiline code or html tag.
+;;
+;; `eacl-complete-line-from-buffer' completes single line by searching text
+;; in the buffers.  Set `eacl-ignore-buffers' and `eacl-include-buffers' to specify
+;; ignored&included buffers.
+;;
+;; `eacl-complete-line-from-buffer-or-project' completes one line by grepping
+;; the project root when editing a physical file.  Or else, it completes one line
+;; by search all buffers.
 ;;
 ;; Modify `grep-find-ignored-directories' and `grep-find-ignored-files'
 ;; to setup directories and files grep should ignore:
@@ -77,7 +87,10 @@
 ;; "git grep" is automatically used for grepping in git repository.
 ;; Please note "git grep" does NOT use `grep-find-ignored-directories' OR
 ;; `grep-find-ignored-files'.
-;; To use "git grep", Git should be added into environment variable "PATH".
+;;
+;; The command line program of grep and git need be added into environment variable
+;; "PATH".  Or else you need set `eacl-grep-program' and `eacl-git-program' to
+;; specify their path.
 ;;
 ;; Set `eacl-git-grep-untracked' if untracked files should be git grepped too.
 ;;
@@ -85,23 +98,30 @@
 ;;; Code:
 (require 'grep)
 (require 'cl-lib)
+(require 'subr-x)
+(require 'comint)
 
 (defgroup eacl nil
   "Emacs auto-complete line(s) by grepping project."
   :group 'tools)
 
 (defcustom eacl-grep-program "grep"
-  "GNU Grep program."
+  "The path of GNU Grep command line program."
+  :type 'string
+  :group 'eacl)
+
+(defcustom eacl-git-program "git"
+  "The path of Git command line program."
   :type 'string
   :group 'eacl)
 
 (defcustom eacl-git-grep-untracked t
-  "Grep untracked files in Git repository."
+  "Search text in untracked files in Git repository."
   :type 'boolean
   :group 'eacl)
 
 (defcustom eacl-project-root nil
-  "Project root.  If it's nil project root is detected automatically."
+  "The project root.  If it's nil project root is detected automatically."
   :type 'string
   :group 'eacl)
 
@@ -116,6 +136,30 @@ The callback is expected to return the path of project root."
   :type 'function
   :group 'eacl)
 
+(defcustom eacl-ignore-buffers
+  '("^ *\\*.*\\*$"
+    dired-mode)
+  "A list specifying which buffers not to search (if not current).
+Can contain both regexps matching buffer names (as strings) and major modes
+\(as atoms).
+Please note `eacl-include-buffers' has higher priority than this variable."
+  :type '(repeat (choice regexp (symbol :tag "Major Mode")))
+  :group 'eacl)
+
+(defcustom eacl-include-buffers
+  '("^\\*shell\\*$")
+  "A list specifying which buffers to search (if not current).
+Can contain regexps matching buffer names (as strings).
+Please note `eacl-ignore-buffers' has lower priority than this variable."
+  :type '(repeat regexp)
+  :group 'eacl)
+
+(defcustom eacl-search-buffer-max-size
+  (* 16 1024 1024)
+  "Only search buffer whose size is not greater than this number."
+  :type 'number
+  :group 'eacl)
+
 (defcustom eacl-use-git-grep-p nil
   "Use git grep even current file is not tracked by Git."
   :type 'boolean
@@ -126,6 +170,8 @@ The callback is expected to return the path of project root."
 
 (defvar eacl-debug nil
   "Enable debug mode.  Internal variable.")
+
+(defvar projectile-project-root) ;; avoid compiling error
 
 (defalias 'eacl-complete-statement 'eacl-complete-multiline)
 (defalias 'eacl-complete-snippet 'eacl-complete-multiline)
@@ -145,7 +191,7 @@ The callback is expected to return the path of project root."
   "Get project root."
   (or eacl-project-root
       ;; use projectile to find project root
-      (and (fboundp 'projectile-find-file)
+      (and (fboundp 'projectile-project-root)
            (unless (featurep 'projectile) (require 'projectile))
            (funcall 'projectile-project-root))
       ;; use find-file-in-project to find project root
@@ -167,9 +213,9 @@ The callback is expected to return the path of project root."
   "Current line text."
   (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
 
-(defun eacl-trim-left (s)
-  "Remove whitespace at the beginning of S."
-  (if (string-match "\\`[ \t\n\r]+" s) (replace-match "" t t s) s))
+(defmacro eacl-process-space-in-regex (regex)
+  "Space character in REGEX is converted to pattern to match any string."
+  `(replace-regexp-in-string "[\t ]+" ".*" ,regex))
 
 (defun eacl-encode(str)
   "Encode STR."
@@ -180,7 +226,7 @@ The callback is expected to return the path of project root."
   ;; code completion.
   ;; For example, in javascript, `import { Button } from "react-bootstrap"` and
   ;; `import { Button } from 'react-bootstrap';` are same.
-  ;; 2, white spaces match any string.
+  ;; 2, white spaces match any string (see `eacl-shell-quote-argument')
   (replace-regexp-in-string "'\\|\"" "." str))
 
 (defun eacl-shell-quote-argument (argument)
@@ -198,9 +244,7 @@ The callback is expected to return the path of project root."
      "\\\\\]" "]"
      (replace-regexp-in-string
       "[^-0-9a-zA-Z<>{}\[:_./\n()*]" "\\\\\\&"
-      (replace-regexp-in-string
-       "[\t ]+" ".*"
-       argument))))))
+      (eacl-process-space-in-regex argument))))))
 
 (defun eacl-grep-exclude-opts ()
   "Create grep exclude options."
@@ -210,15 +254,13 @@ The callback is expected to return the path of project root."
           (mapconcat (lambda (e) (format "--exclude='%s'" e))
                      grep-find-ignored-files " ")))
 
-(defun eacl-trim-string (string)
-  "Trim STRING."
-  (replace-regexp-in-string "\\`[ \t\n]*" "" (replace-regexp-in-string "[ \t\n]*\\'" "" string)))
-
 ;;;###autoload
-(defun eacl-get-keyword (line)
-  "Get trimmed keyword from LINE."
-  (let* ((keyword (replace-regexp-in-string "^[ \t]+\\|[ \t]+$" "" line)))
-    (eacl-encode keyword)))
+(defun eacl-get-keyword (line &optional space-p)
+  "Get trimmed keyword from LINE.
+If SPACE-P is t, space characters are converted to pattern matching any string."
+  (let ((keyword (eacl-encode (string-trim line))))
+    (if space-p (eacl-process-space-in-regex keyword)
+      keyword)))
 
 (defun eacl-replace-text (content end)
   "Delete current line and insert CONTENT.
@@ -228,7 +270,7 @@ Original text from END is preserved."
 
 (defun eacl-clean-summary (s)
   "Clean candidate summary S."
-  (eacl-trim-left (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
+  (string-trim-left (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
 
 (defun eacl-multiline-candidate-summary (s)
   "If S is too wide to fit into the screen, return pair summary and S."
@@ -258,12 +300,11 @@ Original text from END is preserved."
     (cons key s)))
 
 (defun eacl-get-candidates (cmd sep keyword &optional deleted-p)
-  "Create candidates by running CMD.
-Use SEP to split output into lines.
+  "Create candidates by running CMD.  Use SEP to split output into lines.
 Candidates same as KEYWORD in current file is excluded.
 If DELETED-P is t and git grep is used, grep only from deleted code."
   (when eacl-debug
-    (message "eacl-get-candidates called. cmd=%s deleted-p" cmd deleted-p))
+    (message "eacl-get-candidates called. cmd=%s deleted-p=%s" cmd deleted-p))
 
   (let* ((cands (split-string (shell-command-to-string cmd) sep t "[ \t\r\n]+"))
          (str (format "%s:1:%s" (eacl-relative-path) keyword))
@@ -286,7 +327,7 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
   (let ((path (buffer-file-name)))
     (or eacl-use-git-grep-p
         (and path
-             (zerop (call-process "git" nil nil nil "ls-files" "--error-unmatch" path))))))
+             (zerop (call-process eacl-git-program nil nil nil "ls-files" "--error-unmatch" path))))))
 
 (defun eacl-search-command (search-regex multiline-p &optional deleted-p)
   "Return a shell command searching for SEARCH-REGEX.
@@ -303,7 +344,10 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (cond
        ;; use git grep
        (git-p
-        (format "git --no-pager grep -n %s \"%s\"" git-grep-opts search-regex))
+        (format "%s --no-pager grep -n %s \"%s\""
+                eacl-git-program
+                git-grep-opts
+                search-regex))
 
        ;; use grep
        (t
@@ -317,8 +361,14 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (cond
        ;; use git grep
        (git-p
-        (if deleted-p (format "git --no-pager log -p --all -G \"%s\" | %s \"^-.*%s\"" search-regex eacl-grep-program search-regex)
-            (format "git --no-pager grep -h %s \"%s\"" git-grep-opts search-regex)))
+        (if deleted-p (format "%s --no-pager log -p --all -G \"%s\" | %s \"^-.*%s\""
+                              eacl-git-program
+                              search-regex
+                              eacl-grep-program search-regex)
+          (format "%s --no-pager grep -h %s \"%s\""
+                  eacl-git-program
+                  git-grep-opts
+                  search-regex)))
 
        ;; use grep
        (t
@@ -336,31 +386,38 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
   (format "candidates (%.01f seconds): "
           (float-time (time-since time))))
 
+(defun eacl-insert-text-at-point (lines &optional no-confirm-p)
+  "Use one of the LINES to insert text at point.
+If NO-CONFIRM-P is t and, there's only one candidate, input it immediately."
+  (let* (selected
+         (line-end (line-end-position)))
+
+    (cond
+     ((or (not lines) (= 0 (length lines)))
+      (message "Matched line does not exist."))
+
+     ((and no-confirm-p (= 1 (length lines)))
+      ;; one candidate, just complete it now
+      (eacl-replace-text (car lines) line-end))
+
+     (t
+      (when (setq selected (completing-read (eacl-hint (current-time)) lines))
+        (eacl-replace-text selected line-end))))))
+
 (defun eacl-complete-line-internal (keyword extra &optional deleted-p)
   "Complete line(s) by grepping with KEYWORD, EXTRA information.
 If DELETED-P is t and git grep is used, grep only from deleted code."
   (let* ((default-directory (eacl-root-directory))
          (cmd (eacl-search-command (eacl-shell-quote-argument keyword) nil deleted-p))
          (orig-collection (eacl-get-candidates cmd "[\r\n]+" keyword deleted-p))
-         (line (eacl-trim-string (cdr extra)))
+         (line (string-trim (cdr extra)))
          (collection (delq nil (mapcar `(lambda (s) (unless (string= s ,line) s))
-                                       (eacl-clean-candidates orig-collection))))
-         selected
-         (line-end (line-end-position))
-         (time (current-time)))
+                                       (eacl-clean-candidates orig-collection)))))
 
     (when eacl-debug
       (message "eacl-complete-line-internal called. cmd=%s" cmd))
 
-    (cond
-     ((or (not collection) (= 0 (length collection)))
-      (message "No single line match was found!"))
-     ((and extra (= 1 (length collection)))
-      ;; one candidate, just complete it now
-      (eacl-replace-text (car collection) line-end))
-     (t
-      (when (setq selected (completing-read (eacl-hint time) collection))
-        (eacl-replace-text selected line-end))))))
+    (eacl-insert-text-at-point collection extra)))
 
 (defun eacl-line-beginning-position ()
   "Get line beginning position."
@@ -393,8 +450,8 @@ The selected region will replace current line first.
 The text from line beginning to current point is used as grep keyword.
 Whitespace in the keyword could match any characters.
 If DELETED-P is t and current file is tracked by Git, complete from deleted code."
-  (eacl-ensure-no-region-selected)
   (interactive "P")
+  (eacl-ensure-no-region-selected)
   (let* ((cur-line-info (eacl-current-line-info))
          (cur-line (car cur-line-info))
          (eacl-keyword-start (eacl-line-beginning-position))
@@ -515,6 +572,90 @@ Whitespace in keyword could match any characters."
                (selected (completing-read (eacl-hint time) cands)))
           (when selected
             (eacl-replace-text (cdr (assoc selected cands)) line-end))))))))
+
+(defun eacl-extract-matched-lines (keyword buffer info)
+  "Extract lines matching KEYWORD from the BUFFER with INFO of current input."
+  (set-buffer buffer)
+  (let* ((strip-prompt (and (get-buffer-process (current-buffer))
+                            comint-prompt-regexp))
+         (current-input (car info))
+         (lines (split-string (buffer-string) "[\r\n]+")))
+
+    (when strip-prompt
+      (setq strip-prompt (concat strip-prompt "\\(.*\\)$"))
+      ;; strip the prompt in shell buffer
+      (setq lines (mapcar (lambda (l)
+                            (when (string-match strip-prompt l)
+                              (setq l (match-string 1 l)))
+                            l)
+                          lines)))
+
+    (setq lines (cl-remove-if (lambda (l)
+                                (or (not (string-match keyword l))
+                                    (equal l current-input)))
+                              lines))
+    (setq lines (cl-remove-duplicates lines))
+
+    lines))
+
+(defun eacl-buffer-ignore-p (buffer)
+  "Ignore the BUFFER for line candidates extraction."
+  (let ((buf-name (buffer-name buffer)))
+    (set-buffer buffer)
+    (cl-some (lambda (e)
+               (or (and (stringp e)
+                        (string-match e buf-name)
+                        (not (cl-some (lambda (p) (string-match p buf-name))
+                                      eacl-include-buffers)))
+                   (eq e major-mode)
+                   (> (buffer-size buffer) eacl-search-buffer-max-size)))
+             eacl-ignore-buffers)))
+
+(defun eacl-complete-line-from-buffer ()
+  "Complete one line from buffer(s).
+Set `eacl-ignore-buffers' and `eacl-include-buffers' to specify ignored&included
+buffers."
+  (interactive)
+  (let* ((original-buf (current-buffer))
+         strip-prompt
+         (original-buf-name (buffer-name original-buf))
+         (eacl-keyword-start (eacl-line-beginning-position))
+         (info (eacl-current-line-info))
+         (keyword (eacl-get-keyword (car info) t))
+         (all-bufs (cl-delete-if 'eacl-buffer-ignore-p (buffer-list)))
+         lines
+         cands)
+
+    ;; Use current buffer to complete
+    (when (eacl-buffer-ignore-p original-buf)
+      (push original-buf all-bufs))
+
+    ;; Use other buffer plus current buffer
+    (dolist (buf all-bufs)
+      (when (setq lines (eacl-extract-matched-lines keyword buf info))
+        ;; append lines to cands
+        (setq cands (nconc cands lines))))
+
+    ;; go back to original buffer
+    (set-buffer original-buf)
+
+    ;; complete line now
+    (eacl-insert-text-at-point cands)
+    (setq eacl-keyword-start nil)))
+
+(defun eacl-complete-line-from-buffer-or-project (&optional deleted-p)
+  "When editing a physical file, complete one line by grepping project root.
+Or else, complete one line by search all buffers.
+If DELETED-P is t and git grep is used, grep only from deleted code.
+You can set `eacl-ignore-buffers' and `eacl-include-buffers' to specify
+ignored&included buffers.  Please note `eacl-include-buffers' has higher
+priority than `eacl-ignore-buffers'."
+  (interactive "P")
+  (cond
+   (buffer-file-name
+    (eacl-complete-line deleted-p))
+   (t
+    (eacl-complete-line-from-buffer))))
 
 (provide 'eacl)
 ;;; eacl.el ends here

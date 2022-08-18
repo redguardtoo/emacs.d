@@ -44,7 +44,7 @@
                  (propertize "R" 'face nil 'help-echo "Buffer is read-only")))
     "] "
 
-    ;; `global-mode-string' is useufl because `org-timer-set-timer' uses it
+    ;; `global-mode-string' is useful because `org-timer-set-timer' uses it
     "%M"
 
     '(:eval my-extra-mode-line-info)

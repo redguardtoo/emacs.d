@@ -101,25 +101,33 @@ In that case, insert the number."
           rcirc-mode
           minibuffer-inactive-mode)))
 
-(with-eval-after-load 'company-ispell
-  (defun my-company-ispell-available-hack (orig-func &rest args)
+(defun my-company-ispell-available-hack (orig-func &rest args)
     ;; in case evil is disabled
     (my-ensure 'evil-nerd-commenter)
     (cond
      ((and (derived-mode-p 'prog-mode)
            (or (not (company-in-string-or-comment)) ; respect advice in `company-in-string-or-comment'
                ;; I renamed the api in new version of evil-nerd-commenter
-               (not (if (fboundp 'evilnc-pure-comment-p) (evilnc-pure-comment-p (point))
-                      (evilnc-is-pure-comment (point)))))) ; auto-complete in comment only
+               (not  (evilnc-pure-comment-p (point))))) ; auto-complete in comment only
       ;; only use company-ispell in comment when coding
       nil)
      (t
       (apply orig-func args))))
+(with-eval-after-load 'company-ispell
   (advice-add 'company-ispell-available :around #'my-company-ispell-available-hack))
+
+(with-eval-after-load 'ispell
+  ;; `ispell-alternate-dictionary' is a plain text dictionary if it exists
+  (let* ((dict (concat my-emacs-d "misc/english-words.txt")))
+    (when (and (null ispell-alternate-dictionary)
+               (file-exists-p dict))
+      ;; @see https://github.com/redguardtoo/emacs.d/issues/977
+      ;; fallback to built in dictionary
+      (setq ispell-alternate-dictionary dict))))
 
 ;; {{ setup company-ispell
 (defun toggle-company-ispell ()
-  "Toggle company-ispell."
+  "Toggle company ispell backend."
   (interactive)
   (cond
    ((memq 'company-ispell company-backends)
@@ -129,22 +137,26 @@ In that case, insert the number."
     (push 'company-ispell company-backends)
     (message "company-ispell enabled!"))))
 
-(defun company-ispell-setup ()
+(defun my-company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
     (push 'company-ispell company-backends)
-    ;; @see https://github.com/redguardtoo/emacs.d/issues/473
+
     (cond
+     ;; @see https://github.com/redguardtoo/emacs.d/issues/473
+     ;; Windows users never load ispell module
      ((and (boundp 'ispell-alternate-dictionary)
            ispell-alternate-dictionary)
       (setq company-ispell-dictionary ispell-alternate-dictionary))
+
      (t
-       (setq company-ispell-dictionary (file-truename (concat my-emacs-d "misc/english-words.txt")))))))
+      (setq company-ispell-dictionary
+            (concat my-emacs-d "misc/english-words.txt"))))))
 
 ;; message-mode use company-bbdb.
 ;; So we should NOT turn on company-ispell
-(add-hook 'org-mode-hook 'company-ispell-setup)
+(add-hook 'org-mode-hook 'my-company-ispell-setup)
 ;; }}
 
 (provide 'init-company)

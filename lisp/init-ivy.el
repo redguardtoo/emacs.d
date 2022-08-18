@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(my-run-with-idle-timer 1 #'ivy-mode) ; it enables ivy UI for `kill-buffer'
+(my-run-with-idle-timer 1 #'ivy-mode)
 
 (with-eval-after-load 'counsel
   ;; automatically pick up cygwin cli tools for counsel
@@ -13,25 +13,24 @@
                   " -n -M 512 --no-heading --color never -i \"%s\" %s")))
 
    (*win64*
-    (let* ((path (getenv "path"))
-           (cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
+    (let* ((cygpath (or (and (file-exists-p "c:/cygwin64/bin") "c:/cygwin64/bin")
                         (and (file-exists-p "d:/cygwin64/bin") "d:/cygwin64/bin")
                         (and (file-exists-p "e:/cygwin64/bin") "e:/cygwin64/bin"))))
       ;; `cygpath' could be nil on Windows
       (when cygpath
-        (unless (string-match-p cygpath counsel-git-cmd)
+        (unless (string-match cygpath counsel-git-cmd)
           (setq counsel-git-cmd (concat cygpath "/" counsel-git-cmd)))
 
-        (unless (string-match-p cygpath counsel-git-grep-cmd-default)
+        (unless (string-match cygpath counsel-git-grep-cmd-default)
           (setq counsel-git-grep-cmd-default (concat cygpath "/" counsel-git-grep-cmd-default)))
         ;; ;; git-log does not work
-        ;; (unless (string-match-p cygpath counsel-git-log-cmd)
+        ;; (unless (string-match cygpath counsel-git-log-cmd)
         ;;   (setq counsel-git-log-cmd (concat "GIT_PAGER="
         ;;                                     cygpath
         ;;                                     "/cat "
         ;;                                     cygpath
         ;;                                     "/git log --grep '%s'")))
-        (unless (string-match-p cygpath counsel-grep-base-command)
+        (unless (string-match cygpath counsel-grep-base-command)
           (setq counsel-grep-base-command (concat cygpath "/" counsel-grep-base-command)))))))
 
   ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
@@ -146,22 +145,6 @@ If N is 2, list files in my recent 20 commits."
       (message "%s => kill-ring" val)
       (insert val))))
 
-(defun my-recent-directory (&optional n)
-  "Goto recent directories.
-If N is not nil, only list directories in current project."
-  (interactive "P")
-  (unless recentf-mode (recentf-mode 1))
-  (let* ((cands (delete-dups
-                 (append my-dired-directory-history
-                         (mapcar 'file-name-directory recentf-list)
-                         ;; fasd history
-                         (and (executable-find "fasd")
-                              (nonempty-lines (shell-command-to-string "fasd -ld"))))))
-         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
-    (when (and n root-dir)
-      (setq cands (delq nil (mapcar (lambda (f) (path-in-directory-p f root-dir)) cands))))
-    (dired (completing-read "Directories: " cands))))
-
 (defun ivy-occur-grep-mode-hook-setup ()
   "Set up ivy occur grep mode."
   ;; turn on wgrep right now
@@ -178,6 +161,11 @@ If N is not nil, only list directories in current project."
   ;; @see https://emacs.stackexchange.com/questions/598/how-do-i-prevent-extremely-long-lines-making-emacs-slow
   (column-number-mode -1))
 (add-hook 'ivy-occur-grep-mode-hook 'ivy-occur-grep-mode-hook-setup)
+
+(defun my-counsel-git-find-file ()
+  "Use git to find file."
+  (interactive)
+  (counsel-git (and (region-active-p) (my-selected-str))))
 
 (defun my-counsel-git-grep (&optional level)
   "Git grep in project.  If LEVEL is not nil, grep files in parent commit."
@@ -202,10 +190,9 @@ If N is not nil, only list directories in current project."
      (t
       (counsel-git-grep str)))))
 
-(defun counsel-browse-kill-ring (&optional n)
-  "If N > 1, assume just yank the Nth item in `kill-ring'.
-If N is nil, use `ivy-mode' to browse `kill-ring'."
-  (interactive "P")
+(defun my-counsel-browse-kill-ring ()
+  "If N > 1, assume just yank the Nth item in `kill-ring'."
+  (interactive)
   (my-select-from-kill-ring (lambda (s)
                               (let* ((plain-str (my-insert-str s))
                                      (trimmed (string-trim plain-str)))
@@ -215,7 +202,8 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
                                 (kill-new plain-str)))))
 
 (defun ivy-switch-buffer-matcher-pinyin (regexp candidates)
-  (ivy--switch-buffer-matcher (my-pinyinlib-build-regexp-string regexp) candidates))
+  (my-ensure 'pinyinlib)
+  (ivy--switch-buffer-matcher (pinyinlib-build-regexp-string regexp) candidates))
 
 (defun ivy-switch-buffer-by-pinyin ()
   "Switch to another buffer."
@@ -242,40 +230,9 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
 (global-set-key (kbd "C-h f") 'counsel-describe-function)
 
 ;; {{  C-o f to toggle case sensitive, @see https://github.com/abo-abo/swiper/issues/1104
-(defun re-builder-extended-pattern (str)
+(defun my-re-builder-extended-pattern (str)
   "Build regex compatible with pinyin from STR."
-  (let* ((len (length str)))
-    (cond
-     ;; do nothing
-     ((<= (length str) 1))
-
-     ;; If the first character of input in ivy is ":",
-     ;; remaining input is converted into Chinese pinyin regex.
-     ((string= (substring str 0 1) ":")
-      (setq str (my-pinyinlib-build-regexp-string (substring str 1 len))))
-
-     ;; If the first character of input in ivy is "/",
-     ;; remaining input is converted to pattern to search camel case word
-     ;; For example, input "/ic" match "isController" or "isCollapsed"
-     ((string= (substring str 0 1) "/")
-      (let* ((rlt "")
-             (i 0)
-             (subs (substring str 1 len))
-             c)
-        (when (> len 2)
-          (setq subs (upcase subs))
-          (while (< i (length subs))
-            (setq c (elt subs i))
-            (setq rlt (concat rlt (cond
-                                   ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
-                                    (format "%c" c))
-                                   (t
-                                    (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
-                                              (format "%c" c))
-                                            "[a-z]+")))))
-            (setq i (1+ i))))
-        (setq str rlt))))
-    (ivy--regex-plus str)))
+  (ivy--regex-plus (my-extended-regexp str)))
 ;; }}
 
 (defun my-counsel-imenu ()
@@ -336,7 +293,7 @@ If N is nil, use `ivy-mode' to browse `kill-ring'."
   ;; https://oremacs.com/2017/11/30/ivy-0.10.0/
   (setq ivy-use-selectable-prompt t)
 
-  (setq ivy-re-builders-alist '((t . re-builder-extended-pattern)))
+  (setq ivy-re-builders-alist '((t . my-re-builder-extended-pattern)))
   ;; set actions when running C-x b
   ;; replace "frame" with window to open in new window
   (ivy-set-actions

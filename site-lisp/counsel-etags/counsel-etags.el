@@ -4,9 +4,9 @@
 
 ;; Author: Chen Bin <chenbin dot sh AT gmail dot com>
 ;; URL: http://github.com/redguardtoo/counsel-etags
-;; Package-Requires: ((emacs "25.1") (counsel "0.13.4"))
+;; Package-Requires: ((emacs "26.1") (counsel "0.13.4"))
 ;; Keywords: tools, convenience
-;; Version: 1.10.0
+;; Version: 1.10.1
 
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -200,7 +200,7 @@ A CLI to create tags file:
 
 (defcustom counsel-etags-use-ripgrep-force nil
   "Force use ripgrep as grep program.
-If rg is not in $PATH, then it should be defined in `counsel-etags-grep-program'."
+If rg is not in $PATH, then it need be defined in `counsel-etags-grep-program'."
   :group 'counsel-etags
   :type 'boolean)
 
@@ -261,7 +261,7 @@ The definition of word is customized by the user."
 
 (defcustom counsel-etags-maximum-candidates-to-clean 1024
   "Maximum candidates to clean up before displaying to users.
-If candidates number is bigger than this value, show raw candidates without cleanup."
+If candidates number is greater than this value, show all raw candidates."
   :group 'counsel-etags
   :type 'integer)
 
@@ -282,6 +282,7 @@ It's used by `counsel-etags-find-tag-name-default'."
     ".hg"
     ;; project misc
     "bin"
+    "dist"
     "fonts"
     "images"
     ;; Mac
@@ -396,16 +397,16 @@ You can set up it in \".dir-locals.el\"."
 Universal Ctags won't read options from \"~/.ctags\" by default.
 So we force Universal Ctags to load \"~/.ctags\".
 
-Exuberant Ctags actually can NOT open option file \".ctags\" through cli option.
+Exuberant Ctags can NOT read option file \".ctags\" through cli option.
 
-But path \"~/.ctags\" is OK because we use Emacs Lisp to load \"~.ctags\".
+So we use Emacs Lisp to load \"~.ctags\".
 
-Please use file name like \"ctags.cnf\" instead \".ctags\" when customize this variable.
+Use file name \"ctags.cnf\" instead \".ctags\" if it needs change.
 
 Universal Ctags does NOT have this bug.
 
-Please do NOT exclude system temporary folder in ctags configuration because imenu
-related functions need create and scan files in this folder."
+Please do NOT exclude system temporary folder in ctags configuration
+because imenu functions need create and scan files in this folder."
   :group 'counsel-etags
   :type 'string)
 
@@ -446,7 +447,7 @@ Run 'ctags -x some-file' to see the type in second column of output."
   "Sort candidates if its size is less than this variable's value.
 Candidates whose file path has Levenshtein distance to current file/directory.
 You may set it to nil to disable re-ordering for performance reason.
-If `string-distance' exists, sorting always happens and this variable is ignored."
+If `string-distance' exists, sorting happens and this variable is ignored."
   :group 'counsel-etags
   :type 'integer)
 
@@ -541,6 +542,9 @@ The file is also used by tags file auto-update process.")
 (defvar counsel-etags-last-tagname-at-point nil
   "Last tagname queried at point.")
 
+(declare-function outline-up-heading "outline")
+(declare-function org-entry-get "outline")
+
 (defun counsel-etags-org-entry-get-project-root ()
   "Get org property from current node or parent node recursively."
   (when (and (derived-mode-p 'org-mode)
@@ -556,7 +560,7 @@ The file is also used by tags file auto-update process.")
       (save-excursion
         (unless rlt
           (setq old-pos (point))
-          (condition-case nil (outline-up-heading 1))
+          (condition-case nil (outline-up-heading 1) (error nil))
           (while loop
             (cond
              ((or (setq rlt (org-entry-get (point) prop-name))
@@ -564,7 +568,7 @@ The file is also used by tags file auto-update process.")
               (setq loop nil))
              (t
               (setq old-pos (point))
-              (condition-case nil (outline-up-heading 1)))))
+              (condition-case nil (outline-up-heading 1) (error nil)))))
           (goto-char pos))
         rlt))))
 
@@ -595,7 +599,7 @@ Return nil if it's not found."
 ;;;###autoload
 (defun counsel-etags-version ()
   "Return version."
-  (message "1.10.0"))
+  (message "1.10.1"))
 
 ;;;###autoload
 (defun counsel-etags-get-hostname ()
@@ -1684,7 +1688,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
                            (format "--exclude=\"%s\"" (counsel-etags-shell-quote e)))
                          ignore-file-names " "))))))
 
-(defun counsel-etags-grep-cli (keyword use-cache)
+(defun counsel-etags-grep-cli (keyword &optional use-cache)
   "Use KEYWORD and USE-CACHE to build CLI.
 Extended regex is used, like (pattern1|pattern2)."
   (cond
@@ -1729,10 +1733,22 @@ If HINT is not nil, it's used as grep hint.
 ROOT is the directory to grep.  It's automatically detected.
 If current file is org file, current node or parent node's property
 \"GREP_PROJECT_ROOT\" is read to get the root directory to grep.
-If SHOW-KEYWORD-P is t, show the keyword in the minibuffer."
+If SHOW-KEYWORD-P is t, show the keyword in the minibuffer.
+
+This command uses Ivy which supports regexp negation with \"!\".
+For example, \"define key ! ivy quit\" first selects everything
+matching \"define.*key\", then removes everything matching \"ivy\",
+and finally removes everything matching \"quit\". What remains is the
+final result set of the negation regexp."
   (interactive)
+
+  (unless hint
+    (setq hint (if (eq counsel-etags-convert-grep-keyword 'identity)
+                   "Regular expression for grep: "
+                 "Keyword for searching: ")))
+
   (let* ((text (if default-keyword default-keyword
-                  (counsel-etags-read-keyword "Regular expression for grep: ")))
+                  (counsel-etags-read-keyword hint)))
          (keyword (funcall counsel-etags-convert-grep-keyword text))
          (default-directory (expand-file-name (or root
                                                   (counsel-etags-org-entry-get-project-root)
@@ -1759,8 +1775,9 @@ If SHOW-KEYWORD-P is t, show the keyword in the minibuffer."
                        (< (string-distance (car (split-string a ":")) ,ref t)
                           (string-distance (car (split-string b ":")) ,ref t)))))))
 
-    (if counsel-etags-debug (message "counsel-etags-grep called => %s %s %s %s"
-                                     keyword default-directory cmd cands))
+    (when counsel-etags-debug
+      (message "counsel-etags-grep called: keyword=%s\n  root=%s\n  cmd=%s\n  cands=%s"
+               keyword default-directory cmd cands))
     (counsel-etags-put :ignore-dirs
                        counsel-etags-ignore-directories
                        counsel-etags-opts-cache)
@@ -1869,9 +1886,12 @@ The `counsel-etags-browse-url-function' is used to open the url."
     (font-lock-mode -1))
   ;; useless to set `default-directory', it's already correct
   ;; we use regex in elisp, don't unquote regex
-  (let* ((cands (ivy--filter ivy-text
-                             (split-string (shell-command-to-string (counsel-etags-grep-cli counsel-etags-keyword t))
+  (let* ((cmd (counsel-etags-grep-cli counsel-etags-keyword t))
+         (cands (ivy--filter ivy-text
+                             (split-string (shell-command-to-string cmd)
                                            "[\r\n]+" t))))
+    (when counsel-etags-debug
+      (message "counsel-etags-grep-occur called. cmd=%s" cmd))
     (swiper--occur-insert-lines
      (mapcar
       (lambda (cand) (concat "./" cand))

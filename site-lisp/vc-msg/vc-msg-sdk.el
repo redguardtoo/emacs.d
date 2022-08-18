@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(declare-function evil-local-set-key "evil")
+
 (defun vc-msg-sdk-short-id (id)
   "Format commit ID."
   (substring id 0 8))
@@ -134,7 +136,8 @@ Return either id or nil."
     (if (string-match-p pattern output)
       (with-temp-buffer
         (insert output)
-        (goto-line line-num)
+        (goto-char (point-min))
+        (forward-line (1- line-num))
         (setq cur-line (buffer-substring-no-properties (line-beginning-position)
                                                        (line-end-position)))
         (if (string-match pattern cur-line)
@@ -184,8 +187,8 @@ CONTENT is inserted into buffer."
 
       ;; quit easily
       (local-set-key (kbd "q") 'vc-msg-sdk-quit-window)
-      (if (and (boundp 'evil-mode) evil-mode)
-          (evil-local-set-key 'normal "q" 'vc-msg-sdk-quit-window))
+      (when (and (boundp 'evil-mode) evil-mode)
+        (evil-local-set-key 'normal "q" 'vc-msg-sdk-quit-window))
 
       ;; You can run `ffip-diff-mode' which inherits from `diff-mode' but is better
       ;; `ffip-diff-mode' is from package find-file-in-project v5.3.2

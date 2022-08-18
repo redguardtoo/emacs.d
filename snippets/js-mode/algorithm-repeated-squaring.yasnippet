@@ -1,0 +1,22 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: Repeated Squaring
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+// https://algorithmist.com/wiki/Repeated_Squaring
+// Repeated squaring, or repeated doubling is an algorithm that computes integer powers of a number quickly.
+function power(n, p) {
+  if(p === 0) {
+    return 1;
+  }
+  if(p === 1) {
+    return n;
+  }
+  // console.log('n=', n, 'p=', p);
+  // return n ** p;
+  return p % 2 ?  n * power(n * n, p >> 2) : power(n * n,  (p-1) >> 2);
+}
+
+console.time('testName');
+console.log('power(3,23)=', power(3,23));
+console.timeEnd('testName');

@@ -84,7 +84,7 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
 
 (defun my-js2-mode-setup()
   "Set up javascript."
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")

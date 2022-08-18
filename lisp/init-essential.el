@@ -25,16 +25,24 @@
    ((= n 4)
     ;; grep js files which is imported
     (counsel-etags-grep (format "from .*%s('|\\\.js');?"
-                                (file-name-base (file-name-nondirectory buffer-file-name)))))
-   ((= n 5)
-    ;; grep Chinese using pinyinlib.
-    ;; In ivy filter, trigger key must be pressed before filter chinese
-    (let* ((counsel-etags-convert-grep-keyword
-            (lambda (keyword)
-              (if (and keyword (> (length keyword) 0))
-                  (my-pinyinlib-build-regexp-string keyword)
-                keyword))))
-      (counsel-etags-grep)))))
+                                (file-name-base (file-name-nondirectory buffer-file-name)))))))
+
+(defun my-grep-pinyin-in-current-directory ()
+  "Grep pinyin in current directory."
+  (interactive)
+  ;; grep Chinese using pinyinlib.
+  ;; In ivy filter, trigger key must be pressed before filter chinese
+  (my-ensure 'counsel-etags)
+  (let* ((counsel-etags-convert-grep-keyword
+          (lambda (keyword)
+            (cond
+             ((> (length keyword) 0)
+              (my-ensure 'pinyinlib)
+              ;; only grep simplified Chinese
+              (pinyinlib-build-regexp-string keyword t nil t))
+             (t
+              keyword)))))
+    (counsel-etags-grep-current-directory)))
 
 ;; {{ narrow region
 (defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
@@ -60,10 +68,10 @@
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
 ;; fixed to behave correctly in org-src buffers; taken from:
 ;; https://lists.gnu.org/archive/html/emacs-orgmode/2019-09/msg00094.html
-(defun narrow-or-widen-dwim (&optional use-indirect-buffer)
+(defun my-narrow-or-widen-dwim (&optional use-indirect-buffer)
   "If the buffer is narrowed, it widens.
- Otherwise, it narrows to region, or Org subtree.
-If USE-INDIRECT-BUFFER is not nil, use `indirect-buffer' to hold the widen content."
+Otherwise, it narrows to region or Org subtree.
+If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
   (interactive "P")
   (cond
    ((and (not use-indirect-buffer) (buffer-narrowed-p))
@@ -124,7 +132,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
     (swiper keyword)))
 
 (defun my-swiper-hack (&optional arg)
-  "Undo region selection before swiper.  ARG is ingored."
+  "Undo region selection before swiper.  ARG is ignored."
   (ignore arg)
   (if (region-active-p) (deactivate-mark)))
 (advice-add 'swiper :before #'my-swiper-hack)
@@ -140,14 +148,10 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 ;; {{ Write backup files to its own directory
 ;; @see https://www.gnu.org/software/emacs/manual/html_node/tramp/Auto_002dsave-and-Backup.html
-(defvar my-binary-file-name-regexp
-  "\\.\\(avi\\|wav\\|pdf\\|mp[34g]\\|mkv\\|exe\\|3gp\\|rmvb\\|rm\\|pyim\\|\\.recentf\\)$"
-  "Is binary file name?")
-
 (setq backup-enable-predicate
-      (lambda (name)
-        (and (normal-backup-enable-predicate name)
-             (not (string-match-p my-binary-file-name-regexp name)))))
+      (lambda (file-name)
+        (and (normal-backup-enable-predicate file-name)
+             (not (my-binary-file-p file-name)))))
 
 (let* ((backup-dir (expand-file-name "~/.backups")))
   (unless (file-exists-p backup-dir) (make-directory backup-dir))
@@ -165,11 +169,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 (with-eval-after-load 'tramp
   (push (cons tramp-file-name-regexp nil) backup-directory-alist)
-
-;; @see https://github.com/syl20bnr/spacemacs/issues/1921
-;; If you tramp is hanging, you can uncomment below line.
-;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
-
+  ;; @see https://github.com/syl20bnr/spacemacs/issues/1921
+  ;; If you tramp is hanging, you can uncomment below line.
+  ;; (setq tramp-ssh-controlmaster-options "-o ControlMaster=auto -o ControlPath='tramp.%%C' -o ControlPersist=no")
   (setq tramp-chunksize 8192))
 
 
@@ -197,17 +199,18 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (menu-bar-mode -1)
 
 ;; Nicer naming of buffers for files with identical names
-(setq uniquify-buffer-name-style 'reverse)
-(setq uniquify-separator " • ")
-(setq uniquify-after-kill-buffer-p t)
-(setq uniquify-ignore-buffers-re "^\\*")
+(with-eval-after-load 'uniquify
+  (setq uniquify-buffer-name-style 'reverse)
+  (setq uniquify-separator " • ")
+  (setq uniquify-after-kill-buffer-p t)
+  (setq uniquify-ignore-buffers-re "^\\*"))
 
-(setq hippie-expand-try-functions-list
-      '(try-complete-file-name-partially
-        try-complete-file-name
-        try-expand-dabbrev
-        try-expand-dabbrev-all-buffers
-        try-expand-dabbrev-from-kill))
+(setq-default hippie-expand-try-functions-list
+              '(try-complete-file-name-partially
+                try-complete-file-name
+                try-expand-dabbrev
+                try-expand-dabbrev-all-buffers
+                try-expand-dabbrev-from-kill))
 (global-set-key (kbd "M-/") 'hippie-expand)
 
 (defun my-compile (&optional arg)
@@ -221,7 +224,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
       (cond
        ;; jest unit test
-       ((and buffer-file-name (string-match-p "\\.[tj]s$" buffer-file-name))
+       ((and buffer-file-name (string-match "\\.[tj]s$" buffer-file-name))
         (setq extra-opt (format " -t \"%s\" " extra-opt)))
 
        ;; do nothing
@@ -230,4 +233,74 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
       (if extra-opt (kill-new extra-opt))))
   (call-interactively 'compile))
 
+;; {{ eacl - emacs auto complete line(s)
+(global-set-key (kbd "C-x C-l") 'eacl-complete-line-from-buffer-or-project)
+(global-set-key (kbd "C-c C-l") 'eacl-complete-line-from-buffer)
+(global-set-key (kbd "C-c C-;") 'eacl-complete-multiline)
+(with-eval-after-load 'eacl
+  ;; not interested in untracked files in git repository
+  (setq eacl-git-grep-untracked nil))
+;; }}
+
+(defun my-switch-to-previous-buffer ()
+  "Switch to previous buffer."
+  (interactive)
+  (switch-to-buffer nil))
+
+(defun my-current-string-beginning ()
+  "Goto current string's beginning."
+  (interactive)
+  (goto-char (car (my-create-range t))))
+
+(defun my-current-string-end ()
+  "Goto current string's end."
+  (interactive)
+  (goto-char (1- (cdr (my-create-range t)))))
+
+(defun my-switch-to-shell ()
+  "Switch to built in or 3rd party shell."
+  (interactive)
+  (cond
+   ((or (display-graphic-p) (daemonp))
+    (switch-to-builtin-shell))
+   (t
+    (suspend-frame))))
+
+(global-set-key (kbd "C-x C-z") #'my-switch-to-shell)
+(global-set-key (kbd "C-x C-m") 'execute-extended-command)
+
+(defun my-save-current-buffer ()
+  "Save current buffer (Dired, Grep, ...) to re-use in the future."
+  (interactive)
+  (let* ((file (read-file-name "Save buffer to file (its extension must be \"el\"): "))
+         (content (buffer-string))
+         (can-save-p t)
+         (header (format "-*- mode:%s; default-directory: \"%s\" -*-\n"
+                         (replace-regexp-in-string "-mode" "" (format "%s" major-mode))
+                         default-directory)))
+    (when file
+      ;; double check file name extension
+      (unless (equal (file-name-extension file) "el")
+        (setq file (concat (file-name-base file) ".el")))
+
+      (when (file-exists-p file)
+        (setq can-save-p
+              (yes-or-no-p (format "File %s exists.  Override it?" file))))
+      (when can-save-p
+        (with-temp-buffer
+          (insert header)
+          (insert content)
+          ;; write buffer content into file
+          (write-region (point-min) (point-max) file))))))
+
+(with-eval-after-load 'flymake
+  ;; if `flymake-no-changes-timeout' is nil, linting code ONLY after saving buffer.
+  ;; This might speeds up Emacs if some some kind of auto-save package is used
+  (setq flymake-no-changes-timeout 1))
+
+(with-eval-after-load 'paren
+  ;; better performance
+  (setq show-paren-delay 0.5))
+
 (provide 'init-essential)
+;;; init-essential.el ends here

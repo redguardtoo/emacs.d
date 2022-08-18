@@ -76,6 +76,11 @@
 ;; https://github.com/abo-abo/ace-window
 ;; `M-x ace-window ENTER m` to swap window
 (global-set-key (kbd "C-x o") 'ace-window)
+;; (global-set-key (kbd "C-x C-o") 'ace-window) ;; ffip is useless
+(with-eval-after-load 'ace-window
+  (setq aw-background nil)
+  (setq aw-char-position 'top-left)
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 ;; {{ move focus between sub-windows
 (setq winum-keymap

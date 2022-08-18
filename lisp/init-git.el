@@ -10,7 +10,7 @@
 ;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
 ;; open files faster but you can't check if file is version
 ;; controlled. other VCS functionality still works.
-(remove-hook 'find-file-hooks 'vc-find-file-hook)
+(remove-hook 'find-file-hook 'vc-find-file-hook)
 ;; }}
 
 ;; ;; {{ Solution 3: setup `vc-handled-backends' per project
@@ -19,7 +19,7 @@
 ;;   "Default setup for project under vcs."
 ;;   (interactive)
 ;;   (cond
-;;     ((string-match-p (file-truename user-emacs-directory)
+;;     ((string-match (file-truename user-emacs-directory)
 ;;                      (file-name-directory (buffer-file-name)))
 ;;       (setq vc-handled-backends '(Git)))
 ;;     (t
@@ -139,7 +139,7 @@ Show the diff between current working code and git head."
 (defun my-git-commit-id ()
   "Select commit id from current branch."
   (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
-         (collection (nonempty-lines (shell-command-to-string git-cmd)))
+         (collection (my-nonempty-lines (shell-command-to-string git-cmd)))
          (item (completing-read "git log:" collection)))
     (when item
       (car (split-string item "|" t)))))
@@ -168,7 +168,7 @@ Show the diff between current working code and git head."
               collection
               :action (lambda (rev)
                         ;; compatible with ivy 8+ and later ivy version
-                        (unless (string-match-p "^[a-z0-9]*$" (car rev))
+                        (unless (string-match "^[a-z0-9]*$" (car rev))
                           (setq rev (cdr rev)))
                         (git-timemachine-show-revision rev)))))
 
@@ -227,7 +227,7 @@ Show the diff between current working code and git head."
     ("p" my-prev-merge-conflict)))
 
 (defun my-goto-merge-conflict-internal (forward-p)
-  "Goto specific hunk.  If forward-p is t, go in forward direction."
+  "Goto specific hunk.  If FORWARD-P is t, go in forward direction."
   ;; @see https://emacs.stackexchange.com/questions/63413/finding-git-conflict-in-the-same-buffer-if-cursor-is-at-end-of-the-buffer#63414
   (my-ensure 'smerge-mode)
   (let ((buffer (current-buffer))
@@ -290,7 +290,7 @@ Show the diff between current working code and git head."
 
 ;; {{
 (defun my-git-extract-based (target lines)
-  "Extract based version from TARGET."
+  "Extract based version from TARGET and LINES."
   (let* (based (i 0) break)
     (while (and (not break) (< i (length lines)))
       (cond
@@ -322,9 +322,9 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
                                 lines)))
          based)
     (cond
-     ((or (not targets) (eq (length targets) 0))
+     ((or (not targets) (null targets))
       (message "No tag or branch is found to base on."))
-     ((or (not user-select-branch)) (eq (length targets) 1)
+     ((or (not user-select-branch) (eq (length targets) 1))
       ;; select the closest/only tag or branch
       (setq based (my-git-extract-based (nth 0 targets) lines)))
      (t
@@ -350,7 +350,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 
 ;; {{ git-gutter use ivy
 (defun my-reshape-git-gutter (gutter)
-  "Re-shape gutter for `ivy-read'."
+  "Re-shape GUTTER for `ivy-read'."
   (let* ((linenum-start (aref gutter 3))
          (linenum-end (aref gutter 4))
          (target-line "")
@@ -359,7 +359,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
          (max-line-length 0))
     (save-excursion
       (while (<= linenum-start linenum-end)
-        (goto-line linenum-start)
+        (my-goto-line linenum-start)
         (setq tmp-line (replace-regexp-in-string "^[ \t]*" ""
                                                  (buffer-substring (line-beginning-position)
                                                                    (line-end-position))))
@@ -376,13 +376,14 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
           target-linenum)))
 
 (defun my-goto-git-gutter ()
+  "Go to specific git gutter."
   (interactive)
   (if git-gutter:diffinfos
       (ivy-read "git-gutters:"
                 (mapcar 'my-reshape-git-gutter git-gutter:diffinfos)
                 :action (lambda (e)
                           (unless (numberp e) (setq e (cdr e)))
-                          (goto-line e)))
+                          (my-goto-line e)))
     (message "NO git-gutters!")))
 
 ;; }}
@@ -401,4 +402,28 @@ If LEVEL > 0, find file in previous LEVEL commit."
     (when file
       (find-file file))))
 
+(defun my-commit-create ()
+  "Git commit."
+  (interactive)
+  (let ((msg (read-string "Git commit message: ")))
+    (when (> (length msg) 0)
+      (shell-command (format "git commit --no-verify -m \"%s\"" msg)))))
+
+(defun my-commit-amend (&optional reuse-p)
+  "Git amend.  If REUSE-P is t, commit by reusing original message."
+  (interactive)
+  (let* ((original-msg  (shell-command-to-string "git log --pretty=format:'%s' -n1"))
+         msg
+         (extra-args (if reuse-p "--reuse-message=HEAD" ""))
+         cmd)
+
+    (setq msg (unless reuse-p
+                (read-string "Git amend message: " original-msg)))
+    (when (or reuse-p (> (length msg) 0))
+      (setq cmd (format "git commit --no-verify --amend %s" extra-args))
+      (unless reuse-p
+        (setq cmd (format "%s -m \"%s\"" cmd msg)))
+      (shell-command cmd))))
+
 (provide 'init-git)
+;;; init-git.el ends here

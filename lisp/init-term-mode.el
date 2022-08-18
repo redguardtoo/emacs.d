@@ -19,7 +19,7 @@ EVENT is ignored."
   (let* ((beg (nth 0 args))
          (end (nth 1 args)))
     (cond
-     ((not (string-match-p "^complete " (buffer-substring beg end)))
+     ((not (string-match "^complete " (buffer-substring beg end)))
       ;; filter out some weird lines
       nil)
      (t
@@ -57,7 +57,7 @@ EVENT is ignored."
 
 (defun eshell-mode-hook-setup ()
   "Set up `eshell-mode'."
-  (local-set-key (kbd "C-c C-y") 'hydra-launcher/body)
+  (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
   (local-set-key (kbd "M-n") 'counsel-esh-history))
 (add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
 
@@ -66,11 +66,6 @@ EVENT is ignored."
 
 ;; always use bash
 (defvar my-term-program "/bin/bash")
-
-;; utf8
-(defun my-term-use-utf8 ()
-  (set-buffer-process-coding-system 'utf-8-unix 'utf-8-unix))
-(add-hook 'term-exec-hook 'my-term-use-utf8)
 ;; }}
 
 ;; {{ hack counsel-browser-history
@@ -93,7 +88,6 @@ EVENT is ignored."
                           (let* ((cli (if (stringp item) item (car item))))
                             (and (string-match (regexp-quote ,input) cli) item)))
                        rlt))))
-    (when (and rlt (> (length rlt) 0)))
     rlt))
 (advice-add 'ivy-history-contents :around #'my-ivy-history-contents-hack)
 ;; }}
@@ -105,12 +99,15 @@ EVENT is ignored."
   (setq comint-password-prompt-regexp
         (format "%s\\|^ *Password for .*: *$" comint-password-prompt-regexp))
   (add-hook 'comint-output-filter-functions 'comint-watch-for-password-prompt))
-(defun comint-mode-hook-setup ()
+
+(defun my-comint-mode-hook-setup ()
+  "Set up embedded shells."
+  (local-set-key (kbd "C-c C-l") 'eacl-complete-line-from-buffer)
   ;; look up shell command history
   (local-set-key (kbd "M-n") 'counsel-shell-history)
   ;; Don't show trailing whitespace in REPL.
   (local-set-key (kbd "M-;") 'comment-dwim))
-(add-hook 'comint-mode-hook 'comint-mode-hook-setup)
+(add-hook 'comint-mode-hook 'my-comint-mode-hook-setup)
 ;; }}
 
 (provide 'init-term-mode)

@@ -45,10 +45,11 @@
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-svn-execute (file line-num version)
+(defun vc-msg-svn-execute (file line-num &optional version)
   "Use FILE, LINE-NUM and VERSION to produce svn command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
+  (ignore version)
   (setq file (file-name-nondirectory file))
   ;; there is no command to get the commit information for current line
   (let* ((cmd (vc-msg-svn-generate-cmd (format "blame %s" file)))

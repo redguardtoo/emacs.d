@@ -177,7 +177,7 @@ Second sequence is subsequence of B, which starts from B-START with length M."
       (setq u (nth 2 snake))
       (setq v (nth 3 snake))
       (cond
-       ((> d 1)
+       ((and d (> d 1))
         (setq s1 (diff-lisp-myers-find-all-snakes a a-start x b b-start y))
         (setq s2 (diff-lisp-myers-find-all-snakes a (+ a-start u) (- n u) b (+ b-start v) (- m v)))
         (setq all-snakes (append s1 s2))

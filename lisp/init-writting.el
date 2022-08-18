@@ -9,7 +9,7 @@ Only applies to text-mode."
     ;; We obviously don't want to do this in prog-mode.
     (if (and (derived-mode-p 'text-mode)
              (or (looking-at (format f space rg))
-                 (looking-back (format f rg space))))
+                 (looking-back (format f rg space) (point-min))))
         (replace-match rp nil nil nil 1))))
 
 (defun endless/call-subword-cmd (fn)

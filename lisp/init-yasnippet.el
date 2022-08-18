@@ -1,13 +1,20 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 ;; my private snippets, should be placed before enabling yasnippet
-(setq my-yasnippets (expand-file-name "~/my-yasnippets"))
+(defvar my-yasnippets-dir nil
+  "The directory of my own yasnippets, \"~/my-yasnippets\", for example.")
 
 (defun my-enable-yas-minor-mode ()
   "Enable `yas-minor-mode'."
-  (when (or (not (is-buffer-file-temp))
+  (when (or (not (my-buffer-file-temp-p))
             (derived-mode-p 'prog-mode))
-    (yas-minor-mode 1)))
+    (cond
+     ((eq major-mode 'lisp-interaction-mode)
+      ;; The *Message* buffer is the first buffer to display during startup
+      ;; lazy load yasnippet to speed up startup
+      (my-run-with-idle-timer 2 #'yas-minor-mode))
+     (t
+      (yas-minor-mode 1)))))
 
 (add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
 (add-hook 'text-mode-hook 'my-enable-yas-minor-mode)
@@ -84,7 +91,7 @@
     rlt))
 
 (defun my-read-n-from-kill-ring ()
-  (let* ((cands (subseq kill-ring 0 (min (read-number "fetch N `kill-ring'?" 1)
+  (let* ((cands (cl-subseq kill-ring 0 (min (read-number "fetch N `kill-ring'?" 1)
                                          (length kill-ring)))))
     (mapc (lambda (txt)
             (set-text-properties 0 (length txt) nil txt)
@@ -125,10 +132,10 @@
       (apply orig-func args)))
   (advice-add 'yas-insert-snippet :around #'my-yas-insert-snippet-hack)
 
-  (when (and  (file-exists-p my-yasnippets)
-              (not (member my-yasnippets yas-snippet-dirs)))
-    (add-to-list 'yas-snippet-dirs my-yasnippets))
-
-  (yas-reload-all))
+  (when (and  my-yasnippets-dir
+              (file-exists-p my-yasnippets-dir)
+              (not (member my-yasnippets-dir yas-snippet-dirs)))
+    (push my-yasnippets-dir yas-snippet-dirs)
+    (yas-reload-all)))
 
 (provide 'init-yasnippet)

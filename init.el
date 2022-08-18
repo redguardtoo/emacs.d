@@ -19,7 +19,7 @@
 (setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs27* (>= emacs-major-version 27))
+(setq *emacs28* (>= emacs-major-version 28))
 
 ;; don't GC during startup to save time
 (unless (bound-and-true-p my-computer-has-smaller-memory-p)
@@ -43,21 +43,20 @@
                    (t nil)))
 
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
-  "Directory of emacs.d")
+  "Directory of emacs.d.")
 
 (defconst my-site-lisp-dir (concat my-emacs-d "site-lisp")
-  "Directory of site-lisp")
+  "Directory of site-lisp.")
 
 (defconst my-lisp-dir (concat my-emacs-d "lisp")
-  "Directory of lisp.")
+  "Directory of personal configuration.")
 
-(defun my-vc-merge-p ()
-  "Use Emacs for git merge only?"
-  (boundp 'startup-now))
+;; Light weight mode, fewer packages are used.
+(setq my-lightweight-mode-p (and (boundp 'startup-now) (eq startup-now t)))
 
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
-  (when (or (not maybe-disabled) (not (my-vc-merge-p)))
+  (when (or (not maybe-disabled) (not my-lightweight-mode-p))
     (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
 
 (defun my-add-subdirs-to-load-path (lisp-dir)
@@ -67,9 +66,9 @@
           (append
            (delq nil
                  (mapcar (lambda (dir)
-                           (unless (string-match-p "^\\." dir)
+                           (unless (string-match "^\\." dir)
                              (expand-file-name dir)))
-                         (directory-files my-site-lisp-dir)))
+                         (directory-files lisp-dir)))
            load-path))))
 
 ;; @see https://www.reddit.com/r/emacs/comments/3kqt6e/2_easy_little_known_steps_to_speed_up_emacs_start/
@@ -108,11 +107,9 @@
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
   (require-init 'init-ctags t)
-  (require-init 'init-bbdb t)
   (require-init 'init-gnus t)
   (require-init 'init-lua-mode t)
-  (require-init 'init-workgroups2 t) ; use native API in lightweight mode
-  (require-init 'init-term-mode t)
+  (require-init 'init-term-mode)
   (require-init 'init-web-mode t)
   (require-init 'init-company t)
   (require-init 'init-chinese t) ;; cannot be idle-required
@@ -126,10 +123,11 @@
   ;; color themes are already installed in `init-elpa.el'
   (require-init 'init-theme)
 
-  ;; misc has some crucial tools I need immediately
+  ;; essential tools
   (require-init 'init-essential)
-  ;; handy tools though not must have
+  ;; tools nice to have
   (require-init 'init-misc t)
+  (require-init 'init-emms t)
 
   (require-init 'init-emacs-w3m t)
   (require-init 'init-shackle t)
@@ -141,7 +139,8 @@
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
-  (require-init 'init-ediff)
+  (when my-lightweight-mode-p
+    (require-init 'init-ediff))
 
   ;; @see https://github.com/hlissner/doom-emacs/wiki/FAQ
   ;; Adding directories under "site-lisp/" to `load-path' slows
@@ -150,9 +149,9 @@
   (unless my-disable-idle-timer
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
-  (require-init 'init-flymake t)
+  (require-init 'init-no-byte-compile t)
 
-  (unless (my-vc-merge-p)
+  (unless my-lightweight-mode-p
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
     (setq custom-file (expand-file-name (concat my-emacs-d "custom-set-variables.el")))
@@ -173,7 +172,6 @@
   (garbage-collect))
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
-
 
 ;;; Local Variables:
 ;;; no-byte-compile: t

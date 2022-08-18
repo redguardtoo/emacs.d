@@ -3,11 +3,11 @@
 [[https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml][https://github.com/redguardtoo/emacs.d/actions/workflows/test.yml/badge.svg]]
 
 - Fast
-- Robust. Never crash after upgrading packages. Packages could be installed without network
-- Support Windows. Find&Grep files on Windows with minimum setup
-- Tested with Emacs 26.3, 27.1, 28 on Linux/Windows/Cygwin/macOS/WSL(Windows Subsystem for Linux)
-- Emacs vanilla key bindings and directory layout is respected
-- Usable in [[https://packages.debian.org/emacs-nox][emacs-nox]] and works in [[http://www.putty.org/][PuTTY]]
+- Robust. Packages could be installed without network
+- Support Windows. Find&Grep needs only minimum setup on Windows
+- Tested with Emacs 27.2, 28.1 on Linux/Windows10/Cygwin/macOS/WSL(Windows Subsystem for Linux)
+- Vanilla key bindings and directory layout is respected
+- Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
 [[file:demo.png]]
 
@@ -20,7 +20,7 @@
   - [[#install-everything-in-one-step-optional][Install everything in one step (OPTIONAL)]]
   - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
-  - [[#basic-tutorial][Basic tutorial]]
+  - [[#tutorial][Tutorial]]
   - [[#evil-mode-tutorial][Evil-mode tutorial]]
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
@@ -79,6 +79,7 @@
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
+  - [[#emacs-26][Emacs 26]]
   - [[#emacs-25][Emacs 25]]
   - [[#emacs-244-and-245][Emacs 24.4 and 24.5]]
   - [[#emacs-243][Emacs 24.3]]
@@ -91,13 +92,13 @@
 - Emacs 26.1 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- Windows users had better download the version all the optional dependencies). For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
-- Most packages from [[http://melpa.org][MELPA]] are *invisible* but packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
+- Windows users had better download the version with dependencies bundled. For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
+- Unstable packages from [[http://melpa.org][MELPA]] are *invisible* but stable packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation
 Please remove =~/.emacs= first. =~= means [[https://en.wikipedia.org/wiki/Home_directory][Home directory]].
 
-Most users should follow the section "Install in normal way".
+Most users need follow the section "Install in normal way".
 
 Section "Install stable version" is useful *if and only if*,
 - You don't have network access
@@ -210,7 +211,7 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** LanguageTool
 Grammar, Style and Spell Checker
 - Download from [[https://languagetool.org/download/LanguageTool-stable.zip]].
-- Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]. Check its README for usage
+- Used by [[https://github.com/mhayashi1120/Emacs-langtool][Langtool]]. Check its README for usage. My setup is just one liner =(setq langtool-language-tool-jar "/path/to/languagetool-commandline.jar")=
 - Read the head of =site-lisp/langtool/langtool.el= for more customization because I patched it and added more features
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
@@ -218,10 +219,10 @@ Grammar, Style and Spell Checker
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 * Tutorial (OPTIONAL)
-Knowledge of Linux/Unix is required. At least you should know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
-** Basic tutorial
+Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
+** Tutorial
 Please read this tutorial at least for once.
-*** Step 1, learn OS basic
+*** Step 1, learn basics
 At minimum you need know how Emacs interacts with other command line programs,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]]
 - What is [[https://en.wikipedia.org/wiki/Pipeline_(Unix)][Pipeline (Unix)]], [[https://en.wikipedia.org/wiki/Standard_streams][Standard Streams]]
@@ -240,6 +241,8 @@ At minimum, you need learn:
 Please watch [[https://www.youtube.com/watch?v=oJTwQvgfgMM][Carsten Dominik's talk]]. It's really simple. The only hot key to remember is =Tab=.
 *** Step 4, start from a real world problem
 You can visit [[http://www.emacswiki.org/emacs/][EmacsWiki]] for the solution. Newbies can ask for help at [[http://www.reddit.com/r/emacs/]].
+*** Step 5 (optional), improve your shell/cli skills
+You could read free books/guides at [[https://tldp.org/][The Linux Documentation Project]].
 ** Evil-mode tutorial
 Required for vim user,
 - Must read [[http://superuser.com/questions/246487/how-to-use-vimtutor][vimtutor]].
@@ -365,7 +368,7 @@ If you select a region inside current line, the *correct commit which submits th
 ** Use this configuration as merge tool for Git
 This configuration might be the most efficient and most powerful merge tool for VCS.
 Insert below configuration into =~/.gitconfig=,
-#+begin_src javascript
+#+begin_src js
 [mergetool.ediff]
 # use git mergetool ediff to resolve conflicts
 cmd = emacs -nw -Q --eval \"(setq startup-now t)\" -l \"~/.emacs.d/init.el\" --eval \"(progn (setq ediff-quit-hook 'kill-emacs) (if (file-readable-p \\\"$BASE\\\") (ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\") (ediff-merge-files \\\"$LOCAL\\\" \\\"$REMOTE\\\" nil \\\"$MERGED\\\")))\"
@@ -427,6 +430,14 @@ For languages GNU Global doesn't support, you can fall back to =company-ctags= a
 
 You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Color theme
+*** Auto load classic color theme
+Add below code to =~/.custom.el= to load a random classic dark color theme during startup,
+#+begin_src elisp
+(setq my-enable-startup-color-theme-p t)
+#+end_src
+
+If you prefer using your own color theme, you don't need above line.
+
 *** Preview color theme
 Check [[https://emacsthemes.com/]].
 
@@ -540,9 +551,31 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] version of Emacs. Native version of Emacs should know how to find third party command line programs from Cygwin. I suggest adding =C:\Cygwin64\bin= to environment variable =PATH= so Emacs can detect the programs automatically.
+I strongly suggest [[http://www.cygwin.com/][Cygwin]] Emacs.
 
-By default, environment variable =HOME= points to the directory =C:\Users\<username>= on Windows 7+. You need copy the folder =.emacs.d= into that directory. Or you can change =HOME=.
+If you use Windows Emacs, you need help Emacs to find third party command line programs from Cygwin. So you'd better add  =C:\Cygwin64\bin= to environment variable =PATH=.
+
+Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping text or searching file, the Windows Emacs need run the command line programs in Command Prompt which only uses UTF-16 encoded text. So you might need [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
+
+Below Emacs commands do not require external command line programs, so they works out of box on Windows,
+- `M-x swiper`
+- `M-x ffip-lisp-find-file-in-project`
+- `M-x find-lisp-find-dired`
+- `M-x find-by-pinyin-dired`
+- `M-x find-by-pinyin-in-project-dired`
+
+You can set environment variables in PowerShell, like,
+#+begin_src sh
+setx var_name "var_value"
+#+end_src
+
+Environment variable =HOME= points to the directory =C:\Users\<username>= on Windows by default. You need copy the folder =.emacs.d= into that directory. Or you can change the value of =HOME=.
+
+I use below cli to set the variable =HOME= to "c:\cygwin\home\cb",
+#+begin_src sh
+setx HOME "c:\cygwin\home\cb"
+#+end_src
+
 ** Yasnippet
 - Instead of =M-x yas-expand= or pressing =TAB= key, you can press =M-j= instead.
 - Yasnippet works out of box. But you can =M-x my-yas-reload-all= to force Yasnippet compile all the snippets. If you run =my-yas-reload-all= once, you always need run it when new snippets is added. The purpose of =my-yas-reload-all= is to make Emacs start up faster.
@@ -647,52 +680,32 @@ On macOS/Linux/Cygwin, run =make githooks= to install hooks into =.git/hooks=.
 
 Then unit test is run automatically before =git commit=.
 ** Python environment
-We use [[https://github.com/jorgenschaefer/elpy][Elpy (Emacs Python Development Environment)]]. See its official documentation on its usage.
+[[https://github.com/jorgenschaefer/elpy][Elpy (Emacs Python Development Environment)]] is used.
 
 The flag =elpy-disable-backend-error-display= is set to =nil= so you can easily report any error to its developers.
 
-If you don't use Elpy, please set this flag to =t=.
+If you don't use Elpy, comment out the line =(elpy-enable)= in =init-python.el=.
 
-To enable the virtual environment created by Elpy as its official guide has suggested, you can add below code into =~/.custom.el=,
+To enable the virtual environment created by Elpy, add below code into =~/.custom.el=,
 #+begin_src elisp
 (with-eval-after-load 'elpy
-  (let ((venv-dir "~/.emacs.d/elpy/rpc-venv"))
-    (if (file-exists-p venv-dir) (pyvenv-activate venv-dir))))
+  (let* ((venv-dir "~/.emacs.d/elpy/rpc-venv"))
+    (when (and (file-exists-p venv-dir)
+               (executable-find pyvenv-virtualenvwrapper-python))
+      (pyvenv-activate venv-dir))))
 #+end_src
 
-After activating the virtual environment created by Elpy, you could also backup its required packages,
+After activating the virtual environment created by Elpy, you could backup its required packages,
 #+begin_src sh
 source ~/.emacs.d/elpy/rpc-venv/bin/activate && pip freeze > elpy-requirements.txt && deactivate
 #+end_src
 
-Then restore the packages,
+Restore the packages,
 #+begin_src sh
 source ~/.emacs.d/elpy/rpc-venv/bin/activate && pip install -r elpy-requirements.txt && deactivate
 #+end_src
 
-My =elpy-requirements.txt= (Python 3.9.1),
-#+begin_example
-appdirs==1.4.4
-autopep8==1.5.4
-black==20.8b1
-click==7.1.2
-flake8==3.8.4
-jedi==0.18.0
-mccabe==0.6.1
-mypy-extensions==0.4.3
-parso==0.8.1
-pathspec==0.8.1
-pycodestyle==2.6.0
-pyflakes==2.2.0
-regex==2020.11.13
-rope==0.18.0
-toml==0.10.2
-typed-ast==1.4.1
-typing-extensions==3.7.4.3
-yapf==0.30.0
-#+end_example
-
-After above setup, you can run =M-x elpy-config= to double check elpy status.
+Then run =M-x elpy-config= to double check elpy status and install any missing python package.
 
 You might want to modify =include-system-site-packages= in =~/.emacs.d/elpy/rpc-venv/pyvenv.cfg=
 ** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
@@ -745,6 +758,10 @@ Here is my setup in =~/.custom.el=,
      (pdf-loader-install))))
 #+end_src
 * Support legacy Emacs versions
+** Emacs 26
+Version 4.0 is the last version to support =Emacs 26=
+Please use [[https://github.com/redguardtoo/emacs.d/archive/4.0.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.0.zip]].
+
 ** Emacs 25
 Version 3.2 is the last version to support =Emacs 25=
 
@@ -785,7 +802,7 @@ Send error messages to the original developer if it's third party package's prob
 
 If *you are sure* it's this my bug, file report at [[https://github.com/redguardtoo/emacs.d]]. Don't email me!
 
-Bug report should include *environment details*.
+Bug report need include *environment details*.
 * License
 This program is free software: you can redistribute it and/or modify it under the terms of the [[file:LICENSE][GNU General Public License]] as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 

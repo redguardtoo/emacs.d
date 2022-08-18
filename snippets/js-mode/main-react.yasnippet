@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: React Component in FP style
+# key: main
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+function Example() {
+  const [count, setCount] = useState(0);
+
+  // Similar to componentDidMount and componentDidUpdate:
+  useEffect(() => {
+    // Update the document title using the browser API
+    document.title = `You clicked ${count} times`;
+  });
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}

@@ -1,0 +1,66 @@
+# -*- coding: utf-8; mode: snippet -*-
+# name: Union Find
+# key: algorithm
+# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# --
+class UnionFind {
+  constructor(n) {
+    this.length = n; // number of connected sets;
+    this.parent = new Array(n);
+    this.size = new Array(n);
+
+    for (let i = 0; i < n; i++) {
+      // each node point itself
+      this.parent[i] = i;
+      this.size[i] = 1;
+    }
+  }
+
+  find(x) {
+    while(this.parent[x] !== x) {
+      // compress tree path
+      parent[x] = parent[parent[x]];
+      x = this.parent[x];
+    }
+    return x;
+  }
+
+  // connect p and q
+  union(p, q) {
+    const rootP = this.find(p);
+    const rootQ = this.find(q);
+    if (rootP === rootQ) {
+      return;
+    }
+
+    // smaller set connects to bigger set as its parent
+    if (this.size[rootP] > this.size[rootQ]) {
+      this.parent[rootQ] = rootP;
+      this.size[rootP] += this.size[rootQ];
+    } else {
+      this.parent[rootP] = rootQ;
+      this.size[rootQ] += this.size[rootP];
+    }
+    this.length--;
+  }
+
+  // is p and q connected?
+  connected(p, q) {
+    const rootP = this.find(p);
+    const rootQ = this.find(q);
+    return rootP === rootQ;
+  }
+
+}
+
+// console.time('UnionFind');
+// const uf = new UnionFind(10);
+// uf.union(2, 5);
+// uf.union(0, 1);
+// uf.union(0, 6);
+// uf.union(0, 3);
+// uf.union(0, 2);
+// console.log('uf.connected(0,2)=', uf.connected(0, 2));
+// console.log('uf.connected(0,9)=', uf.connected(0, 9));
+// console.log('uf.connected(3,1)=', uf.connected(3, 1));
+// console.timeEnd('UnionFind');

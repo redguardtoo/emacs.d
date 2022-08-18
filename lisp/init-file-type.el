@@ -5,10 +5,14 @@
                "\\.[^b][^a][a-zA-Z]*rc$"
                "\\.aspell\\.en\\.pws$"
                "\\.i3/config-base$"
+               "\\.config/systemd/user/.*\\.service$"
                "\\mimeapps\\.list$"
                "\\mimeapps\\.list$"
                "\\.editorconfig$"
                "\\.meta$"
+               "\\.env[0-9a-z.-]*$" ; ".env" or ".env.local"
+               "PKGBUILD$" ; archlinux
+               "\\.pgpass$"
                "\\.?muttrc$"
                "\\.mailcap$")
 ;; }}
@@ -20,6 +24,7 @@
 (my-add-auto-mode 'emacs-lisp-mode
                "\\.emacs-project\\'"
                "archive-contents\\'"
+               "\\.emacs_workgroups\\'"
                "\\.emacs\\.bmk\\'" )
 ;; }}
 
@@ -41,6 +46,7 @@
 
 (my-add-auto-mode 'text-mode
                "TAGS\\'"
+               "\\.pyim\\'"
                "\\.ctags\\'")
 
 (my-add-auto-mode 'java-mode
@@ -55,8 +61,7 @@
 
 (my-add-auto-mode 'sh-mode
                "\\.bash\\(_profile\\|_history\\|rc\\.local\\|rc\\)?$"
-               "\\.z?sh$"
-               "\\.env$")
+               "\\.z?sh$")
 
 (my-add-auto-mode 'cmake-mode
                "CMakeLists\\.txt\\'"
@@ -85,12 +90,9 @@
 
 (my-add-auto-mode 'octave-mode "\\.m$")
 
-;; pyim
-(my-add-auto-mode 'text-mode "\\.pyim\\'")
-
 ;; {{ web/html
 (my-add-auto-mode 'web-mode
-               "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\)$")
+               "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\)$")
 ;; }}
 
 ;; {{js
@@ -105,7 +107,7 @@
   (my-add-auto-mode 'js2-mode "\\.js\\(\\.erb\\)?\\'")
   ;; JSX
   (my-add-auto-mode 'rjsx-mode
-                 "\\.jsx\\'"
+                 "\\.[tj]sx\\'"
                  "components\\/.*\\.js\\'")
   ;; mock file
   (my-add-auto-mode 'js-mode "\\.mock.js\\'")

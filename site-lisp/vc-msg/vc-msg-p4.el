@@ -46,7 +46,7 @@ to URL."
   "Generate Perforce CLI from OPTS."
   (format "%s %s" vc-msg-p4-program opts))
 
-(defun vc-msg-p4-anonate-output (cmd)
+(defun vc-msg-p4-annotate-output (cmd)
   "Run CMD in shell."
   (shell-command-to-string cmd))
 
@@ -56,19 +56,20 @@ to URL."
     (shell-command-to-string cmd)))
 
 ;;;###autoload
-(defun vc-msg-p4-execute (file line-num version)
+(defun vc-msg-p4-execute (file line-num &optional version)
   "Use FILE, LINE-NUM and VERSION to produce p4 command.
 Parse the command execution output and return a plist:
 '(:id str :author str :date str :message str)."
+  (ignore version)
   ;; convert file to perforce url
   (setq file (file-name-nondirectory file))
   (if (and vc-msg-p4-file-to-url (listp vc-msg-p4-file-to-url))
       (setq file (replace-regexp-in-string (car vc-msg-p4-file-to-url)
                                            (cadr vc-msg-p4-file-to-url)
                                            (file-truename file))))
-  ;; there is no one comamnd to get the commit information for current line
+  ;; there is no one command to get the commit information for current line
   (let* ((cmd (vc-msg-p4-generate-cmd (format "annotate -c -q %s" file)))
-         (output (vc-msg-p4-anonate-output cmd))
+         (output (vc-msg-p4-annotate-output cmd))
          id)
     ;; I prefer simpler code:
     ;; if output doesn't match certain text pattern
@@ -100,7 +101,7 @@ Parse the command execution output and return a plist:
   (let* ((author (plist-get info :author)))
     (cond
      ((string-match-p "Not Committed Yet" author)
-      "*Not Commited Yet*")
+      "*Not Committed Yet*")
      (t
       (format "Commit: %s\nAuthor: %s\nDate: %s\n\n%s"
               (plist-get info :id)

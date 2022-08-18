@@ -45,7 +45,7 @@
     (add-hook hook 'my-lisp-setup)))
 
 (defun elisp-mode-hook-setup ()
-  (unless (is-buffer-file-temp)
+  (unless (my-buffer-file-temp-p)
     (my-ensure 'eldoc)
     (turn-on-eldoc-mode)
     (enable-paredit-mode)
