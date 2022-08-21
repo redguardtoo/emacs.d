@@ -286,16 +286,17 @@
     "
 ^Misc^                      ^File^              ^Copy Info^
 -----------------------------------------------------------------
-[_vv_] video2mp3           [_R_] Move           [_pp_] Path
+[_vv_] Video => Mp3        [_R_] Move           [_pp_] Path
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
 [_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
 [_sa_] Fetch subtitle(s)   [_C_]  Copy          [_dd_] directory
 [_se_] Extract subtitle    [_rb_] Change base
-[_vv_] Video => Mp3        [_df_] Diff 2 files
-[_aa_] Recording Wav       [_ff_] Find
-[_ee_] Mkv => Srt
+[_aa_] Recording Wav       [_df_] Diff 2 files
+[_ee_] Mkv => Srt          [_ff_] Find
 [_+_] Create directory
+[_mp_] Mplayer extra opts
 "
+    ("mp" my-mplayer-setup-extra-opts)
     ("sa" shenshou-download-subtitle)
     ("se" shenshou-extract-subtitle-from-zip)
     ("pp" (my-copy-file-info 'file-truename))

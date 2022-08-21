@@ -1259,5 +1259,16 @@ Emacs 27 is required."
              (length (split-string str separators))
              separators)))
 
+(defun my-mplayer-setup-extra-opts ()
+  "Set up `my-mplayer-extra-opts'."
+  (interactive)
+  (let* ((opts '(("Clockwise 90 degree rotation" . "-vf rotate=1")
+                 ("Anticlockwise 90 degree rotation" . "-vf rotate=2")))
+         (selected (completing-read "Mplayer setup: " opts)))
+    (when selected
+      (setq selected (cdr (assoc selected opts)))
+      (kill-new selected)
+      (message "\"%s\" => kill-ring" selected))))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
