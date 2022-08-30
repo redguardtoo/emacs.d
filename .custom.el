@@ -16,6 +16,9 @@
 ;; Linux Only
 ;;(setq counsel-etags-extra-tags-files '("/usr/include/TAGS"))
 
+;; indent
+(setq-default c-basic-offset 4)
+
 ;; org mode
 (global-set-key (kbd "C-c a") 'org-agenda)
 (global-set-key (kbd "C-c C-r") 'org-store-link)
@@ -29,6 +32,20 @@
 (setq cmake-tab-width 4)
 (setq find-file-visit-truename nil)
 ;;(setq find-file-existing-other-name t)
+
+(defun my-setup-indent (n)
+  ;; java/c/c++
+  (setq-local c-basic-offset n)
+  ;; web development
+  (setq-local coffee-tab-width n) ; coffeescript
+  (setq-local javascript-indent-level n) ; javascript-mode
+  (setq-local js-indent-level n) ; js-mode
+  (setq-local js2-basic-offset n) ; js2-mode, in latest js2-mode, it's alias of js-indent-level
+  (setq-local web-mode-markup-indent-offset n) ; web-mode, html tag in html file
+  (setq-local web-mode-css-indent-offset n) ; web-mode, css in html file
+  (setq-local web-mode-code-indent-offset n) ; web-mode, js code in html file
+  (setq-local css-indent-offset n) ; css-mode
+  )
 
 ;; Don't ask before rereading the TAGS files if they have changed
 (setq tags-revert-without-query t)
@@ -46,9 +63,13 @@
 (defun my-setup-develop-environment ()
   "Set up my develop environment."
   (interactive)
+  (setq indent-tabs-mode nil)
+  (my-setup-indent 4)
   (unless (my-buffer-file-temp-p)
 	(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags 'append 'local)))
 (add-hook 'prog-mode-hook 'my-setup-develop-environment)
+(add-hook 'c-mode-hook 'my-setup-develop-environment)
+(add-hook 'c++-mode-hook 'my-setup-develop-environment)
 
 (require-package 'jenkinsfile-mode)
 
