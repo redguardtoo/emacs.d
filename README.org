@@ -641,8 +641,11 @@ The default pinyin scheme is =quanpin= but you can insert below code into =~/.cu
 Dictionary for wubi is already installed. Please insert below code into =~/.custom.el= to enable wubi dictionary and use wubi scheme,
 #+begin_src elisp
 (setq my-pyim-enable-wubi-dict t)
-(with-eval-after-load 'pyim
-  (setq pyim-default-scheme 'wubi))
+;; ;; @see https://github.com/tumashu/pyim-wbdict for more information
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v86-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v98-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v98-morphe-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v86-single-enable)
 #+end_src
 ** Install multiple versions of Emacs
 Run below commands to install Emacs 26.3 into the directory =~/myemacs/26.3=:

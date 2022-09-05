@@ -93,6 +93,7 @@
     leuven-theme
     elpy ; use latest elpy since Python package API changes
     sublime-themes
+    pyim-wbdict
     tangotango-theme
     darkburn-theme
     ujelly-theme
