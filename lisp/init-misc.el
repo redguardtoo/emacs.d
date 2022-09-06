@@ -231,7 +231,7 @@ FN checks these characters belong to normal word characters."
                 (when closest
                   (goto-char (cdr closest)))))))
 
-    (electric-pair-mode 1)
+    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
 
     ;; eldoc, show API doc in minibuffer echo area
     ;; (turn-on-eldoc-mode)
