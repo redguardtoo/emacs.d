@@ -1270,5 +1270,25 @@ Emacs 27 is required."
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
 
+(defun my-execute-shell-cmd-after-save ()
+  "Run shell command in `after-save-hook'."
+  (interactive)
+  (let* ((cmd (read-string "Shell command: "))
+         (default-directory (read-directory-name "Working directory: "
+                                                 (locate-dominating-file default-directory ".git"))))
+    ;; double check shell command
+    (when (and default-directory
+               (setq cmd (read-string (format "Execute command after saving files in %s : " default-directory)
+                             cmd)))
+      (message "Command cmd is added into `after-save-hook'.")
+      (add-hook 'after-save-hook
+                (lambda ()
+                  ;; execute shell command
+                  (when (and buffer-file-name
+                             (string-match (concat "^" default-directory) buffer-file-name))
+                    (my-async-shell-command cmd)))
+                nil
+                t))))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
