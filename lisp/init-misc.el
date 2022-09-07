@@ -177,6 +177,40 @@ FN checks these characters belong to normal word characters."
 (defvar my-disable-lazyflymake nil
   "Disable lazyflymake.")
 
+;; {{
+(defvar my-save-run-timer nil "Internal timer.")
+
+(defvar my-save-run-rules nil
+  "Rules to execute shell command when saving.
+In each rule, 1st item is default directory, 2nd item is the shell command.")
+
+(defvar my-save-run-interval 4
+  "The interval (seconds) to execute shell command.")
+
+(defun my-save-run-function ()
+  "Run shell command in `after-save-hook'."
+  (interactive)
+  (cond
+   ((or (not my-save-run-timer)
+        (> (- (float-time (current-time)) (float-time my-save-run-timer))
+           my-save-run-interval))
+
+    ;; start timer if not started yet
+    (setq my-save-run-timer (current-time))
+
+    ;; start updating
+    (when buffer-file-name
+      (dolist (rule my-save-run-rules)
+        (let* ((default-directory (nth 0 rule))
+               (cmd (nth 1 rule)))
+          (when (string-match (concat "^" (file-truename default-directory)) buffer-file-name)
+            (message "shell cmd=%s" cmd)
+            (async-shell-command cmd))))))
+   (t
+    ;; do nothing, can't run ctags too often
+    )))
+;; }}
+
 (defun my-generic-prog-mode-hook-setup ()
   "Generic programming mode set up."
   (when (buffer-too-big-p)
@@ -184,6 +218,8 @@ FN checks these characters belong to normal word characters."
     (linum-mode -1)
     (when (my-should-use-minimum-resource)
       (font-lock-mode -1)))
+
+  (add-hook 'after-save-hook #'my-save-run-function nil t)
 
   (my-company-ispell-setup)
 
@@ -1269,26 +1305,6 @@ Emacs 27 is required."
       (setq selected (cdr (assoc selected opts)))
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
-
-(defun my-execute-shell-cmd-after-save ()
-  "Run shell command in `after-save-hook'."
-  (interactive)
-  (let* ((cmd (read-string "Shell command: "))
-         (default-directory (read-directory-name "Working directory: "
-                                                 (locate-dominating-file default-directory ".git"))))
-    ;; double check shell command
-    (when (and default-directory
-               (setq cmd (read-string (format "Execute command after saving files in %s : " default-directory)
-                             cmd)))
-      (message "Command cmd is added into `after-save-hook'.")
-      (add-hook 'after-save-hook
-                (lambda ()
-                  ;; execute shell command
-                  (when (and buffer-file-name
-                             (string-match (concat "^" default-directory) buffer-file-name))
-                    (my-async-shell-command cmd)))
-                nil
-                t))))
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
