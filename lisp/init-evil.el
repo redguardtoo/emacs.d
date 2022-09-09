@@ -199,7 +199,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
   "File name of nearby path"
   (let* ((selected-region (my-evil-path-extract-region)))
     (if selected-region
-        (evil-range (nth 1 selected-region) (nth 2 selected-region) :expanded t))))
+        (evil-range (nth 1 selected-region) (nth 2 selected-region) type :expanded t))))
 
 (evil-define-text-object my-evil-path-outer-text-object (&optional count begin end type)
   "Nearby path."
@@ -247,6 +247,31 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 (define-key evil-outer-text-objects-map "g" #'my-evil-a-paren)
 ;; }}
 
+
+;; {{ keyword search text object
+(defvar my-evil-search-forward-function #'swiper
+  "Search forward function.")
+
+(defun my-evil-search-range (count beg end type inclusive)
+  "Get minimum range of search text object.
+COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
+  (let ((start (point))
+         (end (funcall my-evil-search-forward-function)))
+    (evil-range start (- end (if inclusive 0 (length isearch-string))) type :expanded t)))
+
+(evil-define-text-object my-evil-a-search (count &optional beg end type)
+  "Select a paren."
+  :extend-selection t
+  (my-evil-search-range count beg end type t))
+
+(evil-define-text-object my-evil-inner-search (count &optional beg end type)
+  "Select 'inner' paren."
+  :extend-selection nil
+  (my-evil-search-range count beg end type nil))
+
+(define-key evil-inner-text-objects-map "s" #'my-evil-inner-search)
+(define-key evil-outer-text-objects-map "s" #'my-evil-a-search)
+;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (setq-default evil-escape-delay 0.3)

@@ -204,8 +204,7 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
         (let* ((default-directory (nth 0 rule))
                (cmd (nth 1 rule)))
           (when (string-match (concat "^" (file-truename default-directory)) buffer-file-name)
-            (message "shell cmd=%s" cmd)
-            (async-shell-command cmd))))))
+            (my-async-shell-command cmd))))))
    (t
     ;; do nothing, can't run ctags too often
     )))
