@@ -154,12 +154,12 @@
   (unless my-lightweight-mode-p
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
-    (setq custom-file (expand-file-name (concat my-emacs-d "custom-set-variables.el")))
+    (setq custom-file (concat my-emacs-d "custom-set-variables.el"))
     (if (file-exists-p custom-file) (load custom-file t t))
 
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on *.el in `my-site-lisp-dir'
-    (load (expand-file-name "~/.custom.el") t nil)))
+    (my-run-with-idle-timer 1 (lambda () (load "~/.custom.el" t nil)))))
 
 
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
@@ -173,6 +173,10 @@
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
 
+(message "*** Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time (time-subtract after-init-time before-init-time)))
+           gcs-done)
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:

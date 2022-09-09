@@ -255,6 +255,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 (defun my-evil-search-range (count beg end type inclusive)
   "Get minimum range of search text object.
 COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
+  (ignore count beg end)
   (let ((start (point))
          (end (funcall my-evil-search-forward-function)))
     (evil-range start (- end (if inclusive 0 (length isearch-string))) type :expanded t)))
