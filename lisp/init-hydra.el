@@ -405,10 +405,10 @@ _l_ Right    _Z_ reset       _s_wap       _r_ X Right
 _F_ollow     _D_elete Other  _S_ave       max_i_mize
 _SPC_ cancel _o_nly this     _d_elete
 "
-  ("h" windmove-left )
-  ("j" windmove-down )
-  ("k" windmove-up )
-  ("l" windmove-right )
+  ("h" windmove-left)
+  ("j" windmove-down)
+  ("k" windmove-up)
+  ("l" windmove-right)
   ("q" hydra-move-split-left)
   ("w" hydra-move-split-down)
   ("e" hydra-move-split-up)
@@ -416,11 +416,7 @@ _SPC_ cancel _o_nly this     _d_elete
   ("b" ivy-switch-buffer)
   ("f" counsel-find-file)
   ("F" follow-mode)
-  ("a" (lambda ()
-         (interactive)
-         (ace-window 1)
-         (add-hook 'ace-window-end-once-hook
-                   'my-hydra-window/body)))
+  ("a" (ace-window 1))
   ("v" (lambda ()
          (interactive)
          (split-window-right)
@@ -429,18 +425,10 @@ _SPC_ cancel _o_nly this     _d_elete
          (interactive)
          (split-window-below)
          (windmove-down)))
-  ("s" (lambda ()
-         (interactive)
-         (ace-window 4)
-         (add-hook 'ace-window-end-once-hook
-                   'my-hydra-window/body)))
+  ("s" (ace-window 4))
   ("S" save-buffer)
   ("d" delete-window)
-  ("D" (lambda ()
-         (interactive)
-         (ace-window 16)
-         (add-hook 'ace-window-end-once-hook
-                   'my-hydra-window/body)))
+  ("D" (ace-window 16))
   ("o" delete-other-windows)
   ("i" ace-delete-other-windows)
   ("z" (progn
