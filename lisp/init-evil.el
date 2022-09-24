@@ -214,15 +214,22 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; {{ paren range text object
 (defun my-evil-paren-range (count beg end type inclusive)
   "Get minimum range of paren text object.
-COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
-  (let* ((parens '("()" "[]" "{}" "<>"))
+COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
+FN is function to get range."
+  (let* ((parens '("()" "[]" "{}" "<>" "\"\"" "''" "``"))
+         (pos (point))
+         c1
+         c2
          range
          found-range)
     (dolist (p parens)
       (condition-case nil
-          (setq range (evil-select-paren (aref p 0) (aref p 1) beg end type count inclusive))
+          (let* ((c1 (aref p 0))
+                 (c2 (aref p 1)))
+            (setq range (if (eq c1 c2) (evil-select-quote c1 beg end type count inclusive)
+                          (evil-select-paren c1 c2 beg end type count inclusive))))
         (error nil))
-      (when range
+      (when (and range (<= (nth 0 range) pos) (< pos (nth 1 range)))
         (cond
          (found-range
           (when (< (- (nth 1 range) (nth 0 range))
