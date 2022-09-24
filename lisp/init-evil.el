@@ -218,8 +218,6 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 FN is function to get range."
   (let* ((parens '("()" "[]" "{}" "<>" "\"\"" "''" "``"))
          (pos (point))
-         c1
-         c2
          range
          found-range)
     (dolist (p parens)
