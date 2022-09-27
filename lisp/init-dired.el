@@ -296,9 +296,12 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
         (apply orig-func args)))))
   (advice-add 'dired-do-async-shell-command :around #'my-dired-do-async-shell-command-hack)
 
-  ;; sort file names (numbered) in dired
-  ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
-  (setq dired-listing-switches "-laGh1v")
+  (unless *is-a-mac*
+    ;; sort file names (numbered) in dired
+    ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
+    ;; "-1" options breaks dired on mac sometimes
+    (setq dired-listing-switches "-laGh1v --group-directories-first"))
+
   (setq dired-recursive-deletes 'always))
 
 (defun my-computer-sleep-now ()
