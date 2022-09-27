@@ -91,12 +91,12 @@ If no files marked, always operate on current line in dired-mode."
                                                             "epub"))))
 
 (defvar my-dired-new-file-first-dirs
-  '("bt/finished/$"
-    "bt/torrents?/$"
-    "documents?/$"
-    "music/$"
-    "dwhelper/$"
-    "downloads?/$")
+  '("bt/finished/\\'"
+    "bt/torrents?/\\'"
+    "documents?/\\'"
+    "music/\\'"
+    "dwhelper/\\'"
+    "downloads?/\\'")
   "Dired directory patterns where newest files are on the top.")
 
 (defun my-dired-mode-hook-setup ()
