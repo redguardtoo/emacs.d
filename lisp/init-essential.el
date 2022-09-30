@@ -184,19 +184,8 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq indicate-empty-lines t)
-
-(defun my-mini-ui ()
-  "Minimum ui."
-  ;; NO tool bar, scroll-bar
-  (when window-system
-    (scroll-bar-mode -1)
-    (tool-bar-mode -1)
-    (horizontal-scroll-bar-mode -1)))
-(my-run-with-idle-timer 2 #'my-mini-ui)
 ;; }}
 
-;; no menu bar
-(menu-bar-mode -1)
 
 ;; Nicer naming of buffers for files with identical names
 (with-eval-after-load 'uniquify
