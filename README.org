@@ -198,8 +198,8 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
 **** sdcv (console version of StarDict)
-- Required by =sdcv.e=
-- Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
+- Required by =sdcv.el=
+- Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= and =curl https://src.fedoraproject.org/repo/pkgs/stardict-dic/stardict-langdao-ec-gb-2.4.2.tar.bz2/41a71f5b3952709746dd7e52cf155b8b/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install English dictionaries
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=

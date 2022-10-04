@@ -388,14 +388,9 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
 
 ;; {{start dictionary lookup
 (with-eval-after-load 'sdcv
-  ;; use below commands to create dictionary
-  ;; mkdir -p ~/.stardict/dic
-  ;; # wordnet English => English
-  ;; curl http://abloz.com/huzheng/stardict-dic/dict.org/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
-  ;; # Langdao Chinese => English
-  ;; curl http://abloz.com/huzheng/stardict-dic/zh_CN/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic
-  ;;
+  ;; English => Chinese
   (setq sdcv-dictionary-simple-list '("朗道英汉字典5.0"))
+  ;; WordNet English => English
   (setq sdcv-dictionary-complete-list '("WordNet")))
 ;; }}
 
