@@ -26,6 +26,76 @@
 (setq org-agenda-files  '("~/GTD"))
 (setq org-M-RET-may-split-line nil)
 
+(require-package 'org-roam)
+(require-package 'org-bullets)
+;; (setq org-hide-emphasis-markers t
+;;       org-fontify-done-headline t
+;;       org-hide-leading-stars t
+;;       org-pretty-entities t
+;;       org-odd-levels-only t)
+;; (setq org-bullets-bullet-list '( "⦿" "○" "✸" "✿" "◆"))
+;; (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+(when (member "Symbola" (font-family-list))
+  (set-fontset-font "fontset-default" nil
+                    (font-spec :size 20 :name "Symbola")))
+
+(when (member "Symbola" (font-family-list))
+  (set-fontset-font t 'unicode "Symbola" nil 'prepend))
+
+(prefer-coding-system       'utf-8)
+(set-default-coding-systems 'utf-8)
+(set-terminal-coding-system 'utf-8)
+(set-keyboard-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8)
+
+(setq org-bullets-bullet-list '("◉" "☯" "○" "☯" "✸" "☯" "✿" "☯" "✜" "☯" "◆" "☯" "▶"))
+(setq org-ellipsis "▼")
+
+(setq org-startup-indented t
+      org-src-tab-acts-natively t)
+
+(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;; (add-hook 'org-mode-hook (lambda ()
+;;                            (variable-pitch-mode 1)
+;;                            visual-line-mode))
+
+(setq org-hide-emphasis-markers t)
+(defun org-toggle-emphasis ()
+  "Toggle hiding/showing of org emphasize markers."
+  (interactive)
+  (if org-hide-emphasis-markers
+      (set-variable 'org-hide-emphasis-markers nil)
+    (set-variable 'org-hide-emphasis-markers t)))
+(with-eval-after-load "org-bullets"
+		      (define-key org-mode-map (kbd "C-c e") 'org-toggle-emphasis))
+
+(setq org-fontify-done-headline t)
+(setq org-hide-leading-stars t)
+(setq org-pretty-entities t)
+;; (setq org-odd-levels-only t)
+
+(setq org-list-demote-modify-bullet
+      (quote (("+" . "-")
+              ("-" . "+")
+              ("*" . "-")
+              ("1." . "-")
+              ("1)" . "-")
+              ("A)" . "-")
+              ("B)" . "-")
+              ("a)" . "-")
+              ("b)" . "-")
+              ("A." . "-")
+              ("B." . "-")
+              ("a." . "-")
+              ("b." . "-"))))
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([+]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+
 ;; theme
 (load-theme 'twilight-bright t)
 
@@ -86,3 +156,32 @@
 ;;   (require 'ob-napkin))
 
 (require-package 'powershell)
+
+;; setup lsp-mode
+(with-eval-after-load 'lsp-mode
+  ;; enable log only for debug
+  (setq lsp-log-io nil)
+  ;; use `evil-matchit' instead
+  (setq lsp-enable-folding nil)
+  ;; no real time syntax check
+  (setq lsp-diagnostic-package :none)
+  ;; handle yasnippet by myself
+  (setq lsp-enable-snippet nil)
+  ;; turn off for better performance
+  (setq lsp-enable-symbol-highlighting nil)
+  ;; use find-fine-in-project instead
+  (setq lsp-enable-links nil)
+  ;; auto restart lsp
+  (setq lsp-restart 'auto-restart)
+  ;; don't watch 3rd party javascript libraries
+  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
+  ;; don't ping LSP language server too frequently
+  (defvar lsp-on-touch-time 0)
+  (defun my-lsp-on-change-hack (orig-fun &rest args)
+    ;; do NOT run `lsp-on-change' too frequently
+    (when (> (- (float-time (current-time))
+                lsp-on-touch-time) 120) ;; 2 mins
+      (setq lsp-on-touch-time (float-time (current-time)))
+      (apply orig-fun args)))
+  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
+

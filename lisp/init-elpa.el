@@ -169,15 +169,15 @@
 
         ;; ;; {{ Option 1: 163 mirror repository:
         ;; ;; ("gnu" . "https://mirrors.163.com/elpa/gnu/")
-        ;; ("melpa" . "https://mirrors.163.com/elpa/melpa/")
-        ;; ("melpa-stable" . "https://mirrors.163.com/elpa/stable-melpa/")
+         ("melpa" . "https://mirrors.163.com/elpa/melpa/")
+         ("melpa-stable" . "https://mirrors.163.com/elpa/stable-melpa/")
         ;; ;; }}
 
         ;; ;; {{ Option 2: tsinghua mirror repository
         ;; ;; @see https://mirror.tuna.tsinghua.edu.cn/help/elpa/ on usage:
         ;; ;; ("gnu"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
-         ("melpa" . "http://elpa.emacs-china.org/melpa/")
-         ("melpa-stable" . "http://elpa.emacs-china.org/stable-melpa/")
+        ;;  ("melpa" . "http://elpa.emacs-china.org/melpa/")
+        ;;  ("melpa-stable" . "http://elpa.emacs-china.org/stable-melpa/")
         ;; }}
         ))
 
