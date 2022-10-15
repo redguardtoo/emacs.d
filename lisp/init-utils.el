@@ -552,7 +552,7 @@ Copied from 3rd party package evil-textobj."
 
      ;; If the first character of input in ivy is ":" or ";",
      ;; remaining input is converted into Chinese pinyin regex.
-     ((string-match (substring str 0 1) ":;")
+     ((string-match "[:\|;]" (substring str 0 1))
       (my-ensure 'pinyinlib)
       (setq str (pinyinlib-build-regexp-string (substring str 1 len))))
 
