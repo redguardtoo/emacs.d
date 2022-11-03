@@ -461,7 +461,7 @@ Git:
 
 "
   ("ri" my-git-rebase-interactive)
-  ("rr" git-gutter-reset-to-default)
+  ("rr" my-git-gutter-reset-to-default)
   ("rh" my-git-gutter-reset-to-head-parent)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
@@ -479,7 +479,7 @@ Git:
   ("na" my-commit-amend)
   ("ja" (my-commit-amend t))
   ("au" magit-stage-modified)
-  ("Q" git-gutter-toggle)
+  ("Q" my-git-gutter-toggle)
   ("f" my-git-find-file-in-commit)
   ("cr" my-git-cherry-pick-from-reflog)
   ("q" nil))

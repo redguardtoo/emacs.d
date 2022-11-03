@@ -109,7 +109,7 @@
   (add-hook 'magit-post-commit-hook #'my-git-check-status)
   (add-hook 'git-commit-post-finish-hook #'my-git-check-status))
 
-(defun git-gutter-toggle ()
+(defun my-git-gutter-toggle ()
   "Toggle git gutter."
   (interactive)
   (git-gutter-mode -1)
@@ -118,7 +118,7 @@
   (sit-for 0.1)
   (git-gutter:clear))
 
-(defun git-gutter-reset-to-default ()
+(defun my-git-gutter-reset-to-default ()
   "Restore git gutter to its original status.
 Show the diff between current working code and git head."
   (interactive)
