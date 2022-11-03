@@ -87,7 +87,7 @@
   (require-init 'init-file-type)
   (require-init 'init-elpa)
 
-  ;; make all packages in "site-lisp/" loadalbe right now because idle loader
+  ;; make all packages in "site-lisp/" loadable right now because idle loader
   ;; are not used and packages need be available on the spot.
   (when (or my-lightweight-mode-p my-disable-idle-timer)
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
