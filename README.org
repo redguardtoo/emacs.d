@@ -15,8 +15,8 @@
 - [[#a-fast-and-robust-emacs-setup][A fast and robust Emacs setup]]
 - [[#checklist][Checklist]]
 - [[#installation][Installation]]
-  - [[#install-in-normal-way][Install in normal way]]
-  - [[#install-stable-version-optional][Install stable version (OPTIONAL)]]
+  - [[#install-packages-from-remote-repository-recommended][Install packages from remote repository (RECOMMENDED)]]
+  - [[#install-packages-from-stable-local-repository-optional][Install packages from stable local repository (OPTIONAL)]]
   - [[#install-everything-in-one-step-optional][Install everything in one step (OPTIONAL)]]
   - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
@@ -89,10 +89,10 @@
 - [[#license][License]]
 
 * Checklist
-- Emacs 26.1 or higher version is required
+- Emacs 27 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- Windows users had better download the version with dependencies bundled. For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
+- Windows users had better download the version with dependencies bundled. For example, download "emacs-27.2-x86_64.zip" instead of "emacs-27.2-x86_64-no-deps.zip"
 - Unstable packages from [[http://melpa.org][MELPA]] are *invisible* but stable packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation
@@ -104,7 +104,7 @@ Section "Install stable version" is useful *if and only if*,
 - You don't have network access
 - You have never used any command line program
 
-** Install in normal way
+** Install packages from remote repository (RECOMMENDED)
 There are two ways to install this setup (I recommend the first way):
 
 First way is to download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into =~/.emacs.d=, OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
@@ -116,7 +116,7 @@ By default, packages are installed automatically during Emacs startup.
 Someone reported that package repository [[http://melpa.org]] is not responsive in China.
 
 No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" after firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
-** Install stable version (OPTIONAL)
+** Install packages from stable local repository (OPTIONAL)
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
 - Extract its content into empty directory =~/.emacs.d=
 - Download [[https://github.com/redguardtoo/myelpa/archive/stable.zip]]
@@ -293,14 +293,14 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
 ** Computers with smaller memory
-Make sure you have this line in =early-init.el= (Emacs 27.1+) or at the beginning of =init.el= (Emacs 26),
+Make sure you have this line in =early-init.el= or at the beginning of =init.el=,
 #+begin_src elisp
 (setq my-computer-has-smaller-memory-p t)
 #+end_src
 ** Vim vs Emacs
-I prefer default hotkeys&commands from EVIL and Emacs.
+I prefer vim keybindings provided by EVIL.
 
-But sometimes a mixed style could be better for my personal workflow. See the function =my-optimize-evil= in =init-evil.el=.
+But mixed style is also used in my workflow. See the function =my-optimize-evil= in =init-evil.el=.
 
 You can insert =(my-optimize-evil)= into =~/.custom.el= to enable it.
 ** Backup packages
