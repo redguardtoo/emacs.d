@@ -95,7 +95,6 @@
     sublime-themes
     pyim-wbdict
     tangotango-theme
-    darkburn-theme
     ujelly-theme
     afternoon-theme
     organic-green-theme
@@ -409,7 +408,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     color-theme-sanityinc-tomorrow
     cyberpunk-theme
     dakrone-theme
-    darkburn-theme
     darkmine-theme
     darkokai-theme
     darktooth-theme
@@ -420,7 +418,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     exotica-theme
     eziam-theme
     fantom-theme
-    farmhouse-theme
+    farmhouse-themes
     flatland-theme
     flatui-theme
     gandalf-theme
