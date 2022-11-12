@@ -1261,6 +1261,19 @@ Emacs 27 is required."
       ;; plays the matched video
       (mybigword-run-mplayer start-time (car videos)))))
 
+(defun my-srt-offset-subtitles-from-point (seconds)
+  "Offset subtitles from point by SECONDS (float, e.g. -2.74).
+Continue the video with updated subtitle."
+  (interactive "NSeconds to offset (float e.g. -2.74): ")
+  (my-ensure 'subtitles)
+  (save-excursion
+    (save-restriction
+      (forward-line -1)
+      (narrow-to-region (point) (point-max))
+      (srt-offset-subtitles seconds)))
+  (save-buffer)
+  (my-srt-play-video-at-point))
+
 (defvar org-agenda-files)
 (defvar org-tags-match-list-sublevels)
 (defvar my-org-agenda-files '("~/blog/")

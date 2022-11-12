@@ -112,7 +112,7 @@ N - subtitle number, STRT - start time in milliseconds, STOP - stop time."
 ;;;###autoload
 (defun srt-offset-subtitles (seconds)
   "Offset all subtitles by some SECONDS (float, e.g. -2.74).
-You could narrow down region at first"
+You could narrow down region at first."
   (interactive "NSeconds to offset (float e.g. -2.74)  ")
   (let ((off (truncate (* 1000 seconds)))     ;; offset in milliseconds
         (svd-pos (point))                     ;; saved position

@@ -24,8 +24,10 @@
 [_ka_] Kill other buffers
 [_ii_] Imenu
 [_id_] Insert date string
+[_aa_] Adjust subtitle
 [_q_] Quit
 "
+  ("aa" my-srt-offset-subtitles-from-point)
   ("B" bookmark-set)
   ("m" counsel-bookmark-goto)
   ("f" my-counsel-recentf)
