@@ -71,7 +71,7 @@
 
 (setq org-fontify-done-headline t)
 (setq org-hide-leading-stars t)
-(setq org-pretty-entities t)
+;; (setq org-pretty-entities t)
 ;; (setq org-odd-levels-only t)
 
 (setq org-list-demote-modify-bullet
