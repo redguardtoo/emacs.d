@@ -118,6 +118,7 @@
     badger-theme
     distinguished-theme
     tao-theme
+    pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
     ;; }}
     groovy-mode
     company ; I won't wait another 2 years for stable
