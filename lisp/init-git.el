@@ -217,9 +217,12 @@ Show the diff between current working code and git head."
   "Git add file of current buffer."
   (interactive)
   (when buffer-file-name
-    (let* ((filename (git-get-current-file-relative-path)))
+    (let* ((filename (git-get-current-file-relative-path))
+           (head-info (shell-command-to-string
+                       "git log --pretty=format:'%h %s (%an)' --date=short -n1
+")))
       (shell-command (concat "git add " filename))
-      (message "DONE! git add %s" filename))))
+      (message "%s added. HEAD: %s" filename head-info))))
 
 ;; {{ look up merge conflict
 (defvar my-goto-merge-conflict-fns
