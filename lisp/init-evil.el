@@ -758,7 +758,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "v=" 'git-gutter:popup-hunk
   "hh" 'cliphist-paste-item
   "yu" 'cliphist-select-item
-  "ih" 'my-goto-git-gutter ; use ivy-mode
+  "ih" 'my-git-goto-gutter ; use ivy-mode
   "ir" 'ivy-resume
   "ww" 'my-narrow-or-widen-dwim
   "wf" 'popup-which-function)
