@@ -417,7 +417,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     dracula-theme
     espresso-theme
     exotica-theme
-    eziam-theme
+    eziam-themes
     fantom-theme
     farmhouse-themes
     flatland-theme
