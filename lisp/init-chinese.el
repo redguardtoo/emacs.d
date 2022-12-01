@@ -1,12 +1,16 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defvar my-toggle-ime-init-function
+  (lambda () (my-ensure 'pyim))
+  "Function to execute at the beginning of `my-toggle-input-method'.")
+
 ;; {{ make IME compatible with evil-mode
 (defun my-toggle-input-method ()
   "When input method is on, goto `evil-insert-state'."
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (my-ensure 'pyim)
+  (funcall my-toggle-ime-init-function)
 
   ;; some guys don't use evil-mode at all
   (cond
