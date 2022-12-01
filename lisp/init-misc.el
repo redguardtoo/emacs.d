@@ -1268,7 +1268,7 @@ Continue the video with updated subtitle."
   (my-ensure 'subtitles)
   (save-excursion
     (save-restriction
-      (forward-line -1)
+      (goto-char (car (bounds-of-thing-at-point 'paragraph)))
       (narrow-to-region (point) (point-max))
       (srt-offset-subtitles seconds)))
   (save-buffer)
