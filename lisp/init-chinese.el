@@ -10,7 +10,8 @@
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (funcall my-toggle-ime-init-function)
+  (when my-toggle-ime-init-function
+    (funcall my-toggle-ime-init-function))
 
   ;; some guys don't use evil-mode at all
   (cond
