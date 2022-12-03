@@ -125,6 +125,7 @@
     simple-httpd
     findr
     mwe-log-commands
+    vterm
     noflet
     db
     creole
@@ -388,6 +389,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'graphql-mode)
 (require-package 'ob-sagemath)
 (require-package 'pulseaudio-control)
+(require-package 'vterm)
 
 (defvar my-color-themes
   '(afternoon-theme

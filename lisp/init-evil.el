@@ -330,6 +330,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (help-mode . emacs)
     (eshell-mode . emacs)
     (shell-mode . emacs)
+    (vterm-mode . emacs)
     (xref--xref-buffer-mode . emacs)
     (epa-key-list-mode . emacs)
     (fundamental-mode . emacs)
