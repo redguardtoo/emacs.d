@@ -9,18 +9,18 @@
 ^Misc^                    ^Study^                    ^Emms^
 -------------------------------------------------------------------
 [_ss_] Save workgroup     [_w_] Pronounce word       [_R_] Random
-[_ll_] Load workgroup     [_W_] Big words definition [_n_] Next
-[_B_] New bookmark        [_v_] Play big word video  [_p_] Previous
+[_ll_] Load workgroup     [_W_] Big word list        [_n_] Next
+[_B_] New bookmark        [_vi_] Play word's video   [_p_] Previous
 [_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
-[_bb_] Switch Gnus buffer [_s1_] Pomodoro tiny task  [_S_] Stop
-[_e_] Erase buffer        [_s2_] Pomodoro big task   [_O_] Open
-[_r_] Erase this buffer   [_st_] Pomodoro stop       [_L_] Playlist
-[_f_] Recent file         [_sr_] Pomodoro resume     [_K_] Search
-[_d_] Recent directory    [_sp_] Pomodoro pause      [_F_] filter
-[_z_] Jump around (z.sh)  [_as_] Ascii table         [_E_] replay
-[_bh_] Bash history       [_E_] Typewriter on/off
-[_hh_] Favorite theme     [_V_] Old typewriter
-[_hr_] Random theme
+[_bb_] Switch Gnus buffer [_vv_] Select big word     [_S_] Stop
+[_e_] Erase buffer        [_s1_] Pomodoro tiny task  [_O_] Open
+[_r_] Erase this buffer   [_s2_] Pomodoro big task   [_L_] Playlist
+[_f_] Recent file         [_st_] Pomodoro stop       [_K_] Search
+[_d_] Recent directory    [_sr_] Pomodoro resume     [_F_] filter
+[_z_] Jump around (z.sh)  [_sp_] Pomodoro pause      [_E_] replay
+[_bh_] Bash history       [_as_] Ascii table
+[_hh_] Favorite theme     [_E_] Typewriter on/off
+[_hr_] Random theme       [_V_] Old typewriter
 [_ka_] Kill other buffers
 [_ii_] Imenu
 [_id_] Insert date string
@@ -69,9 +69,10 @@
   ;; }}
 
   ("w" mybigword-pronounce-word)
+  ("vv" mybigword-big-words-in-current-window)
   ("im" mybigword-show-image-of-word)
   ("W" my-lookup-bigword-definition-in-buffer)
-  ("v" mybigword-play-video-of-word-at-point)
+  ("vi" mybigword-play-video-of-word-at-point)
   ("bb" dianyou-switch-gnus-buffer)
   ("q" nil :color red))
 

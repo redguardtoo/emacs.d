@@ -20,6 +20,7 @@
 (autoload 'mybigword-play-video-of-word-at-point "mybigword" "" t)
 (autoload 'mybigword-pronounce-word "mybigword" "" t)
 (autoload 'mybigword-show-image-of-word "mybigword" "" t)
+(autoload 'mybigword-big-words-in-current-window "mybigword" "" t)
 (autoload 'shellcop-erase-buffer "shellcop" "" t)
 (autoload 'shellcop-reset-with-new-command "shellcop" "" t)
 (autoload 'shellcop-start "shellcop" "" t)
