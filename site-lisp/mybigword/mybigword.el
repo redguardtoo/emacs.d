@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
@@ -662,9 +662,18 @@ Please note `browse-url-generic' is used to open external browser."
 
 (defun mybigword-select-visible-word-default-function ()
   "Default function after visible word is selected."
-  (let ((selected (mybigword--word-at-point)))
+  (let* ((selected (mybigword--word-at-point))
+         (desc (mybigword-format-with-dictionary selected nil))
+         outbuf
+         outwin)
     (mybigword-pronounce-word-internal selected)
-    (message "%s" (mybigword-format-with-dictionary selected nil))))
+    (when desc
+      (setq outbuf (get-buffer-create "*mybigword*"))
+      (setq outwin (display-buffer outbuf '(nil (allow-no-window . t))))
+      (with-current-buffer outbuf
+        (erase-buffer)
+        (insert desc)
+        (goto-char (point-min))))))
 
 ;;;###autoload
 (defun mybigword-big-words-in-current-window ()
