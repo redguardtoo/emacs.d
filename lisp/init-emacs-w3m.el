@@ -181,7 +181,8 @@
         (message "%s => clipboard/kill-ring" cmd))))))
 
 (with-eval-after-load 'w3m
-  (define-key w3m-mode-map (kbd "C-c b") 'my-w3m-open-link-or-image-or-url)
+  (define-key w3m-mode-map (kbd "C-c b") #'my-w3m-open-link-or-image-or-url)
+  (define-key w3m-mode-map "w" #'mybigword-big-words-in-current-window)
   (add-hook 'w3m-display-hook
             (lambda (url)
               (let* ((title (or w3m-current-title url)))

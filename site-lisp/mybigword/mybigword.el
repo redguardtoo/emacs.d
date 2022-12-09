@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
@@ -317,7 +317,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   `(and (string-match (format "^%s \\([0-9.]*\\)$" ,word) ,str)
         (string-to-number (match-string 1 ,str))))
 
-(defun mybigword-convert-word (raw-word)
+(defun mybigword-guess-original-tense (raw-word)
   "Convert RAW-WORD to the word to look up."
   (let* ((rlt raw-word))
     (cond
@@ -332,9 +332,13 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 
      ((string-match "\\([a-z]+\\)\\(ed\\|es\\)$" raw-word)
       (setq rlt (match-string 1 raw-word))))
+
+    (when mybigword-debug
+      (message "mybigword-guess-original-tense called => %s %s" raw-word rlt))
+
     rlt))
 
-(defun mybigword-convert-word-again (raw-word)
+(defun mybigword-guess-original-tense-again (raw-word)
   "Convert RAW-WORD to the word to look up."
   (let* ((rlt raw-word))
     (cond
@@ -362,7 +366,7 @@ FILE is the file path."
      (big-words
       ;; sort windows
       (setq big-words (sort big-words (lambda (a b) (< (cdr a) (cdr b)))))
-      (switch-to-buffer-other-window "*BigWords*")
+      (switch-to-buffer-other-window "*mybigword-list*")
       (erase-buffer)
       (insert (funcall mybigword-default-format-header-function file))
       (dolist (bw big-words)
@@ -409,8 +413,8 @@ FILE is the file path."
                    (setq str (gethash (elt word 0) h)))
           (let* (cands (max-item '(nil . 0)))
             (mybigword-push-cand word str cands)
-            (mybigword-push-cand (mybigword-convert-word word) str cands)
-            (mybigword-push-cand (mybigword-convert-word-again word) str cands)
+            (mybigword-push-cand (mybigword-guess-original-tense word) str cands)
+            (mybigword-push-cand (mybigword-guess-original-tense-again word) str cands)
 
             ;; find the one with highest zipf frequency
             (dolist (c cands)
@@ -660,15 +664,48 @@ Please note `browse-url-generic' is used to open external browser."
       (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
                                   (replace-regexp-in-string " " "%20" word))))))
 
+(defun mybigword-original-word (word)
+  "Get WORD in its original tense."
+  (unless mybigword-cache (mybigword-update-cache))
+  (setq word (downcase word))
+  (when mybigword-debug
+    (message "mybigword-original-word => %s" word))
+  (when (> (length word) 3)
+    (let* (cands
+           len
+           (h (plist-get mybigword-cache :content))
+           (str (gethash (elt word 0) h)))
+
+      (mybigword-push-cand (mybigword-guess-original-tense word) str cands)
+      (mybigword-push-cand (mybigword-guess-original-tense-again word) str cands)
+      (cl-delete-if (lambda (e) (null (cdr e))) cands)
+      (setq len (length cands))
+
+      (cond
+       ((eq len 0))
+
+       ((or (eq len 1)
+            (< (length (car (nth 0 cands))) (length (car (nth 1 cands)))))
+        (setq word (car (nth 0 cands))))
+
+       (t
+        (setq word (car (nth 1 cands)))))))
+  word)
+
 (defun mybigword-select-visible-word-default-function ()
   "Default function after visible word is selected."
   (let* ((selected (mybigword--word-at-point))
-         (desc (mybigword-format-with-dictionary selected nil))
+         (original (mybigword-original-word selected))
+         (desc (mybigword-format-with-dictionary original nil))
          outbuf
          outwin)
-    (mybigword-pronounce-word-internal selected)
+    (mybigword-pronounce-word-internal original)
+
+    (when mybigword-debug
+      (message "mybigword-select-visible-word-default-function => selected=%s desc=%s original=%s" selected desc original))
+
     (when desc
-      (setq outbuf (get-buffer-create "*mybigword*"))
+      (setq outbuf (get-buffer-create "*mybigword-single*"))
       (setq outwin (display-buffer outbuf '(nil (allow-no-window . t))))
       (with-current-buffer outbuf
         (erase-buffer)
@@ -683,7 +720,8 @@ The word is pronounced and its definition is displayed."
   (interactive)
   (let* ((avy-all-windows nil)
          (start (window-start))
-         (end (+ 20 (window-end)))
+         ;; area from triple size of current window
+         (end (+ start (* 4 (- (window-end) start))))
          (text (buffer-substring-no-properties start (min end (point-max))))
          big-words)
     (when text
