@@ -85,14 +85,6 @@
                                    dictionary-default-dictionary)))))
 ;; }}
 
-;; {{ bookmark
-;; use my own bookmark if it exists
-(with-eval-after-load 'bookmark
-  (let ((file "~/.emacs.bmk"))
-    (when (file-exists-p file)
-      (setq bookmark-default-file file))))
-;; }}
-
 (defun my-lookup-doc-in-man ()
   "Read man by querying keyword at point."
   (interactive)

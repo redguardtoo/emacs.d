@@ -95,6 +95,7 @@
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling t)
   (require-init 'init-ibuffer t)
+  (require-init 'init-bookmark)
   (require-init 'init-ivy)
   (require-init 'init-windows)
   (require-init 'init-javascript t)

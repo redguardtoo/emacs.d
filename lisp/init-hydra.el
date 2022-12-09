@@ -28,8 +28,8 @@
 [_q_] Quit
 "
   ("aa" my-srt-offset-subtitles-from-point)
-  ("B" bookmark-set)
-  ("m" counsel-bookmark-goto)
+  ("B" my-bookmark-set)
+  ("m" my-bookmark-goto)
   ("f" my-counsel-recentf)
   ("d" my-recent-directory)
   ("bh" my-insert-bash-history)
