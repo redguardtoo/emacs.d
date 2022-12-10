@@ -681,7 +681,7 @@ ARG is ignored."
                (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'mocha))
 
-(defun switch-to-builtin-shell ()
+(defun my-switch-to-builtin-shell ()
   "Switch to builtin shell.
 If the shell is already opened in some buffer, switch to that buffer."
   (interactive)

@@ -251,7 +251,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (interactive)
   (cond
    ((or (display-graphic-p) (daemonp))
-    (switch-to-builtin-shell))
+    (my-switch-to-builtin-shell))
    (t
     (suspend-frame))))
 
