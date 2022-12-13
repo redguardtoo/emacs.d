@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
@@ -699,6 +699,12 @@ Please note `browse-url-generic' is used to open external browser."
          (desc (mybigword-format-with-dictionary original nil))
          outbuf
          outwin)
+
+    (when (string= "" (string-trim desc))
+      ;; fallback to word at point
+      (setq original selected)
+      (setq desc (mybigword-format-with-dictionary original nil)))
+
     (mybigword-pronounce-word-internal original)
 
     (when mybigword-debug
