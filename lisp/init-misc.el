@@ -890,8 +890,8 @@ might be bad."
 		   (forward-word)
 		   (forward-char -1)
 		   (sdcv-search-input (thing-at-point 'word))))
-  (local-set-key (kbd "w") 'mybigword-pronounce-word)
-  (local-set-key (kbd ";") 'avy-goto-char-2))
+  (local-set-key (kbd ";") 'my-hydra-ebook/body)
+  (local-set-key (kbd "w") 'mybigword-big-words-in-current-window))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
 ;; }}
 

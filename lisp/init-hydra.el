@@ -8,11 +8,11 @@
   "
 ^Misc^                    ^Study^                    ^Emms^
 -------------------------------------------------------------------
-[_ss_] Save workgroup     [_w_] Pronounce word       [_R_] Random
+[_ss_] Save workgroup     [_vv_] Pronounce word       [_R_] Random
 [_ll_] Load workgroup     [_W_] Big word list        [_n_] Next
 [_B_] New bookmark        [_vi_] Play word's video   [_p_] Previous
 [_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
-[_bb_] Switch Gnus buffer [_vv_] Select big word     [_S_] Stop
+[_bb_] Switch Gnus buffer [_w_] Select big word     [_S_] Stop
 [_e_] Erase buffer        [_s1_] Pomodoro tiny task  [_O_] Open
 [_r_] Erase this buffer   [_s2_] Pomodoro big task   [_L_] Playlist
 [_f_] Recent file         [_st_] Pomodoro stop       [_K_] Search
@@ -68,8 +68,8 @@
   ("L" emms-playlist-mode-go)
   ;; }}
 
-  ("w" mybigword-pronounce-word)
-  ("vv" mybigword-big-words-in-current-window)
+  ("vv" mybigword-pronounce-word)
+  ("w" mybigword-big-words-in-current-window)
   ("im" mybigword-show-image-of-word)
   ("W" my-lookup-bigword-definition-in-buffer)
   ("vi" mybigword-play-video-of-word-at-point)
@@ -489,6 +489,17 @@ Git:
   ("q" nil))
 (global-set-key (kbd "C-c C-g") 'my-hydra-git/body)
 ;; }}
+
+(defhydra my-hydra-ebook ()
+  "
+[_v_] Pronounce word
+[_;_] Jump to word
+[_w_] Display bigword in current window
+"
+  ("v" mybigword-pronounce-word)
+  (";" avy-goto-char-2)
+  ("w" mybigword-big-words-in-current-window)
+  ("q" nil))
 
 (defhydra my-hydra-search ()
   "

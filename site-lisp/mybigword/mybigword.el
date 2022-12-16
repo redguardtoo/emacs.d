@@ -4,7 +4,7 @@
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.2.3
+;; Version: 0.2.4
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
@@ -152,6 +152,12 @@ If it's nil, ~/.emacs.d/mybigword is is used."
 (defcustom mybigword-select-visible-word-function
   'mybigword-select-visible-word-default-function
   "Function to execute after visible word is selected."
+  :group 'mybigword
+  :type 'function)
+
+(defcustom mybigword-show-image-function
+  'mybigword-show-image-default-function
+  "Function to show image of word."
   :group 'mybigword
   :type 'function)
 
@@ -611,7 +617,7 @@ The word is either the word at point, or selected string or string from input."
   (cond
    ;; macOS
    ((eq system-type 'darwin)
-    "open")
+    "afplay")
    ;; Windows
    ((eq system-type 'windows-nt)
     "start")
@@ -653,16 +659,18 @@ The word is either the word at point, or selected string or string from input."
     (when word
       (mybigword-pronounce-word-internal word))))
 
+(defun mybigword-show-image-default-function (word)
+  "Default function to show image of WORD .
+Please note `browse-url-generic' is used to open external browser."
+  (when word
+    (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
+                                (replace-regexp-in-string " " "%20" word)))))
 
 ;;;###autoload
 (defun mybigword-show-image-of-word ()
-  "Show image of word.
-Please note `browse-url-generic' is used to open external browser."
+  "Show image of word."
   (interactive)
-  (let* ((word (mybigword--word-at-point)))
-    (when word
-      (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
-                                  (replace-regexp-in-string " " "%20" word))))))
+  (funcall mybigword-show-image-function (mybigword--word-at-point)))
 
 (defun mybigword-original-word (word)
   "Get WORD in its original tense."
@@ -697,8 +705,7 @@ Please note `browse-url-generic' is used to open external browser."
   (let* ((selected (mybigword--word-at-point))
          (original (mybigword-original-word selected))
          (desc (mybigword-format-with-dictionary original nil))
-         outbuf
-         outwin)
+         outbuf)
 
     (when (string= "" (string-trim desc))
       ;; fallback to word at point
@@ -712,7 +719,7 @@ Please note `browse-url-generic' is used to open external browser."
 
     (when desc
       (setq outbuf (get-buffer-create "*mybigword-single*"))
-      (setq outwin (display-buffer outbuf '(nil (allow-no-window . t))))
+      (display-buffer outbuf '(nil (allow-no-window . t)))
       (with-current-buffer outbuf
         (erase-buffer)
         (insert desc)
