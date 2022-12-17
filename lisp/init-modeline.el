@@ -47,6 +47,8 @@
     ;; `global-mode-string' is useful because `org-timer-set-timer' uses it
     "%M"
 
+    "   "
+
     '(:eval my-extra-mode-line-info)
 
     " %-" ;; fill with '-'

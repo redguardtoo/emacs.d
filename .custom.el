@@ -16,6 +16,12 @@
 ;; Linux Only
 ;;(setq counsel-etags-extra-tags-files '("/usr/include/TAGS"))
 
+;; customize mode line
+(require-package 'keycast)
+(setq keycast-insert-after "   ")
+(setq-default my-extra-mode-line-info '("" mode-line-keycast))
+(customize-set-variable 'keycast-mode t)
+
 ;; indent
 (setq-default c-basic-offset 4)
 
@@ -26,7 +32,6 @@
 (setq org-agenda-files  '("~/GTD"))
 (setq org-M-RET-may-split-line nil)
 
-(require-package 'org-roam)
 (require-package 'org-bullets)
 ;; (setq org-hide-emphasis-markers t
 ;;       org-fontify-done-headline t
@@ -95,6 +100,18 @@
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([+]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+
+
+;; org roam
+(require-package 'org-roam)
+(setq org-roam-directory (file-truename "~/notes"))
+(org-roam-db-autosync-mode)
+(setq org-roam-v2-ack t)
+
+(global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
+(global-set-key (kbd "C-c n f") 'org-roam-node-find)
+(global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+
 
 ;; theme
 (load-theme 'twilight-bright t)
