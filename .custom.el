@@ -22,6 +22,9 @@
 (setq-default my-extra-mode-line-info '("" mode-line-keycast))
 (customize-set-variable 'keycast-mode t)
 
+(desktop-save-mode)
+(setq desktop-path '("~/emacs-auto-save"))
+
 ;; indent
 (setq-default c-basic-offset 4)
 
