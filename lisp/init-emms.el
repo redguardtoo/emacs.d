@@ -73,11 +73,13 @@ If SUBDIR-P is t, play videos in sub-directories too."
 
       (when found
         (with-current-buffer emms-playlist-buffer-name
+          (emms-playlist-current-select-first)
           (emms-start))))
 
      (subdir-p
       (emms-add-directory-tree default-directory)
       (with-current-buffer emms-playlist-buffer-name
+        (emms-playlist-current-select-first)
         (emms-start)))
 
      ;; play video under current directory and default directory
