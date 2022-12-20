@@ -110,10 +110,66 @@
 (setq org-roam-directory (file-truename "~/notes"))
 (org-roam-db-autosync-mode)
 (setq org-roam-v2-ack t)
+(setq org-roam-complete-everywhere t)
 
 (global-set-key (kbd "C-c n l") 'org-roam-buffer-toggle)
 (global-set-key (kbd "C-c n f") 'org-roam-node-find)
 (global-set-key (kbd "C-c n i") 'org-roam-node-insert)
+
+(setq org-roam-capture-templates
+      '(("m" "main" plain
+         "%?"
+         :if-new (file+head "main/%<%Y%m%d%H%M%S>-${slug}.org"
+                            "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("r" "reference" plain "%?"
+         :if-new
+         (file+head "reference/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n")
+         :immediate-finish t
+         :unnarrowed t)
+        ("b" "taiji reference" plain
+         "%?"
+         :if-new
+         (file+head "reference/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 太极")
+         :immediate-finish t
+         :unnarrowed t)
+        ("t" "taiji" plain "%?"
+         :if-new
+         (file+head "main/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 太极")
+         :immediate-finish t
+         :unnarrowed t)
+        ("a" "article" plain "%?"
+         :if-new
+         (file+head "articles/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :article:\n")
+         :immediate-finish t
+         :unnarrowed t)))
+
+(setq org-capture-templates
+      '(("s" "Slipbox" entry  (file "~/notes/inbox.org")
+         "* %?\n")
+        ("t" "Todo" entry (file+headline "~/gtd.org" "Tasks")
+         "* TODO %?\n  %i\n  %a")))
+
+(defun qucheng/org-capture-slipbox()
+  (interactive)
+  (org-capture nil "s"))
+
+(defun qucheng/org-capture-todo()
+  (interactive)
+  (org-capture nil "t"))
+
+(cl-defmethod org-roam-node-type ((node org-roam-node))
+  "Return the TYPE of NODE."
+  (condition-case nil
+      (file-name-nondirectory
+       (directory-file-name
+        (file-name-directory
+         (file-relative-name (org-roam-node-file node) org-roam-directory))))
+    (error "")))
+
+(setq org-roam-node-display-template
+      (concat "${type:15} ${title:*} " (propertize "${tags:10}" 'face 'org-tag)))
 
 
 ;; theme
