@@ -608,7 +608,8 @@ Install and set up =flycheck= and insert below code to disable =lazyflymake=,
 (setq my-disable-lazyflymake t)
 #+end_src
 ** Disable Vim key bindings
-By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
+By default EVIL (Vim emulation in Emacs) is used. Add =(evil-mode 0)= in `~/.custom.el` to disable vim key bindings.
+
 ** Evil setup
 It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim key bindings.
 
