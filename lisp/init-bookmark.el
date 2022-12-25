@@ -14,8 +14,9 @@ If bookmark with same file name already exists, override it quietly."
       (setq filename w3m-current-url))
     (when (setq existing-bookmark
                 (cl-find-if (lambda (b)
-                              (string= (cdr (assoc 'filename (cdr b)))
-                                       filename))
+                              (let* ((bookmark-filename (cdr (assoc 'filename (cdr b)))))
+                                (string= (file-truename bookmark-filename)
+                                         filename)))
                             bookmark-alist))
       ;; extract name of existing bookmark
       (setq existing-bookmark (car existing-bookmark)))
