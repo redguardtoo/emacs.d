@@ -67,7 +67,7 @@
 ;;                            (variable-pitch-mode 1)
 ;;                            visual-line-mode))
 
-(setq org-hide-emphasis-markers t)
+;; (setq org-hide-emphasis-markers t)
 (defun org-toggle-emphasis ()
   "Toggle hiding/showing of org emphasize markers."
   (interactive)
@@ -220,10 +220,10 @@
 (require-package 'jenkinsfile-mode)
 
 ;; setup plantuml
-;;(require-package 'plantuml-mode)
-;;(setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
-;;;;(add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-;;(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+;; (require-package 'plantuml-mode)
+;; (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+(setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
+(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
 
 ;; setup plantuml napkin
 ;; (with-eval-after-load 'ob
