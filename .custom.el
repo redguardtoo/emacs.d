@@ -219,11 +219,16 @@
 
 (require-package 'jenkinsfile-mode)
 
-;; setup plantuml
+
+;; setup plantuml and mermaid
 ;; (require-package 'plantuml-mode)
 ;; (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 (setq org-plantuml-jar-path (expand-file-name "~/plantuml.jar"))
-(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+(require-package 'ob-mermaid)
+(setq ob-mermaid-cli-path (expand-file-name "~/node_modules/.bin/mmdc"))
+(org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)
+                                                         (mermaid . t)
+                                                         (scheme . t)))
 
 ;; setup plantuml napkin
 ;; (with-eval-after-load 'ob

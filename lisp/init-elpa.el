@@ -148,6 +148,7 @@
     company-statistics
     jenkinsfile-mode
     powershell
+    ob-mermaid
     graphql-mode
     company-statistics)
   "Packages to install from melpa-unstable.")
