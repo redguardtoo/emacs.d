@@ -17,6 +17,7 @@
   (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
   (setq web-mode-enable-auto-closing t) ; enable auto close tag in text-mode
   (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-auto-close-style 2)
   (setq web-mode-enable-css-colorization t)
   (setq web-mode-imenu-regexp-list
         '(("<\\(h[1-9]\\)\\([^>]*\\)>\\([^<]*\\)" 1 3 ">" nil)
