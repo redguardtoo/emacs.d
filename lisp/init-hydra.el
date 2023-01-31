@@ -8,11 +8,11 @@
   "
 ^Misc^                    ^Study^                    ^Emms^
 -------------------------------------------------------------------
-[_ss_] Save workgroup     [_vv_] Pronounce word       [_R_] Random
+[_ss_] Save workgroup     [_vv_] Pronounce word      [_R_] Random
 [_ll_] Load workgroup     [_W_] Big word list        [_n_] Next
 [_B_] New bookmark        [_vi_] Play word's video   [_p_] Previous
 [_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
-[_bb_] Switch Gnus buffer [_w_] Select big word     [_S_] Stop
+[_bb_] Switch Gnus buffer [_w_] Select big word      [_S_] Stop
 [_e_] Erase buffer        [_s1_] Pomodoro tiny task  [_O_] Open
 [_r_] Erase this buffer   [_s2_] Pomodoro big task   [_L_] Playlist
 [_f_] Recent file         [_st_] Pomodoro stop       [_K_] Search
