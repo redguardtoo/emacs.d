@@ -14,7 +14,8 @@
                   "PKGBUILD\\'" ; archlinux
                   "\\.pgpass\\'"
                   "\\.?muttrc\\'"
-                  "\\.mailcap\\'")
+                  "\\.mailcap\\'"
+                  "yarn\\.lock\\'")
 ;; }}
 
 
