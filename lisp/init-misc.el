@@ -163,6 +163,24 @@ FN checks these characters belong to normal word characters."
     rlt))
 
 (with-eval-after-load 'elec-pair
+  ;; {{ @see https://debbugs.gnu.org/cgi/bugreport.cgi?bug=55340
+  ;; `new-line-indent` disables `electric-indent-mode'
+  (defun my-electric-pair-open-newline-between-pairs-psif-hack (orig-func &rest args)
+    (ignore orig-func args)
+    (when (and (if (functionp electric-pair-open-newline-between-pairs)
+                   (funcall electric-pair-open-newline-between-pairs)
+                 electric-pair-open-newline-between-pairs)
+               (eq last-command-event ?\n)
+               (< (1+ (point-min)) (point) (point-max))
+               (eq (save-excursion
+                     (skip-chars-backward "\t\s")
+                     (char-before (1- (point))))
+                   (matching-paren (char-after))))
+      (save-excursion (newline-and-indent 1))))
+  (advice-add 'electric-pair-open-newline-between-pairs-psif
+              :around
+              #'my-electric-pair-open-newline-between-pairs-psif-hack)
+  ;; }}
   (setq electric-pair-inhibit-predicate 'my-electric-pair-inhibit))
 ;; }}
 
