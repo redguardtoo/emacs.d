@@ -362,7 +362,7 @@ Run =vc-msg-show=.
 
 If you select a region inside current line, the *correct commit which submits the selected snippet* is displayed instead of the latest commit touch the whole line.
 ** Save/Load windows layout
-=SPC s s= or =M-x wg-create-workgrou= to save windows layout.
+=SPC s s= or =M-x wg-create-workgroup= to save windows layout.
 =SPC l l= or =M-x wg-open-workgroup= to load windows layout.
 
 ** Use this configuration as merge tool for Git
