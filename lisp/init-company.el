@@ -40,6 +40,9 @@ In that case, insert the number."
 
        (t
         (company-complete-number n)))))
+  (with-eval-after-load 'evil
+    (mapc #'evil-declare-change-repeat
+          '(my-company-number)))
 
   ;; @see https://github.com/company-mode/company-mode/issues/348
   (company-statistics-mode)
