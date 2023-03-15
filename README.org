@@ -551,13 +551,11 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] Emacs.
+If you use Windows Emacs, you need Emacs to find third party command line programs from Cygwin/MSYS2. Please add =C:\Cygwin64\bin= or =C:\msys64\bin= to environment variable =PATH=.
 
-If you use Windows Emacs, you need help Emacs to find third party command line programs from Cygwin. So you'd better add  =C:\Cygwin64\bin= to environment variable =PATH=.
+Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping texts or searching files, the Windows Emacs need run the command line programs in Command Prompt which uses UTF-16 encoded text. So you might need see [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
 
-Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping text or searching file, the Windows Emacs need run the command line programs in Command Prompt which only uses UTF-16 encoded text. So you might need [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
-
-Below Emacs commands do not require external command line programs, so they works out of box on Windows,
+Below Emacs commands do not require external command line programs and work out of box on Windows,
 - `M-x swiper`
 - `M-x ffip-lisp-find-file-in-project`
 - `M-x find-lisp-find-dired`
