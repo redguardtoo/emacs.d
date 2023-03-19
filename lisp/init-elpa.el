@@ -441,7 +441,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     light-soap-theme
     lush-theme
     madhat2r-theme
-    majapahit-theme
+    majapahit-themes
     material-theme
     minimal-theme
     modus-themes
