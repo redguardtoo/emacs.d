@@ -223,8 +223,7 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
 (defun my-generic-prog-mode-hook-setup ()
   "Generic programming mode set up."
   (when (buffer-too-big-p)
-    ;; Turn off `linum-mode' when there are more than 5000 lines
-    (linum-mode -1)
+
     (when (my-should-use-minimum-resource)
       (font-lock-mode -1)))
 
