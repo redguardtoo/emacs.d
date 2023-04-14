@@ -76,7 +76,7 @@
 (require 'rjsx-mode)
 (require 'simple-httpd)
 (require 'vc)
-(require 'sdcv)
+(require 'stardict)
 (require 'wgrep)
 (require 'mybigword)
 (require 'yaml-mode)

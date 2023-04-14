@@ -395,14 +395,6 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
                                          (if previous "prev" "next")))))))
 ;; }}
 
-;; {{start dictionary lookup
-(with-eval-after-load 'sdcv
-  ;; English => Chinese
-  (setq sdcv-dictionary-simple-list '("朗道英汉字典5.0"))
-  ;; WordNet English => English
-  (setq sdcv-dictionary-complete-list '("WordNet")))
-;; }}
-
 ;; ANSI-escape coloring in compilation-mode
 ;; {{ http://stackoverflow.com/questions/13397737/ansi-coloring-in-compilation-mode
 (ignore-errors
@@ -906,7 +898,7 @@ might be bad."
 		   ;; go to end of word to workaround `nov-mode' bug
 		   (forward-word)
 		   (forward-char -1)
-		   (sdcv-search-input (thing-at-point 'word))))
+		   (my-dict-complete-definition)))
   (local-set-key (kbd ";") 'my-hydra-ebook/body)
   (local-set-key (kbd "w") 'mybigword-big-words-in-current-window))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
@@ -998,20 +990,20 @@ might be bad."
   (setq eldoc-echo-area-use-multiline-p t))
 ;;}}
 
-;; {{ use sdcv dictionary to find big word definition
-(defvar my-sdcv-org-head-level 2)
-(defun my-sdcv-format-bigword (word zipf)
-  "Format WORD and ZIPF using sdcv dictionary."
+;; {{ use dictionary to find big word definition
+(defvar my-dict-org-head-level 2)
+(defun my-dict-format-bigword (word zipf)
+  "Format WORD and ZIPF."
   (let* (rlt def)
-    (local-require 'sdcv)
+    (local-require 'stardict)
     ;; 2 level org format
     (condition-case nil
         (progn
-          (setq def (sdcv-search-with-dictionary word sdcv-dictionary-complete-list) )
+          (setq def (my-dict-search-detail my-dict-complete my-dict-complete-cache) )
           (setq def (replace-regexp-in-string "^-->.*" "" def))
           (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
           (setq rlt (format "%s %s (%s)\n%s\n"
-                            (make-string my-sdcv-org-head-level ?*)
+                            (make-string my-dict-org-head-level ?*)
                             word
                             zipf
                             def)))
@@ -1022,7 +1014,7 @@ might be bad."
   "Look up big word definitions."
   (interactive)
   (local-require 'mybigword)
-  (let* ((mybigword-default-format-function 'my-sdcv-format-bigword))
+  (let* ((mybigword-default-format-function 'my-dict-format-bigword))
     (mybigword-show-big-words-from-current-buffer)))
 ;; }}
 

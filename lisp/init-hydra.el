@@ -511,8 +511,8 @@ _s_ StackOverflow _d_ dict.org
 _h_ Code
 _m_ Man
 "
-  ("b" sdcv-search-input)
-  ("t" sdcv-search-input+)
+  ("b" my-dict-complete-definition)
+  ("t" my-dict-simple-definition)
   ("d" my-lookup-dict-org)
   ("g" my-w3m-generic-search)
   ("f" my-w3m-search-financial-dictionary)

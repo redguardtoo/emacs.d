@@ -822,8 +822,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "w" 'mybigword-big-words-in-current-window
   "s" 'avy-goto-word-or-subword-1
   "a" 'avy-goto-char-timer
-  "db" 'sdcv-search-input ; details
-  "dt" 'sdcv-search-input+ ; summary
+  "db" 'my-dict-complete-definition ; details
+  "dt" 'my-dict-simple-definition ; summary
   "dd" 'my-lookup-dict-org
   "mm" 'my-lookup-doc-in-man
   "gg" 'my-w3m-generic-search
