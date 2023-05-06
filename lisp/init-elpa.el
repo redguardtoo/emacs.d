@@ -51,6 +51,7 @@
     auto-package-update
     web-mode
     kv
+    helpful ; @see https://github.com/Wilfred/helpful/pull/283, need unstable version
     esxml ; nov is dependent on latest esxml
     nov
     bbdb
