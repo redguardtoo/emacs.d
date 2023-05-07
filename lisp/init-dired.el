@@ -164,9 +164,7 @@ If N is not nil, only list directories in current project."
     (dired (completing-read "Directories: " cands))))
 
 (with-eval-after-load 'dired
-  ;; re-use dired buffer, available in Emacs 28
-  ;; @see https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20598
-  (setq dired-kill-when-opening-new-dired-buffer t)
+  (setq dired-kill-when-opening-new-dired-buffer nil)
 
   ;; search file name only when focus is over file
   (setq dired-isearch-filenames 'dwim)
