@@ -194,5 +194,16 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   ;; show current track info
   (my-emms-show))
 
+(with-eval-after-load 'emms-player-simple
+  (define-emms-simple-player mplayer '(file url)
+    (concat "\\`\\(http[s]?\\|mms\\)://\\|"
+            (apply #'emms-player-simple-regexp
+                   emms-player-base-format-list))
+    "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null")
+
+  (define-emms-simple-player mplayer-playlist '(streamlist)
+    "\\`http[s]?://"
+    "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null" "-playlist"))
+
 (provide 'init-emms)
 ;;; init-emms.el ends here
