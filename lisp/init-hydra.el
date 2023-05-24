@@ -19,7 +19,7 @@
 [_d_] Recent directory    [_sr_] Pomodoro resume     [_F_] filter
 [_z_] Jump around (z.sh)  [_sp_] Pomodoro pause      [_E_] replay
 [_bh_] Bash history       [_as_] Ascii table
-[_hh_] Favorite theme     [_E_] Typewriter on/off
+[_hh_] Favorite theme     [_T_] Typewriter on/off
 [_hr_] Random theme       [_V_] Old typewriter
 [_ka_] Kill other buffers
 [_ii_] Imenu
@@ -44,7 +44,7 @@
   ("e" shellcop-erase-buffer)
   ("r" shellcop-reset-with-new-command)
   ("z" shellcop-jump-around)
-  ("E" my-toggle-typewriter)
+  ("T" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
 
   ;; {{pomodoro
