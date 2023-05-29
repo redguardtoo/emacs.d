@@ -66,7 +66,7 @@
 
 (defun org-mode-hook-setup ()
   (unless (my-buffer-file-temp-p)
-    (setq evil-auto-indent nil)
+    (setq-local evil-auto-indent nil)
 
     ;; org-mime setup, run this command in org-file, than yank in `message-mode'
     (local-set-key (kbd "C-c M-o") 'org-mime-org-buffer-htmlize)
