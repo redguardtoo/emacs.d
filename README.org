@@ -20,7 +20,7 @@
   - [[#install-everything-in-one-step-optional][Install everything in one step (OPTIONAL)]]
   - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
-  - [[#tutorial][Tutorial]]
+  - [[#quickstart][Quickstart]]
   - [[#evil-mode-tutorial][Evil-mode tutorial]]
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
@@ -143,7 +143,7 @@ Most command line programs can be installed through =default package manager=.
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
 Some package managers allow you to install the program for current user. For example, python package manager =pip= has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
-*** List of programs
+*** List of command line programs
 These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
@@ -219,10 +219,11 @@ Grammar, Style and Spell Checker
 - Required by =lazyflymake=
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
+**** [[https://pdfgrep.org/][pdfgrep]]
+- Used by =my-pdfgrep-in-directory=
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
-** Tutorial
-Please read this tutorial at least for once.
+** Quickstart
 *** Step 1, learn basics
 At minimum you need know how Emacs interacts with other command line programs,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]]

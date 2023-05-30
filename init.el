@@ -139,6 +139,7 @@
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
   (require-init 'init-evil) ; init-evil dependent on init-clipboard
+  (require-init 'init-pdf)
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
