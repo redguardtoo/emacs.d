@@ -283,8 +283,12 @@
                         (concat base "." (if (string= ext "mp3") "wav" "mp3")))))
       (my-async-shell-command cmd)))
   (defun my-copy-file-info (fn)
-    (message "%s => clipboard & yank ring"
-             (copy-yank-str (funcall fn (dired-file-name-at-point)))))
+    "Copy file or directory info."
+    (let* ((file-name (dired-file-name-at-point)))
+      (when (file-directory-p file-name)
+        (setq file-name (directory-file-name file-name)))
+      (message "%s => clipboard & yank ring"
+               (copy-yank-str (funcall fn file-name)))))
   (defhydra my-hydra-dired (:color blue)
     "
 ^Misc^                      ^File^              ^Copy Info^
