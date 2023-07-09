@@ -299,19 +299,24 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
         (setq program "c:/mplayer/mplayer.exe"))
        ((file-executable-p "d:/mplayer/mplayer.exe")
         (setq program "d:/mplayer/mplayer.exe"))
+       ((file-executable-p "c:/Program Files/mplayer/mplayer.exe")
+        (setq program "\"c:/Program Files/mplayer/mplayer.exe\""))
+       ((file-executable-p "d:/Program Files/mplayer/mplayer.exe")
+        (setq program "\"d:/Program Files/mplayer/mplayer.exe\""))
        ((file-executable-p "c:/mpv/mpv.exe")
         (setq program "c:/mpv/mpv.exe"))
        ((file-executable-p "d:/mpv/mpv.exe")
         (setq program "d:/mpv/mpv.exe"))
+       ((file-executable-p "c:/Program Files/mpv/mpv.exe")
+        (setq program "\"c:/Program Files/mpv/mpv.exe\""))
+       ((file-executable-p "d:/Program Files/mpv/mpv.exe")
+        (setq program "\"d:/Program Files/mpv/mpv.exe\""))
        (t
-        (error "Can't find media player.")))
+        (error "Can't find media player."))))
 
-      (if (file-executable-p "c:\\\\mplayer\\\\mplayer.exe")
-
-        (setq program "d:\\\\mplayer\\\\mplayer.exe")))
 
      (t
-      (error "Platform is not supported. Can't find any media player.")))
+      (error "Can't find any media player!")))
 
     (unless (string-match "mplayer" program)
       (setq common-opts ""))
