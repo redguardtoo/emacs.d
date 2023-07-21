@@ -119,6 +119,7 @@
     badger-theme
     distinguished-theme
     tao-theme
+    tablist ; required by pdf-tools
     pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
     ;; }}
     groovy-mode
