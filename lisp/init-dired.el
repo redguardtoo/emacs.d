@@ -16,6 +16,10 @@ If no files marked, always operate on current line in dired-mode."
   (dired-do-shell-command command arg file-list)
   (message command))
 
+(defun my-file-usage ()
+  (interactive)
+  (message (shell-command-to-string "du -kh")))
+
 (defun my-ediff-files ()
   "@see https://oremacs.com/2017/03/18/dired-ediff/."
   (interactive)

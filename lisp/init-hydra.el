@@ -300,7 +300,7 @@
 [_se_] Extract subtitle    [_rb_] Change base
 [_aa_] Recording Wav       [_df_] Diff 2 files
 [_ee_] Mkv => Srt          [_ff_] Find
-[_+_] Create directory
+[_+_] Create directory     [_du_] File usage
 [_mp_] Mplayer extra opts
 "
     ("mp" my-mplayer-setup-extra-opts)
@@ -318,6 +318,7 @@
     ("C" dired-do-copy)
     ("R" dired-do-rename)
     ("cf" find-file)
+    ("du" my-file-usage)
     ("df" my-ediff-files)
     ("rr" dired-toggle-read-only)
     ("ff" (lambda (regexp)
