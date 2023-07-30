@@ -2,6 +2,7 @@
 
 ;; {{ bbdb setup
 (defun my-message-mode-hook-setup ()
+  "Email composing set up."
   (bbdb-initialize 'message)
   (bbdb-initialize 'gnus)
   (local-set-key (kbd "TAB") 'bbdb-complete-name))
@@ -28,26 +29,26 @@
           (lambda () (local-set-key "o" 'my-gnus-group-list-subscribed-groups )))
 
 (defun my-use-gmail-smtp-server ()
-  "Use Gmail SMTP server"
+  "Use Gmail SMTP server."
   (interactive)
   (setq smtpmail-default-smtp-server "smtp.gmail.com")
   (setq smtpmail-smtp-service 587))
 
 (defun my-use-hotmail-smtp-server ()
-  "Use hotmail SMTP server"
+  "Use hotmail SMTP server."
   (interactive)
   (setq smtpmail-default-smtp-server "smtp.office365.com")
   (setq smtpmail-smtp-service 587))
 
 (setq message-send-mail-function 'smtpmail-send-it)
 ;; feel free to override this smtp set up in "~/.custom.el" or "~/.gnus.el"
-(my-use-gmail-smtp-server)
+(my-use-hotmail-smtp-server)
 
 ;; Ignore certificate hostname.
 (setq starttls-extra-arguments '("--insecure"))
 
 (defun message-select-forwarded-email-tags ()
-  "Select the <#mml-or-what-ever> tags in message-mode"
+  "Select the <#mml-or-what-ever> tags in `message-mode'."
   (interactive)
   (let (rlt)
     (when (search-forward "<#")
@@ -59,7 +60,7 @@
     rlt))
 
 (defun message-copy-select-forwarded-email-tags ()
-  "copy the <#mml-or-what-ever> tags in message-mode"
+  "Copy the <#mml-or-what-ever> tags in `message-mode'."
   (interactive)
   (save-excursion
     (cond
