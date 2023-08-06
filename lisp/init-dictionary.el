@@ -3,12 +3,15 @@
 (defvar my-dict-buffer-name "*MYDICT*"
   "The buffer buffer of my dictionary lookup.")
 
+;; {{ Please provide directory and dictionary file base name
 ;; English => Chinese
 (defvar my-dict-simple
   '("~/.stardict/dic/stardict-langdao-ec-gb-2.4.2" "langdao-ec-gb"))
+
 ;; WordNet English => English
 (defvar my-dict-complete
   '("~/.stardict/dic/stardict-dictd_www.dict.org_wn-2.4.2" "dictd_www.dict.org_wn"))
+;; }}
 
 (defvar my-dict-simple-cache nil "Internal variable.")
 (defvar my-dict-complete-cache nil "Internal variable.")
