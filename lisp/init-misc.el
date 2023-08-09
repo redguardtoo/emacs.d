@@ -999,7 +999,7 @@ might be bad."
     ;; 2 level org format
     (condition-case nil
         (progn
-          (setq def (my-dict-search-detail my-dict-complete my-dict-complete-cache) )
+          (setq def (my-dict-search-detail word my-dict-complete my-dict-complete-cache))
           (setq def (replace-regexp-in-string "^-->.*" "" def))
           (setq def (replace-regexp-in-string "[\n\r][\n\r]+" "" def))
           (setq rlt (format "%s %s (%s)\n%s\n"

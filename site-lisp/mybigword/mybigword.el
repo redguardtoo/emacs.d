@@ -1,10 +1,10 @@
 ;;; mybigword.el --- Vocabulary builder using Zipf to extract English big words -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020-2022 Chen Bin <chenbin DOT sh AT gmail.com>
+;; Copyright (C) 2020-2023 Chen Bin <chenbin DOT sh AT gmail.com>
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.2.4
+;; Version: 0.3.0
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
@@ -59,8 +59,9 @@
 ;; Tips,
 ;;
 ;;   1. Customize `mybigword-default-format-function' to format the word for display.
-;;   If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used to
-;;   find the definitions of all big words.
+;;   If it's `mybigword-format-with-dictionary', the `mybigword-word-definition-function',
+;;   whose default value is `dictionary-definition', is used to find the definitions of
+;;   all big words.
 ;;
 ;;   Sample to display the dictionary definitions of big words:
 ;;
@@ -215,15 +216,13 @@ If it's nil, ~/.emacs.d/mybigword is is used."
 
 (defcustom mybigword-default-format-function
   'mybigword-format-word
-  "The function to format big word before displaying it.
-If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used."
+  "The function to format big word before displaying it."
   :group 'mybigword
   :type 'function)
 
 (defcustom mybigword-default-format-function
   'mybigword-format-word
-  "The function to format big word before displaying it.
-If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used."
+  "The function to format big word before displaying it."
   :group 'mybigword
   :type 'function)
 
@@ -251,6 +250,11 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 
 (defcustom mybigword-hide-word-function nil
   "The function to hide a word which has one parameter \" word\"."
+  :group 'mybigword
+  :type 'function)
+
+(defcustom mybigword-word-definition-function 'dictionary-definition
+  "The function to show word's definition.  It has one parameter \" word\"."
   :group 'mybigword
   :type 'function)
 
@@ -357,10 +361,10 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   (format "%s %s\n" word zipf))
 
 (defun mybigword-format-with-dictionary (word zipf)
-  "Format WORD and ZIPF with dictionary api."
+  "Format WORD and ZIPF by looking up in dictionary."
   (ignore zipf)
   (condition-case nil
-      (concat (dictionary-definition word) "\n\n\n")
+      (concat (funcall mybigword-word-definition-function word) "\n\n\n")
     (error nil)))
 
 (defun mybigword-show-big-words-from-content (content file)

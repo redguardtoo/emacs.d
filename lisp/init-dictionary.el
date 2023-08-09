@@ -32,20 +32,20 @@
   (interactive)
   (quit-window t))
 
-(defmacro my-dict-search-detail (dict cache)
-  "Return word's definition with DICT, CACHE."
-  `(let* ((word (my-dict-prompt-input)))
-     (when word
-       (unless (featurep 'stardict) (require 'stardict))
-       (unless ,cache
-         (setq ,cache
-               (stardict-open (nth 0 ,dict) (nth 1 ,dict) t)))
-       (stardict-lookup ,cache word))))
+(defmacro my-dict-search-detail (word dict cache)
+  "Return WORD's definition with DICT, CACHE."
+  `(when ,word
+     (unless (featurep 'stardict) (require 'stardict))
+     (unless ,cache
+       (setq ,cache
+             (stardict-open (nth 0 ,dict) (nth 1 ,dict) t)))
+     (stardict-lookup ,cache word)))
 
 (defun my-dict-complete-definition ()
   "Show dictionary lookup in buffer."
   (interactive)
-  (let* ((def (my-dict-search-detail my-dict-complete my-dict-complete-cache))
+  (let* ((word (my-dict-prompt-input))
+         (def (my-dict-search-detail word my-dict-complete my-dict-complete-cache))
          buf
          win)
     (when def
@@ -68,7 +68,8 @@
 (defun my-dict-simple-definition ()
   "Show dictionary lookup in popup."
   (interactive)
-  (let* ((def (my-dict-search-detail my-dict-simple my-dict-simple-cache)))
+  (let* ((word (my-dict-prompt-input))
+         (def (my-dict-search-detail word my-dict-simple my-dict-simple-cache)))
     (when def
       (unless (featurep 'popup) (require 'popup))
       (popup-tip def))))
