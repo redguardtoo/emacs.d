@@ -609,6 +609,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "pp" 'paste-from-x-clipboard ; used frequently
   "sb" 'my-current-string-beginning
   "se" 'my-current-string-end
+  "su" 'vundo
   "vj" 'my-validate-json-or-js-expression
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
