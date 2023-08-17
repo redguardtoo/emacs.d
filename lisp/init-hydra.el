@@ -141,7 +141,7 @@
 [_d_] CLI to download stream [_R_] Reply with original
 [_b_] Open external browser  [_w_] Reply all (S w)
 [_;_] Click link/button      [_W_] Reply all with original (S W)
-[_g_] Focus link/button      [_b_] Switch Gnus buffer
+[_b_] Switch Gnus buffer
 "
     ("F" gnus-summary-mail-forward)
     ("r" gnus-summary-reply)
@@ -149,11 +149,10 @@
     ("w" gnus-summary-wide-reply)
     ("W" gnus-article-wide-reply-with-original)
     ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
-    ("v" my-w3m-open-with-mplayer)
-    ("d" my-w3m-download-rss-stream)
-    ("b" my-w3m-open-link-or-image-or-url)
-    (";" w3m-lnum-follow)
-    ("g" w3m-lnum-goto)
+    ("v" my-browser-open-with-mplayer)
+    ("d" my-browser-download-rss-stream)
+    ("b" my-browser-open-link-or-image-or-url)
+    (";" eww-lnum-follow)
     ("b" dianyou-switch-gnus-buffer)
     ("q" nil))
   ;; y is not used by default
@@ -508,21 +507,14 @@ Git:
 
 (defhydra my-hydra-search ()
   "
- ^Search^         ^Dictionary^
------------------------------------------
-_g_ Google        _b_ English => English
-_f_ Finance       _t_ English => Chinese
-_s_ StackOverflow _d_ dict.org
-_h_ Code
+_b_ English => English
+_t_ English => Chinese
+_d_ dict.org
 _m_ Man
 "
   ("b" my-dict-complete-definition)
   ("t" my-dict-simple-definition)
   ("d" my-lookup-dict-org)
-  ("g" my-w3m-generic-search)
-  ("f" my-w3m-search-financial-dictionary)
-  ("s" my-w3m-stackoverflow-search)
-  ("h" my-w3m-hacker-search)
   ("m" my-lookup-doc-in-man)
   ("q" nil))
 (global-set-key (kbd "C-c C-s") 'my-hydra-search/body)

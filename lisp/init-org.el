@@ -145,7 +145,9 @@ ARG is ignored."
            ;; select pdf-window
            (when (and (memq major-mode '(doc-view-mode pdf-view-mode))
                       (setq pdf-from-page
-                            (if (eq major-mode 'pdf-view-mode) (pdf-view-current-page) (doc-view-current-page)))
+                            (if (eq major-mode 'pdf-view-mode)
+                                (pdf-view-current-page)
+                              (doc-view-current-page)))
                       (> (abs (- page pdf-from-page)) 2))
              (my-push-if-uniq (format "%s:::%s" pdf-file pdf-from-page) my-pdf-view-from-history)))))
       ;; open pdf file

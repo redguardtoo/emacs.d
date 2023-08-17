@@ -8,10 +8,12 @@ If bookmark with same file name already exists, override it quietly."
   (my-ensure 'bookmark)
   (bookmark-maybe-load-default-file)
 
-  (let* ((filename buffer-file-name)
+  (let* ((filename (cond
+                    ((eq major-mode 'eww-mode)
+                     (eww-current-url))
+                    (t
+                     buffer-file-name)))
          existing-bookmark)
-    (when (eq major-mode 'w3m-mode)
-      (setq filename w3m-current-url))
     (when (setq existing-bookmark
                 (cl-find-if (lambda (b)
                               (let* ((f (cdr (assoc 'filename (cdr b)))))

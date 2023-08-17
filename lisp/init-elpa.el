@@ -145,7 +145,6 @@
     keyfreq
     gitconfig-mode
     textile-mode
-    w3m
     workgroups2
     zoutline
     company-c-headers
@@ -299,8 +298,8 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'winum)
 (require-package 'session)
 (require-package 'unfill)
-(require-package 'w3m)
 (require-package 'counsel-gtags)
+(require-package 'eww-lnum)
 (require-package 'buffer-move)
 (require-package 'ace-window)
 (require-package 'cmake-mode)

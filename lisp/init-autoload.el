@@ -78,8 +78,6 @@
 (autoload 'srt-convert-sub-to-srt "subtitles" "" t)
 (autoload 'srt-slow-down "subtitles" "" t)
 (autoload 'srt-speed-up "subtitles" "" t)
-(autoload 'fastdef-insert "fastdef" nil t)
-(autoload 'fastdef-insert-from-history "fastdef" nil t)
 (autoload 'org-mime-htmlize "org-mime" nil t)
 (autoload 'org-mime-edit-mail-in-org-mode "org-mime" nil t)
 (autoload 'org-mime-revert-to-plain-text-mail "org-mime" nil t)

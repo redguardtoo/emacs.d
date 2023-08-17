@@ -155,14 +155,6 @@ But there is a simple workaround:
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
-**** w3m (web browser)
-- Required by =emacs-w3m=
-
-You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML mail be rendered by =w3m= instead of the default HTML rendering engine =shr=.
-
-=shr= supports colored text while =w3m= not.
-
-But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** aspell or hunspell
 - Required by =flyspell=
 **** xmlstarlet or xml
@@ -535,7 +527,7 @@ Press =M-x org-version=, then read online manual to set up.
 
 For example, =org-capture= requires [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 
-Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by =emacs-w3m=. =C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
+Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by built in browser. =C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
 ** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 

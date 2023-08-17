@@ -29,7 +29,7 @@
 (require 'scroll-bar)
 (require 'ivy)
 (require 'counsel)
-(require 'w3m)
+(require 'eww)
 (require 'ibuffer)
 (require 'org)
 (require 'diff-mode)

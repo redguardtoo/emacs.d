@@ -194,8 +194,7 @@ When fixing a typo, avoid pass camel case option to cli program."
                       (or (string-match "^=[^=]*=[,.]?$" th)
                           (string-match "^\\[\\[" th)
                           (string-match "^=(" th)
-                          (string-match ")=$" th)
-                          (string= "w3m" th)))
+                          (string-match ")=$" th)))
                  ;; embedded code like =code= or org-link [[https://gnu.org][GNU Operation System]] or [[www.gnu.org]]
                  ;; langtool could finish checking before major mode prepare font face for all texts
                  (setq rlt nil))

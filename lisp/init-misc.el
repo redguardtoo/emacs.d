@@ -830,7 +830,7 @@ version control automatically."
           (vc-register)))))))
 
 (defun my-toggle-env-http-proxy ()
-  "Set/unset the environment variable http_proxy used by w3m."
+  "Set/unset the environment variable http_proxy used by browser."
   (interactive)
   (let* ((proxy "http://127.0.0.1:8000"))
     (cond
