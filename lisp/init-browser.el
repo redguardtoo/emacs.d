@@ -16,16 +16,10 @@
        (*is-a-mac* ; mac
         "open")
        (*unix* ; linux or unix
-        ;; prefer Chrome than Firefox
-        (or (executable-find "google-chrome")
-            (executable-find "firefox")))
+        "xdg-open")
        (t
-        ;; Windows: you need add "firefox.exe" to environment variable PATH
-        ;; @see https://en.wikipedia.org/wiki/PATH_(variable)
-        (executable-find "firefox")
-        ;; if you prefer chrome
-        ;; (executable-find "chrome")
-        )))
+        ;; Windows: use default browser
+        "start")))
 
 (setq browse-url-browser-function 'browse-url-generic)
 
