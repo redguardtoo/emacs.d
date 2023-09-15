@@ -291,5 +291,13 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   ;; better performance
   (setq show-paren-delay 0.5))
 
+;; Make emacs know ssh-agent
+;; @see https://emacs.stackexchange.com/questions/17866/magit-how-to-use-systems-ssh-agent-and-dont-ask-for-password
+(my-run-with-idle-timer 2
+                        (lambda ()
+                          (setq exec-path-from-shell-check-startup-files nil)
+                          (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+                          (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")))
+
 (provide 'init-essential)
 ;;; init-essential.el ends here
