@@ -1279,12 +1279,23 @@ Continue the video with updated subtitle."
 (defvar org-tags-match-list-sublevels)
 (defvar my-org-agenda-files '("~/blog/")
   "My org agenda files.")
-(defun my-org-tags-view ()
-  "Show all headlines for org files matching a TAGS criterion."
+(defun my-org-tags-view (&optional match)
+  "Show all headlines for org files matching a TAGS criterion.
+MATCH is optional tag match."
   (interactive)
   (let* ((org-agenda-files my-org-agenda-files)
          (org-tags-match-list-sublevels nil))
-    (call-interactively 'org-tags-view)))
+    (org-tags-view nil match)))
+
+(defun my-org-tags-view-food ()
+  "Show all headlines for org files matching a TAGS criterion."
+  (interactive)
+  (my-org-tags-view "food"))
+
+(defun my-today-is-weekend-p ()
+  "Test if today is weekend."
+  (let ((day (format-time-string "%u")))
+    (or (string= day "6") (string= day "7"))))
 
 (defun my-count-items ()
   "Count items separated by SEPARATORS.  White spaces are ignored."
