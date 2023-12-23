@@ -184,19 +184,8 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 ;; Show a marker in the left fringe for lines not in the buffer
 (setq indicate-empty-lines t)
-
-(defun my-mini-ui ()
-  "Minimum ui."
-  ;; NO tool bar, scroll-bar
-  (when window-system
-    (scroll-bar-mode -1)
-    (tool-bar-mode -1)
-    (horizontal-scroll-bar-mode -1)))
-(my-run-with-idle-timer 2 #'my-mini-ui)
 ;; }}
 
-;; no menu bar
-(menu-bar-mode -1)
 
 ;; Nicer naming of buffers for files with identical names
 (with-eval-after-load 'uniquify
@@ -262,7 +251,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   (interactive)
   (cond
    ((or (display-graphic-p) (daemonp))
-    (switch-to-builtin-shell))
+    (my-switch-to-builtin-shell))
    (t
     (suspend-frame))))
 
@@ -301,6 +290,14 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 (with-eval-after-load 'paren
   ;; better performance
   (setq show-paren-delay 0.5))
+
+;; Make emacs know ssh-agent
+;; @see https://emacs.stackexchange.com/questions/17866/magit-how-to-use-systems-ssh-agent-and-dont-ask-for-password
+(my-run-with-idle-timer 2
+                        (lambda ()
+                          (setq exec-path-from-shell-check-startup-files nil)
+                          (exec-path-from-shell-copy-env "SSH_AGENT_PID")
+                          (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")))
 
 (provide 'init-essential)
 ;;; init-essential.el ends here

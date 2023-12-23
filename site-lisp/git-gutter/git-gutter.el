@@ -480,7 +480,7 @@ gutter information of other windows."
          (git-gutter))
         ((memq git-gutter:real-this-command git-gutter:update-windows-commands)
          (git-gutter)
-         (unless global-linum-mode
+         (unless (bound-and-true-p global-linum-mode)
            (git-gutter:update-other-window-buffers (selected-window) (current-buffer))))))
 
 (defsubst git-gutter:diff-process-buffer (curfile)
@@ -1066,7 +1066,7 @@ start revision."
           (git-gutter:start-live-update file original now))))))
 
 ;; for linum-user
-(when (and global-linum-mode (not (boundp 'git-gutter-fringe)))
+(when (and (bound-and-true-p global-linum-mode) (not (boundp 'git-gutter-fringe)))
   (git-gutter:linum-setup))
 
 (defun git-gutter:all-hunks ()

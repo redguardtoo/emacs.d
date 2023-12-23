@@ -1,12 +1,17 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defvar my-toggle-ime-init-function
+  (lambda () (my-ensure 'pyim))
+  "Function to execute at the beginning of `my-toggle-input-method'.")
+
 ;; {{ make IME compatible with evil-mode
 (defun my-toggle-input-method ()
   "When input method is on, goto `evil-insert-state'."
   (interactive)
 
   ;; load IME when needed, less memory footprint
-  (my-ensure 'pyim)
+  (when my-toggle-ime-init-function
+    (funcall my-toggle-ime-init-function))
 
   ;; some guys don't use evil-mode at all
   (cond
@@ -46,7 +51,8 @@
   "The directory containing pyim dictionaries.")
 
 (defvar my-pyim-enable-wubi-dict nil
-  "Use Pinyin dictionary for Pyim IME.")
+  "Use wubi IME.  Its value is t or pyim-wbdict's enable function.
+See pyim-wbdict's website for the full list of enable functions.")
 
 (with-eval-after-load 'pyim
   (defun my-pyim-clear-and-off ()
@@ -73,13 +79,16 @@
 
   (cond
    (my-pyim-enable-wubi-dict
+    ;; @see https://github.com/tumashu/pyim-wbdict
+    (setq pyim-default-scheme 'wubi)
+    (unless (member my-pyim-enable-wubi-dict
+                    '(pyim-wbdict-v86-enable
+                      pyim-wbdict-v98-enable
+                      pyim-wbdict-v98-morphe-enable
+                      pyim-wbdict-v86-single-enable))
+      (setq my-pyim-enable-wubi-dict 'pyim-wbdict-v86-enable))
     ;; load wubi dictionary
-    (let* ((dir (file-name-directory
-                 (locate-library "pyim-wbdict.el")))
-           (file (concat dir "pyim-wbdict-v98.pyim")))
-      (when (and (file-exists-p file) (featurep 'pyim))
-        (setq pyim-dicts
-              (list (list :name "wbdict-v98-elpa" :file file :elpa t))))))
+    (funcall my-pyim-enable-wubi-dict))
    (t
     (setq pyim-pinyin-fuzzy-alist
           '(("en" "eng")

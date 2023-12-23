@@ -15,12 +15,12 @@
 - [[#a-fast-and-robust-emacs-setup][A fast and robust Emacs setup]]
 - [[#checklist][Checklist]]
 - [[#installation][Installation]]
-  - [[#install-in-normal-way][Install in normal way]]
-  - [[#install-stable-version-optional][Install stable version (OPTIONAL)]]
+  - [[#install-packages-from-remote-repository-recommended][Install packages from remote repository (RECOMMENDED)]]
+  - [[#install-packages-from-stable-local-repository-optional][Install packages from stable local repository (OPTIONAL)]]
   - [[#install-everything-in-one-step-optional][Install everything in one step (OPTIONAL)]]
   - [[#third-party-programs-optional][Third party programs (OPTIONAL)]]
 - [[#tutorial-optional][Tutorial (OPTIONAL)]]
-  - [[#tutorial][Tutorial]]
+  - [[#quickstart][Quickstart]]
   - [[#evil-mode-tutorial][Evil-mode tutorial]]
   - [[#methodology][Methodology]]
 - [[#usage][Usage]]
@@ -89,10 +89,10 @@
 - [[#license][License]]
 
 * Checklist
-- Emacs 26.1 or higher version is required
+- Emacs 27 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- Windows users had better download the version with dependencies bundled. For example, download "emacs-26.3-x86_64.zip" instead of "emacs-26.2-x86_64-no-deps.zip"
+- Windows users had better download the version with dependencies bundled. For example, download "emacs-27.2-x86_64.zip" instead of "emacs-27.2-x86_64-no-deps.zip"
 - Unstable packages from [[http://melpa.org][MELPA]] are *invisible* but stable packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation
@@ -104,7 +104,7 @@ Section "Install stable version" is useful *if and only if*,
 - You don't have network access
 - You have never used any command line program
 
-** Install in normal way
+** Install packages from remote repository (RECOMMENDED)
 There are two ways to install this setup (I recommend the first way):
 
 First way is to download [[https://github.com/redguardtoo/emacs.d/archive/master.zip][latest setup]] and extract its content into =~/.emacs.d=, OR run command =cd ~; git clone https://github.com/redguardtoo/emacs.d.git .emacs.d= in shell.
@@ -116,7 +116,7 @@ By default, packages are installed automatically during Emacs startup.
 Someone reported that package repository [[http://melpa.org]] is not responsive in China.
 
 No worries. You could answer "YES" to the question "Switch to faster package repositories in China temporarily?" after firing Emacs. Please note after startup you could change variable =package-archives= in =init-elpa.el= to permanently switch to Chinese repositories.
-** Install stable version (OPTIONAL)
+** Install packages from stable local repository (OPTIONAL)
 - Download [[https://github.com/redguardtoo/emacs.d/archive/stable.zip]]
 - Extract its content into empty directory =~/.emacs.d=
 - Download [[https://github.com/redguardtoo/myelpa/archive/stable.zip]]
@@ -143,7 +143,7 @@ Most command line programs can be installed through =default package manager=.
 - any package manager at Linux (=apt= on Debian/Ubuntu, =yum= on Redhat, =pacman= on Arch, =emerge= on Gentoo ...)
 
 Some package managers allow you to install the program for current user. For example, python package manager =pip= has the option "[[https://packaging.python.org/tutorials/installing-packages/][--user]]".
-*** List of programs
+*** List of command line programs
 These programs are *OPTIONAL*.
 
 Please ignore error message related to command line programs. For example, if =aspell= and =hunspell= are not installed, you can ignore all the flyspell error messages.
@@ -155,14 +155,6 @@ But there is a simple workaround:
 - Download =fortune-zh= code from [[https://github.com/debiancn/fortune-zh]]
 - Extract code and run =make= in its folder
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
-**** w3m (web browser)
-- Required by =emacs-w3m=
-
-You can insert =(setq mm-text-html-renderer 'w3m)= in =~/.gnus.el= to force HTML mail be rendered by =w3m= instead of the default HTML rendering engine =shr=.
-
-=shr= supports colored text while =w3m= not.
-
-But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** aspell or hunspell
 - Required by =flyspell=
 **** xmlstarlet or xml
@@ -197,9 +189,10 @@ But my =w3m= based utilities can open video/audio/image with the help of =w3m=.
 **** js-beautify
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
-**** sdcv (console version of StarDict)
-- Required by =sdcv.e=
-- Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install dictionary
+**** StarDict dictionaries
+- Cli program is not needed
+- Required by =stardict.el=
+- Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= and =curl https://src.fedoraproject.org/repo/pkgs/stardict-dic/stardict-langdao-ec-gb-2.4.2.tar.bz2/41a71f5b3952709746dd7e52cf155b8b/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install English dictionaries
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
 - Optionally used by =M-x counsel-etags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
@@ -218,10 +211,11 @@ Grammar, Style and Spell Checker
 - Required by =lazyflymake=
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
+**** [[https://pdfgrep.org/][pdfgrep]]
+- Used by =my-pdfgrep-in-directory=
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
-** Tutorial
-Please read this tutorial at least for once.
+** Quickstart
 *** Step 1, learn basics
 At minimum you need know how Emacs interacts with other command line programs,
 - What is [[https://en.wikipedia.org/wiki/Environment_variable][Environment Variable]]
@@ -293,14 +287,14 @@ Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
 ** Computers with smaller memory
-Make sure you have this line in =early-init.el= (Emacs 27.1+) or at the beginning of =init.el= (Emacs 26),
+Make sure you have this line in =early-init.el= or at the beginning of =init.el=,
 #+begin_src elisp
 (setq my-computer-has-smaller-memory-p t)
 #+end_src
 ** Vim vs Emacs
-I prefer default hotkeys&commands from EVIL and Emacs.
+I prefer vim keybindings provided by EVIL.
 
-But sometimes a mixed style could be better for my personal workflow. See the function =my-optimize-evil= in =init-evil.el=.
+But mixed style is also used in my workflow. See the function =my-optimize-evil= in =init-evil.el=.
 
 You can insert =(my-optimize-evil)= into =~/.custom.el= to enable it.
 ** Backup packages
@@ -362,7 +356,7 @@ Run =vc-msg-show=.
 
 If you select a region inside current line, the *correct commit which submits the selected snippet* is displayed instead of the latest commit touch the whole line.
 ** Save/Load windows layout
-=SPC s s= or =M-x wg-create-workgrou= to save windows layout.
+=SPC s s= or =M-x wg-create-workgroup= to save windows layout.
 =SPC l l= or =M-x wg-open-workgroup= to load windows layout.
 
 ** Use this configuration as merge tool for Git
@@ -533,7 +527,7 @@ Press =M-x org-version=, then read online manual to set up.
 
 For example, =org-capture= requires [[http://orgmode.org/manual/Setting-up-capture.html#Setting-up-capture][manual setup]].
 
-Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by =emacs-w3m=. =C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
+Run =M-x org-open-at-point= to open link under cursor. Http link will be opened by built in browser. =C-u M-x org-open-at-point= uses the external browser specified by =browse-url-generic-program= whose value could be =/usr/bin/firefox=.
 ** macOS user?
 Please replace legacy Emacs 22 and ctags with the new versions.
 
@@ -551,13 +545,11 @@ Keep pressing =C-M-j= to ignore candidates and open/save files using current inp
 
 You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
-I strongly suggest [[http://www.cygwin.com/][Cygwin]] Emacs.
+If you use Windows Emacs, you need Emacs to find third party command line programs from Cygwin/MSYS2. Please add =C:\Cygwin64\bin= or =C:\msys64\bin= to environment variable =PATH=.
 
-If you use Windows Emacs, you need help Emacs to find third party command line programs from Cygwin. So you'd better add  =C:\Cygwin64\bin= to environment variable =PATH=.
+Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping texts or searching files, the Windows Emacs need run the command line programs in Command Prompt which uses UTF-16 encoded text. So you might need see [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
 
-Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping text or searching file, the Windows Emacs need run the command line programs in Command Prompt which only uses UTF-16 encoded text. So you might need [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
-
-Below Emacs commands do not require external command line programs, so they works out of box on Windows,
+Below Emacs commands do not require external command line programs and work out of box on Windows,
 - `M-x swiper`
 - `M-x ffip-lisp-find-file-in-project`
 - `M-x find-lisp-find-dired`
@@ -641,8 +633,11 @@ The default pinyin scheme is =quanpin= but you can insert below code into =~/.cu
 Dictionary for wubi is already installed. Please insert below code into =~/.custom.el= to enable wubi dictionary and use wubi scheme,
 #+begin_src elisp
 (setq my-pyim-enable-wubi-dict t)
-(with-eval-after-load 'pyim
-  (setq pyim-default-scheme 'wubi))
+;; ;; @see https://github.com/tumashu/pyim-wbdict for more information
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v86-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v98-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v98-morphe-enable)
+;; (setq my-pyim-enable-wubi-dict pyim-wbdict-v86-single-enable)
 #+end_src
 ** Install multiple versions of Emacs
 Run below commands to install Emacs 26.3 into the directory =~/myemacs/26.3=:

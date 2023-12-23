@@ -1,12 +1,12 @@
 ;;; mybigword.el --- Vocabulary builder using Zipf to extract English big words -*- lexical-binding: t; -*-
 ;;
-;; Copyright (C) 2020 Chen Bin <chenbin DOT sh AT gmail.com>
+;; Copyright (C) 2020-2023 Chen Bin <chenbin DOT sh AT gmail.com>
 ;;
 ;; Author: Chen Bin <chenbin DOT sh AT gmail.com>
 ;; URL: https://github.com/redguardtoo/mybigword
-;; Version: 0.1.1
+;; Version: 0.3.0
 ;; Keywords: convenience
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "26.1") (avy "0.5.0"))
 ;;
 ;; This file is not part of GNU Emacs.
 
@@ -50,6 +50,7 @@
 ;;
 ;;   Run `mybigword-show-big-words-from-file'
 ;;   Run `mybigword-show-big-words-from-current-buffer'
+;;   Run `mybigword-big-words-in-current-window'
 ;;
 ;;
 ;; Customize `mybigword-excluded-words' or `mybigword-personal-excluded-words' to
@@ -58,8 +59,9 @@
 ;; Tips,
 ;;
 ;;   1. Customize `mybigword-default-format-function' to format the word for display.
-;;   If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used to
-;;   find the definitions of all big words.
+;;   If it's `mybigword-format-with-dictionary', the `mybigword-word-definition-function',
+;;   whose default value is `dictionary-definition', is used to find the definitions of
+;;   all big words.
 ;;
 ;;   Sample to display the dictionary definitions of big words:
 ;;
@@ -107,6 +109,8 @@
 (require 'cl-lib)
 (require 'url)
 (require 'browse-url)
+(require 'dictionary)
+(require 'avy)
 
 (defgroup mybigword nil
   "Filter the words by the frequency usage of each word."
@@ -145,6 +149,18 @@ If it's nil, ~/.emacs.d/mybigword is is used."
   "Rewind a few seconds when mplayer playing video."
   :group 'mybigword
   :type 'number)
+
+(defcustom mybigword-select-visible-word-function
+  'mybigword-select-visible-word-default-function
+  "Function to execute after visible word is selected."
+  :group 'mybigword
+  :type 'function)
+
+(defcustom mybigword-show-image-function
+  'mybigword-show-image-default-function
+  "Function to show image of word."
+  :group 'mybigword
+  :type 'function)
 
 (defcustom mybigword-excluded-words
   '("anybody"
@@ -200,15 +216,13 @@ If it's nil, ~/.emacs.d/mybigword is is used."
 
 (defcustom mybigword-default-format-function
   'mybigword-format-word
-  "The function to format big word before displaying it.
-If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used."
+  "The function to format big word before displaying it."
   :group 'mybigword
   :type 'function)
 
 (defcustom mybigword-default-format-function
   'mybigword-format-word
-  "The function to format big word before displaying it.
-If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used."
+  "The function to format big word before displaying it."
   :group 'mybigword
   :type 'function)
 
@@ -236,6 +250,11 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 
 (defcustom mybigword-hide-word-function nil
   "The function to hide a word which has one parameter \" word\"."
+  :group 'mybigword
+  :type 'function)
+
+(defcustom mybigword-word-definition-function 'dictionary-definition
+  "The function to show word's definition.  It has one parameter \" word\"."
   :group 'mybigword
   :type 'function)
 
@@ -308,7 +327,7 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   `(and (string-match (format "^%s \\([0-9.]*\\)$" ,word) ,str)
         (string-to-number (match-string 1 ,str))))
 
-(defun mybigword-convert-word (raw-word)
+(defun mybigword-guess-original-tense (raw-word)
   "Convert RAW-WORD to the word to look up."
   (let* ((rlt raw-word))
     (cond
@@ -323,9 +342,13 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
 
      ((string-match "\\([a-z]+\\)\\(ed\\|es\\)$" raw-word)
       (setq rlt (match-string 1 raw-word))))
+
+    (when mybigword-debug
+      (message "mybigword-guess-original-tense called => %s %s" raw-word rlt))
+
     rlt))
 
-(defun mybigword-convert-word-again (raw-word)
+(defun mybigword-guess-original-tense-again (raw-word)
   "Convert RAW-WORD to the word to look up."
   (let* ((rlt raw-word))
     (cond
@@ -338,10 +361,10 @@ If it's `mybigword-format-with-dictionary', the `dictionary-definition' is used.
   (format "%s %s\n" word zipf))
 
 (defun mybigword-format-with-dictionary (word zipf)
-  "Format WORD and ZIPF with dictionary api."
+  "Format WORD and ZIPF by looking up in dictionary."
   (ignore zipf)
   (condition-case nil
-      (concat (dictionary-definition word) "\n\n\n")
+      (concat (funcall mybigword-word-definition-function word) "\n\n\n")
     (error nil)))
 
 (defun mybigword-show-big-words-from-content (content file)
@@ -353,7 +376,7 @@ FILE is the file path."
      (big-words
       ;; sort windows
       (setq big-words (sort big-words (lambda (a b) (< (cdr a) (cdr b)))))
-      (switch-to-buffer-other-window "*BigWords*")
+      (switch-to-buffer-other-window "*mybigword-list*")
       (erase-buffer)
       (insert (funcall mybigword-default-format-header-function file))
       (dolist (bw big-words)
@@ -400,8 +423,8 @@ FILE is the file path."
                    (setq str (gethash (elt word 0) h)))
           (let* (cands (max-item '(nil . 0)))
             (mybigword-push-cand word str cands)
-            (mybigword-push-cand (mybigword-convert-word word) str cands)
-            (mybigword-push-cand (mybigword-convert-word-again word) str cands)
+            (mybigword-push-cand (mybigword-guess-original-tense word) str cands)
+            (mybigword-push-cand (mybigword-guess-original-tense-again word) str cands)
 
             ;; find the one with highest zipf frequency
             (dolist (c cands)
@@ -439,14 +462,14 @@ FILE is the file path."
   "Return video/audio path similar to SRT-PATH and whose file name match REGEXP."
   (let* ((rlt '(nil . 99999))
          (dir (file-name-directory srt-path))
-	 (video-files (directory-files dir t regexp))
+         (video-files (directory-files dir t regexp))
          (base (file-name-base srt-path))
-	 (distance-fn (if (fboundp 'string-distance) 'string-distance
-	       'org-babel-edit-distance)))
+         (distance-fn (if (fboundp 'string-distance) 'string-distance
+                        'org-babel-edit-distance)))
     (dolist (v video-files)
       (let* ((distance (funcall distance-fn (file-name-base v) base)))
-	(when (< distance (cdr rlt))
-	  (setq rlt (cons v distance)))))
+        (when (< distance (cdr rlt))
+          (setq rlt (cons v distance)))))
     (car rlt)))
 
 (defun mybigword-mplayer-start-time (chunks word)
@@ -482,10 +505,10 @@ FILE is the file path."
 (defun mybigword-async-shell-command (command)
   "Execute string COMMAND asynchronously."
   (let* ((proc (start-process "MyBigWord"
-			      nil
-			      shell-file-name
-			      shell-command-switch
-			      command)))
+                              nil
+                              shell-file-name
+                              shell-command-switch
+                              command)))
     (set-process-sentinel proc 'ignore)))
 
 (defun mybigword-run-mplayer (start-time video-path &optional play-mp3-p)
@@ -493,10 +516,10 @@ FILE is the file path."
 If PLAY-MP3-P is t, mp3 is played."
   (when start-time
     (let* ((default-directory (file-name-directory video-path))
-	   (cmd (format "%s -ss %s -osdlevel 2 \"%s\""
-			mybigword-mplayer-program
-			(mybigword-adjust-start-time start-time)
-			(file-name-nondirectory video-path))))
+           (cmd (format "%s -ss %s -osdlevel 2 \"%s\""
+                        mybigword-mplayer-program
+                        (mybigword-adjust-start-time start-time)
+                        (file-name-nondirectory video-path))))
       (cond
        (play-mp3-p
         ;; open a buffer to accept key binding
@@ -585,12 +608,12 @@ The word is either the word at point, or selected string or string from input."
 (defun mybigword-cambridge-mp3-url (word)
   "Get URL to download mp3 of WORD."
   (let* ((url (concat "https://dictionary.cambridge.org/pronunciation/english/" word))
-	 (html-text (with-current-buffer
-			(url-retrieve-synchronously url) (buffer-string)))
-	 (regexp "<source type=\"audio/mpeg\" src=\"\\([^\"]+\\)"))
+         (html-text (with-current-buffer
+                        (url-retrieve-synchronously url) (buffer-string)))
+         (regexp "<source type=\"audio/mpeg\" src=\"\\([^\"]+\\)"))
     (when (and html-text
-	       (not (string-match "404" html-text))
-	       (string-match regexp html-text))
+               (not (string-match "404" html-text))
+               (string-match regexp html-text))
       (concat "https://dictionary.cambridge.org" (match-string 1 html-text)))))
 
 (defun mybigword-play-mp3-program ()
@@ -598,7 +621,7 @@ The word is either the word at point, or selected string or string from input."
   (cond
    ;; macOS
    ((eq system-type 'darwin)
-    "open")
+    "afplay")
    ;; Windows
    ((eq system-type 'windows-nt)
     "start")
@@ -633,23 +656,100 @@ The word is either the word at point, or selected string or string from input."
       (message "Sorry, can't find pronunciation for \"%s\"" word)))))
 
 ;;;###autoload
-(defun mybigword-pronounce-word ()
-  "Pronounce word."
-  (interactive)
-  (let* ((word (mybigword--word-at-point)))
+(defun mybigword-pronounce-word (&optional input-p)
+  "Pronounce word.  If INPUT-P is t, user need input word."
+  (interactive "P")
+  (let* ((word (if input-p (read-string "Word: ") (mybigword--word-at-point))))
     (when word
       (mybigword-pronounce-word-internal word))))
 
+(defun mybigword-show-image-default-function (word)
+  "Default function to show image of WORD .
+Please note `browse-url-generic' is used to open external browser."
+  (when word
+    (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
+                                (replace-regexp-in-string " " "%20" word)))))
 
 ;;;###autoload
 (defun mybigword-show-image-of-word ()
-  "Show image of word.
-Please note `browse-url-generic' is used to open external browser."
+  "Show image of word."
   (interactive)
-  (let* ((word (mybigword--word-at-point)))
-    (when word
-      (browse-url-generic (format "https://www.bing.com/images/search?q=%s"
-                                  (replace-regexp-in-string " " "%20" word))))))
+  (funcall mybigword-show-image-function (mybigword--word-at-point)))
+
+(defun mybigword-original-word (word)
+  "Get WORD in its original tense."
+  (unless mybigword-cache (mybigword-update-cache))
+  (setq word (downcase word))
+  (when mybigword-debug
+    (message "mybigword-original-word => %s" word))
+  (when (> (length word) 3)
+    (let* (cands
+           len
+           (h (plist-get mybigword-cache :content))
+           (str (gethash (elt word 0) h)))
+
+      (mybigword-push-cand (mybigword-guess-original-tense word) str cands)
+      (mybigword-push-cand (mybigword-guess-original-tense-again word) str cands)
+      (cl-delete-if (lambda (e) (null (cdr e))) cands)
+      (setq len (length cands))
+
+      (cond
+       ((eq len 0))
+
+       ((or (eq len 1)
+            (< (length (car (nth 0 cands))) (length (car (nth 1 cands)))))
+        (setq word (car (nth 0 cands))))
+
+       (t
+        (setq word (car (nth 1 cands)))))))
+  word)
+
+(defun mybigword-select-visible-word-default-function ()
+  "Default function after visible word is selected."
+  (let* ((selected (mybigword--word-at-point))
+         (original (mybigword-original-word selected))
+         (desc (mybigword-format-with-dictionary original nil))
+         outbuf)
+
+    (when (string= "" (string-trim desc))
+      ;; fallback to word at point
+      (setq original selected)
+      (setq desc (mybigword-format-with-dictionary original nil)))
+
+    (mybigword-pronounce-word-internal original)
+
+    (when mybigword-debug
+      (message "mybigword-select-visible-word-default-function => selected=%s desc=%s original=%s" selected desc original))
+
+    (when desc
+      (setq outbuf (get-buffer-create "*mybigword-single*"))
+      (display-buffer outbuf '(nil (allow-no-window . t)))
+      (with-current-buffer outbuf
+        (erase-buffer)
+        (insert desc)
+        (goto-char (point-min))))))
+
+;;;###autoload
+(defun mybigword-big-words-in-current-window ()
+  "Show visible big words in current window.
+`mybigword-select-visible-word-function' is executed if a big word is selected.
+The word is pronounced and its definition is displayed."
+  (interactive)
+  (let* ((avy-all-windows nil)
+         (start (window-start))
+         ;; area from triple size of current window
+         (end (+ start (* 4 (- (window-end) start))))
+         (text (buffer-substring-no-properties start (min end (point-max))))
+         big-words)
+    (when text
+      (unless mybigword-cache (mybigword-update-cache))
+      (setq big-words (mybigword-extract-words text))
+      (when (and big-words (> (length big-words) 0))
+        (avy-with avy-goto-word-1
+          (avy-jump
+           (mapconcat 'car big-words "\\|"))
+          (when mybigword-select-visible-word-function
+            (funcall mybigword-select-visible-word-function)))))))
 
 (defun mybigword-find-file-predicate  (file dir)
   "True if FILE does match `mybigword-find-file-regexp'.

@@ -166,6 +166,11 @@ Saves some variables to restore a BUFFER later."
                                 (ignore vars)
                                 (shell (wg-buf-name _buffer))))))
 
+(wg-support 'vterm-mode
+            'vterm
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (vterm (wg-buf-name _buffer))))))
 ;; org-agenda buffer
 (defun wg-get-org-agenda-view-commands ()
   "Return commands to restore the state of Agenda buffer.
@@ -562,6 +567,14 @@ You can get these commands using `wg-get-org-agenda-view-commands'."
                                 (speedbar-update-contents)
                                 (speedbar-set-timer dframe-update-speed)
                                 speedbar-buffer))))
+
+(wg-support 'treemacs-mode
+            'treemacs
+            `((deserialize . ,(lambda (_buffer vars)
+                                (ignore vars)
+                                (let* ((buffer (switch-to-buffer (wg-buf-name _buffer))))
+                                  (treeemacs)
+                                  buffer)))))
 
 (provide 'workgroups2-support)
 ;;; workgroups2-support.el ends here

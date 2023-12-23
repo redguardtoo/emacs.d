@@ -1,8 +1,8 @@
 ;;; shenshou.el --- Download&Extract subtitles from opensubtitles.org -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2021-2022 Chen Bin
+;; Copyright (C) 2021-2023 Chen Bin
 ;;
-;; Version: 0.0.9
+;; Version: 0.1.2
 
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/shenshou
@@ -87,10 +87,6 @@ Please read curl's manual for more options."
   :type 'string
   :group 'shenshou)
 
-(defcustom shenshou-strict-match-p nil
-  "Download subtitles exactly matching the video files."
-  :type 'string
-  :group 'shenshou)
 
 (defcustom shenshou-supported-video-format
   '("mp4"
@@ -165,43 +161,6 @@ If it's empty, user is required to provide password during login process."
       (setq m (* m 256))
       (setq j (1+ j)))
     n))
-
-(defun shenshou-hash-and-size(file)
-  "Get hash and size of video FILE in the format like (hash . size).
-OpenSubtitles.org uses special hash function to match subtitles against videos."
-  ;; @see https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes
-  (let (str fsize hash i rlt len)
-    (setq str (with-temp-buffer
-                (set-buffer-multibyte nil)
-                (setq buffer-file-coding-system 'binary)
-                (insert-file-contents-literally file)
-                (buffer-substring-no-properties (point-min) (point-max))))
-    (setq fsize (length str))
-    (setq hash fsize)
-
-    (when (> fsize 131072)
-      ;; first 64k bytes
-      (setq i 0)
-      (while (< i 65536)
-        (setq hash (logand (+ hash (shenshou-value i str)) #xFFFFFFFFFFFFFFFF))
-        (setq i (+ i 8)))
-
-      ;; last 64k bytes
-      (setq i (- fsize 65536))
-      (while (< i fsize)
-        (setq hash (logand (+ hash (shenshou-value i str)) #xFFFFFFFFFFFFFFFF))
-        (setq i (+ i 8)))
-
-      (setq rlt (format "%016x" hash))
-      ;; only last 16 digits of hash is used
-      (when (> (setq len (length rlt)) 16)
-        (setq rlt (substring rlt (- len 16) len))))
-
-    (when shenshou-debug
-      (message "shenshou-hash-and-size called => file=%s hash=%s size=%s" file rlt fsize))
-
-    (when rlt
-      (list :moviehash rlt :moviebytesize fsize))))
 
 (defun shenshou-xml-rpc-post-data (method &optional params)
   "Create post data from METHOD and PARAMS."
@@ -347,63 +306,60 @@ OpenSubtitles.org uses special hash function to match subtitles against videos."
     (setq query (replace-regexp-in-string "[ \t-_]*([^)]*$" "" query))
     (shenshou-trim query)))
 
-(defun shenshou-guess-video-info (name)
-  "Guess information from NAME of video."
-  (let* (video-info)
+(defun shenshou-guess-video-info (video-file)
+  "Guess information from VIDEO-FILE."
+  (let* ((name (downcase (file-name-base video-file)))
+         dir-name
+         (case-fold-search t)
+         video-info)
+
+    ;; tv show's name might appears only in directory
+    (when (string-match "^ *S[0-9]+E[0-9]+" name)
+      (setq dir-name (file-name-base (directory-file-name (file-name-directory video-file))))
+      (setq name (concat (replace-regexp-in-string "season.?[0-9]+.*" "" dir-name)
+                         " "
+                         name)))
+
     (cond
      ((string-match shenshou-tvshow-regex-1 name)
       (setq video-info (plist-put video-info :moviekind "tv"))
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
       (setq video-info (plist-put video-info :season (match-string 2 name)))
-      (setq video-info (plist-put video-info :episode (match-string 3 name)))
-      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 4 name)))))
+      (setq video-info (plist-put video-info :episode (match-string 3 name))))
 
      ((string-match shenshou-tvshow-regex-2 name)
       (setq video-info (plist-put video-info :moviekind "tv"))
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
-      (setq video-info (plist-put video-info :season (match-string 2 name)))
-      (setq video-info (plist-put video-info :episode (match-string 3 name)))
-      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 4 name)))))
+      (setq video-info (plist-put video-info :season (match-string 2 name))))
 
      ((string-match shenshou-movie-regex-1 name)
       (setq video-info (plist-put video-info :moviekind "movie"))
       (setq video-info (plist-put video-info :query (shenshou-process-query name)))
-      (setq video-info (plist-put video-info :movieyear (match-string 2 name)))
-      (setq video-info (plist-put video-info :team (shenshou-trim (match-string 3 name)))))
+      (setq video-info (plist-put video-info :movieyear (match-string 2 name))))
 
      (t
       (setq video-info (plist-put video-info :moviekind "unknown"))
       (setq video-info (plist-put video-info :query name))))
 
+    (when shenshou-debug
+      (message "shenshou-guess-video-info called. name=%s video-info=%s"
+               name
+               video-info))
+
     video-info))
 
-(defun shenshou-params-from-videos (video-file)
-  "Generate rpc parameters from VIDEO-FILE."
-  (let* (rlt video-info extra hash-and-size)
-
+(defun shenshou-params-from-videos (video-file user-input-p)
+  "Generate rpc parameters from VIDEO-FILE.
+If USER-INPUT-P is t, user can input query."
+  (let* (rlt video-info extra query)
     (cond
-     ((not (file-exists-p video-file))
-      (message "Video file \"%s\" does not exist. It's skipped." video-file))
-
-     ;; strict match, use file hash and file size to search subtitles
-     ((and shenshou-strict-match-p
-           (setq hash-and-size (shenshou-hash-and-size video-file)))
-      (setq extra (concat extra
-                          ;; video hash
-                          (shenshou-format-struct-member "moviehash"
-                                                         (format "<string>%s</string>"
-                                                                 (plist-get hash-and-size :moviehash)))
-                          ;; video size
-                          (shenshou-format-struct-member "moviebytesize"
-                                                         (format "<double>%s</double>"
-                                                                 (plist-get hash-and-size :moviebytesize))))))
-
      ;; guess info from base file name
-     ((setq video-info (shenshou-guess-video-info (file-name-base video-file)))
-
+     ((setq video-info (shenshou-guess-video-info video-file))
+      (setq query (plist-get video-info :query))
+      (when user-input-p
+        (setq query (read-string "Please input query: " query)))
       (setq extra (shenshou-format-struct-member "query"
-                                                 (format "<string>%s</string>"
-                                                         (plist-get video-info :query))))
+                                                 (format "<string>%s</string>" query)))
 
       (when (string= (plist-get video-info :moviekind) "tv")
         (setq extra (concat extra
@@ -466,18 +422,24 @@ If FILTER-LEVEL is 2, do more checking on movie name."
       (setq movie-year
             (shenshou-xml-get-value-by-name all-props "MovieYear"))
       (setq video-info
-            (shenshou-guess-video-info (downcase (file-name-base video-file))))
+            (shenshou-guess-video-info video-file))
       (setq movie-fuzzy-name
             (replace-regexp-in-string "[.\[\] ()]+" ".*" (plist-get video-info :query)))
       (setq movie-year-match-p
             (or (not (plist-get video-info :movieyear))
                 (string= movie-year (plist-get video-info :movieyear))))
+      (when shenshou-debug
+        (message "movie-year=%s movie-year-match-p=%s"
+                 movie-year
+                 movie-year-match-p))
       (cond
        ((eq filter-level 0)
         (setq ok-p t))
        ((eq filter-level 1)
         (setq ok-p (and movie-release-name movie-year-match-p)))
        ((eq filter-level 2)
+        (when shenshou-debug
+          (message "movie-fuzzy-name=%s movie-release-name=%s" movie-fuzzy-name movie-release-name))
         (setq ok-p (and movie-release-name
                         (string-match (concat "^" movie-fuzzy-name)
                                       (downcase movie-release-name))
@@ -489,7 +451,6 @@ If FILTER-LEVEL is 2, do more checking on movie name."
         (setq sub (plist-put sub :subfilename (setq subfilename (shenshou-xml-get-value-by-name all-props "SubFileName"))))
         (setq sub (plist-put sub :sublanguageid (setq lang (shenshou-xml-get-value-by-name all-props "SubLanguageID"))))
         (setq sub (plist-put sub :subdownloadlink (shenshou-xml-get-value-by-name all-props "SubDownloadLink")))
-        (setq sub (plist-put sub :moviehash (shenshou-xml-get-value-by-name all-props "MovieHash")))
         (push (cons (format "%s(%s)" subfilename lang) sub) subtitles)))
 
     (when shenshou-debug
@@ -501,12 +462,13 @@ If FILTER-LEVEL is 2, do more checking on movie name."
 
     subtitles))
 
-(defun shenshou-search-subtitles (video-file)
-  "Search subtitles of VIDEO-FILE."
+(defun shenshou-search-subtitles (video-file user-input-p)
+  "Search subtitles of VIDEO-FILE.
+If USER-INPUT-P is t, user can input query."
   ;; @see https://trac.opensubtitles.org/projects/opensubtitles/wiki/XmlRpcSearchSubtitles
   (let* ((post-data (shenshou-xml-rpc-post-data "SearchSubtitles"
                                                 (concat (shenshou-format-param (format "<string>%s</string>" (car shenshou-token)))
-                                                        (shenshou-params-from-videos video-file))))
+                                                        (shenshou-params-from-videos video-file user-input-p))))
          (xml-tree (shenshou-xml-rpc-call post-data))
          candidates
          subtitles)
@@ -558,8 +520,9 @@ If FILTER-LEVEL is 2, do more checking on movie name."
               "srt"))))
 
 ;;;###autoload
-(defun shenshou-download-subtitle-internal (video-file)
-  "Download subtitle of VIDEO-FILE."
+(defun shenshou-download-subtitle-internal (video-file user-input-p)
+  "Download subtitle of VIDEO-FILE.
+If USER-INPUT-P is t, user can input query."
   ;; @see http://blog.likewise.org/2013/09/using-curl-to-access-bugzillas-xml-rpc-api/
   (let* (subtitles selected token-p)
 
@@ -572,7 +535,7 @@ If FILTER-LEVEL is 2, do more checking on movie name."
 
     (when token-p
       ;; search subtitles
-      (setq subtitles (shenshou-search-subtitles video-file))
+      (setq subtitles (shenshou-search-subtitles video-file user-input-p))
       (when shenshou-debug
         (message "shenshou-search-subtitles returns: %s" subtitles))
 
@@ -617,18 +580,24 @@ If FILTER-LEVEL is 2, do more checking on movie name."
                   videos))))
 
 ;;;###autoload
-(defun shenshou-download-subtitle ()
+(defun shenshou-download-subtitle (&optional user-input-p)
   "Download subtitles of video files.
 If current buffer is Dired buffer, marked videos will be processed.
-Or else user need specify the video to process."
-  (interactive)
+Or else user need specify the video to process.
+If USER-INPUT-P is t, user can input query."
+  (interactive "P")
   (let* ((videos (shenshou-get-videos)))
 
     (cond
      ((> (length videos) 0)
-      (message "Fetching subtitles of %d video(s) ..." (length videos))
+      (message "Fetching subtitles of %d video(s) ..."
+               (length videos))
+
       (dolist (v videos)
-        (shenshou-download-subtitle-internal v)))
+        ;; make sure full path is passed because parent directory
+        ;; name might be used too
+        (shenshou-download-subtitle-internal (file-truename v)
+                                             user-input-p)))
 
      (t
       (message "No video files are selected.")))))

@@ -109,7 +109,7 @@
   (add-hook 'magit-post-commit-hook #'my-git-check-status)
   (add-hook 'git-commit-post-finish-hook #'my-git-check-status))
 
-(defun git-gutter-toggle ()
+(defun my-git-gutter-toggle ()
   "Toggle git gutter."
   (interactive)
   (git-gutter-mode -1)
@@ -118,7 +118,7 @@
   (sit-for 0.1)
   (git-gutter:clear))
 
-(defun git-gutter-reset-to-default ()
+(defun my-git-gutter-reset-to-default ()
   "Restore git gutter to its original status.
 Show the diff between current working code and git head."
   (interactive)
@@ -217,9 +217,12 @@ Show the diff between current working code and git head."
   "Git add file of current buffer."
   (interactive)
   (when buffer-file-name
-    (let* ((filename (git-get-current-file-relative-path)))
+    (let* ((filename (git-get-current-file-relative-path))
+           (head-info (shell-command-to-string
+                       "git log --pretty=format:'%h %s (%an)' --date=short -n1
+")))
       (shell-command (concat "git add " filename))
-      (message "DONE! git add %s" filename))))
+      (message "%s added. HEAD: %s" filename head-info))))
 
 ;; {{ look up merge conflict
 (defvar my-goto-merge-conflict-fns
@@ -349,7 +352,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
       (magit-cherry-copy commit-id))))
 
 ;; {{ git-gutter use ivy
-(defun my-reshape-git-gutter (gutter)
+(defun my-git-reshape-gutter (gutter)
   "Re-shape GUTTER for `ivy-read'."
   (let* ((linenum-start (aref gutter 3))
          (linenum-end (aref gutter 4))
@@ -375,12 +378,12 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
                   target-linenum target-line)
           target-linenum)))
 
-(defun my-goto-git-gutter ()
+(defun my-git-goto-gutter ()
   "Go to specific git gutter."
   (interactive)
   (if git-gutter:diffinfos
       (ivy-read "git-gutters:"
-                (mapcar 'my-reshape-git-gutter git-gutter:diffinfos)
+                (mapcar 'my-git-reshape-gutter git-gutter:diffinfos)
                 :action (lambda (e)
                           (unless (numberp e) (setq e (cdr e)))
                           (my-goto-line e)))
@@ -402,14 +405,14 @@ If LEVEL > 0, find file in previous LEVEL commit."
     (when file
       (find-file file))))
 
-(defun my-commit-create ()
+(defun my-git-commit-create ()
   "Git commit."
   (interactive)
   (let ((msg (read-string "Git commit message: ")))
     (when (> (length msg) 0)
       (shell-command (format "git commit --no-verify -m \"%s\"" msg)))))
 
-(defun my-commit-amend (&optional reuse-p)
+(defun my-git-commit-amend (&optional reuse-p)
   "Git amend.  If REUSE-P is t, commit by reusing original message."
   (interactive)
   (let* ((original-msg  (shell-command-to-string "git log --pretty=format:'%s' -n1"))
@@ -424,6 +427,12 @@ If LEVEL > 0, find file in previous LEVEL commit."
       (unless reuse-p
         (setq cmd (format "%s -m \"%s\"" cmd msg)))
       (shell-command cmd))))
+
+(defun my-git-current-branch ()
+  "Show current branch name."
+  (interactive)
+  (message "Git current branch: %s"
+           (string-trim (shell-command-to-string "git branch --show-current"))))
 
 (provide 'init-git)
 ;;; init-git.el ends here

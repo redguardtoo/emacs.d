@@ -4,6 +4,7 @@
 (defvar my-linum-inhibit-modes
   '(eshell-mode
     shell-mode
+    vterm-mode
     js-comint-mode
     profiler-report-mode
     ffip-diff-mode
@@ -34,7 +35,6 @@
     vc-git-log-edit-mode
     log-edit-mode
     term-mode
-    w3m-mode
     speedbar-mode
     gnus-summary-mode
     gnus-article-mode

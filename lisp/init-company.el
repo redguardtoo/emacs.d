@@ -40,6 +40,9 @@ In that case, insert the number."
 
        (t
         (company-complete-number n)))))
+  (with-eval-after-load 'evil
+    (mapc #'evil-declare-change-repeat
+          '(my-company-number)))
 
   ;; @see https://github.com/company-mode/company-mode/issues/348
   (company-statistics-mode)
@@ -136,6 +139,12 @@ In that case, insert the number."
    (t
     (push 'company-ispell company-backends)
     (message "company-ispell enabled!"))))
+
+(with-eval-after-load 'ispell
+  ;; "look" is not reliable, use "grep" instead.
+  ;; For example, Linux CLI "/usr/bin/look -df Monday /usr/share/dict/words"
+  ;; returns nothing on my Debian Linux testing version.
+  (setq ispell-look-p nil))
 
 (defun my-company-ispell-setup ()
   ;; @see https://github.com/company-mode/company-mode/issues/50

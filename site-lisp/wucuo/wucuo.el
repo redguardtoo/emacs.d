@@ -1,8 +1,8 @@
 ;;; wucuo.el --- Fastest solution to spell check camel case code or plain text -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2018-2020 Chen Bin
+;; Copyright (C) 2018-2023 Chen Bin
 ;;
-;; Version: 0.2.9
+;; Version: 0.3.1
 ;; Keywords: convenience
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: http://github.com/redguardtoo/wucuo
@@ -46,23 +46,22 @@
 ;;
 ;; 3. Tips
 ;;
-;; - `wucuo-spell-check-file' spell check one file and report typos
-;; - `wucuo-spell-check-directory' spell check files in one directory and report typos
+;; - `wucuo-spell-check-file' checks one file and report typos
+;; - `wucuo-spell-check-directory' checks files in one directory and report typos
 ;;
-;; - If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'.
-;;   If it's "normal", `wucuo-start' runs `flyspell-region' to check visible region
-;;   in current window.
+;; - If `wucuo-flyspell-start-mode' is "normal", `wucuo-start' runs `flyspell-buffer'
+;;   and `wucuo-spell-check-buffer-max' specifies maximum size of buffer to check.
+;;   If it's "fast", `wucuo-start' runs `flyspell-region' on current visible region
+;;   and `wucuo-spell-check-region-max' specifies maximum size of the region to check.
 ;;
 ;; - The interval of checking is set by `wucuo-update-interval'
 ;;
-;; See `wucuo-check-nil-font-face' on how to check plain text (text without font)
+;; - See `wucuo-check-nil-font-face' on how to check plain text (text without font)
 ;;
 ;; - Use `wucuo-current-font-face' to detect font face at point
 ;;
-;; - In `wucuo-flyspell-start-mode' is "normal", `wucuo-spell-check-buffer-max' specifies
-;;   the maximum size of buffer to check.
-;;   In `wucuo-flyspell-start-mode' is "fast", `wucuo-spell-check-region-max' specifies
-;;   the maximum size of visible region to check.
+;; - Set `wucuo-font-faces-to-check' or `wucuo-personal-font-faces-to-check' to specify
+;; font faces to spell check
 ;;
 ;; - You can define a function in `wucuo-spell-check-buffer-predicate'.
 ;;   If the function returns t, the spell checking of current buffer will continue.
@@ -83,10 +82,12 @@
 ;;                        Info-mode)))))
 ;;
 ;; This program assumes Flyspell is already set up properly.
-;; If you have problems on Flyspell configuration, check  wucuo's website.
+;; If you have problems on Flyspell configuration, check wucuo's README.
 ;;
 ;; To ignore specific typo, you can set `wucuo-extra-predicate'.
 ;;
+;; This program can be run in Linux terminal as batch script.
+;; See README for more details.
 
 ;;; Code:
 (require 'flyspell)
@@ -105,7 +106,7 @@
   :group 'wucuo)
 
 (defcustom wucuo-inherit-flyspell-mode-keybindings t
-  "Inherit 'flyspell-mode' keybindings."
+  "Inherit `flyspell-mode' keybindings."
   :type 'boolean
   :group 'wucuo)
 
@@ -115,8 +116,7 @@
   :group 'wucuo)
 
 (defcustom wucuo-enable-camel-case-algorithm-p t
-  "Enable slow algorithm for camel case word.
-If command line program has native support for camel case words, you could turn off the algorithm."
+  "Enable slower Lisp spell check algorithm for camel case word."
   :type 'boolean
   :group 'wucuo)
 
@@ -135,8 +135,8 @@ region in current window."
 
 (defcustom wucuo-check-nil-font-face 'text
   "If nil, ignore plain text (text without font face).
-If it's 'text, check plain text in `text-mode' only.
-If it's 'prog, check plain text in `prog-mode' only.
+If it's \"text\", check plain text in `text-mode' only.
+If it's \"prog\", check plain text in `prog-mode' only.
 If it's t, check plain text in any mode."
   :type 'sexp
   :group 'wucuo)
@@ -164,6 +164,20 @@ User's original dictionary configuration for flyspell still works."
     font-lock-function-name-face
     font-lock-variable-name-face
     ;; font-lock-type-face ; names of user-defined data types
+
+    ;; tree-sitter
+    tree-sitter-hl-face:type
+    tree-sitter-hl-face:string
+    tree-sitter-hl-face:string.special
+    tree-sitter-hl-face:doc
+    tree-sitter-hl-face:comment
+    tree-sitter-hl-face:property
+    tree-sitter-hl-face:variable
+    tree-sitter-hl-face:varialbe.parameter
+    tree-sitter-hl-face:function
+    tree-sitter-hl-face:function.call
+    tree-sitter-hl-face:method
+    tree-sitter-hl-face:method.call
 
     ;; javascript
     js2-function-call
@@ -265,6 +279,10 @@ Returns t to continue checking, nil otherwise.")
 ;; Timer to run auto-update tags file
 (defvar wucuo-timer nil "Internal timer.")
 
+(declare-function markdown-flyspell-check-word-p "markdown-mode")
+(declare-function wucuo-flyspell-org-verify "wucuo-flyspell-org")
+(declare-function wucuo-flyspell-html-verify "wucuo-flyspell-html")
+
 ;;;###autoload
 (defun wucuo-register-extra-typo-detection-algorithms ()
   "Register extra typo detection algorithms."
@@ -287,14 +305,14 @@ If QUIET is t, font face is not output."
 ;;;###autoload
 (defun wucuo-split-camel-case (word)
   "Split camel case WORD into a list of strings.
-Ported from 'https://github.com/fatih/camelcase/blob/master/camelcase.go'."
+Ported from \"https://github.com/fatih/camelcase/blob/master/camelcase.go\"."
   (let* ((case-fold-search nil)
          (len (length word))
          ;; 64 sub-words is enough
-         (runes [nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
+         (runes (vector nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
                  nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
                  nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil
-                 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil])
+                 nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil nil))
          (runes-length 0)
          (i 0)
          ch
@@ -479,9 +497,12 @@ Returns t to continue checking, nil otherwise."
 
      ;; should be right after per mode predicate
      ((and wucuo-enable-extra-typo-detection-algorithm-p
-           (or (and (wucuo-major-mode-html-p) (not (wucuo-flyspell-html-verify)))
-               (and (eq major-mode 'org-mode) (not (wucuo-flyspell-org-verify)))
-               (and (eq major-mode 'markdown-mode) (not (markdown-flyspell-check-word-p)))))
+           (or (and (wucuo-major-mode-html-p)
+                    (not (wucuo-flyspell-html-verify)))
+               (and (eq major-mode 'org-mode)
+                    (not (wucuo-flyspell-org-verify)))
+               (and (eq major-mode 'markdown-mode)
+                    (not (markdown-flyspell-check-word-p)))))
 
       (setq rlt nil))
 
@@ -511,7 +532,7 @@ Returns t to continue checking, nil otherwise."
 
 ;;;###autoload
 (defun wucuo-create-aspell-personal-dictionary ()
-  "Create aspell personal dictionary."
+  "Create aspell personal dictionary which is utf-8 encoded plain text file."
   (interactive)
   (with-temp-buffer
     (let* ((file (file-truename (format "~/.aspell.%s.pws" wucuo-aspell-language-to-use))))
@@ -521,7 +542,7 @@ Returns t to continue checking, nil otherwise."
 
 ;;;###autoload
 (defun wucuo-create-hunspell-personal-dictionary ()
-  "Create hunspell personal dictionary."
+  "Create hunspell personal dictionary which is utf-8 encoded plain text file."
   (interactive)
   (with-temp-buffer
     (let* ((f (file-truename (format "~/.hunspell_%s" wucuo-hunspell-dictionary-base-name))))
@@ -532,7 +553,7 @@ Returns t to continue checking, nil otherwise."
 ;;;###autoload
 (defun wucuo-version ()
   "Output version."
-  (message "0.2.9"))
+  (message "0.3.1"))
 
 ;;;###autoload
 (defun wucuo-spell-check-visible-region ()
@@ -660,7 +681,7 @@ If RUN-TOGETHER is t, aspell can check camel cased word."
 
 ;;;###autoload
 (defun wucuo-flyspell-highlight-incorrect-region-hack (orig-func &rest args)
-  "Don't mark doublon (double words) as typo.  ORIG-FUNC and ARGS is part of advice."
+  "Don't mark double words as typo.  ORIG-FUNC and ARGS is part of advice."
   (let* ((poss (nth 2 args)))
     (when (or wucuo-flyspell-check-doublon (not (eq 'doublon poss)))
       (apply orig-func args))))
@@ -767,7 +788,7 @@ If FULL-PATH-P is t, always show typo's file full path."
       (kill-emacs 1))))
 
 (defun wucuo-mode-on ()
-  "Turn Wucuo mode on.  Do not use this; use 'wucuo-mode' instead."
+  "Turn Wucuo mode on."
   (cond
    (flyspell-mode
     (message "Please turn off `flyspell-mode' and `flyspell-prog-mode' before wucuo starts!"))
@@ -776,7 +797,7 @@ If FULL-PATH-P is t, always show typo's file full path."
     (add-hook 'after-save-hook #'wucuo-spell-check-buffer nil t))))
 
 (defun wucuo-mode-off ()
-  "Turn Wucuo mode on.  Do not use this; use 'wucuo-mode' instead."
+  "Turn Wucuo mode on."
 
   ;; {{ copied from `flyspell-mode-off'
   (flyspell-delete-all-overlays)
@@ -797,8 +818,8 @@ spawns a single Ispell process and checks each word.  The default
 flyspell behavior is to highlight incorrect words.
 
 Remark:
-`wucuo-mode' uses `flyspell' and `flyspell-mode-map'.  Thus all Flyspell options and
-key bindings are valid."
+`wucuo-mode' uses `flyspell' and `flyspell-mode-map'.
+So all Flyspell setup and key bindings are valid."
   :lighter flyspell-mode-line-string
   :keymap flyspell-mode-map
   :group 'wucuo

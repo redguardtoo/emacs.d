@@ -16,6 +16,10 @@ If no files marked, always operate on current line in dired-mode."
   (dired-do-shell-command command arg file-list)
   (message command))
 
+(defun my-file-usage ()
+  (interactive)
+  (message (shell-command-to-string "du -kh")))
+
 (defun my-ediff-files ()
   "@see https://oremacs.com/2017/03/18/dired-ediff/."
   (interactive)
@@ -43,6 +47,9 @@ If no files marked, always operate on current line in dired-mode."
 (defun my-dired-support-program (program pattern)
   "External PROGRAM can open files matching PATTERN."
   (push (list pattern program) dired-guess-shell-alist-user))
+
+;; Run mplayer on multiple videos
+(setq async-shell-command-buffer 'new-buffer)
 
 (with-eval-after-load 'dired-x
   (my-dired-support-program (my-guess-mplayer-path)
@@ -88,12 +95,12 @@ If no files marked, always operate on current line in dired-mode."
                                                             "epub"))))
 
 (defvar my-dired-new-file-first-dirs
-  '("bt/finished/$"
-    "bt/torrents?/$"
-    "documents?/$"
-    "music/$"
-    "dwhelper/$"
-    "downloads?/$")
+  '("bt/finished/\\'"
+    "bt/torrents?/\\'"
+    "documents?/\\'"
+    "music/\\'"
+    "dwhelper/\\'"
+    "downloads?/\\'")
   "Dired directory patterns where newest files are on the top.")
 
 (defun my-dired-mode-hook-setup ()
@@ -161,9 +168,7 @@ If N is not nil, only list directories in current project."
     (dired (completing-read "Directories: " cands))))
 
 (with-eval-after-load 'dired
-  ;; re-use dired buffer, available in Emacs 28
-  ;; @see https://debbugs.gnu.org/cgi/bugreport.cgi?bug=20598
-  (setq dired-kill-when-opening-new-dired-buffer t)
+  (setq dired-kill-when-opening-new-dired-buffer nil)
 
   ;; search file name only when focus is over file
   (setq dired-isearch-filenames 'dwim)
@@ -172,11 +177,6 @@ If N is not nil, only list directories in current project."
   ;; as target buffer (target for copying files, for example).
   ;; It's similar to windows commander.
   (setq dired-dwim-target t)
-
-  ;; Listing directory failed but access-file worked
-  (when (eq system-type 'darwin)
-    (require 'ls-lisp)
-    (setq ls-lisp-use-insert-directory-program nil))
 
   ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
   ;; op open two new dired buffers side-by-side and give your new-found automagic power a whirl.
@@ -290,6 +290,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
       (ignore command)
       (ignore arg)
       (cond
+       ;; play dvd directory
        ((file-directory-p first-file)
         (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
                                      (my-guess-mplayer-path)
@@ -298,9 +299,12 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
         (apply orig-func args)))))
   (advice-add 'dired-do-async-shell-command :around #'my-dired-do-async-shell-command-hack)
 
-  ;; sort file names (numbered) in dired
-  ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
-  (setq dired-listing-switches "-laGh1v")
+  (unless *is-a-mac*
+    ;; sort file names (numbered) in dired
+    ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
+    ;; "-1" options breaks dired on mac sometimes
+    (setq dired-listing-switches "-laGh1v --group-directories-first"))
+
   (setq dired-recursive-deletes 'always))
 
 (defun my-computer-sleep-now ()

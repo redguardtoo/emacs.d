@@ -47,6 +47,16 @@
 If SUBDIR-P is t, play videos in sub-directories too."
   (interactive "P")
   (my-ensure 'emms)
+  (my-ensure 'emms-player-simple)
+
+  (unless my-emms-mplayer-no-video-or-cover-art
+    ;; no cd art
+    (dolist (p '("null" "-vo" ))
+      (setq emms-player-mplayer-parameters
+            (delete p emms-player-mplayer-parameters))
+      (setq emms-player-mplayer-playlist-parameters
+            (delete p emms-player-mplayer-playlist-parameters))))
+
   (unless (eq major-mode 'dired-mode)
     (error "This command is only used in `dired-mode'"))
 
@@ -73,11 +83,13 @@ If SUBDIR-P is t, play videos in sub-directories too."
 
       (when found
         (with-current-buffer emms-playlist-buffer-name
+          (emms-playlist-current-select-first)
           (emms-start))))
 
      (subdir-p
       (emms-add-directory-tree default-directory)
       (with-current-buffer emms-playlist-buffer-name
+        (emms-playlist-current-select-first)
         (emms-start)))
 
      ;; play video under current directory and default directory
@@ -191,6 +203,46 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   (emms-random)
   ;; show current track info
   (my-emms-show))
+
+(defvar my-emms-mplayer-no-video-or-cover-art nil
+  "Emms mplayer backend does not play video or cover art.")
+
+(with-eval-after-load 'emms-player-simple
+  (when my-emms-mplayer-no-video-or-cover-art
+    (define-emms-simple-player mplayer '(file url)
+      (concat "\\`\\(http[s]?\\|mms\\)://\\|"
+              (apply #'emms-player-simple-regexp
+                     emms-player-base-format-list))
+      "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null")
+
+    (define-emms-simple-player mplayer-playlist '(streamlist)
+      "\\`http[s]?://"
+      "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null" "-playlist")))
+
+(defvar my-music-root-directory "~/Dropbox/music"
+  "Music root directory.")
+
+(defun my-music (&optional no-shuffle-p)
+  "My music.  If NO-SHUFFLE-P is t, don't shuffle the tracks."
+  (interactive "P")
+  (my-ensure 'emms)
+  (my-ensure 'emms-player-simple)
+
+  (unless my-emms-mplayer-no-video-or-cover-art
+    ;; no cd art
+    (dolist (p '("null" "-vo" ))
+      (unless (member p emms-player-mplayer-parameters)
+        (push p emms-player-mplayer-parameters))
+      (unless (member p emms-player-mplayer-playlist-parameters)
+        (push p emms-player-mplayer-playlist-parameters))))
+
+  (emms-stop)
+  (when (bufferp emms-playlist-buffer-name)
+    (kill-buffer emms-playlist-buffer-name))
+  (emms-play-directory-tree my-music-root-directory)
+  (unless no-shuffle-p
+    (emms-shuffle))
+  (emms-next))
 
 (provide 'init-emms)
 ;;; init-emms.el ends here

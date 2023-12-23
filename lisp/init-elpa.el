@@ -51,6 +51,7 @@
     auto-package-update
     web-mode
     kv
+    helpful ; @see https://github.com/Wilfred/helpful/pull/283, need unstable version
     esxml ; nov is dependent on latest esxml
     nov
     bbdb
@@ -93,8 +94,8 @@
     leuven-theme
     elpy ; use latest elpy since Python package API changes
     sublime-themes
+    pyim-wbdict
     tangotango-theme
-    darkburn-theme
     ujelly-theme
     afternoon-theme
     organic-green-theme
@@ -118,12 +119,15 @@
     badger-theme
     distinguished-theme
     tao-theme
+    tablist ; required by pdf-tools
+    pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
     ;; }}
     groovy-mode
     company ; I won't wait another 2 years for stable
     simple-httpd
     findr
     mwe-log-commands
+    vterm
     noflet
     db
     creole
@@ -141,7 +145,6 @@
     keyfreq
     gitconfig-mode
     textile-mode
-    w3m
     workgroups2
     zoutline
     company-c-headers
@@ -299,8 +302,8 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'winum)
 (require-package 'session)
 (require-package 'unfill)
-(require-package 'w3m)
 (require-package 'counsel-gtags)
+(require-package 'eww-lnum)
 (require-package 'buffer-move)
 (require-package 'ace-window)
 (require-package 'cmake-mode)
@@ -379,7 +382,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'org-re-reveal)
 
 (require-package 'git-modes)
-(require-package 'magit)
 (require-package 'ace-pinyin)
 (require-package 'which-key)
 (require-package 'highlight-symbol)
@@ -391,6 +393,11 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'graphql-mode)
 (require-package 'ob-sagemath)
 (require-package 'pulseaudio-control)
+(require-package 'vterm)
+
+;; magit sometime use packages which not released yet
+;; so we place it at the end to make sure other packages are installed first
+(require-package 'magit)
 
 (defvar my-color-themes
   '(afternoon-theme
@@ -412,7 +419,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     color-theme-sanityinc-tomorrow
     cyberpunk-theme
     dakrone-theme
-    darkburn-theme
     darkmine-theme
     darkokai-theme
     darktooth-theme
@@ -421,9 +427,9 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     dracula-theme
     espresso-theme
     exotica-theme
-    eziam-theme
+    eziam-themes
     fantom-theme
-    farmhouse-theme
+    farmhouse-themes
     flatland-theme
     flatui-theme
     gandalf-theme
@@ -443,7 +449,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     light-soap-theme
     lush-theme
     madhat2r-theme
-    majapahit-theme
+    majapahit-themes
     material-theme
     minimal-theme
     modus-themes

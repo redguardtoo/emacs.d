@@ -87,13 +87,15 @@
   (require-init 'init-file-type)
   (require-init 'init-elpa)
 
-  ;; for unit test
-  (when my-disable-idle-timer
+  ;; make all packages in "site-lisp/" loadable right now because idle loader
+  ;; are not used and packages need be available on the spot.
+  (when (or my-lightweight-mode-p my-disable-idle-timer)
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling t)
   (require-init 'init-ibuffer t)
+  (require-init 'init-bookmark)
   (require-init 'init-ivy)
   (require-init 'init-windows)
   (require-init 'init-javascript t)
@@ -127,15 +129,17 @@
   (require-init 'init-essential)
   ;; tools nice to have
   (require-init 'init-misc t)
+  (require-init 'init-dictionary t)
   (require-init 'init-emms t)
 
-  (require-init 'init-emacs-w3m t)
+  (require-init 'init-browser t)
   (require-init 'init-shackle t)
   (require-init 'init-dired t)
   (require-init 'init-writting t)
   (require-init 'init-hydra) ; hotkey is required everywhere
   ;; use evil mode (vi key binding)
   (require-init 'init-evil) ; init-evil dependent on init-clipboard
+  (require-init 'init-pdf)
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
@@ -154,12 +158,12 @@
   (unless my-lightweight-mode-p
     ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
     ;; See `custom-file' for details.
-    (setq custom-file (expand-file-name (concat my-emacs-d "custom-set-variables.el")))
+    (setq custom-file (concat my-emacs-d "custom-set-variables.el"))
     (if (file-exists-p custom-file) (load custom-file t t))
 
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on *.el in `my-site-lisp-dir'
-    (load (expand-file-name "~/.custom.el") t nil)))
+    (my-run-with-idle-timer 1 (lambda () (load "~/.custom.el" t nil)))))
 
 
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
@@ -173,6 +177,10 @@
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
 
+(message "*** Emacs loaded in %s with %d garbage collections."
+           (format "%.2f seconds"
+                   (float-time (time-subtract after-init-time before-init-time)))
+           gcs-done)
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
