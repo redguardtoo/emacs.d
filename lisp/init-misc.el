@@ -1023,16 +1023,6 @@ might be bad."
 ;;   (pdf-loader-install))
 ;; ;; }}
 
-;; {{ exe path
-(with-eval-after-load 'exec-path-from-shell
-  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"))
-    (push var exec-path-from-shell-variables)))
-
-(when (and window-system (memq window-system '(mac ns)))
-  ;; @see https://github.com/purcell/exec-path-from-shell/issues/75
-  ;; I don't use those exec path anyway.
-  (my-run-with-idle-timer 4 #'exec-path-from-shell-initialize))
-;; }}
 
 ;; {{ markdown
 (defun markdown-mode-hook-setup ()
