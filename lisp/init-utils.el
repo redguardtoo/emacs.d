@@ -737,6 +737,16 @@ This function is written in pure Lisp and slow."
     "webm")
   "File extensions of media files.")
 
+(defvar my-image-file-extensions
+  '("gif"
+    "jpg"
+    "jpeg"
+    "tif"
+    "png"
+    "svg"
+    "xpm")
+  "File extensions of image files.")
+
 (defun my-file-extensions-to-regexp (extensions)
   "Convert file EXTENSIONS to one regex."
   (concat "\\." (regexp-opt extensions t) "$"))
@@ -744,7 +754,9 @@ This function is written in pure Lisp and slow."
 (defun my-binary-file-p (file)
   "Test if it's binary FILE."
   (let* ((other-exts '("pyim" "recentf"))
-         (exts (append my-media-file-extensions other-exts))
+         (exts (append my-media-file-extensions
+                       my-image-file-extensions
+                       other-exts))
          (regexp (my-file-extensions-to-regexp exts)))
     (string-match regexp file)))
 

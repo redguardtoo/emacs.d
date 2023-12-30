@@ -69,13 +69,7 @@ If no files marked, always operate on current line in dired-mode."
                                                             "7z")))
 
   (my-dired-support-program (if *unix* "feh" "open")
-                            (my-file-extensions-to-regexp '("gif"
-                                                            "jpg"
-                                                            "jpeg"
-                                                            "tif"
-                                                            "png"
-                                                            "svg"
-                                                            "xpm")))
+                            (my-file-extensions-to-regexp my-image-file-extensions))
 
   (my-dired-support-program (if *unix* "libreoffice" "open")
                             (my-file-extensions-to-regexp '("doc"
