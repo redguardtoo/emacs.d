@@ -1,4 +1,3 @@
-(require-package 'use-package)
 (require 'package)
 (package-initialize)
 (unless (package-installed-p 'use-package)
@@ -15,6 +14,11 @@
 (with-eval-after-load 'emacsql-sqlite)
 (setq org-roam-directory (file-truename "~/notes"))
 (setq org-roam-complete-everywhere t)
+
+(require-package 'bind-key)
+(eval-when-compile
+  (add-to-list 'load-path "~/.emacs.d/elpa/use-package-2.4.4")
+  (require 'use-package))
 
 (use-package org-roam
   ;; :after org
@@ -39,3 +43,5 @@
          ;; Dailies
          ("C-c n j" . org-roam-dailies-capture-today))
   )
+
+(provide 'init-orgroam)
