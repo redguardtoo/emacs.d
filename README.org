@@ -760,7 +760,7 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/4.0.zip]] and [[http
 ** Emacs 25
 Version 3.2 is the last version to support =Emacs 25=
 
-Please use [[https://github.com/redguardtoo/emacs.d/archive/3.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.1.zip]].
+Please use [[https://github.com/redguardtoo/emacs.d/archive/3.2.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.2.zip]].
 ** Emacs 24.4 and 24.5
 Version 2.9 is the last version to support =Emacs 24.4+=
 
