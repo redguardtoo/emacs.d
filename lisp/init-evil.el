@@ -994,28 +994,30 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (setq evil-default-cursor t))
 
 
-;; {{ per-major-mode setup
-(general-create-definer my-javascript-leader-def
-  :prefix "SPC"
-  :non-normal-prefix "M-SPC"
-  :states '(normal motion insert emacs)
-  :keymaps 'js2-mode-map)
+;; {{ per major-mode setup
+(with-eval-after-load 'js2-mode
+  (general-create-definer my-javascript-leader-def
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC"
+    :states '(normal motion insert emacs)
+    :keymaps 'js2-mode-map)
 
-(my-javascript-leader-def
-  "de" 'js2-display-error-list
-  "nn" 'js2-next-error
-  "te" 'js2-mode-toggle-element
-  "tf" 'js2-mode-toggle-hide-functions)
+  (my-javascript-leader-def
+    "de" 'js2-display-error-list
+    "nn" 'js2-next-error
+    "te" 'js2-mode-toggle-element
+    "tf" 'js2-mode-toggle-hide-functions))
 
-(general-create-definer my-org-leader-def
-  :prefix ";"
-  :non-normal-prefix "M-;"
-  :states '(normal motion visual)
-  :keymaps 'org-mode-map)
+(with-eval-after-load 'org-mode
+  (general-create-definer my-org-leader-def
+    :prefix ";"
+    :non-normal-prefix "M-;"
+    :states '(normal motion visual)
+    :keymaps 'org-mode-map)
 
-(my-org-leader-def
-  "f" 'my-navigate-in-pdf
-  "g" 'my-open-pdf-goto-page)
+  (my-org-leader-def
+    "f" 'my-navigate-in-pdf
+    "g" 'my-open-pdf-goto-page))
 ;; }}
 
 
