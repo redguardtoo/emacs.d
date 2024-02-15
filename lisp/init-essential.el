@@ -306,5 +306,9 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 
 ;; }}
 
+;; workaround gnupg 2.4 bug
+;; @see https://emacs-china.org/t/gnupg-2-4-1-easypg/25264/7
+(fset 'epg-wait-for-status 'ignore)
+
 (provide 'init-essential)
 ;;; init-essential.el ends here
