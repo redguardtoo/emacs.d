@@ -89,7 +89,8 @@ If N is 2, list files in my recent 20 commits."
   (recentf-mode 1)
   (let* ((files (mapcar #'substring-no-properties recentf-list))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root))))
-         (hint "Recent files: "))
+         (hint "Recent files: ")
+         f)
     (cond
      ((and (eq n 1) root-dir)
       (setq hint (format "Recent files in %s: " root-dir))
@@ -98,14 +99,12 @@ If N is 2, list files in my recent 20 commits."
       (setq hint (format "Files in recent Git commits: "))
       (setq files (my-git-recent-files))))
 
-    (ivy-read hint
-              files
-              :initial-input (if (region-active-p) (my-selected-str))
-              :action (lambda (f)
-                        (if (consp f) (setq f (cdr f)))
-                        (with-ivy-window
-                          (find-file f)))
-              :caller 'counsel-recentf)))
+    (when (setq f (ivy-read hint
+                            files
+                            :initial-input (if (region-active-p) (my-selected-str))))
+      ;; return file buffer if possible
+      (with-ivy-window
+        (find-file f)))))
 
 ;; grep by author is bad idea. Too slow
 
