@@ -550,7 +550,8 @@ Copied from 3rd party package evil-textobj."
 
 (defun my-extended-regexp (str)
   "Build regex compatible with pinyin from STR."
-  (let* ((len (length str)))
+  (let* ((len (length str))
+         bn)
     (cond
      ;; do nothing
      ((<= (length str) 1))
@@ -559,8 +560,9 @@ Copied from 3rd party package evil-textobj."
      ;; remaining input is converted into Chinese pinyin regex.
      ((or (and (string-match "[:\|;]" (substring str 0 1))
                (setq str (substring str 1 len)))
-          (and (buffer-name) (or (string= "*Org Agenda*" (buffer-name))
-                                 (string-match "\\.org$" (buffer-name)))))
+          (and (setq bn (buffer-name))
+               (or (member bn '("*Org Agenda*"))
+                   (string-match ".*EMMS Playlist\\|\\.org$" bn))))
       (my-ensure 'pinyinlib)
       (setq str (pinyinlib-build-regexp-string str)))
 
