@@ -3,6 +3,7 @@
 ;; http://stackoverflow.com/questions/3875213/turning-on-linum-mode-when-in-python-c-mode
 (defvar my-linum-inhibit-modes
   '(eshell-mode
+    pdf-view-mode
     shell-mode
     vterm-mode
     js-comint-mode
