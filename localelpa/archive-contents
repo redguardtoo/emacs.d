@@ -1,5 +1,6 @@
 (1
  (csv-mode . [(1 10) nil "" single])
+ (eldoc . [(1 15 0) nil "" tar])
  (spinner . [(1 7 3) nil "" single])
  (nadvice . [(0 3) nil "" single])
  (xr . [(1 14) nil "" single])
