@@ -1,9 +1,12 @@
-;; -*- coding: utf-8; lexical-binding: t; -*-
+;;; init-linum-mode.el --- line number setup -*- lexical-binding: t; -*-
+;;; Code:
 
 ;; http://stackoverflow.com/questions/3875213/turning-on-linum-mode-when-in-python-c-mode
 (defvar my-linum-inhibit-modes
   '(eshell-mode
     pdf-view-mode
+    special-mode
+    org-agenda-mode
     shell-mode
     vterm-mode
     js-comint-mode
@@ -13,7 +16,6 @@
     erc-mode
     dired-mode
     help-mode
-    text-mode
     fundamental-mode
     jabber-roster-mode
     jabber-chat-mode
@@ -42,12 +44,16 @@
     calendar-mode)
   "Major modes without line number.")
 
-;; I don't care Emacs 25 performance any more
-(defun display-line-numbers-mode-hook-setup ()
-  (setq display-line-numbers (not (or (memq major-mode my-linum-inhibit-modes)
-                                      ;; don't show line number for certain file extensions
-                                      (my-should-use-minimum-resource)))))
-(add-hook 'display-line-numbers-mode-hook 'display-line-numbers-mode-hook-setup)
-(my-run-with-idle-timer 2 #'global-display-line-numbers-mode)
+(defun my-setup-line-number-mode ()
+  "Set up line number display."
+  ;; use idler to speed up emacs startup
+  (unless (or (memq major-mode my-linum-inhibit-modes)
+              ;; don't show line number for certain file extensions
+              (my-should-use-minimum-resource))
+    (my-run-with-idle-timer 1 #'display-line-numbers-mode)))
+
+(add-hook 'prog-mode-hook #'my-setup-line-number-mode)
+;; (add-hook 'text-mode-hook #'my-setup-line-number-mode)
 
 (provide 'init-linum-mode)
+;;; init-linum-mode.el ends here
