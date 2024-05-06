@@ -688,6 +688,8 @@ The flag =elpy-disable-backend-error-display= is set to =nil= so you can easily 
 
 If you don't use Elpy, comment out the line =(elpy-enable)= in =init-python.el=.
 
+Please make sure python and its package `virtualenv` is installed first.
+
 To enable the virtual environment created by Elpy, add below code into =~/.custom.el=,
 #+begin_src elisp
 (with-eval-after-load 'elpy
