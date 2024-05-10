@@ -239,7 +239,14 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   (emms-stop)
   (when (bufferp emms-playlist-buffer-name)
     (kill-buffer emms-playlist-buffer-name))
-  (emms-play-directory-tree my-music-root-directory)
+
+  (let ((m3u-files (my-lisp-find-file-or-directory my-music-root-directory ".*\\.m3u")))
+    (cond
+     ((car m3u-files)
+      (emms-play-playlist (car m3u-files)))
+     (t
+      (emms-play-directory-tree my-music-root-directory))))
+
   (unless no-shuffle-p
     (emms-shuffle))
   (emms-next))
