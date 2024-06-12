@@ -7,6 +7,29 @@
 ;; Set `auto-window-vscroll' to nil to avoid triggering `format-mode-line'.
 (setq auto-window-vscroll nil)
 
+;; {{ auto save set up
+(defvar my-auto-save-exclude-major-mode-list
+  '(message-mode
+    c-mode)
+  "The major modes where auto-save is disabled.")
+
+(setq auto-save-visited-interval 2)
+
+(defun my-auto-save-visited-mode-setup ()
+  "Auto save setup."
+  ;; turn off `auto-save-visited-mode' in certain scenarios
+  (message "my-auto-save-visited-mode-setup called")
+  (when (or (not (buffer-file-name))
+            (file-remote-p (buffer-file-name))
+            (my-file-too-big-p (buffer-file-name))
+            (memq major-mode my-auto-save-exclude-major-mode-list))
+    (setq-local auto-save-visited-mode nil)))
+(my-run-with-idle-timer 2 #'auto-save-visited-mode)
+(add-hook 'auto-save-visited-mode-hook #'my-auto-save-visited-mode-setup)
+;; (add-hook 'text-mode-hook #'my-auto-save-visited-mode-setup)
+;; (add-hook 'prog-mode-hook #'my-auto-save-visited-mode-setup)
+;; }}
+
 ;; {{ auto-yasnippet
 ;; Use C-q instead tab to complete snippet
 ;; - `aya-create' at first, input ~ to mark the thing next
@@ -220,69 +243,6 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
     )))
 ;; }}
 
-(defun my-generic-prog-mode-hook-setup ()
-  "Generic programming mode set up."
-  (when (buffer-too-big-p)
-
-    (when (my-should-use-minimum-resource)
-      (font-lock-mode -1)))
-
-  (add-hook 'after-save-hook #'my-save-run-function nil t)
-
-  (my-company-ispell-setup)
-
-  (unless (my-buffer-file-temp-p)
-    ;;  trim spaces from end of changed line
-    (ws-butler-mode 1)
-
-    (unless (featurep 'esup-child)
-      (cond
-       ((not my-disable-lazyflymake)
-        (my-ensure 'lazyflymake)
-        (lazyflymake-start))
-       (t
-        (flymake-mode 1)))
-
-      (unless my-disable-wucuo
-        (my-ensure 'wucuo)
-        (setq-local ispell-extra-args (my-detect-ispell-args t))
-        (wucuo-start)))
-
-    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
-    (setq compilation-finish-functions
-          '(my-compilation-finish-hide-buffer-on-success))
-
-    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
-
-    ;; don't spell check double words
-    (setq-local wucuo-flyspell-check-doublon nil)
-    ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-    (unless (derived-mode-p 'js2-mode)
-      (subword-mode 1))
-
-    ;; now css-mode derives from prog-mode
-    ;; see the code of `counsel-css-imenu-setup'
-    (when (counsel-css-imenu-setup)
-      ;; css color
-      (rainbow-mode 1)
-      (imenu-extra-auto-setup
-       ;; post-css mixin
-       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
-      (setq beginning-of-defun-function
-            (lambda (arg)
-              (ignore arg)
-              (let* ((closest (my-closest-imenu-item)))
-                (when closest
-                  (goto-char (cdr closest)))))))
-
-    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
-
-    ;; eldoc, show API doc in minibuffer echo area
-    ;; (turn-on-eldoc-mode)
-    ;; show trailing spaces in a programming mod
-    (setq show-trailing-whitespace t)))
-
-(add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 (add-hook 'text-mode-hook #'lazyflymake-start)
 
 ;;; {{ display long lines in truncated style (end line with $)
@@ -462,25 +422,6 @@ So it's at the top of clipboard manager."
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "indent-tabs-mode=%s" indent-tabs-mode))
-
-(defvar my-auto-save-exclude-major-mode-list
-  '(message-mode)
-  "The major modes where auto-save is disabled.")
-
-;; {{ auto-save.el
-(defun my-check-major-mode-for-auto-save (file)
-  "Check current major mode of FILE for auto save."
-  (ignore file)
-  (memq major-mode my-auto-save-exclude-major-mode-list))
-
-(with-eval-after-load 'auto-save
-  (push 'file-remote-p auto-save-exclude)
-  (push 'my-file-too-big-p auto-save-exclude)
-  (push 'my-check-major-mode-for-auto-save auto-save-exclude)
-  (setq auto-save-idle 2) ; 2 seconds
-  (setq auto-save-slient t))
-(my-run-with-idle-timer 4 #'auto-save-enable)
-;; }}
 
 ;; {{ csv
 (setq csv-separators '("," ";" "|" " "))
@@ -1314,6 +1255,68 @@ MATCH is optional tag match."
       (setq selected (cdr (assoc selected opts)))
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
+
+(defun my-generic-prog-mode-hook-setup ()
+  "Generic programming mode set up."
+  (when (buffer-too-big-p)
+    (when (my-should-use-minimum-resource)
+      (font-lock-mode -1)))
+
+  (add-hook 'after-save-hook #'my-save-run-function nil t)
+
+  (my-company-ispell-setup)
+
+  (unless (my-buffer-file-temp-p)
+    ;;  trim spaces from end of changed line
+    (ws-butler-mode 1)
+
+    (unless (featurep 'esup-child)
+      (cond
+       ((not my-disable-lazyflymake)
+        (my-ensure 'lazyflymake)
+        (lazyflymake-start))
+       (t
+        (flymake-mode 1)))
+
+      (unless my-disable-wucuo
+        (my-ensure 'wucuo)
+        (setq-local ispell-extra-args (my-detect-ispell-args t))
+        (wucuo-start)))
+
+    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
+    (setq compilation-finish-functions
+          '(my-compilation-finish-hide-buffer-on-success))
+
+    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
+
+    ;; don't spell check double words
+    (setq-local wucuo-flyspell-check-doublon nil)
+    ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+    (unless (derived-mode-p 'js2-mode)
+      (subword-mode 1))
+
+    ;; now css-mode derives from prog-mode
+    ;; see the code of `counsel-css-imenu-setup'
+    (when (counsel-css-imenu-setup)
+      ;; css color
+      (rainbow-mode 1)
+      (imenu-extra-auto-setup
+       ;; post-css mixin
+       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
+      (setq beginning-of-defun-function
+            (lambda (arg)
+              (ignore arg)
+              (let* ((closest (my-closest-imenu-item)))
+                (when closest
+                  (goto-char (cdr closest)))))))
+
+    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
+
+    ;; eldoc, show API doc in minibuffer echo area
+    ;; (turn-on-eldoc-mode)
+    ;; show trailing spaces in a programming mod
+    (setq show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
