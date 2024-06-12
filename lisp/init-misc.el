@@ -9,8 +9,7 @@
 
 ;; {{ auto save set up
 (defvar my-auto-save-exclude-major-mode-list
-  '(message-mode
-    c-mode)
+  '(message-mode)
   "The major modes where auto-save is disabled.")
 
 (setq auto-save-visited-interval 2)
