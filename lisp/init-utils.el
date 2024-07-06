@@ -232,8 +232,9 @@ If HINT is empty, use symbol at point."
 
 (defun my-file-too-big-p (file)
   "Test if FILE is too big."
-  (> (nth 7 (file-attributes file))
-     (* 5000 64)))
+  (let ((file-size (nth 7 (file-attributes file))))
+    ;; file might not exist
+    (and file-size (> file-size (* 5000 64)))))
 
 (defvar my-force-buffer-file-temp-p nil)
 (defun my-buffer-file-temp-p ()
