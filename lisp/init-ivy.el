@@ -3,6 +3,7 @@
 (my-run-with-idle-timer 1 #'ivy-mode)
 
 (with-eval-after-load 'counsel
+  (setq counsel-async-command-delay 0.3)
   ;; automatically pick up cygwin cli tools for counsel
   (cond
    ((executable-find "rg")
@@ -249,7 +250,7 @@ If N is 2, list files in my recent 20 commits."
   ;; when `ivy-dynamic-exhibit-delay-ms' is a non-zero value
   ;; Setting it to a bigger value in ALL OSs is also more green energy btw.
   ;; @see https://github.com/abo-abo/swiper/issues/1218
-  (setq ivy-dynamic-exhibit-delay-ms 250)
+  (setq ivy-dynamic-exhibit-delay-ms 300)
 
   ;; @see https://github.com/abo-abo/swiper/issues/1218#issuecomment-962516670
   ;; Thanks to Umar Ahmad (Gleek)
