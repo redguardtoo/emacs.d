@@ -65,7 +65,6 @@
   - [[#network-is-blocked][Network is blocked]]
   - [[#email][Email]]
   - [[#cannot-download-packages][Cannot download packages?]]
-  - [[#installing-missing-packages-by-using-gnu-elpa][Installing missing packages by using GNU ELPA]]
   - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
@@ -588,17 +587,6 @@ If you use Gnus for email, check =init-gnus.el= and read [[https://github.com/re
 Some package cannot be downloaded automatically because of network problem.
 
 Run =M-x package-refresh-content=, restart Emacs, reinstall package.
-** Installing missing packages by using [[https://elpa.gnu.org/][GNU ELPA]]
-The GNU ELPA repository contains FSF-sanctioned Emacs packages. It is the default repository used by =package.el=.
-
-GNU ELPA are *deactivated* in this setup.
-
-GNU ELPA is deactivated for below reasons,
-- 99% packages can be found from other repositories like MELPA
-- "~/.emacs.d/localelpa/" contains GNU ELPA packages required by this setup
-
-To re-activate GNU ELPA, please search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= .
-
 ** Use flycheck to syntax check code
 If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
 
