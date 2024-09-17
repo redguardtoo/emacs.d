@@ -105,7 +105,7 @@
 (cond
  ((not *no-memory*)
   ;; javascript
-  (my-add-auto-mode 'js2-mode "\\.js\\(\\.erb\\)?\\'")
+  (my-add-auto-mode 'js2-mode "\\.m?js\\(\\.erb\\)?\\'")
   ;; JSX
   (my-add-auto-mode 'rjsx-mode
                     "\\.[tj]sx\\'"
