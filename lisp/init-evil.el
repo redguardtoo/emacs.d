@@ -614,6 +614,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
+  "rp" 'cp-root-relative-path-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "xo" 'ace-window
   "ff" 'my-toggle-full-window ;; I use WIN+F in i3
