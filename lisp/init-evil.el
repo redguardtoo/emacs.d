@@ -101,7 +101,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (save-excursion
         (forward-char)
         (setq postfix-ch (following-char))))
-    (if (and (not (or (= prefix-ch 32) (= postfix-ch 32)))
+    (if (and (not (or (and prefix-ch (= prefix-ch 32))
+                      (and postfix-ch (= postfix-ch 32))))
              (or (= ch 47) (= ch 92)) )
         (setq rlt t))
     rlt))
