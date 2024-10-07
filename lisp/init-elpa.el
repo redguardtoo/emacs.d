@@ -459,7 +459,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     obsidian-theme
     occidental-theme
     oldlace-theme
-    omtose-phellack-theme
+    omtose-phellack-themes
     organic-green-theme
     phoenix-dark-mono-theme
     phoenix-dark-pink-theme
