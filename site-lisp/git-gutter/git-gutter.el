@@ -1130,7 +1130,8 @@ start revision."
 (defun git-gutter:live-update ()
   (git-gutter:awhen (git-gutter:base-file)
     (when (and git-gutter:enabled
-               (git-gutter:should-update-p))
+               (git-gutter:should-update-p)
+               (git-gutter:vcs-root git-gutter:vcs-type))
       (let ((file (file-name-nondirectory it))
             (root (file-truename (git-gutter:vcs-root git-gutter:vcs-type)))
             (now (make-temp-file "git-gutter-cur"))
