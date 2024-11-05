@@ -309,5 +309,15 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
 ;; @see https://emacs-china.org/t/gnupg-2-4-1-easypg/25264/7
 (fset 'epg-wait-for-status 'ignore)
 
+(with-eval-after-load 'ffap
+  ;; @see https://www.reddit.com/r/emacs/comments/1gjlv1z/why_is_emacs_grep_command_pinging_external_servers/
+  ;; better performance and security
+  (setq ffap-machine-p-known 'reject))
+
 (provide 'init-essential)
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
+
 ;;; init-essential.el ends here
