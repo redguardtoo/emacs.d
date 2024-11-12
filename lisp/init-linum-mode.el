@@ -51,7 +51,7 @@
   (unless (or (memq major-mode my-linum-inhibit-modes)
               ;; don't show line number for certain file extensions
               (my-should-use-minimum-resource))
-    (my-run-with-idle-timer 0.5 #'display-line-numbers-mode)))
+    (display-line-numbers-mode)))
 
 (add-hook 'prog-mode-hook #'my-setup-line-number-mode)
 ;; (add-hook 'text-mode-hook #'my-setup-line-number-mode)
