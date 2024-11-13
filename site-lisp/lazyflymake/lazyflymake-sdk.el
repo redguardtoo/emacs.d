@@ -5,6 +5,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'flymake)
 
 (defcustom lazyflymake-debug nil
@@ -25,6 +26,17 @@ It could be converted to buffer local variable."
   "The code file does exist."
   (and buffer-file-name
        (file-exists-p buffer-file-name)))
+
+(defun lazyflymake-sdk-find-dominating-file (names)
+  "Find dominating file with one of NAMES."
+  (let (dir file rlt)
+    (while (and (not rlt) names)
+      (setq dir (locate-dominating-file default-directory
+                                        (setq file (car names))))
+      (when dir
+        (setq rlt (concat dir (car names))))
+      (setq names (cdr names)))
+    rlt))
 
 (defun lazyflymake-sdk-code-file ()
   "Get code file to check."

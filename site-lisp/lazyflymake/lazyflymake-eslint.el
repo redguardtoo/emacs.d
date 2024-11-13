@@ -20,12 +20,22 @@ If return nil, nothing need be done."
   (let* ((dir (locate-dominating-file default-directory "node_modules"))
          (local-eslint (concat dir "node_modules/.bin/eslint"))
          (program (if (file-exists-p local-eslint) local-eslint "eslint"))
-         file)
+         (eslint-args '("--format" "unix"))
+         file
+         ;; use babel?
+         (babelrc (lazyflymake-sdk-find-dominating-file '("babel.config.json" ".babelrc.json" "babel.config.js"))))
+
     (when (and (executable-find program)
                (setq file (lazyflymake-sdk-code-file)))
+
+      ;; use locale babel configuration file
+      (when babelrc
+        (push (format "{babelOptions:{configFile:'%s'}}" (file-truename babelrc)) eslint-args)
+        (push "--parser-options" eslint-args))
+
       (lazyflymake-sdk-generate-flymake-init
        program
-       '("--format" "unix")
+       eslint-args
        file))))
 
 (provide 'lazyflymake-eslint)
