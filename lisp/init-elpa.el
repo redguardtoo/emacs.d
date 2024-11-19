@@ -389,6 +389,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'ob-sagemath)
 (require-package 'pulseaudio-control)
 (require-package 'vterm)
+(require-package 'dockerfile-mode)
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first

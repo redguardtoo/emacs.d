@@ -96,6 +96,12 @@
                   "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\)\\'")
 ;; }}
 
+(my-add-auto-mode 'dockerfile-mode
+                  "Dockerfile"
+                  "\\.dockerfile"
+                  "Containerfile")
+(put 'dockerfile-image-name 'safe-local-variable #'stringp)
+
 ;; {{js
 (my-add-auto-mode 'js-mode
                   "\\.ja?son\\'"
