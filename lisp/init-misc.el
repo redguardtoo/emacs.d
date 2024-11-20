@@ -25,7 +25,6 @@
 (setq auto-save-visited-predicate #'my-auto-save-visited-predicate)
 
 (my-run-with-idle-timer 2 #'auto-save-visited-mode)
-(add-hook 'auto-save-visited-mode-hook #'my-auto-save-visited-mode-setup)
 ;; }}
 
 ;; {{ auto-yasnippet
