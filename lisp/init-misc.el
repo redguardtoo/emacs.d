@@ -22,7 +22,18 @@
        (file-writable-p (buffer-file-name))
        (not (memq major-mode my-auto-save-exclude-major-mode-list))))
 
-(setq auto-save-visited-predicate #'my-auto-save-visited-predicate)
+(defun my-auto-save-visited-mode-setup ()
+  "Auto save setup."
+  ;; turn off `auto-save-visited-mode' in certain scenarios
+  (when (my-auto-save-visited-predicate)
+    (setq-local auto-save-visited-mode nil)))
+
+(cond
+ (*emacs29*
+  (setq auto-save-visited-predicate #'my-auto-save-visited-predicate))
+ (t
+  (defvar auto-save-visited-predicate)
+  (add-hook 'auto-save-visited-mode-hook #'my-auto-save-visited-mode-setup)))
 
 (my-run-with-idle-timer 2 #'auto-save-visited-mode)
 ;; }}
