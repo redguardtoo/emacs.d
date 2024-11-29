@@ -382,9 +382,22 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   "Go to local definition or first occurrence of symbol in current buffer."
   :jump t
   :type exclusive
-  (let* ((string (evil-find-symbol t))
-         (search (format "\\_<%s\\_>" (regexp-quote string)))
+  (let ((string (evil-find-symbol t))
+         search
          ientry ipos)
+
+    ;; left string "$" from variable name in some major modes
+    (when (and (memq major-mode '(yaml-mode
+                                  sh-mode
+                                  conf-mode
+                                  cmake-mode
+                                  dockerfile-mode
+                                  graphql-mode))
+               (string-match "^\$[A-Za-z]" string))
+      (setq string (substring string 1)))
+
+    (setq search (format "\\_<%s\\_>" (regexp-quote string)))
+
     ;; load imenu if available
     (my-ensure 'imenu)
 
@@ -400,6 +413,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
        ((and (derived-mode-p 'js2-mode)
              (cl-intersection (my-what-face) '(rjsx-tag)))
         (js2-jump-to-definition))
+
        ((fboundp 'imenu--make-index-alist)
         (condition-case nil
             (setq ientry (imenu--make-index-alist))

@@ -1135,7 +1135,8 @@ It's also controlled by `my-lazy-before-save-timer'."
 
 (with-eval-after-load 'yaml-mode
   (setq yaml-imenu-generic-expression
-        '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1))))
+        '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1)
+          (nil  "^ *\\([A-Z][0-9A-Z_-]+\\):" 1))))
 
 ;; {{ calendar setup
 (with-eval-after-load 'calendar
