@@ -7,6 +7,11 @@
 
 (require 'lazyflymake-sdk)
 
+(defcustom lazyflymake-eslint-args '("--format" "unix")
+  "Arguments of eslint cli."
+  :group 'lazyflymake
+  :type '(repeat string))
+
 (defun lazyflymake-eslint-err-line-pattern ()
   "Return error line pattern.
 If return a list containing patterns, `flymake-proc-err-line-patterns' uses the
@@ -20,7 +25,6 @@ If return nil, nothing need be done."
   (let* ((dir (locate-dominating-file default-directory "node_modules"))
          (local-eslint (concat dir "node_modules/.bin/eslint"))
          (program (if (file-exists-p local-eslint) local-eslint "eslint"))
-         (eslint-args '("--format" "unix"))
          file
          ;; use babel?
          (babelrc (lazyflymake-sdk-find-dominating-file '("babel.config.json" ".babelrc.json" "babel.config.js"))))
@@ -30,12 +34,13 @@ If return nil, nothing need be done."
 
       ;; use locale babel configuration file
       (when babelrc
-        (push (format "{babelOptions:{configFile:'%s'}}" (file-truename babelrc)) eslint-args)
-        (push "--parser-options" eslint-args))
+        (push (format "{babelOptions:{configFile:'%s'}}" (file-truename babelrc))
+              lazyflymake-eslint-args)
+        (push "--parser-options" lazyflymake-eslint-args))
 
       (lazyflymake-sdk-generate-flymake-init
        program
-       eslint-args
+       lazyflymake-eslint-args
        file))))
 
 (provide 'lazyflymake-eslint)

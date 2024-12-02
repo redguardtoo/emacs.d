@@ -12,9 +12,14 @@
   :group 'lazyflymake
   :type 'string)
 
+(defcustom lazyflymake-shell-args '("--format=gcc" "-x")
+  "Arguments of shellcheck cli."
+  :group 'lazyflymake
+  :type '(repeat string))
+
 (defun lazyflymake-shell-err-line-pattern ()
   "Return error line pattern.
-If return a list containing the pattern, `flymake-proc-err-line-patterns' uses the
+If return a list of patterns, `flymake-proc-err-line-patterns' uses the
 list and is also converted into a buffer local variable.
 If return the pattern, it's is pushed to `flymake-proc-err-line-patterns'.
 If return nil, nothing need be done."
@@ -29,7 +34,7 @@ If return nil, nothing need be done."
       (if lazyflymake-debug (message "lazyflymake-shell-init called"))
       (lazyflymake-sdk-generate-flymake-init
        lazyflymake-shell-program
-       '("--format=gcc")
+       lazyflymake-shell-args
        file))))
 
 (provide 'lazyflymake-shell)
