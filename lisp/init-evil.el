@@ -375,6 +375,14 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (forward-line 1)
     (evil-search search t t (point))))
 
+(with-eval-after-load 'rjsx-mode
+  (my-ensure 'evil-matchit)
+  (when (functionp 'evilmi-add-one-plugin-rule)
+    (defun my-rjsx-jump-tag ()
+      (when (string-match "</?>" (string-trim (evilmi-sdk-curline)))
+        (rjsx-jump-tag)))
+    (evilmi-add-one-plugin-rule #'rjsx-mode #'my-rjsx-jump-tag)))
+
 ;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
 ;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
