@@ -375,12 +375,15 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (forward-line 1)
     (evil-search search t t (point))))
 
+(defun my-rjsx-jump-tag ()
+  "Wrapper of `rjsx-jump-tags'."
+  (when (string-match "</?>" (string-trim (evilmi-sdk-curline)))
+    (when (functionp 'rjsx-jump-tag)
+      (rjsx-jump-tag))))
+
 (with-eval-after-load 'rjsx-mode
   (my-ensure 'evil-matchit)
   (when (functionp 'evilmi-add-one-plugin-rule)
-    (defun my-rjsx-jump-tag ()
-      (when (string-match "</?>" (string-trim (evilmi-sdk-curline)))
-        (rjsx-jump-tag)))
     (evilmi-add-one-plugin-rule #'rjsx-mode #'my-rjsx-jump-tag)))
 
 ;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
