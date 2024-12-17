@@ -15,6 +15,7 @@
                   "\\.pgpass\\'"
                   "\\.?muttrc\\'"
                   "\\.mailcap\\'"
+                  "default\\.pa\\'" ; pulseaudio configuration file
                   "yarn\\.lock\\'")
 ;; }}
 
