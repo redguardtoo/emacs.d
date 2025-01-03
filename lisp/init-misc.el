@@ -1265,6 +1265,18 @@ MATCH is optional tag match."
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
 
+(defun my-ssh-agent-setup ()
+  "Help emacsclient to find ssh-agent setup."
+  (when (and (not (getenv "SSH_AGENT_PID"))
+             (file-exists-p "~/.ssh/environment"))
+    (let* ((str (with-temp-buffer
+                  (insert-file-contents "~/.ssh/environment")
+                  (buffer-string))))
+      (when (string-match "SSH_AGENT_PID=\\([^ ;]+\\);" str)
+        (setenv "SSH_AGENT_PID" (match-string 1 str)))
+      (when (string-match "SSH_AUTH_SOCK=\\([^ ;]+\\);" str)
+        (setenv "SSH_AUTH_SOCK" (match-string 1 str))))))
+
 (defun my-generic-prog-mode-hook-setup ()
   "Generic programming mode set up."
   (when (buffer-too-big-p)
