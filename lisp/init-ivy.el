@@ -37,14 +37,11 @@
   ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
   ;; press "M-o" to choose ivy action
   (ivy-set-actions
-   'counsel-find-file
+   'find-file
    '(("j" find-file-other-frame "other frame")
-     ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-     ("x" counsel-find-file-extern "open externally")
      ("d" delete-file "delete")
      ("r" counsel-find-file-as-root "open as root"))))
 
-;; (setq ivy-use-virtual-buffers t) ; not good experience
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
@@ -192,11 +189,6 @@ If N is 2, list files in my recent 20 commits."
               :keymap ivy-switch-buffer-map
               :caller 'ivy-switch-buffer)))
 
-(with-eval-after-load 'ivy
-  ;; work around ivy issue.
-  ;; @see https://github.com/abo-abo/swiper/issues/828
-  (setq ivy-display-style 'fancy))
-
 ;; {{ swiper&ivy-mode
 (global-set-key (kbd "C-s") 'counsel-grep-or-swiper)
 ;; }}
@@ -246,6 +238,9 @@ If N is 2, list files in my recent 20 commits."
     (my-counsel-imenu))))
 
 (with-eval-after-load 'ivy
+  ;; Add recent files and bookmarks to the `ivy-switch-buffer'
+  (setq ivy-use-virtual-buffers t)
+
   ;; better performance on everything (especially windows), ivy-0.10.0 required
   ;; when `ivy-dynamic-exhibit-delay-ms' is a non-zero value
   ;; Setting it to a bigger value in ALL OSs is also more green energy btw.

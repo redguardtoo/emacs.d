@@ -766,7 +766,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "9" 'winum-select-window-9
   "xm" 'counsel-M-x
   "xx" 'er/expand-region
-  "xf" 'find-file
+  ;; `counsel-find-file' has more actions (press "M-o" to trigger more actions)
+  "xf" (if (functionp 'counsel-find-file) 'counsel-find-file 'find-file)
   "x/" 'find-file-other-window
   "xb" 'ivy-switch-buffer-by-pinyin
   "xh" 'mark-whole-buffer
