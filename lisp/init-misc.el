@@ -1339,5 +1339,14 @@ MATCH is optional tag match."
     (setq show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
+(with-eval-after-load 'ellama
+  ;; (setq ellama-language "Chinese") ; for translation
+  (require 'llm-ollama)
+  (setq ellama-provider
+        (make-llm-ollama
+         :chat-model "deepseek-r1:8b" :embedding-model "deepseek-r1:8b"))
+  (setq ellama-instant-display-action-function #'display-buffer-at-bottom))
+(add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
