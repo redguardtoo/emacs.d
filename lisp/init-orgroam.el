@@ -7,11 +7,11 @@
   (setq use-package-always-ensure t
         use-package-expand-minimally t))
 (require-package 'emacsql)
-(require-package 'emacsql-sqlite)
+;;(require-package 'emacsql-sqlite)
 (require-package 'org-roam)
 
 (with-eval-after-load 'emacsql)
-(with-eval-after-load 'emacsql-sqlite)
+;;(with-eval-after-load 'emacsql-sqlite)
 (setq org-roam-directory (file-truename "~/notes"))
 (setq org-roam-complete-everywhere t)
 

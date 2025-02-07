@@ -141,6 +141,12 @@
          (file+head "main/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 太极")
          :immediate-finish t
          :unnarrowed t)
+        ("q" "雀魂 reference" plain
+         "%?"
+         :if-new
+         (file+head "reference/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 雀魂\n* 原文\n\n\n* 个人理解\n\n\n* 来源\n\n")
+         :immediate-finish t
+         :unnarrowed t)
         ("a" "article" plain "%?"
          :if-new
          (file+head "articles/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: :article:\n")
