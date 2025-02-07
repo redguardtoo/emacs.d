@@ -13,6 +13,8 @@
 ;; Mac Only
 (defvar my-term-program "/bin/zsh")
 
+(require-package 'unicad)
+
 ;; Linux Only
 ;;(setq counsel-etags-extra-tags-files '("/usr/include/TAGS"))
 
@@ -131,7 +133,7 @@
         ("b" "taiji reference" plain
          "%?"
          :if-new
-         (file+head "reference/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 太极")
+         (file+head "reference/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}\n#+filetags: 太极\n* 原文\n\n\n* 个人理解\n\n\n* 来源\n\n")
          :immediate-finish t
          :unnarrowed t)
         ("t" "taiji" plain "%?"
