@@ -72,3 +72,4 @@ transient/
 elpy/
 package-quickstart.el
 .lsp-session*
+ellama-sessions/

@@ -390,6 +390,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'pulseaudio-control)
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
+(when *emacs28* (require-package 'ellama))
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
@@ -445,7 +446,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     light-soap-theme
     lush-theme
     madhat2r-theme
-    majapahit-themes
     material-theme
     minimal-theme
     modus-themes
