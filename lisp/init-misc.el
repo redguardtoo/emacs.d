@@ -121,7 +121,7 @@
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
 
-;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
+;; @see http://redguardtoo.github.io/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties
       (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
