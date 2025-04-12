@@ -24,8 +24,8 @@
 (setq-default my-extra-mode-line-info '("" mode-line-keycast))
 (customize-set-variable 'keycast-mode t)
 
-(desktop-save-mode)
-(setq desktop-path '("~/emacs-auto-save"))
+;;(desktop-save-mode)
+;;(setq desktop-path '("~/emacs-auto-save"))
 
 ;; indent
 (setq-default c-basic-offset 4)
@@ -36,6 +36,7 @@
 (setq vc-follow-symlinks nil)
 (setq org-agenda-files  '("~/GTD"))
 (setq org-M-RET-may-split-line nil)
+(setq org-image-actual-width 300)
 
 (require-package 'org-bullets)
 ;; (setq org-hide-emphasis-markers t
