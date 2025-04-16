@@ -275,3 +275,6 @@
       (apply orig-fun args)))
   (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
 
+;; jsx tsx mode support
+(require-package 'jtsx)
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . jtsx-tsx-mode))

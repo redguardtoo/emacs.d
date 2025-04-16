@@ -150,6 +150,7 @@
     company-c-headers
     company-statistics
     jenkinsfile-mode
+    jtsx
     powershell
     ob-mermaid
     graphql-mode
