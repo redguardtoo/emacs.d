@@ -9,6 +9,7 @@
 ;; Clang stuff
 (require-package 'clang-format)
 (setq clang-format-style "file")
+(c-set-offset 'innamespace 0)
 
 ;; Mac Only
 (defvar my-term-program "/bin/zsh")
