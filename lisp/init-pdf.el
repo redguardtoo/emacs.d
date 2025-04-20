@@ -1,7 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(require 'pdf-view)
-(require 'pdf-isearch)
+(my-run-with-idle-timer 2 (lambda ()
+                            (require 'pdf-view)))
 
 ;; {{ grep pdf
 (defvar my-pdfgrep-program "pdfgrep"
@@ -50,6 +50,7 @@
         (setq selected (cdr (assoc selected cands)))
         (find-file (nth 0 selected))
         (pdf-view-goto-page (nth 1 selected))
+        (my-ensure 'pdf-isearch)
         (pdf-isearch-hl-matches nil (pdf-isearch-search-page keyword) t)))
 
      (t

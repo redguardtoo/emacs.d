@@ -99,6 +99,7 @@
                                          "package-quickstart.el"
                                          "company-statistics-cache.el"
                                          "custom-set-variables.el"
+                                         "init-misc.el"
                                          "early-init.el")))))
               (lambda (dir parent)
                 (member dir '("lisp"))))))

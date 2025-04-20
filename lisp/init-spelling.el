@@ -217,6 +217,10 @@ When fixing a typo, avoid pass camel case option to cli program."
 
   ;; }}
 
+  (setq wucuo-spell-check-buffer-predicate
+        (lambda ()
+          ;; don't spell check buffer created by ellama
+          (not (string-match "^ellama .*org$" (or (buffer-name) "")))))
   ;; do NOT turn on `flyspell-mode' automatically.
   ;; check buffer or visible region only
   ;; spell check buffer every 30 seconds

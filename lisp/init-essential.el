@@ -291,13 +291,33 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   ;; better performance
   (setq show-paren-delay 0.5))
 
-;; Make emacs know ssh-agent
-;; @see https://emacs.stackexchange.com/questions/17866/magit-how-to-use-systems-ssh-agent-and-dont-ask-for-password
-(my-run-with-idle-timer 2
-                        (lambda ()
-                          (setq exec-path-from-shell-check-startup-files nil)
-                          (exec-path-from-shell-copy-env "SSH_AGENT_PID")
-                          (exec-path-from-shell-copy-env "SSH_AUTH_SOCK")))
+;; {{ Make emacs know ssh-agent
+(unless *win64*
+  ;; package exec-path-from-shell uses some Linux only cli tool
+  (my-run-with-idle-timer 2
+                          (lambda ()
+                            (my-ensure 'exec-path-from-shell)
+                            (setq exec-path-from-shell-check-startup-files nil)
+                            (setq exec-path-from-shell-arguments nil)
+                            (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO" "LANG" "LC_CTYPE" "NIX_SSL_CERT_FILE" "NIX_PATH"))
+                              (add-to-list 'exec-path-from-shell-variables var))
+                            (exec-path-from-shell-initialize))))
+
+;; }}
+
+;; workaround gnupg 2.4 bug
+;; @see https://emacs-china.org/t/gnupg-2-4-1-easypg/25264/7
+(fset 'epg-wait-for-status 'ignore)
+
+(with-eval-after-load 'ffap
+  ;; @see https://www.reddit.com/r/emacs/comments/1gjlv1z/why_is_emacs_grep_command_pinging_external_servers/
+  ;; better performance and security
+  (setq ffap-machine-p-known 'reject))
 
 (provide 'init-essential)
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
+
 ;;; init-essential.el ends here

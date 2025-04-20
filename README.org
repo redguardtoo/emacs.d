@@ -65,7 +65,6 @@
   - [[#network-is-blocked][Network is blocked]]
   - [[#email][Email]]
   - [[#cannot-download-packages][Cannot download packages?]]
-  - [[#use-packages-on-gnu-elpa][Use packages on GNU ELPA]]
   - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
@@ -177,7 +176,7 @@ But there is a simple workaround:
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
-- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
+- See [[http://redguardtoo.github.io/?p=1057][How to use ctags in Emacs effectively]]
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]] and =company-gtags= from =company-mode=
 - It creates index files for code navigation and auto-completion
@@ -282,7 +281,7 @@ Press =C-c C-y= anywhere to bring up default hydra menu.
 
 The tutorials I recommended have enough information about commands.
 
-Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
+Besides, "[[http://redguardtoo.github.io/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
@@ -325,7 +324,7 @@ If you prefer your own spell check solution, insert below code to disable wucuo 
 (setq my-disable-wucuo t)
 #+end_src
 
-For further knowledge on spell checking, you could read [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]] and code in =init-spelling.el=.
+For further knowledge on spell checking, you could read [[http://redguardtoo.github.io/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]] and code in =init-spelling.el=.
 ** Lock packages
 Some packages are so important to my workflow that they are locked.
 
@@ -415,7 +414,7 @@ Here is sample setup:
 
 In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
 
-You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
+You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://redguardtoo.github.io/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
 
 *** Auto-completion for other languages
 It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
@@ -515,7 +514,7 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 ** Indentation
-Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
+Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[http://redguardtoo.github.io/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheat sheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
@@ -588,10 +587,6 @@ If you use Gnus for email, check =init-gnus.el= and read [[https://github.com/re
 Some package cannot be downloaded automatically because of network problem.
 
 Run =M-x package-refresh-content=, restart Emacs, reinstall package.
-** Use packages on [[https://elpa.gnu.org/][GNU ELPA]]
-By default, packages from GNU ELPA are NOT available. Search the line "uncomment below line if you need use GNU ELPA" in =init-elpa.el= if you want to access GNU ELPA.
-
-For example, [[https://github.com/flycheck/flycheck][flycheck]] requires packages from GNU ELPA.
 ** Use flycheck to syntax check code
 If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
 
@@ -681,6 +676,8 @@ The flag =elpy-disable-backend-error-display= is set to =nil= so you can easily 
 
 If you don't use Elpy, comment out the line =(elpy-enable)= in =init-python.el=.
 
+Please make sure python and its package `virtualenv` is installed first.
+
 To enable the virtual environment created by Elpy, add below code into =~/.custom.el=,
 #+begin_src elisp
 (with-eval-after-load 'elpy
@@ -760,7 +757,7 @@ Please use [[https://github.com/redguardtoo/emacs.d/archive/4.0.zip]] and [[http
 ** Emacs 25
 Version 3.2 is the last version to support =Emacs 25=
 
-Please use [[https://github.com/redguardtoo/emacs.d/archive/3.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.1.zip]].
+Please use [[https://github.com/redguardtoo/emacs.d/archive/3.2.zip]] and [[https://github.com/redguardtoo/myelpa/archive/3.2.zip]].
 ** Emacs 24.4 and 24.5
 Version 2.9 is the last version to support =Emacs 24.4+=
 

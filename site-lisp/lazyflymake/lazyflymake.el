@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2020-2022 Chen Bin
 ;;
-;; Version: 0.0.6
+;; Version: 0.0.7
 ;; Keywords: convenience, languages, tools
 ;; Author: Chen Bin <chenbin.sh@gmail.com>
 ;; URL: https://github.com/redguardtoo/lazyflymake

@@ -101,7 +101,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (save-excursion
         (forward-char)
         (setq postfix-ch (following-char))))
-    (if (and (not (or (= prefix-ch 32) (= postfix-ch 32)))
+    (if (and (not (or (and prefix-ch (= prefix-ch 32))
+                      (and postfix-ch (= postfix-ch 32))))
              (or (= ch 47) (= ch 92)) )
         (setq rlt t))
     rlt))
@@ -374,6 +375,17 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (forward-line 1)
     (evil-search search t t (point))))
 
+(defun my-rjsx-jump-tag ()
+  "Wrapper of `rjsx-jump-tags'."
+  (when (string-match "</?>" (string-trim (evilmi-sdk-curline)))
+    (when (functionp 'rjsx-jump-tag)
+      (rjsx-jump-tag))))
+
+(with-eval-after-load 'rjsx-mode
+  (my-ensure 'evil-matchit)
+  (when (functionp 'evilmi-add-one-plugin-rule)
+    (evilmi-add-one-plugin-rule #'rjsx-mode #'my-rjsx-jump-tag)))
+
 ;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
 ;; BEFORE searching string from `point-min'.
 ;; xref part is annoying because I already use `counsel-etags' to search tag.
@@ -381,9 +393,22 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   "Go to local definition or first occurrence of symbol in current buffer."
   :jump t
   :type exclusive
-  (let* ((string (evil-find-symbol t))
-         (search (format "\\_<%s\\_>" (regexp-quote string)))
+  (let ((string (evil-find-symbol t))
+         search
          ientry ipos)
+
+    ;; left string "$" from variable name in some major modes
+    (when (and (memq major-mode '(yaml-mode
+                                  sh-mode
+                                  conf-mode
+                                  cmake-mode
+                                  dockerfile-mode
+                                  graphql-mode))
+               (string-match "^\$[A-Za-z]" string))
+      (setq string (substring string 1)))
+
+    (setq search (format "\\_<%s\\_>" (regexp-quote string)))
+
     ;; load imenu if available
     (my-ensure 'imenu)
 
@@ -399,6 +424,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
        ((and (derived-mode-p 'js2-mode)
              (cl-intersection (my-what-face) '(rjsx-tag)))
         (js2-jump-to-definition))
+
        ((fboundp 'imenu--make-index-alist)
         (condition-case nil
             (setq ientry (imenu--make-index-alist))
@@ -613,6 +639,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
+  "rp" 'cp-root-relative-path-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "xo" 'ace-window
   "ff" 'my-toggle-full-window ;; I use WIN+F in i3
@@ -739,7 +766,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "9" 'winum-select-window-9
   "xm" 'counsel-M-x
   "xx" 'er/expand-region
-  "xf" 'find-file
+  ;; `counsel-find-file' has more actions (press "M-o" to trigger more actions)
+  "xf" (if (functionp 'counsel-find-file) 'counsel-find-file 'find-file)
   "x/" 'find-file-other-window
   "xb" 'ivy-switch-buffer-by-pinyin
   "xh" 'mark-whole-buffer
@@ -994,28 +1022,30 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (setq evil-default-cursor t))
 
 
-;; {{ per-major-mode setup
-(general-create-definer my-javascript-leader-def
-  :prefix "SPC"
-  :non-normal-prefix "M-SPC"
-  :states '(normal motion insert emacs)
-  :keymaps 'js2-mode-map)
+;; {{ per major-mode setup
+(with-eval-after-load 'js2-mode
+  (general-create-definer my-javascript-leader-def
+    :prefix "SPC"
+    :non-normal-prefix "M-SPC"
+    :states '(normal motion insert emacs)
+    :keymaps 'js2-mode-map)
 
-(my-javascript-leader-def
-  "de" 'js2-display-error-list
-  "nn" 'js2-next-error
-  "te" 'js2-mode-toggle-element
-  "tf" 'js2-mode-toggle-hide-functions)
+  (my-javascript-leader-def
+    "de" 'js2-display-error-list
+    "nn" 'js2-next-error
+    "te" 'js2-mode-toggle-element
+    "tf" 'js2-mode-toggle-hide-functions))
 
-(general-create-definer my-org-leader-def
-  :prefix ";"
-  :non-normal-prefix "M-;"
-  :states '(normal motion visual)
-  :keymaps 'org-mode-map)
+(with-eval-after-load 'org-mode
+  (general-create-definer my-org-leader-def
+    :prefix ";"
+    :non-normal-prefix "M-;"
+    :states '(normal motion visual)
+    :keymaps 'org-mode-map)
 
-(my-org-leader-def
-  "f" 'my-navigate-in-pdf
-  "g" 'my-open-pdf-goto-page)
+  (my-org-leader-def
+    "f" 'my-navigate-in-pdf
+    "g" 'my-open-pdf-goto-page))
 ;; }}
 
 

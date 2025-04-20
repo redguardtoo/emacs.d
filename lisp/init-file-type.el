@@ -15,6 +15,7 @@
                   "\\.pgpass\\'"
                   "\\.?muttrc\\'"
                   "\\.mailcap\\'"
+                  "default\\.pa\\'" ; pulseaudio configuration file
                   "yarn\\.lock\\'")
 ;; }}
 
@@ -96,6 +97,12 @@
                   "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\)\\'")
 ;; }}
 
+(my-add-auto-mode 'dockerfile-mode
+                  "Dockerfile"
+                  "\\.dockerfile"
+                  "Containerfile")
+(put 'dockerfile-image-name 'safe-local-variable #'stringp)
+
 ;; {{js
 (my-add-auto-mode 'js-mode
                   "\\.ja?son\\'"
@@ -105,7 +112,7 @@
 (cond
  ((not *no-memory*)
   ;; javascript
-  (my-add-auto-mode 'js2-mode "\\.js\\(\\.erb\\)?\\'")
+  (my-add-auto-mode 'js2-mode "\\.m?js\\(\\.erb\\)?\\'")
   ;; JSX
   (my-add-auto-mode 'rjsx-mode
                     "\\.[tj]sx\\'"

@@ -16,11 +16,32 @@ If N is not nil, copy file name and line number."
       (message "%s => clipboard&kill-ring" s))))
 
 (defun cp-fullpath-of-current-buffer ()
-  "Copy full path into the yank ring and OS clipboard"
+  "Copy full path into the yank ring and OS clipboard."
   (interactive)
   (when buffer-file-name
     (copy-yank-str (file-truename buffer-file-name))
     (message "file full path => clipboard & yank ring")))
+
+(defun cp-root-relative-path-of-current-buffer ()
+  "Copy path relative to the project root into the yank ring and OS clipboard"
+  (interactive)
+  (when buffer-file-name
+    ;; require ffip to get project root
+    (my-ensure 'find-file-in-project)
+    (let* ((root (ffip-project-root))
+           (file-path (file-truename buffer-file-name))
+           relative-path)
+      (cond
+       ((not root)
+        (message "Can't find project root."))
+
+       ((not file-path)
+        (message "File path of current buffer is empty."))
+
+       (t
+        (setq relative-path (file-relative-name file-path root))
+        (copy-yank-str relative-path)
+        (message "%s => clipboard & yank ring" relative-path))))))
 
 (defun clipboard-to-kill-ring ()
   "Copy from clipboard to `kill-ring'."

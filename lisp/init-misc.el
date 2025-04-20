@@ -7,6 +7,37 @@
 ;; Set `auto-window-vscroll' to nil to avoid triggering `format-mode-line'.
 (setq auto-window-vscroll nil)
 
+;; {{ auto save set up
+(defvar my-auto-save-exclude-major-mode-list
+  '(message-mode)
+  "The major modes where auto-save is disabled.")
+
+(setq auto-save-visited-interval 2)
+
+(defun my-auto-save-visited-predicate ()
+  "Predicate to control which buffers are auto-saved."
+  (and (buffer-file-name)
+       (not (file-remote-p (buffer-file-name)))
+       (not (my-file-too-big-p (buffer-file-name)))
+       (file-writable-p (buffer-file-name))
+       (not (memq major-mode my-auto-save-exclude-major-mode-list))))
+
+(defun my-auto-save-visited-mode-setup ()
+  "Auto save setup."
+  ;; turn off `auto-save-visited-mode' in certain scenarios
+  (when (my-auto-save-visited-predicate)
+    (setq-local auto-save-visited-mode nil)))
+
+(cond
+ (*emacs29*
+  (setq auto-save-visited-predicate #'my-auto-save-visited-predicate))
+ (t
+  (defvar auto-save-visited-predicate)
+  (add-hook 'auto-save-visited-mode-hook #'my-auto-save-visited-mode-setup)))
+
+(my-run-with-idle-timer 2 #'auto-save-visited-mode)
+;; }}
+
 ;; {{ auto-yasnippet
 ;; Use C-q instead tab to complete snippet
 ;; - `aya-create' at first, input ~ to mark the thing next
@@ -90,7 +121,7 @@
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
 
-;; @see http://blog.binchen.org/posts/effective-code-navigation-for-web-development.html
+;; @see http://redguardtoo.github.io/posts/effective-code-navigation-for-web-development.html
 ;; don't let the cursor go into minibuffer prompt
 (setq minibuffer-prompt-properties
       (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
@@ -220,69 +251,6 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
     )))
 ;; }}
 
-(defun my-generic-prog-mode-hook-setup ()
-  "Generic programming mode set up."
-  (when (buffer-too-big-p)
-
-    (when (my-should-use-minimum-resource)
-      (font-lock-mode -1)))
-
-  (add-hook 'after-save-hook #'my-save-run-function nil t)
-
-  (my-company-ispell-setup)
-
-  (unless (my-buffer-file-temp-p)
-    ;;  trim spaces from end of changed line
-    ;; (ws-butler-mode 1)
-
-    (unless (featurep 'esup-child)
-      (cond
-       ((not my-disable-lazyflymake)
-        (my-ensure 'lazyflymake)
-        (lazyflymake-start))
-       (t
-        (flymake-mode 1)))
-
-      (unless my-disable-wucuo
-        (my-ensure 'wucuo)
-        (setq-local ispell-extra-args (my-detect-ispell-args t))
-        (wucuo-start)))
-
-    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
-    (setq compilation-finish-functions
-          '(my-compilation-finish-hide-buffer-on-success))
-
-    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
-
-    ;; don't spell check double words
-    (setq-local wucuo-flyspell-check-doublon nil)
-    ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
-    (unless (derived-mode-p 'js2-mode)
-      (subword-mode 1))
-
-    ;; now css-mode derives from prog-mode
-    ;; see the code of `counsel-css-imenu-setup'
-    (when (counsel-css-imenu-setup)
-      ;; css color
-      (rainbow-mode 1)
-      (imenu-extra-auto-setup
-       ;; post-css mixin
-       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
-      (setq beginning-of-defun-function
-            (lambda (arg)
-              (ignore arg)
-              (let* ((closest (my-closest-imenu-item)))
-                (when closest
-                  (goto-char (cdr closest)))))))
-
-    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
-
-    ;; eldoc, show API doc in minibuffer echo area
-    ;; (turn-on-eldoc-mode)
-    ;; show trailing spaces in a programming mod
-    (setq show-trailing-whitespace t)))
-
-(add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 (add-hook 'text-mode-hook #'lazyflymake-start)
 
 ;;; {{ display long lines in truncated style (end line with $)
@@ -462,25 +430,6 @@ So it's at the top of clipboard manager."
   (interactive)
   (setq indent-tabs-mode (not indent-tabs-mode))
   (message "indent-tabs-mode=%s" indent-tabs-mode))
-
-(defvar my-auto-save-exclude-major-mode-list
-  '(message-mode)
-  "The major modes where auto-save is disabled.")
-
-;; {{ auto-save.el
-(defun my-check-major-mode-for-auto-save (file)
-  "Check current major mode of FILE for auto save."
-  (ignore file)
-  (memq major-mode my-auto-save-exclude-major-mode-list))
-
-(with-eval-after-load 'auto-save
-  (push 'file-remote-p auto-save-exclude)
-  (push 'my-file-too-big-p auto-save-exclude)
-  (push 'my-check-major-mode-for-auto-save auto-save-exclude)
-  (setq auto-save-idle 2) ; 2 seconds
-  (setq auto-save-slient t))
-(my-run-with-idle-timer 4 #'auto-save-enable)
-;; }}
 
 ;; {{ csv
 (setq csv-separators '("," ";" "|" " "))
@@ -1023,16 +972,6 @@ might be bad."
 ;;   (pdf-loader-install))
 ;; ;; }}
 
-;; {{ exe path
-(with-eval-after-load 'exec-path-from-shell
-  (dolist (var '("SSH_AUTH_SOCK" "SSH_AGENT_PID" "GPG_AGENT_INFO"))
-    (push var exec-path-from-shell-variables)))
-
-(when (and window-system (memq window-system '(mac ns)))
-  ;; @see https://github.com/purcell/exec-path-from-shell/issues/75
-  ;; I don't use those exec path anyway.
-  (my-run-with-idle-timer 4 #'exec-path-from-shell-initialize))
-;; }}
 
 ;; {{ markdown
 (defun markdown-mode-hook-setup ()
@@ -1196,7 +1135,8 @@ It's also controlled by `my-lazy-before-save-timer'."
 
 (with-eval-after-load 'yaml-mode
   (setq yaml-imenu-generic-expression
-        '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1))))
+        '((nil  "^\\(:?[0-9a-zA-Z_-]+\\):" 1)
+          (nil  "^ *\\([A-Z][0-9A-Z_-]+\\):" 1))))
 
 ;; {{ calendar setup
 (with-eval-after-load 'calendar
@@ -1324,6 +1264,89 @@ MATCH is optional tag match."
       (setq selected (cdr (assoc selected opts)))
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
+
+(defun my-ssh-agent-setup ()
+  "Help emacsclient to find ssh-agent setup."
+  (when (and (not (getenv "SSH_AGENT_PID"))
+             (file-exists-p "~/.ssh/environment"))
+    (let* ((str (with-temp-buffer
+                  (insert-file-contents "~/.ssh/environment")
+                  (buffer-string))))
+      (when (string-match "SSH_AGENT_PID=\\([^ ;]+\\);" str)
+        (setenv "SSH_AGENT_PID" (match-string 1 str)))
+      (when (string-match "SSH_AUTH_SOCK=\\([^ ;]+\\);" str)
+        (setenv "SSH_AUTH_SOCK" (match-string 1 str))))))
+
+(defun my-generic-prog-mode-hook-setup ()
+  "Generic programming mode set up."
+  (when (buffer-too-big-p)
+    (when (my-should-use-minimum-resource)
+      (font-lock-mode -1)))
+
+  (add-hook 'after-save-hook #'my-save-run-function nil t)
+
+  (my-company-ispell-setup)
+
+  (unless (my-buffer-file-temp-p)
+    ;;  trim spaces from end of changed line
+    (ws-butler-mode 1)
+
+    (unless (featurep 'esup-child)
+      (cond
+       ((not my-disable-lazyflymake)
+        (my-ensure 'lazyflymake)
+        (lazyflymake-start))
+       (t
+        (flymake-mode 1)))
+
+      (unless my-disable-wucuo
+        (my-ensure 'wucuo)
+        (setq-local ispell-extra-args (my-detect-ispell-args t))
+        (wucuo-start)))
+
+    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
+    (setq compilation-finish-functions
+          '(my-compilation-finish-hide-buffer-on-success))
+
+    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
+
+    ;; don't spell check double words
+    (setq-local wucuo-flyspell-check-doublon nil)
+    ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
+    (unless (derived-mode-p 'js2-mode)
+      (subword-mode 1))
+
+    ;; now css-mode derives from prog-mode
+    ;; see the code of `counsel-css-imenu-setup'
+    (when (counsel-css-imenu-setup)
+      ;; css color
+      (rainbow-mode 1)
+      (imenu-extra-auto-setup
+       ;; post-css mixin
+       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
+      (setq beginning-of-defun-function
+            (lambda (arg)
+              (ignore arg)
+              (let* ((closest (my-closest-imenu-item)))
+                (when closest
+                  (goto-char (cdr closest)))))))
+
+    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
+
+    ;; eldoc, show API doc in minibuffer echo area
+    ;; (turn-on-eldoc-mode)
+    ;; show trailing spaces in a programming mod
+    (setq show-trailing-whitespace t)))
+(add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
+
+(with-eval-after-load 'ellama
+  ;; (setq ellama-language "Chinese") ; for translation
+  (require 'llm-ollama)
+  (setq ellama-provider
+        (make-llm-ollama
+         :chat-model "deepseek-r1:8b" :embedding-model "deepseek-r1:8b"))
+  (setq ellama-instant-display-action-function #'display-buffer-at-bottom))
+(add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

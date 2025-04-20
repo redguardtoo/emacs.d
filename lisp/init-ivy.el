@@ -3,6 +3,7 @@
 (my-run-with-idle-timer 1 #'ivy-mode)
 
 (with-eval-after-load 'counsel
+  (setq counsel-async-command-delay 0.3)
   ;; automatically pick up cygwin cli tools for counsel
   (cond
    ((executable-find "rg")
@@ -36,14 +37,11 @@
   ;; @see https://oremacs.com/2015/07/23/ivy-multiaction/
   ;; press "M-o" to choose ivy action
   (ivy-set-actions
-   'counsel-find-file
+   'find-file
    '(("j" find-file-other-frame "other frame")
-     ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-     ("x" counsel-find-file-extern "open externally")
      ("d" delete-file "delete")
      ("r" counsel-find-file-as-root "open as root"))))
 
-;; (setq ivy-use-virtual-buffers t) ; not good experience
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
 (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
@@ -89,7 +87,8 @@ If N is 2, list files in my recent 20 commits."
   (recentf-mode 1)
   (let* ((files (mapcar #'substring-no-properties recentf-list))
          (root-dir (if (ffip-project-root) (file-truename (ffip-project-root))))
-         (hint "Recent files: "))
+         (hint "Recent files: ")
+         f)
     (cond
      ((and (eq n 1) root-dir)
       (setq hint (format "Recent files in %s: " root-dir))
@@ -98,14 +97,12 @@ If N is 2, list files in my recent 20 commits."
       (setq hint (format "Files in recent Git commits: "))
       (setq files (my-git-recent-files))))
 
-    (ivy-read hint
-              files
-              :initial-input (if (region-active-p) (my-selected-str))
-              :action (lambda (f)
-                        (if (consp f) (setq f (cdr f)))
-                        (with-ivy-window
-                          (find-file f)))
-              :caller 'counsel-recentf)))
+    (when (setq f (ivy-read hint
+                            files
+                            :initial-input (if (region-active-p) (my-selected-str))))
+      ;; return file buffer if possible
+      (with-ivy-window
+        (find-file f)))))
 
 ;; grep by author is bad idea. Too slow
 
@@ -192,11 +189,6 @@ If N is 2, list files in my recent 20 commits."
               :keymap ivy-switch-buffer-map
               :caller 'ivy-switch-buffer)))
 
-(with-eval-after-load 'ivy
-  ;; work around ivy issue.
-  ;; @see https://github.com/abo-abo/swiper/issues/828
-  (setq ivy-display-style 'fancy))
-
 ;; {{ swiper&ivy-mode
 (global-set-key (kbd "C-s") 'counsel-grep-or-swiper)
 ;; }}
@@ -246,11 +238,14 @@ If N is 2, list files in my recent 20 commits."
     (my-counsel-imenu))))
 
 (with-eval-after-load 'ivy
+  ;; Add recent files and bookmarks to the `ivy-switch-buffer'
+  (setq ivy-use-virtual-buffers t)
+
   ;; better performance on everything (especially windows), ivy-0.10.0 required
   ;; when `ivy-dynamic-exhibit-delay-ms' is a non-zero value
   ;; Setting it to a bigger value in ALL OSs is also more green energy btw.
   ;; @see https://github.com/abo-abo/swiper/issues/1218
-  (setq ivy-dynamic-exhibit-delay-ms 250)
+  (setq ivy-dynamic-exhibit-delay-ms 300)
 
   ;; @see https://github.com/abo-abo/swiper/issues/1218#issuecomment-962516670
   ;; Thanks to Umar Ahmad (Gleek)
