@@ -4,6 +4,19 @@
 
 (with-eval-after-load 'counsel
   (setq counsel-async-command-delay 0.3)
+
+  (defun my-counsel-git-grep-cmd-function-default (str)
+    (let* ((patterns (split-string str " *!"))
+           (pos-re (counsel-etags-positive-regex patterns))
+           (neg-re (counsel-etags-exclusion-regex patterns))
+           rlt)
+      (setq rlt (format counsel-git-grep-cmd pos-re))
+      (when neg-re
+        (setq rlt (format "%s --and --not -e \"%s\"" rlt neg-re)))
+     rlt))
+
+  (setq counsel-git-grep-cmd-function #'my-counsel-git-grep-cmd-function-default)
+
   ;; automatically pick up cygwin cli tools for counsel
   (cond
    ((executable-find "rg")
@@ -281,3 +294,4 @@ If N is 2, list files in my recent 20 commits."
     (counsel-company)))
 
 (provide 'init-ivy)
+;;; init-ivy.el ends here
