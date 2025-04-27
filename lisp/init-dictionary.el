@@ -51,6 +51,7 @@
     (when def
       (setq buf (get-buffer-create my-dict-buffer-name))
         (with-current-buffer buf
+          (special-mode)
           (setq buffer-read-only nil)
           (erase-buffer)
           (insert def)
