@@ -176,7 +176,7 @@ But there is a simple workaround:
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
 - Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
-- See [[http://blog.binchen.org/?p=1057][How to use ctags in Emacs effectively]]
+- See [[http://redguardtoo.github.io/?p=1057][How to use ctags in Emacs effectively]]
 **** [[http://www.gnu.org/software/global][GNU Global]]
 - Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]] and =company-gtags= from =company-mode=
 - It creates index files for code navigation and auto-completion
@@ -281,7 +281,7 @@ Press =C-c C-y= anywhere to bring up default hydra menu.
 
 The tutorials I recommended have enough information about commands.
 
-Besides, "[[http://blog.binchen.org/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
+Besides, "[[http://redguardtoo.github.io/posts/how-to-be-extremely-efficient-in-emacs.html][How to be extremely efficient in Emacs]]" lists my frequently used commands.
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
@@ -324,7 +324,7 @@ If you prefer your own spell check solution, insert below code to disable wucuo 
 (setq my-disable-wucuo t)
 #+end_src
 
-For further knowledge on spell checking, you could read [[http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]] and code in =init-spelling.el=.
+For further knowledge on spell checking, you could read [[http://redguardtoo.github.io/posts/what-s-the-best-spell-check-set-up-in-emacs.html][my article]] and code in =init-spelling.el=.
 ** Lock packages
 Some packages are so important to my workflow that they are locked.
 
@@ -414,7 +414,7 @@ Here is sample setup:
 
 In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
 
-You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://blog.binchen.org/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
+You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://redguardtoo.github.io/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
 
 *** Auto-completion for other languages
 It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
@@ -514,7 +514,7 @@ git revert commit-2014-12-01
 git revert commit-2014-11-01
 #+end_src
 ** Indentation
-Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[http://blog.binchen.org/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
+Learn [[http://www.emacswiki.org/emacs/IndentationBasics][basics]]. Then use [[http://redguardtoo.github.io/posts/easy-indentation-setup-in-emacs-for-web-development.html][my solution]].
 ** Editing Lisp
 Please note [[http://emacswiki.org/emacs/ParEdit][paredit-mode]] is enabled when editing Lisp. Search "paredit cheat sheet" to learn its key bindings.
 ** Use [[https://github.com/Malabarba/smart-mode-line][smart-mode-line]] or [[https://github.com/milkypostman/powerline][powerline]]?
