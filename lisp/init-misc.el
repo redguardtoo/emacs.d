@@ -1349,8 +1349,11 @@ MATCH is optional tag match."
                (typo . "Fix typos, grammar and style of the following:")))
     (push p gptel-directives))
 
+  ;; don't display reasoning
+  (setq gptel-include-reasoning nil)
+
   (setq gptel-model 'deepseek-r1:latest
-        gptel-backend (gptel-make-ollama "AI ollama"
+        gptel-backend (gptel-make-ollama "AI deepseek-r1"
                         :host "localhost:11434"
                         :stream t
                         :models '(deepseek-r1:latest))))
