@@ -1339,14 +1339,21 @@ MATCH is optional tag match."
     (setq show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
-(with-eval-after-load 'ellama
-  ;; (setq ellama-language "Chinese") ; for translation
-  (require 'llm-ollama)
-  (setq ellama-provider
-        (make-llm-ollama
-         :chat-model "deepseek-r1:8b" :embedding-model "deepseek-r1:8b"))
-  (setq ellama-instant-display-action-function #'display-buffer-at-bottom))
-(add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+;; AI
+(global-set-key (kbd "C-c RET") #'gptel-send)
+(setq gptel-default-mode 'org-mode)
+(with-eval-after-load 'gptel
+
+  (dolist (p '((english . "Translate the following to English")
+               (chinese . "Translate the following to Chinese:")
+               (typo . "Fix typos, grammar and style of the following:")))
+    (push p gptel-directives))
+
+  (setq gptel-model 'deepseek-r1:latest
+        gptel-backend (gptel-make-ollama "AI ollama"
+                        :host "localhost:11434"
+                        :stream t
+                        :models '(deepseek-r1:latest))))
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
