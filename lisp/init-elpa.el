@@ -391,6 +391,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
 (require-package 'gptel)
+(require-package 'aider)
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first

@@ -188,6 +188,10 @@ But there is a simple workaround:
 **** js-beautify
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
+**** aider
+- AI pair programming in your terminal. It's required by [[https://github.com/tninja/aider.el][aider.el]]
+- Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install aider-install && aider-install=
+- See [[https://aider.chat/docs/llms/ollama.html]] on how to set it up on ollama
 **** StarDict dictionaries
 - Cli program is not needed
 - Required by =stardict.el=
