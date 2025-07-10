@@ -827,6 +827,8 @@ might be bad."
     ;; "apt-get install pinentry-tty" if using emacs-nox
     ;; Create `~/.gnupg/gpg-agent.conf' which has one line
     ;; "pinentry-program /usr/bin/pinentry-curses"
+    ;; OR "pinentry-program /usr/bin/pinentry-tty"
+    ;; OR "pinentry-program /usr/bin/pinentry-w32"
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
