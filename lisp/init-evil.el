@@ -310,7 +310,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
 ;; You may delete this setup to use Evil NORMAL state always.
-(defvar my-initial-evil-state-setup
+(defvar my-initial-evil-state-per-major-mode
   '((minibuffer-inactive-mode . emacs)
     (calendar-mode . emacs)
     (special-mode . emacs)
@@ -347,8 +347,12 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (ivy-occur-grep-mode . normal)
     (messages-buffer-mode . normal)
     (js2-error-buffer-mode . emacs))
-  "Default evil state per major mode.")
+  "Initial evil state per major mode.")
 ;; }}
+
+(defvar my-initial-evil-state-per-buffer-name
+  '(("\\*AI " . emacs))
+  "Default evil state per buffer name.")
 
 ;; I prefer Emacs way after pressing ":" in evil-mode
 (define-key evil-ex-completion-map (kbd "C-a") 'move-beginning-of-line)
@@ -989,8 +993,11 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (define-key evil-normal-state-map "U" 'undo-fu-only-redo)
 
   ;; initial evil state per major mode
-  (dolist (p my-initial-evil-state-setup)
+  (dolist (p my-initial-evil-state-per-major-mode)
     (evil-set-initial-state (car p) (cdr p)))
+
+  (dolist (p my-initial-evil-state-per-buffer-name)
+    (push p evil-buffer-regexps))
 
   ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command

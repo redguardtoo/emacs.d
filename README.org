@@ -188,6 +188,10 @@ But there is a simple workaround:
 **** js-beautify
 - Beautify javascript code
 - Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install jsbeautifier=
+**** aider
+- AI pair programming in your terminal. It's required by [[https://github.com/tninja/aider.el][aider.el]]
+- Install [[http://pip.readthedocs.org/en/stable/installing/][pip]] through OS package manager, then =pip install aider-install && aider-install=
+- See [[https://aider.chat/docs/llms/ollama.html]] on how to set it up on ollama
 **** StarDict dictionaries
 - Cli program is not needed
 - Required by =stardict.el=
@@ -601,12 +605,12 @@ It's defined in =lisp/init-evil.el=. Press =C-z= to switch between Emacs and Vim
 
 You could visit [[https://github.com/emacs-evil/evil/][its website]] to download its free ebook there.
 
-You can set =my-initial-evil-state-setup= to customize the initial evil state per major mode,
+You can set =my-initial-evil-state-per-major-mode= to customize the initial evil state per major mode,
 #+begin_src elisp
 ;; `diff-mode' uses Emacs original key bindings
-(push '(diff-mode . emacs) my-initial-evil-state-setup)
+(push '(diff-mode . emacs) my-initial-evil-state-per-major-mode)
 ;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
-(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-setup)
+(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-per-major-mode)
 #+end_src
 ** Chinese Input Method Editor
 Please note pyim is already built into this setup. You need not install it through ELPA.

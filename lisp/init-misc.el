@@ -827,6 +827,8 @@ might be bad."
     ;; "apt-get install pinentry-tty" if using emacs-nox
     ;; Create `~/.gnupg/gpg-agent.conf' which has one line
     ;; "pinentry-program /usr/bin/pinentry-curses"
+    ;; OR "pinentry-program /usr/bin/pinentry-tty"
+    ;; OR "pinentry-program /usr/bin/pinentry-w32"
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
@@ -1339,14 +1341,45 @@ MATCH is optional tag match."
     (setq show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
-(with-eval-after-load 'ellama
-  ;; (setq ellama-language "Chinese") ; for translation
-  (require 'llm-ollama)
-  (setq ellama-provider
-        (make-llm-ollama
-         :chat-model "deepseek-r1:8b" :embedding-model "deepseek-r1:8b"))
-  (setq ellama-instant-display-action-function #'display-buffer-at-bottom))
-(add-hook 'org-ctrl-c-ctrl-c-hook #'ellama-chat-send-last-message)
+;; {{ AI
+(global-set-key (kbd "C-c RET") #'gptel-send)
+(setq gptel-default-mode 'org-mode)
+(with-eval-after-load 'gptel
+  (defvar my-deepseek-backend
+    (gptel-make-ollama "AI deepseek-r1"
+      :host "localhost:11434"
+      :stream t
+      :models '(deepseek-r1:latest))
+    "Deepseek backend.")
+
+  (defvar my-gemma3n-backend
+    (gptel-make-ollama "AI gemma3n"
+      :host "localhost:11434"
+      :stream t
+      :models '(gemma3n:latest))
+    "Gemma3n backend.")
+
+  (dolist (p '((english . "Translate the following to English")
+               (chinese . "Translate the following to Chinese:")
+               (typo . "Fix typos, grammar and style of the following:")))
+    (push p gptel-directives))
+
+  ;; don't display reasoning
+  (setq gptel-include-reasoning nil)
+
+  (gptel-make-preset "AI deepseek-r1"
+    :backend my-deepseek-backend)
+
+  (gptel-make-preset "AI gemma3n"
+    :backend my-gemma3n-backend)
+
+  ;; set up default model and backend
+  (setq gptel-model 'deepseek-r1:latest
+        gptel-backend my-deepseek-backend))
+
+;; @see https://github.com/tninja/aider.el
+(global-set-key (kbd "C-c a") 'aider-transient-menu) ;
+;; }}
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
