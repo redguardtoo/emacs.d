@@ -288,6 +288,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
+(require-package 'sudo-edit)
 (require-package 'counsel-bbdb)
 (require-package 'command-log-mode)
 (require-package 'regex-tool)
