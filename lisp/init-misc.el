@@ -1379,6 +1379,9 @@ MATCH is optional tag match."
 
 ;; @see https://github.com/tninja/aider.el
 (global-set-key (kbd "C-c a") 'aider-transient-menu) ;
+(with-eval-after-load 'aider
+  ;; (setq aider-args '("--model" "ollama_chat/gemma3n:latest"))
+  (setq aider-args '("--model" "ollama_chat/deepseek-r1:latest")))
 ;; }}
 
 (provide 'init-misc)
