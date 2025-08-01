@@ -158,6 +158,11 @@ But there is a simple workaround:
 - Required by =flyspell=
 **** xmlstarlet or xml
 - Required by =lazyflymake= for HTML syntax check.
+**** divsvgm
+- Required by =M-x org-latex-preview=
+**** latex
+- Required by =M-x org-latex-preview=
+- Run =brew install --cask mactex= on macOS and =apt install texlive= on Debian/Ubuntu Linux to install it
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
 - Required by =org-mode= to export org file to odt contain images
 **** zip and unzip

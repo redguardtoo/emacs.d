@@ -117,6 +117,9 @@ ARG is ignored."
   (advice-add 'org-edit-src-exit :after 'my-org-edit-src-exit)
   ;; }}
 
+  ;; for `org-latex-preview', cli tool dvisvgm is required.
+  (setq org-preview-latex-default-process 'dvisvgm) ; dvi => svg
+
   (my-ensure 'org-clock)
 
   ;; org-re-reveal requires org 8.3
