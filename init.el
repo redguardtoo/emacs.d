@@ -129,6 +129,7 @@
   ;; essential tools
   (require-init 'init-essential)
   ;; tools nice to have
+  (require-init 'init-ai t)
   (require-init 'init-misc t)
   (require-init 'init-dictionary t)
   (require-init 'init-emms t)
