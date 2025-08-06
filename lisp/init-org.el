@@ -119,6 +119,8 @@ ARG is ignored."
 
   ;; for `org-latex-preview', cli tool dvisvgm is required.
   (setq org-preview-latex-default-process 'dvisvgm) ; dvi => svg
+  (setq org-latex-preview-auto-mode t)
+  (plist-put org-format-latex-options :scale 2.0) ; adjust svg image in `org-latex-preview'
 
   (my-ensure 'org-clock)
 
