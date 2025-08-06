@@ -162,9 +162,10 @@ But there is a simple workaround:
 - Required by =M-x org-latex-preview=
 **** latex
 - Required by =M-x org-latex-preview=
-- Run =brew install --cask mactex= on macOS and =apt install texlive= on Debian/Ubuntu Linux to install it
+- Run =brew install --cask mactex= on macOS
+- Run =apt install texlive-full= or =apt install texlive-latex-base texlive-fonts-recommended texlive-latex-extra texlive-science cm-super= on Debian/Ubuntu Linux
 **** identify from [[http://www.imagemagick.org/][ImageMagick]]
-- Required by =org-mode= to export org file to odt contain images
+- Required by =org-mode= to export org file to odt containing images
 **** zip and unzip
 - Required by =org-mode= to export org file to odt file
 **** xsel or xclip
