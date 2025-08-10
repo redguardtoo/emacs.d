@@ -769,7 +769,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "7" 'winum-select-window-7
   "8" 'winum-select-window-8
   "9" 'winum-select-window-9
-  "xm" 'counsel-M-x
+  "xm" 'execute-extended-command
   "xx" 'er/expand-region
   ;; `counsel-find-file' has more actions (press "M-o" to trigger more actions)
   "xf" (if (functionp 'counsel-find-file) 'counsel-find-file 'find-file)
