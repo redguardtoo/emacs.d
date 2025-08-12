@@ -2,6 +2,8 @@
 
 ;; Please note functions here could be used in ~/.custom.el
 
+;;; Code:
+
 (defun local-require (pkg)
   "Require PKG in site-lisp directory."
   (unless (featurep pkg)
@@ -47,7 +49,7 @@
          (cands (my-nonempty-lines output)))
     (delq nil (delete-dups cands))))
 
-(defun run-cmd-and-replace-region (cmd)
+(defun my-run-cmd-and-replace-region (cmd)
   "Run CMD in shell on selected region or current buffer.
 Then replace the region or buffer with cli output."
   (let* ((orig-point (point))
@@ -107,18 +109,7 @@ Then replace the region or buffer with cli output."
   (let* ((face (get-text-property (or position (point)) 'face)))
     (unless (keywordp (car-safe face)) (list face))))
 
-;; String utilities missing from core emacs
-(defun string-all-matches (regex str &optional group)
-  "Find matches for REGEX in STR, returning the full match or GROUP."
-  (let ((result nil)
-        (pos 0)
-        (group (or group 0)))
-    (while (string-match regex str pos)
-      (push (match-string group str) result)
-      (setq pos (match-end group)))
-    result))
-
-(defun path-in-directory-p (file directory)
+(defun my-path-in-directory-p (file directory)
   "FILE is in DIRECTORY."
   (let* ((pattern (concat "^" (file-name-as-directory directory))))
     (if (string-match pattern file) file)))
@@ -561,6 +552,7 @@ Copied from 3rd party package evil-textobj."
      ;; remaining input is converted into Chinese pinyin regex.
      ((or (and (string-match "[:\|;]" (substring str 0 1))
                (setq str (substring str 1 len)))
+          ;; If current buffer matches certain pattern
           (and (setq bn (buffer-name))
                (or (member bn '("*Org Agenda*"))
                    (string-match ".*EMMS Playlist\\|\\.org$" bn))))

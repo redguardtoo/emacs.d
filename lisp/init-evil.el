@@ -616,8 +616,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
     (my-js-beautify indent-offset))
 
    ((derived-mode-p 'python-mode)
-    (when (and (boundp 'elpy-enabled-p) elpy-enabled-p))
-    (elpy-format-code))
+    (when (and (boundp 'elpy-enabled-p) elpy-enabled-p)
+      (elpy-format-code)))
 
    (t
     (message "Can only beautify code written in python/javascript"))))

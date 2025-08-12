@@ -1,7 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-;; Like "init-misc.el", the difference is this file is always loaded
+;; Like "init-misc.el", but this file is always loaded
 
+;;; Code:
 (defun my-multi-purpose-grep (n)
   "Run different grep from N."
   (interactive "P")

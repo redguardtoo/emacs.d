@@ -1,8 +1,8 @@
 ;; init-ai.el --- AI setup  -*- lexical-binding: t -*-
 ;
 (global-set-key (kbd "C-c RET") #'gptel-send)
-(setq gptel-default-mode 'org-mode)
 (with-eval-after-load 'gptel
+  (setq gptel-default-mode 'org-mode)
   (defvar my-deepseek-backend
     (gptel-make-ollama "AI deepseek-r1"
       :host "localhost:11434"

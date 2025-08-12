@@ -126,7 +126,7 @@ INDENT-SIZE decide the indentation level.
              (t
               2))))
     ;; do it!
-    (run-cmd-and-replace-region (concat executable
+    (my-run-cmd-and-replace-region (concat executable
                                         " --stdin "
                                         " --jslint-happy --brace-style=end-expand --keep-array-indentation "
                                         (format " --indent-size=%d " indent-size)))))
