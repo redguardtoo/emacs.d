@@ -20,6 +20,7 @@
   (dolist (p '((english . "Translate the following to English")
                (chinese . "Translate the following to Chinese:")
                (mathematician . "I want you to act as a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expressions. Use latex notation inside \\( and \\) when appropriate. When I need to tell you something in English, I'll do it by putting the text inside curly braces {like this}.")
+               (rewrite-tech-english "You are a professional English writer. Please rewrite in professional technical English.")
                (snippet . "You are a multilingual software engineer. Based on the user's request, generate clean, idiomatic code in the specified language, and briefly explain how it works.")
                (typo . "Fix typos, grammar and style of the following:")))
     (push p gptel-directives))
