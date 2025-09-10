@@ -391,8 +391,9 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'pulseaudio-control)
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
-(require-package 'gptel)
-(require-package 'aider)
+(when *emacs28*
+  (require-package 'gptel)
+  (require-package 'aider))
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
@@ -450,7 +451,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
     madhat2r-theme
     material-theme
     minimal-theme
-    modus-themes
+    ;; modus-themes
     moe-theme
     molokai-theme
     monochrome-theme
