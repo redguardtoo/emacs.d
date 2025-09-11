@@ -5,7 +5,7 @@
 ;; Without this comment emacs25 adds (package-initialize) here
 ;; (package-initialize)
 
-(let* ((minver "26.1"))
+(let* ((minver "28.1"))
   (when (version< emacs-version minver)
     (error "Emacs v%s or higher is required" minver)))
 
@@ -19,7 +19,6 @@
 (setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs28* (>= emacs-major-version 28))
 (setq *emacs29* (>= emacs-major-version 29))
 
 ;; don't GC during startup to save time

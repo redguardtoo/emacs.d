@@ -240,11 +240,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'writeroom-mode)
 (require-package 'haml-mode)
 (require-package 'markdown-mode)
-(unless *emacs28*
-  (require-package 'link)
-  (require-package 'connection)
-  ;; dictionary requires 'link and 'connection
-  (require-package 'dictionary))
 (require-package 'htmlize) ; prefer stable version
 (require-package 'jade-mode)
 (require-package 'diminish)
@@ -291,8 +286,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'company-native-complete)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
-(when *emacs28*
-  (require-package 'lsp-mode))
+(require-package 'lsp-mode)
 (require-package 'elpy)
 (require-package 'legalese)
 (require-package 'simple-httpd)
@@ -361,47 +355,35 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'pulseaudio-control)
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
-(when *emacs28*
-  (require-package 'gptel)
-  (require-package 'aider))
+(require-package 'gptel)
+(require-package 'aider)
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
-(when *emacs28*
-  (require-package 'magit))
+(require-package 'magit)
 
 (defvar my-color-themes
-  '(afternoon-theme ;
-    alect-themes ;
-    anti-zenburn-theme ;
-    apropospriate-theme ;
-    color-theme-sanityinc-solarized ;
-    color-theme-sanityinc-tomorrow ;
-    cyberpunk-theme ;
-    darktooth-theme ;
-    doom-themes ;
-    dracula-theme ;
-    gotham-theme ;
-    gruber-darker-theme ;
-    gruvbox-theme ;
-    inkpot-theme ;
-    kaolin-themes ;
-    leuven-theme ;
-    material-theme ;
-    ;; modus-themes
-    moe-theme ;
-    molokai-theme ;
-    monokai-theme ;
-    organic-green-theme ;
-    solarized-theme ;
-    spacemacs-theme ;
-    subatomic-theme ;
-    tango-plus-theme ;
-    tangotango-theme ;
-    tao-theme ;
-    ujelly-theme ;
-    zenburn-theme ;
-    )
+  '(afternoon-theme
+    alect-themes
+    color-theme-sanityinc-solarized
+    color-theme-sanityinc-tomorrow
+    darktooth-theme
+    doom-themes
+    dracula-theme
+    gotham-theme
+    gruber-darker-theme
+    gruvbox-theme
+    inkpot-theme
+    kaolin-themes
+    leuven-theme
+    material-theme
+    modus-themes
+    organic-green-theme
+    solarized-theme
+    spacemacs-theme
+    subatomic-theme
+    tangotango-theme
+    tao-theme)
   "Color themes for this setup.")
 
 

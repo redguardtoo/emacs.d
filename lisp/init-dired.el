@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun diredext-exec-git-command-in-shell (command &optional arg file-list)
+(defun my-diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
 If no files marked, always operate on current line in dired-mode."
   (interactive
@@ -111,7 +111,7 @@ If no files marked, always operate on current line in dired-mode."
   (local-set-key  "r" 'dired-up-directory)
   (local-set-key  "e" 'my-ediff-files)
   (local-set-key  "/" 'dired-isearch-filenames)
-  (local-set-key  "\\" 'diredext-exec-git-command-in-shell))
+  (local-set-key  "\\" 'my-diredext-exec-git-command-in-shell))
 (add-hook 'dired-mode-hook 'my-dired-mode-hook-setup)
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to use
