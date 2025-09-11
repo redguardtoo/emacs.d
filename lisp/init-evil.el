@@ -823,6 +823,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
   "hh" 'my-random-favorite-color-theme
+  "lt" 'counsel-load-theme
   "yy" 'my-hydra-zoom/body
   "ii" 'my-toggle-indentation
   "g" 'my-hydra-git/body
