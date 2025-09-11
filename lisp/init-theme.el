@@ -2,44 +2,6 @@
 
 (defvar my-favorite-color-themes nil "My favorite color themes.")
 
-(defvar my-random-color-themes
-  '(adwaita
-    aliceblue
-    bharadwaj
-    black-on-gray
-    blippblopp
-    emacs-21
-    emacs-nw
-    fischmeister
-    github
-    greiner
-    gtk-ide
-    high-contrast
-    jb-simple
-    kaolin-breeze
-    katester
-    leuven
-    marquardt
-    mccarthy
-    montz
-    occidental
-    oldlace
-    scintilla
-    sitaramv-nt
-    snowish
-    soft-stone
-    standard
-    tango
-    tango-plus
-    tangotango
-    tao-yang
-    vim-colors
-    whateveryouwant
-    wheat
-    xemacs
-    xp)
-  "Random color themes.")
-
 ;; someone mentioned that blink cursor could slow Emacs24.4
 ;; I couldn't care less about cursor, so turn it off explicitly
 ;; https://github.com/redguardtoo/emacs.d/issues/208
