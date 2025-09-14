@@ -268,7 +268,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
             ;; clean up old items in `my-dired-directory-history'
             ;; before adding new item
             (setq my-dired-directory-history
-                  (cl-remove-if-not #'file-exists-p my-dired-directory-history))
+                  (my-clear-dired-directory-history my-dired-directory-history))
 
             ;; add current directory into history
             (push file my-dired-directory-history)))
@@ -300,6 +300,26 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     (setq dired-listing-switches "-laGh1v --group-directories-first"))
 
   (setq dired-recursive-deletes 'always))
+
+(defun my-clear-dired-directory-history
+    (history)
+  "Return the HISTORY with inaccessible files removed.
+Using this instead of file-exists-p to handle tramp-file-name in
+history whose connection is dead.  In this case file-exists-p
+would try to connect first before checking.  This blocks the
+function when connection fails, and slows the function even the
+connection succeeds."
+
+  (cl-remove-if-not
+   (lambda (file)
+     (if (tramp-tramp-file-p file)
+         (if (process-live-p
+              (tramp-get-connection-process
+               (tramp-dissect-file-name file)))
+             (file-exists-p file)
+           nil)
+       (file-exists-p file)))
+   history))
 
 (defun my-computer-sleep-now ()
   "Make my computer sleep now."
