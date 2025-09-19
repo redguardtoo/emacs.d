@@ -44,5 +44,38 @@
   ;; (setq aider-args '("--model" "ollama_chat/gemma3n:latest")) ; google light weight model
   (setq aider-args '("--model" "ollama_chat/deepseek-r1:latest"))) ; deepseek
 
+(defun my-gptel-add-project-context ()
+  "Add the current Git project as context."
+  (interactive)
+  (my-ensure 'gptel)
+  (let ((project-root (locate-dominating-file default-directory ".git")))
+    (when project-root
+      (gptel-add-file project-root)
+      (message "Project context added to GPTel session."))))
+
+
+(defun my-gptel-analyze-latest-commit ()
+  "Analyze latest commit diff."
+  (interactive)
+  (my-ensure 'gptel)
+  (let* ((default-directory (locate-dominating-file "." ".git"))
+         (diff-output (shell-command-to-string "git show HEAD"))
+         (prompt (concat
+                  "Please analyze the following code changes from the latest Git commit. "
+                  "Consider the overall project context and provide insights on logic improvements, "
+                  "potential issues, or optimization suggestions:\n\n"
+                  diff-output)))
+    (gptel-request prompt
+      :callback (lambda (response info)
+                  (ignore info)
+                  (cond
+                   (response
+                    (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
+                      (erase-buffer)
+                      (insert response)
+                      (pop-to-buffer (current-buffer))))
+                   (t
+                    (message "No response is given.")))))))
+
 (provide 'init-ai)
 ;;; init-ai.el ends here
