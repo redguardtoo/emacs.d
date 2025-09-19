@@ -23,7 +23,8 @@
       (error nil))))
 
 (defun my-file-exists-p (file)
-  "Detect if a locale or remote FILE exists or not."
+  "Detect if a local or remote FILE exists."
+  (my-ensure 'tramp)
   (or (and (tramp-tramp-file-p file)
            (process-live-p (tramp-get-connection-process (tramp-dissect-file-name file))))
       (file-exists-p file)))
