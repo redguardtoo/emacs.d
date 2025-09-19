@@ -55,6 +55,7 @@
     esxml ; nov is dependent on latest esxml
     nov
     bbdb
+    gptel ; use its new features (https://github.com/karthink/gptel/pull/665) asap
     esup ; Emacs start up profiler
     native-complete
     company-native-complete
