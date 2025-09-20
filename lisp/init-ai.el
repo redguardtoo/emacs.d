@@ -54,16 +54,27 @@
       (message "Project context added to GPTel session."))))
 
 
-(defun my-gptel-analyze-latest-commit ()
-  "Analyze latest commit diff."
+(defun my-gptel-analyze-commit ()
+  "Analyze code commit in the current git project using GPTel.
+If current buffer is in diff format, buffer context is regarded as one commit;
+Or else latest git commit is used.,
+Adds project context and explicitly specifies the project root in the prompt.
+Displays the response in Org mode."
   (interactive)
   (my-ensure 'gptel)
-  (let* ((default-directory (locate-dominating-file "." ".git"))
-         (diff-output (shell-command-to-string "git show HEAD"))
+  (let* ((project-root (locate-dominating-file "." ".git"))
+         (default-directory project-root)
+         (diff-output (cond
+                       ((derived-mode-p 'diff-mode)
+                        (buffer-string))
+                       (t
+                        (shell-command-to-string "git show HEAD"))))
          (prompt (concat
-                  "Please analyze the following code changes from the latest Git commit. "
+                  "You are analyzing code from a Git project located at: " project-root "\n\n"
+                  "Please analyze the following code changes from the Git commit. "
                   "Consider the overall project context and provide insights on logic improvements, "
-                  "potential issues, or optimization suggestions:\n\n"
+                  "potential issues, or optimization suggestions. "
+                  "Format your response using Org mode syntax:\n\n"
                   diff-output)))
     (gptel-request prompt
       :callback (lambda (response info)
@@ -72,6 +83,7 @@
                    (response
                     (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
                       (erase-buffer)
+                      (org-mode)
                       (insert response)
                       (pop-to-buffer (current-buffer))))
                    (t
