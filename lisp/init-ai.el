@@ -68,7 +68,7 @@ Displays the response in Org mode."
                        ((derived-mode-p 'diff-mode)
                         (buffer-string))
                        (t
-                        (shell-command-to-string "git show HEAD"))))
+                        (shell-command-to-string "git show --unified=9999 HEAD"))))
          (prompt (concat
                   "You are analyzing code from a Git project located at: " project-root "\n\n"
                   "Please analyze the following code changes from the Git commit. "
