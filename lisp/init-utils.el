@@ -783,5 +783,13 @@ This function is written in pure Lisp and slow."
   (goto-char (point-min))
   (forward-line (1- n)))
 
+(defun my-git-commit-id ()
+  "Select commit id from current branch."
+  (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+         (collection (my-nonempty-lines (shell-command-to-string git-cmd)))
+         (item (completing-read "git log:" collection)))
+    (when item
+      (car (split-string item "|" t)))))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here

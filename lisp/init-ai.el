@@ -54,40 +54,50 @@
       (message "Project context added to GPTel session."))))
 
 
-(defun my-gptel-analyze-commit ()
+(defun my-gptel-analyze-commit (&optional pick-p)
   "Analyze code commit in the current git project using GPTel.
+When PICK-P is not nil, commit for diff start need be picked up by users.
 If current buffer is in diff format, buffer context is regarded as one commit;
 Or else latest git commit is used.,
 Adds project context and explicitly specifies the project root in the prompt.
 Displays the response in Org mode."
-  (interactive)
+  (interactive "P")
   (my-ensure 'gptel)
   (let* ((project-root (locate-dominating-file "." ".git"))
          (default-directory project-root)
-         (diff-output (cond
-                       ((derived-mode-p 'diff-mode)
-                        (buffer-string))
-                       (t
-                        (shell-command-to-string "git show --unified=9999 HEAD"))))
-         (prompt (concat
-                  "You are analyzing code from a Git project located at: " project-root "\n\n"
-                  "Please analyze the following code changes from the Git commit. "
-                  "Consider the overall project context and provide insights on logic improvements, "
-                  "potential issues, or optimization suggestions. "
-                  "Format your response using Org mode syntax:\n\n"
-                  diff-output)))
-    (gptel-request prompt
-      :callback (lambda (response info)
-                  (ignore info)
-                  (cond
-                   (response
-                    (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
-                      (erase-buffer)
-                      (org-mode)
-                      (insert response)
-                      (pop-to-buffer (current-buffer))))
-                   (t
-                    (message "No response is given.")))))))
+         (start (cond
+                 (pick-p
+                  (my-git-commit-id))
+                 (t
+                  "HEAD")))
+         diff-output
+         prompt)
+    (when start
+      (setq diff-output (cond
+                         ((derived-mode-p 'diff-mode)
+                          (buffer-string))
+                         (t
+                          (shell-command-to-string (format "git --no-pager diff --unified=10 %s^..HEAD"
+                                                           start)))))
+      (setq prompt (concat
+                    "You are analyzing code from a Git project located at: " project-root "\n\n"
+                    "Please analyze the following code changes from the Git commit. "
+                    "Consider the overall project context and provide insights on logic improvements, "
+                    "potential issues, or optimization suggestions. "
+                    "Format your response using Org mode syntax:\n\n"
+                    diff-output))
+      (gptel-request prompt
+        :callback (lambda (response info)
+                    (ignore info)
+                    (cond
+                     (response
+                      (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
+                        (erase-buffer)
+                        (org-mode)
+                        (insert response)
+                        (pop-to-buffer (current-buffer))))
+                     (t
+                      (message "No response is given."))))))))
 
 (provide 'init-ai)
 ;;; init-ai.el ends here
