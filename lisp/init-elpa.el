@@ -89,7 +89,6 @@
     ;; swiper
     ;; }}
     wgrep
-    elpy ; use latest elpy since Python package API changes
     tablist ; required by pdf-tools
     pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
     groovy-mode
@@ -288,7 +287,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
 (require-package 'lsp-mode)
-(require-package 'elpy)
+(require-package 'pyvenv)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
