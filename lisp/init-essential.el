@@ -251,7 +251,7 @@ If OTHER-SOURCE is 2, get keyword from `kill-ring'."
   "Switch to built in or 3rd party shell."
   (interactive)
   (cond
-   ((or (display-graphic-p) (daemonp))
+   ((display-graphic-p)
     (my-switch-to-builtin-shell))
    (t
     (suspend-frame))))
