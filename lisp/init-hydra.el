@@ -20,8 +20,7 @@
 [_z_] Jump around (z.sh)  [_sp_] Pomodoro pause      [_E_] replay
 [_bh_] Bash history       [_as_] Ascii table
 [_hh_] Favorite theme     [_T_] Typewriter on/off
-[_hr_] Random theme       [_V_] Old typewriter
-[_ka_] Kill other buffers
+[_ka_] Kill other buffers [_V_] Old typewriter
 [_ii_] Imenu
 [_id_] Insert date string
 [_aa_] Adjust subtitle
@@ -34,7 +33,6 @@
   ("d" my-recent-directory)
   ("bh" my-insert-bash-history)
   ("hh" my-random-favorite-color-theme)
-  ("hr" my-random-healthy-color-theme)
   ("ii" my-counsel-imenu)
   ("ka" my-kill-all-but-current-buffer)
   ("id" my-insert-date)

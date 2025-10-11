@@ -1,75 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defvar my-favorite-color-themes
-  '(srcery
-    atom-dark
-    atom-one-dark
-    doom-dracula
-    doom-gruvbox
-    doom-molokai
-    doom-monokai-classic
-    doom-monokai-machine
-    doom-monokai-octagon
-    doom-monokai-pro
-    doom-monokai-ristretto
-    doom-monokai-spectrum
-    doom-material-dark
-    doom-moonlight
-    doom-gruvbox
-    doom-xcode
-    doom-nova
-    doom-nord
-    doom-material-dark
-    doom-zenburn
-    deeper-blue
-    tango-dark
-    leuven-dark
-    solarized-dark-high-contrast
-    sanityinc-solarized-dark
-    sanityinc-tomorrow-blue
-    sanityinc-tomorrow-eighties
-    sanityinc-tomorrow-night
-    modus-vivendi
-    spacemacs-dark)
-  "My favorite color themes.")
-
-(defvar my-random-color-themes
-  '(adwaita
-    aliceblue
-    bharadwaj
-    black-on-gray
-    blippblopp
-    emacs-21
-    emacs-nw
-    fischmeister
-    github
-    greiner
-    gtk-ide
-    high-contrast
-    jb-simple
-    kaolin-breeze
-    katester
-    leuven
-    marquardt
-    mccarthy
-    montz
-    occidental
-    oldlace
-    scintilla
-    sitaramv-nt
-    snowish
-    soft-stone
-    standard
-    tango
-    tango-plus
-    tangotango
-    tao-yang
-    vim-colors
-    whateveryouwant
-    wheat
-    xemacs
-    xp)
-  "Random color themes.")
+(defvar my-favorite-color-themes nil "My favorite color themes.")
 
 ;; someone mentioned that blink cursor could slow Emacs24.4
 ;; I couldn't care less about cursor, so turn it off explicitly
@@ -80,35 +11,23 @@
 
 (defun my-pickup-random-color-theme (themes)
   "Pickup random color theme from THEMES."
-  (my-ensure 'counsel)
-  (let* ((available-themes (mapcar 'symbol-name themes))
+  (let* ((available-themes themes)
          (theme (nth (random (length available-themes)) available-themes)))
-    (counsel-load-theme-action theme)
+    (mapc #'disable-theme custom-enabled-themes)
+    (load-theme theme t)
     (message "Color theme [%s] loaded." theme)))
 
 ;; random color theme
-(defun my-random-favorite-color-theme ()
-  "Random color theme."
-  (interactive)
-  (my-pickup-random-color-theme (or my-favorite-color-themes
-                                    (custom-available-themes))))
-
-(defun my-random-healthy-color-theme (&optional join-dark-side)
-  "Random healthy color theme.  If JOIN-DARK-SIDE is t, use dark theme only."
+(defun my-random-favorite-color-theme (&optional any-theme)
+  "Random color theme.  If ANY-THEME is t, pick one from `(custom-available-themes)'."
   (interactive "P")
-  (let* (themes
-         (hour (string-to-number (format-time-string "%H" (current-time))))
-         (prefer-light-p (and (not join-dark-side) (>= hour 9) (<= hour 19)) ))
-    (dolist (theme (custom-available-themes))
-      (let* ((light-theme-p (or (and (string-match "light\\|bright\\|white" (symbol-name theme))
-                                     (not (string-match "^base16-\\|^airline-\\|^doom=\\|^alect-" (symbol-name theme)))
-                                     (not (member theme '(twilight
-                                                          avk-darkblue-white
-                                                          sanityinc-tomorrow-bright))))
-                                (member theme my-random-color-themes))))
-        (when (if prefer-light-p light-theme-p (not light-theme-p))
-          (push theme themes))))
-  (my-pickup-random-color-theme themes)))
+  (my-pickup-random-color-theme (if any-theme (custom-available-themes)
+                                  (or my-favorite-color-themes (custom-available-themes))) ))
+
+(defun my-current-theme ()
+  "Show current theme."
+  (interactive)
+  (message "%S" custom-enabled-themes))
 
 (defun my-theme-packages(packages)
   "Get themes from PACKAGES."

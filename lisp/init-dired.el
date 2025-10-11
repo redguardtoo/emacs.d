@@ -1,6 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun diredext-exec-git-command-in-shell (command &optional arg file-list)
+(defun my-diredext-exec-git-command-in-shell (command &optional arg file-list)
   "Run a shell command `git COMMAND`' on the marked files.
 If no files marked, always operate on current line in dired-mode."
   (interactive
@@ -111,7 +111,7 @@ If no files marked, always operate on current line in dired-mode."
   (local-set-key  "r" 'dired-up-directory)
   (local-set-key  "e" 'my-ediff-files)
   (local-set-key  "/" 'dired-isearch-filenames)
-  (local-set-key  "\\" 'diredext-exec-git-command-in-shell))
+  (local-set-key  "\\" 'my-diredext-exec-git-command-in-shell))
 (add-hook 'dired-mode-hook 'my-dired-mode-hook-setup)
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to use
@@ -141,7 +141,7 @@ If N is not nil, only list directories in current project."
   (interactive "P")
   (unless recentf-mode (recentf-mode 1))
   (let* ((cands (cl-remove-if-not
-                 #'file-exists-p
+                 #'my-file-exists-p
                  (delete-dups
                   (append my-dired-directory-history
                           (mapcar 'file-name-directory recentf-list)
@@ -152,7 +152,7 @@ If N is not nil, only list directories in current project."
     (when (and n root-dir)
       ;; return directories in project root
       (setq cands
-            (cl-remove-if-not (lambda (f) (path-in-directory-p f root-dir)) cands)))
+            (cl-remove-if-not (lambda (f) (my-path-in-directory-p f root-dir)) cands)))
 
     (when my-dired-exclude-directory-regexp
       (setq cands
@@ -265,10 +265,9 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
                    (not (string-match "\\.\\." file)))
           (unless (and my-dired-exclude-directory-regexp
                        (string-match my-dired-exclude-directory-regexp file))
-            ;; clean up old items in `my-dired-directory-history'
-            ;; before adding new item
+            ;; clean up `my-dired-directory-history' before adding new item
             (setq my-dired-directory-history
-                  (cl-remove-if-not #'file-exists-p my-dired-directory-history))
+                  (cl-remove-if-not #'my-file-exists-p my-dired-directory-history))
 
             ;; add current directory into history
             (push file my-dired-directory-history)))

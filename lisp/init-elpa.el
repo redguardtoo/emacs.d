@@ -55,6 +55,7 @@
     esxml ; nov is dependent on latest esxml
     nov
     bbdb
+    gptel ; use its new features (https://github.com/karthink/gptel/pull/665) asap
     esup ; Emacs start up profiler
     native-complete
     company-native-complete
@@ -79,6 +80,7 @@
     test-simple
     ;; }}
     iedit
+    pulseaudio-control
     undo-tree
     js-doc
     ;; {{ since stable v0.13.0 released, we go back to stable version
@@ -87,41 +89,8 @@
     ;; swiper
     ;; }}
     wgrep
-    ;; {{ themes in melpa unstable
-    ample-theme
-    molokai-theme
-    spacemacs-theme
-    leuven-theme
-    elpy ; use latest elpy since Python package API changes
-    sublime-themes
-    pyim-wbdict
-    tangotango-theme
-    ujelly-theme
-    afternoon-theme
-    organic-green-theme
-    inkpot-theme
-    flatui-theme
-    hc-zenburn-theme
-    naquadah-theme
-    seti-theme
-    spacegray-theme
-    jazz-theme
-    espresso-theme
-    phoenix-dark-pink-theme
-    tango-plus-theme
-    twilight-theme
-    minimal-theme
-    noctilux-theme
-    soothe-theme
-    heroku-theme
-    hemisu-theme
-    pulseaudio-control
-    badger-theme
-    distinguished-theme
-    tao-theme
     tablist ; required by pdf-tools
     pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
-    ;; }}
     groovy-mode
     company ; I won't wait another 2 years for stable
     simple-httpd
@@ -271,11 +240,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'writeroom-mode)
 (require-package 'haml-mode)
 (require-package 'markdown-mode)
-(unless *emacs28*
-  (require-package 'link)
-  (require-package 'connection)
-  ;; dictionary requires 'link and 'connection
-  (require-package 'dictionary))
 (require-package 'htmlize) ; prefer stable version
 (require-package 'jade-mode)
 (require-package 'diminish)
@@ -288,6 +252,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'swiper)
 (require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
+(require-package 'sudo-edit)
 (require-package 'counsel-bbdb)
 (require-package 'command-log-mode)
 (require-package 'regex-tool)
@@ -322,7 +287,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
 (require-package 'lsp-mode)
-(require-package 'elpy)
+(require-package 'pyvenv)
 (require-package 'legalese)
 (require-package 'simple-httpd)
 ;; (require-package 'git-gutter) ; use my patched version
@@ -400,106 +365,25 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (defvar my-color-themes
   '(afternoon-theme
     alect-themes
-    ample-theme
-    ample-zen-theme
-    anti-zenburn-theme
-    apropospriate-theme
-    atom-dark-theme
-    atom-one-dark-theme
-    badwolf-theme
-    base16-theme
-    birds-of-paradise-plus-theme
-    bubbleberry-theme
-    busybee-theme
-    cherry-blossom-theme
-    clues-theme
     color-theme-sanityinc-solarized
     color-theme-sanityinc-tomorrow
-    cyberpunk-theme
-    dakrone-theme
-    darkmine-theme
-    darkokai-theme
     darktooth-theme
-    django-theme
     doom-themes
     dracula-theme
-    espresso-theme
-    exotica-theme
-    eziam-themes
-    fantom-theme
-    farmhouse-themes
-    flatland-theme
-    flatui-theme
-    gandalf-theme
     gotham-theme
-    grandshell-theme
     gruber-darker-theme
     gruvbox-theme
-    hc-zenburn-theme
-    hemisu-theme
-    heroku-theme
     inkpot-theme
-    ir-black-theme
-    jazz-theme
-    jbeans-theme
     kaolin-themes
     leuven-theme
-    light-soap-theme
-    lush-theme
-    madhat2r-theme
     material-theme
-    minimal-theme
     modus-themes
-    moe-theme
-    molokai-theme
-    monochrome-theme
-    monokai-theme
-    mustang-theme
-    naquadah-theme
-    noctilux-theme
-    nord-theme
-    obsidian-theme
-    occidental-theme
-    oldlace-theme
-    omtose-phellack-themes
     organic-green-theme
-    phoenix-dark-mono-theme
-    phoenix-dark-pink-theme
-    planet-theme
-    professional-theme
-    purple-haze-theme
-    railscasts-theme
-    rebecca-theme
-    reverse-theme
-    seti-theme
-    smyx-theme
-    soft-charcoal-theme
-    soft-morning-theme
-    soft-stone-theme
     solarized-theme
-    soothe-theme
-    spacegray-theme
     spacemacs-theme
-    srcery-theme
     subatomic-theme
-    subatomic256-theme
-    sublime-themes
-    sunny-day-theme
-    tango-2-theme
-    tango-plus-theme
     tangotango-theme
-    tao-theme
-    toxi-theme
-    twilight-anti-bright-theme
-    twilight-bright-theme
-    twilight-theme
-    ujelly-theme
-    underwater-theme
-    vscode-dark-plus-theme
-    white-sand-theme
-    zen-and-art-theme
-    zenburn-theme
-    zerodark-theme)
+    tao-theme)
   "Color themes for this setup.")
 
 

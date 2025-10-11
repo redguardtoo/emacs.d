@@ -12,7 +12,7 @@
         "\n" "\n;; " ; comment each line
         (replace-regexp-in-string
          "\\(\n$\\|\\|\\[m *\\|\\[[0-9][0-9];?[0-9]?m *\\|\\[;m\\)" ""    ; remove trailing line break
-         (shell-command-to-string fortune-prog)))))
+         (shell-command-to-string (concat "FORTUNEZH_NOCOLOR=1 " fortune-prog))))))
      (t
       (concat ";; Happy hacking "
               (or user-login-name "")

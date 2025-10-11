@@ -298,6 +298,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 ;; with upper cased character or 'g' or special character except "=" and "-"
 (evil-declare-key 'normal org-mode-map
   "gh" 'outline-up-heading
+  "gl" 'org-latex-preview
   "$" 'org-end-of-line ; smarter behavior on headlines etc.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
@@ -614,10 +615,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
    ((derived-mode-p 'js-mode)
     (my-js-beautify indent-offset))
 
-   ((derived-mode-p 'python-mode)
-    (when (and (boundp 'elpy-enabled-p) elpy-enabled-p))
-    (elpy-format-code))
-
    (t
     (message "Can only beautify code written in python/javascript"))))
 
@@ -768,7 +765,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "7" 'winum-select-window-7
   "8" 'winum-select-window-8
   "9" 'winum-select-window-9
-  "xm" 'counsel-M-x
+  "xm" 'execute-extended-command
   "xx" 'er/expand-region
   ;; `counsel-find-file' has more actions (press "M-o" to trigger more actions)
   "xf" (if (functionp 'counsel-find-file) 'counsel-find-file 'find-file)
@@ -822,7 +819,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
   "hh" 'my-random-favorite-color-theme
-  "hr" 'my-random-healthy-color-theme
+  "lt" 'counsel-load-theme
   "yy" 'my-hydra-zoom/body
   "ii" 'my-toggle-indentation
   "g" 'my-hydra-git/body

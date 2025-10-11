@@ -49,6 +49,10 @@ If SUBDIR-P is t, play videos in sub-directories too."
   (my-ensure 'emms)
   (my-ensure 'emms-player-simple)
 
+  ;; full screen
+  (unless (member "-fs" emms-player-mplayer-parameters)
+    (push "-fs" emms-player-mplayer-parameters))
+
   (unless my-emms-mplayer-no-video-or-cover-art
     ;; no cd art
     (dolist (p '("null" "-vo" ))

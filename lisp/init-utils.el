@@ -2,6 +2,8 @@
 
 ;; Please note functions here could be used in ~/.custom.el
 
+;;; Code:
+
 (defun local-require (pkg)
   "Require PKG in site-lisp directory."
   (unless (featurep pkg)
@@ -19,6 +21,13 @@
     (condition-case nil
         (require feature)
       (error nil))))
+
+(defun my-file-exists-p (file)
+  "Detect if a local or remote FILE exists."
+  (my-ensure 'tramp)
+  (or (and (tramp-tramp-file-p file)
+           (process-live-p (tramp-get-connection-process (tramp-dissect-file-name file))))
+      (file-exists-p file)))
 
 (defun my-hostname ()
   "Return stripped output of cli program hostname."
@@ -47,7 +56,7 @@
          (cands (my-nonempty-lines output)))
     (delq nil (delete-dups cands))))
 
-(defun run-cmd-and-replace-region (cmd)
+(defun my-run-cmd-and-replace-region (cmd)
   "Run CMD in shell on selected region or current buffer.
 Then replace the region or buffer with cli output."
   (let* ((orig-point (point))
@@ -107,18 +116,7 @@ Then replace the region or buffer with cli output."
   (let* ((face (get-text-property (or position (point)) 'face)))
     (unless (keywordp (car-safe face)) (list face))))
 
-;; String utilities missing from core emacs
-(defun string-all-matches (regex str &optional group)
-  "Find matches for REGEX in STR, returning the full match or GROUP."
-  (let ((result nil)
-        (pos 0)
-        (group (or group 0)))
-    (while (string-match regex str pos)
-      (push (match-string group str) result)
-      (setq pos (match-end group)))
-    result))
-
-(defun path-in-directory-p (file directory)
+(defun my-path-in-directory-p (file directory)
   "FILE is in DIRECTORY."
   (let* ((pattern (concat "^" (file-name-as-directory directory))))
     (if (string-match pattern file) file)))
@@ -561,6 +559,7 @@ Copied from 3rd party package evil-textobj."
      ;; remaining input is converted into Chinese pinyin regex.
      ((or (and (string-match "[:\|;]" (substring str 0 1))
                (setq str (substring str 1 len)))
+          ;; If current buffer matches certain pattern
           (and (setq bn (buffer-name))
                (or (member bn '("*Org Agenda*"))
                    (string-match ".*EMMS Playlist\\|\\.org$" bn))))
@@ -783,6 +782,14 @@ This function is written in pure Lisp and slow."
   "Goto line N."
   (goto-char (point-min))
   (forward-line (1- n)))
+
+(defun my-git-commit-id ()
+  "Select commit id from current branch."
+  (let* ((git-cmd "git --no-pager log --date=short --pretty=format:'%h|%ad|%s|%an'")
+         (collection (my-nonempty-lines (shell-command-to-string git-cmd)))
+         (item (completing-read "git log:" collection)))
+    (when item
+      (car (split-string item "|" t)))))
 
 (provide 'init-utils)
 ;;; init-utils.el ends here

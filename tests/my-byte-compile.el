@@ -72,7 +72,6 @@
 (require 'find-file-in-project)
 (require 'flymake)
 (require 'elec-pair)
-(require 'elpy)
 (require 'rjsx-mode)
 (require 'simple-httpd)
 (require 'vc)

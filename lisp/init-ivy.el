@@ -105,7 +105,7 @@ If N is 2, list files in my recent 20 commits."
     (cond
      ((and (eq n 1) root-dir)
       (setq hint (format "Recent files in %s: " root-dir))
-      (setq files (delq nil (delete-dups (mapcar (lambda (f) (path-in-directory-p f root-dir)) files)))))
+      (setq files (delq nil (delete-dups (mapcar (lambda (f) (my-path-in-directory-p f root-dir)) files)))))
      ((eq n 2)
       (setq hint (format "Files in recent Git commits: "))
       (setq files (my-git-recent-files))))
