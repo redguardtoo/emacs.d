@@ -47,6 +47,7 @@
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
     pos-tip
+    kotlin-mode ; no package on stable.melpa.org
     racket-mode
     auto-package-update
     web-mode
@@ -229,6 +230,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'wgrep)
 (require-package 'request)
 (require-package 'lua-mode)
+(require-package 'kotlin-mode)
 (require-package 'yaml-mode)
 (require-package 'paredit)
 (require-package 'findr)
