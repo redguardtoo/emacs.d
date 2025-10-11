@@ -5,6 +5,9 @@
 ;; Without this comment emacs25 adds (package-initialize) here
 ;; (package-initialize)
 
+(setenv "PATH" "~/Library/Python/3.9/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/sbin:/usr/sbin:/Library/TeX/texbin:~/.local/bin:~/Nustore/script:~/go/bin:/opt/local/bin")
+(setq exec-path (split-string (getenv "PATH") path-separator))
+
 (let* ((minver "26.1"))
   (when (version< emacs-version minver)
     (error "Emacs v%s or higher is required" minver)))
