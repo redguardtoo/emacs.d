@@ -17,7 +17,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 (require 'cl-lib)
@@ -36,115 +36,110 @@
 
 (defvar diff-lisp-debug nil "Debug flag.")
 
-(defmacro diff-lisp-string-equal (a b x y)
-  "Test if string A[X] equals string B[Y].
-Please note the string is converted to a integer hash."
-  `(eq (nth ,x ,a) (nth ,y ,b)))
-
-(defun diff-lisp-show-v (v half-v-size)
-  "Show content of V.  HALF-V-SIZE is used to get k diagonal."
-  (let* ((i 0)
-         (len (length v))
-         k
-         x
-         rlt)
-    (while (< i len)
-      (setq x (aref v i))
-      (when x
-        (setq k (- i half-v-size))
-        (push (format "k=%s end=(%s,%s)" k x (- x k)) rlt))
-      (setq i (1+ i)))
-    (nreverse rlt)))
+(defsubst diff-lisp-string-equal (a b x y)
+  "Test if hash at A[X] equals hash at B[Y]."
+  (= (aref a x) (aref b y)))
 
 (defun diff-lisp-file-to-string (file)
   "Read FILE into string."
-  (cond
-   ((and file (file-readable-p file))
-    (with-temp-buffer
-      (insert-file-contents file)
-      (buffer-string)))
-   (t
-    "")))
+  (if (and file (file-readable-p file))
+      (with-temp-buffer
+        (insert-file-contents file)
+        (buffer-string))
+    ""))
 
-(defmacro diff-lisp-hash (h c)
-  "Do hash calculation on hash H and character C."
-  `(setq ,h (mod (+ ,h (* ,h 32) ,c) most-positive-fixnum)))
+(defsubst diff-lisp-hash (h c)
+  "Update hash H with character code C."
+  (mod (+ h (* h 32) c) most-positive-fixnum))
 
-(defmacro diff-lisp-hash-record (s)
+(defsubst diff-lisp-hash-record (s)
   "Return hash of string S.  See xdl_hash_record from git."
-  `(let ((h 5381)
-         (len (length ,s))
-         (i 0))
-     (while (< i len)
-       ;; `aref' is faster then `elt'
-       (diff-lisp-hash h (aref ,s i))
-       (setq i (1+ i)))
-     h))
+  (let ((h 5381)
+        (len (length s)))
+    (dotimes (i len h)
+      (setq h (diff-lisp-hash h (aref s i))))
+  h))
 
-(defmacro diff-lisp-whitespace-p (c)
-  "Test if C is a whitespace character."
-  `(or (eq ,c 32) (eq ,c 9)))
+(defsubst diff-lisp-whitespace-p (c)
+  "Test if C is a whitespace character (space or tab)."
+  (or (= c 32) (= c 9)))
 
-(defmacro diff-lisp-hash-record-with-whitespace (s)
-  "Return hash of string S.  See xdl_hash_record_with_whitespace from git."
-  `(let ((h 5381)
-         (len (length ,s))
-         last
-         at-eol
-         c
-         i
+(defmacro diff-lisp-spaces-hash (hash first last)
+  "Get HASH of consecutive space characters with index of FIRST and LAST."
+  `(while (<= ,first ,last)
+            (setq ,hash (diff-lisp-hash ,hash 32))
+            (setq ,first (1+ ,first))))
+
+(defsubst diff-lisp-hash-record-with-whitespace (s)
+  "Return hash of string S with whitespace rules.
+See xdl_hash_record_with_whitespace from git."
+  (let* ((h 5381)
+         (len (length s))
+         (ignore-cr diff-lisp-ignore-cr-at-eol)
+         (last (1- len))
          (i 0)
          j
-         (ignore-cr diff-lisp-ignore-cr-at-eol))
+         at-eol
+         c)
+    (while (< i len)
+      (setq c (aref s i))
+      (cond
 
-     (setq last (1- len))
-     (while (< i len)
-       (setq c (aref ,s i))
-       (cond
-        ;; ignore cr at eol
-        ((and ignore-cr (eq c 31) (eq i last)))
+       ;; ignore CR at eol (Windows-style line ending)
+       ((and ignore-cr (= c 13) (= i last)))
 
-        ;; handle white space rules
-        ((diff-lisp-whitespace-p c)
-         (setq j i)
-         ;; if next character is also whitespace, ignore current character
-         (while (and (< i last) (diff-lisp-whitespace-p (aref ,s (1+ i))))
-           (setq i (1+ i)))
-         (setq at-eol (eq i last))
-         (cond
-          (diff-lisp-ignore-whitespace
-           ;; already handled
-           )
+       ;; whitespace rules
+       ((diff-lisp-whitespace-p c)
+        (setq j i)
+        ;; coalesce consecutive whitespace
+        (while (and (< i last)
+                    (diff-lisp-whitespace-p (aref s (1+ i))))
+          (setq i (1+ i)))
+        (setq at-eol (= i last))
+        (cond
+         ;; ignore all whitespace
+         (diff-lisp-ignore-whitespace)
 
-          ((and diff-lisp-ignore-whitespace-change (not at-eol))
-           (diff-lisp-hash h 32))
+         ;; space sequences in the middle regarded as single space
+         ((and diff-lisp-ignore-whitespace-change (not at-eol))
+          (setq h (diff-lisp-hash h 32)))
 
-          ((and diff-lisp-ignore-whitespace-at-eol (not at-eol))
-           (while (< j (1+ i))
-             (diff-lisp-hash h (aref ,s j))
-             (setq j (1+ j))))))
+         ;; skip trailing spaces
+         ((and diff-lisp-ignore-whitespace-change at-eol))
 
-        (t
-         (diff-lisp-hash h c)))
+         ((and diff-lisp-ignore-whitespace-at-eol (not at-eol))
+          ;; keep original white spaces between j..i
+          (diff-lisp-spaces-hash h j i))
 
-       (setq i (1+ i)))
-     h))
+         ;; skip trailing spaces
+         ((and diff-lisp-ignore-whitespace-at-eol at-eol))
 
-(defun diff-lisp-lines-to-hash-list (lines)
-  "Convert LINES to hash list."
-  (let (rlt)
+         ;; count all spaces
+         (t
+          (diff-lisp-spaces-hash h j i))))
+
+       ;; normal character
+       (t
+        (setq h (diff-lisp-hash h c))))
+      (setq i (1+ i)))
+
+    h))
+
+(defsubst diff-lisp-line-to-hash (lines)
+  "Convert each item of LINES into efficient hash."
+  (let* ((len (length lines))
+         (rlt (make-vector len nil)))
     (cond
      ((or diff-lisp-ignore-whitespace
           diff-lisp-ignore-whitespace-change
           diff-lisp-ignore-whitespace-at-eol
           diff-lisp-ignore-cr-at-eol)
-      (dolist (line lines)
-        (push (diff-lisp-hash-record-with-whitespace line) rlt)))
-
+      (dotimes (i len)
+        (aset rlt i (diff-lisp-hash-record-with-whitespace (aref lines i)))))
      (t
-      (dolist (line lines)
-        (push (diff-lisp-hash-record line) rlt))))
+      (dotimes (i len)
+        (aset rlt i (diff-lisp-hash-record (aref lines i))))))
+     rlt))
 
-    (nreverse rlt)))
 (provide 'diff-lisp-sdk)
 ;;; diff-lisp-sdk.el ends here
