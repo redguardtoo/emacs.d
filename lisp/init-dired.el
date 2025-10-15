@@ -270,7 +270,9 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
                   (cl-remove-if-not #'my-file-exists-p my-dired-directory-history))
 
             ;; add current directory into history
-            (push file my-dired-directory-history)))
+            (unless (or (string-match "/\\.$" file) (member file my-dired-directory-history))
+              (push file my-dired-directory-history))))
+
         (apply orig-func args)))))
   (advice-add 'dired-find-file :around #'my-dired-find-file-hack)
 
