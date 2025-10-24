@@ -28,6 +28,7 @@
   - [[#better-runtime-performance][Better runtime performance]]
   - [[#key-bindings][Key bindings]]
 - [[#faq][FAQ]]
+  - [[#set-up-emacs-service][Set up Emacs service]]
   - [[#computers-with-smaller-memory][Computers with smaller memory]]
   - [[#vim-vs-emacs][Vim vs Emacs]]
   - [[#backup-packages][Backup packages]]
@@ -296,6 +297,58 @@ Besides, "[[http://redguardtoo.github.io/posts/how-to-be-extremely-efficient-in-
 
 Press =kj= to escape from =evil-insert-state= and everything else in Emacs. It's much more efficient than =ESC= in Vim or =C-g= in Emacs. Search =evil-escape= in =init-evil.el= for details.
 * FAQ
+** Set up Emacs service
+Use [[file:tools/start-emacs-daemon.sh]] to set up emacs service.
+*** macOS
+Create "~/Library/LaunchAgents/org.gnu.emacs.daemon.plist",
+#+begin_src xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>org.gnu.emacs.daemon</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>/path/to/start-emacs-daemon.sh</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/emacs-daemon.out</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/emacs-daemon.err</string>
+  </dict>
+</plist>
+#+end_src
+Run =launchctl load ~/Library/LaunchAgents/org.gnu.emacs.daemon.plist && launchctl start org.gnu.emacs.daemon= to enable&start emacs daemon on macOS.
+*** Linux
+create "~/.config/systemd/user/emacs.service",
+#+begin_src confg
+[Unit]
+Description=Emacs text editor
+Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
+
+[Service]
+Type=forking
+ExecStart=/path/to/start-emacs-daemon.sh
+ExecStop=/path/to/start-emacs-daemon.sh stop
+Environment=SSH_AUTH_SOCK=%t/keyring/ssh
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
+#+end_src
+Run =systemctl --user enable emacs.service && systemctl --user start emacs.service= to enable&start emacs daemon on Linux.
+
 ** Computers with smaller memory
 Make sure you have this line in =early-init.el= or at the beginning of =init.el=,
 #+begin_src elisp
