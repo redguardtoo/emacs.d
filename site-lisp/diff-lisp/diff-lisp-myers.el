@@ -23,17 +23,13 @@
 
 (require 'diff-lisp-sdk)
 
-(defsubst diff-lisp-myers-get-v (v index offset)
-  "Get V's element at INDEX offset by OFFSET."
-  ;; (message "v=%s" v)
-  ;; (message "index=%s" index)
-  ;; (message "offset=%s" offset)
-  ;; (message "rlt=%s" (aref v (+ index offset)))
-  (aref v (+ index offset)))
+(defsubst diff-lisp-myers-get-v (v index-plus-offset)
+  "Get V's element at INDEX-PLUS-OFFSET."
+  (aref v index-plus-offset))
 
-(defsubst diff-lisp-myers-set-v (v index offset value)
-  "Set V's element at INDEX offset by OFFSET to VALUE."
-  (aset v (+ index offset) value))
+(defsubst diff-lisp-myers-set-v (v index-plus-offset value)
+  "Set V's element at INDEX-PLUS-OFFSET to VALUE."
+  (aset v index-plus-offset value))
 
 (defsubst diff-lisp-create-snake (difference x y u v)
   "Create a snake using DIFFERENCE X Y U V."
@@ -62,30 +58,37 @@ Second sequence is subsequence of B, which starts from B-START with length M."
          d
          k
          inverse-k ; k+delta
+         k-plus-v1-offset
+         inverse-k-plus-v2-offset
          x
-         y)
+         y
+         neg-d
+         d-minus-one)
 
     ;; initialize start point of the first forward D-path: x = 0, y = 1
-    (diff-lisp-myers-set-v v1 1 v1-offset 0)
+    (diff-lisp-myers-set-v v1 (1+ v1-offset) 0)
     ;; initialize start point of the first reverse D-path: x = n+1, y = m
-    (diff-lisp-myers-set-v v2 (1+ delta) v2-offset (1+ n))
+    (diff-lisp-myers-set-v v2 (+ 1 delta v2-offset) (1+ n))
 
     (setq d 0)
     (while (and (not path-found) (<= d max-d))
+      (setq neg-d (- d))
+      (setq d-minus-one (1- d))
       ;; forward d-path reaching
-      (setq k (- d))
+      (setq k neg-d)
       (while (and (not path-found) (<= k d))
+        (setq k-plus-v1-offset (+ k v1-offset))
         (cond
-         ((or (= k (- d))
+         ((or (= k neg-d)
               (and (/= k d)
-                   (< (diff-lisp-myers-get-v v1 (1- k) v1-offset)
-                      (diff-lisp-myers-get-v v1 (1+ k) v1-offset))))
+                   (< (diff-lisp-myers-get-v v1 (1- k-plus-v1-offset))
+                      (diff-lisp-myers-get-v v1 (1+ k-plus-v1-offset)))))
           ;; move down from D-path in above diagonal
-          (setq x (diff-lisp-myers-get-v v1 (1+ k) v1-offset)))
+          (setq x (diff-lisp-myers-get-v v1 (1+ k-plus-v1-offset))))
 
          (t
           ;; move right from D-path in below diagonal
-          (setq x (1+ (diff-lisp-myers-get-v v1 (1- k) v1-offset)))))
+          (setq x (1+ (diff-lisp-myers-get-v v1 (1- k-plus-v1-offset))))))
 
         (setq y (- x k))
 
@@ -98,17 +101,17 @@ Second sequence is subsequence of B, which starts from B-START with length M."
           (setq x (1+ x))
           (setq y (1+ y)))
 
-        (diff-lisp-myers-set-v v1 k v1-offset x)
+        (diff-lisp-myers-set-v v1 k-plus-v1-offset x)
 
         (when (and delta-odd-p
-                   (>= k (- delta (1- d)))
-                   (<= k (+ delta (1- d))))
+                   (>= k (- delta d-minus-one))
+                   (<= k (+ delta d-minus-one)))
           ;; Overlaps furthest reaching reverse (D-1)-path in diagonal k?
           ;; Right now the reverse (D-1)-path are stored in v2.
-          (when (>= x (diff-lisp-myers-get-v v2 k v2-offset))
+          (when (>= x (diff-lisp-myers-get-v v2 (+ k v2-offset)))
             (setq path-found t)
             ;; TODO, the last snake of the forward path is the middle snake
-            (setq rlt (diff-lisp-create-snake (+ d d -1)
+            (setq rlt (diff-lisp-create-snake (+ d d-minus-one)
                                               last-forward-snake-x
                                               last-forward-snake-y
                                               x
@@ -117,20 +120,21 @@ Second sequence is subsequence of B, which starts from B-START with length M."
         (setq k (+ k 2)))
 
       ;; reverse d-path reaching
-      (setq k (- d))
+      (setq k neg-d)
       (while (and (not path-found) (<= k d))
         (setq inverse-k (+ k delta))
+        (setq inverse-k-plus-v2-offset (+ inverse-k v2-offset))
         (cond
          ((or (= inverse-k (- delta d))
               (and (/= inverse-k (+ delta d))
-                   (<= (diff-lisp-myers-get-v v2 (1+ inverse-k) v2-offset)
-                       (diff-lisp-myers-get-v v2 (1- inverse-k) v2-offset))))
+                   (<= (diff-lisp-myers-get-v v2 (1+ inverse-k-plus-v2-offset))
+                       (diff-lisp-myers-get-v v2 (1- inverse-k-plus-v2-offset)))))
           ;; move left from D-path in above diagonal
-          (setq x (1- (diff-lisp-myers-get-v v2 (1+ inverse-k) v2-offset))))
+          (setq x (1- (diff-lisp-myers-get-v v2 (1+ inverse-k-plus-v2-offset)))))
 
          (t
           ;; move up from D-path in below diagonal
-          (setq x (diff-lisp-myers-get-v v2 (1- inverse-k) v2-offset))))
+          (setq x (diff-lisp-myers-get-v v2 (1- inverse-k-plus-v2-offset)))))
 
         (setq y (- x inverse-k))
 
@@ -143,15 +147,15 @@ Second sequence is subsequence of B, which starts from B-START with length M."
           (setq x (1- x))
           (setq y (1- y)))
 
-        (diff-lisp-myers-set-v v2 inverse-k v2-offset x)
+        (diff-lisp-myers-set-v v2 inverse-k-plus-v2-offset x)
 
 
         (when (and (not delta-odd-p)
-                   (>= inverse-k (- d))
+                   (>= inverse-k neg-d)
                    (<= inverse-k d))
           ;; If the path overlaps the furthest reaching forward D-path in diagonal inverse-k?
           ;; Right now the forward D-path are stored in v1.
-          (when (<= x (diff-lisp-myers-get-v v1 inverse-k v1-offset))
+          (when (<= x (diff-lisp-myers-get-v v1 (+ inverse-k v1-offset)))
             (setq path-found t)
             ;; the last snake of the reverse path is the middle snake
             (setq rlt (diff-lisp-create-snake (+ d d)
