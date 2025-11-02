@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021-2025 Chen Bin
 ;;
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Keywords: convenience patch diff vc
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/diff-lisp
@@ -173,15 +173,15 @@ Similar to xdl_emit_diff in git."
         (setq y2 (+ y2 diff-lisp-output-unified-context))
 
         (cond
-         ((setq recent-change (nth 0 changes))
+         ((and (setq recent-change (nth 0 changes))
+               (or (<= x1 (nth 2 recent-change))
+                   (<= y1 (nth 3 recent-change))))
           ;; If the hunk overlaps with latest change, merge it into the change
-          (when (or (<= x1 (nth 2 recent-change))
-                    (<= y1 (nth 3 recent-change)))
-            (setf (nth 2 (nth 0 changes)) (min x2 a-length))
-            (setf (nth 3 (nth 0 changes)) (min y2 b-length))
-            (setq hunk-list (nth 4 recent-change))
-            (push hunk hunk-list)
-            (setf (nth 4 (nth 0 changes)) hunk-list)))
+          (setf (nth 2 (nth 0 changes)) (min x2 a-length))
+          (setf (nth 3 (nth 0 changes)) (min y2 b-length))
+          (setq hunk-list (nth 4 recent-change))
+          (push hunk hunk-list)
+          (setf (nth 4 (nth 0 changes)) hunk-list))
 
          (t
           (push (list (max x1 0)
