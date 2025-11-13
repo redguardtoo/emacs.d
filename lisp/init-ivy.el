@@ -57,7 +57,7 @@
 
 (global-set-key (kbd "C-x b") 'ivy-switch-buffer)
 
-(define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+(define-key read-expression-map (kbd "C-r") 'counsel-minibuffer-history)
 
 (defvar my-git-recent-files-extra-options ""
   "Extra options for git recent files.
