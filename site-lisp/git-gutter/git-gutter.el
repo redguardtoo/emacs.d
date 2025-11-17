@@ -250,8 +250,8 @@ Argument TEST is the case before BODY execution."
 (defun git-gutter:in-git-repository-p ()
   (when (executable-find "git" t)
     (with-temp-buffer
-      (when-let ((exec-result (git-gutter:execute-command
-                               "git" t "rev-parse" "--is-inside-work-tree")))
+      (when-let* ((exec-result (git-gutter:execute-command
+                                "git" t "rev-parse" "--is-inside-work-tree")))
         (when (zerop exec-result)
           (goto-char (point-min))
           (looking-at-p "true"))))))
