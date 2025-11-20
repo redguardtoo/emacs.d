@@ -4,18 +4,10 @@
 (defvar my-yasnippets-dir nil
   "The directory of my yasnippets is  \"~/my-yasnippets\".")
 
-(defun my-enable-yas-minor-mode ()
-  "Enable `yas-minor-mode'."
-  (when (or (not (my-buffer-file-temp-p))
-            (derived-mode-p 'prog-mode))
-    (yas-minor-mode 1)))
-
-(add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
-(add-hook 'text-mode-hook 'my-enable-yas-minor-mode)
-;; {{ modes do NOT inherit from prog-mode
-(add-hook 'cmake-mode-hook 'my-enable-yas-minor-mode)
-(add-hook 'web-mode-hook 'my-enable-yas-minor-mode)
-;; }}
+(add-hook 'prog-mode-hook 'yas-minor-mode-on)
+(add-hook 'text-mode-hook (lambda ()
+                            (unless (my-buffer-file-temp-p)
+                              (yas-minor-mode-on))))
 
 (defun my-yas-expand-from-trigger-key-hack (orig-func &rest args)
   "Tab key won't trigger yasnippet expand in org heading."
@@ -33,7 +25,7 @@
   (interactive)
   (yas-compile-directory (file-truename (concat my-emacs-d "snippets")))
   (yas-reload-all)
-  (my-enable-yas-minor-mode))
+  (yas-minor-mode-on))
 
 (defun my-yas-field-to-statement(str sep)
   "If STR=='a.b.c' and SEP=' && ', 'a.b.c' => 'a && a.b && a.b.c'"
