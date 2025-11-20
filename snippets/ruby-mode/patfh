@@ -1,3 +1,0 @@
-# This was cloned from a TextMate bundle for yasnippet.
-# --
-File.join(File.dirname(__FILE__), *%w[${1:rel path here}])

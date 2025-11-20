@@ -1,5 +1,0 @@
-#name : before (rspec)
-# --
-before(:each) do
-  @${1:model} = ${1:$(replace-regexp-in-string "_" "" (upcase-initials yas-text))}.new$0
-end

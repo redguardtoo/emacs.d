@@ -1,4 +1,0 @@
-#name : validates_confirmation_of : ... 
-#group: ActiveRecord
-# --
-validates_confirmation_of :${attr}

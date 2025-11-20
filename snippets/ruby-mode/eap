@@ -1,3 +1,0 @@
-# This was cloned from a TextMate bundle for yasnippet.
-# --
-each_pair { |${1:name}, ${2:val}| $0 }

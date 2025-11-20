@@ -1,3 +1,0 @@
-#name: and_raise($error)
-# --
-and_raise(${1:RuntimeError})$0

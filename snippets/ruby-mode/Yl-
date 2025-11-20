@@ -1,3 +1,0 @@
-#name : YAML.load(file)
-# --
-File.open("${1:path/to/file.yaml}") { |${2:file}| YAML.load(${2:file}) }

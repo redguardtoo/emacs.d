@@ -1,4 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name : assert(true)
-# --
-assert(true) $0

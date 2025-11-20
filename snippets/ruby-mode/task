@@ -1,5 +1,0 @@
-#name : task :name ... end
-# --
-task :${2:name} do
-  $0
-end

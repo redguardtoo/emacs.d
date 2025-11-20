@@ -1,3 +1,0 @@
-#name : scan(/../) { |match| .. }
-# --
-scan(/${1:pattern}/) { |${2:match}| $0 }

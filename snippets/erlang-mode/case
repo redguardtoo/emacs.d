@@ -1,9 +1,0 @@
-# name: case ... of ... end
-# key: case
-# --
-case ${1:variable} of
-    ${2:condition1} ->
-        ok;
-    true  ->
-        ok;
-end.

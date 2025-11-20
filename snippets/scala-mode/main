@@ -1,6 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name: def main(args: Array[String]) = { ... }
-# --
-def main(args: Array[String]) = {
-  $0
-}

@@ -1,3 +1,0 @@
-#name: and_return($value)
-# --
-and_return(${1:value})$0

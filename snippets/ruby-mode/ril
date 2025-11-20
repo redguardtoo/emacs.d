@@ -1,4 +1,0 @@
-#name : render :inline => " ... ", :locals => {  ...  => " ... " }
-#group: Rails render
-# --
-render :inline => "${<%= 'hello' %>}", :locals => { ${name} => "${value}" }

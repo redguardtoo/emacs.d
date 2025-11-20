@@ -1,4 +1,0 @@
-#name : redirect_to :action => " ... "
-#group: Rails redirect
-# --
-redirect_to :action => "${index}"

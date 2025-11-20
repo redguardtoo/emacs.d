@@ -1,4 +1,0 @@
-#name : sort_by { |e| .. }
-#group : Enumerables
-# --
-sort_by { |${e}| $0 }

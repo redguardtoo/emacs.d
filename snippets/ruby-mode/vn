@@ -1,4 +1,0 @@
-#name : validates_numericality_of : ... 
-#group: ActiveRecord
-# --
-validates_numericality_of :${attr}

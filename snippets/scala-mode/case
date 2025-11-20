@@ -1,4 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name : case pattern => 
-# --
-case ${1:pattern} => $0

@@ -1,5 +1,0 @@
-#name : describe (rspec)
-# --
-describe "${1:method}" do
-  it$0
-end
