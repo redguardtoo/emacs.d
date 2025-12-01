@@ -1,4 +1,0 @@
-#name : has_many : ... 
-#group: ActiveRecord
-# --
-has_many :${class}

@@ -1,4 +1,0 @@
-#name : validates_presence_of : ...
-#group: ActiveRecord
-# --
-validates_presence_of :${attr}

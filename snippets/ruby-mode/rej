@@ -1,4 +1,0 @@
-#name : reject { |e| .. }
-#group : Enumerables
-# --
-reject { |${1:e}| $0 }

@@ -64,7 +64,8 @@ If SUBDIR-P is t, play videos in sub-directories too."
   (unless (eq major-mode 'dired-mode)
     (error "This command is only used in `dired-mode'"))
 
-  (let* ((items (dired-get-marked-files t current-prefix-arg))
+  (let* ((emms-track-description-function #'emms-track-simple-description)
+         (items (dired-get-marked-files))
          (regexp (my-file-extensions-to-regexp my-media-file-extensions))
          found)
     (cond

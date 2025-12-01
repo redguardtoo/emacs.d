@@ -1,4 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name : actor ! message
-# --
-${1:actor} ! ${2:message} $0

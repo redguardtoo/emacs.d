@@ -1,7 +1,0 @@
-#name : def ... end
-#group : definitions
-# key: def
-# --
-def ${1:method_name}
-  $0
-end

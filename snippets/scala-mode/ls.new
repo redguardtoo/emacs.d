@@ -1,4 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name : List(..)
-# --
-List(${1:args}, ${2:args}) $0

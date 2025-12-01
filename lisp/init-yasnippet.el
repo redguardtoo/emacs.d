@@ -2,26 +2,12 @@
 
 ;; my private snippets, should be placed before enabling yasnippet
 (defvar my-yasnippets-dir nil
-  "The directory of my own yasnippets, \"~/my-yasnippets\", for example.")
+  "The directory of my yasnippets is  \"~/my-yasnippets\".")
 
-(defun my-enable-yas-minor-mode ()
-  "Enable `yas-minor-mode'."
-  (when (or (not (my-buffer-file-temp-p))
-            (derived-mode-p 'prog-mode))
-    (cond
-     ((eq major-mode 'lisp-interaction-mode)
-      ;; The *Message* buffer is the first buffer to display during startup
-      ;; lazy load yasnippet to speed up startup
-      (my-run-with-idle-timer 2 #'yas-minor-mode))
-     (t
-      (yas-minor-mode 1)))))
-
-(add-hook 'prog-mode-hook 'my-enable-yas-minor-mode)
-(add-hook 'text-mode-hook 'my-enable-yas-minor-mode)
-;; {{ modes do NOT inherit from prog-mode
-(add-hook 'cmake-mode-hook 'my-enable-yas-minor-mode)
-(add-hook 'web-mode-hook 'my-enable-yas-minor-mode)
-;; }}
+(add-hook 'prog-mode-hook 'yas-minor-mode-on)
+(add-hook 'text-mode-hook (lambda ()
+                            (unless (my-buffer-file-temp-p)
+                              (yas-minor-mode-on))))
 
 (defun my-yas-expand-from-trigger-key-hack (orig-func &rest args)
   "Tab key won't trigger yasnippet expand in org heading."
@@ -39,7 +25,7 @@
   (interactive)
   (yas-compile-directory (file-truename (concat my-emacs-d "snippets")))
   (yas-reload-all)
-  (my-enable-yas-minor-mode))
+  (yas-minor-mode-on))
 
 (defun my-yas-field-to-statement(str sep)
   "If STR=='a.b.c' and SEP=' && ', 'a.b.c' => 'a && a.b && a.b.c'"
@@ -119,10 +105,6 @@
 (with-eval-after-load 'yasnippet
   ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
   (setq-default mode-require-final-newline nil)
-  ;; Use `yas-dropdown-prompt' if possible. It requires `dropdown-list'.
-  (setq yas-prompt-functions '(yas-dropdown-prompt
-                               yas-ido-prompt
-                               yas-completing-prompt))
 
   ;; Use `yas-completing-prompt' when ONLY when "M-x yas-insert-snippet"
   ;; Thanks to capitaomorte for providing the trick.

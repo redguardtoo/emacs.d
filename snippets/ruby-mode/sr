@@ -1,3 +1,0 @@
-#name : should_receive(:).and_return()
-# --
-should_receive(:${1:method}).and_return(${2:return_val})

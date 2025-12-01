@@ -1,6 +1,0 @@
-#Author : Jonas Bonèr <jonas@jonasboner.com>
-#name : for (x <- xs) { ... }
-# --
-for (${1:x} <- ${2:xs}) {
-  $0
-}

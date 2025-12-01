@@ -1,3 +1,0 @@
-# This was cloned from a TextMate bundle for yasnippet.
-# --
-PStore.new(${1:"${2:file_name.pstore}"})

@@ -1,12 +1,12 @@
 ;;; diff-lisp.el --- diff files&strings in pure Lisp -*- lexical-binding: t -*-
 
-;; Copyright (C) 2021 Chen Bin
+;; Copyright (C) 2021-2025 Chen Bin
 ;;
-;; Version: 0.0.1
+;; Version: 0.2.0
 ;; Keywords: convenience patch diff vc
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/diff-lisp
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "27.1"))
 
 ;; This file is NOT part of GNU Emacs.
 
@@ -71,23 +71,16 @@
   "Convert SNAKES to hunks.  M and N are the length of sequences to compare.
 Numbers are zero-originated in the hunk."
   (let* (rlt
-         (i 0)
          (a-start 0)
-         (b-start 0)
-         current
-         change
-         (snakes-length (length snakes)))
-    (while (< i snakes-length)
-      (setq current (nth i snakes))
-      (setq change (list a-start
-                         b-start
-                         (nth 0 current)
-                         (nth 1 current)))
-      (push change rlt)
-      ;; the next change start from the end of current snake
-      (setq a-start (nth 2 current))
-      (setq b-start (nth 3 current))
-      (setq i (1+ i)))
+         (b-start 0))
+
+    (while snakes
+      (pcase-let ((`(,x ,y ,u ,v) (car snakes)))
+        (push (list a-start b-start x y) rlt)
+        (setq a-start u
+              b-start v))
+      (setq snakes (cdr snakes)))
+
 
     ;; manually add last change
     (when (or (> n a-start)
@@ -97,114 +90,98 @@ Numbers are zero-originated in the hunk."
     (setq rlt (nreverse rlt))
 
     ;; first hunk could be empty
-    (when (and (> (length rlt) 0))
-      (let ((first-hunk (car rlt)))
-        (when (and (eq (nth 2 first-hunk) 0)
-                   (eq (nth 3 first-hunk) 0))
-          (setq rlt (cdr rlt)))))
-
+    (when rlt
+      (pcase-let ((`(,x ,y ,u ,v) (car rlt)))
+        (when (and (= u 0) (= v 0)) (setq rlt (cdr rlt)))))
     rlt))
 
 (defun diff-lisp-change-compact (hunks a b)
   "Compact HUNKS of A and B.
 Similar to xdl_change_compact in git."
+  ;; TODO
   hunks)
 
-(defun diff-lisp-emit-diff (change-list a b &optional diff-header)
-  "Output CHANGE-LIST between A and B.  DIFF-HEADER is output at the beginning.
+(defun diff-lisp-emit-diff (all-changes a b &optional diff-header)
+  "Output ALL-CHANGES between A and B.  DIFF-HEADER is output at the beginning.
 Similar to xdl_emit_diff in git."
-  (let* ((str (if change-list (or diff-header (format "--- a\n+++ b\n")) "") )
-         context-start
-         context-end
-         x1
-         x2
-         y1
-         y2
-         i
-         hunk-list)
+  (with-output-to-string
+    (when all-changes
+      (princ (or diff-header (format "--- a\n+++ b\n"))))
 
-    (when diff-lisp-debug
-      (message "diff-lisp-emit-diff called => %s %s %s" change-list a b))
+    (dolist (change all-changes)
+      (pcase-let ((`(,x1 ,y1 ,x2 ,y2 ,hunks) change))
+        ;; hunk header
+        (princ (format "@@ -%s,%s +%s,%s @@\n"
+                       (1+ x1) (- x2 x1)
+                       (1+ y1) (- y2 y1)))
 
-    (dolist (change change-list)
-      (setq x1 (nth 0 change))
-      (setq x2 (nth 2 change))
-      (setq y1 (nth 1 change))
-      (setq y2 (nth 3 change))
-      ;; output change header
-      (setq str (concat str (format "@@ -%s,%s +%s,%s @@\n"
-                                    (1+ x1)
-                                    (- x2 x1)
-                                    (1+ y1)
-                                    (- y2 y1))))
+        ;; push dummy data and reverse
+        (setq hunks (nreverse (cons (list x2 y2 x2 y2) hunks)))
 
-      ;; prepare hunks in the change
-      (setq hunk-list (nth 4 change))
-      ;; push a dummy item
-      (push (list x2 y2 x2 y2) hunk-list)
-      ;; reverse the hunks
-      (setq hunk-list (nreverse hunk-list))
+        ;; output every hunk
+        (let ((context-start x1)
+              context-end i)
+          (dolist (hunk hunks)
+            (pcase-let ((`(,hx1 ,hy1 ,hx2 ,hy2) hunk))
+              ;; output hunk's context
+              (setq i context-start
+                    context-end hx1)
+              (while (< i context-end)
+                (princ " ")
+                (princ (aref a i))
+                (princ "\n")
+                (setq i (1+ i)))
+              (setq context-start hx2)
 
-      ;; output hunks in the change
-      (setq context-start (nth 0 change))
-      (dolist (hunk hunk-list)
-        ;; output context before the hunk
-        (setq i context-start)
-        (setq context-end (nth 0 hunk))
-        (while (< i context-end)
-          (setq str (concat str " " (elt a i) "\n"))
-          (setq i (1+ i)))
-        ;; next context is after current hunk
-        (setq context-start (nth 2 hunk))
+              ;; output "DELETE" segments from a
+              (setq i hx1)
+              (while (< i hx2)
+                (princ "-")
+                (princ (aref a i))
+                (princ "\n")
+                (setq i (1+ i)))
 
-        ;; a hunk, text to delete
-        (setq i (nth 0 hunk))
-        (while (< i (nth 2 hunk))
-          (setq str (concat str "-" (elt a i) "\n"))
-          (setq i (1+ i)))
-
-        ;; b hunk, text to add
-        (setq i (nth 1 hunk))
-        (while (< i (nth 3 hunk))
-          (setq str (concat str "+" (elt b i) "\n"))
-          (setq i (1+ i)))))
-
-    str))
+              ;; output "INSERT" segments from a
+              (setq i hy1)
+              (while (< i hy2)
+                (princ "+")
+                (princ (aref b i))
+                (princ "\n")
+                (setq i (1+ i))))))))))
 
 ;;;###autoload
 (defun diff-lisp-diff-strings (s1 s2 &optional diff-header)
   "Diff string S1 and string S2.  DIFF-HEADER is output at the beginning."
-  (let* ((a (split-string s1 "\n"))
-         (b (split-string s2 "\n"))
-         (a-hash-list (diff-lisp-lines-to-hash-list a))
-         (b-hash-list (diff-lisp-lines-to-hash-list b))
+  (let* ((a (vconcat (split-string s1 "\n")))
+         (b (vconcat (split-string s2 "\n")))
          (a-length (length a))
          (b-length (length b))
-         (snakes (diff-lisp-myers-do-diff a-hash-list a-length b-hash-list b-length))
-         (hunks (diff-lisp-snakes-to-hunks snakes a-length b-length))
-         (hunks-length (length hunks))
+         (snakes (diff-lisp-myers-do-diff (diff-lisp-line-to-hash a)
+                                          a-length
+                                          (diff-lisp-line-to-hash b)
+                                          b-length))
          recent-change
-         hunk
          hunk-list
-         changes
-         (i 0))
+         changes)
 
-    (while (< i hunks-length)
-      (setq hunk (nth i hunks))
-      (let* ((x1 (- (nth 0 hunk) diff-lisp-output-unified-context))
-             (y1 (- (nth 1 hunk) diff-lisp-output-unified-context))
-             (x2 (+ (nth 2 hunk) diff-lisp-output-unified-context))
-             (y2 (+ (nth 3 hunk) diff-lisp-output-unified-context)))
+    (dolist (hunk (diff-lisp-snakes-to-hunks snakes a-length b-length))
+      (pcase-let ((`(,x1 ,y1 ,x2 ,y2) hunk))
+
+        (setq x1 (- x1 diff-lisp-output-unified-context))
+        (setq y1 (- y1 diff-lisp-output-unified-context))
+        (setq x2 (+ x2 diff-lisp-output-unified-context))
+        (setq y2 (+ y2 diff-lisp-output-unified-context))
+
         (cond
-         ((setq recent-change (nth 0 changes))
+         ((and (setq recent-change (nth 0 changes))
+               (or (<= x1 (nth 2 recent-change))
+                   (<= y1 (nth 3 recent-change))))
           ;; If the hunk overlaps with latest change, merge it into the change
-          (when (or (<= x1 (nth 2 recent-change))
-                    (<= y1 (nth 3 recent-change)))
-            (setf (nth 2 (nth 0 changes)) (min x2 a-length))
-            (setf (nth 3 (nth 0 changes)) (min y2 b-length))
-            (setq hunk-list (nth 4 recent-change))
-            (push hunk hunk-list)
-            (setf (nth 4 (nth 0 changes)) hunk-list)))
+          (setf (nth 2 (nth 0 changes)) (min x2 a-length))
+          (setf (nth 3 (nth 0 changes)) (min y2 b-length))
+          (setq hunk-list (nth 4 recent-change))
+          (push hunk hunk-list)
+          (setf (nth 4 (nth 0 changes)) hunk-list))
 
          (t
           (push (list (max x1 0)
@@ -212,8 +189,7 @@ Similar to xdl_emit_diff in git."
                       (min x2 a-length)
                       (min y2 b-length)
                       (list hunk))
-                changes))))
-      (setq i (1+ i)))
+                changes)))))
 
     ;; compact changes
     (setq changes (diff-lisp-change-compact (nreverse changes) a b))
@@ -282,9 +258,7 @@ Similar to xdl_emit_diff in git."
   "Compare current region with region from `diff-lisp-mark-selected-text-as-a'.
 If no region is selected, `kill-ring' or clipboard is used instead."
   (interactive)
-  (let* (rlt-buf
-         cmd
-         diff-output
+  (let* (diff-output
          (a (save-current-buffer
               (set-buffer (get-buffer-create "*diff-lisp-A*"))
               (buffer-string)))
@@ -296,19 +270,17 @@ If no region is selected, `kill-ring' or clipboard is used instead."
 
              ;; text from `kill-ring' or clipboard
              (t
-              (let* ((choice (completing-read "No region is selected. Compare text from: "
-                                              '("kill-ring" "clipboard"))))
-                (cond
-                 ((string= choice "kill-ring")
-                  (car kill-ring))
-
-                 ((and  (string= choice "clipboard")
-                        (functionp diff-lisp-get-clipboard-function))
-                  (funcall diff-lisp-get-clipboard-function))))))))
+              (pcase (completing-read "No region is selected. Compare text from: "
+                                      '("kill-ring" "clipboard"))
+                ("kill-ring"
+                 (car kill-ring))
+                ("clipboard"
+                 (when (functionp diff-lisp-get-clipboard-function)
+                   (funcall diff-lisp-get-clipboard-function))))))))
 
     (when (and a b)
       (cond
-       ((string= (setq diff-output (diff-lisp-diff-strings a b)) "")
+       ((string-empty-p (setq diff-output (diff-lisp-diff-strings a b)))
         (message "Two regions are SAME!"))
 
        (t

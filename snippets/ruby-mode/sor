@@ -1,4 +1,0 @@
-#name : sort { |a, b| .. }
-#group : Enumerables
-# --
-sort { |a, b| $0 }

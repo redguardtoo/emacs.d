@@ -1,4 +1,0 @@
-#name : validates_uniqueness_of : ... 
-#group: ActiveRecord
-# --
-validates_uniqueness_of :${attr}
