@@ -20,7 +20,6 @@
 ;;
 
 ;;; Code:
-(require 'cl-lib)
 
 (defvar diff-lisp-ignore-whitespace nil
   "Ignore white space.")

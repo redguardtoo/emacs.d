@@ -2,7 +2,7 @@
 
 ;; Copyright (C) 2021-2025 Chen Bin
 ;;
-;; Version: 0.2.0
+;; Version: 0.2.1
 ;; Keywords: convenience patch diff vc
 ;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
 ;; URL: https://github.com/redguardtoo/diff-lisp
@@ -67,6 +67,10 @@
 (defvar evil-state)
 ;; }}
 
+(defsubst diff-lisp-create-hunk (x y u v)
+  "Create hunk from X Y U V."
+  (list x y u v))
+
 (defun diff-lisp-snakes-to-hunks (snakes n m)
   "Convert SNAKES to hunks.  M and N are the length of sequences to compare.
 Numbers are zero-originated in the hunk."
@@ -76,7 +80,7 @@ Numbers are zero-originated in the hunk."
 
     (while snakes
       (pcase-let ((`(,x ,y ,u ,v) (car snakes)))
-        (push (list a-start b-start x y) rlt)
+        (push (diff-lisp-create-hunk a-start b-start x y) rlt)
         (setq a-start u
               b-start v))
       (setq snakes (cdr snakes)))
@@ -85,7 +89,7 @@ Numbers are zero-originated in the hunk."
     ;; manually add last change
     (when (or (> n a-start)
               (> m b-start))
-      (push (list a-start b-start n m) rlt))
+      (push (diff-lisp-create-hunk a-start b-start n m) rlt))
 
     (setq rlt (nreverse rlt))
 
@@ -104,56 +108,57 @@ Similar to xdl_change_compact in git."
 (defun diff-lisp-emit-diff (all-changes a b &optional diff-header)
   "Output ALL-CHANGES between A and B.  DIFF-HEADER is output at the beginning.
 Similar to xdl_emit_diff in git."
-  (with-output-to-string
+  (with-temp-buffer
     (when all-changes
-      (princ (or diff-header (format "--- a\n+++ b\n"))))
-
+      (insert (or diff-header (format "--- a\n+++ b\n"))))
     (dolist (change all-changes)
-      (pcase-let ((`(,x1 ,y1 ,x2 ,y2 ,hunks) change))
-        ;; hunk header
-        (princ (format "@@ -%s,%s +%s,%s @@\n"
-                       (1+ x1) (- x2 x1)
-                       (1+ y1) (- y2 y1)))
-
-        ;; push dummy data and reverse
+      ;; change: (x1 y1 x2 y2 hunks)
+      (let ((x1 (nth 0 change))
+            (y1 (nth 1 change))
+            (x2 (nth 2 change))
+            (y2 (nth 3 change))
+            (hunks (nth 4 change)))
+        ;; header
+        (insert "@@ -"
+                (number-to-string (1+ x1)) "," (number-to-string (- x2 x1))
+                " +" (number-to-string (1+ y1)) "," (number-to-string (- y2 y1))
+                " @@\n")
+        ;; push dummy and reverse once
         (setq hunks (nreverse (cons (list x2 y2 x2 y2) hunks)))
 
-        ;; output every hunk
         (let ((context-start x1)
               context-end i)
           (dolist (hunk hunks)
-            (pcase-let ((`(,hx1 ,hy1 ,hx2 ,hy2) hunk))
-              ;; output hunk's context
+            (let ((hx1 (nth 0 hunk))
+                  (hy1 (nth 1 hunk))
+                  (hx2 (nth 2 hunk))
+                  (hy2 (nth 3 hunk)))
+              ;; context
               (setq i context-start
                     context-end hx1)
               (while (< i context-end)
-                (princ " ")
-                (princ (aref a i))
-                (princ "\n")
+                (insert " " (aref a i) "\n")
                 (setq i (1+ i)))
               (setq context-start hx2)
-
-              ;; output "DELETE" segments from a
+              ;; deletions
               (setq i hx1)
               (while (< i hx2)
-                (princ "-")
-                (princ (aref a i))
-                (princ "\n")
+                (insert "-" (aref a i) "\n")
                 (setq i (1+ i)))
-
-              ;; output "INSERT" segments from a
+              ;; insertions
               (setq i hy1)
               (while (< i hy2)
-                (princ "+")
-                (princ (aref b i))
-                (princ "\n")
-                (setq i (1+ i))))))))))
+                (insert "+" (aref b i) "\n")
+                (setq i (1+ i))))))
+        )
+      )
+    (buffer-string)))
 
 ;;;###autoload
 (defun diff-lisp-diff-strings (s1 s2 &optional diff-header)
   "Diff string S1 and string S2.  DIFF-HEADER is output at the beginning."
-  (let* ((a (vconcat (split-string s1 "\n")))
-         (b (vconcat (split-string s2 "\n")))
+  (let* ((a (vconcat (split-string s1 "\n" nil)))
+         (b (vconcat (split-string s2 "\n" nil)))
          (a-length (length a))
          (b-length (length b))
          (snakes (diff-lisp-myers-do-diff (diff-lisp-line-to-hash a)
@@ -206,7 +211,10 @@ Similar to xdl_emit_diff in git."
 
 (defun diff-lisp-format-region-boundary (b e)
   "Make sure lines are selected and B is less than E."
-  (if (> b e) (cl-rotatef b e))
+  ; rotate b e
+  (let ((tmp b))
+    (setq b e
+          e tmp))
 
   ;; select lines
   (save-excursion
