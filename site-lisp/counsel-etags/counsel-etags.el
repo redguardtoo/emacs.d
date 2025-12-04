@@ -147,6 +147,7 @@
 (require 'etags)
 (require 'cl-lib)
 (require 'find-file)
+(require 'ivy nil t)
 (require 'counsel nil t) ; counsel => swiper => ivy
 (require 'tramp nil t)
 (require 'browse-url)
@@ -198,6 +199,11 @@ A CLI to create tags file:
   :group 'counsel-etags
   :type 'boolean)
 
+(defcustom counsel-etags-use-git-grep-p nil
+  "Use git grep as grep program if current project is under git control."
+  :group 'counsel-etags
+  :type 'boolean)
+
 (defcustom counsel-etags-use-ripgrep-force nil
   "Force use ripgrep as grep program.
 If rg is not in $PATH, then it need be defined in `counsel-etags-grep-program'."
@@ -220,16 +226,7 @@ If rg is not in $PATH, then it need be defined in `counsel-etags-grep-program'."
   :type 'string)
 
 (defcustom counsel-etags-convert-grep-keyword 'identity
-  "Convert keyword to grep to new regex to feed into grep program.
-
-Here is code to enable grepping Chinese using pinyinlib,
-
-  (unless (featurep 'pinyinlib) (require 'pinyinlib))
-  (setq counsel-etags-convert-grep-keyword
-         (lambda (keyword)
-           (if (and keyword (> (length keyword) 0))
-               (pinyinlib-build-regexp-string keyword t)
-             keyword)))"
+  "Convert keyword to grep to new regex to feed into grep program."
   :group 'counsel-etags
   :type 'function)
 
@@ -439,7 +436,7 @@ If it's nil, nothing happens."
   '("variable"
     "constant")
   "Some imenu items should be excluded by type.
-Run 'ctags -x some-file' to see the type in second column of output."
+Run \"ctags -x some-file\" to see the type in second column of output."
   :group 'counsel-etags
   :type '(repeat 'string))
 
@@ -1121,7 +1118,7 @@ Use TAGNAME-RE to search in current buffer with BOUND in ROOT-DIR."
                                    (beginning-of-line)
                                    (counsel-etags-push-one-candidate cands
                                                                      tagname-re
-                                                                     (point-at-eol)
+                                                                     (line-end-position)
                                                                      root-dir))))
     (and cands (nreverse cands))))
 
@@ -1511,7 +1508,7 @@ Tags might be sorted by comparing tag's path with CURRENT-FILE."
           (let* ((name (car c)))
             (goto-char (point-min))
             (counsel-etags-forward-line (cdr c))
-            (when (search-forward name (point-at-eol) t)
+            (when (search-forward name (line-end-position) t)
               (forward-char (- (length name))))
             (push (cons name (point-marker)) imenu-items))))
 
@@ -1524,12 +1521,12 @@ Tags might be sorted by comparing tag's path with CURRENT-FILE."
 (defun counsel-etags-list-tag-in-current-file()
   "List tags in current file."
   (interactive)
-  (let* ((imenu-items (counsel-etags-imenu-default-create-index-function)))
-    (when imenu-items
-      (ivy-read "Tag names in current file: "
-                imenu-items
-                :action (lambda (e)
-                          (goto-char (cdr e)))))))
+  (let* ((imenu-items (counsel-etags-imenu-default-create-index-function))
+         (selected (and imenu-items
+                             (completing-read "Tag names in current file: "
+                                            imenu-items))))
+      (when selected
+        (goto-char (cdr (assoc selected imenu-items))))))
 
 ;;;###autoload
 (defun counsel-etags-find-tag ()
@@ -1656,7 +1653,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
 
 (defun counsel-etags-has-quick-grep-p ()
   "Test if ripgrep program exist."
-  (or counsel-etags-use-ripgrep-force (executable-find "rg")))
+  (or counsel-etags-use-ripgrep-force (counsel-etags-guess-program "rg")))
 
 (defun counsel-etags-shell-quote (argument)
   "Quote ARGUMENT."
@@ -1692,12 +1689,15 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   "Use KEYWORD and USE-CACHE to build CLI.
 Extended regex is used, like (pattern1|pattern2)."
   (cond
+   ((and counsel-etags-use-git-grep-p (executable-find "git"))
+    (format "git --no-pager grep -n --no-color -I -e \"%s\"" keyword))
+
    ((counsel-etags-has-quick-grep-p)
     ;; "--hidden" force ripgrep to search hidden files/directories, that's default
     ;; behavior of grep
     (format "\"%s\" %s %s --hidden %s \"%s\" --"
             ;; if rg is not in $PATH, then it's in `counsel-etags-grep-program'
-            (or (executable-find "rg") counsel-etags-grep-program)
+            (or (counsel-etags-guess-program "rg") counsel-etags-grep-program)
             ;; (if counsel-etags-debug " --debug")
             counsel-etags-ripgrep-default-options
             counsel-etags-grep-extra-arguments
@@ -1739,7 +1739,9 @@ This command uses Ivy which supports regexp negation with \"!\".
 For example, \"define key ! ivy quit\" first selects everything
 matching \"define.*key\", then removes everything matching \"ivy\",
 and finally removes everything matching \"quit\". What remains is the
-final result set of the negation regexp."
+final result set of the negation regexp.
+
+If `counsel-etags-use-git-grep-p' is not nil, git grep is grep program."
   (interactive)
 
   (unless hint
@@ -1861,7 +1863,9 @@ The `counsel-etags-browse-url-function' is used to open the url."
   (unless (eq major-mode 'ivy-occur-grep-mode)
     (ivy-occur-grep-mode))
   ;; we use regex in elisp, don't unquote regex
-  (let* ((cands (ivy--filter ivy-text items)))
+  (let ((cands (ivy--filter ivy-text items)))
+    (when buffer-read-only
+      (setq buffer-read-only nil))
     ;; Need precise number of header lines for `wgrep' to work.
     (insert (format "-*- mode:grep; default-directory: %S -*-\n\n\n"
                     (file-name-directory (counsel-etags-locate-tags-file))))
@@ -1871,12 +1875,14 @@ The `counsel-etags-browse-url-function' is used to open the url."
       (lambda (cand) (concat "./" cand))
       cands))))
 
-(defun counsel-etags-recent-tag-occur ()
-  "Open occur buffer for `counsel-etags-recent-tag'."
+(defun counsel-etags-recent-tag-occur (&optional _cands)
+  "Open occur buffer for `counsel-etags-recent-tag'.
+_CANDS is ignored."
   (counsel-etags-tag-occur-api counsel-etags-tag-history))
 
-(defun counsel-etags-find-tag-occur ()
-  "Open occur buffer for `counsel-etags-find-tag' and `counsel-etags-list-tag'."
+(defun counsel-etags-find-tag-occur (&optional _cands)
+  "Open occur buffer for `counsel-etags-find-tag' and `counsel-etags-list-tag'.
+_CANDS is ignored."
   (counsel-etags-tag-occur-api counsel-etags-find-tag-candidates))
 
 (defun counsel-etags-grep-occur (&optional _cands)
