@@ -8,8 +8,8 @@ on:
     branches:
       - master
   schedule:
-    # build at 00:05 everyday
-    - cron:  '5 0 * * *'
+    # build at 00:05 every Sunday
+    - cron:  '5 0 * * 0'
 
 jobs:
   build:
@@ -20,12 +20,13 @@ jobs:
         emacs_version:
           - 28.1
           - 29.1
+          - 30.1
     steps:
     - uses: purcell/setup-emacs@master
       with:
         version: ${{ matrix.emacs_version }}
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Print emacs version
       run: emacs --version

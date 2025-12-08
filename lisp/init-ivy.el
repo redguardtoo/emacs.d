@@ -152,28 +152,12 @@ If N is 2, list files in my recent 20 commits."
   (interactive)
   (counsel-git (and (region-active-p) (my-selected-str))))
 
-(defun my-counsel-git-grep (&optional level)
-  "Git grep in project.  If LEVEL is not nil, grep files in parent commit."
-  (interactive "P")
-  (let* ((str (if (region-active-p) (my-selected-str))))
-    (cond
-     (level
-      (unless str
-        (setq str (my-use-selected-string-or-ask "Grep keyword: ")))
-      (when str
-        (let* ((default-directory (my-git-root-dir))
-               ;; C-u 1 command to grep files in HEAD
-               (cmd-opts (concat (my-git-files-in-rev-command "HEAD" (1- level))
-                                 " | xargs -I{} "
-                                 "git --no-pager grep -n --no-color -I -e \"%s\" -- {}"))
-               (cmd (format cmd-opts str)))
-          (ivy-read "git grep in commit: "
-                    (my-lines-from-command-output cmd)
-                    :caller 'counsel-etags-grep
-                    :history 'counsel-git-grep-history
-                    :action #'counsel-git-grep-action))))
-     (t
-      (counsel-git-grep str)))))
+(defun my-counsel-git-grep ()
+  "Git grep in project."
+  (interactive)
+  (let* ((str (if (region-active-p) (my-selected-str)))
+         (counsel-etags-use-git-grep-p t))
+    (counsel-etags-grep str)))
 
 (defun my-counsel-browse-kill-ring ()
   "If N > 1, assume just yank the Nth item in `kill-ring'."
