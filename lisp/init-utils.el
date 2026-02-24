@@ -25,9 +25,15 @@
 (defun my-file-exists-p (file)
   "Detect if a local or remote FILE exists."
   (my-ensure 'tramp)
-  (or (and (tramp-tramp-file-p file)
-           (process-live-p (tramp-get-connection-process (tramp-dissect-file-name file))))
+  (cond
+   ((tramp-tramp-file-p file)
+    (when (process-live-p
+           (tramp-get-connection-process
+            (tramp-dissect-file-name file)))
       (file-exists-p file)))
+
+   (t
+    (file-exists-p file))))
 
 (defun my-hostname ()
   "Return stripped output of cli program hostname."
