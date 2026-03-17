@@ -807,7 +807,7 @@ Here is my setup in =~/.custom.el=,
 #+end_src
 * Support legacy Emacs versions
 ** Emacs 27
-Version 4.0 is the last version to support =Emacs 27=
+Version 4.1 is the last version to support =Emacs 27=
 Please use [[https://github.com/redguardtoo/emacs.d/archive/4.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.1.zip]].
 
 ** Emacs 26
