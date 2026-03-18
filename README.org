@@ -5,7 +5,7 @@
 - Fast
 - Robust. Packages could be installed without network
 - Support Windows. Find&Grep needs only minimum setup on Windows
-- Tested with Emacs 28.2 on Linux/Windows10/macOS/MSYS2/Cygwin
+- Tested with Emacs 29.1 on Linux/Windows10/macOS/MSYS2/Cygwin
 - Vanilla key bindings and directory layout is respected
 - Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
@@ -79,6 +79,7 @@
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
+  - [[#emacs-28][Emacs 28]]
   - [[#emacs-27][Emacs 27]]
   - [[#emacs-26][Emacs 26]]
   - [[#emacs-25][Emacs 25]]
@@ -806,6 +807,10 @@ Here is my setup in =~/.custom.el=,
      (pdf-loader-install))))
 #+end_src
 * Support legacy Emacs versions
+** Emacs 28
+Version 4.2 is the last version to support =Emacs 28=
+Please use [[https://github.com/redguardtoo/emacs.d/archive/4.2.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.2.zip]].
+
 ** Emacs 27
 Version 4.1 is the last version to support =Emacs 27=
 Please use [[https://github.com/redguardtoo/emacs.d/archive/4.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.1.zip]].
