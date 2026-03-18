@@ -745,7 +745,7 @@ To enable the virtual environment, add below code into =~/.custom.el=,
     (pyvenv-activate venv-dir)))
 #+end_src
 
-After activating the virtual environment, you could backup its required packages,
+After activating the virtual environment, you could backup its packages,
 #+begin_src sh
 source /path/to/my-venv/bin/activate && pip freeze > venv-requirements.txt && deactivate
 #+end_src
