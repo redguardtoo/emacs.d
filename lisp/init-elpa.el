@@ -67,7 +67,6 @@
     ob-sagemath
     command-log-mode
     evil ; @see https://github.com/emacs-evil/evil/commit/19cc5f8eef8bfffdec8082b604c7129782acb332
-    ;; lsp-mode ; stable version has performance issue, but unstable version sends too many warnings
     vimrc-mode
     rjsx-mode ; fixed the indent issue in jsx
     package-lint ; for melpa pull request only
@@ -288,7 +287,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'company-native-complete)
 (require-package 'company-c-headers)
 (require-package 'company-statistics)
-(require-package 'lsp-mode)
 (require-package 'pyvenv)
 (require-package 'legalese)
 (require-package 'simple-httpd)

@@ -75,7 +75,6 @@
   - [[#directory-structure][Directory structure]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
   - [[#python-development][Python development]]
-  - [[#set-up-lsp-mode][Set up lsp-mode]]
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
@@ -757,38 +756,6 @@ source /path/to/my-venv/bin/activate && pip install -r venv-requirements.txt && 
 
 You might want to modify =include-system-site-packages= in =/path/to/my-venv/pyvenv.cfg=
 
-** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
-You could insert below code into =~/.custom.el=,
-#+begin_src elisp
-(with-eval-after-load 'lsp-mode
-  ;; enable log only for debug
-  (setq lsp-log-io nil)
-  ;; use `evil-matchit' instead
-  (setq lsp-enable-folding nil)
-  ;; no real time syntax check
-  (setq lsp-diagnostic-package :none)
-  ;; handle yasnippet by myself
-  (setq lsp-enable-snippet nil)
-  ;; turn off for better performance
-  (setq lsp-enable-symbol-highlighting nil)
-  ;; use find-fine-in-project instead
-  (setq lsp-enable-links nil)
-  ;; auto restart lsp
-  (setq lsp-restart 'auto-restart)
-  ;; don't watch 3rd party javascript libraries
-  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
-  ;; don't ping LSP language server too frequently
-  (defvar lsp-on-touch-time 0)
-  (defun my-lsp-on-change-hack (orig-fun &rest args)
-    ;; do NOT run `lsp-on-change' too frequently
-    (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 120) ;; 2 mins
-      (setq lsp-on-touch-time (float-time (current-time)))
-      (apply orig-fun args)))
-  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
-#+end_src
-
-Then run =M-x lsp= to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
 ** Enable typewriter sounds when typing
 Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 ** pdf-tools
