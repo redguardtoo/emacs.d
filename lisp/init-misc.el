@@ -203,9 +203,6 @@ FN checks these characters belong to normal word characters."
   (setq electric-pair-inhibit-predicate 'my-electric-pair-inhibit))
 ;; }}
 
-(defvar my-disable-lazyflymake nil
-  "Disable lazyflymake.")
-
 ;; {{
 (defvar my-save-run-timer nil "Internal timer.")
 
@@ -238,8 +235,6 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
     ;; do nothing, can't run ctags too often
     )))
 ;; }}
-
-(add-hook 'text-mode-hook #'lazyflymake-start)
 
 ;;; {{ display long lines in truncated style (end line with $)
 (defun my-truncate-lines-setup ()
@@ -1282,13 +1277,7 @@ MATCH is optional tag match."
     (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
-      (cond
-       ((not my-disable-lazyflymake)
-        (my-ensure 'lazyflymake)
-        (lazyflymake-start))
-       (t
-        (flymake-mode 1)))
-
+      (flymake-mode 1)
       (unless my-disable-wucuo
         (my-ensure 'wucuo)
         (setq-local ispell-extra-args (my-detect-ispell-args t))

@@ -1168,7 +1168,7 @@
        tags-file)))
 
    ;; python
-   ((eq major-mode 'python-mode)
+   ((derived-mode-p 'python-base-mode)
     (let ((s1 (mapconcat 'my-tag-line my-python-numpy-tagnames ""))
           (s2 (mapconcat 'my-tag-line my-python-matplotlib-pyplot-tagnames "")))
       (counsel-etags-append-to-tags-file

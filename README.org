@@ -74,7 +74,7 @@
   - [[#change-time-locale][Change Time Locale]]
   - [[#directory-structure][Directory structure]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
-  - [[#python-environment][Python environment]]
+  - [[#python-development][Python development]]
   - [[#set-up-lsp-mode][Set up lsp-mode]]
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
@@ -734,7 +734,7 @@ Other directories don't matter.
 On macOS/Linux/Cygwin, run =make githooks= to install hooks into =.git/hooks=.
 
 Then unit test is run automatically before =git commit=.
-** Python environment
+** Python development
 Please make sure python and its package `virtualenv` is installed first.
 
 To enable the virtual environment, add below code into =~/.custom.el=,
