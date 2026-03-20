@@ -286,29 +286,14 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
 ;; {{ recentf-mode
 (setq recentf-max-saved-items 2048
       recentf-exclude '("/tmp/"
+                        ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
                         ;; "/ssh:"
                         "/sudo:"
                         "recentf$"
                         "company-statistics-cache\\.el$"
-                        ;; ctags
-                        "/TAGS$"
-                        ;; global
-                        "/GTAGS$"
-                        "/GRAGS$"
-                        "/GPATH$"
-                        ;; binary
-                        "\\.mkv$"
-                        "\\.mp[34]$"
-                        "\\.avi$"
-                        "\\.wav$"
-                        "\\.docx?$"
-                        "\\.xlsx?$"
-                        ;; sub-titles
-                        "\\.sub$"
-                        "\\.srt$"
-                        "\\.ass$"
-                        ;; "/home/[a-z]\+/\\.[a-df-z]" ; configuration file should not be excluded
-                        ))
+                        "/\\(TAGS\\|GTAGS\\|GRAGS\\|GPATH\\)$"
+                        "\\.\\(mkv\\|mp[34]\\|avi\\|wav\\|docx?\\|xlsx?\\|sub\\|srt\\|ass\\)$"
+                        "1080p\\|720p\\|480p"))
 ;; }}
 
 ;; {{ popup functions

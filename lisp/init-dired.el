@@ -261,8 +261,8 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
 
        (t
         (when (and (file-directory-p file)
-                   ;; don't add directory when user pressing "^" in `dired-mode'
-                   (not (string-match "\\.\\." file)))
+                   ;; directories like ".." or "." are excluded
+                   (not (string-match "\\.\\.\\|/\\.$\\|1080p\\|720p\\|480p" file)))
           (unless (and my-dired-exclude-directory-regexp
                        (string-match my-dired-exclude-directory-regexp file))
             ;; clean up `my-dired-directory-history' before adding new item
