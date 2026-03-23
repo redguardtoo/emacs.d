@@ -90,7 +90,7 @@ Displays the response in Org mode."
         :callback (lambda (response info)
                     (ignore info)
                     (cond
-                     (response
+                     ((stringp response)
                       (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
                         (erase-buffer)
                         (org-mode)
