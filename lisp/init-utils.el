@@ -349,13 +349,8 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   "Get clipboard content."
   (let (powershell-program)
     (cond
-     ;; Windows
-     ((and *win64* (fboundp 'w32-get-clipboard-data))
-      ;; `w32-set-clipboard-data' makes `w32-get-clipboard-data' always return null
-      (w32-get-clipboard-data))
-
-     ;; Windows 10
-     ((and *win64* (setq powershell-program (executable-find "powershell.exe")))
+     ;; Windows 10 and WSL
+     ((setq powershell-program (executable-find "powershell.exe"))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
@@ -388,14 +383,9 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let* (win64-clip-program
          ssh-client)
     (cond
-     ;; Windows 10
-     ((and *win64* (setq win64-clip-program (executable-find "clip.exe")))
+     ;; Windows 10+
+     ((setq win64-clip-program (executable-find "clip.exe"))
       (my-send-string-to-cli-stdin str-val win64-clip-program))
-
-     ;; Windows
-     ((and *win64* (fboundp 'w32-set-clipboard-data))
-      ;; Don't know why, but on Windows 7 this API does not work.
-      (w32-set-clipboard-data str-val))
 
      ;; Cygwin
      (*cygwin*
