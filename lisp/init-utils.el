@@ -354,7 +354,8 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
-           (call-process powershell-program nil t nil "-command" "Get-Clipboard")))))
+           (call-process powershell-program nil t nil "-command" "Get-Clipboard")
+           (delete-trailing-whitespace)))))
 
      (*cygwin*
       (string-trim-right (shell-command-to-string "cat /dev/clipboard")))
