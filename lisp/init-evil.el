@@ -639,6 +639,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "vj" 'my-validate-json-or-js-expression
   "kc" 'kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
+  "fc" 'cp-filename-and-content-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
   "rp" 'cp-root-relative-path-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
