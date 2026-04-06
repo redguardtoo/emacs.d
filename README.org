@@ -158,8 +158,6 @@ But there is a simple workaround:
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
 **** aspell or hunspell
 - Required by =flyspell=
-**** xmlstarlet or xml
-- Required by =lazyflymake= for HTML syntax check.
 **** divsvgm
 - Required by =M-x org-latex-preview=
 **** latex
@@ -219,7 +217,7 @@ Grammar, Style and Spell Checker
 - Read the head of =site-lisp/langtool/langtool.el= for more customization because I patched it and added more features
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
-- Required by =lazyflymake=
+- Required by =flymake=
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 **** [[https://pdfgrep.org/][pdfgrep]]
@@ -651,13 +649,8 @@ If you use Gnus for email, check =init-gnus.el= and read [[https://github.com/re
 Some package cannot be downloaded automatically because of network problem.
 
 Run =M-x package-refresh-content=, restart Emacs, reinstall package.
-** Use flycheck to syntax check code
-If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
-
-Install and set up =flycheck= and insert below code to disable =lazyflymake=,
-#+begin_src elisp
-(setq my-disable-lazyflymake t)
-#+end_src
+** Use Flycheck or Flymake syntax check code
+Both packages are available but not activated.
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup

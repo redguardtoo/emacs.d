@@ -744,8 +744,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "fa" 'flyspell-auto-correct-word
   "lb" 'langtool-check-buffer
   "ll" 'langtool-goto-next-error
-  "pe" 'flymake-goto-prev-error
-  "ne" 'flymake-goto-next-error
   "og" 'org-agenda
 
   "otl" 'org-toggle-link-display
