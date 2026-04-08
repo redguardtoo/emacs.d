@@ -228,7 +228,6 @@ If N is 2, list files in my recent 20 commits."
   (cond
    ((my-use-tags-as-imenu-function-p)
     ;; see code of `my-use-tags-as-imenu-function-p'. Currently we only use ctags for imenu
-    ;; in typescript because `lsp-mode' is too damn slow
     (let* ((imenu-create-index-function 'counsel-etags-imenu-default-create-index-function))
       (my-counsel-imenu)))
    (t

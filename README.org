@@ -5,7 +5,7 @@
 - Fast
 - Robust. Packages could be installed without network
 - Support Windows. Find&Grep needs only minimum setup on Windows
-- Tested with Emacs 28.2 on Linux/Windows10/macOS/MSYS2/Cygwin
+- Tested with Emacs 29.1 on Linux/Windows10/macOS/MSYS2/Cygwin
 - Vanilla key bindings and directory layout is respected
 - Works in [[https://packages.debian.org/emacs-nox][emacs-nox]] and [[http://www.putty.org/][PuTTY]]
 
@@ -74,11 +74,11 @@
   - [[#change-time-locale][Change Time Locale]]
   - [[#directory-structure][Directory structure]]
   - [[#run-the-unit-test-before-git-commit][Run the unit test before git commit]]
-  - [[#python-environment][Python environment]]
-  - [[#set-up-lsp-mode][Set up lsp-mode]]
+  - [[#python-development][Python development]]
   - [[#enable-typewriter-sounds-when-typing][Enable typewriter sounds when typing]]
   - [[#pdf-tools][pdf-tools]]
 - [[#support-legacy-emacs-versions][Support legacy Emacs versions]]
+  - [[#emacs-28][Emacs 28]]
   - [[#emacs-27][Emacs 27]]
   - [[#emacs-26][Emacs 26]]
   - [[#emacs-25][Emacs 25]]
@@ -158,8 +158,6 @@ But there is a simple workaround:
 - copy data files and the script named =fortune-zh= into corresponding folders which =fortune= is using. You may need edit the file =fortune-zh= before copying
 **** aspell or hunspell
 - Required by =flyspell=
-**** xmlstarlet or xml
-- Required by =lazyflymake= for HTML syntax check.
 **** divsvgm
 - Required by =M-x org-latex-preview=
 **** latex
@@ -219,7 +217,7 @@ Grammar, Style and Spell Checker
 - Read the head of =site-lisp/langtool/langtool.el= for more customization because I patched it and added more features
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
-- Required by =lazyflymake=
+- Required by =flymake=
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 **** [[https://pdfgrep.org/][pdfgrep]]
@@ -651,13 +649,8 @@ If you use Gnus for email, check =init-gnus.el= and read [[https://github.com/re
 Some package cannot be downloaded automatically because of network problem.
 
 Run =M-x package-refresh-content=, restart Emacs, reinstall package.
-** Use flycheck to syntax check code
-If you prefer =flycheck= instead the default syntax check solution =lazyflymake= built into this configuration.
-
-Install and set up =flycheck= and insert below code to disable =lazyflymake=,
-#+begin_src elisp
-(setq my-disable-lazyflymake t)
-#+end_src
+** Use Flycheck or Flymake syntax check code
+Both packages are available but not activated.
 ** Disable Vim key bindings
 By default EVIL (Vim emulation in Emacs) is used. Comment out line containing =(require 'init-evil)= in init.el to unload it.
 ** Evil setup
@@ -733,7 +726,7 @@ Other directories don't matter.
 On macOS/Linux/Cygwin, run =make githooks= to install hooks into =.git/hooks=.
 
 Then unit test is run automatically before =git commit=.
-** Python environment
+** Python development
 Please make sure python and its package `virtualenv` is installed first.
 
 To enable the virtual environment, add below code into =~/.custom.el=,
@@ -744,7 +737,7 @@ To enable the virtual environment, add below code into =~/.custom.el=,
     (pyvenv-activate venv-dir)))
 #+end_src
 
-After activating the virtual environment, you could backup its required packages,
+After activating the virtual environment, you could backup its packages,
 #+begin_src sh
 source /path/to/my-venv/bin/activate && pip freeze > venv-requirements.txt && deactivate
 #+end_src
@@ -756,38 +749,6 @@ source /path/to/my-venv/bin/activate && pip install -r venv-requirements.txt && 
 
 You might want to modify =include-system-site-packages= in =/path/to/my-venv/pyvenv.cfg=
 
-** Set up [[https://github.com/emacs-lsp/lsp-mode][lsp-mode]]
-You could insert below code into =~/.custom.el=,
-#+begin_src elisp
-(with-eval-after-load 'lsp-mode
-  ;; enable log only for debug
-  (setq lsp-log-io nil)
-  ;; use `evil-matchit' instead
-  (setq lsp-enable-folding nil)
-  ;; no real time syntax check
-  (setq lsp-diagnostic-package :none)
-  ;; handle yasnippet by myself
-  (setq lsp-enable-snippet nil)
-  ;; turn off for better performance
-  (setq lsp-enable-symbol-highlighting nil)
-  ;; use find-fine-in-project instead
-  (setq lsp-enable-links nil)
-  ;; auto restart lsp
-  (setq lsp-restart 'auto-restart)
-  ;; don't watch 3rd party javascript libraries
-  (push "[/\\\\][^/\\\\]*\\.\\(json\\|html\\|jade\\)$" lsp-file-watch-ignored)
-  ;; don't ping LSP language server too frequently
-  (defvar lsp-on-touch-time 0)
-  (defun my-lsp-on-change-hack (orig-fun &rest args)
-    ;; do NOT run `lsp-on-change' too frequently
-    (when (> (- (float-time (current-time))
-                lsp-on-touch-time) 120) ;; 2 mins
-      (setq lsp-on-touch-time (float-time (current-time)))
-      (apply orig-fun args)))
-  (advice-add 'lsp-on-change :around #'my-lsp-on-change-hack))
-#+end_src
-
-Then run =M-x lsp= to start lsp client and server. Check [[https://github.com/emacs-lsp/lsp-mode]] on how to install lsp server.
 ** Enable typewriter sounds when typing
 Run =M-x my-toggle-typewriter=. Please check bundled =typewriter-mode.el= for further setup.
 ** pdf-tools
@@ -806,8 +767,12 @@ Here is my setup in =~/.custom.el=,
      (pdf-loader-install))))
 #+end_src
 * Support legacy Emacs versions
+** Emacs 28
+Version 4.2 is the last version to support =Emacs 28=
+Please use [[https://github.com/redguardtoo/emacs.d/archive/4.2.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.2.zip]].
+
 ** Emacs 27
-Version 4.0 is the last version to support =Emacs 27=
+Version 4.1 is the last version to support =Emacs 27=
 Please use [[https://github.com/redguardtoo/emacs.d/archive/4.1.zip]] and [[https://github.com/redguardtoo/myelpa/archive/4.1.zip]].
 
 ** Emacs 26

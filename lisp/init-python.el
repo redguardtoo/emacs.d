@@ -37,5 +37,15 @@
     (when venv-dir
       (my-activate-python-venv venv-dir))))
 
+;; treesit for smart syntax highlight
+(add-to-list 'treesit-extra-load-path "~/.emacs.d/tree-sitter")
+(when (treesit-language-available-p 'python)
+  (setq major-mode-remap-alist
+        '((python-mode . python-ts-mode))))
+
+;; LSP client
+(add-hook 'python-ts-mode-hook 'eglot-ensure)
+
+
 (provide 'init-python)
 ;;; init-python.el ends here

@@ -5,8 +5,22 @@
   (my-pclip msg)
   msg)
 
+(defvar my-short-introduction-of-file
+  "Full source of \"%s\" is as below,\n\n%s\n\n")
+(defun cp-filename-and-content-of-current-buffer (&optional n)
+  "Copy file name and its content into yank ring and clipboard.
+If N is not nil, copy file path and its content instead."
+  (interactive "P")
+  (when buffer-file-name
+    (let* ((filename (if n buffer-file-name
+                       (file-name-nondirectory buffer-file-name))) )
+      (copy-yank-str (format my-short-introduction-of-file
+                             filename
+                             (buffer-string)))
+      (message "%s and its content => clipboard&kill-ring" filename))))
+
 (defun cp-filename-of-current-buffer (&optional n)
-  "Copy file name (NOT full path) into the yank ring and OS clipboard.
+  "Copy file name (NOT full path) into yank ring and clipboard.
 If N is not nil, copy file name and line number."
   (interactive "P")
   (when buffer-file-name
@@ -111,13 +125,6 @@ If N is 4, rectangle paste."
       (when (derived-mode-p 'js2-mode) (js-mode))
       ;; turn off syntax highlight
       (font-lock-mode -1))
-
-    ;; past a big string, stop lsp temporarily
-    (when (and (> (length str) 1024)
-               (boundp 'lsp-mode)
-               lsp-mode)
-      (lsp-disconnect)
-      (run-at-time 300 nil  #'lsp-deferred))
 
     (my-delete-selected-region)
 

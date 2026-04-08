@@ -86,7 +86,6 @@
 (require 'dictionary)
 (require 'company-ispell)
 (require 'company-ctags)
-(require 'lsp-mode)
 (require 'ob-sagemath)
 
 (let ((files (find-lisp-find-files-internal

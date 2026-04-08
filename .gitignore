@@ -73,3 +73,5 @@ elpy/
 package-quickstart.el
 .lsp-session*
 ellama-sessions/
+tree-sitter/
+python-venv/
