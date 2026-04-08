@@ -579,21 +579,6 @@ ARG is ignored."
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
-;; {{
-(defun adoc-imenu-index ()
-  "Set up imenu for `adoc-mode'."
-  (let* ((patterns '((nil "^=\\([= ]*[^=\n\r]+\\)" 1))))
-    (save-excursion
-      (imenu--generic-function patterns))))
-
-(defun adoc-mode-hook-setup ()
-  "Set up `adoc-mode'."
-  ;; Don't wrap lines because there is table in `adoc-mode'.
-  (setq truncate-lines t)
-  (setq imenu-create-index-function 'adoc-imenu-index))
-(add-hook 'adoc-mode-hook 'adoc-mode-hook-setup)
-;; }}
-
 (with-eval-after-load 'compile
   (defun my-compile-hack (orig-func &rest args)
     (cond
@@ -1302,6 +1287,12 @@ MATCH is optional tag match."
     ;; show trailing spaces in a programming mod
     (setq show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
+
+(defun my-lua-mode-setup ()
+  "Set up lua script."
+  ;; extract event handler
+  (push '("Handler" "^[ \t]*\\([a-zA-Z_.0-9]+\\):Connect(function" 1) imenu-generic-expression))
+(add-hook 'lua-mode-hook 'my-lua-mode-setup)
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
