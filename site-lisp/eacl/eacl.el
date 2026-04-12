@@ -344,7 +344,7 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (cond
        ;; use git grep
        (git-p
-        (format "%s --no-pager grep -n %s \"%s\""
+        (format "%s --no-pager grep -n %s -- \"%s\""
                 eacl-git-program
                 git-grep-opts
                 search-regex))
@@ -361,11 +361,12 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (cond
        ;; use git grep
        (git-p
-        (if deleted-p (format "%s --no-pager log -p --all -G \"%s\" | %s \"^-.*%s\""
+        (if deleted-p (format "%s --no-pager log -p --all -G -- \"%s\" | %s \"^-.*%s\""
                               eacl-git-program
                               search-regex
                               eacl-grep-program search-regex)
-          (format "%s --no-pager grep -h %s \"%s\""
+
+          (format "%s --no-pager grep -h %s -- \"%s\""
                   eacl-git-program
                   git-grep-opts
                   search-regex)))
