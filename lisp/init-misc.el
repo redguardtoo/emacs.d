@@ -78,7 +78,7 @@
   (defun my-search-git-reflog-code ()
     (let* ((default-directory (my-git-root-dir)))
       (shell-command-to-string (format "git --no-pager reflog --date=short -S\"%s\" -p"
-                                            (read-string "Regex: ")))))
+                                       (read-string "Regex: ")))))
   (push 'my-search-git-reflog-code ffip-diff-backends)
   (setq ffip-match-path-instead-of-filename t))
 
@@ -1288,11 +1288,23 @@ MATCH is optional tag match."
     (setq show-trailing-whitespace t)))
 (add-hook 'prog-mode-hook 'my-generic-prog-mode-hook-setup)
 
+;; {{ lua
 (defun my-lua-mode-setup ()
   "Set up lua script."
   ;; extract event handler
   (push '("Handler" "^[ \t]*\\([a-zA-Z_.0-9]+\\):Connect(function" 1) imenu-generic-expression))
 (add-hook 'lua-mode-hook 'my-lua-mode-setup)
 
+(with-eval-after-load 'apheleia
+  ;; 1. Define the formatter command
+  (setf (alist-get 'stylua apheleia-formatters)
+        '("stylua"
+          "--search-parent-directories"
+          "--stdin-filepath" filepath
+          "-"))
+  ;; 2. Map major modes to that formatter
+  (setf (alist-get 'lua-mode apheleia-mode-alist) 'stylua)
+  (setf (alist-get 'luau-mode apheleia-mode-alist) 'stylua))
+;; }}
 (provide 'init-misc)
 ;;; init-misc.el ends here

@@ -66,7 +66,7 @@
   - [[#network-is-blocked][Network is blocked]]
   - [[#email][Email]]
   - [[#cannot-download-packages][Cannot download packages?]]
-  - [[#use-flycheck-to-syntax-check-code][Use flycheck to syntax check code]]
+  - [[#use-flycheck-or-flymake-syntax-check-code][Use Flycheck or Flymake syntax check code]]
   - [[#disable-vim-key-bindings][Disable Vim key bindings]]
   - [[#evil-setup][Evil setup]]
   - [[#chinese-input-method-editor][Chinese Input Method Editor]]
@@ -222,6 +222,8 @@ Grammar, Style and Spell Checker
 - Used by hydra in dired buffer
 **** [[https://pdfgrep.org/][pdfgrep]]
 - Used by =my-pdfgrep-in-directory=
+**** [[https://github.com/psf/black][black]]
+Python formatter used by [[https://github.com/radian-software/apheleia][apheleia-mode]] which is not enabled by default.
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Quickstart
