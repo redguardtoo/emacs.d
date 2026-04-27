@@ -1,12 +1,12 @@
-;;; eacl.el --- Auto-complete lines by grepping project
+;;; eacl.el --- Auto-complete lines by grepping project -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2017-2021 Chen Bin
+;; Copyright (C) 2017-2026 Chen Bin
 ;;
-;; Version: 2.2.0
+;; Version: 2.2.3
 
-;; Author: Chen Bin <chenbin DOT sh AT gmail DOT com>
+;; Author: Chen Bin
 ;; URL: http://github.com/redguardtoo/eacl
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "27.1"))
 ;; Keywords: abbrev, convenience, matching
 
 ;; This file is not part of GNU Emacs.
@@ -48,9 +48,9 @@
 ;; in the buffers.  Set `eacl-ignore-buffers' and `eacl-include-buffers' to specify
 ;; ignored&included buffers.
 ;;
-;; `eacl-complete-line-from-buffer-or-project' completes one line by grepping
-;; the project root when editing a physical file.  Or else, it completes one line
-;; by search all buffers.
+;; `eacl-complete-line-from-buffer-or-project' completes single line by grepping
+;; the project root when editing a physical file.  Or else, it searches all buffers
+;; for line completion.
 ;;
 ;; Modify `grep-find-ignored-directories' and `grep-find-ignored-files'
 ;; to setup directories and files grep should ignore:
@@ -179,6 +179,8 @@ Please note `eacl-ignore-buffers' has lower priority than this variable."
 
 ;; {{ make linter happy
 (defvar evil-state)
+(declare-function evil-insert-state "evil")
+(declare-function evil-exit-visual-state "evil")
 ;; }}
 
 (defun eacl-relative-path ()
@@ -315,8 +317,8 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (setq cands (mapcar (lambda (cand) (replace-regexp-in-string "^-" "" cand)) cands)))
 
     (setq rlt (cl-remove-if `(lambda (e) (string= ,str e)) cands))
-    (when eacl-debug (message "cands=%s" cands))
-    cands))
+    (when eacl-debug (message "rlt=%s" rlt))
+    rlt))
 
 (defun eacl-clean-candidates (cands)
   "Remove duplicated lines from CANDS."
@@ -361,7 +363,7 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
       (cond
        ;; use git grep
        (git-p
-        (if deleted-p (format "%s --no-pager log -p --all -G -- \"%s\" | %s \"^-.*%s\""
+        (if deleted-p (format "%s --no-pager log -p --all -G \"%s\" | %s \"^-.*%s\""
                               eacl-git-program
                               search-regex
                               eacl-grep-program search-regex)
@@ -447,10 +449,10 @@ If DELETED-P is t and git grep is used, grep only from deleted code."
 ;;;###autoload
 (defun eacl-complete-line (&optional deleted-p)
   "Complete line by grepping in root.
-The selected region will replace current line first.
+The selected region replaces current line first.
 The text from line beginning to current point is used as grep keyword.
-Whitespace in the keyword could match any characters.
-If DELETED-P is t and current file is tracked by Git, complete from deleted code."
+Whitespace in the keyword matches any characters.
+If DELETED-P is t and Git is used, complete from deleted code."
   (interactive "P")
   (eacl-ensure-no-region-selected)
   (let* ((cur-line-info (eacl-current-line-info))
@@ -484,7 +486,6 @@ Return (cons multiline-text end-line-text) or nil."
       (let* ((case-fold-search nil)
              (leading-whitespaces (match-string 1 line))
              (pattern (concat "^" leading-whitespaces "[^ \t\r\n]"))
-             end-line
              (continue t)
              line)
         (save-excursion
@@ -562,7 +563,9 @@ Whitespace in keyword could match any characters."
                                                                  file
                                                                  html-p))
                   (when eacl-debug (message "cand=%s" cand))
-                  (add-to-list 'rlt cand)))))))
+                  (push cand rlt)))))))
+      (setq rlt (nreverse rlt))
+
       (cond
        ((or (not rlt) (= (length rlt)  0))
         (message "No multiline match was found!"))
@@ -618,8 +621,6 @@ Set `eacl-ignore-buffers' and `eacl-include-buffers' to specify ignored&included
 buffers."
   (interactive)
   (let* ((original-buf (current-buffer))
-         strip-prompt
-         (original-buf-name (buffer-name original-buf))
          (eacl-keyword-start (eacl-line-beginning-position))
          (info (eacl-current-line-info))
          (keyword (eacl-get-keyword (car info) t))
