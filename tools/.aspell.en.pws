@@ -1,4 +1,4 @@
-personal_ws-1.1 en 345
+personal_ws-1.1 en 347
 acodec
 adoc
 aider
@@ -108,6 +108,7 @@ firefox
 flycheck
 flymake
 flyspell
+formatter
 frontend
 fullpath
 fullscreen
