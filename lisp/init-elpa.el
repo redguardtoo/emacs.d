@@ -46,6 +46,7 @@
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
+    agent-shell
     apheleia ; format code using proper cli tools
     pos-tip
     kotlin-mode ; no package on stable.melpa.org
@@ -360,6 +361,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'aider)
 (require-package 'flycheck)
 (require-package 'apheleia)
+(require-package 'agent-shell)
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
