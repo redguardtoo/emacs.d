@@ -59,6 +59,7 @@
     nov
     bbdb
     gptel ; use its new features (https://github.com/karthink/gptel/pull/665) asap
+    macher ; ai tool based on gptel
     esup ; Emacs start up profiler
     native-complete
     company-native-complete
@@ -361,6 +362,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'flycheck)
 (require-package 'apheleia)
 (require-package 'agent-shell)
+(require-package 'macher)
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
