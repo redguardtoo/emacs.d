@@ -742,8 +742,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
             (wucuo-spell-check-internal)))
   "fe" 'flyspell-goto-next-error
   "fa" 'flyspell-auto-correct-word
-  "lb" 'langtool-check-buffer
-  "ll" 'langtool-goto-next-error
   "og" 'org-agenda
 
   "otl" 'org-toggle-link-display

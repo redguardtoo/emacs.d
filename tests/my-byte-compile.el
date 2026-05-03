@@ -61,7 +61,6 @@
 (require 'pyim)
 (require 'cal-china-x)
 (require 'wucuo)
-(require 'langtool)
 (require 'web-mode)
 (require 'bbdb)
 (require 'gmail2bbdb)

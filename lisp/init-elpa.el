@@ -323,7 +323,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
-;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
 ;; run "M-x pdf-tool-install" at debian and open pdf in GUI Emacs
 (require-package 'pdf-tools)
