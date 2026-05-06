@@ -19,7 +19,7 @@
   (gptel-mode . my-gptel-mode-setup)
 
   :config
-  (require 'macher)
+  (when *emacs30* (require 'macher))
   (dolist (p '((english . "Translate the following to English")
                (chinese . "Translate the following to Chinese:")
                (mathematician . "I want you to act as a mathematician. I will type mathematical expressions and you will respond with the result of calculating the expressions. Use latex notation inside \\( and \\) when appropriate. When I need to tell you something in English, I'll do it by putting the text inside curly braces {like this}.")
@@ -28,19 +28,20 @@
                (typo . "Fix typos, grammar and style of the following:")))
     (push p gptel-directives)))
 
-(use-package macher
-  :after gptel
-  :custom
-  ;; The org UI has structured conversations and nice content folding.
-  (macher-action-buffer-ui 'org)
+(when *emacs30*
+  (use-package macher
+    :after gptel
+    :custom
+    ;; The org UI has structured conversations and nice content folding.
+    (macher-action-buffer-ui 'org)
 
-  :config
-  ;; Recommended - register macher tools and presets with gptel.
-  (macher-install)
+    :config
+    ;; Recommended - register macher tools and presets with gptel.
+    (macher-install)
 
-  ;; Recommended - enable macher infrastructure for tools/prompts in
-  ;; any buffer.  (Actions and presets will still work without this.)
-  (macher-enable))
+    ;; Recommended - enable macher infrastructure for tools/prompts in
+    ;; any buffer.  (Actions and presets will still work without this.)
+    (macher-enable)))
 
 ;; @see https://github.com/tninja/aider.el
 (use-package aider

@@ -19,6 +19,7 @@
 (setq *cygwin* (eq system-type 'cygwin) )
 (setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
 (setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
+(setq *emacs30* (>= emacs-major-version 30))
 
 ;; don't GC during startup to save time
 (unless (bound-and-true-p my-computer-has-smaller-memory-p)
