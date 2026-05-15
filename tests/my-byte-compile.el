@@ -38,7 +38,7 @@
 (require 'tramp)
 (require 'dired)
 (require 'shellcop)
-(require 'counsel-etags)
+(require 'fastctags)
 (require 'typewriter-mode)
 (require 'pomodoro)
 (require 'emms)

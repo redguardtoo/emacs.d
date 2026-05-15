@@ -96,7 +96,7 @@
   (require-init 'init-spelling t)
   (require-init 'init-ibuffer t)
   (require-init 'init-bookmark)
-  (require-init 'init-ivy)
+  (require-init 'init-completing-read)
   (require-init 'init-windows)
   (require-init 'init-javascript t)
   (require-init 'init-org t)
@@ -108,7 +108,6 @@
   (require-init 'init-git)
   (require-init 'init-gtags t)
   (require-init 'init-clipboard)
-  (require-init 'init-ctags t)
   (require-init 'init-gnus t)
   (require-init 'init-term-mode)
   (require-init 'init-web-mode t)
@@ -182,6 +181,7 @@
            (format "%.2f seconds"
                    (float-time (time-subtract after-init-time before-init-time)))
            gcs-done)
+
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:

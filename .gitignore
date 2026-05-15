@@ -70,6 +70,7 @@ network-security.data
 nov-places
 transient/
 elpy/
+tags
 package-quickstart.el
 .lsp-session*
 ellama-sessions/

@@ -45,9 +45,6 @@
   - [[#code-auto-completion][Code auto-completion]]
   - [[#color-theme][Color theme]]
   - [[#true-colors-in-terminal-emacs][True colors in terminal Emacs]]
-  - [[#grepreplace-text-in-project][Grep/Replace text in project]]
-  - [[#hydraswipercounselivy][Hydra/Swiper/Counsel/Ivy]]
-  - [[#set-auto-mode-alist][Set "auto-mode-alist"]]
   - [[#git-gutter][git-gutter]]
   - [[#setup-fonts-in-gui-emacs][Setup fonts in GUI Emacs]]
   - [[#synchronize-setup-with-git][Synchronize setup with Git]]
@@ -58,7 +55,6 @@
   - [[#org-mode][Org-mode]]
   - [[#macos-user][macOS user?]]
   - [[#customize-global-variables][Customize global variables]]
-  - [[#opensave-files-with-counselivy][Open/Save files with Counsel/Ivy]]
   - [[#windows][Windows]]
   - [[#yasnippet][Yasnippet]]
   - [[#non-english-users][Non-English users]]
@@ -181,12 +177,8 @@ But there is a simple workaround:
 - Required by =markdown-preview= from =markdown-mode=
 **** [[https://ctags.io/][Universal Ctags (recommended)]] or [[http://ctags.sourceforge.net][Exuberant CTags]]
 - It creates tags file for code navigation and code completion
-- Required by many tags related packages (=xref=, =counsel-etags=, =company-ctags= from =company-mode=, etc)
+- Required by many tags related packages
 - See [[http://redguardtoo.github.io/?p=1057][How to use ctags in Emacs effectively]]
-**** [[http://www.gnu.org/software/global][GNU Global]]
-- Required by [[https://github.com/syohex/emacs-counsel-gtags][counsel-gtags]] and =company-gtags= from =company-mode=
-- It creates index files for code navigation and auto-completion
-- Please read [[https://www.gnu.org/software/global/manual/global.html][GNU Global manual]] about environment variables =GTAGSLIBPATH= and =MAKEOBJDIRPREFIX=
 **** LibreOffice
 - Only its executable =soffice= is used for converting odt file into doc/pdf
 - Conversion happens automatically when exporting org-mode to odt
@@ -203,7 +195,7 @@ But there is a simple workaround:
 - Required by =stardict.el=
 - Run =curl http://pkgs.fedoraproject.org/repo/pkgs/stardict-dic/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2/f164dcb24b1084e1cfa2b1cb63d590e6/stardict-dictd_www.dict.org_wn-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= and =curl https://src.fedoraproject.org/repo/pkgs/stardict-dic/stardict-langdao-ec-gb-2.4.2.tar.bz2/41a71f5b3952709746dd7e52cf155b8b/stardict-langdao-ec-gb-2.4.2.tar.bz2 | tar jx -C ~/.stardict/dic= to install English dictionaries
 **** [[https://github.com/BurntSushi/ripgrep][ripgrep]]
-- Optionally used by =M-x counsel-etags-grep= to search text in files
+- Optionally used by =M-x fastctags-grep= to search text in files
 - Run =curl https://sh.rustup.rs -sSf | sh= in shell to install [[https://www.rust-lang.org/][Rust]] then =cargo install ripgrep=
 - Tweak environment variable =PATH= so Emacs can find ripgrep
 **** [[http://www.sbcl.org/][sbcl]]
@@ -257,13 +249,13 @@ On Windows, you need install Cygwin which provides command line programs to Emac
 
 Install Ctags (Universal Ctags is better. Exuberant Ctags is fine). On Windows, you could install Ctags through Cygwin.
 
-Run =M-x counsel-etags-find-tag-at-point= from =counsel-etags= to navigate code. It uses tags files created by ctags. Tags file will be automatically created/update when you start using =counsel-etags=.
+Run =M-x fastctags-find-tag-at-point= from =fastctags= to navigate code. It uses tags files created by ctags. Tags file will be automatically created/update when you start using =fastctags=.
 
-Run =M-x counsel-etags-grep= to search text (grep) in project. Project root is automatically detected.
+Run =M-x fastctags-grep= to search text (grep) in project. Project root is automatically detected.
 
 Run =M-x find-file-in-project-by-selected= from =find-file-in-project= to find file in project. Project root is automatically detected. You can also add one line setup in =.emacs= like =(setq ffip-project-root "~/proj1/")=.
 
-Code auto-completion works out of box by using tags file created by Ctags. You need run =counsel-etags= at least once to fire up Ctags. =company-ctags= from =company-mode= provides the candidates for auto completion. No manual setup is required.
+Code auto-completion works out of box by using tags file created by Ctags.
 
 Please [[https://en.wikipedia.org/wiki/Grep][grep]] in the directory =~/.emacs.d/lisp= if you have any further questions on setup.
 ** Better runtime performance
@@ -449,38 +441,16 @@ Here is a sample to override keybindings defined in =lisp/init-evil.el=,
 ** Code navigation
 It's usable out of box if Ctags is installed.
 
-To navigate, =M-x counsel-etags-find-tag-at-point=.
+To navigate, =M-x fastctags-find-tag-at-point=.
 
-To enable code auto-completion, =M-x counsel-etags-scan-code= at least once.
+To enable code auto-completion, =M-x fastctags-scan-code= at least once.
 
-Optionally, you can add =(add-hook 'after-save-hook 'counsel-etags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
+Optionally, you can add =(add-hook 'after-save-hook 'fastctags-virtual-update-tags)= into your =.emacs= to automatically update tags file.
 
 No further setup is required.
 ** Code auto-completion
 I assume you are using [[https://github.com/company-mode/company-mode][company-mode]]. In this setup, users can press digit key to select the candidate from =company-mode=. To disabled this feature, =(setq my-company-select-by-number-p nil)=. Please see =my-company-zero-key-for-filter= for more tips.
 
-*** C++ auto-completion doesn't work?
-There are many ways to scan the C++ source files. =company-clang= from =company-mode= and =Clang= is good at handling C++.
-
-If you use clang to parse the C++ code:
-- Make sure code is syntax correct
-- assign reasonable value into =company-clang-arguments=
-
-Here is sample setup:
-#+begin_src elisp
-(setq company-clang-arguments '("-I/home/myname/projs/test-cmake" "-I/home/myname/projs/test-cmake/inc"))
-#+end_src
-
-In "friendly" Visual C++, [[http://www.codeproject.com/Tips/588022/Using-Additional-Include-Directories][similar setup]] is required.
-
-You can use other backends instead of =clang=. For example, you can use =company-gtags= and [[https://www.gnu.org/software/global/][GNU Global]] instead. See [[http://redguardtoo.github.io/posts/emacs-as-c-ide-easy-way.html][Emacs as C++ IDE, easy way]] for details.
-
-*** Auto-completion for other languages
-It's similar to C++ setup. Since GNU Global supports many popular languages, you can use =company-gtags=.
-
-For languages GNU Global doesn't support, you can fall back to =company-ctags= and [[https://en.wikipedia.org/wiki/Ctags][Ctags]]. Ctags configuration file is =~/.ctags=.
-
-You can also complete line by =M-x eacl-complete-line= and complete multi-lines statement by =M-x eacl-complete-multiline=.
 ** Color theme
 *** Auto load classic color theme
 Add below code to =~/.custom.el= to load a random classic dark color theme during startup,
@@ -496,7 +466,7 @@ Check [[https://emacsthemes.com/]].
 Write down the name of color theme (for example, molokai).
 
 *** Setup color theme manually (recommended)
-You can =M-x counsel-load-theme= to switch themes.
+You can =M-x my-load-theme= to switch themes.
 
 Or you can insert below code into end of =~/.custom.el= or =init.el=,
 #+begin_src elisp
@@ -514,30 +484,6 @@ TERM=xterm-256color emacs -nw
 - Install Emacs 26
 - Install [[https://gist.github.com/XVilka/8346728][terminals supporting true color]]. I suggest [[https://mintty.github.io/][mintty]] on Windows, [[https://gnometerminator.blogspot.com/p/introduction.html][terminator]] on Linux, [[https://www.iterm2.com/][iTerm2]] on macOS
 - [[http://www.gnu.org/software/emacs/manual/html_node/efaq/Colors-on-a-TTY.html][Set up and start Emacs]]
-** Grep/Replace text in project
-Many third party plugins bundled in this setup have already provided enough features. For example, if you use =git=, =counsel-git-grep= from package [[https://github.com/abo-abo/swiper][counsel/ivy]] works out of the box.
-
-A generic grep program =counsel-etags-grep= is also provided. Since =counsel-etags-grep= is based on =counsel/ivy=, it also supports a magic called "multi-editing via Ivy". You could read [[https://sam217pa.github.io/2016/09/11/nuclear-power-editing-via-ivy-and-ag/][Nuclear weapon multi-editing via Ivy and Ag]] to get the idea.
-
-Multi-edit workflow is optimized. After =M-x counsel-etags-grep= or pressing =,qq=, press =C-c C-o C-x C-q= to enable =wgrep-mode=. You can edit text (for example, delete lines) in =wgrep-mode= directly.
-
-You can exclude multiple keywords using =!keyword1 keyword2= in =ivy=.
-** Hydra/Swiper/Counsel/Ivy
-I love all the packages from [[https://github.com/abo-abo][Oleh Krehel (AKA abo-abo)]]. Every article from his [[https://oremacs.com/][blog]] is worth reading ten times.
-
-You can input =:pinyin1 pinyin2 !pinyin3 pinyin4= in ivy UI to search by Chinese Pinyin. The key point is to make sure the first character of input is ":".
-** Set "auto-mode-alist"
-The =auto-mode-alist= associates major modes with files.
-
-For example, associate =rjsx-mode= file with extension "*.jsx",
-#+begin_src elisp
-(push ("\\.jsx\\'" . rsjx-mode) auto-mode-alist)
-#+end_src
-
-Or you can use function =my-add-auto-mode= provided by this configuration,
-#+begin_src elisp
-(my-add-auto-mode 'rjsx-mode "\\.jsx\\'")
-#+end_src
 ** git-gutter
 I use modified version of =git-gutter= for now until my pull request is merged into official repository.
 
@@ -598,21 +544,10 @@ Here are the steps to set these variables:
 -  Find the variable =company-clang-insert-argument= in =lisp/init-company.el= and change its value
 
 BTW, please *read my code comment* first before changing my code.
-** Open/Save files with Counsel/Ivy
-Keep pressing =C-M-j= to ignore candidates and open/save files using current input.
-
-You can also press =M-o= to apply other action on selected file. See [[https://oremacs.com/2015/07/23/ivy-multiaction/]] for details.
 ** Windows
 If you use Windows Emacs, you need Emacs to find third party command line programs from Cygwin/MSYS2. Please add =C:\Cygwin64\bin= or =C:\msys64\bin= to environment variable =PATH=.
 
 Most command line programs are originally developed for macOS and Linux. They can only handle UTF-8 encoded text. When grepping texts or searching files, the Windows Emacs need run the command line programs in Command Prompt which uses UTF-16 encoded text. So you might need see [[https://stackoverflow.com/questions/57131654/using-utf-8-encoding-chcp-65001-in-command-prompt-windows-powershell-window?noredirect=1&lq=1][Using UTF-8 Encoding (CHCP 65001) in Command Prompt / Windows Powershell (Windows 10)]] if Emacs need pass Non-ASCII text to external command line programs.
-
-Below Emacs commands do not require external command line programs and work out of box on Windows,
-- `M-x swiper`
-- `M-x ffip-lisp-find-file-in-project`
-- `M-x find-lisp-find-dired`
-- `M-x find-by-pinyin-dired`
-- `M-x find-by-pinyin-in-project-dired`
 
 You can set environment variables in PowerShell, like,
 #+begin_src sh
@@ -659,8 +594,6 @@ You can set =my-initial-evil-state-per-major-mode= to customize the initial evil
 #+begin_src elisp
 ;; `diff-mode' uses Emacs original key bindings
 (push '(diff-mode . emacs) my-initial-evil-state-per-major-mode)
-;; `ivy-occur-grep-mode' initial state is evil normal state. Vim key bindings are used.
-(push '(ivy-occur-grep-mode . normal) my-initial-evil-state-per-major-mode)
 #+end_src
 ** Chinese Input Method Editor
 Please note pyim is already built into this setup. You need not install it through ELPA.

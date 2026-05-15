@@ -55,7 +55,7 @@ If bookmark with same file name already exists, override it quietly."
                  (t
                   (car bookmark)))))
       ;; key will be displayed
-      ;; re-shape the data so full bookmark be passed to ivy-read
+      ;; re-shape the data so full bookmark be passed
       (cons key bookmark)))
 
   ;; use my own bookmark if it exists
