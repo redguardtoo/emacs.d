@@ -79,7 +79,7 @@
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
 (let* ((file-name-handler-alist nil))
 
-  (require-init 'init-autoload)
+  (require-init 'init-autoload) ; packages in site-lisp/ can be required
   ;; `package-initialize' takes 35% of startup time
   ;; need check https://github.com/hlissner/doom-emacs/wiki/FAQ#how-is-dooms-startup-so-fast for solution
   (require-init 'init-modeline)
@@ -96,23 +96,19 @@
   (require-init 'init-spelling t)
   (require-init 'init-ibuffer t)
   (require-init 'init-bookmark)
-  (require-init 'init-ivy)
   (require-init 'init-windows)
   (require-init 'init-javascript t)
   (require-init 'init-org t)
   (require-init 'init-python t)
   (require-init 'init-lisp t)
-  (require-init 'init-yasnippet t)
+  (require-init 'init-yasnippet )
   (require-init 'init-cc-mode t)
   (require-init 'init-linum-mode)
   (require-init 'init-git)
-  (require-init 'init-gtags t)
   (require-init 'init-clipboard)
-  (require-init 'init-ctags t)
   (require-init 'init-gnus t)
-  (require-init 'init-term-mode)
+  (require-init 'init-term-mode t)
   (require-init 'init-web-mode t)
-  (require-init 'init-company t)
   (require-init 'init-chinese t) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
   (require-init 'init-keyfreq t)
@@ -126,21 +122,24 @@
 
   ;; essential tools
   (require-init 'init-essential)
+
+  ;; use evil mode (vi key binding)
+  (require-init 'init-evil) ; init-evil dependent on init-clipboard
+  (require-init 'init-hydra) ; hotkey is required everywhere
+  (require-init 'init-company)
+  (require-init 'init-completing-read)
+
   ;; tools nice to have
   (require-init 'init-ai t)
-  (require-init 'init-misc t)
   (require-init 'init-dictionary t)
   (require-init 'init-emms t)
-
   (require-init 'init-emacs-w3m t)
   (require-init 'init-browser t)
   (require-init 'init-shackle t)
   (require-init 'init-dired t)
   (require-init 'init-writting t)
-  (require-init 'init-hydra) ; hotkey is required everywhere
-  ;; use evil mode (vi key binding)
-  (require-init 'init-evil) ; init-evil dependent on init-clipboard
-  (require-init 'init-pdf)
+  (require-init 'init-pdf t)
+  (require-init 'init-misc t)
 
   ;; ediff configuration should be last so it can override
   ;; the key bindings in previous configuration
@@ -182,6 +181,7 @@
            (format "%.2f seconds"
                    (float-time (time-subtract after-init-time before-init-time)))
            gcs-done)
+
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:

@@ -6,35 +6,36 @@
 (defun my-multi-purpose-grep (n)
   "Run different grep from N."
   (interactive "P")
+  (my-ensure 'fastctags)
   (cond
    ((not n)
-    (counsel-etags-grep))
+    (fastctags-grep))
    ((= n 1)
     ;; grep references of current web component
     ;; component could be inside styled-component like `const c = styled(Comp1)`
     (let* ((fb (file-name-base buffer-file-name)))
       (when (string= "index" fb)
         (setq fb (file-name-base (directory-file-name (file-name-directory (directory-file-name buffer-file-name))))))
-        (counsel-etags-grep (format "(<%s( *$| [^ ])|styled\\\(%s\\))" fb fb))))
+        (fastctags-grep (format "(<%s( *$| [^ ])|styled\\\(%s\\))" fb fb))))
    ((= n 2)
     ;; grep web component attribute name
-    (counsel-etags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
+    (fastctags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
                                                 (read-string "Component attribute name?")))))
    ((= n 3)
     ;; grep current file name
-    (counsel-etags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
+    (fastctags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
    ((= n 4)
     ;; grep js files which is imported
-    (counsel-etags-grep (format "from .*%s('|\\\.js');?"
+    (fastctags-grep (format "from .*%s('|\\\.js');?"
                                 (file-name-base (file-name-nondirectory buffer-file-name)))))))
 
 (defun my-grep-pinyin-in-current-directory ()
-  "Grep pinyin in current directory."
+  "Grep pinyin (no english) in current directory."
   (interactive)
   ;; grep Chinese using pinyinlib.
   ;; In ivy filter, trigger key must be pressed before filter chinese
-  (my-ensure 'counsel-etags)
-  (let* ((counsel-etags-convert-grep-keyword
+  (my-ensure 'fastctags)
+  (let* ((fastctags-convert-grep-keyword
           (lambda (keyword)
             (cond
              ((> (length keyword) 0)
@@ -43,7 +44,7 @@
               (pinyinlib-build-regexp-string keyword t nil t))
              (t
               keyword)))))
-    (counsel-etags-grep-current-directory)))
+    (fastctags-grep-current-directory)))
 
 ;; {{ narrow region
 (defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
@@ -115,28 +116,6 @@ If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
                                             use-indirect-buffer))
    (t (error "Please select a region to narrow to"))))
 ;; }}
-
-(defun my-swiper (&optional other-source)
-  "Search current file.
-If OTHER-SOURCE is 1, get keyword from clipboard.
-If OTHER-SOURCE is 2, get keyword from `kill-ring'."
-  (interactive "P")
-  (let* ((keyword (cond
-                   ((eq 1 other-source)
-                    (cliphist-select-item))
-                   ((eq 2 other-source)
-                    (my-select-from-kill-ring 'identity))
-                   ((region-active-p)
-                    (my-selected-str)))))
-    ;; `swiper--re-builder' read from `ivy-re-builders-alist'
-    ;; more flexible
-    (swiper keyword)))
-
-(defun my-swiper-hack (&optional arg)
-  "Undo region selection before swiper.  ARG is ignored."
-  (ignore arg)
-  (if (region-active-p) (deactivate-mark)))
-(advice-add 'swiper :before #'my-swiper-hack)
 
 (with-eval-after-load 'shellcop
   (setq shellcop-string-search-function 'swiper))

@@ -42,6 +42,7 @@ If N is not nil, copy file name and line number."
   (when buffer-file-name
     ;; require ffip to get project root
     (my-ensure 'find-file-in-project)
+    (my-ensure 'project)
     (let* ((root (ffip-project-root))
            (file-path (file-truename buffer-file-name))
            relative-path)
@@ -57,14 +58,7 @@ If N is not nil, copy file name and line number."
         (copy-yank-str relative-path)
         (message "%s => clipboard & yank ring" relative-path))))))
 
-(defun clipboard-to-kill-ring ()
-  "Copy from clipboard to `kill-ring'."
-  (interactive)
-  (let* ((warning-minimum-level :emergency))
-    (kill-new (my-gclip)))
-  (message "clipboard => kill-ring"))
-
-(defun kill-ring-to-clipboard ()
+(defun my-kill-ring-to-clipboard ()
   "Copy from `kill-ring' to clipboard."
   (interactive)
   (my-select-from-kill-ring (lambda (s)

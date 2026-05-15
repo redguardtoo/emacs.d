@@ -335,17 +335,13 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (xref--xref-buffer-mode . emacs)
     (epa-key-list-mode . emacs)
     (fundamental-mode . emacs)
-    (weibo-timeline-mode . emacs)
-    (weibo-post-mode . emacs)
     (woman-mode . emacs)
     (sr-mode . emacs)
     (profiler-report-mode . emacs)
     (dired-mode . emacs)
     (compilation-mode . emacs)
     (speedbar-mode . emacs)
-    (ivy-occur-mode . emacs)
     (ffip-file-mode . emacs)
-    (ivy-occur-grep-mode . normal)
     (messages-buffer-mode . normal)
     (js2-error-buffer-mode . emacs))
   "Initial evil state per major mode.")
@@ -362,10 +358,9 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 (define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
 
 (define-key evil-normal-state-map "Y" (kbd "y$"))
-;; (define-key evil-normal-state-map (kbd "RET") 'ivy-switch-buffer-by-pinyin) ; RET key is preserved for occur buffer
 (define-key evil-normal-state-map "go" 'goto-char)
-(define-key evil-normal-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
-(define-key evil-visual-state-map (kbd "C-]") 'counsel-etags-find-tag-at-point)
+(define-key evil-normal-state-map (kbd "C-]") 'fastctags-nav-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") 'fastctags-nav-find-tag-at-point)
 (define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
 (define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
 (define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
@@ -391,64 +386,6 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   (when (functionp 'evilmi-add-one-plugin-rule)
     (evilmi-add-one-plugin-rule #'rjsx-mode #'my-rjsx-jump-tag)))
 
-;; "gd" or `evil-goto-definition' now use `imenu', `xref' first,
-;; BEFORE searching string from `point-min'.
-;; xref part is annoying because I already use `counsel-etags' to search tag.
-(evil-define-motion my-evil-goto-definition ()
-  "Go to local definition or first occurrence of symbol in current buffer."
-  :jump t
-  :type exclusive
-  (let ((string (evil-find-symbol t))
-         search
-         ientry ipos)
-
-    ;; left string "$" from variable name in some major modes
-    (when (and (memq major-mode '(yaml-mode
-                                  sh-mode
-                                  conf-mode
-                                  cmake-mode
-                                  dockerfile-mode
-                                  graphql-mode))
-               (string-match "^\$[A-Za-z]" string))
-      (setq string (substring string 1)))
-
-    (setq search (format "\\_<%s\\_>" (regexp-quote string)))
-
-    ;; load imenu if available
-    (my-ensure 'imenu)
-
-    (if (null string)
-        (user-error "No symbol under cursor")
-      (setq isearch-forward t)
-
-      (my-ensure 'counsel-etags)
-      (counsel-etags-push-marker-stack)
-
-      ;; if imenu is available, try it
-      (cond
-       ((and (derived-mode-p 'js2-mode)
-             (cl-intersection (my-what-face) '(rjsx-tag)))
-        (js2-jump-to-definition))
-
-       ((fboundp 'imenu--make-index-alist)
-        (condition-case nil
-            (setq ientry (imenu--make-index-alist))
-          (error nil))
-        (setq ientry (assoc string ientry))
-        (setq ipos (cdr ientry))
-        (when (and (markerp ipos)
-                   (eq (marker-buffer ipos) (current-buffer)))
-          (setq ipos (marker-position ipos)))
-        ;; imenu found a position, so go there and
-        ;; highlight the occurrence
-        (my-search-defun-from-pos search (if (numberp ipos) ipos (point-min))))
-       ;; otherwise just go to first occurrence in buffer
-       (t
-        (my-search-defun-from-pos search (point-min)))))))
-
-;; Use below line to restore old vim "gd"
-;; (define-key evil-normal-state-map "gd" 'my-evil-goto-definition)
-
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
 (define-key evil-visual-state-map (kbd "v") 'er/expand-region)
@@ -456,74 +393,6 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
 (define-key evil-insert-state-map (kbd "C-k") 'kill-line)
 (define-key evil-insert-state-map (kbd "M-j") 'yas-expand)
 (define-key evil-emacs-state-map (kbd "M-j") 'yas-expand)
-
-;; {{
-(defvar evil-global-markers-history nil)
-(defun my-evil-set-marker-hack (char &optional pos advance)
-  "Place evil marker's position into history."
-  (ignore advance)
-  (unless pos (setq pos (point)))
-  ;; only remember global markers
-  (when (and (>= char ?A) (<= char ?Z) buffer-file-name)
-    (setq evil-global-markers-history
-          (delq nil
-                (mapcar `(lambda (e)
-                           (unless (string-match (format "^%s@" (char-to-string ,char)) e)
-                             e))
-                        evil-global-markers-history)))
-    (setq evil-global-markers-history
-          (add-to-list 'evil-global-markers-history
-                       (format "%s@%s:%d:%s"
-                               (char-to-string char)
-                               (file-truename buffer-file-name)
-                               (line-number-at-pos pos)
-                               (string-trim (my-line-str)))))))
-(advice-add 'evil-set-marker :before #'my-evil-set-marker-hack)
-
-(defun my-evil-goto-mark-line-hack (orig-func &rest args)
-  "Place line marker into history."
-  (let* ((char (nth 0 args))
-         (orig-pos (point)))
-    (condition-case nil
-        (apply orig-func args)
-      (error (progn
-               (when (and (eq orig-pos (point)) evil-global-markers-history)
-                 (let* ((markers evil-global-markers-history)
-                        (i 0)
-                        m
-                        file
-                        found)
-                   (while (and (not found) (< i (length markers)))
-                     (setq m (nth i markers))
-                     (when (string-match (format "\\`%s@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'"
-                                                 (char-to-string char))
-                                         m)
-                       (setq file (match-string-no-properties 1 m))
-                       (setq found (match-string-no-properties 2 m)))
-                     (setq i (1+ i)))
-                   (when file
-                     (find-file file)
-                     (counsel-etags-forward-line found)))))))))
-(advice-add 'evil-goto-mark-line :around #'my-evil-goto-mark-line-hack)
-
-(defun counsel-evil-goto-global-marker ()
-  "Goto global evil marker."
-  (interactive)
-  (my-ensure 'counsel-etags)
-  (ivy-read "Goto global evil marker"
-            evil-global-markers-history
-            :action (lambda (m)
-                      (when (string-match "\\`[A-Z]@\\(.*?\\):\\([0-9]+\\):\\(.*\\)\\'" m)
-                        (let* ((file (match-string-no-properties 1 m))
-                               (linenum (match-string-no-properties 2 m)))
-                          ;; item's format is like '~/proj1/ab.el:39: (defun hello() )'
-                          (counsel-etags-push-marker-stack)
-                          ;; open file, go to certain line
-                          (find-file file)
-                          (counsel-etags-forward-line linenum))
-                        ;; flash, Emacs v25 only API
-                        (xref-pulse-momentarily)))))
-;; }}
 
 (local-require 'general)
 (general-evil-setup t)
@@ -637,7 +506,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "se" 'my-current-string-end
   "su" 'vundo
   "vj" 'my-validate-json-or-js-expression
-  "kc" 'kill-ring-to-clipboard
+  "kc" 'my-kill-ring-to-clipboard
   "fn" 'cp-filename-of-current-buffer
   "fc" 'cp-filename-and-content-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
@@ -647,11 +516,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "ff" 'my-toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
   "tt" 'find-file-in-current-directory
-  "jj" 'find-file-in-project-at-point
+  "jj" 'ind-file-in-project-at-point
   "kk" 'find-file-in-project-by-selected
   "kn" 'find-file-with-similar-name ; ffip v5.3.1
   "kd" 'find-directory-in-project-by-selected
-  "kf" 'find-file
   "k/" 'find-file-other-window
   "hf" 'find-function
   "trm" 'get-term
@@ -671,16 +539,14 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; }}
   "rv" 'my-rename-thing-at-point
   "nm" 'js2hl-add-namespace-to-thing-at-point
-  "rb" 'evilmr-replace-in-buffer
-  "ts" 'evilmr-tag-selected-region ;; recommended
-  "rt" 'counsel-etags-recent-tag
-  "ft" 'counsel-etags-find-tag
-  "yy" 'my-counsel-browse-kill-ring
-  "cf" 'counsel-grep ; grep current buffer
-  "gf" 'my-counsel-git-find-file ; find file
-  "gg" 'my-counsel-git-grep ; quickest grep should be easy to press
+  "rb" 'evilmr-replace-in-buffet
+  "rt" 'fastctags-nav-recent-tar
+  "ft" 'fastctags-nav-find-tag
+  "yy" 'my-browse-kill-ring
+  "gf" 'my-git-find-file ; find file
+  "gg" 'my-git-grep ; quickest grep should be easy to press
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
-  "vv" 'my-evil-goto-definition ; frequently used
+  "vv" 'evil-goto-definition ; frequently used
   "sh" 'my-select-from-search-text-history
   "rjs" 'run-js
   "jsr" 'js-comint-send-region
@@ -688,7 +554,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "bb" 'my-switch-to-previous-buffer
   "kb" 'kill-buffer-and-window
   "bk" 'kill-buffer-and-window
-  "ii" 'my-imenu-or-list-tag-in-current-file
+  "ii" 'consult-imenu
   ;; @see https://github.com/pidu/git-timemachine
   ;; p: previous; n: next; w:hash; W:complete hash; g:nth version; q:quit
   "tm" 'my-git-timemachine
@@ -702,9 +568,9 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "cxo" 'org-clock-out ; `C-c C-x C-o'
   "cxr" 'org-clock-report ; `C-c C-x C-r'
   "qq" 'my-multi-purpose-grep
-  "dd" 'counsel-etags-grep-current-directory
+  "dd" 'fastctags-grep-current-directory
   "dc" 'my-grep-pinyin-in-current-directory
-  "rr" 'my-counsel-recentf
+  "rr" 'my-recentf
   "da" 'diff-lisp-mark-selected-text-as-a
   "db" 'diff-lisp-diff-a-and-b
   "di" 'evilmi-delete-items
@@ -731,9 +597,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; }}
   "cr" 'my-windows-setup
   "uu" 'my-transient-winner-undo
-  "fs" 'ffip-save-ivy-last
-  "fr" 'ivy-resume
-  "ss" 'my-swiper
+  "fr" 'vertico-repeat
+  "ss" 'consult-line
   "sf" 'shellcop-search-in-shell-buffer-of-other-window
   "fb" '(lambda ()
           (interactive)
@@ -745,10 +610,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "og" 'org-agenda
 
   "otl" 'org-toggle-link-display
-  "oa" '(lambda ()
-          (interactive)
-          (my-ensure 'org)
-          (counsel-org-agenda-headlines))
   "ar" 'align-regexp
   "wrn" 'httpd-restart-now
   "wrd" 'httpd-restart-at-default-directory
@@ -764,10 +625,9 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "9" 'winum-select-window-9
   "xm" 'execute-extended-command
   "xx" 'er/expand-region
-  ;; `counsel-find-file' has more actions (press "M-o" to trigger more actions)
-  "xf" (if (functionp 'counsel-find-file) 'counsel-find-file 'find-file)
+  "xb" 'consult-buffer
+  "xf" 'find-file
   "x/" 'find-file-other-window
-  "xb" 'ivy-switch-buffer-by-pinyin
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
@@ -783,8 +643,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "v=" 'git-gutter:popup-hunk
   "hh" 'cliphist-paste-item
   "yu" 'cliphist-select-item
-  "ih" 'my-git-goto-gutter ; use ivy-mode
-  "ir" 'ivy-resume
+  "ih" 'my-git-goto-gutter
   "ww" 'my-narrow-or-widen-dwim
   "wf" 'popup-which-function)
 ;; }}
@@ -806,7 +665,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
         (if (derived-mode-p 'diff-mode) (my-search-prev-diff-hunk)
           (my-search-prev-merge-conflict)))
   "dd" 'pwd
-  "mm" 'counsel-evil-goto-global-marker
   "mf" 'mark-defun
   "xc" 'save-buffers-kill-terminal ; not used frequently
   "ss" 'wg-create-workgroup ; save windows layout
@@ -816,19 +674,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "jj" 'scroll-other-window
   "kk" 'scroll-other-window-up
   "hh" 'my-random-favorite-color-theme
-  "lt" 'counsel-load-theme
+  "lt" 'my-load-theme
   "yy" 'my-hydra-zoom/body
   "ii" 'my-toggle-indentation
-  "g" 'my-hydra-git/body
-  "ur" 'gud-remove
-  "ub" 'gud-break
-  "uu" 'gud-run
-  "up" 'gud-print
-  "un" 'gud-next
-  "us" 'gud-step
-  "ui" 'gud-stepi
-  "uc" 'gud-cont
-  "uf" 'gud-finish)
+  "g" 'my-hydra-git/body)
 
 ;; {{ Use `;` as leader key, for searching something
 (general-create-definer my-semicolon-leader-def
@@ -860,10 +709,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 (defun my-select-from-search-text-history ()
   "My select the history of text searching."
   (interactive)
-  (ivy-read "Search text history:" my-search-text-history
-            :action (lambda (item)
-                      (copy-yank-str item)
-                      (message "%s => clipboard & yank ring" item))))
+  (let* ((selected (completing-read "Search text history:" my-search-text-history)))
+    (when selected
+      (copy-yank-str item)
+      (message "%s => clipboard & yank ring" item))))
 
 (defun my-cc-isearch-string (&rest args)
   "Add `isearch-string' into history.  ARGS is ignored."
@@ -937,7 +786,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (my-ensure 'counsel)
   (when (fboundp 'evilnc-imenu-create-index-function)
     (let* ((imenu-create-index-function 'evilnc-imenu-create-index-function))
-      (counsel-imenu))))
+      (consult-imenu))))
 ;; }}
 
 ;; {{ `evil-matchit'
@@ -963,16 +812,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 ;; {{ Evil’s f/F/t/T command can search PinYin ,
 (my-run-with-idle-timer 4 #'evil-find-char-pinyin-mode)
 ;; }}
-
-;; ;; In insert mode, press "fg" in 0.3 second to trigger my-counsel-company
-;; ;; Run "grep fg english-words.txt", got "afghan".
-;; ;; "afgan" is rarely used when programming
-;; ;; Insert below code to ~/.custome.el if your really want this feature.
-;; ;; @see https://github.com/redguardtoo/emacs.d/issues/870 first
-;; (general-imap "f"
-;;   (general-key-dispatch 'self-insert-command
-;;     :timeout 0.3
-;;     "g" 'my-counsel-company))
 
 ;; press ",xx" to expand region
 ;; then press "char" to contract, "x" to expand

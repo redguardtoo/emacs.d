@@ -152,17 +152,14 @@ Show the diff between current working code and git head."
 (defun my-git-timemachine-show-selected-revision ()
   "Show last (current) revision of file."
   (interactive)
+  (my-ensure 'git-timemachine)
   (let* ((collection (mapcar (lambda (rev)
-                    ;; re-shape list for the ivy-read
-                    (cons (concat (substring-no-properties (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
-                  (git-timemachine--revisions))))
-    (ivy-read "commits:"
-              collection
-              :action (lambda (rev)
-                        ;; compatible with ivy 8+ and later ivy version
-                        (unless (string-match "^[a-z0-9]*$" (car rev))
-                          (setq rev (cdr rev)))
-                        (git-timemachine-show-revision rev)))))
+                               ;; re-shape list
+                               (cons (concat (substring-no-properties (nth 0 rev) 0 7) "|" (nth 5 rev) "|" (nth 6 rev)) rev))
+                             (git-timemachine--revisions)))
+         (selected (completing-read "commits:" collection)))
+    (when selected
+      (git-timemachine-show-revision (cdr (assoc selected collection))))))
 
 (defun my-git-timemachine ()
   "Open git snapshot with the selected version."
@@ -343,9 +340,9 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
       (my-ensure 'magit)
       (magit-cherry-copy commit-id))))
 
-;; {{ git-gutter use ivy
+;; {{ git-gutter
 (defun my-git-reshape-gutter (gutter)
-  "Re-shape GUTTER for `ivy-read'."
+  "Re-shape GUTTER."
   (let* ((linenum-start (aref gutter 3))
          (linenum-end (aref gutter 4))
          (target-line "")
@@ -373,13 +370,14 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 (defun my-git-goto-gutter ()
   "Go to specific git gutter."
   (interactive)
-  (if git-gutter:diffinfos
-      (ivy-read "git-gutters:"
-                (mapcar 'my-git-reshape-gutter git-gutter:diffinfos)
-                :action (lambda (e)
-                          (unless (numberp e) (setq e (cdr e)))
-                          (my-goto-line e)))
-    (message "NO git-gutters!")))
+  (cond
+   (git-gutter:diffinfos
+    (let* ((cands (mapcar 'my-git-reshape-gutter git-gutter:diffinfos))
+           (selected (completing-read "git-gutters:" cands)))
+      (when selected
+        (my-goto-line (cdr (assoc selected cands))))))
+   (t
+    (message "NO git-gutters!"))))
 
 ;; }}
 
@@ -425,6 +423,24 @@ If LEVEL > 0, find file in previous LEVEL commit."
   (interactive)
   (message "Git current branch: %s"
            (string-trim (shell-command-to-string "git branch --show-current"))))
+
+(defun my-git-find-file ()
+  "Find file in the current Git repository (all files)."
+  (interactive)
+  (let* ((default-directory (or (ffip-project-root)
+                                default-directory))
+         (cmd "git ls-files -z --full-name --")
+         (cands (split-string (shell-command-to-string cmd) "\0" t))
+         (file (completing-read "Find file: " cands nil t (if (region-active-p) (my-selected-str)))))
+    (when file
+      (find-file file))))
+
+(defun my-git-grep ()
+  "Git grep in project."
+  (interactive)
+  (let* ((str (if (region-active-p) (my-selected-str)))
+         (fastctags-use-git-grep-p t))
+    (fastctags-grep str)))
 
 (provide 'init-git)
 ;;; init-git.el ends here

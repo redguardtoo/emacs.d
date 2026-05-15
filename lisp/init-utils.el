@@ -71,14 +71,6 @@ Then replace the region or buffer with cli output."
     (shell-command-on-region b e cmd nil t)
     (goto-char orig-point)))
 
-(defun my-use-tags-as-imenu-function-p ()
-  "Can use tags file to build imenu function"
-  (my-ensure 'counsel-etags)
-  (and (locate-dominating-file default-directory "TAGS")
-       ;; latest universal ctags has built in parser for javascript/typescript
-       (counsel-etags-universal-ctags-p "ctags")
-       (memq major-mode '(typescript-mode js-mode javascript-mode))))
-
 ;; {{ copied from http://ergoemacs.org/emacs/elisp_read_file_content.html
 (defun my-get-string-from-file (file)
   "Return FILE's content."
@@ -128,6 +120,7 @@ Then replace the region or buffer with cli output."
     (if (string-match pattern file) file)))
 
 (defun my-prepare-candidate-fit-into-screen (s)
+  "Fit string S into screen."
   (let* ((w (frame-width))
          ;; display kill ring item in one line
          (key (replace-regexp-in-string "[ \t]*[\n\r]+[ \t]*" "\\\\n" s)))
@@ -139,18 +132,17 @@ Then replace the region or buffer with cli output."
     (cons key s)))
 
 (defun my-select-from-kill-ring (fn)
-  "If N > 1, yank the Nth item in `kill-ring'.
-If N is nil, use `ivy-mode' to browse `kill-ring'."
+  "Browse `kill-ring' with `completing-read' and call FN on selected item."
   (interactive "P")
   (let* ((candidates (cl-remove-if
                        (lambda (s)
                          (or (< (length s) 5)
                              (string-match "\\`[\n[:blank:]]+\\'" s)))
                        (delete-dups kill-ring)))
-          (ivy-height (/ (frame-height) 2)))
-     (ivy-read "Browse `kill-ring':"
-               (mapcar #'my-prepare-candidate-fit-into-screen candidates)
-               :action fn)))
+         (cands (mapcar #'my-prepare-candidate-fit-into-screen candidates))
+         (selected (completing-read "Browse `kill-ring': " cands)))
+    (when selected
+      (funcall fn (assoc selected cands)))))
 
 (defun my-delete-selected-region ()
   "Delete selected region."

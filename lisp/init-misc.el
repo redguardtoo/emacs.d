@@ -100,8 +100,7 @@
   (interactive)
   (let* ((word (my-use-selected-string-or-ask "Input word for dict.org:")))
     (when word
-      (dictionary-new-search (cons word
-                                   dictionary-default-dictionary)))))
+      (dictionary-new-search (cons word dictionary-default-dictionary)))))
 ;; }}
 
 (defun my-lookup-doc-in-man ()
@@ -109,12 +108,23 @@
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
 
-;; @see http://redguardtoo.github.io/posts/effective-code-navigation-for-web-development.html
-;; don't let the cursor go into minibuffer prompt
-(setq minibuffer-prompt-properties
-      (quote (read-only t point-entered minibuffer-avoid-prompt face minibuffer-prompt)))
+(use-package emacs
+  :custom
+  ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
+  ;; to switch display modes.
+  (context-menu-mode t)
+  ;; Support opening new minibuffers from inside existing minibuffers.
+  (enable-recursive-minibuffers t)
+  ;; Hide commands in M-x which do not work in the current mode.  Vertico
+  ;; commands are hidden in normal buffers. This setting is useful beyond
+  ;; Vertico.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Do not allow the cursor in the minibuffer prompt
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)))
 
-(global-set-key (kbd "M-x") 'counsel-M-x)
+
+(global-set-key (kbd "M-x") 'execute-extended-command)
 
 ;; hide the compilation buffer automatically is not a good idea.
 ;; if compiling command is a unit test command
@@ -236,6 +246,9 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
     )))
 ;; }}
 
+;; complete&navigate code using fastctags
+(my-run-with-idle-timer 1 #'fastctags-auto-setup)
+
 ;;; {{ display long lines in truncated style (end line with $)
 (defun my-truncate-lines-setup ()
   (toggle-truncate-lines 1))
@@ -296,20 +309,10 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
                         "1080p\\|720p\\|480p"))
 ;; }}
 
-;; {{ popup functions
-(defun my-which-function ()
-  "Return current function name."
-  ;; @see http://stackoverflow.com/questions/13426564/how-to-force-a-rescan-in-imenu-by-a-function
-  ;; clean the imenu cache
-  (my-rescan-imenu-items (if (my-use-tags-as-imenu-function-p)
-                      'counsel-etags-imenu-default-create-index-function
-                    imenu-create-index-function))
-  (which-function))
-
 (defun popup-which-function ()
   "Popup which function message."
   (interactive)
-  (let* ((msg (my-which-function)))
+  (let* ((msg (which-function)))
     (when msg
       (popup-tip msg)
       (copy-yank-str msg))))
@@ -1265,21 +1268,6 @@ MATCH is optional tag match."
     (unless (derived-mode-p 'js2-mode)
       (subword-mode 1))
 
-    ;; now css-mode derives from prog-mode
-    ;; see the code of `counsel-css-imenu-setup'
-    (when (counsel-css-imenu-setup)
-      ;; css color
-      (rainbow-mode 1)
-      (imenu-extra-auto-setup
-       ;; post-css mixin
-       '(("Function" "^ *@define-mixin +\\([^ ]+\\)" 1)))
-      (setq beginning-of-defun-function
-            (lambda (arg)
-              (ignore arg)
-              (let* ((closest (my-closest-imenu-item)))
-                (when closest
-                  (goto-char (cdr closest)))))))
-
     (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
 
     ;; eldoc, show API doc in minibuffer echo area
@@ -1306,5 +1294,104 @@ MATCH is optional tag match."
   (setf (alist-get 'lua-mode apheleia-mode-alist) 'stylua)
   (setf (alist-get 'luau-mode apheleia-mode-alist) 'stylua))
 ;; }}
+
+;; {{ recent files
+(defvar my-git-recent-files-extra-options ""
+  "Extra options for git recent files.
+For example, could be \"---author=MyName\"")
+
+(defmacro my-git-extract-file (n items rlt)
+  "Extract Nth item from ITEMS as a file candidate.
+The candidate could be placed in RLT."
+  `(let* ((file (string-trim (nth ,n ,items))))
+     (when (file-exists-p file)
+       (push (cons file (file-truename file)) ,rlt))))
+
+(defun my-git-recent-files ()
+  "Get files in my recent git commits."
+  (let* ((default-directory (my-git-root-dir))
+         ;; two weeks is a sprint, minus weekend and days for sprint review and test
+         (cmd (format "git --no-pager log %s --name-status --since=\"10 days ago\" --pretty=format:"
+                      my-git-recent-files-extra-options))
+         (lines (my-lines-from-command-output cmd))
+         items
+         rlt)
+    (when lines
+      (dolist (l lines)
+        (setq items (split-string l "[ \t]+" l))
+        (cond
+         ((= (length items) 2)
+          (my-git-extract-file 1 items rlt))
+         ((= (length items) 3)
+          (my-git-extract-file 1 items rlt)
+          (my-git-extract-file 2 items rlt)))))
+    rlt))
+
+(defun my-recentf (&optional n)
+  "Find a file on `recentf-list'.
+If N is 1, only list files in current project.
+If N is 2, list files in my recent 20 commits."
+  (interactive "P")
+  (my-ensure 'recentf)
+  (my-ensure 'project)
+  (unless n (setq n 0))
+  (recentf-mode 1)
+  (let* ((files (mapcar #'substring-no-properties recentf-list))
+         (root (ffip-project-root))
+         (root-dir (if root (file-truename root)))
+         (hint "Recent files: ")
+         f)
+    (cond
+     ((and (eq n 1) root-dir)
+      (setq hint (format "Recent files in %s: " root-dir))
+      (setq files (delq nil (delete-dups (mapcar (lambda (f) (my-path-in-directory-p f root-dir)) files)))))
+     ((eq n 2)
+      (setq hint (format "Files in recent Git commits: "))
+      (setq files (my-git-recent-files))))
+
+    (when (setq f (completing-read hint files))
+      ;; return file buffer if possible
+      (find-file f))))
+;; }}
+
+(defun my-insert-bash-history ()
+  "Yank the bash history."
+  (interactive)
+  (shell-command "history -r") ; reload history
+  (let* ((collection (nreverse (my-read-lines (file-truename "~/.bash_history"))))
+         (val (completing-read "Bash history: " collection)))
+  (when val
+      (kill-new val)
+      (message "%s => kill-ring" val)
+      (insert val))))
+
+(defun my-browse-kill-ring ()
+ "If N > 1, assume just yank the Nth item in `kill-ring'."
+  (interactive)
+  (my-select-from-kill-ring (lambda (s)
+                              (let* ((plain-str (my-insert-str s))
+                                     (trimmed (string-trim plain-str)))
+                                (setq kill-ring (cl-delete-if
+                                                 `(lambda (e) (string= ,trimmed (string-trim e)))
+                                                 kill-ring))
+                                (kill-new plain-str)))))
+
+(defun my-load-theme ()
+  "Load color theme."
+  (interactive)
+  (let* ((selected (completing-read "Load custom theme: "
+                                    (mapcar #'symbol-name (custom-available-themes)))))
+    (when selected
+      (condition-case nil
+          (progn
+            (mapc #'disable-theme custom-enabled-themes)
+            (load-theme selected t)
+            (when (fboundp 'powerline-reset)
+              (powerline-reset)))
+        (error "Problem loading theme %s" selected)))))
+
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x b") 'ibuffer)
+
 (provide 'init-misc)
 ;;; init-misc.el ends here

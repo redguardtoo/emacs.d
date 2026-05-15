@@ -38,7 +38,7 @@
 (require 'tramp)
 (require 'dired)
 (require 'shellcop)
-(require 'counsel-etags)
+(require 'fastctags)
 (require 'typewriter-mode)
 (require 'pomodoro)
 (require 'emms)
@@ -84,7 +84,6 @@
 (require 'exec-path-from-shell)
 (require 'dictionary)
 (require 'company-ispell)
-(require 'company-ctags)
 (require 'ob-sagemath)
 
 (let ((files (find-lisp-find-files-internal
