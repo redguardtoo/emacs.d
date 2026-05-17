@@ -431,16 +431,15 @@ If LEVEL > 0, find file in previous LEVEL commit."
                                 default-directory))
          (cmd "git ls-files -z --full-name --")
          (cands (split-string (shell-command-to-string cmd) "\0" t))
-         (file (completing-read "Find file: " cands nil t (if (region-active-p) (my-selected-str)))))
+         (file (completing-read "Find file: " cands nil t (my-selected-str))))
     (when file
       (find-file file))))
 
 (defun my-git-grep ()
   "Git grep in project."
   (interactive)
-  (let* ((str (if (region-active-p) (my-selected-str)))
-         (fastctags-use-git-grep-p t))
-    (fastctags-grep str)))
+  (let ((fastctags-use-git-grep-p t))
+    (fastctags-grep (my-selected-str))))
 
 (provide 'init-git)
 ;;; init-git.el ends here

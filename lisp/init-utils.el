@@ -182,7 +182,8 @@ Then replace the region or buffer with cli output."
 
 (defun my-selected-str ()
   "Get string of selected region."
-  (buffer-substring-no-properties (region-beginning) (region-end)))
+  (when (region-active-p)
+    (buffer-substring-no-properties (region-beginning) (region-end))))
 
 (defun my-use-selected-string-or-ask (&optional hint)
   "Use selected region or ask for input.
