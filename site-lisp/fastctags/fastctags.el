@@ -172,7 +172,7 @@ If rg is not in $PATH, then it need be defined in `fastctags-grep-program'."
   :group 'fastctags
   :type 'string)
 
-(defcustom fastctags-convert-grep-keyword 'identity
+(defcustom fastctags-convert-grep-keyword #'identity
   "Convert keyword to grep to new regex to feed into grep program."
   :group 'fastctags
   :type 'function)
@@ -193,10 +193,27 @@ The parameter \"root\" is the project root directory."
   :group 'fastctags
   :type 'boolean)
 
-(defcustom fastctags-nav-find-tag-name-function 'fastctags-nav-find-tag-name-default
+(defcustom fastctags-nav-find-tag-name-function
+  #'fastctags-nav-find-tag-name-default
   "The function to use to find tag name at point.
-It should be a function that takes no arguments and returns an string.
+It's function that takes no arguments and returns an string.
 If it returns nil, the `find-tag-default' is used."
+  :group 'fastctags
+  :type 'function)
+
+(defcustom fastctags-nav-format-candidate-function
+  #'fastctags-nav-format-candidate-default
+  "Format code navigation candidate for display.
+It's function that takes one candidate and return a string.
+The candidate is like,
+
+  (list :file  \"my/relative/path\"
+        :fullpath \"my/full/path\"
+        :excmd \"excmd\"
+        :text \"text\"
+        :rank 0
+        :kind \"f\"
+        :tagname \"tagname\")"
   :group 'fastctags
   :type 'function)
 
@@ -1017,14 +1034,10 @@ CURRENT-FILE is used to compare with candidate path."
   (let* ((file-info (fastctags-get-tags-file-info tags-file)))
     (or (plist-get file-info :filesize) 0)))
 
-(defun fastctags-build-cand (info)
-  "Build tag candidate from INFO.
-If SHOW-ONLY-TEXT is t, the candidate shows only text."
-  (cons (format "%s:%s:%s"
-                (plist-get info :kind)
-                (plist-get info :file)
-                (plist-get info :text))
-        info))
+(defun fastctags-nav-build-candidate (candidate)
+  "Build tag CANDIDATE."
+  (cons (funcall fastctags-nav-format-candidate-function candidate)
+        candidate))
 
 (defun fastctags-excmd-display-text (excmd)
   "Return human-readable text extracted from Vim ctags EXCMD."
@@ -1128,7 +1141,7 @@ Return candidate."
                                             :rank rank ; smaller value is at top
                                             :kind kind
                                             :tagname ta)))
-                           (fastctags-build-cand cand)))
+                           (fastctags-nav-build-candidate cand)))
                         (t
                          ;; need push cursor forward
                          (end-of-line)
@@ -1360,6 +1373,13 @@ Focus on TAGNAME if it's not nil."
                (string-match "^\\(`.*`\\|=.*=\\|~.*~\\|\".*\"\\|'.*'\\)$" tag-name))
       (setq tag-name (substring tag-name 1 (1- (length tag-name)))))
     tag-name))
+
+(defun fastctags-nav-format-candidate-default (candidate)
+  "Format code navigation CANDIDATE for display."
+  (format "%s:%s:%s"
+          (plist-get candidate :kind)
+          (plist-get candidate :file)
+          (plist-get candidate :text)))
 
 ;;;###autoload
 (defun fastctags-scan-code (&optional dir)
