@@ -516,7 +516,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "ff" 'my-toggle-full-window ;; I use WIN+F in i3
   "ip" 'find-file-in-project
   "tt" 'find-file-in-current-directory
-  "jj" 'ind-file-in-project-at-point
+  "jj" 'find-file-in-project-at-point
   "kk" 'find-file-in-project-by-selected
   "kn" 'find-file-with-similar-name ; ffip v5.3.1
   "kd" 'find-directory-in-project-by-selected
