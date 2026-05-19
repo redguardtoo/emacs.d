@@ -46,6 +46,7 @@
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
+    acp ; required by agent-shell
     agent-shell
     apheleia ; format code using proper cli tools
     pos-tip
