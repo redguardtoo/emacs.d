@@ -112,7 +112,7 @@ not exist, it is replaced (silently) with an empty string."
 Used by `fastctags-virtual-update-tags'."
   :type 'integer)
 
-(defcustom fastctags-tags-file-loading-speedup-min-size (* 10 1024 1024)
+(defcustom fastctags-tags-file-loading-speedup-min-size (* 4 1024 1024)
   "Minimum size of tags file whose loading can be optimized."
   :type 'integer)
 
