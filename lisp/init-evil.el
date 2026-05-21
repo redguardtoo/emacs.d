@@ -522,7 +522,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "kd" 'find-directory-in-project-by-selected
   "k/" 'find-file-other-window
   "hf" 'find-function
-  "trm" 'get-term
+  "tr" 'cleanup-buffer-safe
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
   "ci" 'evilnc-comment-or-uncomment-lines
