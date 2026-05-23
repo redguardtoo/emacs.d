@@ -43,11 +43,6 @@
     ;; any buffer.  (Actions and presets will still work without this.)
     (macher-enable)))
 
-;; @see https://github.com/tninja/aider.el
-(use-package aider
-  :bind
-  (("C-c a" . aider-transient-menu)))
-
 (defun my-gptel-add-project-context ()
   "Add the current Git project as context."
   (interactive)

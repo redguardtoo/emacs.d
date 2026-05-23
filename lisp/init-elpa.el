@@ -343,7 +343,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
 (require-package 'gptel)
-(require-package 'aider)
 (require-package 'flycheck)
 (require-package 'apheleia)
 (require-package 'agent-shell)
