@@ -147,7 +147,8 @@ If N is not nil, only list directories in current project."
                           (mapcar 'file-name-directory recentf-list)
                           (and my-shell-directory-history-function
                                (funcall my-shell-directory-history-function))))))
-         (root-dir (if (ffip-project-root) (file-truename (ffip-project-root)))))
+         (root (ffip-project-root))
+         (root-dir (if root (file-truename root))))
 
     (when (and n root-dir)
       ;; return directories in project root

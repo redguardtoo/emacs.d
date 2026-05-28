@@ -29,11 +29,11 @@
   ("aa" my-srt-offset-subtitles-from-point)
   ("B" my-bookmark-set)
   ("m" my-bookmark-goto)
-  ("f" my-counsel-recentf)
+  ("f" my-recentf)
   ("d" my-recent-directory)
   ("bh" my-insert-bash-history)
   ("hh" my-random-favorite-color-theme)
-  ("ii" my-counsel-imenu)
+  ("ii" imenu)
   ("ka" my-kill-all-but-current-buffer)
   ("id" my-insert-date)
   ("as" my-ascii-table)
@@ -166,7 +166,7 @@
 [_b_] Switch Gnus buffer
 [_i_] Insert email address
 "
-    ("c" counsel-bbdb-complete-mail)
+    ("c" bbdb-complete-mail)
     ("a" mml-attach-file)
     ("s" message-send-and-exit)
     ("b" dianyou-switch-gnus-buffer)
@@ -418,8 +418,8 @@ _SPC_ cancel _o_nly this     _d_elete
   ("w" hydra-move-split-down)
   ("e" hydra-move-split-up)
   ("r" hydra-move-split-right)
-  ("b" ivy-switch-buffer)
-  ("f" counsel-find-file)
+  ("b" switch-buffer)
+  ("f" find-file)
   ("F" follow-mode)
   ("a" (ace-window 1))
   ("v" (lambda ()

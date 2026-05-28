@@ -91,8 +91,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     ;; counsel/ivy is more generic and powerful for refactoring
     ;; js2-mode has its own syntax linter
 
-   ;; call js-doc commands through `counsel-M-x'!
-
     ;; @see https://github.com/mooz/js2-mode/issues/350
     (setq forward-sexp-function nil)))
 
@@ -203,25 +201,5 @@ INDENT-SIZE decide the indentation level.
                 "tileTabs" ; Firefox addon
                 "util" ; Keysnail
                 "utag"))
-
-(defun my-typescript-beginning-of-defun-hack (orig-func &rest args)
-  "Overwrite typescript beginning detection."
-  (ignore orig-func)
-  (ignore args)
-  (when (my-use-tags-as-imenu-function-p)
-    (let* ((closest (my-closest-imenu-item)))
-      (when closest
-        (imenu closest)))))
-(advice-add 'typescript-beginning-of-defun :around #'my-typescript-beginning-of-defun-hack)
-
-;; {{ typescript
-(defun typescript-mode-hook-setup ()
-  "Set up `typescript-mode'."
-  (when (my-use-tags-as-imenu-function-p)
-    ;; use ctags to calculate imenu items
-    (setq imenu-create-index-function
-          'counsel-etags-imenu-default-create-index-function)))
-(add-hook 'typescript-mode-hook 'typescript-mode-hook-setup)
-;; }}
 
 (provide 'init-javascript)

@@ -47,7 +47,6 @@ In that case, insert the number."
   ;; @see https://github.com/company-mode/company-mode/issues/348
   (company-statistics-mode)
   (push 'company-cmake company-backends)
-  (push 'company-c-headers company-backends)
   ;; can't work with TRAMP
   (setq company-backends (delete 'company-ropemacs company-backends))
 
@@ -64,9 +63,9 @@ In that case, insert the number."
   ;; characters "/ ) . , ;"to trigger auto commit
   (setq company-auto-commit-chars '(92  41 46 44 59))
 
-  ;; company-ctags is much faster out of box. No further optimiation needed
-  (unless (featurep 'company-ctags) (local-require 'company-ctags))
-  (company-ctags-auto-setup)
+  ;; fastctags is much faster out of box
+  (unless (featurep 'fastctags) (local-require 'fastctags))
+  (fastctags-auto-setup)
 
   ;; (setq company-backends (delete 'company-capf company-backends))
 
@@ -82,7 +81,7 @@ In that case, insert the number."
         company-idle-delay 0.2
         company-clang-insert-arguments nil
         company-require-match nil
-        company-ctags-ignore-case t ; I use company-ctags instead
+        fastctags-complete-ignore-case-p t ; I use fastctags
         ;; @see https://github.com/company-mode/company-mode/issues/146
         company-tooltip-align-annotations t)
 

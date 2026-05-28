@@ -38,7 +38,7 @@
 (require 'tramp)
 (require 'dired)
 (require 'shellcop)
-(require 'counsel-etags)
+(require 'fastctags)
 (require 'typewriter-mode)
 (require 'pomodoro)
 (require 'emms)
@@ -61,7 +61,6 @@
 (require 'pyim)
 (require 'cal-china-x)
 (require 'wucuo)
-(require 'langtool)
 (require 'web-mode)
 (require 'bbdb)
 (require 'gmail2bbdb)
@@ -85,7 +84,6 @@
 (require 'exec-path-from-shell)
 (require 'dictionary)
 (require 'company-ispell)
-(require 'company-ctags)
 (require 'ob-sagemath)
 
 (let ((files (find-lisp-find-files-internal

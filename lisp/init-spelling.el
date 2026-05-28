@@ -156,56 +156,6 @@ When fixing a typo, avoid pass camel case option to cli program."
                         (length aspell-words)
                         (mapconcat 'identity aspell-words "\n"))))))
 
-;; {{ langtool setup
-(with-eval-after-load 'langtool
-  (setq langtool-generic-check-predicate
-        '(lambda (start end)
-           ;; set up for `org-mode'
-           (let* ((begin-regexp "^[ \t]*#\\+begin_\\(src\\|html\\|latex\\|example\\|quote\\)")
-                  (end-regexp "^[ \t]*#\\+end_\\(src\\|html\\|latex\\|example\\|quote\\)")
-                  (case-fold-search t)
-                  (ignored-font-faces '(org-verbatim
-                                        org-block-begin-line
-                                        org-meta-line
-                                        org-special-keyword
-                                        org-property-value
-                                        org-tag
-                                        org-link
-                                        org-table
-                                        org-level-1
-                                        org-document-info))
-                  (rlt t)
-                  th
-                  b e)
-             (save-excursion
-               (goto-char start)
-
-               ;; ignore certain errors by set rlt to nil
-               (cond
-                ((cl-intersection (my-what-face start) ignored-font-faces)
-                 ;; check current font face
-                 (setq rlt nil))
-                ((or (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ start 2)))
-                     (string-match "^ *- $" (buffer-substring (line-beginning-position) (+ end 2))))
-                 ;; dash character of " - list item 1"
-                 (setq rlt nil))
-
-                ((and (setq th (thing-at-point 'evil-WORD))
-                      (or (string-match "^=[^=]*=[,.]?$" th)
-                          (string-match "^\\[\\[" th)
-                          (string-match "^=(" th)
-                          (string-match ")=$" th)))
-                 ;; embedded code like =code= or org-link [[https://gnu.org][GNU Operation System]] or [[www.gnu.org]]
-                 ;; langtool could finish checking before major mode prepare font face for all texts
-                 (setq rlt nil))
-                (t
-                 ;; inside source block?
-                 (setq b (re-search-backward begin-regexp nil t))
-                 (if b (setq e (re-search-forward end-regexp nil t)))
-                 (if (and b e (< start e)) (setq rlt nil)))))
-             rlt))))
-;; }}
-
 
 (with-eval-after-load 'wucuo
   ;; {{ wucuo is used to check camel cased code and plain text.  Code is usually written

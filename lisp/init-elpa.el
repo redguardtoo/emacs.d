@@ -46,6 +46,9 @@
 (defvar melpa-include-packages
   '(ace-window ; latest stable is released on year 2014
     ace-pinyin
+    acp ; required by agent-shell
+    agent-shell
+    apheleia ; format code using proper cli tools
     pos-tip
     kotlin-mode ; no package on stable.melpa.org
     racket-mode
@@ -57,6 +60,7 @@
     nov
     bbdb
     gptel ; use its new features (https://github.com/karthink/gptel/pull/665) asap
+    macher ; ai tool based on gptel
     esup ; Emacs start up profiler
     native-complete
     company-native-complete
@@ -83,11 +87,6 @@
     pulseaudio-control
     undo-tree
     js-doc
-    ;; {{ since stable v0.13.0 released, we go back to stable version
-    ;; ivy
-    ;; counsel
-    ;; swiper
-    ;; }}
     wgrep
     tablist ; required by pdf-tools
     pdf-tools ; @see https://github.com/vedang/pdf-tools/issues/102
@@ -116,8 +115,6 @@
     textile-mode
     w3m
     workgroups2
-    zoutline
-    company-c-headers
     graphql-mode
     company-statistics)
   "Packages to install from melpa-unstable.")
@@ -249,12 +246,8 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'textile-mode)
 (require-package 'git-timemachine)
 (require-package 'exec-path-from-shell)
-(require-package 'ivy)
-(require-package 'swiper)
-(require-package 'counsel) ; counsel => swiper => ivy
 (require-package 'find-file-in-project)
 (require-package 'sudo-edit)
-(require-package 'counsel-bbdb)
 (require-package 'command-log-mode)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
@@ -263,7 +256,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'session)
 (require-package 'unfill)
 (require-package 'w3m) ; better than eww for reading web page
-(require-package 'counsel-gtags)
 (require-package 'eww-lnum)
 (require-package 'buffer-move)
 (require-package 'ace-window)
@@ -285,7 +277,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'company)
 (require-package 'native-complete)
 (require-package 'company-native-complete)
-(require-package 'company-c-headers)
 (require-package 'company-statistics)
 (require-package 'pyvenv)
 (require-package 'legalese)
@@ -293,10 +284,8 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 ;; (require-package 'git-gutter) ; use my patched version
 (require-package 'neotree)
 (require-package 'hydra)
-(require-package 'ivy-hydra) ; @see https://oremacs.com/2015/07/23/ivy-multiaction/
 (require-package 'web-mode)
 (require-package 'iedit)
-(require-package 'websocket) ; for debug debugging of browsers
 (require-package 'undo-tree)
 (require-package 'evil)
 (require-package 'evil-escape)
@@ -308,7 +297,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 (require-package 'undo-fu)
-(require-package 'counsel-css)
 (require-package 'auto-package-update)
 (require-package 'keyfreq)
 (require-package 'adoc-mode) ; asciidoc files
@@ -321,7 +309,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
-;; (require-package 'langtool) ; my own patched version is better
 (require-package 'typescript-mode)
 ;; run "M-x pdf-tool-install" at debian and open pdf in GUI Emacs
 (require-package 'pdf-tools)
@@ -356,8 +343,16 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'vterm)
 (require-package 'dockerfile-mode)
 (require-package 'gptel)
-(require-package 'aider)
 (require-package 'flycheck)
+(require-package 'apheleia)
+(require-package 'agent-shell)
+(require-package 'vertico)
+(require-package 'consult)
+(require-package 'orderless)
+(require-package 'embark)
+(require-package 'embark-consult)
+
+(when *emacs30* (require-package 'macher))
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first
