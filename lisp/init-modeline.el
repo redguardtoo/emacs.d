@@ -20,7 +20,12 @@
             (format "%s" (if (consp mode-name) (car mode-name) mode-name))))
 
    ;; buffer file encoding
-   (:eval (format " %s " buffer-file-coding-system))
+   (:eval (let ((sys (coding-system-plist buffer-file-coding-system)))
+            (format " %s "
+                    (if (memq (plist-get sys :category)
+                              '(coding-category-undecided coding-category-utf-8))
+                        "UTF-8"
+                      (upcase (symbol-name (plist-get sys :name)))))))
 
    (:eval (propertize (concat (if overwrite-mode "O" "I")
                               (and (buffer-modified-p) "M")
