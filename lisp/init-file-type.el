@@ -105,7 +105,7 @@
 
 ;; {{js
 (my-add-auto-mode 'js-mode
-                  "\\.ja?son\\'"
+                  "\\.ja?sonc?\\'"
                   "\\.pac\\'"
                   "\\.jshintrc\\'")
 
