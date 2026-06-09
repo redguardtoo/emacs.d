@@ -68,7 +68,7 @@ If no files marked, always operate on current line in dired-mode."
                                                             "zip"
                                                             "7z")))
 
-  (my-dired-support-program (if *unix* "feh" "open")
+  (my-dired-support-program (if *unix* "feh -F" "open")
                             (my-file-extensions-to-regexp my-image-file-extensions))
 
   (my-dired-support-program (if *unix* "libreoffice" "open")
