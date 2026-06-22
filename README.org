@@ -86,10 +86,10 @@
 - [[#license][License]]
 
 * Checklist
-- Emacs 28 or higher version is required
+- Emacs 29 or higher version is required
 - Please read FAQ to disable [[http://www.vim.org][Vim]] key bindings
 - Please read section "Key bindings" to learn key bindings
-- Windows users had better download the version with dependencies bundled. For example, download "emacs-28.2-x86_64.zip" instead of "emacs-28.2-x86_64-no-deps.zip"
+- Windows users had better download the version with dependencies bundled. For example, download "emacs-29.1-x86_64.zip" instead of "emacs-29.1-x86_64-no-deps.zip"
 - Unstable packages from [[http://melpa.org][MELPA]] are *invisible* but stable packages from [[https://stable.melpa.org][MELPA Stable]] are visible. Please modify variable =melpa-include-packages= in =lisp/init-elpa.el= to install unstable packages
 - Other issues are covered in FAQ
 * Installation

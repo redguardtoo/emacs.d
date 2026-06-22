@@ -6,51 +6,42 @@
 (defvar my-extra-mode-line-info '()
   "Extra info displayed at the end of the mode line.")
 
-(setq-default mode-line-format
-  (list
-    ;; the buffer name
-   "%b"
+(setq-default
+ mode-line-format
+ '("%b" ;; the buffer name
 
-    ;; line and column
-   ;; '%02' to set to 2 chars at least; prevents flickering
-    "(%02l,%01c)"
+   (:eval " (%l,%C) ")
 
-    "["
+   "["
 
-    "%m " ; major mode name
+   ;; major mode, please note "%m" is legacy format since emacs 28
+   (:eval (if (stringp mode-name)
+              mode-name
+            (format "%s" (if (consp mode-name) (car mode-name) mode-name))))
 
-    ;; buffer file encoding
-    '(:eval (let ((sys (coding-system-plist buffer-file-coding-system)))
-              (if (memq (plist-get sys :category)
-                        '(coding-category-undecided coding-category-utf-8))
-                  "UTF-8"
-                (upcase (symbol-name (plist-get sys :name))))))
-    " "
+   ;; buffer file encoding
+   (:eval (let ((sys (coding-system-plist buffer-file-coding-system)))
+            (format " %s "
+                    (if (memq (plist-get sys :category)
+                              '(coding-category-undecided coding-category-utf-8))
+                        "UTF-8"
+                      (upcase (symbol-name (plist-get sys :name)))))))
 
-    ;; insert vs overwrite mode
-    '(:eval (propertize (if overwrite-mode "O" "I")
-              'face nil
-              'help-echo (concat "Buffer is in "
-                           (if overwrite-mode "overwrite" "insert") " mode")))
+   (:eval (propertize (concat (if overwrite-mode "O" "I")
+                              (and (buffer-modified-p) "M")
+                              (and buffer-read-only "R"))
+                      'face
+                      'font-lock-keyword-face))
 
-    ;; was this buffer modified since the last save?
-    '(:eval (and (buffer-modified-p)
-                 (propertize "M"
-                             'face nil
-                             'help-echo "Buffer has been modified")))
+   "] "
 
-    ;; is this buffer read-only?
-    '(:eval (and buffer-read-only
-                 (propertize "R" 'face nil 'help-echo "Buffer is read-only")))
-    "] "
+   ;; `org-timer-set-timer' uses it
+   (:eval mode-line-misc-info)
 
-    ;; `global-mode-string' is useful because `org-timer-set-timer' uses it
-    "%M"
+   (:eval my-extra-mode-line-info)
 
-    '(:eval my-extra-mode-line-info)
-
-    " %-" ;; fill with '-'
-    ))
+   mode-line-end-spaces
+   ))
 
 (with-eval-after-load 'time
   ;; Donot show system load in mode line

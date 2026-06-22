@@ -97,11 +97,10 @@
       map))
 
 (with-eval-after-load 'winum
-  (setq winum-format "%s")
-  (setq winum-mode-line-position 0)
-  (set-face-attribute 'winum-face nil :foreground "DeepPink" :underline "DeepPink" :weight 'bold))
-;; }}
+  (setq winum-mode-line-position 0
+        winum-scope 'frame-local))
 (my-run-with-idle-timer 0.5 #'winum-mode)
+;; }}
 
 (defun my-toggle-full-window()
   "Toggle full view of selected window."
