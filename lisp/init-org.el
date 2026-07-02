@@ -70,8 +70,6 @@
     ;; default `org-indent-line' inserts extra spaces at the beginning of lines
     (setq-local indent-line-function 'indent-relative)
 
-    ;; `imenu-create-index-function' is automatically buffer local
-
     ;; display wrapped lines instead of truncated lines
     (setq truncate-lines nil)
     (setq word-wrap t)))
@@ -84,6 +82,7 @@
   "PDF view TO history which is List of (pdf-path . page-number).")
 
 (with-eval-after-load 'org
+  (my-ensure 'imenu) ; set up org imenu function
   ;; {{
   (defvar my-org-src--saved-temp-window-config nil
     "Window layout before edit special element.")
@@ -229,7 +228,7 @@ ARG is ignored."
         org-outline-path-complete-in-steps nil
         org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
                                   (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
-        org-imenu-depth 9))
+        org-imenu-depth 5))
 
 ;; executing sage in org babel
 (with-eval-after-load 'ob-sagemath

@@ -783,7 +783,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 (defun my-imenu-comments ()
   "Imenu display comments."
   (interactive)
-  (my-ensure 'counsel)
   (when (fboundp 'evilnc-imenu-create-index-function)
     (let* ((imenu-create-index-function 'evilnc-imenu-create-index-function))
       (consult-imenu))))
