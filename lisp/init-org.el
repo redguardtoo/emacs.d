@@ -53,17 +53,6 @@
   (add-hook 'org-mime-html-hook 'org-mime-html-hook-setup))
 ;; }}
 
-(defun my-imenu-create-index-function-no-org-link ()
-  "Imenu index function which returns items without org link."
-  (let (rlt label marker)
-    (dolist (elem (imenu-default-create-index-function))
-      (cond
-       ((and (setq label (car elem)) (setq marker (cdr elem)))
-        (push (cons (replace-regexp-in-string "\\[\\[[^ ]+\\]\\[\\|\\]\\]" "" label) marker) rlt))
-       (t
-        (push elem rlt))))
-    (nreverse rlt)))
-
 (defun org-mode-hook-setup ()
   (unless (my-buffer-file-temp-p)
     (setq-local evil-auto-indent nil)
@@ -82,7 +71,6 @@
     (setq-local indent-line-function 'indent-relative)
 
     ;; `imenu-create-index-function' is automatically buffer local
-    (setq imenu-create-index-function 'my-imenu-create-index-function-no-org-link)
 
     ;; display wrapped lines instead of truncated lines
     (setq truncate-lines nil)
