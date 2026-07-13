@@ -510,6 +510,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "fn" 'cp-filename-of-current-buffer
   "fc" 'cp-filename-and-content-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
+  "fw" 'my-single-window-and-toggle-follow-mode
   "rp" 'cp-root-relative-path-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "xo" 'ace-window

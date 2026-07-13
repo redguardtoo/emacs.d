@@ -420,7 +420,7 @@ _SPC_ cancel _o_nly this     _d_elete
   ("r" hydra-move-split-right)
   ("b" switch-buffer)
   ("f" find-file)
-  ("F" follow-mode)
+  ("F" my-single-window-and-toggle-follow-mode)
   ("a" (ace-window 1))
   ("v" (lambda ()
          (interactive)

@@ -1393,5 +1393,21 @@ If N is 2, list files in my recent 20 commits."
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x b") 'ibuffer)
 
+(defun my-single-window-and-toggle-follow-mode ()
+  "Toggle `follow-mode' with side-by-side windows.
+If it's off, split window right and enable it.
+If it's on, disable it and restore single window."
+  (interactive)
+  (cond
+   ((bound-and-true-p follow-mode)
+    (follow-mode -1)
+    (delete-other-windows)
+    (message "Follow mode disabled"))
+   (t
+    (delete-other-windows)
+    (split-window-right)
+    (follow-mode 1)
+    (message "Follow mode enabled"))))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
