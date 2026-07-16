@@ -540,7 +540,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; }}
   "rv" 'my-rename-thing-at-point
   "nm" 'js2hl-add-namespace-to-thing-at-point
-  "rb" 'evilmr-replace-in-buffet
+  "rb" 'evilmr-replace-in-buffer
   "rt" 'fastctags-nav-recent-tar
   "ft" 'fastctags-nav-find-tag
   "yy" 'my-browse-kill-ring
