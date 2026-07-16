@@ -1613,8 +1613,8 @@ Extended regex is used, like (pattern1|pattern2)."
     rlt))
 
 (defun fastctags-dirname (directory)
-  "Get DIRECTORY name without parent."
-  (file-name-as-directory (file-name-base (directory-file-name directory))))
+  "Get the last directory name from DIRECTORY with trailing slash."
+  (file-name-as-directory (file-name-nondirectory (directory-file-name directory))))
 
 (defun fastctags-grep-completion-table (cands)
   "Create a completion table with `fastctags-grep' category from CANDS."
