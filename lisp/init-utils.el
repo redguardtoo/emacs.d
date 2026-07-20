@@ -437,19 +437,14 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 For example,
 - \"English\" and 'utf-16-le
 - \"Chinese-GBK\" and 'gbk"
-  (cond
-   ((eq system-type 'windows-nt)
+  (when (eq system-type 'windows-nt)
+    ;; `set-language-environment' might reset default-input-method
     (set-language-environment language-name)
+    ;; (when (eq coding-system 'gbk))
     (prefer-coding-system 'utf-8)
     (set-terminal-coding-system coding-system)
-
-    (modify-coding-system-alist 'process "*" coding-system)
-
-    (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
-
-   (t
-    (set-language-environment "UTF-8")
-    (prefer-coding-system 'utf-8))))
+    (modify-coding-system-alist 'process "*" coding-system))
+  (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
 ;; }}
 
 (defun my-skip-white-space (start step)
