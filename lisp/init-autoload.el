@@ -40,6 +40,7 @@
 (autoload 'csv-mode "csv-mode" "Major mode for editing comma-separated value files." t)
 (autoload 'csv-nav-mode "csv-nav-mode" "Major mode for navigating comma-separated value files." t)
 (autoload 'fastctags-nav-find-tag-at-point "fastctags" "" t nil)
+(autoload 'fastctags-nav-goto-definition-xref "fastctags" "" t nil)
 (autoload 'fastctags-push-marker-stack "fastctags" "" t nil)
 (autoload 'fastctags-scan-code "fastctags" "" t nil)
 (autoload 'fastctags-filename-p "fastctags" "" t nil)

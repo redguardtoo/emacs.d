@@ -4,7 +4,7 @@
 
 ;; Author: Chen Bin
 ;; URL: https://github.com/redguardtoo/fastctags
-;; Version: 0.0.1
+;; Version: 0.0.2
 ;; Keywords: convenience
 ;; Package-Requires: ((emacs "29.1"))
 
@@ -65,8 +65,16 @@
 ;;
 ;;   - "M-x fastctags-debug-info" for debugging.
 ;;
-;;   -- Make sure `fastctags-update-tags-file-interval' is greater than the total
+;;   - Make sure `fastctags-update-tags-file-interval' is greater than the total
 ;;   seconds Ctags program takes to scan code.
+;;
+;;   - Use below ".dir-locals.el" to set up EVIL's `evil-goto-definition'
+;;
+;;     ((cc-mode . (
+;;       (eval . (setq-local evil-goto-definition-functions
+;;                           '(evil-goto-definition-search
+;;                             fastctags-nav-goto-definition-xref
+;;                             evil-goto-definition-search))))))
 ;;
 
 ;;; Code:
@@ -1414,10 +1422,11 @@ Focus on TAGNAME if it's not nil."
      ((not (setq fastctags-nav-find-tag-candidates
                  (fastctags-nav-collect-cands tagname fuzzy current-file dir)))
       ;; OK, let's try grep the whole project if no tag is found yet
-      (funcall fastctags-fallback-grep-function
-               tagname
-               "No tag is found. "
-               (fastctags-locate-project)))
+      (when fastctags-fallback-grep-function
+        (funcall fastctags-fallback-grep-function
+                 tagname
+                 "No tag is found. "
+                 (fastctags-locate-project))))
 
      (t
       ;; open the one selected candidate
@@ -1449,6 +1458,13 @@ That's the known issue of Emacs Lisp.  The program itself is perfectly fine."
       (fastctags-nav-find-tag-api tagname nil buffer-file-name))
      (t
       (message "No tag at point")))))
+
+;;;###autoload
+(defun fastctags-nav-goto-definition-xref (tagname _position)
+  "Find definition for TAGNAME.  It replace `evil-goto-definition-xref'."
+  (let* ((fastctags-fallback-grep-function nil))
+    (fastctags-nav-find-tag-api tagname nil buffer-file-name)
+    (> (length fastctags-nav-find-tag-candidates) 0)))
 
 ;;;###autoload
 (defun fastctags-nav-recent-tag ()
