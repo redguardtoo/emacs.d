@@ -1,0 +1,15 @@
+# -*- mode: snippet -*-
+# name: ifndef
+# key: main
+# condition: (string-match "\\.h\\(pp\\|xx\\|h\\)?$" (buffer-file-name))
+# --
+#ifndef ${1:`(upcase
+              (replace-regexp-in-string
+               "[^A-Za-z0-9]"
+               "_"
+               (file-relative-name
+                (buffer-file-name)
+                (project-root (project-current)))))`}
+#define $1
+$0
+#endif /* $1 */
