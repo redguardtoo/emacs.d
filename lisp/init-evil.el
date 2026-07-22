@@ -632,7 +632,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xc" 'my-switch-to-shell
   "xz" 'my-switch-to-shell
   "vf" 'my-vc-rename-file-and-buffer
   "vc" 'my-vc-copy-file-and-rename-buffer
