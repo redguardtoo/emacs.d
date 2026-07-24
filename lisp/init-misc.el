@@ -1409,5 +1409,10 @@ If it's on, disable it and restore single window."
     (follow-mode 1)
     (message "Follow mode enabled"))))
 
+(use-package apheleia
+  :ensure t
+  :config
+  (push '(sh-mode . shfmt) apheleia-mode-alist))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here

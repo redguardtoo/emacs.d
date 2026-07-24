@@ -24,9 +24,11 @@
 [_ii_] Imenu
 [_id_] Insert date string
 [_aa_] Adjust subtitle
+[_tt_] Format code
 [_q_] Quit
 "
   ("aa" my-srt-offset-subtitles-from-point)
+  ("tt" apheleia-format-buffer)
   ("B" my-bookmark-set)
   ("m" my-bookmark-goto)
   ("f" my-recentf)
