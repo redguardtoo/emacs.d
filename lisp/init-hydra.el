@@ -216,12 +216,13 @@
                           (format "%s-%s-%s.mp3" (file-name-base video-file) start total)))))
       (shell-command (concat cmd " &"))))
 
-  (defun my-extract-mkv-subtitle ()
-    "Use mkvtoolnix to extract mkv subtitle."
-    (interactive)
+  (defun my-extract-mkv-subtitle (&optional lang-p)
+    "Use mkvtoolnix to extract mkv subtitle with LANG-P."
+    (interactive "P")
     (let* ((file (file-name-nondirectory (dired-file-name-at-point)))
            (ext (file-name-extension file))
            (default-directory (file-name-directory (dired-file-name-at-point)))
+           (lang "eng")
            trunks
            track-number)
       (cond
@@ -240,9 +241,11 @@
                       trunks))
         ;; If there is more than one subtitle, process English track only
         (when (> (length trunks) 1)
+          (when lang-p
+            (setq lang (read-string "Please input language code (eng, spa ...): ")))
           (setq trunks (cl-remove-if-not
                         (lambda (trunk)
-                          (string-match "Language: eng" trunk))
+                          (string-match (concat "Language: " lang) trunk))
                         trunks)))
         (when (and (> (length trunks) 0)
                    (string-match "Track number: \\([0-9]+\\)" (car trunks)))
