@@ -1250,7 +1250,8 @@ MATCH is optional tag match."
     (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
-      (flymake-mode 1)
+      ;; users can activate flymake or flycheck here
+      ;; (flymake-mode 1)
       (unless my-disable-wucuo
         (my-ensure 'wucuo)
         (setq-local ispell-extra-args (my-detect-ispell-args t))
