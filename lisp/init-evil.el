@@ -549,7 +549,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "vv" 'evil-goto-definition ; frequently used
   "sh" 'my-select-from-search-text-history
-  "rjs" 'run-js
+  "runjs" 'run-js
+  "runpy" 'run-python
   "jsr" 'js-comint-send-region
   "jsb" 'my-js-clear-send-buffer
   "bb" 'my-switch-to-previous-buffer
