@@ -48,6 +48,7 @@
 
 (my-add-auto-mode 'text-mode
                   "TAGS\\'"
+                  "\\.bash_history\\'"
                   "\\.pyim\\'"
                   "\\.ctags\\'")
 
@@ -62,7 +63,7 @@
                   "\\.gradle\\'" )
 
 (my-add-auto-mode 'sh-mode
-                  "\\.bash\\(_profile\\|_history\\|rc\\.local\\|rc\\)?\\'"
+                  "\\.bash\\(_profile\\|rc\\.local\\|rc\\)?\\'"
                   "\\.z?sh\\'")
 
 (my-add-auto-mode 'cmake-mode
