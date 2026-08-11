@@ -14,6 +14,10 @@
 
 (defvar my-debug nil "Enable debug mode.")
 
+(setq *wsl* (and (eq system-type 'gnu/linux)
+                 (or (executable-find "powershell.exe")
+                     (executable-find "clip.exe")
+                     (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))))
 (setq *is-a-mac* (eq system-type 'darwin))
 (setq *win64* (eq system-type 'windows-nt))
 (setq *cygwin* (eq system-type 'cygwin) )

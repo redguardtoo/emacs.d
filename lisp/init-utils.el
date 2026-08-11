@@ -343,68 +343,57 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let (powershell-program)
     (cond
      ;; Windows 10 and WSL
-     ((setq powershell-program (executable-find "powershell.exe"))
+     ((and *wsl* (setq powershell-program (or (executable-find "powershell.exe")
+                                              (executable-find "/mnt/c/windows/System32/WindowsPowerShell/v1.0/powershell.exe"))))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
            (call-process powershell-program nil t nil "-command" "Get-Clipboard")
            (delete-trailing-whitespace)))))
 
-     (*cygwin*
-      (string-trim-right (shell-command-to-string "cat /dev/clipboard")))
-
-     ;; xclip can handle
+     ;; let xclip.el handle clipboard
      (t
       (xclip-get-selection 'clipboard)))))
 
 (defvar my-ssh-client-user nil
   "User name of ssh client.")
 
-(defun my-send-string-to-cli-stdin (string program)
-  "Send STRING to cli PROGRAM's stdin."
+(defun my-send-string-to-cli-stdin (string command)
+  "Send STRING to COMMAND via stdin."
   (with-temp-buffer
     (insert string)
-    (call-process-region (point-min) (point-max) program)))
+    (call-process-region (point-min) (point-max) command nil 0 nil)))
 
-(defun my-write-string-to-file (string file)
-  "Write STRING to FILE."
-  (with-temp-buffer
-    (insert string)
-    (write-region (point-min) (point-max) file)))
 
 (defun my-pclip (str-val)
-  "Put STR-VAL into clipboard."
+  "Put STR-VAL into clipboard.
+Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
   (let* (win64-clip-program
          ssh-client)
     (cond
-     ;; Windows 10+
-     ((setq win64-clip-program (executable-find "clip.exe"))
+     ;;  Windows 10+ / WSL: clip.exe (emacsclient need full path of clip.exe)
+     ((and *wsl* (setq win64-clip-program (or (executable-find "clip.exe")
+                                              (executable-find "/mnt/c/Windows/System32/clip.exe"))))
       (my-send-string-to-cli-stdin str-val win64-clip-program))
 
-     ;; Cygwin
-     (*cygwin*
-      (my-write-string-to-file str-val "/dev/clipboard"))
-
-     ;; If Emacs is inside an ssh session, place the clipboard content
-     ;; into "~/.tmp-clipboard" and send it back into ssh client
-     ;; Make sure you already set up ssh correctly.
-     ;; Only enabled if ssh server is macOS
+     ;; SSH client on macOS
      ((and (setq ssh-client (getenv "SSH_CLIENT"))
            (not (string= ssh-client ""))
-           *is-a-mac*)
+           *is-a-mac*
+           (boundp 'my-ssh-client-user)
+           my-ssh-client-user)
       (let* ((file "~/.tmp-clipboard")
              (ip (car (split-string ssh-client "[ \t]+")))
              (cmd (format "scp %s %s@%s:~/" file my-ssh-client-user ip)))
-        (when my-ssh-client-user
-          (my-write-to-file str-val file)
-          (shell-command cmd)
-          ;; clean up
-          (delete-file file))))
+        (my-write-to-file str-val file)
+        (shell-command cmd)
+        (delete-file file)))
 
-     ;; xclip can handle
+     ;; let xclip.el handle clipboard
      (t
-      (xclip-set-selection 'clipboard str-val)))))
-;; }}
+      (xclip-set-selection 'CLIPBOARD str-val)))
+
+    str-val))
 
 (defun my-should-use-minimum-resource ()
   "Use minimum resource (no highlight or line number)."

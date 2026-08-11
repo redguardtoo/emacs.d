@@ -1,11 +1,11 @@
 ;;; xclip.el --- Copy&paste GUI clipboard from text terminal  -*- lexical-binding:t -*-
 
-;; Copyright (C) 2007-2022  Free Software Foundation, Inc.
+;; Copyright (C) 2007-2024  Free Software Foundation, Inc.
 
 ;; Author: Leo Liu <sdl.web@gmail.com>
 ;; Keywords: convenience, tools
 ;; Created: 2007-12-30
-;; Version: 1.11
+;; Version: 1.11.1
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -18,7 +18,7 @@
 ;; GNU General Public License for more details.
 
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ;;; Commentary:
 
@@ -28,8 +28,8 @@
 ;; It can use external command-line tools for that, which you may need
 ;; to install in order for the package to work.
 ;; More specifically, it can use the following tools:
-;; - Under X11: `xclip' or `xsel' (http://xclip.sourceforge.net and
-;;   http://www.vergenet.net/~conrad/software/xsel/ respectively).
+;; - Under X11: `xclip' or `xsel' (https://xclip.sourceforge.net and
+;;   https://www.vergenet.net/~conrad/software/xsel/ respectively).
 ;; - MacOS: `pbpaste/pbcopy'
 ;; - Cygwin: `getclip/putclip'
 ;; - Under Wayland: `wl-clipboard' (https://github.com/bugaevc/wl-clipboard)
@@ -49,6 +49,24 @@
 ;; into Emacs in a different way.  AFAICT it currently only supports
 ;; copy/pasting from an external application to Emacs and not from Emacs to
 ;; another application (for which it relies on the default code).
+
+;;; News:
+
+;; Since 1.11:
+;;
+;; - Bugfixes only so far.
+;;
+;; Changes in 1.11:
+;;
+;; - Add tentative WSL support
+;;
+;; Changes in 1.9:
+;;
+;; - Add support for Termux and Wayland.
+;;
+;; Changes in 1.7:
+;;
+;; - Add `emacs' method to use built-in GUI code i.s.o external executable.
 
 ;;; Code:
 
@@ -228,7 +246,7 @@ TYPE and DATA are the same as for `gui-set-selection'."
 (defvar xclip--hidden-frame nil)
 
 (defun xclip--hidden-frame ()
-  (or xclip--hidden-frame
+  (or (and (frame-live-p xclip--hidden-frame) xclip--hidden-frame)
       (setq xclip--hidden-frame
             (make-frame-on-display (getenv "DISPLAY")
                                    '((visibility . nil)
