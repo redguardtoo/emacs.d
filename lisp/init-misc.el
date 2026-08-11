@@ -599,7 +599,7 @@ ARG is ignored."
   "Switch to builtin shell.
 If the shell is already opened in some buffer, switch to that buffer."
   (interactive)
-  (let* ((buf-name (if *win64* "*shell*" "*ansi-term*"))
+  (let* ((buf-name (if my-win64-p "*shell*" "*ansi-term*"))
          (buf (get-buffer buf-name))
          (wins (window-list))
          current-frame-p)
@@ -615,7 +615,7 @@ If the shell is already opened in some buffer, switch to that buffer."
       (unless current-frame-p
         (switch-to-buffer buf)))
      ;; Windows
-     (*win64*
+     (my-win64-p
       (shell))
      ;; Linux
      (t
@@ -623,7 +623,7 @@ If the shell is already opened in some buffer, switch to that buffer."
 
 (transient-mark-mode t)
 
-(unless (or *cygwin* *win64*)
+(unless (or my-cygwin-p my-win64-p)
   ;; Takes ages to start Emacs.
   ;; Got error `Socket /tmp/fam-cb/fam- has wrong permissions` in Cygwin ONLY!
   ;; reproduced with Emacs 26.1 and Cygwin upgraded at 2019-02-26
@@ -926,7 +926,7 @@ might be bad."
 ;; }}
 
 ;; ;; {{ use pdf-tools to view pdf
-;; (when (and (display-graphic-p) *linux*)
+;; (when (and (display-graphic-p) my-linux-p)
 ;;   (pdf-loader-install))
 ;; ;; }}
 

@@ -274,7 +274,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let* ((program "mplayer")
          (common-opts "-fs -quiet"))
     (cond
-     (*is-a-mac*
+     (my-macos-p
       (cond
        ((executable-find "mplayer")
         (setq program "mplayer"))
@@ -283,15 +283,15 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 
       (setq program "mplayer"))
 
-     (*linux*
+     (my-linux-p
       (setq program "mplayer -stop-xscreensaver"))
 
-     (*cygwin*
+     (my-cygwin-p
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
           (setq program "/cygdrive/c/mplayer/mplayer.exe")
         (setq program "/cygdrive/d/mplayer/mplayer.exe")))
 
-     (*win64*
+     (my-win64-p
       (cond
        ((file-executable-p "c:/mplayer/mplayer.exe")
         (setq program "c:/mplayer/mplayer.exe"))
@@ -323,14 +323,14 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 (defun my-guess-image-viewer-path (image &optional stream-p)
   "How to open IMAGE which could be STREAM-P."
   (cond
-   (*is-a-mac*
+   (my-macos-p
     (format "open %s &" image))
 
-   (*linux*
+   (my-linux-p
     (if stream-p (format "curl -L %s | feh -F - &" image)
       (format "feh -F %s &" image)))
 
-   (*cygwin*
+   (my-cygwin-p
     "feh -F")
 
    (t ; windows
@@ -343,8 +343,9 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let (powershell-program)
     (cond
      ;; Windows 10 and WSL
-     ((and *wsl* (setq powershell-program (or (executable-find "powershell.exe")
-                                              (executable-find "/mnt/c/windows/System32/WindowsPowerShell/v1.0/powershell.exe"))))
+     ((and my-wsl-p (setq powershell-program
+                          (or (executable-find "powershell.exe")
+                              (executable-find "/mnt/c/windows/System32/WindowsPowerShell/v1.0/powershell.exe"))))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
@@ -372,14 +373,15 @@ Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
          ssh-client)
     (cond
      ;;  Windows 10+ / WSL: clip.exe (emacsclient need full path of clip.exe)
-     ((and *wsl* (setq win64-clip-program (or (executable-find "clip.exe")
-                                              (executable-find "/mnt/c/Windows/System32/clip.exe"))))
+     ((and my-wsl-p (setq win64-clip-program
+                          (or (executable-find "clip.exe")
+                              (executable-find "/mnt/c/Windows/System32/clip.exe"))))
       (my-send-string-to-cli-stdin str-val win64-clip-program))
 
      ;; SSH client on macOS
      ((and (setq ssh-client (getenv "SSH_CLIENT"))
            (not (string= ssh-client ""))
-           *is-a-mac*
+           my-macos-p
            (boundp 'my-ssh-client-user)
            my-ssh-client-user)
       (let* ((file "~/.tmp-clipboard")

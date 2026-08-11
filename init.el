@@ -14,16 +14,16 @@
 
 (defvar my-debug nil "Enable debug mode.")
 
-(setq *wsl* (and (eq system-type 'gnu/linux)
-                 (or (executable-find "powershell.exe")
-                     (executable-find "clip.exe")
-                     (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))))
-(setq *is-a-mac* (eq system-type 'darwin))
-(setq *win64* (eq system-type 'windows-nt))
-(setq *cygwin* (eq system-type 'cygwin) )
-(setq *linux* (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
-(setq *unix* (or *linux* (eq system-type 'usg-unix-v) (eq system-type 'berkeley-unix)) )
-(setq *emacs30* (>= emacs-major-version 30))
+(defvar my-wsl-p (and (eq system-type 'gnu/linux)
+                      (or (executable-find "powershell.exe")
+                          (executable-find "clip.exe")
+                          (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))))
+(defvar my-cygwin-p (eq system-type 'cygwin) )
+(defvar my-macos-p (eq system-type 'darwin))
+(defvar my-win64-p (eq system-type 'windows-nt))
+(defvar my-cygwin-p (eq system-type 'cygwin) )
+(defvar my-linux-p (or (eq system-type 'gnu/linux) (eq system-type 'linux)) )
+(defvar my-emacs30-p (>= emacs-major-version 30))
 
 ;; don't GC during startup to save time
 (unless (bound-and-true-p my-computer-has-smaller-memory-p)
@@ -38,12 +38,12 @@
 ;; }}
 
 (setq *no-memory* (cond
-                   (*is-a-mac*
+                   (my-macos-p
                     ;; @see https://discussions.apple.com/thread/1753088
                     ;; "sysctl -n hw.physmem" does not work
                     (<= (string-to-number (shell-command-to-string "sysctl -n hw.memsize"))
                         (* 4 1024 1024)))
-                   (*linux* nil)
+                   (my-linux-p nil)
                    (t nil)))
 
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)

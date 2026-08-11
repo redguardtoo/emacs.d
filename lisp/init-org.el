@@ -162,7 +162,7 @@ ARG is ignored."
   (defun my-setup-odt-org-convert-process ()
     (interactive)
     (let* ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
-      (when (and *is-a-mac* (file-exists-p cmd))
+      (when (and my-macos-p (file-exists-p cmd))
         ;; org v8
         (setq org-odt-convert-processes
               '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))))

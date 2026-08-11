@@ -13,9 +13,9 @@
 ; {{ Search using external browser
 (setq browse-url-generic-program
       (cond
-       (*is-a-mac* ; mac
+       (my-macos-p ; mac
         "open")
-       (*unix* ; linux or unix
+       (my-linux-p ; linux or unix
         "xdg-open")
        (t
         ;; Windows: use default browser
