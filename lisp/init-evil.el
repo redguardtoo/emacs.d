@@ -315,7 +315,6 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   '((minibuffer-inactive-mode . emacs)
     (calendar-mode . emacs)
     (special-mode . emacs)
-    (grep-mode . emacs)
     (Info-mode . emacs)
     (term-mode . emacs)
     (sdcv-mode . emacs)
