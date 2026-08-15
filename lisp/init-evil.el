@@ -342,6 +342,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (speedbar-mode . emacs)
     (ffip-file-mode . emacs)
     (messages-buffer-mode . normal)
+    (grep-mode . normal)
     (js2-error-buffer-mode . emacs))
   "Initial evil state per major mode.")
 ;; }}
