@@ -151,7 +151,6 @@ Then replace the region or buffer with cli output."
 
 (defun my-insert-str (str)
   "Insert STR into current buffer."
-  ;; ivy8 or ivy9
   (if (consp str) (setq str (cdr str)))
   ;; evil-mode?
   (if (and (functionp 'evil-normal-state-p)
@@ -522,7 +521,7 @@ Copied from 3rd party package evil-textobj."
      ;; do nothing
      ((<= (length str) 1))
 
-     ;; If the first character of input in ivy is ":" or ";",
+     ;; If the first character of input is ":" or ";",
      ;; remaining input is converted into Chinese pinyin regex.
      ((or (and (string-match "[:\|;]" (substring str 0 1))
                (setq str (substring str 1 len)))
@@ -533,7 +532,7 @@ Copied from 3rd party package evil-textobj."
       (my-ensure 'pinyinlib)
       (setq str (pinyinlib-build-regexp-string str)))
 
-     ;; If the first character of input in ivy is "/",
+     ;; If the first character of input is "/",
      ;; remaining input is converted to pattern to search camel case word
      ;; For example, input "/ic" match "isController" or "isCollapsed"
      ((string= (substring str 0 1) "/")
@@ -576,8 +575,8 @@ Copied from 3rd party package evil-textobj."
   (let* ((pos (point))
          closest)
     (dolist (c cands)
-      (let* ((item (cdr c))
-             (m (cdr item)))
+      (let* ((item c)
+             (m (cdr c)))
         (when (and m (<= (my-imenu-item-position m) pos))
           (cond
            ((not closest)
@@ -592,10 +591,40 @@ Copied from 3rd party package evil-textobj."
   (set-mark (or position (line-end-position)))
   (activate-mark))
 
+(defun my-imenu-flatten (alist &optional prefix)
+  "Flatten imenu ALIST into (key . marker) pairs.
+PREFIX is prepended to nested item names."
+  (cl-mapcan
+   (lambda (item)
+     (if (imenu--subalist-p item)
+         ;; 子菜单：递归处理
+         (my-imenu-flatten
+          (cdr item)
+          (concat prefix (if prefix ".") (car item)))
+       ;; 叶子节点：直接返回
+       (let* ((key (if prefix
+                       (concat prefix ": " (car item))
+                     (car item)))
+              (value (cdr item))
+              (marker (if (overlayp value)
+                          (overlay-start value)
+                        value)))
+         (list (cons key marker)))))
+   alist))
+
+(defun my-imenu-candidates ()
+  "Return imenu candidates as (key . marker) pairs."
+  (let* ((imenu-auto-rescan t)
+         (imenu-auto-rescan-maxout (if current-prefix-arg
+                                       (buffer-size)
+                                     imenu-auto-rescan-maxout))
+         (items (imenu--make-index-alist t))
+         (items (delete (assoc "*Rescan*" items) items)))
+    (my-imenu-flatten items)))
+
 (defun my-closest-imenu-item ()
   "Return the closest imenu item."
-  (my-ensure 'counsel)
-  (my-closest-imenu-item-internal (counsel--imenu-candidates)))
+  (my-closest-imenu-item-internal (my-imenu-candidates)))
 
 (defun my-setup-extra-keymap (extra-fn-list hint fn &rest args)
   "Map EXTRA-FN-LIST to new keymap and show HINT after calling FN with ARGS."

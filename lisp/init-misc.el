@@ -1085,10 +1085,6 @@ It's also controlled by `my-lazy-before-save-timer'."
 ;; don't find this very useful, but it's frequently useful to only
 ;; look at interactive functions.
 (global-set-key (kbd "C-h C") #'helpful-command)
-
-(with-eval-after-load 'counsel
-  (setq counsel-describe-function-function #'helpful-callable)
-  (setq counsel-describe-variable-function #'helpful-variable))
 ;; }}
 
 (with-eval-after-load 'yaml-mode

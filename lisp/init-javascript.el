@@ -88,8 +88,6 @@ If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it.
     ;; if use node.js we need nice output
     (js2-imenu-extras-mode)
     (setq mode-name "JS2")
-    ;; counsel/ivy is more generic and powerful for refactoring
-    ;; js2-mode has its own syntax linter
 
     ;; @see https://github.com/mooz/js2-mode/issues/350
     (setq forward-sexp-function nil)))

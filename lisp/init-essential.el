@@ -33,7 +33,6 @@
   "Grep pinyin (no english) in current directory."
   (interactive)
   ;; grep Chinese using pinyinlib.
-  ;; In ivy filter, trigger key must be pressed before filter chinese
   (my-ensure 'fastctags)
   (let* ((fastctags-convert-grep-keyword
           (lambda (keyword)
