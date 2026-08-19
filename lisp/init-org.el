@@ -53,17 +53,6 @@
   (add-hook 'org-mime-html-hook 'org-mime-html-hook-setup))
 ;; }}
 
-(defun my-imenu-create-index-function-no-org-link ()
-  "Imenu index function which returns items without org link."
-  (let (rlt label marker)
-    (dolist (elem (imenu-default-create-index-function))
-      (cond
-       ((and (setq label (car elem)) (setq marker (cdr elem)))
-        (push (cons (replace-regexp-in-string "\\[\\[[^ ]+\\]\\[\\|\\]\\]" "" label) marker) rlt))
-       (t
-        (push elem rlt))))
-    (nreverse rlt)))
-
 (defun org-mode-hook-setup ()
   (unless (my-buffer-file-temp-p)
     (setq-local evil-auto-indent nil)
@@ -81,9 +70,6 @@
     ;; default `org-indent-line' inserts extra spaces at the beginning of lines
     (setq-local indent-line-function 'indent-relative)
 
-    ;; `imenu-create-index-function' is automatically buffer local
-    (setq imenu-create-index-function 'my-imenu-create-index-function-no-org-link)
-
     ;; display wrapped lines instead of truncated lines
     (setq truncate-lines nil)
     (setq word-wrap t)))
@@ -96,6 +82,7 @@
   "PDF view TO history which is List of (pdf-path . page-number).")
 
 (with-eval-after-load 'org
+  (my-ensure 'imenu) ; set up org imenu function
   ;; {{
   (defvar my-org-src--saved-temp-window-config nil
     "Window layout before edit special element.")
@@ -175,7 +162,7 @@ ARG is ignored."
   (defun my-setup-odt-org-convert-process ()
     (interactive)
     (let* ((cmd "/Applications/LibreOffice.app/Contents/MacOS/soffice"))
-      (when (and *is-a-mac* (file-exists-p cmd))
+      (when (and my-macos-p (file-exists-p cmd))
         ;; org v8
         (setq org-odt-convert-processes
               '(("LibreOffice" "/Applications/LibreOffice.app/Contents/MacOS/soffice --headless --convert-to %f%x --outdir %d %i"))))))
@@ -241,7 +228,7 @@ ARG is ignored."
         org-outline-path-complete-in-steps nil
         org-todo-keywords (quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
                                   (sequence "WAITING(w@/!)" "SOMEDAY(S)" "PROJECT(P@)" "|" "CANCELLED(c@/!)")))
-        org-imenu-depth 9))
+        org-imenu-depth 5))
 
 ;; executing sage in org babel
 (with-eval-after-load 'ob-sagemath

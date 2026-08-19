@@ -247,7 +247,7 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
 
   (let ((m3u-files (my-lisp-find-file-or-directory my-music-root-directory ".*\\.m3u"))
         ;; emms might regards bsd find as gnu find
-        (emms-source-file-directory-tree-function (if *unix* 'emms-source-file-directory-tree-find
+        (emms-source-file-directory-tree-function (if my-linux-p 'emms-source-file-directory-tree-find
                                                     'emms-source-file-directory-tree-internal)))
     (cond
      ((car m3u-files)

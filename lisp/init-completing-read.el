@@ -45,6 +45,12 @@
   ;; use "<" to narrow
   (consult-narrow-key "<"))
 
+(use-package marginalia
+  :ensure t
+  :after vertico
+  :config
+  (marginalia-mode 1))
+
 (use-package embark
   :ensure t
   :bind

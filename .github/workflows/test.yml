@@ -9,7 +9,7 @@ on:
       - master
   schedule:
     # build at 00:05 every Sunday
-    - cron:  '5 0 * * 0'
+    - cron: '5 0 * * 0'
 
 jobs:
   build:
@@ -21,17 +21,19 @@ jobs:
           - 29.1
           - 30.1
     steps:
-    - uses: purcell/setup-emacs@master
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Install Emacs
+      uses: jcs090218/setup-emacs@master
       with:
         version: ${{ matrix.emacs_version }}
 
-    - uses: actions/checkout@v4
+    - name: Install dependencies
+      run: sudo apt install -y aspell aspell-en
 
     - name: Print emacs version
       run: emacs --version
-
-    - name: Install dependency
-      run: sudo apt install aspell aspell-en
 
     - name: Run tests
       run: make test

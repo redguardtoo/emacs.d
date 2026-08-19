@@ -1,8 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
 (defun my-kill-process-buffer-when-exit (process event)
-  "Kill buffer of PROCESS when it's terminated.
-EVENT is ignored."
+  "Kill buffer of PROCESS when it's terminated.  EVENT is ignored."
   (ignore event)
   (when (memq (process-status process) '(signal exit))
     (kill-buffer (process-buffer process))))
@@ -55,12 +54,6 @@ EVENT is ignored."
 (add-hook 'shell-mode-hook 'shell-mode-hook-setup)
 ;; }}
 
-(defun eshell-mode-hook-setup ()
-  "Set up `eshell-mode'."
-  (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
-  (local-set-key (kbd "M-n") 'counsel-esh-history))
-(add-hook 'eshell-mode-hook 'eshell-mode-hook-setup)
-
 ;; {{ @see http://emacs-journey.blogspot.com.au/2012/06/improving-ansi-term.html
 (advice-add 'term-sentinel :after #'my-kill-process-buffer-when-exit)
 
@@ -68,29 +61,46 @@ EVENT is ignored."
 (defvar my-term-program "/bin/bash")
 ;; }}
 
-;; {{ hack counsel-browser-history
-(defvar my-comint-full-input nil)
-(defun my-counsel-shell-history-hack (orig-func &rest args)
-  (setq my-comint-full-input (my-comint-current-input))
-  (my-comint-kill-current-input)
-  (apply orig-func args)
-  (setq my-comint-full-input nil))
-(advice-add 'counsel-shell-history :around #'my-counsel-shell-history-hack)
-(defun my-ivy-history-contents-hack (orig-func &rest args)
-  "Make sure `ivy-history-contents' returns items matching `my-comint-full-input'."
-  (let* ((rlt (apply orig-func args))
-         (input my-comint-full-input))
-    (when (and input (not (string= input "")))
-      ;; filter shell history with current input
-      (setq rlt
-            (delq nil (mapcar
-                       `(lambda (item)
-                          (let* ((cli (if (stringp item) item (car item))))
-                            (and (string-match (regexp-quote ,input) cli) item)))
-                       rlt))))
-    rlt))
-(advice-add 'ivy-history-contents :around #'my-ivy-history-contents-hack)
-;; }}
+(defun my-shell-history ()
+  "Browse shell history with current input as initial filter."
+  (interactive)
+  (let* ((current-input (my-comint-current-input))
+         (history-list (ring-elements comint-input-ring))
+         ;; use current non-empty input as filter
+         (initial-filter (when (and current-input
+                                    (not (string= current-input "")))
+                           current-input))
+         ;; filter history
+         (filtered-history (if initial-filter
+                               (seq-filter (lambda (cmd)
+                                             (string-match-p
+                                              (regexp-quote initial-filter)
+                                              cmd))
+                                           history-list)
+                             history-list))
+         selected)
+
+    ;; clear current input
+    (when current-input
+      (my-comint-kill-current-input))
+
+    ;; use completing-read to select
+    (setq selected
+          (completing-read
+           (format "Shell history%s: "
+                   (if initial-filter
+                       (format " (filter: %s)" initial-filter)
+                     ""))
+           filtered-history
+           nil                    ; predicate
+           t                      ; require-match
+           nil                    ; initial-input
+           'shell-history-ring    ; history variable (built-in)
+           (car filtered-history))) ; default value
+
+    ;; insert selected command
+    (when (and selected (not (string= selected "")))
+      (insert selected))))
 
 ;; {{ comint-mode
 (with-eval-after-load 'comint
@@ -102,12 +112,12 @@ EVENT is ignored."
 
 (defun my-comint-mode-hook-setup ()
   "Set up embedded shells."
-  (local-set-key (kbd "C-c C-l") 'eacl-complete-line-from-buffer)
+  (local-set-key (kbd "C-c C-l") #'eacl-complete-line-from-buffer)
   ;; look up shell command history
-  (local-set-key (kbd "M-n") 'counsel-shell-history)
+  (local-set-key (kbd "M-n") #'my-shell-history)
   ;; Don't show trailing whitespace in REPL.
-  (local-set-key (kbd "M-;") 'comment-dwim))
-(add-hook 'comint-mode-hook 'my-comint-mode-hook-setup)
+  (local-set-key (kbd "M-;") #'comment-dwim))
+(add-hook 'comint-mode-hook #'my-comint-mode-hook-setup)
 ;; }}
 
 (provide 'init-term-mode)

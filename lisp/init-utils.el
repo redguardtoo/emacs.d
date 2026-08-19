@@ -151,7 +151,6 @@ Then replace the region or buffer with cli output."
 
 (defun my-insert-str (str)
   "Insert STR into current buffer."
-  ;; ivy8 or ivy9
   (if (consp str) (setq str (cdr str)))
   ;; evil-mode?
   (if (and (functionp 'evil-normal-state-p)
@@ -274,7 +273,7 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let* ((program "mplayer")
          (common-opts "-fs -quiet"))
     (cond
-     (*is-a-mac*
+     (my-macos-p
       (cond
        ((executable-find "mplayer")
         (setq program "mplayer"))
@@ -283,15 +282,15 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 
       (setq program "mplayer"))
 
-     (*linux*
+     (my-linux-p
       (setq program "mplayer -stop-xscreensaver"))
 
-     (*cygwin*
+     (my-cygwin-p
       (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
           (setq program "/cygdrive/c/mplayer/mplayer.exe")
         (setq program "/cygdrive/d/mplayer/mplayer.exe")))
 
-     (*win64*
+     (my-win64-p
       (cond
        ((file-executable-p "c:/mplayer/mplayer.exe")
         (setq program "c:/mplayer/mplayer.exe"))
@@ -323,14 +322,14 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 (defun my-guess-image-viewer-path (image &optional stream-p)
   "How to open IMAGE which could be STREAM-P."
   (cond
-   (*is-a-mac*
+   (my-macos-p
     (format "open %s &" image))
 
-   (*linux*
+   (my-linux-p
     (if stream-p (format "curl -L %s | feh -F - &" image)
       (format "feh -F %s &" image)))
 
-   (*cygwin*
+   (my-cygwin-p
     "feh -F")
 
    (t ; windows
@@ -343,68 +342,59 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
   (let (powershell-program)
     (cond
      ;; Windows 10 and WSL
-     ((setq powershell-program (executable-find "powershell.exe"))
+     ((and my-wsl-p (setq powershell-program
+                          (or (executable-find "powershell.exe")
+                              (executable-find "/mnt/c/windows/System32/WindowsPowerShell/v1.0/powershell.exe"))))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
            (call-process powershell-program nil t nil "-command" "Get-Clipboard")
            (delete-trailing-whitespace)))))
 
-     (*cygwin*
-      (string-trim-right (shell-command-to-string "cat /dev/clipboard")))
-
-     ;; xclip can handle
+     ;; let xclip.el handle clipboard
      (t
       (xclip-get-selection 'clipboard)))))
 
 (defvar my-ssh-client-user nil
   "User name of ssh client.")
 
-(defun my-send-string-to-cli-stdin (string program)
-  "Send STRING to cli PROGRAM's stdin."
+(defun my-send-string-to-cli-stdin (string command)
+  "Send STRING to COMMAND via stdin."
   (with-temp-buffer
     (insert string)
-    (call-process-region (point-min) (point-max) program)))
+    (call-process-region (point-min) (point-max) command nil 0 nil)))
 
-(defun my-write-string-to-file (string file)
-  "Write STRING to FILE."
-  (with-temp-buffer
-    (insert string)
-    (write-region (point-min) (point-max) file)))
 
 (defun my-pclip (str-val)
-  "Put STR-VAL into clipboard."
+  "Put STR-VAL into clipboard.
+Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
   (let* (win64-clip-program
          ssh-client)
     (cond
-     ;; Windows 10+
-     ((setq win64-clip-program (executable-find "clip.exe"))
+     ;;  Windows 10+ / WSL: clip.exe (emacsclient need full path of clip.exe)
+     ((and my-wsl-p (setq win64-clip-program
+                          (or (executable-find "clip.exe")
+                              (executable-find "/mnt/c/Windows/System32/clip.exe"))))
       (my-send-string-to-cli-stdin str-val win64-clip-program))
 
-     ;; Cygwin
-     (*cygwin*
-      (my-write-string-to-file str-val "/dev/clipboard"))
-
-     ;; If Emacs is inside an ssh session, place the clipboard content
-     ;; into "~/.tmp-clipboard" and send it back into ssh client
-     ;; Make sure you already set up ssh correctly.
-     ;; Only enabled if ssh server is macOS
+     ;; SSH client on macOS
      ((and (setq ssh-client (getenv "SSH_CLIENT"))
            (not (string= ssh-client ""))
-           *is-a-mac*)
+           my-macos-p
+           (boundp 'my-ssh-client-user)
+           my-ssh-client-user)
       (let* ((file "~/.tmp-clipboard")
              (ip (car (split-string ssh-client "[ \t]+")))
              (cmd (format "scp %s %s@%s:~/" file my-ssh-client-user ip)))
-        (when my-ssh-client-user
-          (my-write-to-file str-val file)
-          (shell-command cmd)
-          ;; clean up
-          (delete-file file))))
+        (my-write-to-file str-val file)
+        (shell-command cmd)
+        (delete-file file)))
 
-     ;; xclip can handle
+     ;; let xclip.el handle clipboard
      (t
-      (xclip-set-selection 'clipboard str-val)))))
-;; }}
+      (xclip-set-selection 'CLIPBOARD str-val)))
+
+    str-val))
 
 (defun my-should-use-minimum-resource ()
   "Use minimum resource (no highlight or line number)."
@@ -437,19 +427,14 @@ For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'."
 For example,
 - \"English\" and 'utf-16-le
 - \"Chinese-GBK\" and 'gbk"
-  (cond
-   ((eq system-type 'windows-nt)
+  (when (eq system-type 'windows-nt)
+    ;; `set-language-environment' might reset default-input-method
     (set-language-environment language-name)
+    ;; (when (eq coding-system 'gbk))
     (prefer-coding-system 'utf-8)
     (set-terminal-coding-system coding-system)
-
-    (modify-coding-system-alist 'process "*" coding-system)
-
-    (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
-
-   (t
-    (set-language-environment "UTF-8")
-    (prefer-coding-system 'utf-8))))
+    (modify-coding-system-alist 'process "*" coding-system))
+  (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
 ;; }}
 
 (defun my-skip-white-space (start step)
@@ -478,15 +463,6 @@ If STEP is 1,  search in forward direction, or else in backward direction."
   "Get current input in shell."
   (let* ((region (my-comint-current-input-region)))
     (string-trim (buffer-substring-no-properties (car region) (cdr region)))))
-
-(defun my-rescan-imenu-items (&optional index-function)
-  "Get imenu items using INDEX-FUNCTION."
-  (my-ensure 'imenu)
-  (let* ((imenu-auto-rescan t)
-         (imenu-create-index-function (or index-function imenu-create-index-function))
-         (imenu-auto-rescan-maxout (buffer-size))
-         (items (imenu--make-index-alist t)))
-    (delete (assoc "*Rescan*" items) items)))
 
 (defun my-create-range (&optional inclusive)
   "Return range by font face.
@@ -545,7 +521,7 @@ Copied from 3rd party package evil-textobj."
      ;; do nothing
      ((<= (length str) 1))
 
-     ;; If the first character of input in ivy is ":" or ";",
+     ;; If the first character of input is ":" or ";",
      ;; remaining input is converted into Chinese pinyin regex.
      ((or (and (string-match "[:\|;]" (substring str 0 1))
                (setq str (substring str 1 len)))
@@ -556,7 +532,7 @@ Copied from 3rd party package evil-textobj."
       (my-ensure 'pinyinlib)
       (setq str (pinyinlib-build-regexp-string str)))
 
-     ;; If the first character of input in ivy is "/",
+     ;; If the first character of input is "/",
      ;; remaining input is converted to pattern to search camel case word
      ;; For example, input "/ic" match "isController" or "isCollapsed"
      ((string= (substring str 0 1) "/")
@@ -599,8 +575,8 @@ Copied from 3rd party package evil-textobj."
   (let* ((pos (point))
          closest)
     (dolist (c cands)
-      (let* ((item (cdr c))
-             (m (cdr item)))
+      (let* ((item c)
+             (m (cdr c)))
         (when (and m (<= (my-imenu-item-position m) pos))
           (cond
            ((not closest)
@@ -615,10 +591,40 @@ Copied from 3rd party package evil-textobj."
   (set-mark (or position (line-end-position)))
   (activate-mark))
 
+(defun my-imenu-flatten (alist &optional prefix)
+  "Flatten imenu ALIST into (key . marker) pairs.
+PREFIX is prepended to nested item names."
+  (cl-mapcan
+   (lambda (item)
+     (if (imenu--subalist-p item)
+         ;; 子菜单：递归处理
+         (my-imenu-flatten
+          (cdr item)
+          (concat prefix (if prefix ".") (car item)))
+       ;; 叶子节点：直接返回
+       (let* ((key (if prefix
+                       (concat prefix ": " (car item))
+                     (car item)))
+              (value (cdr item))
+              (marker (if (overlayp value)
+                          (overlay-start value)
+                        value)))
+         (list (cons key marker)))))
+   alist))
+
+(defun my-imenu-candidates ()
+  "Return imenu candidates as (key . marker) pairs."
+  (let* ((imenu-auto-rescan t)
+         (imenu-auto-rescan-maxout (if current-prefix-arg
+                                       (buffer-size)
+                                     imenu-auto-rescan-maxout))
+         (items (imenu--make-index-alist t))
+         (items (delete (assoc "*Rescan*" items) items)))
+    (my-imenu-flatten items)))
+
 (defun my-closest-imenu-item ()
   "Return the closest imenu item."
-  (my-ensure 'counsel)
-  (my-closest-imenu-item-internal (counsel--imenu-candidates)))
+  (my-closest-imenu-item-internal (my-imenu-candidates)))
 
 (defun my-setup-extra-keymap (extra-fn-list hint fn &rest args)
   "Map EXTRA-FN-LIST to new keymap and show HINT after calling FN with ARGS."

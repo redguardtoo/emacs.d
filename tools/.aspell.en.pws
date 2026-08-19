@@ -1,4 +1,4 @@
-personal_ws-1.1 en 347
+personal_ws-1.1 en 355
 acodec
 adoc
 aider
@@ -24,6 +24,7 @@ bbdb
 beautfiy
 bigdict
 bigword
+binfmt
 blockquote
 camelcase
 cands
@@ -97,6 +98,7 @@ esup
 etags
 eval
 evilnc
+exe
 facebookmail
 fasd
 fastdef
@@ -110,6 +112,7 @@ flymake
 flyspell
 formatter
 frontend
+fs
 fullpath
 fullscreen
 func
@@ -173,6 +176,7 @@ linum
 linux
 localelpa
 lsp
+macos
 magit
 mailcap
 makefile
@@ -233,6 +237,7 @@ powrprof
 premote
 prev
 privoxy
+proc
 profiler
 prog
 programmically
@@ -282,7 +287,9 @@ subtree
 subword
 sudo
 swiper
+sy
 symlinks
+sys
 sysctl
 texlive
 textobj
@@ -346,3 +353,4 @@ zcat
 zh
 zipf
 zsh
+WSLInterop

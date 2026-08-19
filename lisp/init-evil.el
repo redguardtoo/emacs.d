@@ -315,7 +315,6 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   '((minibuffer-inactive-mode . emacs)
     (calendar-mode . emacs)
     (special-mode . emacs)
-    (grep-mode . emacs)
     (Info-mode . emacs)
     (term-mode . emacs)
     (sdcv-mode . emacs)
@@ -343,6 +342,7 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
     (speedbar-mode . emacs)
     (ffip-file-mode . emacs)
     (messages-buffer-mode . normal)
+    (grep-mode . normal)
     (js2-error-buffer-mode . emacs))
   "Initial evil state per major mode.")
 ;; }}
@@ -510,6 +510,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "fn" 'cp-filename-of-current-buffer
   "fc" 'cp-filename-and-content-of-current-buffer
   "fp" 'cp-fullpath-of-current-buffer
+  "fw" 'my-single-window-and-toggle-follow-mode
   "rp" 'cp-root-relative-path-of-current-buffer
   "dj" 'dired-jump ;; open the dired from current file
   "xo" 'ace-window
@@ -539,7 +540,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; }}
   "rv" 'my-rename-thing-at-point
   "nm" 'js2hl-add-namespace-to-thing-at-point
-  "rb" 'evilmr-replace-in-buffet
+  "rb" 'evilmr-replace-in-buffer
   "rt" 'fastctags-nav-recent-tar
   "ft" 'fastctags-nav-find-tag
   "yy" 'my-browse-kill-ring
@@ -548,7 +549,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "gd" 'ffip-show-diff-by-description ;find-file-in-project 5.3.0+
   "vv" 'evil-goto-definition ; frequently used
   "sh" 'my-select-from-search-text-history
-  "rjs" 'run-js
+  "runjs" 'run-js
+  "runpy" 'run-python
   "jsr" 'js-comint-send-region
   "jsb" 'my-js-clear-send-buffer
   "bb" 'my-switch-to-previous-buffer
@@ -631,7 +633,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "xh" 'mark-whole-buffer
   "xk" 'kill-buffer
   "xs" 'save-buffer
-  "xc" 'my-switch-to-shell
   "xz" 'my-switch-to-shell
   "vf" 'my-vc-rename-file-and-buffer
   "vc" 'my-vc-copy-file-and-rename-buffer
@@ -783,7 +784,6 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 (defun my-imenu-comments ()
   "Imenu display comments."
   (interactive)
-  (my-ensure 'counsel)
   (when (fboundp 'evilnc-imenu-create-index-function)
     (let* ((imenu-create-index-function 'evilnc-imenu-create-index-function))
       (consult-imenu))))

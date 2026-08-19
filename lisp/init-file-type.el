@@ -5,7 +5,7 @@
                   "\\.[^b][^a][a-zA-Z]*rc\\'"
                   "\\.aspell\\.en\\.pws\\'"
                   "\\.i3/config-base\\'"
-                  "\\.config/systemd/user/.*\\.service\\'"
+                  "\\.config/systemd/user/.*\\.\\(service\\|timer\\)\\'"
                   "\\mimeapps\\.list\\'"
                   "\\mimeapps\\.list\\'"
                   "\\.editorconfig\\'"
@@ -48,6 +48,7 @@
 
 (my-add-auto-mode 'text-mode
                   "TAGS\\'"
+                  "\\.bash_history\\'"
                   "\\.pyim\\'"
                   "\\.ctags\\'")
 
@@ -62,7 +63,7 @@
                   "\\.gradle\\'" )
 
 (my-add-auto-mode 'sh-mode
-                  "\\.bash\\(_profile\\|_history\\|rc\\.local\\|rc\\)?\\'"
+                  "\\.bash\\(_profile\\|rc\\.local\\|rc\\)?\\'"
                   "\\.z?sh\\'")
 
 (my-add-auto-mode 'cmake-mode

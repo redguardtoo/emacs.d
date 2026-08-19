@@ -1,5 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;; @see https://github.com/tumashu/pyim
+(setq default-input-method "pyim")
+
 (defvar my-toggle-ime-init-function
   (lambda () (my-ensure 'pyim))
   "Function to execute at the beginning of `my-toggle-input-method'.")

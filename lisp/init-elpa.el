@@ -23,7 +23,7 @@
   ;; "package-quickstart.el" converts path in `load-path' into
   ;; os dependent path, make it impossible to share same emacs.d between
   ;; Windows and Cygwin.
-  (unless (or *win64* *cygwin*)
+  (unless (or my-win64-p my-cygwin-p)
     ;; you need run `M-x package-quickstart-refresh' at least once
     ;; to generate file "package-quickstart.el'.
     ;; It contains the `autoload' statements for all packages.
@@ -66,6 +66,7 @@
     company-native-complete
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
+    glsl-mode
     highlight-symbol
     undo-fu
     ob-sagemath
@@ -291,7 +292,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'evil-escape)
 (require-package 'evil-exchange)
 (require-package 'evil-find-char-pinyin)
-(require-package 'evil-mark-replace)
 (require-package 'evil-matchit)
 (require-package 'evil-nerd-commenter)
 (require-package 'evil-surround)
@@ -351,8 +351,9 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'orderless)
 (require-package 'embark)
 (require-package 'embark-consult)
+(require-package 'glsl-mode)
 
-(when *emacs30* (require-package 'macher))
+(when my-emacs30-p (require-package 'macher))
 
 ;; magit sometime use packages which not released yet
 ;; so we place it at the end to make sure other packages are installed first

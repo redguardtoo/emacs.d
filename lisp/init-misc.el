@@ -599,7 +599,7 @@ ARG is ignored."
   "Switch to builtin shell.
 If the shell is already opened in some buffer, switch to that buffer."
   (interactive)
-  (let* ((buf-name (if *win64* "*shell*" "*ansi-term*"))
+  (let* ((buf-name (if my-win64-p "*shell*" "*ansi-term*"))
          (buf (get-buffer buf-name))
          (wins (window-list))
          current-frame-p)
@@ -615,7 +615,7 @@ If the shell is already opened in some buffer, switch to that buffer."
       (unless current-frame-p
         (switch-to-buffer buf)))
      ;; Windows
-     (*win64*
+     (my-win64-p
       (shell))
      ;; Linux
      (t
@@ -623,7 +623,7 @@ If the shell is already opened in some buffer, switch to that buffer."
 
 (transient-mark-mode t)
 
-(unless (or *cygwin* *win64*)
+(unless (or my-cygwin-p my-win64-p)
   ;; Takes ages to start Emacs.
   ;; Got error `Socket /tmp/fam-cb/fam- has wrong permissions` in Cygwin ONLY!
   ;; reproduced with Emacs 26.1 and Cygwin upgraded at 2019-02-26
@@ -926,7 +926,7 @@ might be bad."
 ;; }}
 
 ;; ;; {{ use pdf-tools to view pdf
-;; (when (and (display-graphic-p) *linux*)
+;; (when (and (display-graphic-p) my-linux-p)
 ;;   (pdf-loader-install))
 ;; ;; }}
 
@@ -1085,10 +1085,6 @@ It's also controlled by `my-lazy-before-save-timer'."
 ;; don't find this very useful, but it's frequently useful to only
 ;; look at interactive functions.
 (global-set-key (kbd "C-h C") #'helpful-command)
-
-(with-eval-after-load 'counsel
-  (setq counsel-describe-function-function #'helpful-callable)
-  (setq counsel-describe-variable-function #'helpful-variable))
 ;; }}
 
 (with-eval-after-load 'yaml-mode
@@ -1250,7 +1246,8 @@ MATCH is optional tag match."
     (ws-butler-mode 1)
 
     (unless (featurep 'esup-child)
-      (flymake-mode 1)
+      ;; users can activate flymake or flycheck here
+      ;; (flymake-mode 1)
       (unless my-disable-wucuo
         (my-ensure 'wucuo)
         (setq-local ispell-extra-args (my-detect-ispell-args t))
@@ -1392,6 +1389,27 @@ If N is 2, list files in my recent 20 commits."
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 (global-set-key (kbd "C-x b") 'ibuffer)
+
+(defun my-single-window-and-toggle-follow-mode ()
+  "Toggle `follow-mode' with side-by-side windows.
+If it's off, split window right and enable it.
+If it's on, disable it and restore single window."
+  (interactive)
+  (cond
+   ((bound-and-true-p follow-mode)
+    (follow-mode -1)
+    (delete-other-windows)
+    (message "Follow mode disabled"))
+   (t
+    (delete-other-windows)
+    (split-window-right)
+    (follow-mode 1)
+    (message "Follow mode enabled"))))
+
+(use-package apheleia
+  :ensure t
+  :config
+  (push '(sh-mode . shfmt) apheleia-mode-alist))
 
 (provide 'init-misc)
 ;;; init-misc.el ends here

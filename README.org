@@ -688,11 +688,11 @@ Here is my setup in =~/.custom.el=,
 #+begin_src elisp
 ;; @see https://github.com/vedang/pdf-tools/
 ;; Don't bother Windows
-(when (and (display-graphic-p) (or *linux* *is-a-mac*))
+(when (and (display-graphic-p) (or my-linux-p my-macos-p))
   (my-run-with-idle-timer
    2
    (lambda ()
-     (when *is-a-mac*
+     (when my-macos-p
        (setenv "PKG_CONFIG_PATH" "/usr/local/Cellar/zlib/1.2.8/lib/pkgconfig:/usr/local/lib/pkgconfig:/opt/X11/lib/pkgconfig"))
      (pdf-loader-install))))
 #+end_src

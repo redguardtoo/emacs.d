@@ -55,7 +55,7 @@ If no files marked, always operate on current line in dired-mode."
   (my-dired-support-program (my-guess-mplayer-path)
                             (my-file-extensions-to-regexp my-media-file-extensions))
 
-  (my-dired-support-program (if *unix* "zathura" "open")
+  (my-dired-support-program (if my-linux-p "zathura" "open")
                             (my-file-extensions-to-regexp '("pdf"
                                                             "pdf.gz"
                                                             "dvi"
@@ -68,10 +68,10 @@ If no files marked, always operate on current line in dired-mode."
                                                             "zip"
                                                             "7z")))
 
-  (my-dired-support-program (if *unix* "feh -F" "open")
+  (my-dired-support-program (if my-linux-p "feh -F" "open")
                             (my-file-extensions-to-regexp my-image-file-extensions))
 
-  (my-dired-support-program (if *unix* "libreoffice" "open")
+  (my-dired-support-program (if my-linux-p "libreoffice" "open")
                             (my-file-extensions-to-regexp '("doc"
                                                             "docx"
                                                             "xls"
@@ -295,7 +295,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
         (apply orig-func args)))))
   (advice-add 'dired-do-async-shell-command :around #'my-dired-do-async-shell-command-hack)
 
-  (unless *is-a-mac*
+  (unless my-macos-p
     ;; sort file names (numbered) in dired
     ;; @see https://emacs.stackexchange.com/questions/5649/sort-file-names-numbered-in-dired/5650#5650
     ;; "-1" options breaks dired on mac sometimes
@@ -307,9 +307,9 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
   "Make my computer sleep now."
   (interactive)
   (let* ((cmd (cond
-               (*cygwin*
+               (my-cygwin-p
                 "rundll32.exe PowrProf.dll,SetSuspendState")
-               (*is-a-mac*
+               (my-macos-p
                 "pmset sleepnow")
                (t
                 "sudo pm-suspend"))))

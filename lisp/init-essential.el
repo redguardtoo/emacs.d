@@ -33,7 +33,6 @@
   "Grep pinyin (no english) in current directory."
   (interactive)
   ;; grep Chinese using pinyinlib.
-  ;; In ivy filter, trigger key must be pressed before filter chinese
   (my-ensure 'fastctags)
   (let* ((fastctags-convert-grep-keyword
           (lambda (keyword)
@@ -272,7 +271,7 @@ If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
   (setq show-paren-delay 0.5))
 
 ;; {{ Make emacs know ssh-agent
-(unless *win64*
+(unless my-win64-p
   ;; package exec-path-from-shell uses some Linux only cli tool
   (my-run-with-idle-timer 2
                           (lambda ()
