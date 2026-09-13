@@ -305,7 +305,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'elpa-mirror)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (require-package 'color-theme)
-(require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
