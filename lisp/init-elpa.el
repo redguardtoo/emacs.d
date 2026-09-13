@@ -109,7 +109,6 @@
     session
     inflections
     lua-mode
-    pomodoro
     packed
     keyfreq
     gitconfig-mode
@@ -203,7 +202,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (defun require-package (package &optional min-version no-refresh)
   "Ask elpa to install given PACKAGE with MIN-VERSION.
 If NO-REFRESH is nil, `package-refresh-contents' is called."
-  (my-ensure 'package)
   (unless (package-installed-p package min-version)
     (unless (or (assoc package package-archive-contents) no-refresh)
       (message "Missing package: %s" package)
@@ -263,7 +261,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'cmake-mode)
 (require-package 'cpputils-cmake)
 (require-package 'bbdb)
-(require-package 'pomodoro)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
@@ -351,6 +348,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'embark)
 (require-package 'embark-consult)
 (require-package 'glsl-mode)
+(require-package 'tmr)
 
 (when my-emacs30-p (require-package 'macher))
 

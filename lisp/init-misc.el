@@ -788,13 +788,11 @@ might be bad."
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
-(with-eval-after-load 'pomodoro
-  (setq pomodoro-play-sounds nil) ; *.wav is not installed
-  (setq pomodoro-break-time 2)
-  (setq pomodoro-long-break-time 5)
-  (setq pomodoro-work-time 15)
-  ;; Instead of calling `pomodoro-add-to-mode-line`
-  (push '(pomodoro-mode-line-string pomodoro-mode-line-string) mode-line-format))
+;; {{ use tmr for pomodoro
+(with-eval-after-load 'tmr
+  ;; Show timer in the mode line
+  (tmr-mode-line-mode 1))
+;; }}
 
 ;; {{ epub setup
 (defun nov-mode-hook-setup ()
@@ -802,7 +800,7 @@ might be bad."
   (local-set-key (kbd "d")
 		 (lambda ()
 		   (interactive)
-		   ;; go to end of word to workaround `nov-mode' bug
+           ;; go to end of word to workaround `nov-mode' bug
 		   (forward-word)
 		   (forward-char -1)
 		   (my-dict-complete-definition)))

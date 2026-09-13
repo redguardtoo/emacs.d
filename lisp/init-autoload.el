@@ -108,7 +108,6 @@
 (autoload 'my-chinese-compare "my-chinese" "" t)
 (autoload 'vundo "vundo" "" t)
 (autoload 'yas-minor-mode-on "yasnippet" "" t)
-
 (provide 'init-autoload)
 ;;; init-autoload.el ends here
 

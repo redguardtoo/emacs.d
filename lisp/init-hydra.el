@@ -14,13 +14,13 @@
 [_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
 [_bb_] Switch Gnus buffer [_w_] Select big word      [_S_] Stop
 [_e_] Erase buffer        [_s1_] Pomodoro tiny task  [_O_] Open
-[_r_] Erase this buffer   [_s2_] Pomodoro big task   [_L_] Playlist
+[_r_] Erase this buffer   [_s2_] Pomodoro task       [_L_] Playlist
 [_f_] Recent file         [_st_] Pomodoro stop       [_K_] Search
-[_d_] Recent directory    [_sr_] Pomodoro resume     [_F_] Filter
-[_z_] Jump around (z.sh)  [_sp_] Pomodoro pause      [_E_] Replay
-[_bh_] Bash history       [_as_] Ascii table
-[_hh_] Favorite theme     [_T_] Typewriter on/off
-[_ka_] Kill other buffers [_V_] Old typewriter
+[_d_] Recent directory    [_sp_] Pomodoro pause      [_F_] Filter
+[_z_] Jump around (z.sh)  [_sb_] Pomodoro break      [_E_] Replay
+[_bh_] Bash history       [_T_] Typewriter on/off
+[_hh_] Favorite theme     [_V_] Old typewriter
+[_ka_] Kill other buffers [_as_] Ascii table
 [_ii_] Imenu
 [_id_] Insert date string
 [_aa_] Adjust subtitle
@@ -47,12 +47,12 @@
   ("T" my-toggle-typewriter)
   ("V" twm/toggle-sound-style)
 
-  ;; {{pomodoro
-  ("s1" (pomodoro-start 15))
-  ("s2" (pomodoro-start 60))
-  ("st" pomodoro-stop)
-  ("sr" pomodoro-resume)
-  ("sp" pomodoro-pause)
+  ;; {{ pomodoro
+  ("s1" (tmr 15 "Tiny task"))
+  ("s2" (tmr 25 "Standard task"))
+  ("sb" (tmr 5 "Break"))
+  ("st" tmr-cancel)
+  ("sp" tmr-toggle-pause)
   ;; }}
 
   ;; {{emms
