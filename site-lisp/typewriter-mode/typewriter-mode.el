@@ -50,21 +50,27 @@
   "Play sound."
   (unless (and twm/quiet-major-modes
                (apply 'derived-mode-p twm/quiet-major-modes))
-    (let* ((cmd twm/play-command))
       ;; guess player
-      (unless cmd
-        (setq cmd
+      (unless twm/play-command
+        (setq twm/play-command
               (cond
                ((eq system-type 'darwin)
                 "afplay %s")
                ((eq system-type 'windows-nt)
                 "powershell -c (New-Object Media.SoundPlayer \"%s\").PlaySync();")
                ((eq system-type 'gnu/linux)
-                ;; pulseaudio or alsa
-                (if (executable-find "paplay") "paplay %s" "aplay %s")))))
+                ;; pulseaudio or ffmpeg or alsa
+                (cond
+                 ((executable-find "paplay")
+                  "paplay %s")
+                 ((executable-find "ffplay")
+                  "ffplay -nodisp -autoexit %s")
+                 (t
+                  "aplay %s"))))))
       (start-process-shell-command
-       "*play-typewriter-sound*" nil
-       (format cmd (concat twm/sound-file-dir twm/sound-file))))))
+       "*play-typewriter-sound*"
+       nil
+       (format twm/play-command (concat twm/sound-file-dir twm/sound-file)))))
 
 (defun twm/toggle-sound-style ()
   "Change typewriter sound between vintage and modern."
