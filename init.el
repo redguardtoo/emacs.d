@@ -2,9 +2,6 @@
 
 ;;; Code:
 
-;; Without this comment emacs25 adds (package-initialize) here
-;; (package-initialize)
-
 (let* ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Emacs v%s or higher is required" minver)))
