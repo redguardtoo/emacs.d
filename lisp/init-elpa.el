@@ -114,6 +114,7 @@
     gitconfig-mode
     textile-mode
     w3m
+    jupyter
     workgroups2
     graphql-mode
     company-statistics)
@@ -391,6 +392,9 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 
 ;; {{ trivial packages which has extra dependency
 (require-package 'emms)
+(when (or my-linux-p my-wsl-p)
+  ;; extra linux cli tools are required
+  (require-package 'jupyter))
 ;; }}
 
 ;; kill buffer without my confirmation
