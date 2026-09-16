@@ -189,7 +189,7 @@ ARG is ignored."
   ;; {{ org-babel
   (org-babel-do-load-languages
    'org-babel-load-languages
-   '((emacs-lisp . t)
+   `((emacs-lisp . t)
      (julia . t)
      (python . t)
      (C . t)
@@ -198,7 +198,8 @@ ARG is ignored."
      (shell . t)
      (lua . t)
      (js . t)
-     (jupyter . t)))
+     ,@(when (or my-linux-p my-wsl-p)
+         '((jupyter . t)))))
 
   ;; disable prompt when executing code block in org mode
   (setq org-confirm-babel-evaluate nil)
