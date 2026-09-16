@@ -523,6 +523,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "kd" 'find-directory-in-project-by-selected
   "k/" 'find-file-other-window
   "hf" 'find-function
+  "hh" 'hs-toggle-hiding ; hide&show code block
   "tr" 'cleanup-buffer-safe
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
@@ -642,7 +643,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "vg" 'vc-annotate ; 'C-x v g' in original
   "vm" 'vc-msg-show
   "v=" 'git-gutter:popup-hunk
-  "hh" 'cliphist-paste-item
+  "yp" 'cliphist-paste-item
   "yu" 'cliphist-select-item
   "ih" 'my-git-goto-gutter
   "ww" 'my-narrow-or-widen-dwim

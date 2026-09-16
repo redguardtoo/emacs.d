@@ -788,13 +788,11 @@ might be bad."
     (setq epa-pinentry-mode 'loopback)))
 ;; }}
 
-(with-eval-after-load 'pomodoro
-  (setq pomodoro-play-sounds nil) ; *.wav is not installed
-  (setq pomodoro-break-time 2)
-  (setq pomodoro-long-break-time 5)
-  (setq pomodoro-work-time 15)
-  ;; Instead of calling `pomodoro-add-to-mode-line`
-  (push '(pomodoro-mode-line-string pomodoro-mode-line-string) mode-line-format))
+;; {{ use tmr for pomodoro
+(with-eval-after-load 'tmr
+  ;; Show timer in the mode line
+  (tmr-mode-line-mode 1))
+;; }}
 
 ;; {{ epub setup
 (defun nov-mode-hook-setup ()
@@ -802,7 +800,7 @@ might be bad."
   (local-set-key (kbd "d")
 		 (lambda ()
 		   (interactive)
-		   ;; go to end of word to workaround `nov-mode' bug
+           ;; go to end of word to workaround `nov-mode' bug
 		   (forward-word)
 		   (forward-char -1)
 		   (my-dict-complete-definition)))
@@ -1208,12 +1206,12 @@ MATCH is optional tag match."
              (length (split-string str separators))
              separators)))
 
-(defun my-mplayer-setup-extra-opts ()
-  "Set up `my-mplayer-extra-opts'."
+(defun my-media-player-opts-setup ()
+  "Set up `my-media-player-extra-opts'."
   (interactive)
   (let* ((opts '(("Clockwise 90 degree rotation" . "-vf rotate=1")
                  ("Anticlockwise 90 degree rotation" . "-vf rotate=2")))
-         (selected (completing-read "Mplayer setup: " opts)))
+         (selected (completing-read "Media Player setup: " opts)))
     (when selected
       (setq selected (cdr (assoc selected opts)))
       (kill-new selected)
@@ -1240,6 +1238,8 @@ MATCH is optional tag match."
   (add-hook 'after-save-hook #'my-save-run-function nil t)
 
   (my-company-ispell-setup)
+
+  (hs-minor-mode 1) ; hide&show  code block
 
   (unless (my-buffer-file-temp-p)
     ;;  trim spaces from end of changed line

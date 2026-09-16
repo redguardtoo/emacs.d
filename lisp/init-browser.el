@@ -51,7 +51,7 @@
         (setq url (eww-current-url))))
     (browse-url-generic (if url url (car (browse-url-interactive-arg "URL: "))))))
 
-(defun my-browser-open-with-mplayer ()
+(defun my-browser-open-with-media-player ()
   "Open the media file embedded."
   (interactive)
   (when (memq major-mode '(eww-mode gnus-article-mode))
@@ -65,7 +65,7 @@
             (setq url (match-string 1 str)))))
       (my-ensure 'url-util)
       ;; cache 2M data and don't block UI
-      (setq cmd (format "%s -cache 2048 %s &" (my-guess-mplayer-path) url))
+      (setq cmd (format "%s -cache 2048 %s &" (my-guess-media-player-path) url))
       (when (string= url "buffer://")
         (setq cmd (my-guess-image-viewer-path url t)))
       (if url (shell-command cmd)))))

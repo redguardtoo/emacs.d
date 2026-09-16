@@ -190,15 +190,16 @@ ARG is ignored."
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
+     (julia . t)
      (python . t)
      (C . t)
      (lisp . t)
-     (java . t)
-     (perl . t)
      (latex . t)
      (shell . t)
      (lua . t)
-     (js . t)))
+     (js . t)
+     (jupyter . t)))
+
   ;; disable prompt when executing code block in org mode
   (setq org-confirm-babel-evaluate nil)
   ;; }}

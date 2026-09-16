@@ -27,8 +27,6 @@
 
 (require 'find-lisp)
 (require 'scroll-bar)
-(require 'ivy)
-(require 'counsel)
 (require 'eww)
 (require 'ibuffer)
 (require 'org)
@@ -40,7 +38,6 @@
 (require 'shellcop)
 (require 'fastctags)
 (require 'typewriter-mode)
-(require 'pomodoro)
 (require 'emms)
 (require 'emms-playlist-mode)
 (require 'gnus)

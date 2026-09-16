@@ -48,11 +48,11 @@ If no files marked, always operate on current line in dired-mode."
   "External PROGRAM can open files matching PATTERN."
   (push (list pattern program) dired-guess-shell-alist-user))
 
-;; Run mplayer on multiple videos
+;; Run Media Player on multiple videos
 (setq async-shell-command-buffer 'new-buffer)
 
 (with-eval-after-load 'dired-x
-  (my-dired-support-program (my-guess-mplayer-path)
+  (my-dired-support-program (my-guess-media-player-path)
                             (my-file-extensions-to-regexp my-media-file-extensions))
 
   (my-dired-support-program (if my-linux-p "zathura" "open")
@@ -184,8 +184,8 @@ If N is not nil, only list directories in current project."
   (defun my-dired-basename ()
     (file-name-base (car (dired-get-marked-files 'no-dir))))
 
-  (defun my-mplayer-subtitle-option (subtitle directory)
-    "Return mplayer option from SUBTITLE under DIRECTORY."
+  (defun my-media-player-subtitle-option (subtitle directory)
+    "Return media player option from SUBTITLE under DIRECTORY."
     (or (when subtitle
           (let* ((vobsub-p (string-match "\.sub$" subtitle))
                  (opt (if vobsub-p "-vobsub" "-sub"))
@@ -198,14 +198,14 @@ If N is not nil, only list directories in current project."
         ""))
 
   (defun my-detect-subtitle (subtitle &optional search-in-dir)
-    "Find SUBTITLE file and return mplayer option.
+    "Find SUBTITLE file and return media player option.
 If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     (let* ((sub-directory "Subs")
            (subtitle-dir (file-name-as-directory (concat default-directory sub-directory)))
            rlt)
       (cond
        ((file-exists-p (concat subtitle-dir subtitle))
-        (setq rlt (my-mplayer-subtitle-option subtitle sub-directory)))
+        (setq rlt (my-media-player-subtitle-option subtitle sub-directory)))
        ((and search-in-dir
              (file-exists-p subtitle-dir)
              (fboundp 'string-distance))
@@ -229,15 +229,15 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
               (when (< distance min-distance)
                 (setq min-distance distance)
                 (setq found f)))
-            (setq rlt (my-mplayer-subtitle-option found sub-directory))))))
+            (setq rlt (my-media-player-subtitle-option found sub-directory))))))
       rlt))
 
   (defun my-dired-guess-default-hack (orig-func &rest args)
-    "Detect subtitles for mplayer."
+    "Detect subtitles for media player."
     (let* ((rlt (apply orig-func args)))
       (when (and (stringp rlt)
-                 (string-match "^mplayer .*-quiet" rlt))
-        ;; append subtitle to mplayer cli
+                 (string-match "^mpv .*-quiet" rlt))
+        ;; append subtitle to media player cli
         (setq rlt
               (format "%s %s"
                       rlt
@@ -278,7 +278,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
   (advice-add 'dired-find-file :around #'my-dired-find-file-hack)
 
   (defun my-dired-do-async-shell-command-hack (orig-func &rest args)
-    "Mplayer scan dvd-ripped directory in dired correctly."
+    "Media player scan dvd-ripped directory in dired correctly."
     (let* ((command (nth 0 args))
            (arg (nth 1 args))
            (file-list (nth 2 args))
@@ -289,7 +289,7 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
        ;; play dvd directory
        ((file-directory-p first-file)
         (async-shell-command (format "%s -dvd-device %s dvd://1 dvd://2 dvd://3 dvd://4 dvd://1 dvd://5 dvd://6 dvd://7 dvd://8 dvd://9"
-                                     (my-guess-mplayer-path)
+                                     (my-guess-media-player-path)
                                      first-file)))
        (t
         (apply orig-func args)))))

@@ -3,6 +3,7 @@
 ;;; {{ shell and conf
 (my-add-auto-mode 'conf-mode
                   "\\.[^b][^a][a-zA-Z]*rc\\'"
+                  "zathurarc\\'"
                   "\\.aspell\\.en\\.pws\\'"
                   "\\.i3/config-base\\'"
                   "\\.config/systemd/user/.*\\.\\(service\\|timer\\)\\'"

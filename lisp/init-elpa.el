@@ -109,12 +109,12 @@
     session
     inflections
     lua-mode
-    pomodoro
     packed
     keyfreq
     gitconfig-mode
     textile-mode
     w3m
+    jupyter
     workgroups2
     graphql-mode
     company-statistics)
@@ -203,7 +203,6 @@ You still need modify `package-archives' in \"init-elpa.el\" to PERMANENTLY use 
 (defun require-package (package &optional min-version no-refresh)
   "Ask elpa to install given PACKAGE with MIN-VERSION.
 If NO-REFRESH is nil, `package-refresh-contents' is called."
-  (my-ensure 'package)
   (unless (package-installed-p package min-version)
     (unless (or (assoc package package-archive-contents) no-refresh)
       (message "Missing package: %s" package)
@@ -263,7 +262,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'cmake-mode)
 (require-package 'cpputils-cmake)
 (require-package 'bbdb)
-(require-package 'pomodoro)
 ;; rvm-open-gem to get gem's code
 (require-package 'rvm)
 ;; C-x r l to list bookmarks
@@ -305,7 +303,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'elpa-mirror)
 ;; {{ @see https://pawelbx.github.io/emacs-theme-gallery/
 (require-package 'color-theme)
-(require-package 'visual-regexp) ;; Press "M-x vr-*"
 (require-package 'vimrc-mode)
 (require-package 'nov) ; read epub
 (require-package 'rust-mode)
@@ -352,6 +349,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'embark)
 (require-package 'embark-consult)
 (require-package 'glsl-mode)
+(require-package 'tmr)
 
 (when my-emacs30-p (require-package 'macher))
 
@@ -394,6 +392,9 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 
 ;; {{ trivial packages which has extra dependency
 (require-package 'emms)
+(when (or my-linux-p my-wsl-p)
+  ;; extra linux cli tools are required
+  (require-package 'jupyter))
 ;; }}
 
 ;; kill buffer without my confirmation

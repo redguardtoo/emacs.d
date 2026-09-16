@@ -264,60 +264,47 @@ If HINT is empty, use symbol at point."
       (setq rlt nil)))
     rlt))
 
-(defvar my-mplayer-extra-opts ""
-  "Extra options for mplayer (ao or vo setup).
-For example, you can '(setq my-mplayer-extra-opts \"-fs -ao alsa -vo vdpau\")'.")
+(defvar my-media-player-extra-opts ""
+  "Extra options for media player (ao or vo setup).
+For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\")'.")
 
-(defun my-guess-mplayer-path ()
-  "Guess cli program mplayer's path."
-  (let* ((program "mplayer")
+(defun my-guess-media-player-path ()
+  "Guess media player path."
+  (let* ((program "mpv")
          (common-opts "-fs -quiet"))
     (cond
-     (my-macos-p
+     ((and (or my-macos-p my-linux-p) (not my-wsl-p))
       (cond
-       ((executable-find "mplayer")
-        (setq program "mplayer"))
+       ((executable-find "mpv")
+        (setq program "mpv"))
        (t
-        (setq program "open")))
-
-      (setq program "mplayer"))
-
-     (my-linux-p
-      (setq program "mplayer -stop-xscreensaver"))
-
-     (my-cygwin-p
-      (if (file-executable-p "/cygdrive/c/mplayer/mplayer.exe")
-          (setq program "/cygdrive/c/mplayer/mplayer.exe")
-        (setq program "/cygdrive/d/mplayer/mplayer.exe")))
+        (setq program "open"))))
 
      (my-win64-p
       (cond
-       ((file-executable-p "c:/mplayer/mplayer.exe")
-        (setq program "c:/mplayer/mplayer.exe"))
-       ((file-executable-p "d:/mplayer/mplayer.exe")
-        (setq program "d:/mplayer/mplayer.exe"))
-       ((file-executable-p "c:/Program Files/mplayer/mplayer.exe")
-        (setq program "\"c:/Program Files/mplayer/mplayer.exe\""))
-       ((file-executable-p "d:/Program Files/mplayer/mplayer.exe")
-        (setq program "\"d:/Program Files/mplayer/mplayer.exe\""))
-       ((file-executable-p "c:/mpv/mpv.exe")
-        (setq program "c:/mpv/mpv.exe"))
-       ((file-executable-p "d:/mpv/mpv.exe")
-        (setq program "d:/mpv/mpv.exe"))
-       ((file-executable-p "c:/Program Files/mpv/mpv.exe")
-        (setq program "\"c:/Program Files/mpv/mpv.exe\""))
-       ((file-executable-p "d:/Program Files/mpv/mpv.exe")
-        (setq program "\"d:/Program Files/mpv/mpv.exe\""))
+       ((file-executable-p "c:/Program Files/MPV Player/mpv.exe")
+        (setq program "\"c:/Program Files/MPV Player/mpv.exe\""))
+       ((file-executable-p "d:/Program Files/MPV Player/mpv.exe")
+        (setq program "\"d:/Program Files/MPV Player/mpv.exe\""))
        (t
         (error "Can't find media player."))))
 
 
+     (my-wsl-p
+      (cond
+       ((file-executable-p "/mnt/c/Program Files/MPV Player/mpv.exe")
+        (setq program "\"/mnt/c/Program Files/MPV Player/mpv.exe\""))
+       ((file-executable-p "/mnt/d/Program Files/MPV Player/mpv.exe")
+        (setq program "\"/mnt/d/Program Files/MPV Player/mpv.exe\""))
+       (t
+        (error "Can't find media player."))))
+
      (t
       (error "Can't find any media player!")))
 
-    (unless (string-match "mplayer" program)
+    (unless (string-match "mpv" program)
       (setq common-opts ""))
-    (format "%s %s %s" program common-opts my-mplayer-extra-opts)))
+    (format "%s %s %s" program common-opts my-media-player-extra-opts)))
 
 (defun my-guess-image-viewer-path (image &optional stream-p)
   "How to open IMAGE which could be STREAM-P."

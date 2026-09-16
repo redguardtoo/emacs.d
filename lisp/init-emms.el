@@ -11,36 +11,31 @@
 (with-eval-after-load 'emms
   ;; minimum setup is more robust
   (emms-minimalistic)
-  ;; only show file track's base name
+
   (setq emms-track-description-function 'my-emms-track-description)
 
-  ;; {{ extract track's information
-  ;; `emms-info-native' supports mp3,flac and requires NO cli tools
-  (unless (memq 'emms-info-native emms-info-functions)
-    (require 'emms-info-native)
-    (push 'emms-info-native emms-info-functions))
-
-  ;; you can add uncomment below setup to add more methods.
+  ;; Extract track's information
   ;; @see https://www.gnu.org/software/emms/manual/#Track-Information
   ;; But more methods slows down emms
+  ;; On Debian:
+  ;;   run "sudo apt install emms" to install emms-print-metadata
+  ;;   run "sudo apt install libimage-exiftool-perl" to install exiftool
+  (let* ((emms-cli-p (executable-find "emms-print-metadata"))
+         (exiftool-p (executable-find "exiftool")))
+    (cond
+     (emms-cli-p
+      (require 'emms-info-libtag)
+      (setq emms-info-functions '(emms-info-libtag)))
 
-  ;; (unless (memq 'emms-info-cueinfo emms-info-functions)
-  ;;   (require 'emms-cue)
-  ;;   (push 'emms-info-cueinfo emms-info-functions))
+     (exiftool-p
+      (require 'emms-info-exiftool)
+      (setq emms-info-functions '(emms-info-exiftool))
+      (setq emms-info-functions '(emms-print-metadata))))
 
-  ;; (when (and (not (memq 'emms-info-metaflac emms-info-functions))
-  ;;            (executable-find "metaflac"))
-  ;;   (require 'emms-info-metaflac)
-  ;;   (push 'emms-info-metaflac emms-info-functions))
+    (when (or emms-cli-p exiftool-p)
+      (setq emms-track-initialize-functions '(emms-info-initialize-track))))
 
-  (push 'emms-info-initialize-track emms-track-initialize-functions)
-  ;; }}
-
-  (setq emms-source-file-exclude-regexp
-        (concat "\\`\\(#.*#\\|.*,v\\|.*~\\|\\.\\.?\\|\\.#.*\\|,.*\\)\\'\\|"
-                "/\\(CVS\\|RCS\\|\\.dropbox.attr\\|\\.git\\|,.*\\|\\.svn\\)\\(/\\|\\'\\)"))
-  (setq emms-player-list '(emms-player-mplayer
-                           emms-player-vlc)))
+  (setq emms-player-list '(emms-player-mpv)))
 
 (defun my-emms-play (&optional subdir-p)
   "Play media files which are marked or in marked sub-directories.
@@ -49,20 +44,12 @@ If SUBDIR-P is t, play videos in sub-directories too."
   (my-ensure 'emms)
   (my-ensure 'emms-player-simple)
 
-  ;; full screen
-  (unless (member "-fs" emms-player-mplayer-parameters)
-    (push "-fs" emms-player-mplayer-parameters))
-
-  (unless my-emms-mplayer-no-video-or-cover-art
-    ;; no cd art
-    (dolist (p '("null" "-vo" ))
-      (setq emms-player-mplayer-parameters
-            (delete p emms-player-mplayer-parameters))
-      (setq emms-player-mplayer-playlist-parameters
-            (delete p emms-player-mplayer-playlist-parameters))))
-
   (unless (eq major-mode 'dired-mode)
     (error "This command is only used in `dired-mode'"))
+
+  ;; full screen
+  (unless (member "-fs" emms-player-mpv-parameters)
+    (push "-fs" emms-player-mpv-parameters))
 
   (let* ((emms-track-description-function #'emms-track-simple-description)
          (items (dired-get-marked-files))
@@ -209,21 +196,6 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   ;; show current track info
   (my-emms-show))
 
-(defvar my-emms-mplayer-no-video-or-cover-art nil
-  "Emms mplayer backend does not play video or cover art.")
-
-(with-eval-after-load 'emms-player-simple
-  (when my-emms-mplayer-no-video-or-cover-art
-    (define-emms-simple-player mplayer '(file url)
-      (concat "\\`\\(http[s]?\\|mms\\)://\\|"
-              (apply #'emms-player-simple-regexp
-                     emms-player-base-format-list))
-      "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null")
-
-    (define-emms-simple-player mplayer-playlist '(streamlist)
-      "\\`http[s]?://"
-      "mplayer" "-slave" "-quiet" "-really-quiet" "-vo" "null" "-playlist")))
-
 (defvar my-music-root-directory "~/Dropbox/music"
   "Music root directory.")
 
@@ -232,14 +204,6 @@ If INPUT-P is t, `my-emms-playlist-random-track-keyword' is input by user."
   (interactive "P")
   (my-ensure 'emms)
   (my-ensure 'emms-player-simple)
-
-  (unless my-emms-mplayer-no-video-or-cover-art
-    ;; no cd art
-    (dolist (p '("null" "-vo" ))
-      (unless (member p emms-player-mplayer-parameters)
-        (push p emms-player-mplayer-parameters))
-      (unless (member p emms-player-mplayer-playlist-parameters)
-        (push p emms-player-mplayer-playlist-parameters))))
 
   (emms-stop)
   (when (bufferp emms-playlist-buffer-name)
