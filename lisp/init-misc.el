@@ -790,6 +790,9 @@ might be bad."
 
 ;; {{ use tmr for pomodoro
 (with-eval-after-load 'tmr
+  (when my-wsl-p
+    (remove-hook 'tmr-timer-finished-functions
+                 #'tmr-notification-notify))
   ;; Show timer in the mode line
   (tmr-mode-line-mode 1))
 ;; }}
