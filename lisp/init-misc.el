@@ -810,6 +810,38 @@ might be bad."
   (local-set-key (kbd ";") 'my-hydra-ebook/body)
   (local-set-key (kbd "w") 'mybigword-big-words-in-current-window))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
+
+(with-eval-after-load 'nov
+  (defun my-nov-content-unique-identifier (orig-fun content)
+    "Work around broken EPUB unique-identifier metadata."
+    (condition-case err
+        ;; First, let nov.el handle normal EPUBs normally.
+        (funcall orig-fun content)
+
+      ;; Only handle the specific broken unique-identifier error.
+      (error
+       (cond
+        ((string-match-p
+           "\\`Unique identifier not found by its name:"
+           (error-message-string err))
+         (let* ((node (car
+                       (esxml-query-all
+                        "package>metadata>identifier"
+                        content)))
+                (id (and node
+                         (car (dom-children node)))))
+
+           (cond
+            (id
+             (message "nov: broken unique-identifier, using fallback: %s" id)
+             (intern id))
+            (t
+             (setq id (concat "nov-fallback-" (md5 (or (buffer-file-name) "unknown"))))
+             (message "use %s as fallback id for `nov-mode'." id)
+             (intern id)))))
+        (t
+         (error-message-string err))))))
+  (advice-add 'nov-content-unique-identifier :around #'my-nov-content-unique-identifier))
 ;; }}
 
 ;; {{ octave
