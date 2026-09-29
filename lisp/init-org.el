@@ -198,7 +198,7 @@ ARG is ignored."
      (shell . t)
      (lua . t)
      (js . t)
-     ,@(when (or my-linux-p my-wsl-p)
+     ,@(when  (and (or my-linux-p my-wsl-p) (executable-find "jupyter"))
          '((jupyter . t)))))
 
   ;; disable prompt when executing code block in org mode
