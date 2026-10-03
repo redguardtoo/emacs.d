@@ -21,7 +21,7 @@ install: clean
 
 # Delete byte-compiled files etc.
 spellcheck:
-	@$(EMACS) $(EMACS_BATCH_OPTS) -L site-lisp/wucuo -l site-lisp/wucuo/wucuo.el -l tools/spellcheck.el
+	@LANG=en_US.UTF-8 $(EMACS) $(EMACS_BATCH_OPTS) -L site-lisp/wucuo -l site-lisp/wucuo/wucuo.el -l tools/spellcheck.el
 
 compile: install
 	@$(EMACS) $(EMACS_BATCH_OPTS) --eval "(require 'gptel)" -l init.el -l tests/my-byte-compile.el 2>&1 | grep -E "[0-9]: ([Ee]rror|[Ww]arning):" && exit 1 || exit 0
