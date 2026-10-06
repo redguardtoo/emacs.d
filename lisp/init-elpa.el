@@ -101,6 +101,7 @@
     db
     creole
     web
+    shell-maker ; required by agent-shell unstable
     buffer-move
     regex-tool
     legalese
