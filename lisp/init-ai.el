@@ -98,5 +98,30 @@ Displays the response in Org mode."
                      (t
                       (message "No response is given."))))))))
 
+(with-eval-after-load 'agent-shell
+  ;; (setq agent-shell-transcript-file-path-function
+  ;;       (lambda (subdir)
+  ;;         (let* ((cache-dir "~/.cache/agent-shell/"))
+  ;;           (unless (file-exists-p cache-dir) (make-directory cache-dir))
+  ;;           (expand-file-name subdir))))
+
+  (defun my-deepseek-harness-make-agent-config ()
+    "为 DeepSeek Harness 创建 agent-shell 配置。"
+    (agent-shell-make-agent-config
+     :identifier 'deepseek-harness
+     :mode-line-name "DeepSeek"
+     :buffer-name "DeepSeek"
+     :shell-prompt "DS> "
+     :shell-prompt-regexp "DS> "
+     :client-maker (lambda (buffer)
+                     (agent-shell--make-acp-client
+                      :command "npx"
+                      :command-params '("@deepseek-ai/dsh" "--profile" "acp")
+                      :context-buffer buffer))
+     :needs-authentication nil
+     :install-instructions "Make sure CLI 'npx @deepseek-ai/dsh --profile acp' works!"))
+
+  (push #'my-deepseek-harness-make-agent-config agent-shell-agent-configs))
+
 (provide 'init-ai)
 ;;; init-ai.el ends here
