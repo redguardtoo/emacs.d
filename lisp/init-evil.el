@@ -543,7 +543,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "rv" 'my-rename-thing-at-point
   "nm" 'js2hl-add-namespace-to-thing-at-point
   "rb" 'evilmr-replace-in-buffer
-  "rt" 'fastctags-nav-recent-tar
+  "rt" 'fastctags-nav-recent-tag
   "ft" 'fastctags-nav-find-tag
   "yy" 'my-browse-kill-ring
   "gf" 'my-git-find-file ; find file
@@ -714,8 +714,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (interactive)
   (let* ((selected (completing-read "Search text history:" my-search-text-history)))
     (when selected
-      (copy-yank-str item)
-      (message "%s => clipboard & yank ring" item))))
+      (copy-yank-str selected)
+      (message "%s => clipboard & yank ring" selected))))
 
 (defun my-cc-isearch-string (&rest args)
   "Add `isearch-string' into history.  ARGS is ignored."
