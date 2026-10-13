@@ -23,19 +23,19 @@
     (cond
      ((eq evil-state 'insert)
       (toggle-input-method))
+
      (t
       (evil-insert-state)
       (unless current-input-method
         (toggle-input-method))))
+
     (cond
      (current-input-method
       ;; evil-escape and pyim may conflict
       ;; @see https://github.com/redguardtoo/emacs.d/issues/629
-      (evil-escape-mode -1)
-      (message "IME on!"))
+      (evil-escape-mode -1))
      (t
-      (evil-escape-mode 1)
-      (message "IME off!"))))
+      (evil-escape-mode 1))))
    (t
     ;; NOT evil-mode
     (toggle-input-method))))
