@@ -6,12 +6,12 @@
 ;; use similar key bindings as init-evil.el
 (defhydra my-hydra-launcher (:color blue)
   "
-^Misc^                    ^Study^                    ^Emms^
--------------------------------------------------------------------
-[_ss_] Save workgroup     [_vv_] Pronounce word      [_R_] Random
-[_ll_] Load workgroup     [_W_] Big word list        [_n_] Next
-[_B_] New bookmark        [_vi_] Play word's video   [_p_] Previous
-[_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause
+^Misc^                    ^Study^                    ^Emms^         ^Auto Yasnippet^
+----------------------------------------------------------------------------------------------
+[_ss_] Save workgroup     [_vv_] Pronounce word      [_R_] Random   [_ac_] Create
+[_ll_] Load workgroup     [_W_] Big word list        [_n_] Next     [_ae_] Expand (C-])
+[_B_] New bookmark        [_vi_] Play word's video   [_p_] Previous [_ah_] Expand from history
+[_m_] Goto bookmark       [_im_] Image of word       [_P_] Pause    [_ad_] Delete from history
 [_bb_] Switch Gnus buffer [_w_] Select big word      [_S_] Stop
 [_e_] Erase buffer        [_s1_] Pomodoro tiny task  [_O_] Open
 [_r_] Erase this buffer   [_s2_] Pomodoro task       [_L_] Playlist
@@ -27,6 +27,10 @@
 [_tt_] Format code
 [_q_] Quit
 "
+  ("ac" aya-create)
+  ("ae" my-aya-expand)
+  ("ah" my-aya-expand-from-history)
+  ("ad" aya-delete-from-history)
   ("aa" my-srt-offset-subtitles-from-point)
   ("tt" apheleia-format-buffer)
   ("B" my-bookmark-set)

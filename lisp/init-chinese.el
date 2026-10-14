@@ -18,8 +18,7 @@
 
   ;; some guys don't use evil-mode at all
   (cond
-   ((and (boundp 'evil-mode) evil-mode)
-    ;; evil-mode
+   ((my-evil-mode-p)
     (cond
      ((eq evil-state 'insert)
       (toggle-input-method))

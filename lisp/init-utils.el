@@ -774,5 +774,23 @@ This function is written in pure Lisp and slow."
     (when item
       (car (split-string item "|" t)))))
 
+(defun my-evil-mode-p ()
+  "Test if `evil-mode' is activated."
+  (and (boundp 'evil-mode) evil-mode))
+
+(defun my-aya-expand ()
+  "Make auto yasnippet work in `evil-mode'."
+  (interactive)
+  (when (my-evil-mode-p)
+    (unless (eq evil-state 'insert) (evil-insert-state)))
+  (call-interactively 'aya-expand))
+
+(defun my-aya-expand-from-history ()
+  "Make auto yasnippet work in `evil-mode'."
+  (interactive)
+  (when (my-evil-mode-p)
+    (unless (eq evil-state 'insert) (evil-insert-state)))
+  (call-interactively 'aya-expand-from-history))
+
 (provide 'init-utils)
 ;;; init-utils.el ends here
