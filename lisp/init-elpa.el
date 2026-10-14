@@ -117,7 +117,7 @@
     jupyter
     workgroups2
     graphql-mode
-    company-statistics)
+    company-prescient)
   "Packages to install from melpa-unstable.")
 
 (defvar melpa-stable-banned-packages nil
@@ -275,7 +275,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'yasnippet-snippets)
 (require-package 'company)
 (require-package 'native-complete)
-(require-package 'company-statistics)
+(require-package 'company-prescient)
 (require-package 'pyvenv)
 (require-package 'legalese)
 (require-package 'simple-httpd)

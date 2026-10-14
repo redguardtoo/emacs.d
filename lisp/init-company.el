@@ -45,7 +45,8 @@ In that case, insert the number."
           '(my-company-number)))
 
   ;; @see https://github.com/company-mode/company-mode/issues/348
-  (company-statistics-mode)
+  (company-prescient-mode)
+
   (push 'company-cmake company-backends)
   ;; can't work with TRAMP
   (setq company-backends (delete 'company-ropemacs company-backends))
