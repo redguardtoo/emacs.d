@@ -204,7 +204,7 @@ But there is a simple workaround:
 - Some dired commands use ffmpeg to process video/audio
 **** [[https://github.com/koalaman/shellcheck][shellcheck]]
 - Check syntax of shell script
-- Required by =flymake=
+- Required by =flymake= and =flycheck=
 **** [[https://mkvtoolnix.download/][mkvtoolnix]]
 - Used by hydra in dired buffer
 **** [[https://pdfgrep.org/][pdfgrep]]
