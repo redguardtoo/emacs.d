@@ -98,6 +98,7 @@ In that case, insert the number."
         '(not
           eshell-mode
           comint-mode
+          shell-mode
           erc-mode
           gud-mode
           rcirc-mode

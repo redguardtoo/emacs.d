@@ -63,7 +63,6 @@
     macher ; ai tool based on gptel
     esup ; Emacs start up profiler
     native-complete
-    company-native-complete
     js2-mode ; need new features
     git-timemachine ; stable version is broken when git rename file
     glsl-mode
@@ -276,7 +275,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'yasnippet-snippets)
 (require-package 'company)
 (require-package 'native-complete)
-(require-package 'company-native-complete)
 (require-package 'company-statistics)
 (require-package 'pyvenv)
 (require-package 'legalese)
