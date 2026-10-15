@@ -52,7 +52,6 @@
     pos-tip
     kotlin-mode ; no package on stable.melpa.org
     racket-mode
-    auto-package-update
     web-mode
     kv
     helpful ; @see https://github.com/Wilfred/helpful/pull/283, need unstable version
@@ -294,7 +293,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'evil-surround)
 (require-package 'evil-visualstar)
 (require-package 'undo-fu)
-(require-package 'auto-package-update)
 (require-package 'keyfreq)
 (require-package 'adoc-mode) ; asciidoc files
 (require-package 'shackle)
