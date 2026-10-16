@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+(defvar ispell-program-name)
+
 (defvar my-default-spell-check-language "en_US"
   "Language used by aspell and hunspell CLI.")
 
@@ -114,6 +116,23 @@ So it should be used in `prog-mode-hook' only."
 
 ;; You could define your own configuration and call `my-configure-ispell-parameters' in "~/.custom.el"
 (my-configure-ispell-parameters)
+
+(defvar wucuo-flyspell-start-mode)
+(declare-function wucuo-spell-check-internal "wucuo")
+
+(defun my-spell-check-buffer ()
+  "Spell check current buffer with wucuo."
+  (interactive)
+  (unless (and (stringp ispell-program-name)
+               (executable-find ispell-program-name)
+               (string-match-p "\\(?:aspell\\|hunspell\\)\\(?:\\.exe\\)?\\'"
+                               ispell-program-name))
+    (user-error "Spell checking unavailable. Install aspell or hunspell, then restart Emacs"))
+  (my-ensure 'wucuo)
+  (unless (fboundp 'wucuo-spell-check-internal)
+    (user-error "Spell checking unavailable. Failed to load wucuo"))
+  (let ((wucuo-flyspell-start-mode "normal"))
+    (wucuo-spell-check-internal)))
 
 (defun my-ispell-word-hack (orig-func &rest args)
   "Use Emacs original arguments when calling `ispell-word'.
