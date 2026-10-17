@@ -597,11 +597,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "fr" 'vertico-repeat
   "ss" '(lambda () (interactive) (consult-line (my-selected-str)))
   "sf" 'shellcop-search-in-shell-buffer-of-other-window
-  "fb" '(lambda ()
-          (interactive)
-          (my-ensure 'wucuo)
-          (let* ((wucuo-flyspell-start-mode "normal"))
-            (wucuo-spell-check-internal)))
+  "fb" 'my-spell-check-buffer
   "fe" 'flyspell-goto-next-error
   "fa" 'flyspell-auto-correct-word
   "og" 'org-agenda
