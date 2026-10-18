@@ -21,6 +21,7 @@
 [_bh_] Bash history       [_T_] Typewriter on/off
 [_hh_] Favorite theme     [_V_] Old typewriter
 [_ka_] Kill other buffers [_as_] Ascii table
+[_ca_] Call `org-capture'
 [_ii_] Imenu
 [_id_] Insert date string
 [_aa_] Adjust subtitle
@@ -42,6 +43,7 @@
   ("ii" imenu)
   ("ka" my-kill-all-but-current-buffer)
   ("id" my-insert-date)
+  ("ca" org-capture)
   ("as" my-ascii-table)
   ("ss" wg-create-workgroup)
   ("ll" wg-open-workgroup)
