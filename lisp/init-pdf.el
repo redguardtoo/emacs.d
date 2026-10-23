@@ -1,7 +1,6 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(my-run-with-idle-timer 2 (lambda ()
-                            (require 'pdf-view)))
+(my-run-with-idle-timer 2 (lambda () (require 'pdf-view)))
 
 ;; {{ grep pdf
 (defvar my-pdfgrep-program "pdfgrep"

@@ -106,6 +106,8 @@
 (autoload 'shenshou-logout-now "shenshou" "" t)
 (autoload 'my-chinese-sort-words "my-chinese" "" t)
 (autoload 'my-chinese-compare "my-chinese" "" t)
+(autoload 'rewind-resume "rewind" "" t)
+(autoload 'rewind-mode "rewind" "" t)
 (autoload 'vundo "vundo" "" t)
 (autoload 'yas-minor-mode-on "yasnippet" "" t)
 (provide 'init-autoload)

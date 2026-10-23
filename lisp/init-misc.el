@@ -623,6 +623,8 @@ If the shell is already opened in some buffer, switch to that buffer."
 
 (transient-mark-mode t)
 
+(my-run-with-idle-timer 2 #'rewind-mode)
+
 (unless (or my-cygwin-p my-win64-p)
   ;; Takes ages to start Emacs.
   ;; Got error `Socket /tmp/fam-cb/fam- has wrong permissions` in Cygwin ONLY!

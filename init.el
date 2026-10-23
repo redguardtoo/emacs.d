@@ -87,11 +87,6 @@
   (require-init 'init-file-type)
   (require-init 'init-elpa)
 
-  ;; make all packages in "site-lisp/" loadable right now because idle loader
-  ;; are not used and packages need be available on the spot.
-  (when (or my-lightweight-mode-p my-disable-idle-timer)
-    (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
-
   ;; Any file use flyspell should be initialized after init-spelling.el
   (require-init 'init-spelling t)
   (require-init 'init-ibuffer t)
@@ -150,7 +145,7 @@
   ;; Adding directories under "site-lisp/" to `load-path' slows
   ;; down all `require' statement. So we do this at the end of startup
   ;; NO ELPA package is dependent on "site-lisp/".
-  (unless my-disable-idle-timer
+  (unless my-lightweight-mode-p
     (my-add-subdirs-to-load-path (file-name-as-directory my-site-lisp-dir)))
 
   (require-init 'init-no-byte-compile t)

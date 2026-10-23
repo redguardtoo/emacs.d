@@ -594,7 +594,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; }}
   "cr" 'my-windows-setup
   "uu" 'my-transient-winner-undo
-  "fr" 'vertico-repeat
+  "fr" 'rewind-resume
+  "vr" 'vertico-repeat
   "ss" '(lambda () (interactive) (consult-line (my-selected-str)))
   "sf" 'shellcop-search-in-shell-buffer-of-other-window
   "fb" 'my-spell-check-buffer
