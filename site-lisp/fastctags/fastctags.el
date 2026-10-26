@@ -419,6 +419,10 @@ The file is also used by tags file auto-update process.")
 (defvar fastctags-last-tagname-at-point nil
   "Last tagname queried at point.")
 
+(defun fastctags-skip-completing-read-collection-p ()
+  "Skip to produce collection for `completing-read'."
+  (and (boundp 'cmd-rewind-replay-session) cmd-rewind-replay-session))
+
 (defun fastctags-in-string-or-comment ()
   "Return non-nil if point is within a string or comment."
   (let ((ppss (syntax-ppss)))
@@ -735,12 +739,14 @@ This function return t if FILE is reloaded."
 
 (defun fastctags-completion-table (string pred action)
   "Completion table for fastctags with STRING PRED ACTION."
-  (if (eq action 'metadata)
-      `(metadata (category . fastctags-complete)
-                 (cycle-sort-function . identity)
-                 (display-sort-function . identity))
+  (cond
+   ((eq action 'metadata)
+    `(metadata (category . fastctags-complete)
+               (cycle-sort-function . identity)
+               (display-sort-function . identity)))
+   (t
     (let ((candidates (fastctags-complete-candidates string)))
-      (complete-with-action action candidates string pred))))
+      (complete-with-action action candidates string pred)))))
 
 ;;;###autoload
 (defun fastctags-completion-at-point ()
@@ -1326,9 +1332,13 @@ Focus on TAGNAME if it's not nil."
 (defun fastctags-find-tag-completion-table (cands)
   "Create a completion table with `fastctags-find-tag' category from CANDS."
   (lambda (string pred action)
-    (if (eq action 'metadata)
-        `(metadata (category . fastctags-find-tag))
-      (complete-with-action action cands string pred))))
+     (cond
+      ((eq action 'metadata)
+       `(metadata (category . fastctags-find-tag)))
+      ((eq action 'original-candidates)
+       cands)
+      (t
+       (complete-with-action action cands string pred)))))
 
 (defun fastctags-open-tag-cand (tagname cands time)
   "Find TAGNAME from CANDS.  Open tags file at TIME."
@@ -1402,7 +1412,8 @@ Focus on TAGNAME if it's not nil."
 
 (defun fastctags-nav-find-tag-api (tagname fuzzy current-file)
   "Find TAGNAME using FUZZY algorithm from CURRENT-FILE."
-  (let* ((time (current-time))
+  (let* (replay-session
+         (time (current-time))
          (dir (fastctags-tags-file-directory))
          (current-file (and current-file (file-local-name current-file))))
     (if dir (setq dir (file-local-name dir)))
@@ -1416,6 +1427,12 @@ Focus on TAGNAME if it's not nil."
     (cond
      ((and (not dir) (not fastctags-extra-tags-files))
       (message "Tags file is not ready yet."))
+
+     ((setq replay-session (fastctags-skip-completing-read-collection-p))
+      (let* ((collection (nth 1 (plist-get replay-session :completing-read-args)))
+             (candidates (funcall collection nil nil 'original-candidates)))
+        (fastctags-open-tag-cand nil candidates time)))
+
      ((not tagname)
       (error "Please provide a keyword to search tag"))
 
@@ -1441,9 +1458,9 @@ Any tag whose sub-string matches regex will be listed.
 Step 2, user keeps filtering tags."
   (interactive)
   (fastctags-tags-file-must-exist)
-  (let* ((tagname (completing-read "Regex to match tag: " nil nil nil (or (fastctags-selected-str) ""))))
-    (when (and tagname (not (string= tagname "")))
-      (fastctags-nav-find-tag-api tagname t buffer-file-name))))
+  (let* ((tagname (unless (fastctags-skip-completing-read-collection-p)
+                    (read-string "Regex to match tag: " (or (fastctags-selected-str) "")))))
+    (fastctags-nav-find-tag-api tagname t buffer-file-name)))
 
 ;;;###autoload
 (defun fastctags-nav-find-tag-at-point ()
@@ -1545,8 +1562,10 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   (let* ((str (cond
                ((region-active-p)
                 (fastctags-selected-str))
+               ((fastctags-skip-completing-read-collection-p)
+                (setq fastctags-keyword nil))
                (t
-                (completing-read hint nil)))))
+                (read-string hint)))))
     (when str
       (cond
        ((region-active-p)
@@ -1635,9 +1654,11 @@ Extended regex is used, like (pattern1|pattern2)."
 (defun fastctags-grep-completion-table (cands)
   "Create a completion table with `fastctags-grep' category from CANDS."
   (lambda (string pred action)
-    (if (eq action 'metadata)
-        `(metadata (category . fastctags-grep))
-      (complete-with-action action cands string pred))))
+    (cond
+     ((eq action 'metadata)
+      `(metadata (category . fastctags-grep)))
+     (t
+      (complete-with-action action cands string pred)))))
 
 ;;;###autoload
 (defun fastctags-grep (&optional default-keyword hint root)
@@ -1648,20 +1669,19 @@ If HINT is not nil, it's used as grep hint.
 ROOT is the directory to grep.  It's automatically detected.
 If `fastctags-use-git-grep-p' is t, git grep is grep program."
   (interactive)
-
   (unless hint
     (setq hint (if (eq fastctags-convert-grep-keyword 'identity)
                    "Regular expression for grep: "
                  "Keyword for searching: ")))
 
   (let* ((text (or default-keyword (fastctags-read-keyword hint)))
-         (keyword (funcall fastctags-convert-grep-keyword text))
+         (keyword (and text (funcall fastctags-convert-grep-keyword text)))
          (default-directory (expand-file-name (or root
                                                   (fastctags-locate-project)
                                                   default-directory)))
          (time (current-time))
-         (cmd (fastctags-grep-cli keyword nil))
-         (cands (split-string (shell-command-to-string cmd) "[\r\n]+" t))
+         (cmd (and keyword (fastctags-grep-cli keyword nil)))
+         (cands (and cmd (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
          (dir-summary (fastctags-dirname default-directory))
          selected)
 
@@ -1691,14 +1711,14 @@ If `fastctags-use-git-grep-p' is t, git grep is grep program."
                    fastctags-ignore-filenames
                    fastctags-opts-cache)
 
-    (when (and cands
-               (setq selected (completing-read (concat hint (format "Grep \"%s\" at %s (%s): "
-                                                                    text
-                                                                    dir-summary
-                                                                    (fastctags--time-cost time)))
-                                               (fastctags-grep-completion-table cands)
-                                               nil
-                                               t)))
+    ;;  cands could be nil, but 3rd party plugins like cmd-rewind might advice `completing-read'
+    (when (setq selected (completing-read (concat hint (format "Grep \"%s\" at %s (%s): "
+                                                               text
+                                                               dir-summary
+                                                               (fastctags--time-cost time)))
+                                          (fastctags-grep-completion-table cands)
+                                          nil
+                                          t))
       (fastctags-open-file-api selected default-directory keyword))))
 
 ;;;###autoload
