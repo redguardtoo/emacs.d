@@ -2,11 +2,13 @@
 
 ;; Copyright (C) 2026
 ;; Author: Chen Bin
-;; Version: 0.2
+;; Version: 1.0
 ;; Keywords: convenience, minibuffer
 ;; Package-Requires: ((emacs "29.1"))
 
 ;;; Commentary:
+
+;;
 ;; A completion-front-end-independent approximation of `ivy-resume' for
 ;; named interactive commands which use the built-in `completing-read'.
 ;;
@@ -14,6 +16,15 @@
 ;; visible when the minibuffer exits, and the command/buffer context.
 ;; Calling `cmd-rewind-resume' re-runs that command and replays the saved
 ;; `completing-read' call with the saved arguments and last input.
+;;
+;; Sessions can also be saved to and loaded from files:
+;;   - `cmd-rewind-save-session' saves the current session to a file.
+;;   - `cmd-rewind-load-session' loads a previously saved session from a file.
+;;
+;; Session files are stored in `cmd-rewind-session-directory', which defaults
+;; to a "~/.emacs.d/cmd-rewind-sessions/".
+;; The save and load commands allow sessions to be reused across Emacs
+;; restarts, provided the saved arguments and completion data remain usable.
 ;;
 ;; Anonymous interactive functions are not recorded or replayed.
 ;;
@@ -72,14 +83,23 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'subr-x)
 
 (defgroup cmd-rewind nil
   "Resume the last `completing-read' session."
   :group 'minibuffer
   :prefix "cmd-rewind-")
 
+(defcustom cmd-rewind-session-directory
+  (expand-file-name "cmd-rewind-sessions/" user-emacs-directory)
+  "Directory where cmd-rewind sessions are stored."
+  :type 'directory
+  :group 'cmd-rewind)
+
 (defcustom cmd-rewind-excluded-commands
   '("^cmd-rewind-resume$"
+    "^cmd-rewind-save-session$"
+    "^cmd-rewind-load-session$"
     "^.*-buffer$"
     "^describe-.*$"
     "^apropos.*$"
@@ -209,9 +229,9 @@ ORIG is the original function and ARGS are its arguments."
 
       ;; Track success separately; dynamically bind the replaying flag so
       ;; it is restored even if the completion call exits with an error.
-      (setq cmd-rewind-replay-completed-p t)
       (let ((cmd-rewind-completing-read-replaying-p t))
-        (cmd-rewind-read orig saved-completing-read-args session)))
+        (cmd-rewind-read orig saved-completing-read-args session)
+        (setq cmd-rewind-replay-completed-p t)))
 
      ;; Do not record nested calls during replay, or commands explicitly excluded by configuration.
      ((or (and cmd-rewind-replay-session
@@ -270,6 +290,156 @@ ORIG is the original function and ARGS are its arguments."
                   #'cmd-rewind-around-completing-read)
     (advice-remove 'completing-read
                    #'cmd-rewind-around-completing-read)))
+
+(defun cmd-rewind--sanitize-session-name (name)
+  "Convert NAME into a safe filename component."
+  (let ((name (replace-regexp-in-string
+               "[^[:alnum:]_-]+" "-" name)))
+    (setq name (replace-regexp-in-string "\\`[-_]+" "" name))
+    (setq name (replace-regexp-in-string "[-_]+\\'" "" name))
+    (if (string-empty-p name)
+        "session"
+      name)))
+
+
+(defun cmd-rewind--default-session-name (session)
+  "Generate a default filename stem from SESSION."
+  (cmd-rewind--sanitize-session-name
+   (format "%s-%s"
+           (let ((command (plist-get session :command)))
+             (if (symbolp command)
+                 (symbol-name command)
+               "session"))
+           (or (plist-get session :completing-read-input) ""))))
+
+
+(defun cmd-rewind--plist-well-formed-p (object)
+  "Return non-nil if OBJECT is a proper property list."
+  (let ((tail object)
+        (valid t))
+    (while (and valid (consp tail))
+      (if (and (keywordp (car tail))
+               (consp (cdr tail)))
+          (setq tail (cddr tail))
+        (setq valid nil)))
+    (and valid (null tail))))
+
+(defun cmd-rewind--read-session-file (file)
+  "Read a session plist from FILE."
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (let* ((read-eval nil)
+           (read-circle t)
+           (session (read (current-buffer))))
+      ;; The file must contain exactly one Lisp object.
+      (skip-chars-forward " \t\r\n")
+      (unless (eobp)
+        (error "Unexpected trailing content in %s" file))
+      session)))
+
+
+(defun cmd-rewind--serialize-session (session)
+  "Serialize SESSION and verify that it can be read back."
+  (let* ((print-length nil)
+         (print-level nil)
+         (print-circle t)
+         (serialized (prin1-to-string session)))
+    (with-temp-buffer
+      (insert serialized)
+      (goto-char (point-min))
+      (let* ((read-eval nil)
+             (read-circle t)
+             (copy (read (current-buffer))))
+        (skip-chars-forward " \t\r\n")
+        (unless (eobp)
+          (error "Unexpected trailing content after serialization"))
+        (unless (equal copy session)
+          (error "Session did not survive serialization unchanged"))))
+    serialized))
+
+
+;;;###autoload
+(defun cmd-rewind-save-session ()
+  "Save `cmd-rewind-last-session' to a named file."
+  (interactive)
+
+  (unless cmd-rewind-last-session
+    (user-error "No recorded cmd-rewind session"))
+
+  (let* ((session cmd-rewind-last-session)
+         (default-name (cmd-rewind--default-session-name session))
+         (input-name (read-string
+                      (format "Save session as (default %s): " default-name)
+                      nil nil default-name))
+         (name (cmd-rewind--sanitize-session-name
+                (if (string-empty-p input-name) default-name input-name)))
+         (directory (expand-file-name cmd-rewind-session-directory))
+         (file (expand-file-name (concat name ".sexp") directory))
+         (serialized (condition-case err
+                         (cmd-rewind--serialize-session session)
+                       (error
+                        (user-error "Cannot serialize session: %s"
+                                    (error-message-string err))))))
+
+    ;; make sure directory exsits
+    (make-directory directory t)
+
+    (when (file-exists-p file)
+      (unless (yes-or-no-p (format "File %s exists.  Overwrite? " file))
+        (user-error "Save cancelled")))
+
+    (unless (file-writable-p directory)
+      (user-error "Directory is not writable: %s" directory))
+
+    (when (and (file-exists-p file)
+               (not (file-writable-p file)))
+      (user-error "File is not writable: %s" file))
+
+    (with-temp-file file
+      (insert ";; cmd-rewind session plist\n")
+      (insert serialized "\n"))
+
+    (message "cmd-rewind session saved: %s" file)))
+
+
+;;;###autoload
+(defun cmd-rewind-load-session (&optional file)
+  "Load a saved session plist into `cmd-rewind-last-session'.
+
+Interactively, prompt for a session file.
+Optional FILE specifies the file to load."
+  (interactive)
+  (let* ((directory
+          (file-name-as-directory
+           (expand-file-name cmd-rewind-session-directory)))
+         (session-file
+          (or file
+              (read-file-name
+               "Load cmd-rewind session: "
+               directory
+               nil
+               t
+               nil
+               (lambda (candidate)
+                 (or (file-directory-p candidate)
+                     (string-suffix-p ".sexp" candidate))))))
+         (session-file (expand-file-name session-file)))
+
+    (unless (file-regular-p session-file)
+      (user-error "Not a regular session file: %s" session-file))
+
+    (let ((session
+           (condition-case err
+               (cmd-rewind--read-session-file session-file)
+             (error
+              (user-error "Cannot load session: %s"
+                          (error-message-string err))))))
+      ;; Change the current session only after successful validation.
+      (setq cmd-rewind-last-session session)
+      (message "cmd-rewind session loaded: %s"
+               (file-name-nondirectory session-file))
+      session)))
 
 (provide 'cmd-rewind)
 ;;; cmd-rewind.el ends here
