@@ -347,6 +347,7 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'embark-consult)
 (require-package 'glsl-mode)
 (require-package 'tmr)
+(require-package 'package-lint) ; for package developer only
 
 (when my-emacs30-p (require-package 'macher))
 
