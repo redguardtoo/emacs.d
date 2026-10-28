@@ -1,14 +1,32 @@
-;;; cmd-rewind.el -- Resume the last completing-read session -*- lexical-binding: t; -*-
+;;; cmd-rewind.el --- Resume the last completing-read session     -*- lexical-binding: t; -*-
 
-;; Copyright (C) 2026
-;; Author: Chen Bin
-;; Version: 1.0
-;; Keywords: convenience, minibuffer
+;; Copyright (C) 2026 Chen Bin
+
+;; Author: Chen Bin <chb_sh@hotmail.com>
+;; Package-Version: 1.0.0
 ;; Package-Requires: ((emacs "29.1"))
+;; Keywords: convenience, tools
+;; URL: http://github.com/redguardtoo/cmd-rewind
+
+;; SPDX-License-Identifier: GPL-3.0-or-later
+
+;; This program is free software: you can redistribute it and/or
+;; modify it under the terms of the GNU General Public License as published
+;; by the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;; This file is NOT part of GNU Emacs.
 
 ;;; Commentary:
 
-;;
 ;; A completion-front-end-independent approximation of `ivy-resume' for
 ;; named interactive commands which use the built-in `completing-read'.
 ;;
@@ -27,6 +45,12 @@
 ;; restarts, provided the saved arguments and completion data remain usable.
 ;;
 ;; Anonymous interactive functions are not recorded or replayed.
+;;
+;; If you use Ivy/Counsel/Swiper, use `ivy-resume' instead.
+;; If you use Vertico (e.g., together with Consult), use `vertico-repeat'.
+;; `cmd-rewind' targets the built-in `completing-read' with no
+;; completion front-end (or front-ends that do not provide their own
+;; resume command).
 ;;
 ;; Note for command developers:
 ;; When `cmd-rewind-replay-session' is non-nil, `cmd-rewind' will replay the
@@ -79,9 +103,8 @@
 ;;                          (my-computing))))
 ;;            (selected (completing-read "Select fruit: " (my-completion-table candidates))))
 ;;       (message "Selected fruit: %s" (cdr (assoc selected candidates)))))
-;;
-;;; Code:
 
+;;; Code:
 (require 'cl-lib)
 (require 'subr-x)
 

@@ -1,21 +1,21 @@
-;;; fastctags.el -- navigate&complete code with Universal Ctags  -*- lexical-binding: t -*-
+;;; fastctags.el --- Navigate and complete code with Universal Ctags    -*- lexical-binding: t -*-
 
 ;; Copyright (C) 2026 Chen Bin
 
-;; Author: Chen Bin
-;; URL: https://github.com/redguardtoo/fastctags
-;; Version: 0.0.2
-;; Keywords: convenience
+;; Author: Chen Bin <chb_sh@hotmail.com>
+;; Package-Version: 1.0.0
 ;; Package-Requires: ((emacs "29.1"))
+;; Keywords: convenience
+;; URL: https://github.com/redguardtoo/fastctags
 
-;; This file is NOT part of GNU Emacs.
+;; SPDX-License-Identifier: GPL-3.0-or-later
 
-;; GNU Emacs is free software: you can redistribute it and/or modify
+;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation, either version 3 of the License, or
 ;; (at your option) any later version.
 
-;; GNU Emacs is distributed in the hope that it will be useful,
+;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
@@ -23,9 +23,11 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with GNU Emacs.  If not, see <https://www.gnu.org/licenses/>.
 
+;; This file is NOT part of GNU Emacs.
+
 ;;; Commentary:
 
-;; This library completes code using tags file created by Ctags.
+;; This program completes code using tags file created by Ctags.
 ;; It uses a much faster algorithm optimized for ctags.
 ;; It takes only 9 seconds to load 300M tags file which is created by
 ;; scanning the Linux Kernel code v5.3.1.
@@ -78,7 +80,6 @@
 ;;
 
 ;;; Code:
-
 (require 'xref nil t) ; xref is optional
 (require 'rx)
 (require 'cl-lib)
@@ -1077,17 +1078,17 @@ CURRENT-FILE is used to compare with candidate path."
   (rx-to-string
    `(seq line-start
          ;; Group 1: Tag Name
-         (group ,(or tagname '(one-or-more (not (any "\t")))))
+         (group ,(or tagname '(one-or-more (regexp "[^\t]"))))
          "\t"
          ;; Group 2: Filename (changed to one-or-more)
-         (group (one-or-more (not (any "\t"))))
+         (group (one-or-more (regexp "[^\t]")))
          "\t"
          ;; Group 3: Ex-command (the search pattern or line number)
          (group (+? any))
          ";\""
          ;; Group 4: Kind (made optional and more flexible for trailing fields)
          (zero-or-more whitespace)
-         (group (any "a-zA-Z"))
+         (group (regexp "[a-zA-Z]"))
          ;; Allow for extra fields like line:42 or class:X
          (zero-or-more any)
          line-end)))
