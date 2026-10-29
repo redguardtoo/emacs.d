@@ -96,7 +96,7 @@
 
 ;; {{ web/html
 (my-add-auto-mode 'web-mode
-                  "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\)\\'")
+                  "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\|tsx\\)\\'")
 ;; }}
 
 (my-add-auto-mode 'dockerfile-mode
@@ -117,7 +117,7 @@
   (my-add-auto-mode 'js2-mode "\\.m?js\\(\\.erb\\)?\\'")
   ;; JSX
   (my-add-auto-mode 'rjsx-mode
-                    "\\.[tj]sx\\'"
+                    "\\.[j]sx\\'"
                     "components\\/.*\\.js\\'")
   ;; mock file
   (my-add-auto-mode 'js-mode "\\.mock.js\\'")
