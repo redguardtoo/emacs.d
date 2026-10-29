@@ -1294,7 +1294,7 @@ MATCH is optional tag match."
     (setq compilation-finish-functions
           '(my-compilation-finish-hide-buffer-on-success))
 
-    ;; fic-mode has performance issue on 5000 line C++, use swiper instead
+    ;; fic-mode has performance issue on 5000 line C++, use `consult-line' instead
 
     ;; don't spell check double words
     (setq-local wucuo-flyspell-check-doublon nil)

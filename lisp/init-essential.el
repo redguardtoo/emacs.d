@@ -117,7 +117,7 @@ If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
 ;; }}
 
 (with-eval-after-load 'shellcop
-  (setq shellcop-string-search-function 'swiper))
+  (setq shellcop-string-search-function 'consult-line))
 
 (with-eval-after-load 'cliphist
   (defun cliphist-routine-before-insert-hack (&optional arg)

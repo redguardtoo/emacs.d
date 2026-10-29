@@ -255,7 +255,7 @@ FN is function to get range."
 
 
 ;; {{ keyword search text object
-(defvar my-evil-search-forward-function #'swiper
+(defvar my-evil-search-forward-function #'consult-line
   "Search forward function.")
 
 (defun my-evil-search-range (count beg end type inclusive)
