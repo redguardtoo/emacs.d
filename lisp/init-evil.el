@@ -567,6 +567,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "qq" 'my-multi-purpose-grep
   "dd" 'fastctags-grep-current-directory
   "dc" 'my-grep-pinyin-in-current-directory
+  "dg" 'my-grep-pinyin-in-project
   "rr" 'my-recentf
   "da" 'diff-lisp-mark-selected-text-as-a
   "db" 'diff-lisp-diff-a-and-b

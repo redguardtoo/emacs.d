@@ -45,9 +45,26 @@
               keyword)))))
     (fastctags-grep-current-directory)))
 
+(defun my-grep-pinyin-in-project ()
+  "Grep pinyin (no english) in project."
+  (interactive)
+  ;; grep Chinese using pinyinlib.
+  (my-ensure 'fastctags)
+  (let* ((fastctags-convert-grep-keyword
+          (lambda (keyword)
+            (cond
+             ((> (length keyword) 0)
+              (my-ensure 'pinyinlib)
+              ;; only grep simplified Chinese
+              (pinyinlib-build-regexp-string keyword t nil t))
+             (t
+              keyword)))))
+    (fastctags-grep)))
+
 ;; {{ narrow region
 (defun narrow-to-region-indirect-buffer-maybe (start end use-indirect-buffer)
-  "Indirect buffer could multiple widen on same file."
+  "Indirect buffer could multiple widen on same file.
+Text from START to END is narrowed with USE-INDIRECT-BUFFER flag."
   (if (region-active-p) (deactivate-mark))
   (if use-indirect-buffer
       (with-current-buffer (clone-indirect-buffer
