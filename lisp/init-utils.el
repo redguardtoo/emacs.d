@@ -329,9 +329,7 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
   (let (powershell-program)
     (cond
      ;; Windows 10 and WSL
-     ((and my-wsl-p (setq powershell-program
-                          (or (executable-find "powershell.exe")
-                              (executable-find "/mnt/c/windows/System32/WindowsPowerShell/v1.0/powershell.exe"))))
+     ((and my-wsl-p (setq powershell-program (my-get-powershell-exe)))
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
@@ -346,12 +344,10 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
 (defvar my-ssh-client-user nil
   "User name of ssh client.")
 
-(defun my-send-string-to-cli-stdin (string command)
-  "Send STRING to COMMAND via stdin."
-  (with-temp-buffer
-    (insert string)
-    (call-process-region (point-min) (point-max) command nil 0 nil)))
-
+(defun my-get-powershell-exe ()
+  "Get powershell.exe on Windows."
+  (or (executable-find "powershell.exe")
+      (executable-find "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe")))
 
 (defun my-pclip (str-val)
   "Put STR-VAL into clipboard.
@@ -360,10 +356,11 @@ Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
          ssh-client)
     (cond
      ;;  Windows 10+ / WSL: clip.exe (emacsclient need full path of clip.exe)
-     ((and my-wsl-p (setq win64-clip-program
-                          (or (executable-find "clip.exe")
-                              (executable-find "/mnt/c/Windows/System32/clip.exe"))))
-      (my-send-string-to-cli-stdin str-val win64-clip-program))
+     ((and my-wsl-p (setq win64-clip-program (my-get-powershell-exe)))
+      (let* ((b64 (base64-encode-string (encode-coding-string str-val 'utf-8) t))
+             (ps-cmd (format "Set-Clipboard -Value ([System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('%s')))"
+                             b64)))
+        (call-process win64-clip-program nil nil nil "-NoProfile" "-NonInteractive" "-Command" ps-cmd)))
 
      ;; SSH client on macOS
      ((and (setq ssh-client (getenv "SSH_CLIENT"))
