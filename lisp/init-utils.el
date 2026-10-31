@@ -335,7 +335,8 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
       (string-trim-right
        (with-output-to-string
          (with-current-buffer standard-output
-           (call-process powershell-program nil t nil "-command" "Get-Clipboard")
+           ;; force Powershell output into utf-8 encoding
+           (call-process powershell-program nil t nil "-command" "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; Get-Clipboard")
            (delete-trailing-whitespace)))))
 
      ;; let xclip.el handle clipboard
