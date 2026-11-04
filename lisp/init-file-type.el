@@ -49,6 +49,7 @@
 
 (my-add-auto-mode 'text-mode
                   "TAGS\\'"
+                  "tags\\'"
                   "\\.bash_history\\'"
                   "\\.pyim\\'"
                   "\\.ctags\\'")
