@@ -1347,6 +1347,7 @@ Focus on TAGNAME if it's not nil."
   (when fastctags-debug
     (message "fastctags-open-tag-cand called => %s %s %s" tagname cands time))
   (let* ((dir (fastctags-tags-file-directory))
+         (vertico-sort-function nil)
          selected)
     (cond
      ((= 1 (length cands))
@@ -1499,6 +1500,7 @@ That's the known issue of Emacs Lisp.  The program itself is perfectly fine."
                                (when (string= dir (plist-get (cdr e) :tags-file-directory))
                                  e))
                              fastctags-nav-tag-history)))
+           (vertico-sort-function nil)
            selected)
       (when (and cands
                  (setq selected (completing-read "Recent tag names: " cands nil t)))
@@ -1684,6 +1686,7 @@ If `fastctags-use-git-grep-p' is t, git grep is grep program."
          (cmd (and keyword (fastctags-grep-cli keyword nil)))
          (cands (and cmd (split-string (shell-command-to-string cmd) "[\r\n]+" t)))
          (dir-summary (fastctags-dirname default-directory))
+         (vertico-sort-function nil)
          selected)
 
     (when (and cands
