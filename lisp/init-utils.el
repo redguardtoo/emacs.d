@@ -134,11 +134,12 @@ Then replace the region or buffer with cli output."
 (defun my-select-from-kill-ring (fn)
   "Browse `kill-ring' with `completing-read' and call FN on selected item."
   (interactive "P")
-  (let* ((candidates (cl-remove-if
-                       (lambda (s)
-                         (or (< (length s) 5)
-                             (string-match "\\`[\n[:blank:]]+\\'" s)))
-                       (delete-dups kill-ring)))
+  (let* ((vertico-sort-function nil)
+         (candidates (cl-remove-if
+                      (lambda (s)
+                        (or (< (length s) 5)
+                            (string-match "\\`[\n[:blank:]]+\\'" s)))
+                      (delete-dups kill-ring)))
          (cands (mapcar #'my-prepare-candidate-fit-into-screen candidates))
          (selected (completing-read "Browse `kill-ring': " cands)))
     (when selected
