@@ -43,7 +43,12 @@
                   (buffer-substring-no-properties (region-beginning) (region-end))
                 (thing-at-point 'symbol)))
          escaped-old)
-    (unless old (setq old (read-string "String to be replaced:")) )
+
+    (cond
+     (old
+      (kill-new old))
+     (t
+      (setq old (read-string "String to be replaced:"))))
 
     (setq escaped-old (regexp-quote old))
 
