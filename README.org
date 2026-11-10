@@ -211,6 +211,8 @@ But there is a simple workaround:
 - Used by =my-pdfgrep-in-directory=
 **** [[https://github.com/psf/black][black]]
 Python formatter used by [[https://github.com/radian-software/apheleia][apheleia-mode]] which is not enabled by default.
+**** [[https://github.com/ast-grep/ast-grep][ast-grep]]
+Ast-grep(sg) is a CLI tool for code structural search, lint, and rewriting.
 * Tutorial (OPTIONAL)
 Knowledge of Linux/Unix is required. At least you need know the meanings of "environment variable", "shell", "stdin", "stdout", "man", "info".
 ** Quickstart

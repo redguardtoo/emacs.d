@@ -534,6 +534,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "wj" 'evil-window-down
   ;; }}
   "rv" 'my-rename-thing-at-point
+  "ag" 'ast-grep-rewrite
+  "as" 'ast-grep-search
   "nm" 'js2hl-add-namespace-to-thing-at-point
   "rb" 'evilmr-replace-in-buffer
   "rt" 'fastctags-nav-recent-tag
