@@ -76,3 +76,4 @@ package-quickstart.el
 ellama-sessions/
 tree-sitter/
 python-venv/
+cmd-rewind-sessions/
