@@ -1449,5 +1449,21 @@ If it's on, disable it and restore single window."
   (push '(sh-mode . shfmt) apheleia-mode-alist))
 
 (use-package ast-grep :ensure t)
+
+
+;; {{ search by pinyin initials
+(defun my-pinyin-initials-regexp (s)
+  "Match string S as pinyin initials."
+  (my-ensure 'pinyinlib)
+  (when (and (stringp s)
+             (string-match-p "^[a-zA-Z ]+$" s))
+    (replace-regexp-in-string " " ".*" (pinyinlib-build-regexp-string (downcase s) t))))
+
+;;; Uncomment below code if you need search by pinyin initials
+;; (unless (memq #'my-pinyin-initials-regexp orderless-matching-styles)
+;;   (push #'my-pinyin-initials-regexp orderless-matching-styles))
+
+;; }}
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
