@@ -112,21 +112,15 @@
                   "\\.pac\\'"
                   "\\.jshintrc\\'")
 
-(cond
- ((not *no-memory*)
-  ;; javascript
-  (my-add-auto-mode 'js2-mode "\\.m?js\\(\\.erb\\)?\\'")
-  ;; JSX
-  (my-add-auto-mode 'rjsx-mode
+;; javascript
+(my-add-auto-mode 'js2-mode "\\.m?js\\(\\.erb\\)?\\'")
+;; JSX
+(my-add-auto-mode 'rjsx-mode
                     "\\.[j]sx\\'"
                     "components\\/.*\\.js\\'")
-  ;; mock file
-  (my-add-auto-mode 'js-mode "\\.mock.js\\'")
-  (my-add-interpreter-mode 'js2-mode "node"))
- (t
-  (my-add-auto-mode 'js-mode
-                    "\\.js\\(\\.erb\\)?\\'"
-                    "\\.babelrc\\'")))
+;; mock file
+(my-add-auto-mode 'js-mode "\\.mock.js\\'")
+(my-add-interpreter-mode 'js2-mode "node")
 
 (my-add-auto-mode 'typescript-mode "\\.ts\\'")
 

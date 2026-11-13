@@ -33,15 +33,6 @@
     (list start end)))
 ;; }}
 
-(setq *no-memory* (cond
-                   (my-macos-p
-                    ;; @see https://discussions.apple.com/thread/1753088
-                    ;; "sysctl -n hw.physmem" does not work
-                    (<= (string-to-number (shell-command-to-string "sysctl -n hw.memsize"))
-                        (* 4 1024 1024)))
-                   (my-linux-p nil)
-                   (t nil)))
-
 (defconst my-emacs-d (file-name-as-directory user-emacs-directory)
   "Directory of emacs.d.")
 

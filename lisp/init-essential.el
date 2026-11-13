@@ -79,9 +79,8 @@ Text from START to END is narrowed with USE-INDIRECT-BUFFER flag."
       (narrow-to-region start end)))
 
 ;; @see https://www.reddit.com/r/emacs/comments/988paa/emacs_on_windows_seems_lagging/
-(unless *no-memory*
-  ;; speed up font rendering for special characters
-  (setq inhibit-compacting-font-caches t))
+;; speed up font rendering for special characters
+(setq inhibit-compacting-font-caches t)
 
 ;; @see https://gist.github.com/mwfogleman/95cc60c87a9323876c6c
 ;; fixed to behave correctly in org-src buffers; taken from:
