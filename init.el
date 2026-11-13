@@ -148,8 +148,7 @@
   (unless my-lightweight-mode-p
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on *.el in `my-site-lisp-dir'
-    (my-run-with-idle-timer 1 (lambda () (load "~/.custom.el" t nil)))))
-
+    (my-run-with-idle-timer 1 (lambda () (load (expand-file-name "~/.custom.el") t nil)))))
 
 ;; @see https://www.reddit.com/r/emacs/comments/55ork0/is_emacs_251_noticeably_slower_than_245_on_windows/
 ;; Emacs 25 does gc too frequently
@@ -169,7 +168,9 @@
            gcs-done))
 (add-hook 'after-init-hook #'my-report-startup-time)
 
+(put 'erase-buffer 'disabled nil)
+(provide 'init)
+;;; init.el ends here
 ;;; Local Variables:
 ;;; no-byte-compile: t
 ;;; End:
-(put 'erase-buffer 'disabled nil)

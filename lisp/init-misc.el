@@ -108,11 +108,11 @@
   (interactive)
   (man (concat "-k " (my-use-selected-string-or-ask))))
 
+(context-menu-mode 1)
 (use-package emacs
   :custom
   ;; Enable context menu. `vertico-multiform-mode' adds a menu in the minibuffer
   ;; to switch display modes.
-  (context-menu-mode t)
   ;; Support opening new minibuffers from inside existing minibuffers.
   (enable-recursive-minibuffers t)
   ;; Hide commands in M-x which do not work in the current mode.  Vertico
@@ -239,7 +239,7 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
       (dolist (rule my-save-run-rules)
         (let* ((default-directory (nth 0 rule))
                (cmd (nth 1 rule)))
-          (when (string-match (concat "^" (file-truename default-directory)) buffer-file-name)
+          (when (file-in-directory-p buffer-file-name default-directory)
             (my-async-shell-command cmd))))))
    (t
     ;; do nothing, can't run ctags too often
@@ -348,8 +348,8 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
   "Set up mini buffer."
   (local-set-key (kbd "M-y") 'paste-from-x-clipboard)
   (local-set-key (kbd "C-k") 'kill-line)
-  (subword-mode 1) ; enable sub-word movement in minibuffer
-  (setq gc-cons-threshold most-positive-fixnum))
+  ;; enable sub-word movement in minibuffer
+  (subword-mode 1))
 
 (defun my-minibuffer-exit-hook ()
   "Hook when exiting mini buffer."
@@ -481,15 +481,14 @@ So it's at the top of clipboard manager."
         (y-or-n-p "The message suggests that you may want to attach something, but no attachment is found.  Send anyway?")
       (error "It seems that an attachment is needed, but none was found.  Aborting sending!"))))
 (add-hook 'message-send-hook 'my-message-pre-send-check-attachment)
-
 ;; }}
 
-;; @see https://stackoverflow.com/questions/3417438/closing-all-other-buffers-in-emacs
 (defun my-kill-all-but-current-buffer ()
   "Kill all other buffers, but not current buffer."
   (interactive)
-  (mapc 'kill-buffer (cdr (buffer-list (current-buffer))))
-  "All other buffers have been killed!")
+  (dolist (buf (buffer-list))
+    (unless (eq buf (current-buffer))
+      (kill-buffer buf))))
 
 (defun my-minibuffer-inactive-mode-hook-setup ()
   "Set up mini buffer so auto complete works."
@@ -742,7 +741,7 @@ version control automatically."
   (let* ((proxy "http://127.0.0.1:8000"))
     (cond
      ((string= (getenv "http_proxy") proxy)
-      (setenv "http_proxy" "")
+      (setenv "http_proxy" nil)
       (message "env http_proxy is empty now"))
      (t
       (setenv "http_proxy" proxy)
@@ -773,10 +772,12 @@ might be bad."
 (with-eval-after-load 'epg
   (defun my-epg--start-hack (orig-func &rest args)
     "Make `epg--start' not able to find gpg-agent."
-    (let* ((agent (getenv "GPG_AGENT_INFO")))
-      (setenv "GPG_AGENT_INFO" nil)
-      (apply orig-func args)
-      (setenv "GPG_AGENT_INFO" agent)))
+    (let ((agent (getenv "GPG_AGENT_INFO")))
+      (unwind-protect
+          (progn
+            (setenv "GPG_AGENT_INFO" nil)
+            (apply orig-func args))
+        (setenv "GPG_AGENT_INFO" agent))))
   (advice-add 'epg--start :around #'my-epg--start-hack)
 
   (unless (string-match "^gpg (GnuPG) 1.4"
@@ -862,9 +863,9 @@ might be bad."
 ;; }}
 
 (defun my-browse-file (file)
-  "Browse FILE as url using `browse-url'."
+  "Browse FILE using the configured browser."
   (when (and file (file-exists-p file))
-    (browse-url-generic (concat "file://" file))))
+    (browse-url-of-file file)))
 
 (defun my-browse-current-file ()
   "Browse current file."
@@ -996,8 +997,7 @@ might be bad."
         (my-ensure 'org)
         (my-focus-on-pdf-window-then-back
          (lambda (pdf-file)
-           (when (string= (file-name-base pdf-file) (file-name-base pdf-file))
-             (my-pdf-view-goto-page pdf-page))))))))
+           (my-pdf-view-goto-page pdf-page)))))))
 
 (defun my-open-pdf-scroll-or-next-page (&optional n)
   "Open pdf, scroll or go to next N page."
@@ -1135,17 +1135,15 @@ It's also controlled by `my-lazy-before-save-timer'."
   (setq calendar-view-holidays-initially-flag t))
 
 (defvar holiday-nsw-holidays
-  (mapcar 'purecopy
-  '((holiday-fixed  1 26 "NSW: New Year's Day")
-    (holiday-fixed  1 26 "NSW: Australia Day")
-    (holiday-fixed  4 25 "NSW: ANZAC Day")
-    ;; second Monday on June, don't know why the month
-    ;; is zero based in `holiday-float'
-    (holiday-float  5 1 7 "NSW: Queen's Birthday")
-    (holiday-float 9 1 0 "NSW: Labour Day")
-    (holiday-fixed 12 25 "NSW: Christmas Day")
-    (holiday-fixed 12 26 "NSW: Boxing Day")))
-    "NSW public holidays.")
+  (mapcar #'purecopy
+          '((holiday-fixed 1 1 "NSW: New Year's Day")
+            (holiday-fixed 1 26 "NSW: Australia Day")
+            (holiday-fixed 4 25 "NSW: ANZAC Day")
+            (holiday-float 5 1 2 "NSW: King's Birthday")
+            (holiday-float 9 1 1 "NSW: Labour Day")
+            (holiday-fixed 12 25 "NSW: Christmas Day")
+            (holiday-fixed 12 26 "NSW: Boxing Day")))
+  "NSW public holidays.")
 
 (defun my-china-calendar (&optional arg)
   "Open Chinese Lunar calendar with ARG."
@@ -1239,7 +1237,7 @@ MATCH is optional tag match."
       (setq separators ","))
     (setq str (string-trim str separators separators))
     (message "%s has %d words separated by \"%s\"."
-             (if (region-active-p) "Buffer" "Region")
+             (if (region-active-p) "Region" "Buffer")
              (length (split-string str separators))
              separators)))
 
@@ -1301,8 +1299,6 @@ MATCH is optional tag match."
     ;; @see http://emacsredux.com/blog/2013/04/21/camelcase-aware-editing/
     (unless (derived-mode-p 'js2-mode)
       (subword-mode 1))
-
-    (my-run-with-idle-timer 2 (lambda () (electric-pair-mode 1)))
 
     ;; eldoc, show API doc in minibuffer echo area
     ;; (turn-on-eldoc-mode)
@@ -1419,7 +1415,7 @@ If N is 2, list files in my recent 20 commits."
       (condition-case nil
           (progn
             (mapc #'disable-theme custom-enabled-themes)
-            (load-theme selected t)
+            (load-theme (intern selected) t)
             (when (fboundp 'powerline-reset)
               (powerline-reset)))
         (error "Problem loading theme %s" selected)))))
@@ -1463,6 +1459,8 @@ If it's on, disable it and restore single window."
 ;;   (push #'my-pinyin-initials-regexp orderless-matching-styles))
 
 ;; }}
+
+(electric-pair-mode 1)
 
 (provide 'init-misc)
 ;;; init-misc.el ends here
