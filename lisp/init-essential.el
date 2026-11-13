@@ -3,31 +3,6 @@
 ;; Like "init-misc.el", but this file is always loaded
 
 ;;; Code:
-(defun my-multi-purpose-grep (n)
-  "Run different grep from N."
-  (interactive "P")
-  (my-ensure 'fastctags)
-  (cond
-   ((not n)
-    (fastctags-grep))
-   ((= n 1)
-    ;; grep references of current web component
-    ;; component could be inside styled-component like `const c = styled(Comp1)`
-    (let* ((fb (file-name-base buffer-file-name)))
-      (when (string= "index" fb)
-        (setq fb (file-name-base (directory-file-name (file-name-directory (directory-file-name buffer-file-name))))))
-        (fastctags-grep (format "(<%s( *$| [^ ])|styled\\\(%s\\))" fb fb))))
-   ((= n 2)
-    ;; grep web component attribute name
-    (fastctags-grep (format "^ *%s[=:]" (or (thing-at-point 'symbol)
-                                                (read-string "Component attribute name?")))))
-   ((= n 3)
-    ;; grep current file name
-    (fastctags-grep (format ".*%s" (file-name-nondirectory buffer-file-name))))
-   ((= n 4)
-    ;; grep js files which is imported
-    (fastctags-grep (format "from .*%s('|\\\.js');?"
-                                (file-name-base (file-name-nondirectory buffer-file-name)))))))
 
 (defun my-grep-pinyin-in-current-directory ()
   "Grep pinyin (no english) in current directory."

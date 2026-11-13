@@ -566,7 +566,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "cxi" 'org-clock-in ; `C-c C-x C-i'
   "cxo" 'org-clock-out ; `C-c C-x C-o'
   "cxr" 'org-clock-report ; `C-c C-x C-r'
-  "qq" 'my-multi-purpose-grep
+  "qq" 'fastctags-grep
   "dd" 'fastctags-grep-current-directory
   "dc" 'my-grep-pinyin-in-current-directory
   "dg" 'my-grep-pinyin-in-project
