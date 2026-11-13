@@ -84,10 +84,11 @@ If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
    ;; narrow to specific org element
    ((derived-mode-p 'org-mode)
     (cond
-     ((ignore-errors (org-edit-src-code)) t)
+     ((ignore-errors (org-edit-src-code) t))
      ((ignore-errors (org-narrow-to-block) t))
      ((ignore-errors (org-narrow-to-element) t))
-     (t (org-narrow-to-subtree))))
+     (t
+      (org-narrow-to-subtree))))
 
    ((derived-mode-p 'diff-mode)
     (let* (b e)
