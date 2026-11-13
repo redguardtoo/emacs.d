@@ -327,14 +327,8 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
   ;; enable sub-word movement in minibuffer
   (subword-mode 1))
 
-(defun my-minibuffer-exit-hook ()
-  "Hook when exiting mini buffer."
-  ;; evil-mode also use mini buffer
-  (setq gc-cons-threshold 67108864))
-
 ;; @see http://bling.github.io/blog/2016/01/18/why-are-you-changing-gc-cons-threshold/
 (add-hook 'minibuffer-setup-hook #'my-minibuffer-setup-hook)
-(add-hook 'minibuffer-exit-hook #'my-minibuffer-exit-hook)
 
 ;; {{ cliphist.el
 (defun my-select-cliphist-item (num item)
@@ -994,7 +988,7 @@ might be bad."
   "Open pdf and go to page from history."
   (interactive)
   (let* ((link (completing-read "Open pdf:::page: " my-pdf-view-from-history)))
-    (when link
+    (unless (string-empty-p link)
       (let* ((items (split-string link ":::"))
              (pdf-page (string-to-number (nth 1 items))))
         (my-ensure 'org)
@@ -1250,7 +1244,7 @@ MATCH is optional tag match."
   (let* ((opts '(("Clockwise 90 degree rotation" . "-vf rotate=1")
                  ("Anticlockwise 90 degree rotation" . "-vf rotate=2")))
          (selected (completing-read "Media Player setup: " opts)))
-    (when selected
+    (unless (string-empty-p selected)
       (setq selected (cdr (assoc selected opts)))
       (kill-new selected)
       (message "\"%s\" => kill-ring" selected))))
@@ -1378,7 +1372,7 @@ If N is 2, list files in my recent 20 commits."
       (setq hint (format "Files in recent Git commits: "))
       (setq files (my-git-recent-files))))
 
-    (when (setq f (completing-read hint files))
+    (unless (string-empty-p (setq f (completing-read hint files)))
       ;; return file buffer if possible
       (find-file f))))
 ;; }}
@@ -1386,10 +1380,9 @@ If N is 2, list files in my recent 20 commits."
 (defun my-insert-bash-history ()
   "Yank the bash history."
   (interactive)
-  (shell-command "history -r") ; reload history
   (let* ((collection (nreverse (my-read-lines (file-truename "~/.bash_history"))))
          (val (completing-read "Bash history: " collection)))
-  (when val
+  (unless (string-empty-p val)
       (kill-new val)
       (message "%s => kill-ring" val)
       (insert val))))
@@ -1410,7 +1403,7 @@ If N is 2, list files in my recent 20 commits."
   (interactive)
   (let* ((selected (completing-read "Load custom theme: "
                                     (mapcar #'symbol-name (custom-available-themes)))))
-    (when selected
+    (unless (string-empty-p selected)
       (condition-case nil
           (progn
             (mapc #'disable-theme custom-enabled-themes)
