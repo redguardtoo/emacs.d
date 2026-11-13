@@ -54,6 +54,11 @@
 ;; Light weight mode, fewer packages are used.
 (setq my-lightweight-mode-p (and (boundp 'startup-now) (eq startup-now t)))
 
+;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
+;; See `custom-file' for details.
+(setq custom-file (concat my-emacs-d "custom-set-variables.el"))
+(if (file-exists-p custom-file) (load custom-file t t))
+
 (defun require-init (pkg &optional maybe-disabled)
   "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
   (when (or (not maybe-disabled) (not my-lightweight-mode-p))
@@ -148,11 +153,6 @@
   (require-init 'init-no-byte-compile t)
 
   (unless my-lightweight-mode-p
-    ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
-    ;; See `custom-file' for details.
-    (setq custom-file (concat my-emacs-d "custom-set-variables.el"))
-    (if (file-exists-p custom-file) (load custom-file t t))
-
     ;; my personal setup, other major-mode specific setup need it.
     ;; It's dependent on *.el in `my-site-lisp-dir'
     (my-run-with-idle-timer 1 (lambda () (load "~/.custom.el" t nil)))))
