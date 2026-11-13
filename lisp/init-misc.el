@@ -577,18 +577,7 @@ This function can be re-used by other major modes after compilation."
 
 (with-eval-after-load 'compile
   ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
-  (setq compilation-finish-functions '(my-compilation-finish-hide-buffer-on-success))
-  (defun my-compile-hack (orig-func &rest args)
-    (cond
-     ((member major-mode '(octave-mode))
-      (octave-send-buffer))
-     (t
-      (apply orig-func args))))
-  (advice-add 'compile :around #'my-compile-hack)
-
-  (add-to-list 'compilation-error-regexp-alist-alist
-               (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
-  (add-to-list 'compilation-error-regexp-alist 'mocha))
+  (setq compilation-finish-functions '(my-compilation-finish-hide-buffer-on-success)))
 ;; }}
 
 (defun my-switch-to-builtin-shell ()
