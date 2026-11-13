@@ -126,30 +126,6 @@
 
 (global-set-key (kbd "M-x") 'execute-extended-command)
 
-;; hide the compilation buffer automatically is not a good idea.
-;; if compiling command is a unit test command
-;; It's better let user decide when to hide something
-(defvar my-do-bury-compilation-buffer nil
-  "Hide compilation buffer if compile successfully.")
-
-(defun my-compilation-finish-hide-buffer-on-success (buffer str)
-  "Bury BUFFER whose name marches STR.
-This function can be re-used by other major modes after compilation."
-  (cond
-   ;;there were errors
-   ((string-match "exited abnormally" str)
-    (message "There IS compilation errors, press C-x ` to visit!"))
-
-   ;;no errors, make the compilation window go away in 0.5 seconds
-   (t
-    (when (and my-do-bury-compilation-buffer
-               (buffer-name buffer)
-               (string-match "*compilation*" (buffer-name buffer)))
-      ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
-      (bury-buffer "*compilation*")
-      (winner-undo)
-      (message "NO compilation error.")))))
-
 ;; {{ electric pair
 (defun my-normal-word-before-point-p (position n fn)
   "A normal word exists before POSITION.
@@ -562,8 +538,7 @@ ARG is ignored."
 
 ;; wgrep and rgrep, inspired by http://oremacs.com/2015/01/27/my-refactoring-workflow/
 (with-eval-after-load 'wgrep
-  '(define-key grep-mode-map
-     (kbd "C-c C-c") 'wgrep-finish-edit))
+  (define-key grep-mode-map (kbd "C-c C-c") #'wgrep-finish-edit))
 
 ;; {{ https://www.emacswiki.org/emacs/EmacsSession better than "desktop.el" or "savehist".
 ;; Any global variable matching `session-globals-regexp' is saved *automatically*.
@@ -581,7 +556,34 @@ ARG is ignored."
 (add-hook 'after-init-hook 'session-initialize)
 ;; }}
 
+;; {{ compile setup
+;; hide the compilation buffer automatically is not a good idea.
+;; if compiling command is a unit test command
+;; It's better let user decide when to hide something
+(defvar my-do-bury-compilation-buffer nil
+  "Hide compilation buffer if compile successfully.")
+
+(defun my-compilation-finish-hide-buffer-on-success (buffer str)
+  "Bury BUFFER whose name marches STR.
+This function can be re-used by other major modes after compilation."
+  (cond
+   ;;there were errors
+   ((string-match "exited abnormally" str)
+    (message "There IS compilation errors, press C-x ` to visit!"))
+
+   ;;no errors, make the compilation window go away in 0.5 seconds
+   (t
+    (when (and my-do-bury-compilation-buffer
+               (buffer-name buffer)
+               (string= "*compilation*" (buffer-name buffer)))
+      ;; @see http://emacswiki.org/emacs/ModeCompile#toc2
+      (bury-buffer "*compilation*")
+      (winner-undo)
+      (message "NO compilation error.")))))
+
 (with-eval-after-load 'compile
+  ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
+  (setq compilation-finish-functions '(my-compilation-finish-hide-buffer-on-success))
   (defun my-compile-hack (orig-func &rest args)
     (cond
      ((member major-mode '(octave-mode))
@@ -593,6 +595,7 @@ ARG is ignored."
   (add-to-list 'compilation-error-regexp-alist-alist
                (list 'mocha "at [^()]+ (\\([^:]+\\):\\([^:]+\\):\\([^:]+\\))" 1 2 3))
   (add-to-list 'compilation-error-regexp-alist 'mocha))
+;; }}
 
 (defun my-switch-to-builtin-shell ()
   "Switch to builtin shell.
@@ -1287,10 +1290,6 @@ MATCH is optional tag match."
         (my-ensure 'wucuo)
         (setq-local ispell-extra-args (my-detect-ispell-args t))
         (wucuo-start)))
-
-    ;; @see http://xugx2007.blogspot.com.au/2007/06/benjamin-rutts-emacs-c-development-tips.html
-    (setq compilation-finish-functions
-          '(my-compilation-finish-hide-buffer-on-success))
 
     ;; fic-mode has performance issue on 5000 line C++, use `consult-line' instead
 
