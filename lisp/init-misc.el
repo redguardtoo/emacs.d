@@ -1450,7 +1450,6 @@ If it's on, disable it and restore single window."
 
 (use-package ast-grep :ensure t)
 
-
 ;; {{ search by pinyin initials
 (defun my-pinyin-initials-regexp (s)
   "Match string S as pinyin initials."

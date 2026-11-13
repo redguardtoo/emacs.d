@@ -2,7 +2,7 @@
 
 ;;; Code:
 
-(let* ((minver "29.1"))
+(let ((minver "29.1"))
   (when (version< emacs-version minver)
     (error "Emacs v%s or higher is required" minver)))
 
@@ -11,15 +11,15 @@
 
 (defvar my-debug nil "Enable debug mode.")
 
-(defvar my-wsl-p (and (eq system-type 'gnu/linux)
-                      (or (executable-find "powershell.exe")
-                          (executable-find "clip.exe")
-                          (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))))
-(defvar my-cygwin-p (eq system-type 'cygwin) )
-(defvar my-macos-p (eq system-type 'darwin))
-(defvar my-win64-p (eq system-type 'windows-nt))
-(defvar my-linux-p (or (eq system-type 'gnu/linux) (eq system-type 'linux)))
-(defvar my-emacs30-p (>= emacs-major-version 30))
+(defconst my-wsl-p (and (eq system-type 'gnu/linux)
+                        (or (executable-find "powershell.exe")
+                            (executable-find "clip.exe")
+                            (file-exists-p "/proc/sys/fs/binfmt_misc/WSLInterop"))))
+(defconst my-cygwin-p (eq system-type 'cygwin))
+(defconst my-macos-p (eq system-type 'darwin))
+(defconst my-win64-p (eq system-type 'windows-nt))
+(defconst my-linux-p (or (eq system-type 'gnu/linux) (eq system-type 'linux)))
+(defconst my-emacs30-p (>= emacs-major-version 30))
 
 ;; don't GC during startup to save time
 (unless (bound-and-true-p my-computer-has-smaller-memory-p)
@@ -43,17 +43,19 @@
   "Directory of personal configuration.")
 
 ;; Light weight mode, fewer packages are used.
-(setq my-lightweight-mode-p (and (boundp 'startup-now) (eq startup-now t)))
+(defconst my-lightweight-mode-p (and (boundp 'startup-now) (eq startup-now t))
+  "Test if it's in light weight mode.")
 
 ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/
 ;; See `custom-file' for details.
-(setq custom-file (concat my-emacs-d "custom-set-variables.el"))
-(if (file-exists-p custom-file) (load custom-file t t))
+(setq custom-file (expand-file-name "custom-set-variables.el" my-emacs-d))
+(load custom-file t t)
 
 (defun require-init (pkg &optional maybe-disabled)
-  "Load PKG if MAYBE-DISABLED is nil or it's nil but start up in normal slowly."
-  (when (or (not maybe-disabled) (not my-lightweight-mode-p))
-    (load (file-truename (format "%s/%s" my-lisp-dir pkg)) t t)))
+  "Load PKG unless MAYBE-DISABLED and running in lightweight mode."
+  (when (or (not maybe-disabled)
+            (not my-lightweight-mode-p))
+    (load (expand-file-name (symbol-name pkg) my-lisp-dir) t t)))
 
 (defun my-add-subdirs-to-load-path (lisp-dir)
   "Add sub-directories under LISP-DIR into `load-path'."
@@ -73,7 +75,7 @@
 ;; ("\\`/[^/|:][^/|]*:" . tramp-file-name-handler)
 ;; ("\\`/:" . file-name-non-special))
 ;; Which means on every .el and .elc file loaded during start up, it has to runs those regexps against the filename.
-(let* ((file-name-handler-alist nil))
+(let ((file-name-handler-alist nil))
 
   (require-init 'init-autoload) ; packages in site-lisp/ can be required
   ;; `package-initialize' takes 35% of startup time
@@ -96,7 +98,7 @@
   (require-init 'init-org t)
   (require-init 'init-python t)
   (require-init 'init-lisp t)
-  (require-init 'init-yasnippet )
+  (require-init 'init-yasnippet)
   (require-init 'init-cc-mode t)
   (require-init 'init-linum-mode)
   (require-init 'init-git)
@@ -154,16 +156,18 @@
 ;; (setq garbage-collection-messages t) ; for debug
 (defun my-cleanup-gc ()
   "Clean up gc."
-  (setq gc-cons-threshold  67108864) ; 64M
+  (setq gc-cons-threshold  (* 64 1024 1024)) ; 64M
   (setq gc-cons-percentage 0.1) ; original value
   (garbage-collect))
 
 (run-with-idle-timer 4 nil #'my-cleanup-gc)
 
-(message "*** Emacs loaded in %s with %d garbage collections."
-           (format "%.2f seconds"
-                   (float-time (time-subtract after-init-time before-init-time)))
-           gcs-done)
+(defun my-report-startup-time ()
+  "Report Emacs startup time."
+  (message "*** Emacs loaded in %.2f seconds with %d garbage collections."
+           (float-time (time-subtract after-init-time before-init-time))
+           gcs-done))
+(add-hook 'after-init-hook #'my-report-startup-time)
 
 ;;; Local Variables:
 ;;; no-byte-compile: t
