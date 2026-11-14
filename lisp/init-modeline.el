@@ -15,9 +15,7 @@
    "["
 
    ;; major mode, please note "%m" is legacy format since emacs 28
-   (:eval (if (stringp mode-name)
-              mode-name
-            (format "%s" (if (consp mode-name) (car mode-name) mode-name))))
+   (:eval (format "%s" (if (consp mode-name) (car mode-name) mode-name)))
 
    ;; buffer file encoding
    (:eval (let ((sys (coding-system-plist buffer-file-coding-system)))
