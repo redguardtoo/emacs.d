@@ -1,7 +1,8 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defvar my-browser-search-keyword nil
-  "Searches keyword.")
+;;; Code:
+
+(defvar my-browser-search-keyword nil "Searches keyword.")
 
 (defun my-browser-guess-keyword ()
   "Guess keyword to search."
@@ -25,7 +26,7 @@
 
 ;; use external browser to search programming stuff
 (defun my-browser-hacker-search ()
-  "Search on all programming related sites in external browser"
+  "Search on all programming related sites in external browser."
   (interactive)
   (let ((keyword (my-browser-guess-keyword)))
     ;; google
@@ -71,6 +72,7 @@
       (if url (shell-command cmd)))))
 
 (defun my-browser-subject-to-target-filename ()
+  "Get target file name from rss reader in Gnus."
   (let (rlt str)
     (save-excursion
       (goto-char (point-min))
@@ -105,3 +107,4 @@
   (define-key eww-mode-map "F" 'eww-lnum-universal))
 
 (provide 'init-browser)
+;;; init-browser.el ends here
