@@ -353,46 +353,49 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
 (defun my-pclip (str-val)
   "Put STR-VAL into clipboard.
 Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
-  (let* (win64-clip-program
-         ssh-client)
+  (let (win64-clip-program
+        ssh-client)
     (cond
-     ;;  Windows 10+ / WSL: clip.exe (emacsclient need full path of clip.exe)
+     ;;  Windows 10+ / WSL
      ((and my-wsl-p
            (setq win64-clip-program (my-get-powershell-exe)))
-      (let ((b64 (base64-encode-string (encode-coding-string str-val 'utf-8) t))
-            (ps-cmd (concat "$b64 = [Console]::In.ReadToEnd(); "
-                            "$text = [System.Text.Encoding]::UTF8.GetString("
-                            "[System.Convert]::FromBase64String($b64)); "
-                            "Set-Clipboard -Value $text")))
+      (let* ((b64 (base64-encode-string (encode-coding-string str-val 'utf-8) t))
+             (ps-cmd (concat "$b64 = [Console]::In.ReadToEnd(); "
+                             "$text = [System.Text.Encoding]::UTF8.GetString("
+                             "[System.Convert]::FromBase64String($b64)); "
+                             "Set-Clipboard -Value $text")))
         (with-temp-buffer
           (insert b64)
-          (let ((coding-system-for-write 'us-ascii-unix)
-                (status
-                 (call-process-region
-                  (point-min) (point-max)
-                  win64-clip-program
-                  nil nil nil
-                  "-NoProfile"
-                  "-NonInteractive"
-                  "-Command" ps-cmd)))
+          (let* ((coding-system-for-write 'us-ascii-unix)
+                 (status
+                  (call-process-region (point-min)
+                                       (point-max)
+                                       win64-clip-program
+                                       nil
+                                       nil
+                                       nil
+                                       "-NoProfile"
+                                       "-NonInteractive"
+                                       "-Command" ps-cmd)))
             (unless (and (integerp status) (= status 0))
-              (error "PowerShell clipboard failed: %s" status)))))
-      ;; SSH client on macOS
-      ((and (setq ssh-client (getenv "SSH_CLIENT"))
-            (not (string= ssh-client ""))
-            my-macos-p
-            (boundp 'my-ssh-client-user)
-            my-ssh-client-user)
-       (let* ((file "~/.tmp-clipboard")
-              (ip (car (split-string ssh-client "[ \t]+")))
-              (cmd (format "scp %s %s@%s:~/" file my-ssh-client-user ip)))
-         (my-write-to-file str-val file)
-         (shell-command cmd)
-         (delete-file file)))
+              (error "PowerShell clipboard failed: %s" status))))))
 
-      ;; let xclip.el handle clipboard
-      (t
-       (xclip-set-selection 'CLIPBOARD str-val)))
+     ;; SSH client on macOS
+     ((and (setq ssh-client (getenv "SSH_CLIENT"))
+           (not (string= ssh-client ""))
+           my-macos-p
+           (boundp 'my-ssh-client-user)
+           my-ssh-client-user)
+      (let* ((file "~/.tmp-clipboard")
+             (ip (car (split-string ssh-client "[ \t]+")))
+             (cmd (format "scp %s %s@%s:~/" file my-ssh-client-user ip)))
+        (my-write-to-file str-val file)
+        (shell-command cmd)
+        (delete-file file)))
+
+     ;; let xclip.el handle clipboard
+     (t
+      (xclip-set-selection 'CLIPBOARD str-val)))
 
     str-val))
 
