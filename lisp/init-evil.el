@@ -740,8 +740,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
                  '("#006fa0" . "#ffffff"))
                 (t
                  my-default-color))))
-    (set-face-background 'mode-line (car color))
-    (set-face-foreground 'mode-line (cdr color))))
+    (unless (and (equal (face-background 'mode-line) (car color))
+                 (equal (face-foreground 'mode-line) (cdr color)))
+      (set-face-background 'mode-line (car color))
+      (set-face-foreground 'mode-line (cdr color)))))
 (add-hook 'post-command-hook #'my-show-evil-state)
 ;; }}
 
