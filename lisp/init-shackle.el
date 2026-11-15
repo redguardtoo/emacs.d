@@ -1,6 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; @see https://github.com/wasamasa/shackle
+;; You need enable `shackle-mode' in "~/.custom.el" to use this setup
 (setq shackle-lighter "")
 (setq shackle-select-reused-windows nil) ; default nil
 (setq shackle-default-alignment 'below) ; default below
@@ -8,7 +11,7 @@
 
 (setq shackle-rules
       ;; CONDITION(:regexp)            :select     :inhibit-window-quit   :size+:align|:other     :same|:popup
-      '((compilation-mode :select nil )
+      '((compilation-mode :select nil)
         ("*undo-tree*" :size 0.25 :align right)
         ("*eshell*" :select t :other t )
         ("*Shell Command Output*" :select nil )
@@ -25,3 +28,4 @@
         (magit-log-mode :select t :inhibit-window-quit t :same t)))
 
 (provide 'init-shackle)
+;;; init-shackle.el ends here
