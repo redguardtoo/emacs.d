@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; some cool org tricks
 ;; @see http://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 
@@ -13,10 +15,10 @@
 
   ;; Show the clocked-in task - if any - in the header line
   (defun my-show-org-clock-in-header-line ()
-    (setq-default header-line-format '((" " org-mode-line-string " "))))
+    (setq header-line-format '((" " org-mode-line-string " "))))
 
   (defun my-hide-org-clock-from-header-line ()
-    (setq-default header-line-format nil))
+    (setq header-line-format nil))
 
   (add-hook 'org-clock-in-hook 'my-show-org-clock-in-header-line)
   (add-hook 'org-clock-out-hook 'my-hide-org-clock-from-header-line)
@@ -29,8 +31,8 @@
 (setq org2nikola-output-root-directory "~/.config/nikola")
 ;; }}
 
-(defun org-demote-or-promote (&optional is-promote)
-  "Demote or promote current org tree."
+(defun org-demote-or-promote (&optional promote-p)
+  "Demote or promote current org tree with PROMOTE-P."
   (interactive "P")
   (save-excursion
     (beginning-of-line)
@@ -40,7 +42,7 @@
                        (= (point) (- (point-max) (length line))) ;; is line at EOF
                        )))
       (org-mark-subtree)))
-  (if is-promote (org-do-promote) (org-do-demote)))
+  (if promote-p (org-do-promote) (org-do-demote)))
 
 ;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 (with-eval-after-load 'org-mime
@@ -54,6 +56,7 @@
 ;; }}
 
 (defun org-mode-hook-setup ()
+  "Set up `org-mode'."
   (unless (my-buffer-file-temp-p)
     (setq-local evil-auto-indent nil)
 
@@ -71,8 +74,8 @@
     (setq-local indent-line-function 'indent-relative)
 
     ;; display wrapped lines instead of truncated lines
-    (setq truncate-lines nil)
-    (setq word-wrap t)))
+    (setq-local truncate-lines nil)
+    (setq-local word-wrap t)))
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defvar my-pdf-view-from-history nil
@@ -90,7 +93,9 @@
     (ignore arg)
     "Save current window layout before `org-edit' buffer is open.
 ARG is ignored."
-    (setq my-org-src--saved-temp-window-config (current-window-configuration)))
+    (unless my-org-src--saved-temp-window-config
+      (setq my-org-src--saved-temp-window-config
+            (current-window-configuration))))
 
   (defun my-org-edit-src-exit ()
     "Restore the window layout that was saved before `org-edit-special' is called."
@@ -241,3 +246,4 @@ ARG is ignored."
   (add-hook 'sage-shell-after-prompt-hook #'sage-shell-view-mode))
 
 (provide 'init-org)
+;;; init-org.el ends here
