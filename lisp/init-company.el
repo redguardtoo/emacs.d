@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; evil has already integrated company-mode, see evil-integration.el
@@ -9,7 +11,7 @@
 
 (defvar my-company-zero-key-for-filter nil
   "If t, pressing 0 calls `company-filter-candidates' per company's status.
-If `my-company-select-by-number-p' is nil, this flag is ignored. ")
+If `my-company-select-by-number-p' is nil, this flag is ignored.")
 
 (with-eval-after-load 'company
 
@@ -106,7 +108,8 @@ In that case, insert the number."
           minibuffer-inactive-mode)))
 
 (defun my-company-ispell-available-hack (orig-func &rest args)
-    ;; in case evil is disabled
+    "Only activate auto complete in text file and comment of code file.
+ORIG-FUNC and ARGS are used."
     (my-ensure 'evil-nerd-commenter)
     (cond
      ((and (derived-mode-p 'prog-mode)
@@ -148,7 +151,7 @@ In that case, insert the number."
   (setq ispell-look-p nil))
 
 (defun my-company-ispell-setup ()
-  ;; @see https://github.com/company-mode/company-mode/issues/50
+  "Make sure ispell backend is loaded and set up."
   (when (boundp 'company-backends)
     (make-local-variable 'company-backends)
     (push 'company-ispell company-backends)
@@ -170,3 +173,4 @@ In that case, insert the number."
 ;; }}
 
 (provide 'init-company)
+;;; init-company.el ends here
