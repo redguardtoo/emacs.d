@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; ;; {{ Solution 1: disable all vc backends
 ;; @see http://stackoverflow.com/questions/5748814/how-does-one-disable-vc-git-in-emacs
 ;; (setq vc-handled-backends nil)
@@ -178,7 +180,7 @@ Show the diff between current working code and git head."
   "Git checkout current file."
   (interactive)
   (when (and (buffer-file-name)
-             (yes-or-no-p (format "git checkout %s?"
+             (yes-or-no-p (format "Git checkout %s?"
                                   (file-name-nondirectory (buffer-file-name)))))
     (let* ((filename (git-get-current-file-relative-path)))
       (shell-command (concat "git checkout " filename))

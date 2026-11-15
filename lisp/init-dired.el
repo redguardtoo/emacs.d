@@ -1,22 +1,9 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(defun my-diredext-exec-git-command-in-shell (command &optional arg file-list)
-  "Run a shell command `git COMMAND`' on the marked files.
-If no files marked, always operate on current line in dired-mode."
-  (interactive
-   (let* ((files (dired-get-marked-files t current-prefix-arg)))
-     (list
-      ;; Want to give feedback whether this file or marked files are used:
-      (dired-read-shell-command "git command on %s: " current-prefix-arg files)
-      current-prefix-arg
-      files)))
-  (unless (string-match "[*?][ \t]*\\'" command)
-    (setq command (concat command " *")))
-  (setq command (concat "git " command))
-  (dired-do-shell-command command arg file-list)
-  (message command))
+;;; Code:
 
 (defun my-file-usage ()
+  "Show file usage in current directory."
   (interactive)
   (message (shell-command-to-string "du -kh")))
 
@@ -41,7 +28,7 @@ If no files marked, always operate on current line in dired-mode."
                     (setq ediff-after-quit-hook-internal nil)
                     (set-window-configuration wnd)))))
      (t
-      (error "no more than 2 files should be marked")))))
+      (error "No more than 2 files should be marked")))))
 
 
 (defun my-dired-support-program (program pattern)
@@ -110,15 +97,14 @@ If no files marked, always operate on current line in dired-mode."
   (unless dired-subdir-alist (dired-build-subdir-alist))
   (local-set-key  "r" 'dired-up-directory)
   (local-set-key  "e" 'my-ediff-files)
-  (local-set-key  "/" 'dired-isearch-filenames)
-  (local-set-key  "\\" 'my-diredext-exec-git-command-in-shell))
+  (local-set-key  "/" 'dired-isearch-filenames))
 (add-hook 'dired-mode-hook 'my-dired-mode-hook-setup)
 
 ;; https://www.emacswiki.org/emacs/EmacsSession which is easier to use
 ;; See `session-globals-regexp'
 ;; If the variable is named like "*-history", it will be *automatically* saved.
 (defvar my-dired-directory-history nil
-  "Recent directories accessed by dired.")
+  "Recent directories accessed by Dired.")
 
 (defvar my-dired-exclude-directory-regexp nil
   "Dired directories matching this regexp are not added into directory history.")
@@ -311,3 +297,4 @@ If SEARCH-IN-DIR is t, try to find the subtitle by searching in directory."
     (shell-command cmd)))
 
 (provide 'init-dired)
+;;; init-dired.el ends here
