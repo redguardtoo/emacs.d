@@ -409,6 +409,11 @@ For example,
   (advice-add 'org-babel-execute:python :around #'my-org-babel-execute:python-hack))
 ;; }}
 
+(defun my-current-file-relative-path ()
+  "Get relative path of current file."
+  (when buffer-file-name
+    (file-relative-name buffer-file-name)))
+
 (defun my-skip-white-space (start step)
   "Skip white spaces from START, return position of first non-space character.
 If STEP is 1,  search in forward direction, or else in backward direction."

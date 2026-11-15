@@ -8,11 +8,11 @@
 ;; }}
 
 ;; {{ Solution 2: if NO network mounted drive involved
-(setq vc-handled-backends '(Git SVN Hg))
+(setq vc-handled-backends '(Git SVN))
 ;; @see https://www.reddit.com/r/emacs/comments/4c0mi3/the_biggest_performance_improvement_to_emacs_ive/
 ;; open files faster but you can't check if file is version
 ;; controlled. other VCS functionality still works.
-(remove-hook 'find-file-hook 'vc-find-file-hook)
+(remove-hook 'find-file-hook #'vc-refresh-state)
 ;; }}
 
 ;; ;; {{ Solution 3: setup `vc-handled-backends' per project
@@ -22,7 +22,7 @@
 ;;   (interactive)
 ;;   (cond
 ;;     ((string-match (file-truename user-emacs-directory)
-;;                      (file-name-directory (buffer-file-name)))
+;;                      (file-name-directory buffer-file-name))
 ;;       (setq vc-handled-backends '(Git)))
 ;;     (t
 ;;       (setq vc-handled-backends nil))))
@@ -34,16 +34,15 @@
 
 ;; {{ git-gutter
 (with-eval-after-load 'git-gutter
-  (unless (fboundp 'global-display-line-numbers-mode)
+  (unless (fboundp #'global-display-line-numbers-mode)
     ;; git-gutter's workaround for linum-mode bug.
     ;; should not be used in `display-line-number-mode'
     (git-gutter:linum-setup))
 
   (setq git-gutter:update-interval 2)
-  ;; nobody use bzr
-  ;; I could be forced to use subversion or hg which has higher priority
+  ;; I could be forced to use subversion which has higher priority
   ;; Please note my $HOME directory is under git control
-  (setq git-gutter:handled-backends '(svn hg git))
+  (setq git-gutter:handled-backends '(svn git))
   (setq git-gutter:disabled-modes
         '(asm-mode
           org-mode
@@ -54,7 +53,7 @@
 (defun my-git-gutter-reset-to-head-parent()
   "Reset gutter to HEAD^.  Support Subversion and Git."
   (interactive)
-  (let* ((filename (buffer-file-name))
+  (let* ((filename buffer-file-name)
          (cmd (concat "git --no-pager log --oneline -n1 --pretty=\"format:%H\" "
                       filename))
          (parent (cond
@@ -73,7 +72,7 @@
 
   ;; don't scan whole home directory
   (unless (string= (file-truename default-directory) (file-truename "~/"))
-    (let* ((exts (mapcar 'file-name-extension (my-lines-from-command-output "git diff-tree --no-commit-id --name-only -r HEAD")))
+    (let* ((exts (mapcar #'file-name-extension (my-lines-from-command-output "git diff-tree --no-commit-id --name-only -r HEAD")))
            (untracked-files (my-lines-from-command-output "git --no-pager ls-files --others --exclude-standard"))
            (lookup-ext (make-hash-table :test #'equal))
            rlt)
@@ -86,17 +85,17 @@
         (when (gethash (file-name-extension file) lookup-ext)
           (push (file-name-nondirectory file) rlt)))
       (when rlt
-        (message "Stage files? %s" (mapconcat 'identity rlt " "))))))
+        (message "Stage files? %s" (mapconcat #'identity rlt " "))))))
 
 (with-eval-after-load 'magit
   ;; {{speed up magit, @see https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
   (when my-prefer-lightweight-magit
-    (remove-hook 'magit-status-sections-hook 'magit-insert-tags-header)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-status-headers)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-pushremote)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-pushremote)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-unpulled-from-upstream)
-    (remove-hook 'magit-status-sections-hook 'magit-insert-unpushed-to-upstream-or-recent))
+    (remove-hook 'magit-status-sections-hook #'magit-insert-tags-header)
+    (remove-hook 'magit-status-sections-hook #'magit-insert-status-headers)
+    (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-pushremote)
+    (remove-hook 'magit-status-sections-hook #'magit-insert-unpulled-from-pushremote)
+    (remove-hook 'magit-status-sections-hook #'magit-insert-unpulled-from-upstream)
+    (remove-hook 'magit-status-sections-hook #'magit-insert-unpushed-to-upstream-or-recent))
   ;; }}
 
   ;; "Continue listing the history of a file beyond renames (works only for a single file)."
@@ -129,12 +128,12 @@ Show the diff between current working code and git head."
 
 (my-run-with-idle-timer 2 #'global-git-gutter-mode)
 
-(global-set-key (kbd "C-x C-g") 'git-gutter:toggle)
-(global-set-key (kbd "C-x v =") 'git-gutter:popup-hunk)
+(global-set-key (kbd "C-x C-g") #'git-gutter:toggle)
+(global-set-key (kbd "C-x v =") #'git-gutter:popup-hunk)
 ;; Stage current hunk
-(global-set-key (kbd "C-x v s") 'git-gutter:stage-hunk)
+(global-set-key (kbd "C-x v s") #'git-gutter:stage-hunk)
 ;; Revert current hunk
-(global-set-key (kbd "C-x v r") 'git-gutter:revert-hunk)
+(global-set-key (kbd "C-x v r") #'git-gutter:revert-hunk)
 
 ;; }}
 
@@ -170,20 +169,14 @@ Show the diff between current working code and git head."
   (git-timemachine--start #'my-git-timemachine-show-selected-revision))
 ;; }}
 
-(defun git-get-current-file-relative-path ()
-  "Get relative path of current file for Git."
-  (replace-regexp-in-string (concat "^" (file-name-as-directory default-directory))
-                            ""
-                            buffer-file-name))
-
 (defun git-checkout-current-file ()
   "Git checkout current file."
   (interactive)
-  (when (and (buffer-file-name)
+  (when (and buffer-file-name
              (yes-or-no-p (format "Git checkout %s?"
-                                  (file-name-nondirectory (buffer-file-name)))))
-    (let* ((filename (git-get-current-file-relative-path)))
-      (shell-command (concat "git checkout " filename))
+                                  (file-name-nondirectory buffer-file-name))))
+    (let* ((filename (my-current-file-relative-path)))
+      (shell-command (concat "git checkout " (shell-quote-argument filename)))
       (message "DONE! git checkout %s" filename))))
 
 (defvar git-commit-message-history nil)
@@ -195,11 +188,11 @@ Show the diff between current working code and git head."
                                     nil
                                     nil
                                     nil
-                                    'git-commit-message-history)))
+                                    #'git-commit-message-history)))
     (cond
      ((and msg (> (length msg) 3))
       (shell-command "git add -u")
-      (shell-command (format "git commit -m \"%s\"" msg))
+      (shell-command (format "git commit -m %s" (shell-quote-argument msg)))
       (message "Tracked files is committed."))
      (t
       (message "Do nothing!")))))
@@ -208,11 +201,11 @@ Show the diff between current working code and git head."
   "Git add file of current buffer."
   (interactive)
   (when buffer-file-name
-    (let* ((filename (git-get-current-file-relative-path))
+    (let* ((filename (my-current-file-relative-path))
            (head-info (shell-command-to-string
                        "git log --pretty=format:'%h %s (%an)' --date=short -n1
 ")))
-      (shell-command (concat "git add " filename))
+      (shell-command (concat "git add " (shell-quote-argument filename)))
       (message "%s added. HEAD: %s" filename head-info))))
 
 ;; {{ look up merge conflict
@@ -250,7 +243,7 @@ Show the diff between current working code and git head."
   (interactive)
   (my-setup-extra-keymap my-goto-merge-conflict-fns
                          "Goto merge conflict: [n]ext [p]revious [q]uit"
-                         'my-goto-merge-conflict-internal
+                         #'my-goto-merge-conflict-internal
                          t))
 
 (defun my-search-prev-merge-conflict ()
@@ -258,7 +251,7 @@ Show the diff between current working code and git head."
   (interactive)
   (my-setup-extra-keymap my-goto-merge-conflict-fns
                          "Goto merge conflict: [n]ext [p]revious [q]uit"
-                         'my-goto-merge-conflict-internal
+                         #'my-goto-merge-conflict-internal
                          nil))
 ;; }}
 
@@ -272,14 +265,14 @@ Show the diff between current working code and git head."
   (interactive)
   (my-setup-extra-keymap my-goto-diff-hunk-fns
                          "Goto diff hunk: [n]ext [p]revious [q]uit"
-                         'diff-hunk-next))
+                         #'diff-hunk-next))
 
 (defun my-search-prev-diff-hunk ()
   "Search previous diff hunk."
   (interactive)
   (my-setup-extra-keymap my-goto-diff-hunk-fns
                          "Goto diff hunk: [n]ext [p]revious [q]uit"
-                         'diff-hunk-prev))
+                         #'diff-hunk-prev))
 ;; }}
 
 ;; {{
@@ -374,7 +367,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
   (interactive)
   (cond
    (git-gutter:diffinfos
-    (let* ((cands (mapcar 'my-git-reshape-gutter git-gutter:diffinfos))
+    (let* ((cands (mapcar #'my-git-reshape-gutter git-gutter:diffinfos))
            (selected (completing-read "git-gutters:" cands)))
       (when selected
         (my-goto-line (cdr (assoc selected cands))))))
@@ -386,7 +379,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 (defun my-git-find-file-in-commit (&optional level)
   "Find file in previous commit with LEVEL.
 If LEVEL > 0, find file in previous LEVEL commit."
-  (interactive "P")
+  (interactive "p")
   (my-ensure 'magit)
   (let* ((rev (concat "HEAD" (if (and level (> level 0)) (make-string level ?^))))
          (pretty (string-trim (shell-command-to-string (format "git --no-pager log %s --oneline --no-walk" rev))))
@@ -402,7 +395,7 @@ If LEVEL > 0, find file in previous LEVEL commit."
   (interactive)
   (let ((msg (read-string "Git commit message: ")))
     (when (> (length msg) 0)
-      (shell-command (format "git commit --no-verify -m \"%s\"" msg)))))
+      (shell-command (format "git commit --no-verify -m %s" (shell-quote-argument msg))))))
 
 (defun my-git-commit-amend (&optional reuse-p)
   "Git amend.  If REUSE-P is t, commit by reusing original message."
@@ -417,7 +410,7 @@ If LEVEL > 0, find file in previous LEVEL commit."
     (when (or reuse-p (> (length msg) 0))
       (setq cmd (format "git commit --no-verify --amend %s" extra-args))
       (unless reuse-p
-        (setq cmd (format "%s -m \"%s\"" cmd msg)))
+        (setq cmd (format "%s -m %s" cmd (shell-quote-argument msg))))
       (shell-command cmd))))
 
 (defun my-git-current-branch ()
