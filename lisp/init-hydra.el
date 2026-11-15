@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; @see https://github.com/abo-abo/hydra
 ;; color could: red, blue, amaranth, pink, teal
 
@@ -85,6 +87,7 @@
 ;; Because in message-mode/article-mode we've already use `y' as hotkey
 (global-set-key (kbd "C-c C-y") 'my-hydra-launcher/body)
 (defun org-mode-hook-hydra-setup ()
+  "Set up hydra for org file."
   (local-set-key (kbd "C-c C-y") 'my-hydra-launcher/body))
 (add-hook 'org-mode-hook 'org-mode-hook-hydra-setup)
 
@@ -102,10 +105,11 @@
     ("n" diff-file-next)
     ("q" nil)))
 (defun ffip-diff-mode-hook-hydra-setup ()
+  "Set up hydra for `ffip-diff-mode'."
   (local-set-key (kbd "C-c C-y") 'my-hydra-diff/body))
 (add-hook 'ffip-diff-mode-hook 'ffip-diff-mode-hook-hydra-setup)
 
-;; gnus-summary-mode
+;; Setup for `gnus-summary-mode'
 (with-eval-after-load 'gnus-sum
   (defhydra my-hydra-gnus-summary (:color blue)
     "
@@ -184,6 +188,7 @@
     ("q" nil)))
 
 (defun message-mode-hook-hydra-setup ()
+  "Set up hydra for `message-mode'."
   (local-set-key (kbd "C-c C-y") 'my-hydra-message/body))
 (add-hook 'message-mode-hook 'message-mode-hook-hydra-setup)
 
@@ -336,6 +341,7 @@
     ("q" nil)))
 
 (defun dired-mode-hook-hydra-setup ()
+  "Set up hydra for `dired-mode'."
   (local-set-key (kbd "y") 'my-hydra-dired/body))
 (add-hook 'dired-mode-hook 'dired-mode-hook-hydra-setup)
 ;; }}
@@ -379,7 +385,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
 
 ;; helpers from https://github.com/abo-abo/hydra/blob/master/hydra-examples.el
 (defun hydra-move-split-left (arg)
-  "Move window split left."
+  "Move window split left with ARG."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
@@ -387,7 +393,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
     (enlarge-window-horizontally arg)))
 
 (defun hydra-move-split-right (arg)
-  "Move window split right."
+  "Move window split right with ARG."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'right))
@@ -395,7 +401,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
     (shrink-window-horizontally arg)))
 
 (defun hydra-move-split-up (arg)
-  "Move window split up."
+  "Move window split up with ARG."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
@@ -403,7 +409,7 @@ _i_ indent-tabs-mode:   %`indent-tabs-mode
     (shrink-window arg)))
 
 (defun hydra-move-split-down (arg)
-  "Move window split down."
+  "Move window split down with ARG."
   (interactive "p")
   (if (let* ((windmove-wrap-around))
         (windmove-find-other-window 'up))
