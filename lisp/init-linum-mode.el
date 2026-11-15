@@ -43,16 +43,16 @@
     calendar-mode)
   "Major modes without line number.")
 
-(defun my-setup-line-number-mode ()
+(defun my-display-line-number ()
   "Set up line number display."
   ;; use idler to speed up emacs startup
-  (unless (or (memq major-mode my-linum-inhibit-modes)
+  (unless (or (apply #'derived-mode-p my-linum-inhibit-modes)
               ;; don't show line number for certain file extensions
               (my-should-use-minimum-resource))
-    (display-line-numbers-mode)))
+    (display-line-numbers-mode 1)))
 
-(add-hook 'prog-mode-hook #'my-setup-line-number-mode)
-;; (add-hook 'text-mode-hook #'my-setup-line-number-mode)
+(add-hook 'prog-mode-hook #'my-display-line-number)
+;; (add-hook 'text-mode-hook #'my-display-line-number)
 
 (provide 'init-linum-mode)
 ;;; init-linum-mode.el ends here
