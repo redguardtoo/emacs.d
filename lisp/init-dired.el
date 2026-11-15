@@ -173,11 +173,6 @@ If N is not nil, only list directories in current project."
   ;; It's similar to windows commander.
   (setq dired-dwim-target t)
 
-  ;; @see http://blog.twonegatives.com/post/19292622546/dired-dwim-target-is-j00-j00-magic
-  ;; op open two new dired buffers side-by-side and give your new-found automagic power a whirl.
-  ;; Now combine that with a nice window configuration stored in a register and you’ve got a pretty slick work flow.
-  (setq dired-dwim-target t)
-
   (my-ensure 'dired-x)
   (my-ensure 'dired-aux) ; for `dired-dwim-target-directory'
 
