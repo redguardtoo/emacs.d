@@ -167,17 +167,8 @@ Then replace the region or buffer with cli output."
   (insert str)
   str)
 
-(defun my-line-str (&optional line-end)
-  (buffer-substring-no-properties (line-beginning-position)
-                                  (if line-end line-end (line-end-position))))
-
-(defun my-is-in-one-line (b e)
-  (save-excursion
-    (goto-char b)
-    (and (<= (line-beginning-position) b)
-         (<= e (line-end-position)))))
-
 (defun my-buffer-str ()
+  "Return content of current buffer."
   (buffer-substring-no-properties (point-min) (point-max)))
 
 (defun my-selected-str ()
@@ -196,33 +187,10 @@ If HINT is empty, use symbol at point."
    (t
     (read-string hint))))
 
-(defun delete-this-file ()
-  "Delete the current file, and kill the buffer."
-  (interactive)
-  (or (buffer-file-name) (error "No file is currently being edited"))
-  (when (yes-or-no-p (format "Really delete '%s'?"
-                             (file-name-nondirectory buffer-file-name)))
-    (delete-file (buffer-file-name))
-    (kill-this-buffer)))
+(defvar my-load-user-customized-major-mode-hook t
+  "This flag is set to nil when exporting org file's code snippet.")
 
-(defun rename-this-file-and-buffer (new-name)
-  "Renames both current buffer and file it's visiting to NEW-NAME."
-  (interactive "sNew name: ")
-  (let ((name (buffer-name))
-        (filename (buffer-file-name)))
-    (unless filename
-      (error "Buffer '%s' is not visiting a file!" name))
-    (if (get-buffer new-name)
-        (message "A buffer named '%s' already exists!" new-name)
-      (progn
-        (rename-file filename new-name 1)
-        (rename-buffer new-name)
-        (set-visited-file-name new-name)
-        (set-buffer-modified-p nil)))))
-
-(defvar my-load-user-customized-major-mode-hook t)
-
-(defun buffer-too-big-p ()
+(defun my-buffer-too-big-p ()
   "Test if current buffer is too big."
   ;; 5000 lines
   (> (buffer-size) (* 5000 80)))
@@ -288,7 +256,7 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
        ((file-executable-p "d:/Program Files/MPV Player/mpv.exe")
         (setq program "\"d:/Program Files/MPV Player/mpv.exe\""))
        (t
-        (error "Can't find media player."))))
+        (error "Can't find media player"))))
 
 
      (my-wsl-p
@@ -298,7 +266,7 @@ For example, you can '(setq my-media-player-extra-opts \"-fs -ao alsa -vo vdpau\
        ((file-executable-p "/mnt/d/Program Files/MPV Player/mpv.exe")
         (setq program "\"/mnt/d/Program Files/MPV Player/mpv.exe\""))
        (t
-        (error "Can't find media player."))))
+        (error "Can't find media player"))))
 
      (t
       (error "Can't find any media player!")))
@@ -421,7 +389,8 @@ Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
 ;; {{ code is copied from https://liu233w.github.io/2016/09/29/org-python-windows.org/
 
 (defun my-org-babel-execute:python-hack (orig-func &rest args)
-  ;; @see https://github.com/Liu233w/.spacemacs.d/issues/6
+  "Make sure code is in utf-8 coding before running it.
+ORIG-FUNC and ARGS are used."
   (let ((coding-system-for-write 'utf-8))
     (apply orig-func args)))
 
@@ -468,8 +437,8 @@ If STEP is 1,  search in forward direction, or else in backward direction."
     (string-trim (buffer-substring-no-properties (car region) (cdr region)))))
 
 (defun my-create-range (&optional inclusive)
-  "Return range by font face.
-Copied from 3rd party package evil-textobj."
+  "Return range by font face.  Copied from 3rd party package evil-textobj.
+INCLUSIVE is used."
   (let* ((point-face (my-what-face))
          (pos (point))
          (backward-none-space-point pos) ; last none white space char

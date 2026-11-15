@@ -1252,7 +1252,7 @@ MATCH is optional tag match."
 
 (defun my-generic-prog-mode-hook-setup ()
   "Generic programming mode set up."
-  (when (buffer-too-big-p)
+  (when (my-buffer-too-big-p)
     (when (my-should-use-minimum-resource)
       (font-lock-mode -1)))
 
