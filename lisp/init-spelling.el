@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (defvar ispell-program-name)
 
 (defvar my-default-spell-check-language "en_US"
@@ -127,16 +129,17 @@ So it should be used in `prog-mode-hook' only."
                (executable-find ispell-program-name)
                (string-match-p "\\(?:aspell\\|hunspell\\)\\(?:\\.exe\\)?\\'"
                                ispell-program-name))
-    (user-error "Spell checking unavailable. Install aspell or hunspell, then restart Emacs"))
+    (user-error "Spell checking unavailable.  Install aspell or hunspell and restart Emacs"))
   (my-ensure 'wucuo)
   (unless (fboundp 'wucuo-spell-check-internal)
-    (user-error "Spell checking unavailable. Failed to load wucuo"))
+    (user-error "Spell checking unavailable.  Failed to load wucuo"))
   (let ((wucuo-flyspell-start-mode "normal"))
     (wucuo-spell-check-internal)))
 
 (defun my-ispell-word-hack (orig-func &rest args)
   "Use Emacs original arguments when calling `ispell-word'.
-When fixing a typo, avoid pass camel case option to cli program."
+When fixing a typo, avoid pass camel case option to cli program.
+ORIG-FUNC and ARGS are used."
   (let* ((old-ispell-extra-args ispell-extra-args))
     (ispell-kill-ispell t)
     ;; use emacs original arguments
@@ -196,3 +199,4 @@ When fixing a typo, avoid pass camel case option to cli program."
   (setq wucuo-update-interval 2))
 
 (provide 'init-spelling)
+;;; init-spelling.el ends here
