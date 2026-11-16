@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; @see http://emacs-fu.blogspot.com/2011/08/customizing-mode-line.html
 ;; @see http://www.delorie.com/gnu/docs/elisp-manual-21/elisp_360.html
 ;; use setq-default to set it for /all/ modes
@@ -38,8 +40,7 @@
 
    (:eval my-extra-mode-line-info)
 
-   mode-line-end-spaces
-   ))
+   mode-line-end-spaces))
 
 (with-eval-after-load 'time
   ;; Donot show system load in mode line
@@ -50,3 +51,4 @@
   (setq display-time-mail-function (lambda () nil)))
 
 (provide 'init-modeline)
+;;; init-modeline.el ends here

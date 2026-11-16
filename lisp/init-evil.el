@@ -1,29 +1,31 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; My frequently used commands are listed here
 
-;; enable evil-mode
 (evil-mode 1)
 
 ;; Store more undo history to prevent loss of data
 (setq undo-limit 8000000
-      undo-strong-limit 8000000
-      undo-outer-limit 8000000)
+      undo-strong-limit 12000000
+      undo-outer-limit 48000000)
 
 ;; {{ @see https://github.com/timcharper/evil-surround for tutorial
 (my-run-with-idle-timer 2 #'global-evil-surround-mode)
 (with-eval-after-load 'evil-surround
-  (defun evil-surround-prog-mode-hook-setup ()
+  (defun my-evil-surround-org-mode-hook-setup ()
+    "Set up Evil Surround for Org."
+    (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist)
+    (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
+  (add-hook 'org-mode-hook #'my-evil-surround-org-mode-hook-setup)
+  (defun my-evil-surround-prog-mode-hook-setup ()
     "Set up surround shortcuts."
     (cond
      ((memq major-mode '(sh-mode))
       (push '(?$ . ("$(" . ")")) evil-surround-pairs-alist))
      (t
       (push '(?$ . ("${" . "}")) evil-surround-pairs-alist)))
-
-    (when (memq major-mode '(org-mode))
-      (push '(?\[ . ("[[" . "]]")) evil-surround-pairs-alist) ; [
-      (push '(?= . ("=" . "=")) evil-surround-pairs-alist))
 
     (when (memq major-mode '(emacs-lisp-mode))
       (push '(?\( . ("( " . ")")) evil-surround-pairs-alist)
@@ -36,7 +38,7 @@
 
     ;; generic
     (push '(?/ . ("/" . "/")) evil-surround-pairs-alist))
-  (add-hook 'prog-mode-hook 'evil-surround-prog-mode-hook-setup))
+  (add-hook 'prog-mode-hook #'my-evil-surround-prog-mode-hook-setup))
 ;; }}
 
 ;; {{ For example, press `viW*`
@@ -48,16 +50,17 @@
 (defun my-ffip-diff-mode-hook-setup ()
   "Set up key bindings in diff."
   (evil-local-set-key 'normal "q" (lambda () (interactive) (quit-window t)))
-  (evil-local-set-key 'normal (kbd "RET") 'ffip-diff-find-file)
+  (evil-local-set-key 'normal (kbd "RET") #'ffip-diff-find-file)
   ;; "C-c C-a" is binding to `diff-apply-hunk' in `diff-mode'
-  (evil-local-set-key 'normal "u" 'diff-undo)
-  (evil-local-set-key 'normal "a" 'ffip-diff-apply-hunk)
-  (evil-local-set-key 'normal "o" 'ffip-diff-find-file))
-(add-hook 'ffip-diff-mode-hook 'my-ffip-diff-mode-hook-setup)
+  (evil-local-set-key 'normal "u" #'diff-undo)
+  (evil-local-set-key 'normal "a" #'ffip-diff-apply-hunk)
+  (evil-local-set-key 'normal "o" #'ffip-diff-find-file))
+(add-hook 'ffip-diff-mode-hook #'my-ffip-diff-mode-hook-setup)
 
 ;; {{ define my own text objects, works on evil v1.0.9 using older method
 ;; @see http://stackoverflow.com/questions/18102004/emacs-evil-mode-how-to-create-a-new-text-object-to-select-words-with-any-non-sp
 (defmacro my-evil-define-and-bind-text-object (key start-regex end-regex)
+  "Define some text object with KEY START-REGEX END-REGEX."
   (let* ((inner-name (make-symbol "inner-name"))
          (outer-name (make-symbol "outer-name")))
     `(progn
@@ -77,7 +80,7 @@
 ;; trimmed line
 (my-evil-define-and-bind-text-object "l" "^ *" " *$")
 ;; angular template
-(my-evil-define-and-bind-text-object "r" "\{\{" "\}\}")
+(my-evil-define-and-bind-text-object "r" "{{" "}}")
 ;; }}
 
 
@@ -101,8 +104,8 @@ If the character before and after CH is space or tab, CH is NOT slash"
       (save-excursion
         (forward-char)
         (setq postfix-ch (following-char))))
-    (if (and (not (or (and prefix-ch (= prefix-ch 32))
-                      (and postfix-ch (= postfix-ch 32))))
+    (if (and (not (or (memq prefix-ch '(?\s ?\t))
+                      (memq postfix-ch '(?\s ?\t))))
              (or (= ch 47) (= ch 92)) )
         (setq rlt t))
     rlt))
@@ -125,6 +128,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
               127))))
 
 (defun my-evil-path-calculate-path (b e)
+  "Calculate path of B and E."
   (let* (rlt f)
     (when (and b e)
       (setq b (+ 1 b))
@@ -136,6 +140,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
     rlt))
 
 (defun my-evil-path-get-path-already-inside ()
+  "Calculate inside path."
   (let* (b e)
     (save-excursion
       (setq b (my-evil-path-search-forward-char 'my-evil-path-not-path-char t)))
@@ -148,6 +153,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (my-evil-path-calculate-path b e)))
 
 (defun my-evil-path-search-forward-char (fn &optional backward)
+  "Search forward char in path with FN and BACKWARD."
   (let* (found
          rlt
          (limit (if backward (point-min) (point-max)))
@@ -155,7 +161,7 @@ If the character before and after CH is space or tab, CH is NOT slash"
     (save-excursion
       (while (not out-of-loop)
         ;; for the char, exit
-        (if (setq found (apply fn (list (following-char))))
+        (if (setq found (funcall fn (following-char)))
             (setq out-of-loop t)
           ;; reach the limit, exit
           (if (= (point) limit)
@@ -215,28 +221,26 @@ If the character before and after CH is space or tab, CH is NOT slash"
 ;; {{ paren range text object
 (defun my-evil-paren-range (count beg end type inclusive)
   "Get minimum range of paren text object.
-COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
-FN is function to get range."
-  (let* ((parens '("()" "[]" "{}" "<>" "\"\"" "''" "``"))
-         (pos (point))
-         range
-         found-range)
+COUNT BEG END TYPE INCLUSIVE is used."
+  (let ((parens '("()" "[]" "{}" "<>"))
+        (pos (point))
+        found-range)
     (dolist (p parens)
-      (condition-case nil
-          (let* ((c1 (aref p 0))
-                 (c2 (aref p 1)))
-            (setq range (if (eq c1 c2) (evil-select-quote c1 beg end type count inclusive)
-                          (evil-select-paren c1 c2 beg end type count inclusive))))
-        (error nil))
-      (when (and range (<= (nth 0 range) pos) (< pos (nth 1 range)))
-        (cond
-         (found-range
-          (when (< (- (nth 1 range) (nth 0 range))
-                   (- (nth 1 found-range) (nth 0 found-range)))
-            (setf (nth 0 found-range) (nth 0 range))
-            (setf (nth 1 found-range) (nth 1 range))))
-         (t
-          (setq found-range range)))))
+      (let ((range
+             (condition-case nil
+                 (let ((c1 (aref p 0))
+                       (c2 (aref p 1)))
+                   (if (eq c1 c2)
+                       (evil-select-quote c1 beg end type count inclusive)
+                     (evil-select-paren c1 c2 beg end type count inclusive)))
+               (error nil))))
+        (when (and range
+                   (<= (nth 0 range) pos)
+                   (< pos (nth 1 range)))
+          (when (or (null found-range)
+                    (< (- (nth 1 range) (nth 0 range))
+                       (- (nth 1 found-range) (nth 0 found-range))))
+            (setq found-range range)))))
     found-range))
 
 (evil-define-text-object my-evil-a-paren (count &optional beg end type)
@@ -253,32 +257,6 @@ FN is function to get range."
 (define-key evil-outer-text-objects-map "g" #'my-evil-a-paren)
 ;; }}
 
-
-;; {{ keyword search text object
-(defvar my-evil-search-forward-function #'consult-line
-  "Search forward function.")
-
-(defun my-evil-search-range (count beg end type inclusive)
-  "Get minimum range of search text object.
-COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive."
-  (ignore count beg end)
-  (let ((start (point))
-         (end (funcall my-evil-search-forward-function)))
-    (evil-range start (- end (if inclusive 0 (length isearch-string))) type :expanded t)))
-
-(evil-define-text-object my-evil-a-search (count &optional beg end type)
-  "Select a paren."
-  :extend-selection t
-  (my-evil-search-range count beg end type t))
-
-(evil-define-text-object my-evil-inner-search (count &optional beg end type)
-  "Select 'inner' paren."
-  :extend-selection nil
-  (my-evil-search-range count beg end type nil))
-
-(define-key evil-inner-text-objects-map "s" #'my-evil-inner-search)
-(define-key evil-outer-text-objects-map "s" #'my-evil-a-search)
-;; }}
 
 ;; {{ https://github.com/syl20bnr/evil-escape
 (setq-default evil-escape-delay 0.3)
@@ -303,11 +281,11 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   "^" 'org-beginning-of-line ; ditto
   "<" (lambda () (interactive) (org-demote-or-promote 1)) ; out-dent
   ">" 'org-demote-or-promote ; indent
-  (kbd "TAB") 'org-cycle)
+  (kbd "TAB") #'org-cycle)
 
 (evil-declare-key 'normal markdown-mode-map
   "gh" 'outline-up-heading
-  (kbd "TAB") 'markdown-cycle)
+  (kbd "TAB") #'markdown-cycle)
 
 ;; {{ specify major mode uses Evil (vim) NORMAL state or EMACS original state.
 ;; You may delete this setup to use Evil NORMAL state always.
@@ -353,37 +331,37 @@ COUNT, BEG, END, TYPE is used.  If INCLUSIVE is t, the text object is inclusive.
   "Default evil state per buffer name.")
 
 ;; I prefer Emacs way after pressing ":" in evil-mode
-(define-key evil-ex-completion-map (kbd "C-a") 'move-beginning-of-line)
-(define-key evil-ex-completion-map (kbd "C-b") 'backward-char)
-(define-key evil-ex-completion-map (kbd "M-p") 'previous-complete-history-element)
-(define-key evil-ex-completion-map (kbd "M-n") 'next-complete-history-element)
+(define-key evil-ex-completion-map (kbd "C-a") #'move-beginning-of-line)
+(define-key evil-ex-completion-map (kbd "C-b") #'backward-char)
+(define-key evil-ex-completion-map (kbd "M-p") #'previous-complete-history-element)
+(define-key evil-ex-completion-map (kbd "M-n") #'next-complete-history-element)
 
 (define-key evil-normal-state-map "Y" (kbd "y$"))
-(define-key evil-normal-state-map "go" 'goto-char)
-(define-key evil-normal-state-map (kbd "C-]") 'fastctags-nav-find-tag-at-point)
-(define-key evil-visual-state-map (kbd "C-]") 'fastctags-nav-find-tag-at-point)
-(define-key evil-insert-state-map (kbd "C-x C-n") 'evil-complete-next-line)
-(define-key evil-insert-state-map (kbd "C-x C-p") 'evil-complete-previous-line)
-(define-key evil-insert-state-map (kbd "C-]") 'aya-expand)
+(define-key evil-normal-state-map "go" #'goto-char)
+(define-key evil-normal-state-map (kbd "C-]") #'fastctags-nav-find-tag-at-point)
+(define-key evil-visual-state-map (kbd "C-]") #'fastctags-nav-find-tag-at-point)
+(define-key evil-insert-state-map (kbd "C-x C-n") #'evil-complete-next-line)
+(define-key evil-insert-state-map (kbd "C-x C-p") #'evil-complete-previous-line)
+(define-key evil-insert-state-map (kbd "C-]") #'aya-expand)
 
 (defun my-rjsx-jump-tag ()
-  "Wrapper of `rjsx-jump-tags'."
+  "Wrapper of `rjsx-jump-tag'."
   (when (string-match "</?>" (string-trim (evilmi-sdk-curline)))
-    (when (functionp 'rjsx-jump-tag)
+    (when (functionp #'rjsx-jump-tag)
       (rjsx-jump-tag))))
 
 (with-eval-after-load 'rjsx-mode
   (my-ensure 'evil-matchit)
-  (when (functionp 'evilmi-add-one-plugin-rule)
+  (when (functionp #'evilmi-add-one-plugin-rule)
     (evilmi-add-one-plugin-rule #'rjsx-mode #'my-rjsx-jump-tag)))
 
 ;; I learn this trick from ReneFroger, need latest expand-region
 ;; @see https://github.com/redguardtoo/evil-matchit/issues/38
-(define-key evil-visual-state-map (kbd "v") 'er/expand-region)
-(define-key evil-insert-state-map (kbd "C-e") 'move-end-of-line)
-(define-key evil-insert-state-map (kbd "C-k") 'kill-line)
-(define-key evil-insert-state-map (kbd "M-j") 'yas-expand)
-(define-key evil-emacs-state-map (kbd "M-j") 'yas-expand)
+(define-key evil-visual-state-map (kbd "v") #'er/expand-region)
+(define-key evil-insert-state-map (kbd "C-e") #'move-end-of-line)
+(define-key evil-insert-state-map (kbd "C-k") #'kill-line)
+(define-key evil-insert-state-map (kbd "M-j") #'yas-expand)
+(define-key evil-emacs-state-map (kbd "M-j") #'yas-expand)
 
 (local-require 'general)
 (general-evil-setup t)
@@ -711,11 +689,15 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
       (message "%s => clipboard & yank ring" selected))))
 
 (defun my-cc-isearch-string (&rest args)
-  "Add `isearch-string' into history.  ARGS is ignored."
+  "Add `isearch-string' into history with ARGS."
   (ignore args)
-  (and isearch-string
-       (> (length isearch-string) 0)
-       (push isearch-string my-search-text-history)))
+  (when (and isearch-string
+             (>= (length isearch-string) 3))
+    (setq my-search-text-history
+          (cons isearch-string
+                (delete isearch-string my-search-text-history)))
+    (when (> (length my-search-text-history) 100)
+      (setcdr (nthcdr 99 my-search-text-history) nil))))
 (advice-add 'evil-search-incrementally :after #'my-cc-isearch-string)
 (advice-add 'evil-search-word :after #'my-cc-isearch-string)
 (advice-add 'evil-visualstar/begin-search :after #'my-cc-isearch-string)
@@ -740,9 +722,9 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
                  '("#006fa0" . "#ffffff"))
                 (t
                  my-default-color))))
-    (unless (and (equal (face-background 'mode-line) (car color))
-                 (equal (face-foreground 'mode-line) (cdr color)))
-      (set-face-background 'mode-line (car color))
+    (unless (equal (face-background 'mode-line) (car color))
+      (set-face-background 'mode-line (car color)))
+    (unless (equal (face-foreground 'mode-line) (cdr color))
       (set-face-foreground 'mode-line (cdr color)))))
 (add-hook 'post-command-hook #'my-show-evil-state)
 ;; }}
@@ -817,8 +799,8 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   ;; replace undo-tree with undo-fu
   ;; @see https://github.com/emacs-evil/evil/issues/1074
   (setq evil-undo-system 'undo-redo)
-  (define-key evil-normal-state-map "u" 'undo-fu-only-undo)
-  (define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo)
+  (define-key evil-normal-state-map "u" #'undo-fu-only-undo)
+  (define-key evil-normal-state-map (kbd "C-r") #'undo-fu-only-redo)
   ;; @see https://www.reddit.com/r/emacs/comments/12arjtn/my_basic_keybinding_setup_for_emacs_with_evilmode/
   (define-key evil-normal-state-map "U" 'undo-fu-only-redo)
 
@@ -831,7 +813,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
 
   ;; evil re-assign "M-." to `evil-repeat-pop-next' which I don't use actually.
   ;; Restore "M-." to original binding command
-  (define-key evil-normal-state-map (kbd "M-.") 'xref-find-definitions)
+  (define-key evil-normal-state-map (kbd "M-.") #'xref-find-definitions)
   (setq expand-region-contract-fast-key "z")
   ;; @see https://bitbucket.org/lyro/evil/issue/360/possible-evil-search-symbol-forward
   ;; evil 1.0.8 search word instead of symbol
@@ -909,14 +891,14 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "I prefer mixed Emacs&Vi style.  Run this function in \"~/.custom.el\"."
   (with-eval-after-load 'evil
     ;; TAB key still triggers `evil-ex-completion'.
-    (define-key evil-ex-completion-map (kbd "C-d") 'delete-char)
+    (define-key evil-ex-completion-map (kbd "C-d") #'delete-char)
 
     ;; use `my-search-evil-ex-history' to replace `evil-ex-command-window'
-    (define-key evil-ex-completion-map (kbd "C-f") 'forward-char)
-    (define-key evil-ex-completion-map (kbd "C-s") 'evil-ex-command-window)
+    (define-key evil-ex-completion-map (kbd "C-f") #'forward-char)
+    (define-key evil-ex-completion-map (kbd "C-s") #'evil-ex-command-window)
     ;; I use Emacs in terminal which may not support keybinding "C-r" or "M-n"
-    (define-key evil-ex-completion-map (kbd "C-r") 'my-search-evil-ex-history)
-    (define-key evil-ex-completion-map (kbd "M-n") 'my-search-evil-ex-history)))
+    (define-key evil-ex-completion-map (kbd "C-r") #'my-search-evil-ex-history)
+    (define-key evil-ex-completion-map (kbd "M-n") #'my-search-evil-ex-history)))
 ;; }}
 
 ;; @see https://github.com/redguardtoo/emacs.d/issues/955
@@ -930,8 +912,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "Automatically copy the selected text into evil register.
 I'm not sure this is good idea.")
 (defun my-evil-visual-update-x-selection-hack (orig-func &rest args)
+  "Update x selection clipboard with ORIG-FUNC and ARGS."
   (when my-evil-enable-visual-update-x-selection
     (apply orig-func args)))
 (advice-add 'evil-visual-update-x-selection :around #'my-evil-visual-update-x-selection-hack)
 
 (provide 'init-evil)
+;;; init-evil.el ends here
