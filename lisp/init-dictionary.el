@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (defvar my-dict-buffer-name "*MYDICT*"
   "The buffer buffer of my dictionary lookup.")
 
@@ -18,14 +20,16 @@
 
 (defun my-dict-prompt-input ()
   "Prompt input for translate."
-  (let* ((word (if mark-active
-                   (buffer-substring-no-properties (region-beginning)
-                                                   (region-end))
-                 (thing-at-point 'word))))
-    (setq word (read-string (format "Word (%s): " (or word ""))
-                            nil nil
-                            word))
-    (if word (downcase word))))
+  (let* ((initial  (if (use-region-p)
+                       (buffer-substring-no-properties (region-beginning)
+                                                       (region-end))
+                     (thing-at-point 'word)))
+         (word (read-string (format "Word (%s): " (or initial ""))
+                            nil
+                            nil
+                            initial)))
+    (when (and word (not (string-empty-p (string-trim word))))
+      (downcase (string-trim word)))))
 
 (defun my-dict-quit-window ()
   "Quit window."
@@ -34,12 +38,12 @@
 
 (defmacro my-dict-search-detail (word dict cache)
   "Return WORD's definition with DICT, CACHE."
-  `(when ,word
-     (unless (featurep 'stardict) (require 'stardict))
+  `(when (and ,word (not (string-empty-p ,word)))
+     (my-ensure 'stardict)
      (unless ,cache
        (setq ,cache
              (stardict-open (nth 0 ,dict) (nth 1 ,dict) t)))
-     (stardict-lookup ,cache word)))
+     (stardict-lookup ,cache ,word)))
 
 (defun my-dict-complete-definition ()
   "Show dictionary lookup in buffer."
@@ -50,20 +54,22 @@
          win)
     (when def
       (setq buf (get-buffer-create my-dict-buffer-name))
-        (with-current-buffer buf
-          (setq buffer-read-only nil)
+      (with-current-buffer buf
+        (let ((inhibit-read-only t))
           (erase-buffer)
           (insert def)
           (goto-char (point-min))
+          (setq buffer-read-only t))
 
-          ;; quit easily
-          (local-set-key (kbd "q") 'my-dict-quit-window)
-          (when (and (boundp 'evil-mode) evil-mode)
-            (evil-local-set-key 'normal "q" 'my-dict-quit-window)))
-        (unless (eq (current-buffer) buf)
-          (if (null (setq win (get-buffer-window buf)))
-              (switch-to-buffer-other-window buf)
-            (select-window win))))))
+        ;; quit easily
+        (local-set-key (kbd "q") #'my-dict-quit-window)
+        (when (bound-and-true-p evil-local-mode)
+          (evil-local-set-key 'normal "q" #'my-dict-quit-window)))
+
+      (unless (eq (current-buffer) buf)
+        (if (null (setq win (get-buffer-window buf)))
+            (switch-to-buffer-other-window buf)
+          (select-window win))))))
 
 (defun my-dict-simple-definition ()
   "Show dictionary lookup in popup."
@@ -71,7 +77,7 @@
   (let* ((word (my-dict-prompt-input))
          (def (my-dict-search-detail word my-dict-simple my-dict-simple-cache)))
     (when def
-      (unless (featurep 'popup) (require 'popup))
+      (my-ensure 'popup)
       (popup-tip def))))
 
 (provide 'init-dictionary)
