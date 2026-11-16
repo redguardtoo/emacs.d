@@ -1,16 +1,19 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (with-eval-after-load 'ibuffer
   ;; Use human readable Size column instead of original one
   (define-ibuffer-column size-h
     (:name "Size" :inline t)
-    (cond
-     ((> (buffer-size) 1000000)
-      (format "%7.1fM" (/ (buffer-size) 1000000.0)))
-     ((> (buffer-size) 1000)
-      (format "%7.1fk" (/ (buffer-size) 1000.0)))
-     (t
-      (format "%8d" (buffer-size)))))
+    (let* ((buf-size buf-size))
+      (cond
+       ((>= buf-size 1000000)
+        (format "%7.1fM" (/ buf-size 1000000.0)))
+       ((>= buf-size 1000)
+        (format "%7.1fk" (/ buf-size 1000.0)))
+       (t
+        (format "%8d" buf-size)))))
 
   (setq ibuffer-expert t
         ibuffer-show-empty-filter-groups nil
@@ -63,17 +66,17 @@
                              (mode . gnus-article-mode)
                              (name . "^\\.bbdb$")
                              (name . "^\\.newsrc-dribble")))))))
-  (defun ibuffer-mode-hook-setup ()
+  (defun my-ibuffer-mode-hook-setup ()
     (unless (eq ibuffer-sorting-mode 'filename/process)
       (ibuffer-do-sort-by-filename/process))
     (ibuffer-switch-to-saved-filter-groups "default"))
 
-  (add-hook 'ibuffer-mode-hook 'ibuffer-mode-hook-setup)
+  (add-hook 'ibuffer-mode-hook #'my-ibuffer-mode-hook-setup)
 
   ;; Modify the default ibuffer-formats
   (setq ibuffer-formats
         '((mark modified read-only " "
-                (name 18 18 :left :elide)
+                (name 18 24 :left :elide)
                 " "
                 (size-h 9 -1 :right)
                 " "
@@ -83,6 +86,7 @@
 
   (setq ibuffer-filter-group-name-face 'font-lock-doc-face))
 
-(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key (kbd "C-x C-b") #'ibuffer)
 
 (provide 'init-ibuffer)
+;;; init-ibuffer.el ends here
