@@ -1,13 +1,19 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
-(with-eval-after-load 'python
+;;; Code:
+
+(defun my-python-mode-setup ()
+  "Setup Python editing."
   (unless (or (my-buffer-file-temp-p)
               (not buffer-file-name)
-              ;; embed python code in org file
-              (string= (file-name-extension buffer-file-name) "org"))
-  ;; http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
-  ;; emacs 24.4+
-  (setq electric-indent-chars (delq ?: electric-indent-chars))))
+              (string-equal (file-name-extension buffer-file-name) "org"))
+    (when (boundp 'electric-indent-chars)
+      ;; http://emacs.stackexchange.com/questions/3322/python-auto-indent-problem/3338#3338
+      ;; emacs 24.4+
+      (setq-local electric-indent-chars
+                  (delq ?: (copy-sequence electric-indent-chars))))))
+(add-hook 'python-mode-hook #'my-python-mode-setup)
+(add-hook 'python-ts-mode-hook #'my-python-mode-setup)
 
 (defvar my-python-venv-directories
   '("~/.venv")
@@ -16,14 +22,15 @@
 (defun my-activate-python-venv (directory)
   "Activate python venv in DIRECTORY."
   (my-ensure 'pyvenv)
-  (let* ((venv-dir directory)
-         (python pyvenv-virtualenvwrapper-python))
+  (let* ((python (or (and  pyvenv-virtualenvwrapper-python
+                           (executable-find pyvenv-virtualenvwrapper-python))
+                     (executable-find "python3")))
+         (venv-dir (expand-file-name directory)))
 
-    (setq python (and (executable-find python) (executable-find "python3")))
     (cond
      ((null python)
-      (message "Python executable \"%s\" is missing." python))
-     ((not (file-exists-p venv-dir))
+      (message "No Python executable found."))
+     ((not (file-directory-p venv-dir))
       (message "Directory \"%s\" is missing." venv-dir))
      (t
       (let* ((pyvenv-virtualenvwrapper-python python))
@@ -38,13 +45,14 @@
       (my-activate-python-venv venv-dir))))
 
 ;; treesit for smart syntax highlight
-(add-to-list 'treesit-extra-load-path "~/.emacs.d/tree-sitter")
+(add-to-list 'treesit-extra-load-path
+             (expand-file-name "~/.emacs.d/tree-sitter"))
 (when (treesit-language-available-p 'python)
-  (setq major-mode-remap-alist
-        '((python-mode . python-ts-mode))))
+  (push '(python-mode . python-ts-mode) major-mode-remap-alist))
 
 ;; LSP client
-(add-hook 'python-ts-mode-hook 'eglot-ensure)
+(add-hook 'python-mode-hook #'eglot-ensure)
+(add-hook 'python-ts-mode-hook #'eglot-ensure)
 
 
 (provide 'init-python)
