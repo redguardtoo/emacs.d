@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; Tip 1: use more popular style "linux" instead of "gnu",
 ;;
 ;;   (setq c-default-style '((java-mode . "java")
@@ -46,7 +48,7 @@
       (my-c-mode-setup))))
 (add-hook 'c-mode-common-hook 'c-mode-common-hook-setup)
 
-(defun my/cmake-mode-imenu-setup ()
+(defun my-cmake-mode-imenu-setup ()
   "Imenu setup for `cmake-mode'."
   (setq imenu-generic-expression
         '(("Functions" "^\\s-*function\\s-*(\\s-*\\([a-zA-Z0-9_]+\\)" 1)
@@ -54,6 +56,6 @@
           ("Targets"   "^\\s-*add_\\(?:executable\\|library\\)\\s-*(\\s-*\\([a-zA-Z0-9_]+\\)" 1)
           ("Options"   "^\\s-*option\\s-*(\\s-*\\([a-zA-Z0-9_]+\\)" 1))))
 
-(add-hook 'cmake-mode-hook #'my/cmake-mode-imenu-setup)
+(add-hook 'cmake-mode-hook #'my-cmake-mode-imenu-setup)
 (provide 'init-cc-mode)
 ;;; init-cc-mode.el ends here
