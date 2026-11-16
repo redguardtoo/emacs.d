@@ -1,17 +1,21 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (defun my-show-scratch-buffer-message ()
   "Show something in scratch buffer."
   (let* ((fortune-prog (or (executable-find "fortune-zh")
                            (executable-find "fortune"))))
+
+    (my-ensure 'ansi-color)
     (cond
      (fortune-prog
       (format
        ";; %s\n\n"
        (replace-regexp-in-string
-        "\n" "\n;; " ; comment each line
-        (replace-regexp-in-string
-         "\\(\n$\\|\\|\\[m *\\|\\[[0-9][0-9];?[0-9]?m *\\|\\[;m\\)" ""    ; remove trailing line break
+        "\n"
+        "\n;; " ; comment each line
+        (ansi-color-filter-apply
          (shell-command-to-string (concat "FORTUNEZH_NOCOLOR=1 " fortune-prog))))))
      (t
       (concat ";; Happy hacking "
@@ -26,11 +30,12 @@
 (with-eval-after-load 'paredit
   (diminish 'paredit-mode " Par"))
 
-(defvar paredit-minibuffer-commands '(eval-expression
-                                      pp-eval-expression
-                                      eval-expression-with-eldoc
-                                      ibuffer-do-eval
-                                      ibuffer-do-view-and-eval)
+(defvar paredit-minibuffer-commands
+  '(eval-expression
+    pp-eval-expression
+    eval-expression-with-eldoc
+    ibuffer-do-eval
+    ibuffer-do-view-and-eval)
   "Interactive commands for which paredit should be enabled in the minibuffer.")
 
 (defun my-lisp-setup ()
@@ -44,7 +49,8 @@
   (dolist (hook hooks)
     (add-hook hook 'my-lisp-setup)))
 
-(defun elisp-mode-hook-setup ()
+(defun my-elisp-mode-hook-setup ()
+  "Set up elisp."
   (unless (my-buffer-file-temp-p)
     (my-ensure 'eldoc)
     (turn-on-eldoc-mode)
@@ -58,6 +64,7 @@
 
     (checkdoc-minor-mode 1)))
 
-(add-hook 'emacs-lisp-mode-hook 'elisp-mode-hook-setup)
+(add-hook 'emacs-lisp-mode-hook #'my-elisp-mode-hook-setup)
 
 (provide 'init-lisp)
+;;; init-lisp.el ends here
