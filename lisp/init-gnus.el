@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; {{ bbdb setup
 (defun my-message-mode-hook-setup ()
   "Email composing set up."
@@ -83,3 +85,4 @@
 ;; }}
 
 (provide 'init-gnus)
+;;; init-gnus.el ends here
