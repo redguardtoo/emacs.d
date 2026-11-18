@@ -413,12 +413,6 @@ If LEVEL > 0, find file in previous LEVEL commit."
         (setq cmd (format "%s -m %s" cmd (shell-quote-argument msg))))
       (shell-command cmd))))
 
-(defun my-git-current-branch ()
-  "Show current branch name."
-  (interactive)
-  (message "Git current branch: %s"
-           (string-trim (shell-command-to-string "git branch --show-current"))))
-
 (defun my-git-find-file ()
   "Find file in the current Git repository (all files)."
   (interactive)

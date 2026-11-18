@@ -149,7 +149,7 @@
 [_o_] Save attachment        [_F_] Forward
 [_v_] Play video/audio       [_r_] Reply
 [_d_] CLI to download stream [_R_] Reply with original
-[_b_] Open external browser  [_w_] Reply all (S w)
+[_B_] Open external browser  [_w_] Reply all (S w)
 [_;_] Click link/button      [_W_] Reply all with original (S W)
 [_b_] Switch Gnus buffer
 "
@@ -161,7 +161,7 @@
     ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (my-copy-yank-str file)))))
     ("v" my-browser-open-with-media-player)
     ("d" my-browser-download-rss-stream)
-    ("b" my-browser-open-link-or-image-or-url)
+    ("B" my-browser-open-link-or-image-or-url)
     (";" eww-lnum-follow)
     ("b" dianyou-switch-gnus-buffer)
     ("q" nil))
@@ -308,13 +308,12 @@
 -----------------------------------------------------------------
 [_vv_] Video => Mp3        [_R_] Move           [_pp_] Path
 [_aa_] Record by mp3       [_cf_] New           [_nn_] Name
-[_zz_] Play wav&mp3        [_rr_] Rename        [_bb_] Base name
+[_zz_] Play wav&mp3        [_rr_] Edit names    [_bb_] Base name
 [_sa_] Fetch subtitle(s)   [_C_]  Copy          [_dd_] directory
 [_se_] Extract subtitle    [_rb_] Change base
-[_aa_] Recording Wav       [_df_] Diff 2 files
-[_ee_] Mkv => Srt          [_ff_] Find
-[_+_] Create directory     [_du_] File usage
-[_mp_] Media Player opts
+[_ee_] Mkv => Srt          [_df_] Diff 2 files
+[_+_] Create directory     [_ff_] Find
+[_mp_] Media Player opts   [_du_] File usage
 "
     ("mp" my-media-player-opts-setup)
     ("sa" shenshou-download-subtitle)
@@ -463,29 +462,29 @@ _SPC_ cancel _o_nly this     _d_elete
 
 ;; {{ git-gutter, @see https://github.com/abo-abo/hydra/wiki/Git-gutter
 (defhydra my-hydra-git (:body-pre
-                     (progn
-                       (git-gutter-mode 1)
-                       (setq git-link-use-commit t))
-                     :after-exit (setq git-link-use-commit nil)
-                     :color blue)
-"
+                        (progn
+                          (git-gutter-mode 1)
+                          (setq git-link-use-commit t))
+                        :after-exit (setq git-link-use-commit nil)
+                        :color blue)
+  "
 Git:
 [_dd_] Diff               [_ri_] Rebase closest
 [_dc_] Diff staged        [_s_] Show commit
 [_dr_] Diff range         [_rr_] Reset gutter
 [_au_] Add modified       [_rh_] Gutter => HEAD
 [_cc_] Commit             [_l_] Log selected/file
-[_ca_] Amend              [_b_] Branches
+[_ca_] Amend              [_b_] Branch&Ref
 [_ja_] Amend silent       [_k_] Git commit link
 [_tt_] Stash              [_Q_] Quit gutter
 [_ta_] Apply stash        [_cr_] Cherry pick from reflog
-[_f_] Find file in commit
-
+[_f_] Find file in commit [_g_] Status
+[_nn_] New commit
+[_na_] Amend commit
 "
   ("ri" my-git-rebase-interactive)
   ("rr" my-git-gutter-reset-to-default)
   ("rh" my-git-gutter-reset-to-head-parent)
-  ("cb" my-git-current-branch)
   ("s" my-git-show-commit)
   ("l" magit-log-buffer-file)
   ("b" magit-show-refs)
@@ -542,6 +541,7 @@ _b_ bindings
 _c_ char
 _C_ coding system
 _f_ function
+_g_ category
 _i_ input method
 _k_ key briefly
 _K_ key
@@ -560,7 +560,7 @@ _v_ variable
 _w_ where is something defined
 "
   ("b" describe-bindings)
-  ("C" describe-categories)
+  ("g" describe-categories)
   ("c" describe-char)
   ("C" describe-coding-system)
   ("f" describe-function)
