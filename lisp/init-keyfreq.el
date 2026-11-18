@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (local-require 'keyfreq)
 
 (defun turnon-keyfreq-mode ()
@@ -94,6 +96,7 @@
           "^web-mode"
           "^yas-"
           "^y-or-n-"
+          "^vertico-"
           "emms-"))
 
   (my-write-to-missing-file "()" keyfreq-file))
@@ -105,3 +108,5 @@
 ;; (turnon-keyfreq-mode)
 
 (provide 'init-keyfreq)
+(provide 'init-keyfreq)
+;;; init-keyfreq.el ends here
