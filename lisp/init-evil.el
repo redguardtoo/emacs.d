@@ -496,7 +496,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "k/" 'find-file-other-window
   "hf" 'find-function
   "hh" 'hs-toggle-hiding ; hide&show code block
-  "tr" 'cleanup-buffer-safe
+  "tr" 'my-cleanup-buffer-safe
   "tff" 'toggle-frame-fullscreen
   "tfm" 'toggle-frame-maximized
   "ci" 'evilnc-comment-or-uncomment-lines
