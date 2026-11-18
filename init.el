@@ -43,7 +43,7 @@
   "Directory of personal configuration.")
 
 ;; Light weight mode, fewer packages are used.
-(defconst my-lightweight-mode-p (and (boundp 'startup-now) (eq startup-now t))
+(defconst my-lightweight-mode-p (bound-and-true-p startup-now)
   "Test if it's in light weight mode.")
 
 ;; @see https://www.reddit.com/r/emacs/comments/4q4ixw/how_to_forbid_emacs_to_touch_configuration_files/

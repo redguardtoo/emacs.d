@@ -74,7 +74,7 @@ Also remove buffers whose binding files already merged in `buffer-list'."
 (defun ediff-startup-hook-setup ()
   "Set up ediff."
   ;; hide control panel if it's current buffer
-  (when (string-match "\*Ediff Control Panel.*\*" (buffer-name))
+  (when (string-prefix-p "*Ediff Control Panel." (buffer-name))
     (unless my-ediff-panel-name (setq my-ediff-panel-name (buffer-name)))
     ;; load color theme for merge
     (load-theme 'tao-yang t)
