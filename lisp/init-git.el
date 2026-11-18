@@ -379,7 +379,7 @@ If USER-SELECT-BRANCH is not nil, rebase on the tag or branch selected by user."
 (defun my-git-find-file-in-commit (&optional level)
   "Find file in previous commit with LEVEL.
 If LEVEL > 0, find file in previous LEVEL commit."
-  (interactive "p")
+  (interactive "P")
   (my-ensure 'magit)
   (let* ((rev (concat "HEAD" (if (and level (> level 0)) (make-string level ?^))))
          (pretty (string-trim (shell-command-to-string (format "git --no-pager log %s --oneline --no-walk" rev))))

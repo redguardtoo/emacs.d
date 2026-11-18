@@ -53,10 +53,9 @@ If NOT-JSON-P is not nil, validate as Javascript expression instead of JSON."
                  (js2-get-msg (caar first-err))))))
     (if first-err (goto-char first-err-pos))))
 
-(defun my-print-json-path (&optional hardcoded-array-index)
-  "Print the path to the JSON value under point, and save it in the kill ring.
-If HARDCODED-ARRAY-INDEX provided, array index in JSON path is replaced with it."
-  (interactive "p")
+(defun my-print-json-path ()
+  "Print the path to the JSON value under point, and save it in the kill ring."
+  (interactive)
   (cond
    ((memq major-mode '(js2-mode))
     (js2-print-json-path hardcoded-array-index))
