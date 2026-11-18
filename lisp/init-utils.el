@@ -114,11 +114,6 @@ Then replace the region or buffer with cli output."
   (let* ((face (get-text-property (or position (point)) 'face)))
     (unless (keywordp (car-safe face)) (list face))))
 
-(defun my-path-in-directory-p (file directory)
-  "FILE is in DIRECTORY."
-  (let* ((pattern (concat "^" (file-name-as-directory directory))))
-    (if (string-match pattern file) file)))
-
 (defun my-prepare-candidate-fit-into-screen (s)
   "Fit string S into screen."
   (let* ((w (frame-width))
@@ -221,8 +216,8 @@ If HINT is empty, use symbol at point."
       ;; file is create from temp directory
       (setq rlt t))
 
-     ((and (string-match "\.html$" f)
-           (file-exists-p (replace-regexp-in-string "\.html$" ".org" f)))
+     ((and (string-match "\\.html\\'" f)
+           (file-exists-p (replace-regexp-in-string "\\.html\\'" ".org" f)))
       ;; file is a html file exported from org-mode
       (setq rlt t))
 
@@ -370,7 +365,7 @@ Supports: Windows/WSL (clip.exe), Cygwin, macOS (via SSH), and xclip."
 (defun my-should-use-minimum-resource ()
   "Use minimum resource (no highlight or line number)."
   (and buffer-file-name
-       (string-match "\.\\(mock\\|min\\|bundle\\)\.js" buffer-file-name)))
+       (string-match "\\.\\(mock\\|min\\|bundle\\)\\.js\\'" buffer-file-name)))
 
 (defun my-async-shell-command (command)
   "Execute string COMMAND asynchronously."
@@ -522,7 +517,8 @@ INCLUSIVE is used."
           (while (< i (length subs))
             (setq c (elt subs i))
             (setq rlt (concat rlt (cond
-                                   ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
+                                   ((not (or (and (>= c ?a) (<= c ?z))
+                                             (and (>= c ?A) (<= c ?Z))))
                                     (format "%c" c))
                                    (t
                                     (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
@@ -661,9 +657,9 @@ PREFIX is prepended to nested item names."
                                    (let ((file (buffer-file-name (window-buffer w))))
                                      (and file (string= (file-name-extension file) "pdf"))))
                                  (my-visible-window-list)))
-         (pdf-file (buffer-file-name (window-buffer pdf-window)))
+         pdf-file
          (original-window (get-buffer-window)))
-    (when (and pdf-window pdf-file)
+    (when (and pdf-window (setq pdf-file (buffer-file-name (window-buffer pdf-window))))
       ;; select pdf-window
       (select-window pdf-window)
       ;; do something

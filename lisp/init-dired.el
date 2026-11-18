@@ -139,7 +139,7 @@ If N is not nil, only list directories in current project."
     (when (and n root-dir)
       ;; return directories in project root
       (setq cands
-            (cl-remove-if-not (lambda (f) (my-path-in-directory-p f root-dir)) cands)))
+            (cl-remove-if-not (lambda (f) (file-in-directory-p f root-dir)) cands)))
 
     (when my-dired-exclude-directory-regexp
       (setq cands
