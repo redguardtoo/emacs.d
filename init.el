@@ -131,7 +131,6 @@
   (require-init 'init-browser t)
   (require-init 'init-shackle t)
   (require-init 'init-dired t)
-  (require-init 'init-writting t)
   (require-init 'init-pdf t)
   (require-init 'init-misc t)
 

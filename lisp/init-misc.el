@@ -790,12 +790,12 @@ might be bad."
 (defun nov-mode-hook-setup ()
   "Set up of `nov-mode'."
   (local-set-key (kbd "d")
-		 (lambda ()
-		   (interactive)
+         (lambda ()
+           (interactive)
            ;; go to end of word to workaround `nov-mode' bug
-		   (forward-word)
-		   (forward-char -1)
-		   (my-dict-complete-definition)))
+           (forward-word)
+           (forward-char -1)
+           (my-dict-complete-definition)))
   (local-set-key (kbd ";") 'my-hydra-ebook/body)
   (local-set-key (kbd "w") #'mybigword-big-words-in-current-window))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
@@ -1477,6 +1477,57 @@ If it's on, disable it and restore single window."
   (setq web-mode-enable-auto-pairing t)
   (setq web-mode-auto-close-style 2)
   (setq web-mode-enable-css-colorization t))
+;; }}
+
+
+;; {{ Smart capitalization, case conversion, and punctuation correction.
+(defun my-convert-punctuation (rg rp)
+  "Look for regexp RG around point, and replace with RP.
+Only applies to `text-mode'."
+  (let ((f "\\(%s\\)\\(%s\\)")
+        (space "[[:blank:]\n\r]*"))
+    (when (and (derived-mode-p 'text-mode)
+               (or (looking-at (format f space rg))
+                   (looking-back (format f rg space)
+                                 (max (point-min) (- (point) 100)))))
+      (replace-match rp nil nil nil 1))))
+
+(defun my-call-subword-cmd (fn)
+  "Run function FN."
+  (my-ensure 'subword)
+  (call-interactively fn))
+
+(defun my-capitalize ()
+  "Capitalize region or word.
+Also converts commas to full stops, and removes
+an extra space at beginning of line."
+  (interactive)
+  (my-convert-punctuation "," ".")
+  (if (use-region-p)
+      (call-interactively #'capitalize-region)
+    (when (looking-at "^ ")
+      (delete-char 1))
+    (my-call-subword-cmd #'subword-capitalize)))
+
+(defun my-downcase ()
+  "Downcase region or word.
+Also converts full stops to commas."
+  (interactive)
+  (my-convert-punctuation "\\." ",")
+  (if (use-region-p)
+      (call-interactively #'downcase-region)
+    (my-call-subword-cmd #'subword-downcase)))
+
+(defun my-upcase ()
+  "Upcase region or word."
+  (interactive)
+  (if (use-region-p)
+      (call-interactively #'upcase-region)
+    (my-call-subword-cmd #'subword-upcase)))
+
+(global-set-key (kbd "M-c") #'my-capitalize)
+(global-set-key (kbd "M-l") #'my-downcase)
+(global-set-key (kbd "M-u") #'my-upcase)
 ;; }}
 
 (provide 'init-misc)
