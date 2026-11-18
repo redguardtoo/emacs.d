@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (when (boundp 'evil-mode)
   (general-imap ","
     (general-key-dispatch 'self-insert-command
