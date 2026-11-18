@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; @see https://github.com/tumashu/pyim
 (setq default-input-method "pyim")
 
@@ -40,9 +42,9 @@
     (toggle-input-method))))
 
 (defun my-evil-insert-state-hack (orig-func &rest args)
-  "Notify user IME status."
+  "Notify user IME status with ORIG-FUNC and ARGS."
   (apply orig-func args)
-  (if current-input-method (message "IME on!")))
+  (when current-input-method (message "IME on!")))
 (advice-add 'evil-insert-state :around #'my-evil-insert-state-hack)
 
 (global-set-key (kbd "C-\\") 'my-toggle-input-method)
@@ -113,8 +115,8 @@ See pyim-wbdict's website for the full list of enable functions.")
     (setq pyim-dcache-backend 'pyim-dregcache)
 
     ;; automatically load pinyin dictionaries "*.pyim" under "~/.eim/"
-    (let* ((files (and (file-exists-p my-pyim-directory)
-                       (directory-files-recursively my-pyim-directory "\.pyim$")))
+    (let* ((files (and (file-directory-p my-pyim-directory)
+                       (directory-files-recursively my-pyim-directory "\\.pyim$")))
            disable-basedict)
       (when (and files (> (length files) 0))
         (setq pyim-dicts
@@ -123,14 +125,12 @@ See pyim-wbdict's website for the full list of enable functions.")
                       files))
         (dolist (f files)
           (when (member (file-name-base f) '("pyim-another-dict"
-                                             "pyim-tsinghua-dict.pyim"
+                                             "pyim-tsinghua-dict"
                                              "pyim-bigdict"
                                              "pyim-greatdict"))
             (setq disable-basedict t))))
-      (unless disable-basedict (pyim-basedict-enable)))))
-
-  ;; don't use tooltip
-  (setq pyim-use-tooltip 'popup))
+      (unless disable-basedict (pyim-basedict-enable))))))
 ;; }}
 
 (provide 'init-chinese)
+;;; init-chinese.el ends here
