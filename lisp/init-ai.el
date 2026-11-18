@@ -1,12 +1,14 @@
 ;;; init-ai.el --- AI setup  -*- lexical-binding: t -*-
 
 ;;; Code:
+
 (defun my-gptel-mode-setup ()
   "Setup of gptel."
   ;; Auto-scroll responses.
   (setq-local window-point-insertion-type t)
   ;; Wrap lines.
   (visual-line-mode 1))
+
 (use-package gptel
   :bind
   (("C-c RET" . gptel-send))
@@ -26,7 +28,7 @@
                (rewrite-tech-english . "You are a professional English writer. Please rewrite in professional technical English.")
                (snippet . "You are a multilingual software engineer. Based on the user's request, generate clean, idiomatic code in the specified language, and briefly explain how it works.")
                (typo . "Fix typos, grammar and style of the following:")))
-    (push p gptel-directives)))
+    (add-to-list 'gptel-directives p)))
 
 (when my-emacs30-p
   (use-package macher
@@ -52,52 +54,6 @@
       (gptel-add-file project-root)
       (message "Project context added to GPTel session."))))
 
-
-(defun my-gptel-analyze-commit (&optional pick-p)
-  "Analyze code commit in the current git project using GPTel.
-When PICK-P is not nil, commit for diff start need be picked up by users.
-If current buffer is in diff format, buffer context is regarded as one commit;
-Or else latest git commit is used.,
-Adds project context and explicitly specifies the project root in the prompt.
-Displays the response in Org mode."
-  (interactive "P")
-  (my-ensure 'gptel)
-  (let* ((project-root (locate-dominating-file "." ".git"))
-         (default-directory project-root)
-         (start (cond
-                 (pick-p
-                  (my-git-commit-id))
-                 (t
-                  "HEAD")))
-         diff-output
-         prompt)
-    (when start
-      (setq diff-output (cond
-                         ((derived-mode-p 'diff-mode)
-                          (buffer-string))
-                         (t
-                          (shell-command-to-string (format "git --no-pager diff --unified=10 %s^..HEAD"
-                                                           start)))))
-      (setq prompt (concat
-                    "You are analyzing code from a Git project located at: " project-root "\n\n"
-                    "Please analyze the following code changes from the Git commit. "
-                    "Consider the overall project context and provide insights on logic improvements, "
-                    "potential issues, or optimization suggestions. "
-                    "Format your response using Org mode syntax:\n\n"
-                    diff-output))
-      (gptel-request prompt
-        :callback (lambda (response info)
-                    (ignore info)
-                    (cond
-                     ((stringp response)
-                      (with-current-buffer (get-buffer-create "*GPTel Commit Analysis*")
-                        (erase-buffer)
-                        (org-mode)
-                        (insert response)
-                        (pop-to-buffer (current-buffer))))
-                     (t
-                      (message "No response is given."))))))))
-
 (with-eval-after-load 'agent-shell
   ;; (setq agent-shell-transcript-file-path-function
   ;;       (lambda (subdir)
@@ -121,7 +77,7 @@ Displays the response in Org mode."
      :needs-authentication nil
      :install-instructions "Make sure CLI 'npx @deepseek-ai/dsh --profile acp' works!"))
 
-  (push #'my-deepseek-harness-make-agent-config agent-shell-agent-configs))
+  (add-to-list 'agent-shell-agent-configs #'my-deepseek-harness-make-agent-config))
 
 (provide 'init-ai)
 ;;; init-ai.el ends here
