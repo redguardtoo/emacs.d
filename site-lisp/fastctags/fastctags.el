@@ -3,7 +3,7 @@
 ;; Copyright (C) 2026 Chen Bin
 
 ;; Author: Chen Bin <chb_sh@hotmail.com>
-;; Package-Version: 1.0.0
+;; Package-Version: 1.0.1
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience
 ;; URL: https://github.com/redguardtoo/fastctags
@@ -1620,7 +1620,7 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
 Extended regex is used, like (pattern1|pattern2)."
   (cond
    ((and fastctags-use-git-grep-p (executable-find "git"))
-    (format "git --no-pager grep -n --no-color -I -e \"%s\"" keyword))
+    (format "git --no-pager grep -n --no-color -I -e \"%s\"" (shell-quote-argument keyword)))
 
    ((fastctags-has-quick-grep-p)
     ;; "--hidden" force ripgrep to search hidden files/directories, that's default
@@ -1632,14 +1632,14 @@ Extended regex is used, like (pattern1|pattern2)."
             fastctags-ripgrep-default-options
             fastctags-grep-extra-arguments
             (fastctags-exclude-opts use-cache)
-            keyword))
+            (shell-quote-argument keyword)))
    (t
     ;; use extended regex always
     (format "\"%s\" -rsnE %s %s \"%s\" *"
             (or fastctags-grep-program (fastctags-guess-program "grep"))
             fastctags-grep-extra-arguments
             (fastctags-exclude-opts use-cache)
-            keyword))))
+            (shell-quote-argument keyword)))))
 
 (defun fastctags-parent-directory (level directory)
   "Return LEVEL up parent directory of DIRECTORY."
