@@ -79,10 +79,10 @@
 (add-hook 'org-mode-hook 'org-mode-hook-setup)
 
 (defvar my-pdf-view-from-history nil
-  "PDF view FROM history which is List of (pdf-path . page-number).")
+  "PDF view FROM history as a list of PDF path and page strings.")
 
 (defvar my-pdf-view-to-history nil
-  "PDF view TO history which is List of (pdf-path . page-number).")
+  "PDF view TO history as a list of PDF path and page strings.")
 
 (with-eval-after-load 'org
   (my-ensure 'imenu) ; set up org imenu function
@@ -90,9 +90,9 @@
   (defvar my-org-src--saved-temp-window-config nil
     "Window layout before edit special element.")
   (defun my-org-edit-special (&optional arg)
-    (ignore arg)
     "Save current window layout before `org-edit' buffer is open.
 ARG is ignored."
+    (ignore arg)
     (unless my-org-src--saved-temp-window-config
       (setq my-org-src--saved-temp-window-config
             (current-window-configuration))))
