@@ -6,7 +6,7 @@
   ;; Use human readable Size column instead of original one
   (define-ibuffer-column size-h
     (:name "Size" :inline t)
-    (let* ((buf-size buf-size))
+    (let* ((buf-size (buffer-size)))
       (cond
        ((>= buf-size 1000000)
         (format "%7.1fM" (/ buf-size 1000000.0)))

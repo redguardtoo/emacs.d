@@ -685,7 +685,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   (interactive)
   (let* ((selected (completing-read "Search text history:" my-search-text-history)))
     (when selected
-      (copy-yank-str selected)
+      (my-copy-yank-str selected)
       (message "%s => clipboard & yank ring" selected))))
 
 (defun my-cc-isearch-string (&rest args)

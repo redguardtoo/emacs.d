@@ -158,7 +158,7 @@
     ("R" gnus-article-reply-with-original)
     ("w" gnus-summary-wide-reply)
     ("W" gnus-article-wide-reply-with-original)
-    ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (copy-yank-str file)))))
+    ("o" (lambda () (interactive) (let* ((file (gnus-mime-save-part))) (when file (my-copy-yank-str file)))))
     ("v" my-browser-open-with-media-player)
     ("d" my-browser-download-rss-stream)
     ("b" my-browser-open-link-or-image-or-url)
@@ -301,7 +301,7 @@
       (when (file-directory-p file-name)
         (setq file-name (directory-file-name file-name)))
       (message "%s => clipboard & yank ring"
-               (copy-yank-str (funcall fn file-name)))))
+               (my-copy-yank-str (funcall fn file-name)))))
   (defhydra my-hydra-dired (:color blue)
     "
 ^Misc^                      ^File^              ^Copy Info^
