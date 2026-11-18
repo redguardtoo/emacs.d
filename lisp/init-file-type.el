@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;;; {{ shell and conf
 (my-add-auto-mode 'conf-mode
                   "\\.[^b][^a][a-zA-Z]*rc\\'"
@@ -7,7 +9,6 @@
                   "\\.aspell\\.en\\.pws\\'"
                   "\\.i3/config-base\\'"
                   "\\.config/systemd/user/.*\\.\\(service\\|timer\\)\\'"
-                  "\\mimeapps\\.list\\'"
                   "\\mimeapps\\.list\\'"
                   "\\.editorconfig\\'"
                   "\\.meta\\'"
@@ -41,7 +42,6 @@
 ;; {{ perl
 ;; Use cperl-mode instead of the default perl-mode
 (my-add-auto-mode 'cperl-mode
-                  "\\.\\([pP][Llm]\\|al\\)\\'"
                   "\\.\\([pP][Llm]\\|al\\)\\'")
 
 (my-add-interpreter-mode 'cperl-mode "perl5?\\|minperl")
@@ -93,11 +93,9 @@
 ;; epub
 (my-add-auto-mode 'nov-mode "\\.epub\\'")
 
-(my-add-auto-mode 'octave-mode "\\.m\\'")
-
 ;; {{ web/html
 (my-add-auto-mode 'web-mode
-                  "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|erb\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml?\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\|tsx\\)\\'")
+                  "\\.\\(cmp\\|app\\|page\\|component\\|wp\\|vue\\|tmpl\\|php\\|module\\|inc\\|hbs\\|tpl\\|[gj]sp\\|as[cp]x\\|mustache\\|djhtml\\|ftl\\|[rp]?html?\\|xul?\\|eex?\\|xml\\|jst\\|ejs\\|erb\\|rbxlx\\|plist\\|tsx\\)\\'")
 ;; }}
 
 (my-add-auto-mode 'dockerfile-mode
@@ -133,8 +131,6 @@
 ;; python
 (my-add-interpreter-mode 'python-mode "python")
 
-;; roblox studio
-(my-add-auto-mode 'roblox-mode "\\.rbxlx\\'")
 ;; }}
 
 ;; `css-mode' has better imenu support and won't force flymake to create rubbish files.
@@ -142,3 +138,4 @@
 (my-add-auto-mode 'css-mode "\\.scss\\'")
 
 (provide 'init-file-type)
+;;; init-file-type.el ends here
