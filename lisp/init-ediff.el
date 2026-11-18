@@ -1,9 +1,11 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (defvar my-ediff-panel-name nil)
 
 (defun my-server-save-buffers-kill-terminal-hack (&optional arg)
-  "Kill buffers to create ediff panel and call `ediff-startup-hook-setup'.
+  "Kill buffers to create ediff panel and call `ediff-startup-hook-setup' with ARG.
 Also remove buffers whose binding files already merged in `buffer-list'."
   (ignore arg)
   (mapc 'kill-buffer (buffer-list)))
@@ -70,6 +72,7 @@ Also remove buffers whose binding files already merged in `buffer-list'."
   "b" (my-ediff-command 'ediff-copy-both-to-C))
 
 (defun ediff-startup-hook-setup ()
+  "Set up ediff."
   ;; hide control panel if it's current buffer
   (when (string-match "\*Ediff Control Panel.*\*" (buffer-name))
     (unless my-ediff-panel-name (setq my-ediff-panel-name (buffer-name)))
