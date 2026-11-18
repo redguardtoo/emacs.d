@@ -31,19 +31,6 @@
 (setq org2nikola-output-root-directory "~/.config/nikola")
 ;; }}
 
-(defun org-demote-or-promote (&optional promote-p)
-  "Demote or promote current org tree with PROMOTE-P."
-  (interactive "P")
-  (save-excursion
-    (beginning-of-line)
-    (unless (or (region-active-p)
-                (let ((line (thing-at-point 'line t)))
-                  (and (string-match "^\\*+ $" line) ;; is node only one spaced
-                       (= (point) (- (point-max) (length line))) ;; is line at EOF
-                       )))
-      (org-mark-subtree)))
-  (if promote-p (org-do-promote) (org-do-demote)))
-
 ;; {{ @see http://orgmode.org/worg/org-contrib/org-mime.html
 (with-eval-after-load 'org-mime
   (setq org-mime-export-options '(:section-numbers nil :with-author nil :with-toc nil))
