@@ -1,4 +1,5 @@
 ;;; init-bookmark.el ---  book mark setup -*- lexical-binding: t -*-
+
 ;;; Code:
 
 (defun my-bookmark-set ()
@@ -12,14 +13,16 @@ If bookmark with same file name already exists, override it quietly."
                     ((eq major-mode 'eww-mode)
                      (eww-current-url))
                     (t
-                     buffer-file-name)))
+                     (and buffer-file-name
+                          (expand-file-name buffer-file-name)))))
          existing-bookmark)
     (when (setq existing-bookmark
                 (cl-find-if (lambda (b)
                               (let* ((f (cdr (assoc 'filename (cdr b)))))
                                 (when (and f (file-exists-p f))
-                                  (setq f (file-truename f)))
-                                (string= f filename)))
+                                  (setq f (expand-file-name f)))
+                                (when (and f filename)
+                                  (string= f filename))))
                             bookmark-alist))
       ;; extract name of existing bookmark
       (setq existing-bookmark (car existing-bookmark)))
@@ -46,22 +49,19 @@ If bookmark with same file name already exists, override it quietly."
 
 (with-eval-after-load 'bookmark
   (defun my-build-bookmark-candidate (bookmark)
-    "Re-shape BOOKMARK."
-    (let* ((key (cond
-                 ((and (assoc 'filename bookmark) (cdr (assoc 'filename bookmark)))
-                  (format "%s (%s)" (car bookmark) (cdr (assoc 'filename bookmark))))
-                 ((and (assoc 'location bookmark) (cdr (assoc 'location bookmark)))
-                  (format "%s (%s)" (car bookmark) (cdr (assoc 'location bookmark))))
-                 (t
-                  (car bookmark)))))
-      ;; key will be displayed
-      ;; re-shape the data so full bookmark be passed
-      (cons key bookmark)))
+    "Build a completion candidate from BOOKMARK."
+    (let* ((name (car bookmark))
+           (filename (alist-get 'filename (cdr bookmark)))
+           (location (alist-get 'location (cdr bookmark)))
+           (description (or filename location)))
+      (cons (if description
+                (format "%s (%s)" name description)
+              name)
+            bookmark)))
 
   ;; use my own bookmark if it exists
-  (let ((file "~/.emacs.bmk"))
-    (when (file-exists-p file)
-      (setq bookmark-default-file file))))
+  (setq bookmark-default-file
+        (expand-file-name "~/.emacs.bmk")))
 
 (provide 'init-bookmark)
 ;;; init-bookmark.el ends here
