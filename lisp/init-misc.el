@@ -1443,5 +1443,24 @@ If it's on, disable it and restore single window."
 
 (electric-pair-mode 1)
 
+;; {{ simple-httpd setup
+;; per project setup may be better
+;; (setq httpd-root "/var/www")
+(setq httpd-port 4444)
+(defun httpd-restart-now ()
+  "Restart http server."
+  (interactive)
+  (httpd-stop)
+  (httpd-start)
+  (message "http://localhost:%d/ at %s restarted"
+           httpd-port httpd-root))
+
+(defun httpd-restart-at-default-directory ()
+  "Restart http server at default directory."
+  (interactive)
+  (setq httpd-root default-directory)
+  (httpd-restart-now))
+;; }}
+
 (provide 'init-misc)
 ;;; init-misc.el ends here

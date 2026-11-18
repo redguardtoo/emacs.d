@@ -109,7 +109,6 @@
   (require-init 'init-chinese t) ;; cannot be idle-required
   ;; need statistics of keyfreq asap
   (require-init 'init-keyfreq t)
-  (require-init 'init-httpd t)
 
   ;; projectile costs 7% startup time
 
