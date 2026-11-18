@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; Navigate window layouts with "C-c <left>" and "C-c <right>"
 (my-run-with-idle-timer 2 #'winner-mode)
 
@@ -49,30 +51,6 @@
         (select-window first-win)
         (if this-win-2nd (other-window 1))))))
 
-(defun my-rotate-windows ()
-  "Rotate windows in clock-wise direction."
-  (interactive)
-  (cond
-   ((not (> (count-windows)1))
-    (message "You can't rotate a single window!"))
-   (t
-    (let* ((i 1)
-           (num-windows (count-windows)))
-      (while (< i num-windows)
-        (let* ((w1 (elt (window-list) i))
-               (w2 (elt (window-list) (+ (% i num-windows) 1)))
-
-               (b1 (window-buffer w1))
-               (b2 (window-buffer w2))
-
-               (s1 (window-start w1))
-               (s2 (window-start w2)))
-          (set-window-buffer w1 b2)
-          (set-window-buffer w2 b1)
-          (set-window-start w1 s2)
-          (set-window-start w2 s1)
-          (setq i (1+ i))))))))
-
 ;; https://github.com/abo-abo/ace-window
 ;; `M-x ace-window ENTER m` to swap window
 (global-set-key (kbd "C-x o") 'ace-window)
@@ -119,10 +97,10 @@
                            ("h" shrink-window-horizontally)
                            ("b" balance-windows)
                            ("t" my-toggle-two-split-window)
-                           ("c" (kill-buffer (current-buffer)))
-                           ("r" my-rotate-windows))
+                           ("c" kill-window))
                          "Window: [r]oate [t]oggle-split [hjkl]resize [b]alance [c]lose [q]uit"
                          nil))
 (global-set-key (kbd "C-c C-r") 'my-windows-setup)
 
 (provide 'init-windows)
+;;; init-windows.el ends here
