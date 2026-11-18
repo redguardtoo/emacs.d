@@ -1462,5 +1462,24 @@ If it's on, disable it and restore single window."
   (httpd-restart-now))
 ;; }}
 
+;; {{ web
+(defun web-mode-hook-setup ()
+  "Set up `web-mode'."
+  (unless (my-buffer-file-temp-p)
+    (setq-local wucuo-flyspell-check-doublon nil)
+    (remove-hook 'yas-after-exit-snippet-hook
+                 'web-mode-yasnippet-exit-hook t)))
+(add-hook 'web-mode-hook 'web-mode-hook-setup)
+
+(with-eval-after-load 'web-mode
+  ;; make org-mode export fail, I use evil and evil-matchit
+  ;; to select text, so expand-region.el is not used
+  (remove-hook 'web-mode-hook 'er/add-web-mode-expansions)
+  (setq web-mode-enable-auto-closing t) ; enable auto close tag in text-mode
+  (setq web-mode-enable-auto-pairing t)
+  (setq web-mode-auto-close-style 2)
+  (setq web-mode-enable-css-colorization t))
+;; }}
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
