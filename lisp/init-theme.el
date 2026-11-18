@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (defvar my-favorite-color-themes nil "My favorite color themes.")
 
 ;; someone mentioned that blink cursor could slow Emacs24.4
@@ -11,11 +13,11 @@
 
 (defun my-pickup-random-color-theme (themes)
   "Pickup random color theme from THEMES."
-  (let* ((available-themes themes)
-         (theme (nth (random (length available-themes)) available-themes)))
-    (mapc #'disable-theme custom-enabled-themes)
-    (load-theme theme t)
-    (message "Color theme [%s] loaded." theme)))
+  (unless (null themes)
+    (let* ((theme (nth (random (length themes)) themes)))
+      (mapc #'disable-theme custom-enabled-themes)
+      (load-theme theme t)
+      (message "Color theme [%s] loaded." theme))))
 
 ;; random color theme
 (defun my-random-favorite-color-theme (&optional any-theme)
@@ -31,7 +33,7 @@
 
 (defun my-theme-packages(packages)
   "Get themes from PACKAGES."
-  (let* ((sorted-packages (sort packages
+  (let* ((sorted-packages (sort (copy-sequence packages)
                                 (lambda (a b)
                                   (> (cdr a) (cdr b)))))
          rlt
@@ -55,12 +57,21 @@
                       (mapcar 'string-trim
                               (split-string (my-selected-str) "\n"))))
          names)
-    (with-current-buffer
-        (url-retrieve-synchronously "http://melpa.org/download_counts.json" t t 30)
-      (goto-char (point-min))
-      (search-forward "{")
-      (backward-char) ; move cursor just before the "{"
-      (setq pkgs (json-read)))
+
+    ;; get package download counts
+    (let ((buffer
+           (url-retrieve-synchronously
+            "https://melpa.org/download_counts.json" t t 30)))
+      (if (not (buffer-live-p buffer))
+          (message "Failed to retrieve MELPA download counts.")
+        (unwind-protect
+            (with-current-buffer buffer
+              (goto-char (point-min))
+              (search-forward "{")
+              (backward-char)
+              (setq pkgs (json-read)))
+          (kill-buffer buffer))))
+
     (when (and pkgs
                (setq names (nconc (my-theme-packages pkgs) old-names)))
       (setq names (delete-dups (sort names 'string<)))
