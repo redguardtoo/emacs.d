@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 ;; my private snippets, should be placed before enabling yasnippet
 (defvar my-yasnippets-dir nil
   "The directory of my yasnippets is  \"~/my-yasnippets\".")
@@ -10,7 +12,8 @@
                               (yas-minor-mode-on))))
 
 (defun my-yas-expand-from-trigger-key-hack (orig-func &rest args)
-  "Tab key won't trigger yasnippet expand in org heading."
+  "Tab key won't trigger yasnippet expand in org heading.
+ORIG-FUNC and ARGS is used."
   (cond
    ;; skip yas expand in org heading
    ((and (eq major-mode 'org-mode)
@@ -28,7 +31,7 @@
   (yas-minor-mode-on))
 
 (defun my-yas-field-to-statement(str sep)
-  "If STR=='a.b.c' and SEP=' && ', 'a.b.c' => 'a && a.b && a.b.c'"
+  "If STR=='a.b.c' and SEP=' && ', 'a.b.c' => 'a && a.b && a.b.c'."
   (let ((a (split-string str "\\.")) rlt)
     (mapconcat 'identity
                (mapcar (lambda (elem)
@@ -40,6 +43,7 @@
                sep)))
 
 (defun my-yas-get-first-name-from-to-field ()
+  "Get first name from email's to field."
   (let ((rlt "AGENT_NAME") str)
     (save-excursion
       (goto-char (point-min))
@@ -53,15 +57,14 @@
 
 (defun my-yas-camelcase-to-string-list (str)
   "Convert camelcase STR into string list."
-  (let* ((old-case case-fold-search) rlt)
-    (setq case-fold-search nil)
-    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)" " \\1" str t))
-    (setq rlt (replace-regexp-in-string "\\([A-Z]+\\)\\([A-Z][a-z]+\\)" "\\1 \\2" rlt t))
-    ;; restore case-fold-search
-    (setq case-fold-search old-case)
+  (let* ((case-fold-search nil)
+         (rlt (replace-regexp-in-string "\\([A-Z]+\\)\\([A-Z][a-z]+\\)" "\\1 \\2"
+                                        (replace-regexp-in-string "\\([A-Z]+\\)" " \\1" str t)
+                                        t)))
     (split-string rlt " ")))
 
 (defun my-yas-camelcase-to-downcase (str)
+  "Change STR from camelcase to downcase."
   (let* ((l (my-yas-camelcase-to-string-list str))
          (case-fold-search nil))
     (mapconcat 'identity (mapcar (lambda (elem)
@@ -72,17 +75,17 @@
                " ")))
 
 (defun my-yas-escape-string (s)
+  "Escape string S."
   (let* ((rlt (replace-regexp-in-string "'" "\\\\'" s)))
     (setq rlt (replace-regexp-in-string "\"" "\\\\\"" rlt))
     rlt))
 
 (defun my-read-n-from-kill-ring ()
-  (let* ((cands (cl-subseq kill-ring 0 (min (read-number "fetch N `kill-ring'?" 1)
-                                         (length kill-ring)))))
-    (mapc (lambda (txt)
-            (set-text-properties 0 (length txt) nil txt)
-            txt)
-          cands)))
+  "Read N items from `kill-ring'."
+  (let ((n (read-number "Fetch N `kill-ring' items: " 1)))
+    (mapcar #'substring-no-properties
+            (cl-subseq kill-ring 0
+                       (min (max 0 n) (length kill-ring))))))
 
 (defun my-yas-get-var-list-from-kill-ring ()
   "Variable name is among the `kill-ring'.  Multiple major modes supported."
@@ -103,9 +106,6 @@
     rlt))
 
 (with-eval-after-load 'yasnippet
-  ;; http://stackoverflow.com/questions/7619640/emacs-latex-yasnippet-why-are-newlines-inserted-after-a-snippet
-  (setq-default mode-require-final-newline nil)
-
   ;; Use `yas-completing-prompt' when ONLY when "M-x yas-insert-snippet"
   ;; Thanks to capitaomorte for providing the trick.
   (defun my-yas-insert-snippet-hack (orig-func &rest args)
@@ -121,3 +121,4 @@
     (yas-reload-all)))
 
 (provide 'init-yasnippet)
+;;; init-yasnippet.el ends here
