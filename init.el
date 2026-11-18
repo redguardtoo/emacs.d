@@ -130,7 +130,6 @@
   (require-init 'init-ai t)
   (require-init 'init-dictionary t)
   (require-init 'init-emms t)
-  (require-init 'init-emacs-w3m t)
   (require-init 'init-browser t)
   (require-init 'init-shackle t)
   (require-init 'init-dired t)

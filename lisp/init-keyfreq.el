@@ -92,7 +92,6 @@
           "^select-window-"
           "^undo-"
           "^web-mode"
-          "^w3m-"
           "^yas-"
           "^y-or-n-"
           "emms-"))

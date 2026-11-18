@@ -112,7 +112,6 @@
     keyfreq
     gitconfig-mode
     textile-mode
-    w3m
     jupyter
     workgroups2
     graphql-mode
@@ -254,7 +253,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'winum)
 (require-package 'session)
 (require-package 'unfill)
-(require-package 'w3m) ; better than eww for reading web page
 (require-package 'eww-lnum)
 (require-package 'buffer-move)
 (require-package 'ace-window)

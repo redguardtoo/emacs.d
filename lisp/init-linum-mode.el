@@ -36,7 +36,6 @@
     vc-git-log-edit-mode
     log-edit-mode
     term-mode
-    w3m-mode
     speedbar-mode
     gnus-summary-mode
     gnus-article-mode

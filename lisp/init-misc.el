@@ -797,7 +797,7 @@ might be bad."
 		   (forward-char -1)
 		   (my-dict-complete-definition)))
   (local-set-key (kbd ";") 'my-hydra-ebook/body)
-  (local-set-key (kbd "w") 'mybigword-big-words-in-current-window))
+  (local-set-key (kbd "w") #'mybigword-big-words-in-current-window))
 (add-hook 'nov-mode-hook 'nov-mode-hook-setup)
 
 (with-eval-after-load 'nov

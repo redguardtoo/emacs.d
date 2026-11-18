@@ -22,7 +22,8 @@
         ;; Windows: use default browser
         "start")))
 
-(setq browse-url-browser-function 'browse-url-generic)
+;; use external browser to open url if possible
+(setq browse-url-browser-function #'browse-url-generic)
 
 ;; use external browser to search programming stuff
 (defun my-browser-hacker-search ()
@@ -103,8 +104,8 @@
         (message "%s => clipboard/kill-ring" cmd))))))
 
 (with-eval-after-load 'eww
-  (define-key eww-mode-map "f" 'eww-lnum-follow)
-  (define-key eww-mode-map "F" 'eww-lnum-universal))
+  (define-key eww-mode-map (kbd "f") #'eww-lnum-follow)
+  (define-key eww-mode-map (kbd "f") #'eww-lnum-universal))
 
 (provide 'init-browser)
 ;;; init-browser.el ends here
