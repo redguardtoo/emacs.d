@@ -1286,7 +1286,7 @@ If N is 2, list files in my recent 20 commits."
   (my-ensure 'recentf)
   (my-ensure 'project)
   (recentf-mode 1)
-  (let* ((files (mapcar #'substring-no-properties recentf-list))
+  (let* ((files recentf-list)
          hint)
     (cond
      ((eq n 1)
