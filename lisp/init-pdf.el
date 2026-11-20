@@ -1,5 +1,7 @@
 ;; -*- coding: utf-8; lexical-binding: t; -*-
 
+;;; Code:
+
 (my-run-with-idle-timer 2 (lambda () (require 'pdf-view)))
 
 ;; {{ grep pdf
