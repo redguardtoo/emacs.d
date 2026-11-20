@@ -66,7 +66,8 @@
     (git-gutter:set-start-revision parent)
     (message "git-gutter:set-start-revision HEAD^")))
 
-(defvar my-prefer-lightweight-magit t)
+(defvar my-prefer-lightweight-magit nil
+  "Speed up `magit-status'.")
 (defun my-hint-untracked-files ()
   "If untracked files and committed files share same extension, warn users."
 
@@ -89,6 +90,8 @@
 
 (with-eval-after-load 'magit
   ;; {{speed up magit, @see https://jakemccrary.com/blog/2020/11/14/speeding-up-magit/
+  ;; Setting `magit-refresh-verbose' to t causes Magit to print useful output
+  ;; to *Messages* buffer. It shows how many seconds each step of `magit-status' takes.
   (when my-prefer-lightweight-magit
     (remove-hook 'magit-status-sections-hook #'magit-insert-tags-header)
     (remove-hook 'magit-status-sections-hook #'magit-insert-status-headers)
