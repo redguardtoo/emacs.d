@@ -475,6 +475,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "ad" 'aya-delete-from-history
   "pp" 'paste-from-x-clipboard ; used frequently
   "xg" 'magit-status
+  "xd" 'magit-file-dispatch
   "sb" 'my-current-string-beginning
   "se" 'my-current-string-end
   "su" 'vundo
@@ -562,16 +563,10 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "x1" 'delete-other-windows
   "x2" 'split-window-vertically
   "x3" 'split-window-horizontally
-  "xq" 'delete-window
-  "xa" 'split-window-vertically
-  "xd" 'split-window-horizontally
   "s0" 'delete-window
   "s1" 'delete-other-windows
   "s2" 'split-window-vertically
   "s3" 'split-window-horizontally
-  "sq" 'delete-window
-  "sa" 'split-window-vertically
-  "sd" 'split-window-horizontally
   "oo" 'delete-other-windows
   ;; }}
   "cr" 'my-windows-setup
