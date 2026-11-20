@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: (with-eval-after-load 'major-mode ...)
 # key: eval
-# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# contributor: Chen Bin
 # --
 (with-eval-after-load '${1:major-mode}
   $0)

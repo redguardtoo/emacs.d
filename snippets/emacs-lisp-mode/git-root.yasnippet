@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: git root directory
 # key: root
-# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# contributor: Chen Bin
 # --
 (setq ${1:root-dir} (locate-dominating-file (file-name-as-directory (file-name-directory buffer-file-name)) ".git"))
 (when (and ${1:$(yas/substr yas-text "[^ ]*")} (file-exists-p ${1:$(yas/substr yas-text "[^ ]*")}))

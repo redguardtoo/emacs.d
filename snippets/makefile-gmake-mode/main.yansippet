@@ -2,7 +2,7 @@
 # name: makefile for XLib
 # key: main
 # expand-env: ((yas-indent-line 'fixed) (indent-tabs-mode t))
-# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# contributor: Chen Bin
 # --
 .PHONY = all clean
 TARGET = ${1:main}

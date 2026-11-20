@@ -1,7 +1,7 @@
 # -*- coding: utf-8; mode: snippet -*-
 # name: (message "buffer=%s" buffer)
 # key: lb
-# contributor: Chen Bin <chenbin DOT sh AT gmail>
+# contributor: Chen Bin
 # --
 # buffer-substring-no-properties start end
 (with-current-buffer ${1:object} (message "${1:$(yas/substr yas-text "[^ ]*")}=%s" (buffer-substring-no-properties (point-min) (point-max))))
