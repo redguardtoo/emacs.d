@@ -1475,5 +1475,9 @@ Also converts full stops to commas."
 (global-set-key (kbd "M-u") #'my-upcase)
 ;; }}
 
+(with-eval-after-load 'diff-lisp
+  (setq diff-lisp-ignore-whitespace t)
+  (setq diff-lisp-ignore-whitespace-change t))
+
 (provide 'init-misc)
 ;;; init-misc.el ends here
