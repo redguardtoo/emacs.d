@@ -431,7 +431,7 @@ If LEVEL > 0, find file in previous LEVEL commit."
   "Git grep in project."
   (interactive)
   (let ((fastctags-use-git-grep-p t))
-    (fastctags-grep (my-selected-str))))
+    (call-interactively #'fastctags-grep)))
 
 (provide 'init-git)
 ;;; init-git.el ends here

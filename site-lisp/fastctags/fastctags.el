@@ -3,7 +3,7 @@
 ;; Copyright (C) 2026 Chen Bin
 
 ;; Author: Chen Bin <chb_sh@hotmail.com>
-;; Package-Version: 1.0.1
+;; Package-Version: 1.0.2
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience
 ;; URL: https://github.com/redguardtoo/fastctags
@@ -1585,11 +1585,6 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
   "Test if ripgrep program exist."
   (or fastctags-use-ripgrep-force (fastctags-guess-program "rg")))
 
-(defun fastctags-shell-quote (argument)
-  "Quote ARGUMENT."
-  (if (eq system-type 'windows-nt) argument
-    (shell-quote-argument argument)))
-
 (defun fastctags-exclude-opts (use-cache)
   "Grep CLI options.  IF USE-CACHE is t, the options is read from cache."
   (let* ((ignore-dirs (if use-cache (plist-get fastctags-opts-cache :ignore-dirs)
@@ -1600,19 +1595,19 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
     (cond
      ((fastctags-has-quick-grep-p)
       (concat (mapconcat (lambda (e)
-                           (format "-g=\"!%s/*\"" (fastctags-shell-quote e)))
+                           (format "-g=%s" (shell-quote-argument (concat "!" e "/*"))))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "-g=\"!%s\"" (fastctags-shell-quote e)))
+                           (format "-g=%s" (shell-quote-argument (concat "!" e))))
                          ignore-file-names " ")))
      (t
       (concat (mapconcat (lambda (e)
-                           (format "--exclude-dir=\"%s\"" (fastctags-shell-quote e)))
+                           (format "--exclude-dir=%s" (shell-quote-argument e)))
                          ignore-dirs " ")
               " "
               (mapconcat (lambda (e)
-                           (format "--exclude=\"%s\"" (fastctags-shell-quote e)))
+                           (format "--exclude=%s" (shell-quote-argument e)))
                          ignore-file-names " "))))))
 
 (defun fastctags-grep-cli (keyword &optional use-cache)
@@ -1620,12 +1615,12 @@ If SYMBOL-AT-POINT is nil, don't read symbol at point."
 Extended regex is used, like (pattern1|pattern2)."
   (cond
    ((and fastctags-use-git-grep-p (executable-find "git"))
-    (format "git --no-pager grep -n --no-color -I -e \"%s\"" (shell-quote-argument keyword)))
+    (format "git --no-pager grep -n --no-color -I -e %s" (shell-quote-argument keyword)))
 
    ((fastctags-has-quick-grep-p)
     ;; "--hidden" force ripgrep to search hidden files/directories, that's default
     ;; behavior of grep
-    (format "\"%s\" %s %s --hidden %s \"%s\" --"
+    (format "\"%s\" %s %s --hidden %s %s --"
             ;; if rg is not in $PATH, then it's in `fastctags-grep-program'
             (or (fastctags-guess-program "rg") fastctags-grep-program)
             ;; (if fastctags-debug " --debug")
@@ -1635,7 +1630,7 @@ Extended regex is used, like (pattern1|pattern2)."
             (shell-quote-argument keyword)))
    (t
     ;; use extended regex always
-    (format "\"%s\" -rsnE %s %s \"%s\" *"
+    (format "\"%s\" -rsnE %s %s %s *"
             (or fastctags-grep-program (fastctags-guess-program "grep"))
             fastctags-grep-extra-arguments
             (fastctags-exclude-opts use-cache)
