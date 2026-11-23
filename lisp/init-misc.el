@@ -197,9 +197,13 @@ In each rule, 1st item is default directory, 2nd item is the shell command.")
 (my-run-with-idle-timer 1 #'fastctags-auto-setup)
 
 ;;; {{ display long lines in truncated style (end line with $)
-(defun my-truncate-lines-setup ()
-  (toggle-truncate-lines 1))
-(add-hook 'grep-mode-hook 'my-truncate-lines-setup)
+(defun my-long-lines-setup ()
+  "Set up long lines."
+  (setq-local truncate-lines t)
+  (setq-local truncate-partial-width-windows t)
+  (setq-local long-line-threshold 200)
+  (setq-local large-hscroll-threshold 300))
+(add-hook 'grep-mode-hook 'my-long-lines-setup)
 ;; }}
 
 ;; turn on auto-fill-mode, don't use `text-mode-hook' because for some
