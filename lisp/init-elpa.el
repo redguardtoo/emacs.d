@@ -249,7 +249,6 @@ If NO-REFRESH is nil, `package-refresh-contents' is called."
 (require-package 'command-log-mode)
 (require-package 'regex-tool)
 (require-package 'groovy-mode)
-(require-package 'emmet-mode)
 (require-package 'winum)
 (require-package 'session)
 (require-package 'unfill)
