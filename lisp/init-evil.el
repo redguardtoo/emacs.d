@@ -475,6 +475,7 @@ If N > 0 and in js, only occurrences in current N lines are renamed."
   "ad" 'aya-delete-from-history
   "pp" 'paste-from-x-clipboard ; used frequently
   "xg" 'magit-status
+  "xp" 'magit-dispatch
   "xd" 'magit-file-dispatch
   "sb" 'my-current-string-beginning
   "se" 'my-current-string-end
