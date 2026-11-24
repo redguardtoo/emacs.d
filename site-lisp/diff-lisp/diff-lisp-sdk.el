@@ -22,16 +22,13 @@
 ;;; Code:
 
 (defvar diff-lisp-ignore-whitespace nil
-  "Ignore white space.")
+  "Ignore all whitespace differences.
+Whitespace characters are treated as if they do not exist.")
 
-(defvar diff-lisp-ignore-whitespace-change nil
-  "Ignore white space change.")
-
-(defvar diff-lisp-ignore-whitespace-at-eol t
-  "Ignore white space at end of line.")
-
-(defvar diff-lisp-ignore-cr-at-eol t
-  "Ignore CR character at end of line.")
+(defvar diff-lisp-ignore-whitespace-change t
+  "Ignore changes in the amount of whitespace.
+Consecutive whitespace characters are treated as a single space.
+Whitespace presence is still significant.")
 
 (defvar diff-lisp-debug nil "Debug flag.")
 
@@ -49,15 +46,14 @@
 
 (defsubst diff-lisp-hash (h c)
   "Update hash H with character code C."
-  (mod (+ h (* h 32) c) most-positive-fixnum))
+  (logand (+ h (* h 32) c) most-positive-fixnum))
 
 (defsubst diff-lisp-hash-record (s)
   "Return hash of string S.  See xdl_hash_record from git."
   (let ((h 5381)
         (len (length s)))
     (dotimes (i len h)
-      (setq h (diff-lisp-hash h (aref s i))))
-  h))
+      (setq h (diff-lisp-hash h (aref s i))))))
 
 (defsubst diff-lisp-whitespace-p (c)
   "Test if C is a whitespace character (space or tab)."
@@ -66,15 +62,14 @@
 (defmacro diff-lisp-spaces-hash (hash first last)
   "Get HASH of consecutive space characters with index of FIRST and LAST."
   `(while (<= ,first ,last)
-            (setq ,hash (diff-lisp-hash ,hash 32))
-            (setq ,first (1+ ,first))))
+     (setq ,hash (diff-lisp-hash ,hash 32))
+     (setq ,first (1+ ,first))))
 
 (defsubst diff-lisp-hash-record-with-whitespace (s)
   "Return hash of string S with whitespace rules.
 See xdl_hash_record_with_whitespace from git."
   (let* ((h 5381)
          (len (length s))
-         (ignore-cr diff-lisp-ignore-cr-at-eol)
          (last (1- len))
          (i 0)
          j
@@ -85,7 +80,7 @@ See xdl_hash_record_with_whitespace from git."
       (cond
 
        ;; ignore CR at eol (Windows-style line ending)
-       ((and ignore-cr (= c 13) (= i last)))
+       ((and (= c 13) (= i last)))
 
        ;; whitespace rules
        ((diff-lisp-whitespace-p c)
@@ -106,13 +101,6 @@ See xdl_hash_record_with_whitespace from git."
          ;; skip trailing spaces
          ((and diff-lisp-ignore-whitespace-change at-eol))
 
-         ((and diff-lisp-ignore-whitespace-at-eol (not at-eol))
-          ;; keep original white spaces between j..i
-          (diff-lisp-spaces-hash h j i))
-
-         ;; skip trailing spaces
-         ((and diff-lisp-ignore-whitespace-at-eol at-eol))
-
          ;; count all spaces
          (t
           (diff-lisp-spaces-hash h j i))))
@@ -130,9 +118,7 @@ See xdl_hash_record_with_whitespace from git."
          (rlt (make-vector len nil)))
     (cond
      ((or diff-lisp-ignore-whitespace
-          diff-lisp-ignore-whitespace-change
-          diff-lisp-ignore-whitespace-at-eol
-          diff-lisp-ignore-cr-at-eol)
+          diff-lisp-ignore-whitespace-change)
       (dotimes (i len)
         (aset rlt i (diff-lisp-hash-record-with-whitespace (aref lines i)))))
      (t

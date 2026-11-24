@@ -171,15 +171,65 @@ Second sequence is subsequence of B, which starts from B-START with length M."
 
     rlt))
 
+
+(defun diff-lisp-myers--find-d1-snake (a a-start n b b-start m x u y v)
+  "Find snakes for a subproblem with edit distance D = 1.
+A and B are sequence/vector representations; subproblem starts at
+A-START (length N) and B-START (length M), with middle-snake
+coordinates X, Y, U, V in local coordinates."
+  (let ((prefix-len 0)
+        (suffix-len 0)
+        snakes)
+
+    ;; Find common prefix before the middle snake.
+    (while (and (< prefix-len x)
+                (< prefix-len y)
+                (diff-lisp-string-equal
+                 a b
+                 (+ a-start prefix-len)
+                 (+ b-start prefix-len)))
+      (setq prefix-len (1+ prefix-len)))
+
+    (when (> prefix-len 0)
+      (push (list a-start b-start
+                  (+ a-start prefix-len)
+                  (+ b-start prefix-len))
+            snakes))
+
+    ;; Collect the middle snake.
+    (when (or (/= x u) (/= y v))
+      (push (list (+ a-start x) (+ b-start y)
+                  (+ a-start u) (+ b-start v))
+            snakes))
+
+    ;; Find common suffix after the middle snake.
+    (while (and (< suffix-len (- n u))
+                (< suffix-len (- m v))
+                (diff-lisp-string-equal
+                 a b
+                 (- (+ a-start n) 1 suffix-len)
+                 (- (+ b-start m) 1 suffix-len)))
+      (setq suffix-len (1+ suffix-len)))
+
+    (when (> suffix-len 0)
+      (push (list (- (+ a-start n) suffix-len)
+                  (- (+ b-start m) suffix-len)
+                  (+ a-start n)
+                  (+ b-start m))
+            snakes))
+
+    (nreverse snakes)))
+
 (defun diff-lisp-myers-find-all-snakes (a a-start n b b-start m)
   "Find all snakes from two sequences.
 First sequence is subsequence of A, which starts from A-START with length N.
 Second sequence is subsequence of B, which starts from B-START with length M."
   (when diff-lisp-debug
-      (message "diff-lisp-myers-find-all-snakes called => %s %s %s %s" a-start n b-start m))
+    (message "diff-lisp-myers-find-all-snakes called => %s %s %s %s" a-start n b-start m))
 
   (when (and (> n 0) (> m 0))
-    (let* (all-snakes
+    (let* (snake
+           all-snakes
            ;; Use a-start and b-start is to avoid copy sequences.
            (middle-snake (diff-lisp-myers-find-middle-snake a a-start n b b-start m)))
 
@@ -190,39 +240,14 @@ Second sequence is subsequence of B, which starts from B-START with length M."
             (setq all-snakes
                   (nconc (diff-lisp-myers-find-all-snakes a a-start x b b-start y)
                          (diff-lisp-myers-find-all-snakes a (+ a-start u) (- n u) b (+ b-start v) (- m v))))
-            (push (list (+ x a-start) (+ y b-start) (+ u a-start) (+ v b-start)) all-snakes))
-
-           ((> m n)
-            ;; If d = 1, there are two cases:
-            ;;    Case 1       Case 2
-            ;;  x---x---x    x---x---x
-            ;;  | \ |   |    |   |   |
-            ;;  x---x---x    x---x---x
-            ;;  |   | \ |    | \ |   |
-            ;;  x---x---x    x---x---x
-            ;;  |   |   |    |   | \ |
-            ;;  x---x---x    x---x---x
-            ;; In Case 1, right bottom corner is returned as the middle snake.
-            (cond
-             ((and (= x u) (= y v))
-              (push (list a-start b-start (+ n a-start) (+ n b-start)) all-snakes))
-             (t
-              (push (list (+ x a-start) (+ y b-start) (+ u a-start) (+ v b-start)) all-snakes))))
+            (setq snake (list (+ x a-start) (+ y b-start) (+ u a-start) (+ v b-start)))
+            (when (diff-lisp--not-empty-snake-p snake)
+              (push snake all-snakes)))
 
            (t
-            ;; If d = 1, there are two cases:
-            ;;     Case 1            Case 2
-            ;;  x---x---x---x     x---x---x---x
-            ;;  | \ |   |   |     |   | \ |   |
-            ;;  x---x---x---x     x---x---x---x
-            ;;  |   | \ |   |     |   |   | \ |
-            ;;  x---x---x---x     x---x---x---x
-            ;; In Case 1, right bottom corner is returned as the middle snake.
-            (cond
-             ((and (= x u) (= y v))
-              (push (list a-start b-start (+ m a-start) (+ m b-start)) all-snakes))
-             (t
-              (push (list (+ x a-start) (+ y b-start) (+ u a-start) (+ v b-start)) all-snakes)))))))
+            (setq all-snakes
+                  (nconc all-snakes
+                         (diff-lisp-myers--find-d1-snake a a-start n b b-start m x u y v)))))))
       all-snakes)))
 
 
@@ -233,7 +258,6 @@ Second sequence is subsequence of B, which starts from B-START with length M."
   (if (or (/= (nth 0 snake) (nth 2 snake))
           (/= (nth 1 snake) (nth 3 snake)))
       snake))
-
 
 (defun diff-lisp-myers-do-diff (a n b m)
   "Diff sequence A with length N and sequence B with length M.
