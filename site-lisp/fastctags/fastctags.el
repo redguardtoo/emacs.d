@@ -3,7 +3,7 @@
 ;; Copyright (C) 2026 Chen Bin
 
 ;; Author: Chen Bin <chb_sh@hotmail.com>
-;; Package-Version: 1.0.2
+;; Package-Version: 2.0.0
 ;; Package-Requires: ((emacs "29.1"))
 ;; Keywords: convenience
 ;; URL: https://github.com/redguardtoo/fastctags
@@ -67,6 +67,21 @@
 ;;
 ;;   - "M-x fastctags-debug-info" for debugging.
 ;;
+;;
+;;   - `fastctags-extra-json-files' specifies additional JSON files to scan
+;;   for tags.  File paths are relative to the directory containing TAGS-FILE.
+;;   For example, to generate tags for JSON object properties,
+;;
+;;     (setq fastctags-extra-json-files
+;;           '("src/i18n/locales/en.json"
+;;             "src/i18n/locales/zh.json"))
+;;
+;;   Alternatively, you can set this variable in the project's ".dir-locals.el",
+;;
+;;      ((nil . ((fastctags-extra-json-files
+;;                . ("src/i18n/locales/en.json"
+;;                   "src/i18n/locales/zh.json")))))
+;;
 ;;   - Make sure `fastctags-update-tags-file-interval' is greater than the total
 ;;   seconds Ctags program takes to scan code.
 ;;
@@ -86,6 +101,7 @@
 (require 'tramp nil t)
 (require 'find-file)
 (require 'subr-x)
+(require 'json)
 
 (defgroup fastctags nil
   "Completion backend for ctags."
@@ -93,6 +109,7 @@
 
 (defcustom fastctags-complete-ignore-case-p nil
   "Non-nil to ignore case in code completion candidates."
+  :group 'fastctags
   :type 'boolean)
 
 (defcustom fastctags-extra-tags-files nil
@@ -105,29 +122,40 @@ A typical format is,
 Environment variables can be inserted between slashes (`/').
 They will be replaced by their definitions.  If a variable does
 not exist, it is replaced (silently) with an empty string."
+  :group 'fastctags
+  :type '(repeat string))
+
+(defcustom fastctags-extra-json-files nil
+  "Additional JSON files to generate tags from, relative to TAGS-FILE."
+  :group 'fastctags
   :type '(repeat string))
 
 (defcustom fastctags-quiet nil
   "Be quiet and do not notify user tags file status."
+  :group 'fastctags
   :type 'boolean)
 
 (defcustom fastctags-complete-everywhere nil
   "Non-nil to offer code completions in comments&strings."
+  :group 'fastctags
   :type '(choice (const :tag "Off" nil)
                  (const :tag "On" t)))
 
 (defcustom fastctags-update-tags-file-interval 150
   "The interval (seconds) to generate the tags file and update cache.
 Used by `fastctags-virtual-update-tags'."
+  :group 'fastctags
   :type 'integer)
 
 (defcustom fastctags-tags-file-loading-speedup-min-size (* 4 1024 1024)
   "Minimum size of tags file whose loading can be optimized."
+  :group 'fastctags
   :type 'integer)
 
 (defcustom fastctags-tag-name-valid-characters
   "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$#@%_!*&1234567890"
   "The characters of tag name.  It's used for partition algorithm."
+  :group 'fastctags
   :type 'string)
 
 (defvar-local fastctags-cached-current-tags-file nil)
@@ -773,11 +801,6 @@ Return nil if it's not found."
     (if (executable-find executable-name) (executable-find executable-name)))))
 
 ;;;###autoload
-(defun fastctags-version ()
-  "Return version."
-  (message "2.0.5"))
-
-;;;###autoload
 (defun fastctags-get-hostname ()
   "Reliable way to get current hostname.
 `(getenv \"HOSTNAME\")' won't work because $HOSTNAME is NOT an
@@ -828,6 +851,52 @@ Return nil if it's not found."
                      fastctags-tags-file-history)))
     (push tags-file fastctags-tags-file-history)))
 
+
+;;;###autoload
+(defun fastctags-tag-line (tag-name file-name line-number &optional kind)
+  "Return one tags-file line using TAG-NAME, FILE-NAME, LINE-NUMBER and KIND."
+  (concat
+   (format "%s\t%s\t%d;\""
+           tag-name
+           file-name
+           line-number)
+   (if kind (format "\t%s" kind) "")))
+
+;;;###autoload
+(defun fastctags-append-json-tags (json-file tags-file)
+  "Append new tag names in JSON-FILE into TAGS-FILE.
+JSON-FILE is relative to the directory containing TAGS-FILE."
+  (let* ((dir (file-name-directory (expand-file-name tags-file)))
+         (path (expand-file-name json-file dir))
+         jp
+         tagstr)
+    (with-temp-buffer
+      (insert-file-contents path)
+      (goto-char (point-min))
+      ;; find all js object property names
+      (while (re-search-forward "\"?[a-z][a-zA-Z0-9]*\"?[ \t]*:[ \t]*\"[^\"]*\"" (point-max) t)
+        (when (and (setq jp (mapconcat #'identity
+                                       (plist-get (json-path-to-position (point)) :path)
+                                       "."))
+                   (not (string-empty-p jp)))
+          (setq tagstr (concat tagstr
+                               (fastctags-tag-line jp json-file (line-number-at-pos))
+                               "\n")))))
+    (when (and tagstr (not (string-empty-p tagstr)))
+      (with-temp-buffer
+        (insert-file-contents tags-file)
+        ;; Remove existing tags belonging to JSON-FILE before appending updated ones.
+        (flush-lines (concat "^[^\t]*\t" (regexp-quote json-file) "\t"))
+        (goto-char (point-max))
+        (unless (bolp) (insert "\n"))
+        (insert tagstr)
+        (write-region (point-min) (point-max) tags-file nil 'silent)))))
+
+(defun fastctags-scan-extra-json-files (tags-file)
+  "Generate and append tags from `fastctags-extra-json-files' to TAGS-FILE."
+  (dolist (json-file fastctags-extra-json-files)
+    (fastctags-append-json-tags json-file tags-file)))
+
 ;;;###autoload
 (defun fastctags-async-shell-command (command tags-file)
   "Execute string COMMAND and create TAGS-FILE asynchronously."
@@ -848,6 +917,7 @@ Return nil if it's not found."
                   (tramp-cleanup-this-connection))
                 ;; reload tags-file
                 (when (and ,tags-file (file-exists-p ,tags-file))
+                  (fastctags-scan-extra-json-files ,tags-file)
                   (run-hook-with-args 'fastctags-after-update-tags-hook ,tags-file)
                   (message "Tags file %s was created." ,tags-file))))
              (t
@@ -1071,26 +1141,24 @@ CURRENT-FILE is used to compare with candidate path."
       pat))
 
    ;; fallback
-   (t excmd)))
+   (t
+    excmd)))
 
 (defun fastctags-search-regex (tagname)
   "Return regex to match a Vim ctags line containing TAGNAME using rx."
   (rx-to-string
    `(seq line-start
-         ;; Group 1: Tag Name
-         (group ,(or tagname '(one-or-more (regexp "[^\t]"))))
+         (group ,(or tagname '(one-or-more (not (any "\t")))))
          "\t"
-         ;; Group 2: Filename (changed to one-or-more)
-         (group (one-or-more (regexp "[^\t]")))
+         (group (one-or-more (not (any "\t"))))
          "\t"
-         ;; Group 3: Ex-command (the search pattern or line number)
-         (group (+? any))
+         (group (one-or-more any))
          ";\""
-         ;; Group 4: Kind (made optional and more flexible for trailing fields)
-         (zero-or-more whitespace)
-         (group (regexp "[a-zA-Z]"))
-         ;; Allow for extra fields like line:42 or class:X
-         (zero-or-more any)
+         (zero-or-one
+          (seq
+           "\t"
+           (group (one-or-more (any "a-zA-Z")))
+           (zero-or-more any)))
          line-end)))
 
 (defun fastctags-apply-excmd (excmd)
@@ -1130,6 +1198,9 @@ CURRENT-FILE is used to compare with candidate path."
 (defun fastctags-nav-parse-cands (str tagname-re tagname root-dir fuzzy rank)
   "Parse string STR with TAGNAME-RE TAGNAME ROOT-DIR FUZZY RANK.
 Return candidate."
+  (when fastctags-debug
+    (message "fastctags-nav-parse-cands called => %s %s %s %s"
+             str tagname-re tagname rank))
   (when (> (length (string-trim (or str ""))) 0)
     (let* (cands cand)
       (with-temp-buffer
@@ -1387,19 +1458,30 @@ Focus on TAGNAME if it's not nil."
 ;;;###autoload
 (defun fastctags-nav-find-tag-name-default ()
   "Find tag at point."
-  (let ((tag-name (find-tag-default)))
-    (when (and (memq major-mode
-                     fastctags-major-modes-to-strip-default-tag-name)
-               (string-match "^\\(`.*`\\|=.*=\\|~.*~\\|\".*\"\\|'.*'\\)$" tag-name))
+  (let (tag-name)
+    (cond
+     ((and fastctags-extra-json-files
+           (string-match "[a-zA-Z]+\\(\\.[a-zA-Z]+\\)+"
+                         (setq tag-name (thing-at-point 'filename))))
+      tag-name)
+
+     ((and (memq major-mode fastctags-major-modes-to-strip-default-tag-name)
+           (string-match "^\\(`.*`\\|=.*=\\|~.*~\\|\".*\"\\|'.*'\\)$"
+                         (setq tag-name (find-tag-default))))
       (setq tag-name (substring tag-name 1 (1- (length tag-name)))))
-    tag-name))
+
+     (t
+      tag-name))))
 
 (defun fastctags-nav-format-candidate-default (candidate)
   "Format code navigation CANDIDATE for display."
-  (format "%s:%s:%s"
-          (plist-get candidate :kind)
-          (plist-get candidate :file)
-          (plist-get candidate :text)))
+  (let* ((tagname (plist-get candidate :tagname))
+         (kind (plist-get candidate :kind)))
+    (format "%s [%s] %s: %s"
+            (or tagname "")
+            (or kind "")
+            (plist-get candidate :file)
+            (plist-get candidate :text))))
 
 ;;;###autoload
 (defun fastctags-scan-code (&optional dir)
