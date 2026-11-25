@@ -265,6 +265,20 @@ If USE-INDIRECT-BUFFER is t, use `indirect-buffer' to hold widen content."
   ;; better performance and security
   (setq ffap-machine-p-known 'reject))
 
+(defun my-native-comp-info ()
+  "Display Emacs native compilation information and copy it to the kill ring."
+  (interactive)
+  (let ((info (list
+               :emacs-version emacs-version
+               :native-comp (native-comp-available-p)
+               :jit-enabled native-comp-jit-compilation
+               :eln-path native-comp-eln-load-path
+               :eln-version-dir
+               (and (boundp 'comp-native-version-dir) comp-native-version-dir)
+               :emacs-dir user-emacs-directory)))
+    (let ((output (pp-to-string info)))
+      (message "%s" output)
+      (kill-new output))))
 (provide 'init-essential)
 
 ;; Local Variables:
